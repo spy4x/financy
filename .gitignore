@@ -1,0 +1,29 @@
+# OS
+.DS_Store
+
+# IDE
+.idea
+
+# Configs
+.env
+.env.*
+!.env.example
+!.env.sg1.example
+
+# Packages
+node_modules
+
+# Artifacts
+build
+dist
+.vite
+package
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+.volumes
+
+# Logs
+*.log
+.vs/
+
+infra/configs/vapid.json
