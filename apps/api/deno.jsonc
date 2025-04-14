@@ -1,0 +1,19 @@
+{
+  "name": "@apps/api",
+  "version": "1.0.0",
+  "exports": {},
+  "tasks": {
+    "dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch apps/api/index.ts"
+  },
+  "imports": {
+    // Aliases
+    "$api/services/": "./services/",
+    "$api/middlewares/": "./middlewares/",
+    // Dependencies
+    "hono": "jsr:@hono/hono@^4.6.3",
+    "ioredis": "npm:ioredis@^5.4.1",
+    // "@hectorm/otpauth": "jsr:@hectorm/otpauth",
+    // "qrcode": "jsr:@libs/qrcode@^2.0.0",
+    // "webpush": "jsr:@negrel/webpush"
+  }
+}

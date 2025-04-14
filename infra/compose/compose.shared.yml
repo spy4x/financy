@@ -1,0 +1,457 @@
+name: ${PROJECT}
+
+services:
+  proxy:
+    container_name: ${PROJECT}-proxy
+    image: traefik
+    restart: unless-stopped
+    command:
+      - '--log.level=${PROXY_LOG_LEVEL}'
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.web.address=:80'
+      - '--ping=true'
+      - '--ping.entryPoint=ping'
+    ports:
+      - '443:443'
+      - '80:80'
+    volumes:
+      - '../../.volumes/traefik/letsencrypt:/letsencrypt'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    deploy:
+      resources:
+        limits:
+          cpus: ${PROXY_CPU_LIMIT}
+          memory: ${PROXY_MEM_LIMIT}
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.proxy.rule=Host(`proxy.${DOMAIN}`)'
+      - 'traefik.http.routers.proxy.entrypoints=web'
+      - 'traefik.http.services.proxy.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.pingweb.rule=PathPrefix(`/ping`)'
+      - 'traefik.http.routers.pingweb.service=ping@internal'
+      - 'traefik.http.routers.pingweb.entrypoints=web'
+
+  # region Storages
+  db:
+    container_name: ${PROJECT}-db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    command: [ 
+        'postgres', 
+        '-c', 
+        'shared_preload_libraries=pg_stat_statements',
+        '-c',
+        'shared_buffers=2GB', # Set memory for shared buffers
+        '-c',
+        'work_mem=64MB', # Memory for sorting/hash joins per operation
+        '-c',
+        'maintenance_work_mem=512MB', # Memory for maintenance operations
+        '-c',
+        'effective_cache_size=6GB', # Anticipated OS disk cache
+        '-c',
+        'max_connections=30', # Limit max client connections
+        '-c',
+        'wal_buffers=16MB', # Increase write-ahead log (WAL) buffers
+        '-c',
+        'min_wal_size=1GB', # Minimum size of WAL files
+        '-c',
+        'max_wal_size=4GB', # Maximum size of WAL files
+        '-c',
+        'checkpoint_completion_target=0.7', # Spread checkpoints over time
+        '-c',
+        'autovacuum_vacuum_scale_factor=0.1', # Scale factor for vacuuming. 0.05-0.1 for tables with heavy write activity to trigger autovacuum earlier and avoid table bloat.
+        '-c',
+        'autovacuum_analyze_scale_factor=0.05', # Scale factor for analyzing. 0.05-0.1 so ANALYZE runs more frequently on tables with many tuple changes, ensuring up-to-date table statistics for the query planner.
+        '-c',
+        'autovacuum_vacuum_cost_limit=1000', # Cost limit for vacuuming. 1000-2000 to allow autovacuum processes to perform more work in each cycle on larger tables.
+        '-c',
+        'autovacuum_work_mem=512MB', # Memory for autovacuum processes, Explicitly set it to 256MB or 512MB, especially for large tables that are vacuumed frequently.
+        '-c',
+        'random_page_cost=1.1', # Set the cost of a non-sequentially fetched disk page to 1.1, which is a good starting point for SSDs.
+        '-c',
+        'effective_io_concurrency=32', # Increase if using modern SSD storage to 32 or 64 (depends on the number of concurrent I/O operations your disk subsystem can handle).
+        '-c',
+        'fsync=on', # Ensures data durability
+        '-c',
+        'synchronous_commit=on', # Balance between durability and speed
+      ]
+    deploy:
+      resources:
+        limits:
+          cpus: '${DB_CPU_LIMIT}'
+          memory: '${DB_MEM_LIMIT}'
+    volumes:
+      - ../../.volumes/postgres:/var/lib/postgresql/data
+    environment:
+      - PGUSER=${DB_USER}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - ${DB_PORT}:5432
+    healthcheck:
+      test: [ 'CMD', 'pg_isready', '-d', '${DB_NAME}', '-U', '${DB_USER}' ]
+    security_opt:
+      - no-new-privileges:true
+
+  redis:
+    container_name: ${PROJECT}-redis
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - ../../.volumes/redis:/data
+    command:
+      [
+        'redis-server',
+        '--maxmemory',
+        '${REDIS_MEM_INNER_LIMIT}',
+        '--maxmemory-policy',
+        'allkeys-lru',
+      ]
+    deploy:
+      resources:
+        limits:
+          cpus: ${REDIS_CPU_LIMIT}
+          memory: '${REDIS_MEM_LIMIT}'
+    healthcheck:
+      test: [ 'CMD', 'redis-cli', 'ping' ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  minio:
+    container_name: ${PROJECT}-minio
+    image: minio/minio
+    restart: unless-stopped
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler && \
+        minio server --console-address ":9001" /data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASS}
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+    volumes:
+      - ../../.volumes/minio:/data
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live' ]
+      interval: 15s
+      timeout: 20s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: ${MINIO_CPU_LIMIT}
+          memory: '${MINIO_MEM_LIMIT}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.minio.rule=Host(`minio.${DOMAIN}`)'
+      - 'traefik.http.routers.minio.entrypoints=web'
+      - 'traefik.http.services.minio.loadbalancer.server.port=9001'
+
+  minio-configure:
+    container_name: ${PROJECT}-minio-configure
+    image: minio/mc
+    depends_on:
+      - minio
+    volumes:
+      - ../../infra:/infra
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc alias set myminio http://minio:9000 ${MINIO_USER} ${MINIO_PASS}); do
+        echo 'Waiting for MinIO...'; sleep 3;
+      done;
+      /usr/bin/mc ilm import myminio/loki-data < /infra/configs/loki-data-minio-lifecycle.json;
+      "
+  # endregion Storages
+
+  # region Monitoring
+  loki:
+    container_name: ${PROJECT}-loki
+    image: grafana/loki
+    restart: unless-stopped
+    volumes:
+      - ../../infra/configs/loki.yml:/etc/loki/config.yaml
+    environment:
+      - S3_ACCESS_KEY_ID=${MINIO_USER}
+      - S3_SECRET_ACCESS_KEY=${MINIO_PASS}
+    depends_on:
+      - minio
+    command:
+      - '-config.file=/etc/loki/config.yaml'
+      - '-config.expand-env=true'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: ${LOKI_CPU_LIMIT}
+          memory: '${LOKI_MEM_LIMIT}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  promtail:
+    container_name: ${PROJECT}-promtail
+    restart: unless-stopped
+    image: grafana/promtail:2.9.2
+    volumes:
+      - /var/log:/var/log
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../infra/configs/promtail.yml:/etc/promtail/config.yaml:ro
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
+    deploy:
+      resources:
+        limits:
+          cpus: ${PROMTAIL_CPU_LIMIT}
+          memory: '${PROMTAIL_MEM_LIMIT}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  prometheus:
+    container_name: ${PROJECT}-prometheus
+    image: prom/prometheus
+    restart: unless-stopped
+    user: '0'
+    volumes:
+      - ../../infra/configs/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../.volumes/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+      - '--web.external-url=https://prometheus.${DOMAIN}'
+      - '--web.route-prefix=/'
+    deploy:
+      resources:
+        limits:
+          cpus: ${PROMETHEUS_CPU_LIMIT}
+          memory: '${PROMETHEUS_MEM_LIMIT}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  postgres-prometheus-exporter:
+    container_name: ${PROJECT}-postgres-prometheus-exporter
+    image: wrouesnel/postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: 'postgresql://${DB_USER}:${DB_PASS}@db:5432/${DB_NAME}?sslmode=disable'
+    deploy:
+      resources:
+        limits:
+          cpus: ${POSTGRES_EXPORTER_CPU_LIMIT}
+          memory: '${POSTGRES_EXPORTER_MEM_LIMIT}'
+    depends_on:
+      - db
+
+  grafana:
+    container_name: ${PROJECT}-grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    user: '0'
+    volumes:
+      - ../../.volumes/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS}
+      - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN}
+    deploy:
+      resources:
+        limits:
+          cpus: ${GRAFANA_CPU_LIMIT}
+          memory: '${GRAFANA_MEM_LIMIT}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)'
+      - 'traefik.http.routers.grafana.entrypoints=web'
+      - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
+
+  nodeexporter:
+    container_name: ${PROJECT}-nodeexporter
+    image: prom/node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.textfile.directory=/etc/node-exporter'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    deploy:
+      resources:
+        limits:
+          cpus: ${NODEEXPORTER_CPU_LIMIT}
+          memory: '${NODEEXPORTER_MEM_LIMIT}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  cadvisor:
+    container_name: ${PROJECT}-cadvisor
+    image: gcr.io/cadvisor/cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    deploy:
+      resources:
+        limits:
+          cpus: ${CADVISOR_CPU_LIMIT}
+          memory: '${CADVISOR_MEM_LIMIT}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+  # endregion Monitoring
+
+  # region Apps
+  api:
+    container_name: ${PROJECT}-api
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    volumes:
+      - ${DENO_DIR}:/deno-dir/
+      - ../../apps:/app/apps
+      - ../../libs:/app/libs
+      - ../../deno.jsonc:/app/deno.jsonc
+      - ../../infra/configs/vapid.json:/app/vapid.json
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - AUTH_COOKIE_SECRET=${AUTH_COOKIE_SECRET}
+      - AUTH_PEPPER=${AUTH_PEPPER}
+      - AUTH_TOTP=${AUTH_TOTP}
+      - DEV_EMAIL=${DEV_EMAIL}
+      - TIMEZONE=${TIMEZONE}
+      - REDIS_URL=${REDIS_URL}
+      - RATE_LIMITER_WINDOW_MS=${RATE_LIMITER_WINDOW_MS}
+      - RATE_LIMITER_STRICT_LIMIT=${RATE_LIMITER_STRICT_LIMIT}
+      - RATE_LIMITER_LIMIT=${RATE_LIMITER_LIMIT}
+    deploy:
+      resources:
+        limits:
+          cpus: '${API_CPU_LIMIT}'
+          memory: '${API_MEM_LIMIT}'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [ 'CMD', 'wget', '--spider', 'http://127.0.0.1:${API_PORT}/api/health' ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.api.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/ws`))'
+      - 'traefik.http.services.api.loadbalancer.server.port=${API_PORT}'
+      - 'traefik.http.routers.api.entrypoints=web'
+
+  web:
+    container_name: ${PROJECT}-web
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: apps/web/dockerfile.prod
+      args:
+        DENO_DEPLOYMENT_ID: ${DENO_DEPLOYMENT_ID}
+    volumes:
+      - ${DENO_DIR}:/deno-dir/
+      - ../../apps:/app/apps
+      - ../../libs:/app/libs
+      - ../../deno.jsonc:/app/deno.jsonc
+    deploy:
+      resources:
+        limits:
+          cpus: ${WEB_CPU_LIMIT}
+          memory: "${WEB_MEM_LIMIT}"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`)"
+      - "traefik.http.routers.web.entrypoints=web"
+      - "traefik.http.services.web.loadbalancer.server.port=8000"
+    healthcheck:
+      test:
+        [ "CMD", "wget", "--spider", "http://127.0.0.1:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  # endregion API & Web

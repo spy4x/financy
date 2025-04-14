@@ -1,0 +1,12 @@
+{
+  "name": "@shared/helpers",
+  "version": "1.0.0",
+  "exports": {
+    "./async": "./async.ts",
+    "./time": "./time.ts",
+    "./hash": "./hash.ts",
+    "./format": "./format.ts",
+    "./random": "./random.ts",
+    "./string": "./string.ts"
+  }
+}

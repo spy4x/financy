@@ -1,0 +1,18 @@
+# 1. Ignore everything
+**/*
+
+# 2. Add files and directories that should be included
+!apps/**
+!libs/**
+!infra/**
+!deno.jsonc
+
+# 3. Bonus step: ignore any unnecessary files that may be inside those allowed directories in Step #2
+**/.DS_Store
+**/Thumbs.db
+**/node_modules
+**/build
+**/dist
+**/Dockerfile
+**/dockerfile.*
+**/_fresh

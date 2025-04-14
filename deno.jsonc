@@ -1,0 +1,94 @@
+{
+  "version": "1.0.0",
+  "tasks": {
+    // #region Dev
+    "api:dev": "deno task -f @apps/api dev",
+    "web:dev": "deno task -f @apps/web dev",
+    // #endregion Dev
+    // #region Checks
+    "check": {
+      "command": "echo 'Checks passed!'",
+      "description": "Run all checks",
+      "dependsOn": [
+        "lint:check",
+        "fmt:check",
+        "ts:check",
+        "test"
+      ]
+    },
+    "fmt:fix": "deno fmt",
+    "fmt:check": "deno fmt --check",
+    "lint:fix": "deno lint --fix",
+    "lint:check": "deno lint",
+    "ts:check": "deno check **/*.ts",
+    "test": "deno test",
+    "fix": {
+      "command": "echo 'Fixes applied!'",
+      "description": "Run all fixes",
+      "dependsOn": [
+        "lint:fix",
+        "fmt:fix"
+      ]
+    },
+    // #endregion Checks
+    // #region Scripts
+    "db:migrate": "deno run -N=$DB_HOST:5432 -E -R=./libs/server/db/migrations  ./libs/server/db/migrate.ts",
+    "deps:check": "deno outdated -r",
+    "deps:update": "deno outdated -r -u -i",
+    "update:ubuntu": "sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo apt --fix-broken install && sudo do-release-upgrade",
+    "install:docker": "curl -fsSL https://get.docker.com | sudo sh",
+    "vapid-keys:create": "deno run -W=infra/configs/vapid.json --allow-run=deno ./infra/scripts/vapid-keys-create.ts",
+    // #endregion Scripts
+    // #region Git Hooks
+    "hooks:install": "deno run -R=deno.json,deno.jsonc,.git/hooks/ -W=.git/hooks/ jsr:@hongminhee/deno-task-hooks",
+    "hooks:pre-commit": "deno task check"
+    // #endregion Git Hooks
+  },
+  "imports": {
+    // Shared
+    "@std/path": "jsr:@std/path@^1.0.3",
+    "@std/assert": "jsr:@std/assert@^1.0.12",
+    "@std/testing": "jsr:@std/testing@^1.0.11",
+    "@std/encoding": "jsr:@std/encoding@^1.0.5"
+  },
+  "workspace": [
+    "./apps/api",
+    "./apps/web",
+    "./libs/shared/constants",
+    "./libs/shared/helpers",
+    "./libs/shared/types",
+    "./libs/shared/testing",
+    "./libs/server/db"
+  ],
+  "exclude": [
+    "**/.vite/*",
+    "**/.cache/*",
+    "**/dist/*",
+    ".volumes",
+    ".git",
+    "node_modules",
+    "dist",
+    "build",
+    "docs",
+    "infra",
+    "*.lock"
+  ],
+  "lint": {
+    "rules": {
+      "tags": [
+        "recommended"
+      ],
+      "exclude": [
+        "require-await"
+      ]
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "semiColons": false
+  }
+}

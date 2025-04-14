@@ -1,0 +1,25 @@
+services:
+  db:
+    healthcheck:
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    environment:
+      - ENV=dev
+    ports:
+      - ${API_PORT}:8000
+    healthcheck:
+      interval: 3s
+
+  web:
+    environment:
+      - ENV=${ENV}
+      - WEB_API_PREFIX=${WEB_API_PREFIX}
+    ports:
+      - ${WEB_PORT}:8000
+    build:
+      dockerfile: apps/web/dockerfile.dev
+    healthcheck:
+      interval: 3s

@@ -1,0 +1,7 @@
+apps/***
+libs/***
+infra/***
+.dockerignore
+README.md
+justfile
+deno.jsonc
