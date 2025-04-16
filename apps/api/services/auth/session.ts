@@ -1,5 +1,6 @@
-import { User, UserSession, UserSessionBase, UserSessionStatus } from "$shared/types"
-import { checkHash, getRandomString, hash } from "$shared/helpers"
+import { User, UserSession, UserSessionBase, UserSessionStatus } from "@shared/types"
+import { getRandomString } from "@shared/helpers/random"
+import { checkHash, hash } from "@shared/helpers/hash"
 
 import { db } from "../db.ts"
 import { config } from "../config.ts"
@@ -24,9 +25,10 @@ export class SessionManager {
 
   async create(
     session_: Pick<UserSessionBase, "userId" | "keyId" | "mfa">,
+    tx?: typeof db,
   ): Promise<null | UserSession> {
     const result = await this.createBody(session_)
-    const session = await db.userSession.createOne({ data: result.session })
+    const session = await (tx || db).userSession.createOne({ data: result.session })
     if (!session) {
       return null
     }

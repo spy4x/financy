@@ -2,11 +2,11 @@ import { WSContext } from "hono/ws"
 
 import {
   SyncModel,
+  SyncModelName,
   WebSocketMessage,
   webSocketMessageSchema,
   WebSocketMessageType,
-} from "$shared/types"
-import { SyncModelName } from "$shared/helpers"
+} from "@shared/types"
 
 import { db } from "./db.ts"
 import { log } from "./log.ts"

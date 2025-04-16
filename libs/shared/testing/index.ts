@@ -1,11 +1,11 @@
-export { assert, assertEquals } from "@std/assert";
+export { expect } from "@std/expect"
 export {
-    after,
-    afterAll,
-    afterEach,
-    before,
-    beforeAll,
-    beforeEach,
-    describe,
-    it,
-} from "@std/testing/bdd";
+  after,
+  afterAll,
+  afterEach,
+  before,
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from "@std/testing/bdd"

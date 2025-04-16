@@ -32,11 +32,6 @@ dev_pristine:
     just delete_volumes
     just dev
 
-prepare_release:
-    # prepare a cache id for Fresh
-    # TODO: pick ".env.stag" or ".env.prod" depending on the environment
-    sed -i 's/^DENO_DEPLOYMENT_ID=.*/DENO_DEPLOYMENT_ID='"$(git rev-parse HEAD)"'/' ./infra/envs/.env.prod
-
 prod:
     just compose "build"
     # restart api to apply migrations

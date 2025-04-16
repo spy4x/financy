@@ -1,12 +1,13 @@
-import { checkHash, hash } from "$shared/helpers"
+import { checkHash, hash } from "@shared/helpers/hash"
 import {
   SessionMFAStatus,
   User,
   UserKey,
   UserKeyKind,
   UserMFAStatus,
+  UserRole,
   UserSession,
-} from "$shared/types"
+} from "@shared/types"
 import { config } from "../config.ts"
 import { db } from "../db.ts"
 import { SessionManager } from "./session.ts"
@@ -49,6 +50,55 @@ export class PasswordMethod {
       key,
       session,
     }
+  }
+
+  async signUp(username: string, password: string): Promise<null | AuthData> {
+    return db.begin(async (tx) => {
+      const existingKey = await tx.userKey.findOne({
+        kind: UserKeyKind.USERNAME_PASSWORD,
+        identification: username,
+      })
+      if (existingKey) { // Username already taken
+        return null
+      }
+      const user = await tx.user.createOne({
+        data: {
+          firstName: "",
+          lastName: "",
+          mfa: UserMFAStatus.NOT_CONFIGURED,
+          role: UserRole.VIEWER,
+          lastLoginAt: new Date(),
+        },
+      })
+      if (!user) {
+        console.error("Failed to create user", { username })
+        return null
+      }
+      const key = await tx.userKey.createOne({
+        userId: user.id,
+        kind: UserKeyKind.USERNAME_PASSWORD,
+        identification: username,
+        secret: await hash(password, config.authPepper),
+      })
+      if (!key) {
+        console.error("Failed to create key", {
+          userId: user.id,
+          username,
+          kind: UserKeyKind.USERNAME_PASSWORD,
+        })
+        return null
+      }
+      const session = await this.session.create({
+        userId: user.id,
+        keyId: key.id,
+        mfa: SessionMFAStatus.NOT_REQUIRED,
+      }, tx)
+      if (!session) {
+        console.error("Failed to create session", { userId: user.id, keyId: key.id, username })
+        return null
+      }
+      return { user, key, session }
+    })
   }
 
   async connect(userId: number, username: string, password: string): Promise<null | AuthData> {

@@ -1,8 +1,9 @@
 import { type Context, Hono } from "hono"
 import { upgradeWebSocket } from "hono/deno"
-import { log, websockets } from "$api/services"
+import { websockets } from "$api/services/websockets.ts"
+import { log } from "$api/services/log.ts"
 import { APIContext } from "../_types.ts"
-import { isAuthenticated2FA } from "$api/middlewares"
+import { isAuthenticated2FA } from "$api/middlewares/auth.ts"
 
 export const wsRoute = new Hono<APIContext>()
   .get(

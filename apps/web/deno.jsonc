@@ -19,12 +19,12 @@
     "$state/": "./state/",
     "$routes/": "./routes/",
     // Dependencies
-    "vite": "npm:vite@^6.2.6",
+    "vite": "npm:vite@^6.3.0",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
     "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^5.0.3",
-    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.1.3",
-    "svelte": "npm:svelte@^5.26.1",
-    "tailwindcss": "npm:tailwindcss@^4.1.3",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.1.4",
+    "svelte": "npm:svelte@^5.27.0",
+    "tailwindcss": "npm:tailwindcss@^4.1.4",
     "@mateothegreat/svelte5-router": "npm:@mateothegreat/svelte5-router@^2.14.1"
   },
   "exports": {} // Required for named packages

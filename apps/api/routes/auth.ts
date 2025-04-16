@@ -4,25 +4,32 @@ import {
   authPasswordChangeSchema,
   authUsernamePasswordSchema,
   SessionMFAStatus,
-} from "$shared/types"
-import { auth } from "$api/services"
+} from "@shared/types"
+import { auth } from "$api/services/auth/+index.ts"
 import { APIContext } from "../_types.ts"
 import { isAuthenticated1FA, isAuthenticated2FA } from "../middlewares/auth.ts"
-import { rateLimiter, strictRateLimiter } from "../middlewares/rateLimiter.ts"
+import { validator } from "../middlewares/validator.ts"
 
 export const authRoute = new Hono<APIContext>()
   .post(`/sign-out`, async (c) => {
     await auth.signOut(c)
     return c.json({ success: true })
   })
-  .use(strictRateLimiter)
-  .post(`password/check`, async (c) => {
-    const parseResult = authUsernamePasswordSchema.safeParse(await c.req.json())
-    if (!parseResult.success) {
-      return c.json(parseResult.error, 400)
-    }
-    const { username, password } = parseResult.data
+  // .use(strictRateLimiter)
+  .post(`password/check`, validator("json", authUsernamePasswordSchema), async (c) => {
+    const { username, password } = c.req.valid("json")
     const authData = await auth.signInWithPassword(username, password, c)
+    if (!authData) {
+      return c.json({ error: "Invalid username or password" }, 401)
+    }
+    return c.json(
+      authData.user,
+      authData.session.mfa === SessionMFAStatus.NOT_PASSED_YET ? 202 : 200,
+    )
+  })
+  .post(`/password/sign-up`, validator("json", authUsernamePasswordSchema), async (c) => {
+    const { username, password } = c.req.valid("json")
+    const authData = await auth.signUpWithPassword(username, password, c)
     if (!authData) {
       return c.json({ error: "Invalid username or password" }, 401)
     }
@@ -67,7 +74,7 @@ export const authRoute = new Hono<APIContext>()
     }
     return c.json({ success: true })
   })
-  .use(rateLimiter)
+  // .use(rateLimiter)
   .use(isAuthenticated2FA)
   .post(`/totp/disconnect`, async (c) => {
     const isSuccess = await auth.disconnectTOTP(c.get("auth"))
@@ -89,6 +96,9 @@ export const authRoute = new Hono<APIContext>()
     return c.json({ success: true })
   })
 
+// TODO: move this to a better place
+// This is a temporary solution to expire sessions every hour
+// This should be done in a more efficient way, like using a cron job or similar
 const SESSION_EXPIRE_INTERVAL = 60 * 60 * 1000
 setInterval(async () => {
   await auth.expireSessions()

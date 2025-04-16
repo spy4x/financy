@@ -1,7 +1,14 @@
-import type { User } from "@shared/types"
+import { type User, userSchema, validate } from "@shared/types"
 
 // #region State
-let _user = $state<null | User>(null)
+// TODO: refactor get item from local storage
+const userFromLocalStorage = localStorage.getItem("user")
+const userParseResult = validate(userSchema, userFromLocalStorage)
+if (userFromLocalStorage && userParseResult.error) {
+  console.error("Error validating user data:", userParseResult.error)
+  localStorage.removeItem("user")
+}
+let _user = $state<null | User>(userFromLocalStorage ? userParseResult.value : null)
 let _isSigningIn = $state(false)
 let _signingInError = $state<null | string>(null)
 let _isSigningUp = $state(false)
@@ -9,6 +16,17 @@ let _signingUpError = $state<null | string>(null)
 let _isSigningOut = $state(false)
 let _signingOutError = $state<null | string>(null)
 // #endregion State
+
+// #region Effects
+// on _user change, update the local storage
+$effect(() => {
+  if (_user) {
+    localStorage.setItem("user", JSON.stringify(_user))
+  } else {
+    localStorage.removeItem("user")
+  }
+})
+// #endregion Effects
 
 export const auth = {
   // #region State
@@ -58,21 +76,26 @@ export const auth = {
     _isSigningIn = true
     _signingInError = null
     try {
-      const response = await fetch("/api/auth/sign-in", {
+      const response = await fetch("/api/auth/password/check", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username: email, password }),
       })
 
       const data = await response.json()
 
-      if (data.user) {
-        _user = data.user
+      const parseResult = validate(userSchema, data)
+      if (parseResult.error) {
+        console.error("Error validating user data:", parseResult.error)
+        _signingUpError = parseResult.error.description
+        return null
       }
 
-      return data.user
+      _user = parseResult.value
+
+      return parseResult.value
     } catch (error: unknown) {
       console.error("Error signing in:", error)
       _signingInError = error instanceof Error ? error.message : String(error)
@@ -87,21 +110,26 @@ export const auth = {
     _isSigningUp = true
     _signingUpError = null
     try {
-      const response = await fetch("/api/auth/sign-up", {
+      const response = await fetch("/api/auth/password/sign-up", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username: email, password }),
       })
 
       const data = await response.json()
 
-      if (data.user) {
-        _user = data.user
+      const parseResult = validate(userSchema, data)
+      if (parseResult.error) {
+        console.error("Error validating user data:", parseResult.error)
+        _signingUpError = parseResult.error.description
+        return null
       }
 
-      return data.user
+      _user = parseResult.value
+
+      return parseResult.value
     } catch (error: unknown) {
       console.error("Error signing up:", error)
       _signingUpError = error instanceof Error ? error.message : String(error)
@@ -139,3 +167,18 @@ export const auth = {
   },
   // #endregion Functions
 }
+
+// #region On app start
+// check if there is a cookie "user_id" and if so, connect websocket
+if (document.cookie.includes("user_id")) {
+  const cookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("user_id="))
+  if (cookie) {
+    const userId = cookie.split("=")[1]
+    if (userId) {
+      // publish event "user_authenticated" to event bus
+    }
+  }
+}
+// #endregion On app start

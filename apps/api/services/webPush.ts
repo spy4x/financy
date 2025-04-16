@@ -1,7 +1,8 @@
 import * as webpush from "webpush"
 import { encodeBase64Url } from "@std/encoding"
-import { config, db } from "$api/services"
-import { UserPushToken } from "$shared/types"
+import { db } from "$api/services/db.ts"
+import { config } from "$api/services/config.ts"
+import { UserPushToken } from "@shared/types"
 
 type Subscriptions = { [deviceId: string]: webpush.PushSubscriber }
 

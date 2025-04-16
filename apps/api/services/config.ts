@@ -1,4 +1,4 @@
-import { getEnvVar } from "$server/helpers"
+import { getEnvVar } from "@server/helpers/env"
 
 export class Config {
   env = getEnvVar("ENV") as "dev" | "prod"

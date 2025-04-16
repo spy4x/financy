@@ -3,17 +3,18 @@
   "version": "1.0.0",
   "exports": {},
   "tasks": {
-    "dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch apps/api/index.ts"
+    "dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch index.ts"
   },
   "imports": {
     // Aliases
     "$api/services/": "./services/",
     "$api/middlewares/": "./middlewares/",
     // Dependencies
-    "hono": "jsr:@hono/hono@^4.6.3",
-    "ioredis": "npm:ioredis@^5.4.1",
-    // "@hectorm/otpauth": "jsr:@hectorm/otpauth",
-    // "qrcode": "jsr:@libs/qrcode@^2.0.0",
-    // "webpush": "jsr:@negrel/webpush"
+    "hono": "jsr:@hono/hono@^4.7.7",
+    "@hono/arktype-validator": "npm:@hono/arktype-validator@^2.0.0",
+    "ioredis": "npm:ioredis@^5.6.1",
+    "@hectorm/otpauth": "jsr:@hectorm/otpauth",
+    "qrcode": "jsr:@libs/qrcode@^2.0.0",
+    "webpush": "jsr:@negrel/webpush"
   }
 }

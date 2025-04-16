@@ -1,7 +1,5 @@
 {
   "name": "@shared/testing",
   "version": "1.0.0",
-  "exports": {
-    ".": "./index.ts"
-  }
+  "exports": "./index.ts"
 }

@@ -3,10 +3,10 @@ import { Hono } from "hono"
 import {
   gatewayBaseSchema,
   gatewayUpdateSchema,
+  SyncModelName,
   UserRole,
   WebSocketMessageType,
-} from "$shared/types"
-import { SyncModelName } from "$shared/helpers"
+} from "@shared/types"
 import { db, websockets } from "$api/services"
 import { isRole } from "$api/middlewares"
 

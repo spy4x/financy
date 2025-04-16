@@ -1,5 +1,5 @@
 import { checkHash, hash } from "./hash.ts"
-import { assert, describe, it } from "@shared/testing"
+import { describe, expect, it } from "@shared/testing"
 
 const password = "securePassword"
 const pepper = "pepper"
@@ -7,47 +7,29 @@ const pepper = "pepper"
 describe("hash", () => {
   it("hash()", async () => {
     const hashed = await hash(password, pepper)
-    assert(hashed.length > 0, "Hashed password should not be empty")
+    expect(hashed.length > 0).toBe(true)
     const hashed2 = await hash(password, pepper)
-    assert(
-      hashed !== hashed2,
-      "Hashes should be different due to random salt",
-    )
+    expect(hashed !== hashed2).toBe(true)
     const hashedEmptyString = await hash("", pepper)
-    assert(
-      hashedEmptyString.length > 0,
-      "Should still produce a hash for empty password",
-    )
+    expect(hashedEmptyString.length > 0).toBe(true)
   })
 
   it("checkHash()", async () => {
     const hashed = await hash(password, pepper)
     const result = await checkHash(password, hashed, pepper)
-    assert(
-      result === true,
-      "checkHash returns true for the correct password",
-    )
+    expect(result).toBe(true)
 
     const wrongResult = await checkHash("wrongPassword", hashed, pepper)
-    assert(
-      wrongResult === false,
-      "checkHash returns false for the wrong password",
-    )
+    expect(wrongResult).toBe(false)
 
     const hashedWrongPepper = await checkHash(
       password,
       hashed,
       "wrongPepper",
     )
-    assert(
-      hashedWrongPepper === false,
-      "checkHash returns false for the wrong pepper",
-    )
+    expect(hashedWrongPepper).toBe(false)
 
     const result2 = await checkHash(password, "invalidHash", pepper)
-    assert(
-      result2 === false,
-      "Should return false for incorrect hash format",
-    )
+    expect(result2).toBe(false)
   })
 })

@@ -424,8 +424,6 @@ services:
     build:
       context: ../..
       dockerfile: apps/web/dockerfile.prod
-      args:
-        DENO_DEPLOYMENT_ID: ${DENO_DEPLOYMENT_ID}
     volumes:
       - ${DENO_DIR}:/deno-dir/
       - ../../apps:/app/apps
@@ -447,10 +445,10 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`)"
       - "traefik.http.routers.web.entrypoints=web"
-      - "traefik.http.services.web.loadbalancer.server.port=8000"
+      - "traefik.http.services.web.loadbalancer.server.port=${WEB_PORT}"
     healthcheck:
       test:
-        [ "CMD", "wget", "--spider", "http://127.0.0.1:8000/health" ]
+        [ "CMD", "wget", "--spider", "http://127.0.0.1:${WEB_PORT}" ]
       interval: 10s
       timeout: 5s
       retries: 30

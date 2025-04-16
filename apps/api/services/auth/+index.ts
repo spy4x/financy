@@ -6,7 +6,7 @@ import { PasswordMethod } from "./password.ts"
 import { db } from "../db.ts"
 import { TOTPMethod } from "./totp.ts"
 import { APIContext } from "../../_types.ts"
-import { UserMFAStatus } from "$shared/types"
+import { UserMFAStatus } from "@shared/types"
 
 class Auth {
   private cookie = new CookieManager()
@@ -55,6 +55,24 @@ class Auth {
       id: authData.user.id,
       data: { lastLoginAt: new Date() },
     })
+    return authData
+  }
+
+  async signUpWithPassword(
+    username: string,
+    password: string,
+    context: Context<APIContext>,
+  ): Promise<null | AuthData> {
+    const authData = await this.usernamePassword.signUp(username, password)
+    if (!authData) return null
+    if (authData.user.deletedAt) {
+      return null
+    }
+    await this.cookie.set(
+      context,
+      authData.user.id,
+      this.session.getIdTokenForCookie(authData.session),
+    )
     return authData
   }
 

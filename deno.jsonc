@@ -5,6 +5,7 @@
     "api:dev": "deno task -f @apps/api dev",
     "web:dev": "deno task -f @apps/web dev",
     // #endregion Dev
+
     // #region Checks
     "check": {
       "command": "echo 'Checks passed!'",
@@ -31,6 +32,7 @@
       ]
     },
     // #endregion Checks
+
     // #region Scripts
     "db:migrate": "deno run -N=$DB_HOST:5432 -E -R=./libs/server/db/migrations  ./libs/server/db/migrate.ts",
     "deps:check": "deno outdated -r",
@@ -38,7 +40,9 @@
     "update:ubuntu": "sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo apt --fix-broken install && sudo do-release-upgrade",
     "install:docker": "curl -fsSL https://get.docker.com | sudo sh",
     "vapid-keys:create": "deno run -W=infra/configs/vapid.json --allow-run=deno ./infra/scripts/vapid-keys-create.ts",
+    "compose": "deno run -R=./infra --allow-run=docker ./infra/scripts/compose.ts",
     // #endregion Scripts
+
     // #region Git Hooks
     "hooks:install": "deno run -R=deno.json,deno.jsonc,.git/hooks/ -W=.git/hooks/ jsr:@hongminhee/deno-task-hooks",
     "hooks:pre-commit": "deno task check"
@@ -47,7 +51,7 @@
   "imports": {
     // Shared
     "@std/path": "jsr:@std/path@^1.0.3",
-    "@std/assert": "jsr:@std/assert@^1.0.12",
+    "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/testing": "jsr:@std/testing@^1.0.11",
     "@std/encoding": "jsr:@std/encoding@^1.0.5"
   },
@@ -58,7 +62,10 @@
     "./libs/shared/helpers",
     "./libs/shared/types",
     "./libs/shared/testing",
-    "./libs/server/db"
+    "./libs/shared/cache",
+    "./libs/shared/event-bus",
+    "./libs/server/db",
+    "./libs/server/helpers"
   ],
   "exclude": [
     "**/.vite/*",
