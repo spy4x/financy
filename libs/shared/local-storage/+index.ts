@@ -22,7 +22,7 @@ class StorageHelper {
         this.storage.removeItem(key)
         return null
       }
-      return parseResult.value as T
+      return parseResult.data as T
     }
     return value as T
   }

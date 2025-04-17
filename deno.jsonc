@@ -67,7 +67,8 @@
     "./libs/shared/local-storage",
     "./libs/server/db",
     "./libs/server/kv",
-    "./libs/server/helpers"
+    "./libs/server/helpers",
+    "./libs/client/browser"
   ],
   "exclude": [
     "**/.vite/*",

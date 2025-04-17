@@ -102,7 +102,7 @@ export const buildMethods = <T>(
         if (parseResult.error) {
           throw parseResult.error.details
         }
-        return parseResult.value as T
+        return parseResult.data as T
       }
       return result
     },
@@ -119,7 +119,7 @@ export const buildMethods = <T>(
         if (parseResult.error) {
           throw parseResult.error.details
         }
-        return parseResult.value as T
+        return parseResult.data as T
       }
       return result
     },

@@ -1,7 +1,6 @@
 # Todos:
 
-- auth
-  - After authentication, open WebSocket connection
+- sync data over websocket after connection
 - users
 - groups
 - incomes

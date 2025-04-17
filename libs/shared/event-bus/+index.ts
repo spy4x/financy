@@ -2,7 +2,8 @@ export interface Event {
   data?: unknown
 }
 
-type EventConstructor<T extends Event> = new (...args: unknown[]) => T
+// deno-lint-ignore no-explicit-any
+type EventConstructor<T extends Event> = new (...args: any[]) => T
 
 /**
  * EventBus class for managing event listeners and emitting events.

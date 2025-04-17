@@ -15,12 +15,12 @@ export type ValidationSchema = Type
 export function validate<T extends Type>(
   schema: T,
   value: unknown,
-): { error: null; value: T["infer"] } | {
+): { error: null; data: T["infer"] } | {
   error: {
     description: string
     details: type.errors
   }
-  value: null
+  data: null
 } {
   const result = schema(value)
   if (result instanceof type.errors) {
@@ -29,16 +29,39 @@ export function validate<T extends Type>(
         description: result.summary,
         details: result,
       },
-      value: null,
+      data: null,
     }
   } else {
     return {
       error: null,
-      value: result as T["infer"], // Type assertion needed here
+      data: result as T["infer"], // Type assertion needed here
     }
   }
 }
 // #endregion Helpers
+
+// #region State
+export type OperationState<T, E = unknown> = {
+  inProgress: boolean
+  result: null | T
+  error: null | E
+}
+export function getOperationState<T, E = unknown>(
+  inProgress: boolean = false,
+  result: T | null = null,
+  error: E | null = null,
+): OperationState<T, E> {
+  return {
+    inProgress,
+    result,
+    error,
+  }
+}
+export type OperationResult<T, E = unknown> = { error: null; result: T } | {
+  error: E
+  result: null
+}
+// #endregion State
 
 // #region Base Types
 
@@ -204,6 +227,12 @@ export enum SyncModelName {
 export const SYNC_MODELS = [
   SyncModelName.user,
 ] as const
+
+export enum WSStatus {
+  CONNECTING = 1,
+  CONNECTED = 2,
+  DISCONNECTED = 3,
+}
 
 export enum WebSocketMessageType {
   PING = "ping",

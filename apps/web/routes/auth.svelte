@@ -1,7 +1,7 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-    import { auth } from "../state/auth.svelte.ts";
+    import { auth } from "../state/auth.svelte";
     let email = $state("");
     let password = $state("");
 </script>

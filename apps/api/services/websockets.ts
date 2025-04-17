@@ -3,6 +3,7 @@ import { WSContext } from "hono/ws"
 import {
   SyncModel,
   SyncModelName,
+  validate,
   WebSocketMessage,
   webSocketMessageSchema,
   WebSocketMessageType,
@@ -96,9 +97,9 @@ export const websockets = {
     const ws = wsc as WS
     log(`Message from client: ${event}`)
     const json = JSON.parse(event.data)
-    const parseResult = webSocketMessageSchema.safeParse(json)
-    if (!parseResult.success) {
-      console.error("Invalid message", { issues: parseResult.error.issues, json })
+    const parseResult = validate(webSocketMessageSchema, json)
+    if (parseResult.error) {
+      console.error("Invalid message", { issues: parseResult.error, json })
       return
     }
     if (

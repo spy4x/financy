@@ -13,7 +13,7 @@ describe(validate.name, () => {
     const result = validate(testSchema, input)
 
     expect(result.error).toBeNull()
-    expect(result.value).toEqual(input)
+    expect(result.data).toEqual(input)
   })
 
   it("returns an error when the input does not match the schema", () => {
@@ -22,6 +22,6 @@ describe(validate.name, () => {
 
     expect(result.error).not.toBeNull()
     expect(result.error?.description).toContain("age must be a number (was a string)")
-    expect(result.value).toBeNull()
+    expect(result.data).toBeNull()
   })
 })

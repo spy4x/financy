@@ -1,10 +1,32 @@
 import { type User, userSchema, validate } from "@shared/types"
-import { makeStorage } from "@shared/local-storage"
+import { USER_ID_COOKIE_NAME } from "@shared/constants"
+import { getCookie } from "@client/browser/cookie"
+import { eventBus } from "../services/eventBus.ts"
+import {
+  UserAuthenticatedOnAppStart,
+  UserSignedIn,
+  UserSignedOut,
+  UserSignedUp,
+} from "../cqrs/events.ts"
 
-const userStorage = makeStorage<User>(localStorage, "user", userSchema)
+// #region App Start
+const userIdCookie = getCookie(USER_ID_COOKIE_NAME)
+let userId: number | null = null
+if (userIdCookie) {
+  userId = Number(userIdCookie)
+  if (isNaN(userId)) {
+    userId = null
+  }
+}
+
+if (userId) {
+  // delay the event emission to allow the app to start
+  setTimeout(() => eventBus.emit(new UserAuthenticatedOnAppStart(userId)))
+}
+// #endregion App Start
 
 // #region State
-let _user = $state<null | User>(userStorage.get())
+let _userId = $state<null | number>(userId)
 let _isSigningIn = $state(false)
 let _signingInError = $state<null | string>(null)
 let _isSigningUp = $state(false)
@@ -13,17 +35,11 @@ let _isSigningOut = $state(false)
 let _signingOutError = $state<null | string>(null)
 // #endregion State
 
-// #region Effects
-$effect.root(() => { // use root effect to allow $effect outside of a component
-  $effect(() => _user ? userStorage.set(_user) : userStorage.del()) // store user in localStorage
-})
-// #endregion Effects
-
 export const auth = {
   // #region State
   /** Currently authenticated user or null otherwise. */
-  get user(): null | User {
-    return _user
+  get userId(): null | number {
+    return _userId
   },
 
   /** Whether a sign-in operation is in progress. */
@@ -84,9 +100,10 @@ export const auth = {
         return null
       }
 
-      _user = parseResult.value
+      _userId = parseResult.data.id
+      eventBus.emit(new UserSignedIn(parseResult.data))
 
-      return parseResult.value
+      return parseResult.data
     } catch (error: unknown) {
       console.error("Error signing in:", error)
       _signingInError = error instanceof Error ? error.message : String(error)
@@ -117,9 +134,10 @@ export const auth = {
         return null
       }
 
-      _user = parseResult.value
+      _userId = parseResult.data.id
+      eventBus.emit(new UserSignedUp(parseResult.data))
 
-      return parseResult.value
+      return parseResult.data
     } catch (error: unknown) {
       console.error("Error signing up:", error)
       _signingUpError = error instanceof Error ? error.message : String(error)
@@ -143,7 +161,10 @@ export const auth = {
       if (!response.ok) {
         throw new Error("Failed to sign out")
       }
-      _user = null
+
+      eventBus.emit(new UserSignedOut())
+      _userId = null
+
       return true
     } catch (error: unknown) {
       console.error("Error signing out:", error)
@@ -155,18 +176,3 @@ export const auth = {
   },
   // #endregion Functions
 }
-
-// #region On app start
-// check if there is a cookie "user_id" and if so, connect websocket
-if (document.cookie.includes("user_id")) {
-  const cookie = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("user_id="))
-  if (cookie) {
-    const userId = cookie.split("=")[1]
-    if (userId) {
-      // publish event "user_authenticated" to event bus
-    }
-  }
-}
-// #endregion On app start
