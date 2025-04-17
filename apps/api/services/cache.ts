@@ -1,5 +1,4 @@
-import { Redis } from "ioredis"
-
+import { KeyValueService } from "@server/kv"
 import { User, UserKey, UserSession, ValidationSchema } from "@shared/types"
 import {
   ONE_DAY_IN_SECONDS,
@@ -13,23 +12,11 @@ import { config } from "../services/config.ts"
 
 import { buildMethods as buildMethodsBase, CacheService } from "@shared/cache"
 
-const redis = new Redis(config.redis.url)
-
-const redisCacheService = new CacheService({
-  get: redis.get.bind(redis),
-  set: async (key: string, value: string, ttlMs: number): Promise<void> => {
-    await redis.set(key, value, "EX", ttlMs)
-  },
-  del: async (key: string): Promise<void> => {
-    await redis.del(key)
-  },
-  reset: async (): Promise<void> => {
-    await redis.flushdb()
-  },
-})
+const kv = await KeyValueService.connect(config.kv.hostname, config.kv.port)
+const cacheService = new CacheService(kv)
 
 function buildMethods<T>(prefix: string, schema?: ValidationSchema<T>) {
-  return buildMethodsBase<T>(redisCacheService, prefix, ONE_MONTH_IN_SECONDS, schema)
+  return buildMethodsBase<T>(cacheService, prefix, ONE_MONTH_IN_SECONDS, schema)
 }
 
 export enum CacheTTL {
@@ -51,20 +38,20 @@ export class PublicAPICache {
     ttl: CacheTTL.day,
 
     get: async (sessionToken: string): Promise<null | boolean> => {
-      return redisCacheService.get<boolean>(this.isSessionTokenExpired.key(sessionToken))
+      return cacheService.get<boolean>(this.isSessionTokenExpired.key(sessionToken))
     },
     set: async (sessionToken: string, isExpired = true): Promise<void> => {
-      return redisCacheService.set(
+      return cacheService.set(
         this.isSessionTokenExpired.key(sessionToken),
         isExpired,
         this.isSessionTokenExpired.ttl,
       )
     },
     delete: async (sessionToken: string): Promise<void> => {
-      return redisCacheService.delete(this.isSessionTokenExpired.key(sessionToken))
+      return cacheService.delete(this.isSessionTokenExpired.key(sessionToken))
     },
     wrap: async (sessionToken: string, fn: () => Promise<boolean>): Promise<boolean> => {
-      return redisCacheService.wrap<boolean>(
+      return cacheService.wrap<boolean>(
         this.isSessionTokenExpired.key(sessionToken),
         fn,
         this.isSessionTokenExpired.ttl,

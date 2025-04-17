@@ -1,8 +1,8 @@
 export interface Event {
-  data?: unknown;
+  data?: unknown
 }
 
-type EventConstructor<T extends Event> = new (...args: any[]) => T;
+type EventConstructor<T extends Event> = new (...args: unknown[]) => T
 
 /**
  * EventBus class for managing event listeners and emitting events.
@@ -34,20 +34,20 @@ export class EventBus {
   private listeners: Map<
     EventConstructor<Event>,
     Array<(event: Event) => void>
-  > = new Map();
+  > = new Map()
 
   on<T extends Event>(
     eventClass: EventConstructor<T>,
     callback: (event: T) => void,
   ): () => void {
     if (!this.listeners.get(eventClass)) {
-      this.listeners.set(eventClass, []);
+      this.listeners.set(eventClass, [])
     }
-    this.listeners.get(eventClass)!.push(callback as (event: Event) => void);
+    this.listeners.get(eventClass)!.push(callback as (event: Event) => void)
     return () => {
-      const callbacks = this.listeners.get(eventClass) || [];
-      this.listeners.set(eventClass, callbacks.filter((cb) => cb !== callback));
-    };
+      const callbacks = this.listeners.get(eventClass) || []
+      this.listeners.set(eventClass, callbacks.filter((cb) => cb !== callback))
+    }
   }
 
   once<T extends Event>(
@@ -55,18 +55,18 @@ export class EventBus {
     callback: (event: T) => void,
   ): () => void {
     const unsubscribe = this.on(eventClass, (event) => {
-      callback(event);
-      unsubscribe();
-    });
-    return unsubscribe;
+      callback(event)
+      unsubscribe()
+    })
+    return unsubscribe
   }
 
   emit<T extends Event>(event: T): void {
-    const eventClass = event.constructor as EventConstructor<T>;
-    const callbacks = this.listeners.get(eventClass);
+    const eventClass = event.constructor as EventConstructor<T>
+    const callbacks = this.listeners.get(eventClass)
     if (callbacks) {
       for (const callback of callbacks) {
-        callback(event as Event);
+        callback(event as Event)
       }
     }
   }

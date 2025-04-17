@@ -102,27 +102,27 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  redis:
-    container_name: ${PROJECT}-redis
-    image: redis:alpine
+  kv:
+    container_name: ${PROJECT}-kv
+    image: valkey/valkey:8.1-alpine
     restart: unless-stopped
     volumes:
-      - ../../.volumes/redis:/data
+      - ../../.volumes/kv:/data
     command:
       [
-        'redis-server',
+        'valkey-server',
         '--maxmemory',
-        '${REDIS_MEM_INNER_LIMIT}',
+        '${KV_MEM_INNER_LIMIT}',
         '--maxmemory-policy',
         'allkeys-lru',
       ]
     deploy:
       resources:
         limits:
-          cpus: ${REDIS_CPU_LIMIT}
-          memory: '${REDIS_MEM_LIMIT}'
+          cpus: ${KV_CPU_LIMIT}
+          memory: '${KV_MEM_LIMIT}'
     healthcheck:
-      test: [ 'CMD', 'redis-cli', 'ping' ]
+      test: [ 'CMD', 'valkey-cli', 'ping' ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -389,7 +389,8 @@ services:
       - AUTH_TOTP=${AUTH_TOTP}
       - DEV_EMAIL=${DEV_EMAIL}
       - TIMEZONE=${TIMEZONE}
-      - REDIS_URL=${REDIS_URL}
+      - KV_HOSTNAME=kv
+      - KV_PORT=6379
       - RATE_LIMITER_WINDOW_MS=${RATE_LIMITER_WINDOW_MS}
       - RATE_LIMITER_STRICT_LIMIT=${RATE_LIMITER_STRICT_LIMIT}
       - RATE_LIMITER_LIMIT=${RATE_LIMITER_LIMIT}

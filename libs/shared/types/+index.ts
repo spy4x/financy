@@ -1,10 +1,10 @@
-import { configure } from "arktype/config";
-configure({ onUndeclaredKey: "delete" }); // delete all fields that are not in the schema
-import { Type, type } from "arktype"; // The core arktype import must be AFTER the config has been set
+import { configure } from "arktype/config"
+configure({ onUndeclaredKey: "delete" }) // delete all fields that are not in the schema
+import { Type, type } from "arktype" // The core arktype import must be AFTER the config has been set
 
 // #region Helpers
-export { type };
-export type ValidationSchema<T> = Type<T>;
+export { type }
+export type ValidationSchema = Type
 
 /**
  * Validate a value against a schema.
@@ -17,12 +17,12 @@ export function validate<T extends Type>(
   value: unknown,
 ): { error: null; value: T["infer"] } | {
   error: {
-    description: string;
-    details: type.errors;
-  };
-  value: null;
+    description: string
+    details: type.errors
+  }
+  value: null
 } {
-  const result = schema(value);
+  const result = schema(value)
   if (result instanceof type.errors) {
     return {
       error: {
@@ -30,12 +30,12 @@ export function validate<T extends Type>(
         details: result,
       },
       value: null,
-    };
+    }
   } else {
     return {
       error: null,
       value: result as T["infer"], // Type assertion needed here
-    };
+    }
   }
 }
 // #endregion Helpers
@@ -44,22 +44,22 @@ export function validate<T extends Type>(
 
 export const DateSchema = type(
   "Date | string.date.iso.parse",
-);
-export type DateType = typeof DateSchema.infer;
-export const DateNullableSchema = DateSchema.or("null").default(null);
+)
+export type DateType = typeof DateSchema.infer
+export const DateNullableSchema = DateSchema.or("null").default(null)
 
 export const ImmutableBaseModelSchema = type({
   //   "+": "delete", // delete all fields that are not in the schema
   id: "number",
   createdAt: DateSchema,
-});
+})
 export const UndeletableBaseModelSchema = ImmutableBaseModelSchema.and({
   updatedAt: DateSchema,
-});
+})
 export const BaseModelSchema = UndeletableBaseModelSchema.and({
   deletedAt: DateNullableSchema,
-});
-export type BaseModel = typeof BaseModelSchema.infer;
+})
+export type BaseModel = typeof BaseModelSchema.infer
 
 // #endregion Base Types
 
@@ -69,7 +69,7 @@ export enum UserRole { //TODO: rethink roles as user.role
   SUPERVISOR = 2,
   ADMIN = 3,
 }
-export const userRoleValues = Object.values(UserRole);
+export const userRoleValues = Object.values(UserRole)
 export enum UserMFAStatus {
   NOT_CONFIGURED = 1,
   CONFIGURATION_NOT_FINISHED = 2,
@@ -77,8 +77,8 @@ export enum UserMFAStatus {
 }
 export const userMFAStatusValues = Object.values(
   UserMFAStatus,
-) as UserMFAStatus[];
-export const NAME_MAX_LENGTH = 50;
+) as UserMFAStatus[]
+export const NAME_MAX_LENGTH = 50
 export const UserBaseSchema = type({
   firstName: `string <= ${NAME_MAX_LENGTH}`,
   lastName: `string <= ${NAME_MAX_LENGTH}`,
@@ -87,47 +87,47 @@ export const UserBaseSchema = type({
     UserMFAStatus.NOT_CONFIGURED,
   ),
   role: type.enumerated(...userRoleValues).default(UserRole.VIEWER),
-});
-export type UserBase = typeof UserBaseSchema.infer;
+})
+export type UserBase = typeof UserBaseSchema.infer
 
-export const userSchema = BaseModelSchema.and(UserBaseSchema);
-export type User = typeof userSchema.infer;
+export const userSchema = BaseModelSchema.and(UserBaseSchema)
+export type User = typeof userSchema.infer
 
-export const userUpdateSchema = UserBaseSchema.pick("firstName", "lastName");
-export type UserUpdate = typeof userUpdateSchema.infer;
+export const userUpdateSchema = UserBaseSchema.pick("firstName", "lastName")
+export type UserUpdate = typeof userUpdateSchema.infer
 
 // #region Auth
 export const authOTPSchema = type({
   otp: "string.numeric == 6",
-});
-export type AuthOTP = typeof authOTPSchema.infer;
+})
+export type AuthOTP = typeof authOTPSchema.infer
 
 export const authUsernameSchema = type({
   username: "string <= 50",
-});
-export type AuthUsername = typeof authUsernameSchema.infer;
+})
+export type AuthUsername = typeof authUsernameSchema.infer
 
 export const authPasswordSchema = type({
   password: "8 <= string <= 50",
-});
-export type AuthPassword = typeof authPasswordSchema.infer;
+})
+export type AuthPassword = typeof authPasswordSchema.infer
 
 export const authUsernamePasswordSchema = authUsernameSchema.and(
   authPasswordSchema,
-);
-export type AuthUsernamePassword = typeof authUsernamePasswordSchema.infer;
+)
+export type AuthUsernamePassword = typeof authUsernamePasswordSchema.infer
 
 export const authPasswordChangeSchema = authPasswordSchema.and({
   newPassword: "8 <= string <= 50",
-});
-export type AuthPasswordChange = typeof authPasswordChangeSchema.infer;
+})
+export type AuthPasswordChange = typeof authPasswordChangeSchema.infer
 
 export enum UserKeyKind {
   USERNAME_PASSWORD = 0,
   USERNAME_2FA_CONNECTING = 1,
   USERNAME_2FA_COMPLETED = 2,
 }
-export const userKeyKindValues = Object.values(UserKeyKind);
+export const userKeyKindValues = Object.values(UserKeyKind)
 
 export enum SessionMFAStatus {
   NOT_REQUIRED = 1,
@@ -141,7 +141,7 @@ export enum UserSessionStatus {
   SIGNED_OUT = 3,
 }
 
-export const userSessionStatusValues = Object.values(UserSessionStatus);
+export const userSessionStatusValues = Object.values(UserSessionStatus)
 export const userKeyBaseSchema = type({
   userId: "number = 0",
   kind: type.enumerated(...userKeyKindValues).default(
@@ -149,14 +149,14 @@ export const userKeyBaseSchema = type({
   ),
   identification: "string <= 50 = ''",
   secret: "string <= 60 | null = null",
-});
-export type UserKeyBase = typeof userKeyBaseSchema.infer;
+})
+export type UserKeyBase = typeof userKeyBaseSchema.infer
 
-export const userKeySchema = BaseModelSchema.and(userKeyBaseSchema);
-export type UserKey = typeof userKeySchema.infer;
+export const userKeySchema = BaseModelSchema.and(userKeyBaseSchema)
+export type UserKey = typeof userKeySchema.infer
 
-export const userKeyPublicSchema = userKeySchema.omit("secret");
-export type UserKeyPublic = typeof userKeyPublicSchema.infer;
+export const userKeyPublicSchema = userKeySchema.omit("secret")
+export type UserKeyPublic = typeof userKeyPublicSchema.infer
 
 export const userSessionBaseSchema = type({
   token: "string <= 32 = ''",
@@ -169,16 +169,16 @@ export const userSessionBaseSchema = type({
     SessionMFAStatus.NOT_REQUIRED,
   ),
   expiresAt: DateSchema.default(() => new Date()),
-});
-export type UserSessionBase = typeof userSessionBaseSchema.infer;
+})
+export type UserSessionBase = typeof userSessionBaseSchema.infer
 
 export const userSessionSchema = UndeletableBaseModelSchema.and(
   userSessionBaseSchema,
-);
-export type UserSession = typeof userSessionSchema.infer;
+)
+export type UserSession = typeof userSessionSchema.infer
 
-export const userSessionPublicSchema = userSessionSchema.omit("token", "keyId");
-export type UserSessionPublic = typeof userSessionPublicSchema.infer;
+export const userSessionPublicSchema = userSessionSchema.omit("token", "keyId")
+export type UserSessionPublic = typeof userSessionPublicSchema.infer
 
 export const userPushTokenSchemaBase = type({
   userId: "number = 0",
@@ -186,16 +186,16 @@ export const userPushTokenSchemaBase = type({
   endpoint: "string <= 256 = ''",
   auth: "string <= 256 = ''",
   p256dh: "string <= 256 = ''",
-});
-export type UserPushTokenBase = typeof userPushTokenSchemaBase.infer;
+})
+export type UserPushTokenBase = typeof userPushTokenSchemaBase.infer
 
-export const userPushTokenSchema = BaseModelSchema.and(userPushTokenSchemaBase);
-export type UserPushToken = typeof userPushTokenSchema.infer;
+export const userPushTokenSchema = BaseModelSchema.and(userPushTokenSchemaBase)
+export type UserPushToken = typeof userPushTokenSchema.infer
 // #endregion Auth
 
 // #region Sync
 // TODO: Actualize sync functionality
-export type SyncModel = User;
+export type SyncModel = User
 
 export enum SyncModelName {
   user = "user",
@@ -203,7 +203,7 @@ export enum SyncModelName {
 
 export const SYNC_MODELS = [
   SyncModelName.user,
-] as const;
+] as const
 
 export enum WebSocketMessageType {
   PING = "ping",
@@ -225,6 +225,6 @@ export const webSocketMessageSchema = type({
   p: "unknown[]?",
   /** Acknowledgement id */
   id: "string?",
-});
-export type WebSocketMessage = typeof webSocketMessageSchema.infer;
+})
+export type WebSocketMessage = typeof webSocketMessageSchema.infer
 // #endregion Sync

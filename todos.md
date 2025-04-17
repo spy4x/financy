@@ -1,7 +1,6 @@
 # Todos:
 
 - auth
-  - Make REST API work
   - After authentication, open WebSocket connection
 - users
 - groups

@@ -16,8 +16,10 @@ export class Config {
     strictLimit: Number(getEnvVar("RATE_LIMITER_STRICT_LIMIT")),
     limit: Number(getEnvVar("RATE_LIMITER_LIMIT")),
   }
-  redis = {
-    url: getEnvVar("REDIS_URL"),
+
+  kv = {
+    hostname: getEnvVar("KV_HOSTNAME"),
+    port: Number(getEnvVar("KV_PORT")),
   }
 
   get isDev() {

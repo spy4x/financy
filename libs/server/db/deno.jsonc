@@ -1,8 +1,8 @@
 {
-    "name": "@server/db",
-    "version": "1.0.0",
-    "exports": "./+index.ts",
-    "imports": {
-        "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
-    }
+  "name": "@server/db",
+  "version": "1.0.0",
+  "exports": "./+index.ts",
+  "imports": {
+    "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
+  }
 }

@@ -10,7 +10,7 @@
     "check": {
       "command": "echo 'Checks passed!'",
       "description": "Run all checks",
-      "dependsOn": [
+      "dependencies": [
         "lint:check",
         "fmt:check",
         "ts:check",
@@ -26,7 +26,7 @@
     "fix": {
       "command": "echo 'Fixes applied!'",
       "description": "Run all fixes",
-      "dependsOn": [
+      "dependencies": [
         "lint:fix",
         "fmt:fix"
       ]
@@ -64,7 +64,9 @@
     "./libs/shared/testing",
     "./libs/shared/cache",
     "./libs/shared/event-bus",
+    "./libs/shared/local-storage",
     "./libs/server/db",
+    "./libs/server/kv",
     "./libs/server/helpers"
   ],
   "exclude": [

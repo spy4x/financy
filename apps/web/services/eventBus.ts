@@ -48,6 +48,7 @@ export interface Event {
   data?: unknown
 }
 
+// deno-lint-ignore no-explicit-any
 type EventConstructor<T extends Event> = new (...args: any[]) => T
 
 export class EventBus {

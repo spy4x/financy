@@ -273,3 +273,5 @@ export class DbService extends DbServiceBase {
 }
 
 export const db = new DbService()
+await db.connect()
+console.log(`✅ Connected to DB`)

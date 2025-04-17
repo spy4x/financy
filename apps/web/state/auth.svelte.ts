@@ -1,14 +1,10 @@
 import { type User, userSchema, validate } from "@shared/types"
+import { makeStorage } from "@shared/local-storage"
+
+const userStorage = makeStorage<User>(localStorage, "user", userSchema)
 
 // #region State
-// TODO: refactor get item from local storage
-const userFromLocalStorage = localStorage.getItem("user")
-const userParseResult = validate(userSchema, userFromLocalStorage)
-if (userFromLocalStorage && userParseResult.error) {
-  console.error("Error validating user data:", userParseResult.error)
-  localStorage.removeItem("user")
-}
-let _user = $state<null | User>(userFromLocalStorage ? userParseResult.value : null)
+let _user = $state<null | User>(userStorage.get())
 let _isSigningIn = $state(false)
 let _signingInError = $state<null | string>(null)
 let _isSigningUp = $state(false)
@@ -18,13 +14,8 @@ let _signingOutError = $state<null | string>(null)
 // #endregion State
 
 // #region Effects
-// on _user change, update the local storage
-$effect(() => {
-  if (_user) {
-    localStorage.setItem("user", JSON.stringify(_user))
-  } else {
-    localStorage.removeItem("user")
-  }
+$effect.root(() => { // use root effect to allow $effect outside of a component
+  $effect(() => _user ? userStorage.set(_user) : userStorage.del()) // store user in localStorage
 })
 // #endregion Effects
 
@@ -101,7 +92,6 @@ export const auth = {
       _signingInError = error instanceof Error ? error.message : String(error)
       return null
     } finally {
-      console.log("signIn() finally")
       _isSigningIn = false
     }
   },
@@ -135,7 +125,6 @@ export const auth = {
       _signingUpError = error instanceof Error ? error.message : String(error)
       return null
     } finally {
-      console.log("signUp() finally")
       _isSigningUp = false
     }
   },
@@ -161,7 +150,6 @@ export const auth = {
       _signingOutError = error instanceof Error ? error.message : String(error)
       return false
     } finally {
-      console.log("signOut() finally")
       _isSigningOut = false
     }
   },

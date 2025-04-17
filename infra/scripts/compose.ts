@@ -10,7 +10,7 @@ compose params:
 start: web
 
 web:
-    just compose "up -d --build --force-recreate proxy db redis minio minio-configure api web"
+    just compose "up -d --build --force-recreate proxy db kv minio minio-configure api web"
 
 dev:
     just compose "up -d --build --remove-orphans"

@@ -1,0 +1,5 @@
+{
+  "name": "@shared/local-storage",
+  "version": "1.0.0",
+  "exports": "./+index.ts"
+}

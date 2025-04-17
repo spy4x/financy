@@ -227,7 +227,6 @@ export class TOTPMethod {
   private validateToken(secret: string, token: string): boolean {
     const totp = this.build(secret)
     const delta = totp.validate({ token, window: 1 })
-    console.log({ delta })
     return typeof delta === "number" && (delta >= -1 && delta <= 1) // -1, 0, 1 represent the current, previous, and next token. Bigger delta is not allowed as it may be a replay attack
   }
 }
