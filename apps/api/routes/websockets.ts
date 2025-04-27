@@ -5,7 +5,7 @@ import { log } from "$api/services/log.ts"
 import { APIContext } from "../_types.ts"
 import { isAuthenticated2FA } from "$api/middlewares/auth.ts"
 
-export const wsRoute = new Hono<APIContext>()
+export const websocketsRoute = new Hono<APIContext>()
   .get(
     `/`,
     isAuthenticated2FA,

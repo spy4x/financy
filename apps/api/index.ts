@@ -2,7 +2,7 @@ import { Hono } from "hono"
 import { contextStorage } from "hono/context-storage"
 import { requestId } from "hono/request-id"
 import { db } from "$api/services/db.ts"
-import { wsRoute } from "./routes/ws.ts"
+import { websocketsRoute } from "./routes/websockets.ts"
 import { logger } from "$api/middlewares/log.ts"
 import { parseAuth } from "$api/middlewares/auth.ts"
 import { APIContext } from "./_types.ts"
@@ -16,7 +16,7 @@ app.use(
   logger(),
   parseAuth,
 )
-app.route("/ws", wsRoute) // isAuthenticated check is inside, because ⚠️ order of middlewares matters. Don't move this line if you don't know what you're doing.
+app.route("/ws", websocketsRoute) // isAuthenticated check is inside, because ⚠️ order of middlewares matters. Don't move this line if you don't know what you're doing.
 
 app.get(
   "/health",

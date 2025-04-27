@@ -19,6 +19,5 @@
   - qr-code-generator
   - log
   - rateLimiter
-  - cache
   - webpush
   - websockets
