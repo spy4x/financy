@@ -20,7 +20,13 @@ and Telegram bot integration.
 
 ## Quick Start
 
-_Coming soon_ - Instructions for getting started with Financy in minutes.
+To start local development, run:
+
+```sh
+deno task compose up -d
+```
+
+This command launches all necessary applications for Financy in a local development environment.
 
 ## Contributing
 
