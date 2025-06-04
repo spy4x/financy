@@ -2,6 +2,8 @@ import {
   SYNC_MODELS,
   SyncModel,
   SyncModelName,
+  Transaction,
+  TransactionBase,
   User,
   UserBase,
   UserKey,
@@ -254,8 +256,37 @@ export class DbService extends DbServiceBase {
     },
   }
 
+  transaction = {
+    ...this.buildMethods<Transaction, TransactionBase, Partial<SyncModel>>(
+      `transactions`,
+      publicAPICache.transaction,
+    ),
+    findMany: async (userId: number): Promise<SyncModel[]> => {
+      return sql<SyncModel[]>`
+        SELECT t.*
+        FROM transactions t
+        WHERE t.group_id IN (
+          SELECT group_id FROM group_memberships WHERE user_id = ${userId}
+        )
+        ORDER BY t.created_at DESC
+      `
+    },
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<SyncModel[]> => {
+      return sql<SyncModel[]>`
+        SELECT t.*
+        FROM transactions t
+        WHERE t.group_id IN (
+          SELECT group_id FROM group_memberships WHERE user_id = ${userId}
+        )
+        AND t.updated_at > ${updatedAtGt}
+        ORDER BY t.created_at DESC
+      `
+    },
+  }
+
   syncData = async (
     callback: (model: SyncModelName, data: SyncModel[]) => void,
+    userId: number,
     lastSyncAt: number,
   ) => {
     const lastSyncAtDate = new Date(lastSyncAt)
@@ -263,9 +294,9 @@ export class DbService extends DbServiceBase {
       const model = SYNC_MODELS[i]
       let data = []
       if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
-        data = await db[model].findChanged(lastSyncAtDate)
+        data = await db[model].findChanged(lastSyncAtDate, userId)
       } else {
-        data = await db[model].findMany()
+        data = await db[model].findMany(userId)
       }
       callback(model, data)
     }

@@ -216,16 +216,41 @@ export const userPushTokenSchema = BaseModelSchema.and(userPushTokenSchemaBase)
 export type UserPushToken = typeof userPushTokenSchema.infer
 // #endregion Auth
 
+// #region Transaction
+export enum TransactionType {
+  DEBIT = 1,
+  CREDIT = 2,
+}
+export const transactionBaseSchema = type({
+  createdBy: "number = 0",
+  amount: "number = 0",
+  memo: "string <= 256 = ''",
+  type: type.enumerated(...Object.values(TransactionType)).default(TransactionType.CREDIT),
+  categoryId: "number > 0",
+  originalCurrency: "string == 3 = 'USD'",
+  originalAmount: "number = 0",
+  groupId: "number > 0",
+  accountId: "number > 0",
+})
+export type TransactionBase = typeof transactionBaseSchema.infer
+export const transactionSchema = BaseModelSchema.and(transactionBaseSchema)
+export type Transaction = typeof transactionSchema.infer
+export const transactionUpdateSchema = transactionSchema.pick("amount", "memo", "type")
+export type TransactionUpdate = typeof transactionUpdateSchema.infer
+// #endregion Transaction
+
 // #region Sync
 // TODO: Actualize sync functionality
 export type SyncModel = User
 
 export enum SyncModelName {
   user = "user",
+  transaction = "transaction",
 }
 
 export const SYNC_MODELS = [
   SyncModelName.user,
+  SyncModelName.transaction,
 ] as const
 
 export enum WSStatus {

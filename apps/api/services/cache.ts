@@ -1,5 +1,5 @@
 import { KeyValueService } from "@server/kv"
-import { User, UserKey, UserSession, ValidationSchema } from "@shared/types"
+import { Transaction, User, UserKey, UserSession, ValidationSchema } from "@shared/types"
 import {
   ONE_DAY_IN_SECONDS,
   ONE_HOUR_IN_SECONDS,
@@ -15,7 +15,7 @@ import { buildMethods as buildMethodsBase, CacheService } from "@shared/cache"
 const kv = await KeyValueService.connect(config.kv.hostname, config.kv.port)
 const cacheService = new CacheService(kv)
 
-function buildMethods<T>(prefix: string, schema?: ValidationSchema<T>) {
+function buildMethods<T>(prefix: string, schema?: ValidationSchema) {
   return buildMethodsBase<T>(cacheService, prefix, ONE_MONTH_IN_SECONDS, schema)
 }
 
@@ -32,6 +32,7 @@ export class PublicAPICache {
   user = buildMethods<User>(`user`)
   userKey = buildMethods<UserKey>(`userKey`)
   userSession = buildMethods<UserSession>(`userSession`)
+  transaction = buildMethods<Transaction>(`transaction`)
 
   isSessionTokenExpired = {
     key: (sessionToken: string): string => `isSessionTokenExpired_${sessionToken}`,

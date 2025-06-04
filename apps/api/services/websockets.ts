@@ -3,6 +3,7 @@ import { WSContext } from "hono/ws"
 import {
   SyncModel,
   SyncModelName,
+  Transaction,
   validate,
   WebSocketMessage,
   webSocketMessageSchema,
@@ -95,13 +96,22 @@ export const websockets = {
   },
   onMessage: async (wsc: WSContext, event: MessageEvent) => {
     const ws = wsc as WS
-    log(`Message from client: ${event}`)
     const json = JSON.parse(event.data)
     const parseResult = validate(webSocketMessageSchema, json)
     if (parseResult.error) {
       console.error("Invalid message", { issues: parseResult.error, json })
       return
     }
+
+    if (
+      !(parseResult.data.e === "client" && (
+        parseResult.data.t === WebSocketMessageType.PING ||
+        parseResult.data.t === WebSocketMessageType.PONG
+      ))
+    ) {
+      log(`Received message from ${parseResult.data.e}:`, parseResult.data)
+    }
+
     if (
       parseResult.data.e === "client" &&
       parseResult.data.t === WebSocketMessageType.PING
@@ -120,6 +130,19 @@ export const websockets = {
       parseResult.data.p && parseResult.data.p.length > 0
     ) {
       await websockets.syncData(ws, parseResult.data.p[0] as number)
+    }
+
+    if (parseResult.data.e === "transaction") {
+      if (parseResult.data.t === WebSocketMessageType.CREATED) {
+        db.transaction.createOne({ data: parseResult.data.p?.[0] as Transaction })
+      } else if (parseResult.data.t === WebSocketMessageType.UPDATED) {
+        db.transaction.updateOne({
+          id: (parseResult.data.p?.[0] as Transaction).id as number,
+          data: parseResult.data.p?.[0] as Transaction,
+        })
+      } else if (parseResult.data.t === WebSocketMessageType.DELETED) {
+        db.transaction.deleteOne({ id: (parseResult.data.p?.[0] as Transaction).id as number })
+      }
     }
   },
   closed(wsc: WSContext) {
@@ -193,12 +216,21 @@ export const websockets = {
     }
   },
   syncData: async (ws: WS, lastSyncAt: number) => {
-    await db.syncData((model, data) => {
-      websockets.send({
-        ws,
-        message: { e: model, t: WebSocketMessageType.LIST, p: data },
-      })
-    }, lastSyncAt)
+    const userId = userBySocket.get(ws)
+    if (!userId) {
+      console.error("No userId found for websocket, cannot sync data")
+      return
+    }
+    await db.syncData(
+      (model, data) => {
+        websockets.send({
+          ws,
+          message: { e: model, t: WebSocketMessageType.LIST, p: data },
+        })
+      },
+      userId,
+      lastSyncAt,
+    )
     const newSyncAt = Date.now()
     websockets.send({
       ws,

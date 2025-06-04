@@ -16,7 +16,6 @@ export const websocketsRoute = new Hono<APIContext>()
           websockets.opened(authData.user.id, thisWS)
         },
         onMessage: async (event, thisWS) => {
-          log(`Message from client: ${event.data}`)
           await websockets.onMessage(thisWS, event)
         },
         onClose: (/*event*/ _, thisWS) => {
