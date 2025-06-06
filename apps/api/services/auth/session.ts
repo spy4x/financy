@@ -1,6 +1,6 @@
 import { User, UserSession, UserSessionBase, UserSessionStatus } from "@shared/types"
-import { getRandomString } from "@shared/helpers/random"
-import { checkHash, hash } from "@shared/helpers/hash"
+import { getRandomString } from "@shared/helpers/random.ts"
+import { checkHash, hash } from "@shared/helpers/hash.ts"
 
 import { db } from "../db.ts"
 import { config } from "../config.ts"

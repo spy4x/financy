@@ -17,8 +17,8 @@ services:
     environment:
       - ENV=${ENV}
       - WEB_API_PREFIX=${WEB_API_PREFIX}
-    ports:
-      - ${WEB_PORT}:${WEB_PORT}
+    # ports:
+    #   - ${WEB_PORT}:8000
     build:
       dockerfile: apps/web/dockerfile.dev
     healthcheck:

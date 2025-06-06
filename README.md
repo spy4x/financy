@@ -20,13 +20,18 @@ and Telegram bot integration.
 
 ## Quick Start
 
+Prerequisites (unix-like OS):
+
+- [Deno](https://deno.land/): `curl -fsSL https://deno.land/install.sh | sh`
+- [Docker](https://www.docker.com/): `curl -fsSL https://get.docker.com | sudo sh`
+
 To start local development, run:
 
 ```sh
 deno task compose up -d
 ```
 
-This command launches all necessary applications for Financy in a local development environment.
+This command launches all necessary services & apps in Docker Compose.
 
 ## Contributing
 

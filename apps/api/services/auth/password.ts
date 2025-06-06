@@ -1,4 +1,4 @@
-import { checkHash, hash } from "@shared/helpers/hash"
+import { checkHash, hash } from "@shared/helpers/hash.ts"
 import {
   SessionMFAStatus,
   User,

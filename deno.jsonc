@@ -1,10 +1,26 @@
 {
-  "version": "1.0.0",
   "tasks": {
-    // #region Dev
-    "api:dev": "deno task -f @apps/api dev",
-    "web:dev": "deno task -f @apps/web dev",
-    // #endregion Dev
+    // #region apps/api
+    "api:dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch apps/api/index.ts",
+    // #endregion apps/api
+
+    // #region apps/web
+    "web:dev": "deno run -A --watch=apps/web/static/,apps/web/routes/ apps/web/dev.ts",
+    "web:build": "deno run -A apps/web/dev.ts build",
+    "web:cli": "echo \"import '\\@fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
+    "web:manifest": "deno task cli manifest $(pwd)",
+    "web:preview": "deno task web:build && deno run -A apps/web/main.ts",
+    "web:update": "deno run -A -r https://fresh.deno.dev/update apps/web",
+    // #endregion apps/web
+
+    // #region Scripts
+    "db:migrate": "deno run -N=$DB_HOST:5432 -E -R=./libs/server/db/migrations  ./libs/server/db/migrate.ts",
+    "deps:check": "deno outdated -r",
+    "deps:update": "deno outdated -r -u -i",
+    "update:ubuntu": "sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo apt --fix-broken install && sudo do-release-upgrade",
+    "vapid-key:create": "deno run -W=infra/configs/vapid.json --allow-run=deno ./infra/scripts/vapid-keys-create.ts",
+    "compose": "deno run -R=./infra --allow-run=docker ./infra/scripts/compose.ts",
+    // #endregion Scripts
 
     // #region Checks
     "check": {
@@ -33,45 +49,71 @@
     },
     // #endregion Checks
 
-    // #region Scripts
-    "db:migrate": "deno run -N=$DB_HOST:5432 -E -R=./libs/server/db/migrations  ./libs/server/db/migrate.ts",
-    "deps:check": "deno outdated -r",
-    "deps:update": "deno outdated -r -u -i",
-    "update:ubuntu": "sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo apt --fix-broken install && sudo do-release-upgrade",
-    "install:docker": "curl -fsSL https://get.docker.com | sudo sh",
-    "vapid-keys:create": "deno run -W=infra/configs/vapid.json --allow-run=deno ./infra/scripts/vapid-keys-create.ts",
-    "compose": "deno run -R=./infra --allow-run=docker ./infra/scripts/compose.ts",
-    // #endregion Scripts
-
     // #region Git Hooks
     "hooks:install": "deno run -R=deno.json,deno.jsonc,.git/hooks/ -W=.git/hooks/ jsr:@hongminhee/deno-task-hooks",
     "hooks:pre-commit": "deno task check"
     // #endregion Git Hooks
   },
   "imports": {
-    // Shared
+    // #region Aliases
+    "@api/services/": "./apps/api/services/",
+    "@api/middlewares/": "./apps/api/middlewares/",
+    "@web/state/": "./apps/web/state/",
+    "@web/islands": "./apps/web/islands/+index.ts",
+    "@shared/types": "./libs/shared/types/+index.ts",
+    "@shared/constants": "./libs/shared/constants/+index.ts",
+    "@shared/helpers/": "./libs/shared/helpers/",
+    "@shared/testing": "./libs/shared/testing/+index.ts",
+    "@shared/event-bus": "./libs/shared/event-bus/+index.ts",
+    "@shared/local-storage": "./libs/shared/local-storage/+index.ts",
+    "@shared/cache": "./libs/shared/cache/+index.ts",
+    "@server/db": "./libs/server/db/+index.ts",
+    "@server/kv": "./libs/server/kv/+index.ts",
+    "@server/helpers/": "./libs/server/helpers/",
+    "@client/preact": "./libs/client/preact/+index.ts",
+    "@client/browser": "./libs/client/browser/+index.ts",
+    "@client/helpers": "./libs/client/helpers/+index.ts",
+    "@client/icons": "./libs/client/icons/+index.tsx",
+    // #endregion Aliases
+
+    // #region Dependencies
+    // apps/api
+    "hono": "jsr:@hono/hono@^4.7.7",
+    "@hono/arktype-validator": "npm:@hono/arktype-validator@^2.0.0",
+    "@hectorm/otpauth": "jsr:@hectorm/otpauth",
+    "qrcode": "jsr:@libs/qrcode@^3.0.0",
+    "webpush": "jsr:@negrel/webpush",
+
+    // apps/web
+    "@fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "preact": "https://esm.sh/preact@10.26.8",
+    "preact/": "https://esm.sh/preact@10.26.8/",
+    "@preact/signals": "https://esm.sh/*@preact/signals@2.2.0",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.9.0",
+    "tailwindcss": "npm:tailwindcss@3.4.17",
+    "tailwindcss/": "npm:/tailwindcss@3.4.17/",
+    "tailwindcss/plugin": "npm:/tailwindcss@3.4.17/plugin.js",
+    "@tailwindcss/forms": "npm:@tailwindcss/forms@0.5.10",
+
+    // shared
     "@std/path": "jsr:@std/path@^1.0.3",
     "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/testing": "jsr:@std/testing@^1.0.11",
-    "@std/encoding": "jsr:@std/encoding@^1.0.5"
+    "@std/encoding": "jsr:@std/encoding@^1.0.5",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
+
+    // shared/types
+    "arktype": "npm:arktype@^2.1.20",
+
+    // server/kv
+    "@iuioiua/redis": "jsr:@iuioiua/redis@^1.1.1",
+
+    // server/db
+    "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
+    // #endregion Dependencies
   },
-  "workspace": [
-    "./apps/api",
-    "./apps/web",
-    "./libs/shared/constants",
-    "./libs/shared/helpers",
-    "./libs/shared/types",
-    "./libs/shared/testing",
-    "./libs/shared/cache",
-    "./libs/shared/event-bus",
-    "./libs/shared/local-storage",
-    "./libs/server/db",
-    "./libs/server/kv",
-    "./libs/server/helpers",
-    "./libs/client/browser"
-  ],
   "exclude": [
-    "**/.vite/*",
+    "**/_fresh/*",
     "**/.cache/*",
     "**/dist/*",
     ".volumes",
@@ -86,6 +128,7 @@
   "lint": {
     "rules": {
       "tags": [
+        "fresh",
         "recommended"
       ],
       "exclude": [
@@ -100,5 +143,14 @@
     "singleQuote": false,
     "proseWrap": "preserve",
     "semiColons": false
-  }
+  },
+  // #region Fresh Configs
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "lib": ["dom"]
+  },
+  "lock": false,
+  "nodeModulesDir": "auto"
+  // #endregion Fresh Configs
 }

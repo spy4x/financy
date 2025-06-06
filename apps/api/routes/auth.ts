@@ -5,7 +5,7 @@ import {
   authUsernamePasswordSchema,
   SessionMFAStatus,
 } from "@shared/types"
-import { auth } from "$api/services/auth/+index.ts"
+import { auth } from "@api/services/auth/+index.ts"
 import { APIContext } from "../_types.ts"
 import { isAuthenticated1FA, isAuthenticated2FA } from "../middlewares/auth.ts"
 import { validator } from "../middlewares/validator.ts"
@@ -16,28 +16,43 @@ export const authRoute = new Hono<APIContext>()
     return c.json({ success: true })
   })
   // .use(strictRateLimiter)
-  .post(`password/check`, validator("json", authUsernamePasswordSchema), async (c) => {
-    const { username, password } = c.req.valid("json")
-    const authData = await auth.signInWithPassword(username, password, c)
+  .get(`/me`, async (c) => {
+    const authData = c.get("auth")
     if (!authData) {
-      return c.json({ error: "Invalid username or password" }, 401)
+      return c.json({ error: "User not signed in" }, 401)
     }
-    return c.json(
-      authData.user,
-      authData.session.mfa === SessionMFAStatus.NOT_PASSED_YET ? 202 : 200,
-    )
+    return c.json(authData.user)
   })
-  .post(`/password/sign-up`, validator("json", authUsernamePasswordSchema), async (c) => {
-    const { username, password } = c.req.valid("json")
-    const authData = await auth.signUpWithPassword(username, password, c)
-    if (!authData) {
-      return c.json({ error: "Invalid username or password" }, 401)
-    }
-    return c.json(
-      authData.user,
-      authData.session.mfa === SessionMFAStatus.NOT_PASSED_YET ? 202 : 200,
-    )
-  })
+  .post(
+    `password/check`,
+    validator("json", authUsernamePasswordSchema),
+    async (c) => {
+      const { username, password } = c.req.valid("json")
+      const authData = await auth.signInWithPassword(username, password, c)
+      if (!authData) {
+        return c.json({ error: "Invalid username or password" }, 401)
+      }
+      return c.json(
+        authData.user,
+        authData.session.mfa === SessionMFAStatus.NOT_PASSED_YET ? 202 : 200,
+      )
+    },
+  )
+  .post(
+    `/password/sign-up`,
+    validator("json", authUsernamePasswordSchema),
+    async (c) => {
+      const { username, password } = c.req.valid("json")
+      const authData = await auth.signUpWithPassword(username, password, c)
+      if (!authData) {
+        return c.json({ error: "Invalid username or password" }, 401)
+      }
+      return c.json(
+        authData.user,
+        authData.session.mfa === SessionMFAStatus.NOT_PASSED_YET ? 202 : 200,
+      )
+    },
+  )
   .use(isAuthenticated1FA)
   .post(`/totp/check`, async (c) => {
     const authData = c.get("auth")
@@ -68,7 +83,10 @@ export const authRoute = new Hono<APIContext>()
     if (!parseResult.success) {
       return c.json(parseResult.error, 400)
     }
-    const isSuccess = await auth.connectTOTPFinish(authData, parseResult.data.otp)
+    const isSuccess = await auth.connectTOTPFinish(
+      authData,
+      parseResult.data.otp,
+    )
     if (!isSuccess) {
       return c.json({ error: "Code is incorrect" }, 400)
     }

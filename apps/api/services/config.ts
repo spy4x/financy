@@ -1,4 +1,4 @@
-import { getEnvVar } from "@server/helpers/env"
+import { getEnvVar } from "@server/helpers/env.ts"
 
 export class Config {
   env = getEnvVar("ENV") as "dev" | "prod"

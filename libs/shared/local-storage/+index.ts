@@ -16,6 +16,9 @@ class StorageHelper {
       return null
     }
     if (schema) {
+      if (!value) {
+        return null
+      }
       const parseResult = validate(schema, value)
       if (parseResult.error) {
         console.error("Error validating data:", parseResult.error)

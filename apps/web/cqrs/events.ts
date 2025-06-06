@@ -2,10 +2,7 @@ import { Event } from "@shared/event-bus"
 import { User } from "@shared/types"
 
 export class UserAuthenticatedOnAppStart implements Event {
-  public data: { user: { id: number } }
-  constructor(userId: number) {
-    this.data = { user: { id: userId } }
-  }
+  constructor(public data: User) {}
 }
 
 export class UserSignedIn implements Event {

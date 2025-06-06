@@ -1,11 +1,14 @@
-import "./app.css"
-import { mount } from "svelte"
-import App from "./app.svelte"
-import { initWebSocket } from "./services/websocket.ts"
-initWebSocket()
+/// <reference no-default-lib="true" />
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+/// <reference lib="dom.asynciterable" />
+/// <reference lib="deno.ns" />
 
-const app = mount(App, {
-  target: document.getElementById("app")!,
-})
+import "@std/dotenv/load"
 
-export default app
+import { start } from "@fresh/server.ts"
+import manifest from "./fresh.gen.ts"
+import config from "./fresh.config.ts"
+// import "@client/preact"
+
+await start(manifest, config)

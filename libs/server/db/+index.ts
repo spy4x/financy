@@ -1,5 +1,5 @@
 import postgres from "postgres"
-import { getEnvVar } from "@server/helpers/env"
+import { getEnvVar } from "@server/helpers/env.ts"
 import { PublicAPICacheModel } from "@shared/cache"
 
 export const sql = postgres({

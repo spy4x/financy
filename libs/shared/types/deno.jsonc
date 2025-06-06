@@ -1,8 +1,0 @@
-{
-  "name": "@shared/types",
-  "version": "1.0.0",
-  "exports": "./+index.ts",
-  "imports": {
-    "arktype": "npm:arktype@^2.1.20"
-  }
-}

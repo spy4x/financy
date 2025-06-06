@@ -46,7 +46,7 @@ export type OperationState<T, E = unknown> = {
   result: null | T
   error: null | E
 }
-export function getOperationState<T, E = unknown>(
+export function op<T, E = unknown>(
   inProgress: boolean = false,
   result: T | null = null,
   error: E | null = null,
@@ -65,19 +65,19 @@ export type OperationResult<T, E = unknown> = { error: null; result: T } | {
 
 // #region Base Types
 
-export const DateSchema = type(
+export const dateSchema = type(
   "Date | string.date.iso.parse",
 )
-export type DateType = typeof DateSchema.infer
-export const DateNullableSchema = DateSchema.or("null").default(null)
+export type DateType = typeof dateSchema.infer
+export const DateNullableSchema = dateSchema.or("null").default(null)
 
 export const ImmutableBaseModelSchema = type({
   //   "+": "delete", // delete all fields that are not in the schema
   id: "number",
-  createdAt: DateSchema,
+  createdAt: dateSchema,
 })
 export const UndeletableBaseModelSchema = ImmutableBaseModelSchema.and({
-  updatedAt: DateSchema,
+  updatedAt: dateSchema,
 })
 export const BaseModelSchema = UndeletableBaseModelSchema.and({
   deletedAt: DateNullableSchema,
@@ -92,7 +92,7 @@ export enum UserRole { //TODO: rethink roles as user.role
   SUPERVISOR = 2,
   ADMIN = 3,
 }
-export const userRoleValues = Object.values(UserRole)
+export const userRoleValues = Object.values(UserRole) as UserRole[]
 export enum UserMFAStatus {
   NOT_CONFIGURED = 1,
   CONFIGURATION_NOT_FINISHED = 2,
@@ -102,21 +102,21 @@ export const userMFAStatusValues = Object.values(
   UserMFAStatus,
 ) as UserMFAStatus[]
 export const NAME_MAX_LENGTH = 50
-export const UserBaseSchema = type({
-  firstName: `string <= ${NAME_MAX_LENGTH}`,
-  lastName: `string <= ${NAME_MAX_LENGTH}`,
-  lastLoginAt: DateSchema,
+export const userBaseSchema = type({
+  firstName: `string <= ${NAME_MAX_LENGTH} = ''`,
+  lastName: `string <= ${NAME_MAX_LENGTH} = ''`,
+  lastLoginAt: dateSchema.default(() => new Date()),
   mfa: type.enumerated(...userMFAStatusValues).default(
     UserMFAStatus.NOT_CONFIGURED,
   ),
   role: type.enumerated(...userRoleValues).default(UserRole.VIEWER),
 })
-export type UserBase = typeof UserBaseSchema.infer
+export type UserBase = typeof userBaseSchema.infer
 
-export const userSchema = BaseModelSchema.and(UserBaseSchema)
+export const userSchema = BaseModelSchema.and(userBaseSchema)
 export type User = typeof userSchema.infer
 
-export const userUpdateSchema = UserBaseSchema.pick("firstName", "lastName")
+export const userUpdateSchema = userBaseSchema.pick("firstName", "lastName")
 export type UserUpdate = typeof userUpdateSchema.infer
 
 // #region Auth
@@ -150,7 +150,7 @@ export enum UserKeyKind {
   USERNAME_2FA_CONNECTING = 1,
   USERNAME_2FA_COMPLETED = 2,
 }
-export const userKeyKindValues = Object.values(UserKeyKind)
+export const userKeyKindValues = Object.values(UserKeyKind) as UserKeyKind[]
 
 export enum SessionMFAStatus {
   NOT_REQUIRED = 1,
@@ -164,7 +164,7 @@ export enum UserSessionStatus {
   SIGNED_OUT = 3,
 }
 
-export const userSessionStatusValues = Object.values(UserSessionStatus)
+export const userSessionStatusValues = Object.values(UserSessionStatus) as UserSessionStatus[]
 export const userKeyBaseSchema = type({
   userId: "number = 0",
   kind: type.enumerated(...userKeyKindValues).default(
@@ -188,10 +188,10 @@ export const userSessionBaseSchema = type({
   status: type.enumerated(...userSessionStatusValues).default(
     UserSessionStatus.ACTIVE,
   ),
-  mfa: type.enumerated(...Object.values(SessionMFAStatus)).default(
+  mfa: type.enumerated(...Object.values(SessionMFAStatus) as SessionMFAStatus[]).default(
     SessionMFAStatus.NOT_REQUIRED,
   ),
-  expiresAt: DateSchema.default(() => new Date()),
+  expiresAt: dateSchema.default(() => new Date()),
 })
 export type UserSessionBase = typeof userSessionBaseSchema.infer
 
@@ -225,7 +225,9 @@ export const transactionBaseSchema = type({
   createdBy: "number = 0",
   amount: "number = 0",
   memo: "string <= 256 = ''",
-  type: type.enumerated(...Object.values(TransactionType)).default(TransactionType.CREDIT),
+  type: type.enumerated(...Object.values(TransactionType) as TransactionType[]).default(
+    TransactionType.CREDIT,
+  ),
   categoryId: "number > 0",
   originalCurrency: "string == 3 = 'USD'",
   originalAmount: "number = 0",
@@ -274,7 +276,7 @@ export const webSocketMessageSchema = type({
   /** Entity: "system" or one of database models, like "zone", "lampBox" or "zoneLampBox" */
   e: "string",
   /** Type */
-  t: type.enumerated(...Object.values(WebSocketMessageType)),
+  t: type.enumerated(...Object.values(WebSocketMessageType) as WebSocketMessageType[]),
   /** Payload: Array of Entity data, has to be parsed with a model schema, because whole websocket message was stringified */
   p: "unknown[]?",
   /** Acknowledgement id */

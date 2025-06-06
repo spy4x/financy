@@ -1,8 +1,0 @@
-{
-  "name": "@server/kv",
-  "version": "1.0.0",
-  "exports": "./+index.ts",
-  "imports": {
-    "@iuioiua/redis": "jsr:@iuioiua/redis@^1.1.1"
-  }
-}

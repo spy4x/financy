@@ -1,0 +1,8 @@
+FROM denoland/deno:alpine-2.3.5
+WORKDIR /app
+COPY . .
+ARG DENO_DEPLOYMENT_ID
+ENV DENO_DEPLOYMENT_ID=${DENO_DEPLOYMENT_ID}
+RUN deno run -A apps/web/dev.ts build
+EXPOSE 8000
+CMD ["run", "-A", "apps/web/main.ts"]

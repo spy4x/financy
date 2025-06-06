@@ -1,12 +1,12 @@
 import { Hono } from "hono"
 import { contextStorage } from "hono/context-storage"
 import { requestId } from "hono/request-id"
-import { db } from "$api/services/db.ts"
+import { db } from "@api/services/db.ts"
 import { websocketsRoute } from "./routes/websockets.ts"
-import { logger } from "$api/middlewares/log.ts"
-import { parseAuth } from "$api/middlewares/auth.ts"
+import { logger } from "@api/middlewares/log.ts"
+import { parseAuth } from "@api/middlewares/auth.ts"
 import { APIContext } from "./_types.ts"
-import { getRandomString } from "@shared/helpers/random"
+import { getRandomString } from "@shared/helpers/random.ts"
 import { authRoute } from "./routes/auth.ts"
 
 const app = new Hono<APIContext>().basePath("/api")
@@ -20,7 +20,12 @@ app.route("/ws", websocketsRoute) // isAuthenticated check is inside, because âš
 
 app.get(
   "/health",
-  async (c) => c.json({ status: "ok", isDbConnected: await db.isConnected(), date: Date.now() }),
+  async (c) =>
+    c.json({
+      status: "ok",
+      isDbConnected: await db.isConnected(),
+      date: Date.now(),
+    }),
 )
 app.route("/auth", authRoute) // has some public routes and some more protected
 
