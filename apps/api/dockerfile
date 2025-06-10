@@ -1,3 +1,6 @@
 FROM denoland/deno:alpine-2.3.5
 WORKDIR /app
+COPY . .
+RUN chown -R 1000:1000 /app
+USER 1000:1000
 CMD deno task db:migrate && deno task api:dev
