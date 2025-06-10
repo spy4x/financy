@@ -3,5 +3,5 @@ libs/***
 infra/***
 .dockerignore
 README.md
-justfile
 deno.jsonc
+deno.lock

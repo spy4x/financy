@@ -1,27 +1,3 @@
-/*
-I had the next justfile:
-```
-set dotenv-load := true
-set dotenv-path := "./infra/envs/.env"
-
-compose params:
-    docker compose -f "./infra/compose/compose.shared.yml" -f "./infra/compose/compose.${ENV}.yml" --env-file="./infra/envs/.env" {{params}}
-
-start: web
-
-web:
-    just compose "up -d --build --force-recreate proxy db kv minio minio-configure api web"
-
-dev:
-    just compose "up -d --build --remove-orphans"
-
-dev_down:
-    just compose "down --remove-orphans"
-```
-
-Now I need to rewrite it to Deno typescript script.
-*/
-
 const envFilePath = `./infra/envs/.env`;
 const env = await Deno.readTextFile(envFilePath);
 const envVars = Object.fromEntries(

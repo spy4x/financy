@@ -1,4 +1,42 @@
 services:
+  proxy:
+    container_name: ${PROJECT}-proxy
+    image: traefik
+    restart: unless-stopped
+    command:
+      - '--log.level=${PROXY_LOG_LEVEL}'
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.web.address=:80'
+      - '--ping=true'
+      - '--ping.entryPoint=ping'
+    ports:
+      - '443:443'
+      - '80:80'
+    volumes:
+      - '../../.volumes/traefik/letsencrypt:/letsencrypt'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    deploy:
+      resources:
+        limits:
+          cpus: ${PROXY_CPU_LIMIT}
+          memory: ${PROXY_MEM_LIMIT}
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.proxy.rule=Host(`proxy.${DOMAIN}`)'
+      - 'traefik.http.routers.proxy.entrypoints=web'
+      - 'traefik.http.services.proxy.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.pingweb.rule=PathPrefix(`/ping`)'
+      - 'traefik.http.routers.pingweb.service=ping@internal'
+      - 'traefik.http.routers.pingweb.entrypoints=web'
+      
   db:
     healthcheck:
       interval: 5s
