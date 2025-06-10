@@ -19,9 +19,9 @@ export function Shell({ children }: Props) {
     showSidePanel.value = !showSidePanel.value
   }
 
-  if (!auth.user.value) {
-    return <Auth />
-  }
+  // if (!auth.user.value) {
+  //   return <Auth />
+  // }
 
   return (
     <div>

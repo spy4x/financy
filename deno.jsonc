@@ -90,6 +90,8 @@
     "preact/": "https://esm.sh/preact@10.26.8/",
     "@preact/signals": "https://esm.sh/*@preact/signals@2.2.0",
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.9.0",
+    // "preact-iso": "https://esm.sh/preact-iso@2.9.1?external=preact,preact/signals,preact/signals-core",
+    "preact-router": "https://esm.sh/preact-router@4.1.2",
     "tailwindcss": "npm:tailwindcss@3.4.17",
     "tailwindcss/": "npm:/tailwindcss@3.4.17/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.17/plugin.js",

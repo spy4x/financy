@@ -7,6 +7,7 @@ import * as $_app from "./routes/_app.tsx"
 import * as $_layout from "./routes/_layout.tsx"
 import * as $_middleware from "./routes/_middleware.ts"
 import * as $_types from "./routes/_types.ts"
+import * as $app_path_ from "./routes/app/[...path].tsx"
 import * as $health from "./routes/health.ts"
 import * as $index from "./routes/index.tsx"
 import * as $profile_index from "./routes/profile/index.tsx"
@@ -26,6 +27,7 @@ import * as $ui_PageTitle from "./islands/ui/PageTitle.tsx"
 import * as $ui_Table from "./islands/ui/Table.tsx"
 import * as $ui_ToggleSwitch from "./islands/ui/ToggleSwitch.tsx"
 import * as $_islands_Dashboard from "./routes/(_islands)/Dashboard.tsx"
+import * as $_islands_Spa from "./routes/(_islands)/Spa.tsx"
 import * as $profile_islands_Profile from "./routes/profile/(_islands)/Profile.tsx"
 import type { Manifest } from "$fresh/server.ts"
 
@@ -36,6 +38,7 @@ const manifest = {
     "./routes/_layout.tsx": $_layout,
     "./routes/_middleware.ts": $_middleware,
     "./routes/_types.ts": $_types,
+    "./routes/app/[...path].tsx": $app_path_,
     "./routes/health.ts": $health,
     "./routes/index.tsx": $index,
     "./routes/profile/index.tsx": $profile_index,
@@ -57,6 +60,7 @@ const manifest = {
     "./islands/ui/Table.tsx": $ui_Table,
     "./islands/ui/ToggleSwitch.tsx": $ui_ToggleSwitch,
     "./routes/(_islands)/Dashboard.tsx": $_islands_Dashboard,
+    "./routes/(_islands)/Spa.tsx": $_islands_Spa,
     "./routes/profile/(_islands)/Profile.tsx": $profile_islands_Profile,
   },
   baseUrl: import.meta.url,
