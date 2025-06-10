@@ -378,6 +378,7 @@ services:
       - ../../libs:/app/libs
       - ../../deno.jsonc:/app/deno.jsonc
       - ../../infra/configs/vapid.json:/app/vapid.json
+    user: "1000:1000"
     environment:
       - DENO_LOG=${DENO_LOG}
       - DB_HOST=db
@@ -426,15 +427,15 @@ services:
     build:
       context: ../..
       dockerfile: apps/web/dockerfile.prod
-      args:
-        DENO_DEPLOYMENT_ID: ${DENO_DEPLOYMENT_ID}
     environment:
       - DENO_LOG=${DENO_LOG}
+      - VITE_ENV=prod
     volumes:
       - ${DENO_DIR}:/deno-dir/
       - ../../apps:/app/apps
       - ../../libs:/app/libs
       - ../../deno.jsonc:/app/deno.jsonc
+    user: "1000:1000"
     deploy:
       resources:
         limits:
@@ -451,11 +452,10 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`) && !PathPrefix(`/ws`)"
       - "traefik.http.routers.web.entrypoints=web"
-      - "traefik.http.services.web.loadbalancer.server.port=${WEB_PORT}"
+      - "traefik.http.services.web.loadbalancer.server.port=80"
     healthcheck:
-      test:
-        [ "CMD", "wget", "--spider", "http://127.0.0.1:${WEB_PORT}/health" ]
+      test: ["CMD", "wget", "--spider", "http://127.0.0.1:80"]
       interval: 10s
       timeout: 5s
-      retries: 30
+      retries: 5
   # endregion API & Web

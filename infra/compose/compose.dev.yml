@@ -8,18 +8,18 @@ services:
   api:
     environment:
       - ENV=dev
-    ports:
-      - ${API_PORT}:8000
     healthcheck:
       interval: 3s
 
   web:
     environment:
-      - ENV=${ENV}
-      - WEB_API_PREFIX=${WEB_API_PREFIX}
-    # ports:
-    #   - ${WEB_PORT}:8000
+      - ENV=dev
+    ports:
+      - 5173:5173
     build:
       dockerfile: apps/web/dockerfile.dev
+    labels:
+      - "traefik.http.services.web.loadbalancer.server.port=5173"
     healthcheck:
+      test: ["CMD", "wget", "--spider", "http://127.0.0.1:5173"]
       interval: 3s

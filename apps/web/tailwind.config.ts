@@ -3,7 +3,8 @@ import tailwindForms from "@tailwindcss/forms"
 
 export default {
   content: [
-    "{routes,islands,components}/**/*.{ts,tsx}",
+    "./index.html",
+    "./src/**/*.{ts,tsx}",
     "../../libs/client/**/*.{ts,tsx}",
   ],
   plugins: [tailwindForms],

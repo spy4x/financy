@@ -1,3 +1,6 @@
+/** @jsxImportSource preact */
+/** @jsxRuntime automatic */
+
 export function IconArrowLeft(
   props: { class?: string },
 ) {

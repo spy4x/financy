@@ -14,5 +14,6 @@
 **/build
 **/dist
 **/Dockerfile
+**/dockerfile
 **/dockerfile.*
 **/_fresh

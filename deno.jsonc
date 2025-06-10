@@ -5,12 +5,8 @@
     // #endregion apps/api
 
     // #region apps/web
-    "web:dev": "deno run -A --watch=apps/web/static/,apps/web/routes/ apps/web/dev.ts",
-    "web:build": "deno run -A apps/web/dev.ts build",
-    "web:cli": "echo \"import '\\@fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
-    "web:manifest": "deno task cli manifest $(pwd)",
-    "web:preview": "deno task web:build && deno run -A apps/web/main.ts",
-    "web:update": "deno run -A -r https://fresh.deno.dev/update apps/web",
+    "web:dev": "deno run -A --node-modules-dir npm:vite apps/web",
+    "web:build": "deno run -A --node-modules-dir npm:vite build apps/web",
     // #endregion apps/web
 
     // #region Scripts
@@ -58,8 +54,8 @@
     // #region Aliases
     "@api/services/": "./apps/api/services/",
     "@api/middlewares/": "./apps/api/middlewares/",
-    "@web/state/": "./apps/web/state/",
-    "@web/islands": "./apps/web/islands/+index.ts",
+    "@web/state/": "./apps/web/src/state/",
+    "@web/components/": "./apps/web/src/components/",
     "@shared/types": "./libs/shared/types/+index.ts",
     "@shared/constants": "./libs/shared/constants/+index.ts",
     "@shared/helpers/": "./libs/shared/helpers/",
@@ -70,7 +66,8 @@
     "@server/db": "./libs/server/db/+index.ts",
     "@server/kv": "./libs/server/kv/+index.ts",
     "@server/helpers/": "./libs/server/helpers/",
-    "@client/preact": "./libs/client/preact/+index.ts",
+    "@client/preact/": "./libs/client/preact/",
+    "@client/vite/": "./libs/client/vite/",
     "@client/browser": "./libs/client/browser/+index.ts",
     "@client/helpers": "./libs/client/helpers/+index.ts",
     "@client/icons": "./libs/client/icons/+index.tsx",
@@ -85,17 +82,18 @@
     "webpush": "jsr:@negrel/webpush",
 
     // apps/web
-    "@fresh/": "https://deno.land/x/fresh@1.7.3/",
-    "preact": "https://esm.sh/preact@10.26.8",
-    "preact/": "https://esm.sh/preact@10.26.8/",
-    "@preact/signals": "https://esm.sh/*@preact/signals@2.2.0",
-    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.9.0",
-    // "preact-iso": "https://esm.sh/preact-iso@2.9.1?external=preact,preact/signals,preact/signals-core",
-    "preact-router": "https://esm.sh/preact-router@4.1.2",
-    "tailwindcss": "npm:tailwindcss@3.4.17",
-    "tailwindcss/": "npm:/tailwindcss@3.4.17/",
-    "tailwindcss/plugin": "npm:/tailwindcss@3.4.17/plugin.js",
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
+    "@preact/preset-vite": "npm:@preact/preset-vite@^2.10.1",
+    "preact": "npm:preact@^10.26.2",
+    "vite": "npm:vite@^6.1.1",
+    "wouter-preact": "npm:wouter-preact@^3.7.1",
+    "@preact/signals": "npm:@preact/signals@^2.2.0",
+    "@preact/signals-core": "npm:@preact/signals-core@^1.9.0",
+    "tailwindcss": "npm:tailwindcss@4.1.8",
+    "tailwindcss/": "npm:/tailwindcss@4.1.8/",
+    "tailwindcss/plugin": "npm:/tailwindcss@4.1.8/plugin.js",
     "@tailwindcss/forms": "npm:@tailwindcss/forms@0.5.10",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@4.1.8",
 
     // shared
     "@std/path": "jsr:@std/path@^1.0.3",
@@ -115,7 +113,6 @@
     // #endregion Dependencies
   },
   "exclude": [
-    "**/_fresh/*",
     "**/.cache/*",
     "**/dist/*",
     ".volumes",
@@ -130,7 +127,6 @@
   "lint": {
     "rules": {
       "tags": [
-        "fresh",
         "recommended"
       ],
       "exclude": [
@@ -146,13 +142,12 @@
     "proseWrap": "preserve",
     "semiColons": false
   },
-  // #region Fresh Configs
+
+  // #region Preact Configs
   "compilerOptions": {
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "lib": ["dom"]
-  },
-  "lock": false,
-  "nodeModulesDir": "auto"
-  // #endregion Fresh Configs
+    "jsxImportSource": "preact"
+  }
+  // #endregion Preact Configs
 }

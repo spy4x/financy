@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@utility text-primary {
+  @apply text-purple-600;
+}
+@utility rounded-primary {
+  @apply rounded-lg;
+}
+@utility bg-primary {
+  @apply bg-purple-900;
+}
+@utility border-primary {
+  @apply border-purple-600;
+}
+
+@utility input {
+  @apply block w-full h-12 rounded-primary border border-gray-300 text-gray-900;
+  @apply placeholder:text-gray-500;
+  @apply focus:border-purple-600 focus:ring-1 focus:ring-inset focus:ring-transparent;
+}
+
+@utility html {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  @apply text-base text-black;
+}
+@utility h1 {
+  @apply text-2xl xl:text-3xl font-medium;
+}
+h1 {
+  @apply h1;
+}
+
+@utility h2 {
+  @apply text-xl xl:text-2xl font-medium;
+}
+h2 {
+  @apply h2;
+}
+@utility h3 {
+  @apply text-lg xl:text-xl font-medium;
+}
+h3 {
+  @apply h3;
+}
+@utility h4 {
+  @apply text-lg xl:text-xl font-medium;
+}
+h4 {
+  @apply h4;
+}
+@utility h5 {
+  @apply text-lg font-medium;
+}
+@utility h6 {
+  @apply text-base font-medium;
+}
+h5 {
+  @apply h5;
+}
+@utility p {
+  @apply text-base;
+}
+p {
+  @apply p;
+}
+@utility link {
+  @apply underline decoration-gray-300 text-gray-500 hover:text-primary hover:no-underline;
+}
+@utility page-layout {
+  @apply mx-auto max-w-6xl space-y-4 lg:space-y-8;
+}
+@utility list-ul {
+  @apply list-disc list-inside text-sm space-y-1 pl-1;
+}
+
+@utility btn {
+  @apply cursor-pointer flex items-center justify-center gap-x-2.5;
+  @apply rounded-primary px-6 h-12 text-white whitespace-nowrap;
+  @apply hover:opacity-90 transition-all duration-75 ease-in;
+  @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
+}
+button {
+  @apply cursor-pointer
+}
+@utility btn-sm {
+  @apply h-9 px-4;
+}
+@utility btn-disabled {
+  @apply cursor-not-allowed opacity-50 pointer-events-none shadow-none hover:opacity-100;
+}
+fieldset[disabled] btn {
+  @apply btn-disabled;
+}
+@utility btn-primary {
+  @apply bg-primary text-purple-50;
+}
+@utility btn-primary-outline {
+  @apply border border-purple-900 text-purple-900 hover:bg-purple-800 hover:text-purple-100
+    focus-visible:outline-purple-800;
+}
+@utility btn-danger {
+  @apply border border-red-600 bg-red-600 text-red-50 hover:bg-red-700 hover:text-red-50
+    focus-visible:outline-red-700;
+}
+@utility btn-danger-outline {
+  @apply border border-red-600 text-red-600 hover:bg-red-700 hover:text-red-50
+    focus-visible:outline-red-700;
+}
+@utility btn-warning {
+  @apply border border-orange-600 bg-orange-600 text-orange-50 hover:bg-orange-700
+    hover:text-orange-50 focus-visible:outline-orange-700;
+}
+@utility btn-warning-outline {
+  @apply border border-orange-600 text-orange-600 hover:bg-orange-700 hover:text-orange-50
+    focus-visible:outline-orange-700;
+}
+@utility btn-success {
+  @apply border border-green-700 bg-green-700 text-green-50 hover:bg-green-700 hover:text-green-50
+    focus-visible:outline-green-700;
+}
+@utility btn-success-outline {
+  @apply border border-green-700 text-green-700 hover:bg-green-700 hover:text-green-50
+    focus-visible:outline-green-700;
+}
+@utility btn-icon {
+  @apply px-0 w-12;
+}
+@utility btn-link {
+  @apply text-primary hover:underline inline-flex items-center gap-x-1.5;
+}
+@utility btn-input-icon {
+  @apply size-9 shrink-0 inline-flex items-center justify-center whitespace-nowrap rounded-md
+    text-sm;
+  @apply font-medium transition-colors text-gray-800;
+  @apply disabled:opacity-50;
+  @apply hover:bg-gray-100 hover:text-black;
+}
+@utility checkbox {
+  @apply size-5 border-gray-400 rounded-sm;
+  @apply text-purple-900 focus:ring-transparent;
+}
+@utility radio {
+  @apply size-4 border-gray-300 text-purple-900 focus:ring-purple-900;
+}
+@utility select {
+  @apply input;
+}
+@utility textarea {
+  @apply block w-full min-h-24 rounded-primary border border-gray-300 text-gray-900;
+  @apply placeholder:text-gray-500;
+  @apply focus:border-purple-600 focus:ring-1 focus:ring-inset focus:ring-transparent;
+}
+@utility label {
+  @apply block text-black text-sm font-medium;
+}
+@utility card {
+  @apply rounded-primary border border-gray-200 bg-white;
+}
+@utility card-body {
+  @apply px-4 py-6 sm:p-8;
+}
+@utility card-header {
+  @apply flex items-center justify-between border-b border-gray-200 px-4 py-4 sm:px-8;
+}
+@utility card-footer {
+  @apply flex flex-wrap items-center gap-4 border-t border-gray-200 px-4 py-4 sm:px-8;
+}
