@@ -11,7 +11,7 @@ import { UIGuideInstructions } from "./instructions.tsx"
 export function UIGuide() {
   return (
     <div class="page-layout">
-      <PageTitle>UI Guide</PageTitle>
+      <PageTitle class="lg:mb-4">UI Guide</PageTitle>
 
       <UIGuideInstructions />
 
