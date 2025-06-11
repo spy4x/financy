@@ -80,7 +80,7 @@ export function Nav() {
     <>
       <div class="flex gap-4 h-16 shrink-0 items-center">
         <h3 class="text-purple-100 font-medium text-xl">
-          SmartLite
+          Financy
         </h3>
         {(!ws.syncOp.value.inProgress && ws.status.value === WSStatus.CONNECTED)
           ? (
