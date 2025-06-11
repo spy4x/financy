@@ -1,6 +1,6 @@
 import { Route, Switch } from "wouter-preact"
 import { Profile } from "./profile/page.tsx"
-import { UIGuide } from "./ui-guide/page.tsx"
+import { UIGuide } from "./ui-guide/+page.tsx"
 
 export function Router() {
   return (

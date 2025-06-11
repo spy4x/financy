@@ -178,7 +178,7 @@ export function IconLoading(
   )
 }
 
-export function IconMagnifyingGlass(
+export function IconSearch(
   props: { class?: string },
 ) {
   return (

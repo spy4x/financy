@@ -1,5 +1,5 @@
 import { Signal } from "@preact/signals"
-import { useLocation } from "wouter-preact"
+import { navigate as wouterNavigate } from "wouter-preact/use-browser-location"
 
 /** Modify a signal's value by merging the given update object. Does it in immutable way to trigger effects & UI updates. */
 export function set<T>(
@@ -72,6 +72,5 @@ export function setValidationState<
 }
 
 export function navigate(url: string): void {
-  const [_, navigate] = useLocation()
-  navigate(url)
+  wouterNavigate(url, { replace: true })
 }

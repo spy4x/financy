@@ -14,7 +14,7 @@
 }
 
 @utility input {
-  @apply block w-full h-12 rounded-primary border border-gray-300 text-gray-900;
+  @apply block w-full h-12 px-3 rounded-primary border border-gray-300 text-gray-900;
   @apply placeholder:text-gray-500;
   @apply focus:border-purple-600 focus:ring-1 focus:ring-inset focus:ring-transparent;
 }
@@ -148,12 +148,12 @@ fieldset[disabled] btn {
   @apply input;
 }
 @utility textarea {
-  @apply block w-full min-h-24 rounded-primary border border-gray-300 text-gray-900;
+  @apply block w-full min-h-24 p-2 rounded-primary border border-gray-300 text-gray-900;
   @apply placeholder:text-gray-500;
   @apply focus:border-purple-600 focus:ring-1 focus:ring-inset focus:ring-transparent;
 }
 @utility label {
-  @apply block text-black text-sm font-medium;
+  @apply inline-flex text-black text-sm font-medium;
 }
 @utility card {
   @apply rounded-primary border border-gray-200 bg-white;
