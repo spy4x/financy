@@ -1,6 +1,6 @@
 import { Link } from "wouter-preact"
 
-export default function Error404() {
+export function Error404() {
   return (
     <>
       <div class="px-4 py-8 mx-auto">

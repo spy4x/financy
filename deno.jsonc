@@ -1,5 +1,7 @@
 {
   "tasks": {
+    "dev": "deno run compose up -d",
+
     // #region apps/api
     "api:dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch apps/api/index.ts",
     // #endregion apps/api

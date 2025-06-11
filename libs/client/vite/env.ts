@@ -6,3 +6,6 @@ export function getEnvVar(name: string, required = false): string {
   }
   return value || ""
 }
+
+export const isProd = getEnvVar("ENV") === "prod"
+console.log(`Running in ${isProd ? "production" : "development"} mode.`)

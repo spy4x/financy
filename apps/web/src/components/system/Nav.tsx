@@ -1,13 +1,15 @@
-import { effect, Signal, signal, useSignal } from "@preact/signals"
+import { Signal, signal, useSignal } from "@preact/signals"
 import { FunctionalComponent } from "preact"
-import { IconBookOpen, IconChevronDown, IconCpuChip, IconHome, IconUser } from "@client/icons"
-import { UserRole, WSStatus } from "@shared/types"
+import { IconChevronDown, IconCpuChip, IconHome, IconUser } from "@client/icons"
+import { WSStatus } from "@shared/types"
 import { Badge, BadgeColor } from "@web/components/ui/Badge.tsx"
 import { auth } from "@web/state/auth.ts"
 import { page } from "@web/state/page.ts"
 import { ws } from "@web/state/ws.ts"
 import { navigate } from "@client/helpers"
 import { Link } from "wouter-preact"
+import { routes } from "../../routes/_router.tsx"
+import { isProd } from "@client/vite/env.ts"
 
 type NavItem =
   & {
@@ -33,45 +35,45 @@ type NavItem =
   )
 
 const navItems: NavItem[] = [
-  { name: "Dashboard", href: "/", Icon: IconHome },
-  {
-    name: "Devices",
-    Icon: IconCpuChip,
-    isOpen: signal(false),
-    subItems: [
-      {
-        name: "Regions",
-        href: "/devices/regions",
-        // counter: computed(() => regions.list.notDeleted.value.length),
-      },
-    ],
-  },
-  { name: "UI Guide", href: "/ui-guide", Icon: IconBookOpen },
-]
-effect(() => {
-  if (
-    auth.user.value?.role === UserRole.ADMIN &&
-    !navItems.some((item) => item.name === "Admin")
-  ) {
-    navItems.push({
-      name: "Admin",
-      Icon: IconUser,
+  { name: routes.dashboard.title, href: routes.dashboard.href, Icon: IconHome },
+  { name: routes.todos.title, href: routes.todos.href, Icon: IconCpuChip },
+  ...(!isProd
+    ? [{
+      name: "Dev",
+      Icon: IconCpuChip,
       isOpen: signal(false),
       subItems: [
-        {
-          name: "Users",
-          href: "/admin/users",
-          //   counter: computed(() => state.user.list.nonDeleted.value.length),
-        },
-        {
-          name: "Commands",
-          href: "/admin/commands",
-        },
-        { name: "Settings", href: "/admin/settings" },
+        { name: routes.uiGuide.title, href: routes.uiGuide.href },
+        { name: routes.notFound.title, href: routes.notFound.href },
       ],
-    })
-  }
-})
+    }]
+    : []),
+]
+
+// effect(() => {
+//   if (
+//     auth.user.value?.role === UserRole.ADMIN &&
+//     !navItems.some((item) => item.name === "Admin")
+//   ) {
+//     navItems.push({
+//       name: "Admin",
+//       Icon: IconUser,
+//       isOpen: signal(false),
+//       subItems: [
+//         {
+//           name: "Users",
+//           href: "/admin/users",
+//           //   counter: computed(() => state.user.list.nonDeleted.value.length),
+//         },
+//         {
+//           name: "Commands",
+//           href: "/admin/commands",
+//         },
+//         { name: "Settings", href: "/admin/settings" },
+//       ],
+//     })
+//   }
+// })
 
 export function Nav() {
   const isProfileDropdownOpen = useSignal(false)

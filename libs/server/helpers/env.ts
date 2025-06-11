@@ -5,3 +5,5 @@ export function getEnvVar(key: string, isOptional = false): string {
   }
   return value || ""
 }
+
+export const isProd = getEnvVar("ENV") === "prod"
