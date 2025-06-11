@@ -55,7 +55,7 @@ if (rsyncStatus.code !== 0) {
 }
 
 log("Running remote SSH deploy commands...");
-const remoteCmd = `cd ${PATH_ON_SERVER} && mv ./infra/envs/.env.prod ./infra/envs/.env && source ~/.zshrc && deno task compose up -d`;
+const remoteCmd = `cd ${PATH_ON_SERVER} && mv ./infra/envs/.env.prod ./infra/envs/.env && source ~/.zshrc && deno task compose up -d --build`;
 
 const ssh = Deno.run({
   cmd: ["ssh", SSH_TO_SERVER, remoteCmd],

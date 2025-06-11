@@ -1,6 +1,4 @@
 apps/***/build/
 apps/***/dist/
 apps/***/node_modules/
-apps/***/_fresh/
-infra/configs/mosquitto-sycra/mosquitto.passwd
-infra/configs/mosquitto-sg1/mosquitto.passwd
+apps/***/.vite/
