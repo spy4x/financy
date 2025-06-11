@@ -5,6 +5,7 @@
     "jsr:@hono/hono@^4.7.7": "4.7.7",
     "jsr:@iuioiua/redis@*": "1.1.1",
     "jsr:@iuioiua/redis@^1.1.1": "1.1.1",
+    "jsr:@libs/qrcode@3": "3.0.0",
     "jsr:@negrel/http-ece@0.6.0": "0.6.0",
     "jsr:@negrel/webpush@*": "0.3.0",
     "jsr:@std/assert@0.224": "0.224.0",
@@ -53,6 +54,9 @@
         "jsr:@std/bytes@^1.0.5",
         "jsr:@std/collections"
       ]
+    },
+    "@libs/qrcode@3.0.0": {
+      "integrity": "f19ae517f67c33cd1c0ed3a54a46540980de45cb3327d09b21479a75d7222953"
     },
     "@negrel/http-ece@0.6.0": {
       "integrity": "7afdd81b86ea5b21a9677b323c01c3338705e11cc2bfed250870f5349d8f86f7",

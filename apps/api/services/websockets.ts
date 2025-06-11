@@ -103,6 +103,8 @@ export const websockets = {
       return
     }
 
+    const acknoledgmentId = parseResult.data.id
+
     if (
       !(parseResult.data.e === "client" && (
         parseResult.data.t === WebSocketMessageType.PING ||
@@ -142,6 +144,26 @@ export const websockets = {
         })
       } else if (parseResult.data.t === WebSocketMessageType.DELETED) {
         db.transaction.deleteOne({ id: (parseResult.data.p?.[0] as Transaction).id as number })
+      }
+    }
+
+    if (parseResult.data.e === "user") {
+      if (parseResult.data.t === WebSocketMessageType.UPDATE) {
+        const userId = userBySocket.get(ws)
+        if (!userId) {
+          console.error("No userId found for websocket, cannot update user")
+          return
+        }
+        const updatedUser = await db.user.updateOne({
+          id: userId,
+          data: parseResult.data.p?.[0] as SyncModel,
+        })
+        websockets.onModelChange(
+          SyncModelName.user,
+          [updatedUser],
+          WebSocketMessageType.UPDATED,
+          acknoledgmentId ?? undefined,
+        )
       }
     }
   },
@@ -210,9 +232,19 @@ export const websockets = {
       this.send({ ws, message })
     }
   },
-  onModelChange(model: SyncModelName, p: SyncModel[], t: WebSocketMessageType) {
+  onModelChange(
+    model: SyncModelName,
+    p: SyncModel[],
+    t: WebSocketMessageType,
+    acknowledgmentId?: string,
+  ) {
     for (const ws of all) {
-      websockets.send({ ws, message: { e: model, t, p } })
+      // TODO: right now we send all changes to all websockets, but we could optimize this
+      // by sending only to websockets of the user that owns the model
+      websockets.send({
+        ws,
+        message: { e: model, t, p, id: acknowledgmentId },
+      })
     }
   },
   syncData: async (ws: WS, lastSyncAt: number) => {

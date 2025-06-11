@@ -1,11 +1,21 @@
 import { computed, effect, signal } from "@preact/signals"
-import { op, User, UserMFAStatus, UserRole, userSchema, UserUpdate, validate } from "@shared/types"
+import {
+  op,
+  User,
+  UserMFAStatus,
+  UserRole,
+  userSchema,
+  UserUpdate,
+  validate,
+  WebSocketMessageType,
+} from "@shared/types"
 import { toast } from "./toast.ts"
 // import { ws } from "./ws.ts"
 import { makeStorage } from "@shared/local-storage"
 import { eventBus } from "../services/eventBus.ts"
 import {
   UserAuthenticatedOnAppStart,
+  UserAuthenticationFailed,
   UserSignedIn,
   UserSignedOut,
   UserSignedUp,
@@ -55,6 +65,50 @@ export const auth = {
     const u = user.value
     // setTimeout - give app some time to init before emitting event, otherwise it may not be handled (other services may not be listening yet)
     if (u) setTimeout(() => eventBus.emit(new UserAuthenticatedOnAppStart(u)))
+
+    eventBus.on(UserAuthenticationFailed, () => user.value = null)
+
+    ws.onMessage((message) => {
+      if (message.e !== "user") return
+      if (!message.p || !Array.isArray(message.p) || message.p.length === 0) {
+        console.error("User data missing in WS message", message)
+        return
+      }
+      if (message.t === WebSocketMessageType.LIST) {
+        const parseResult = validate(userSchema, message.p[0])
+        if (parseResult.error) {
+          console.error("Failed to parse user data from WS", parseResult.error)
+          return
+        }
+        user.value = parseResult.data
+        console.log("User data received from WS", user.value)
+        // globalThis.location.reload()
+      } else if (message.t === WebSocketMessageType.UPDATED) {
+        const parseResult = validate(userSchema, message.p[0])
+        if (parseResult.error) {
+          console.error("Failed to parse user data from WS", parseResult.error)
+          return
+        }
+        user.value = parseResult.data
+        console.log("User data updated from WS", user.value)
+      }
+    })
+    // eventBus.on(WSConnected, () =>
+    //   ws.request({
+    //     message: {
+    //       e: "user",
+    //       t: WebSocketMessageType.GET,
+    //       p: [],
+    //     },
+    //   }, (response) => {
+    //     console.log("User data received from WS", response)
+    //     const parseResult = validate(userSchema, response.message.p[0])
+    //     if (parseResult.error) {
+    //       console.error("Failed to parse user data from WS", parseResult.error)
+    //       return
+    //     }
+    //     user.value = parseResult.data
+    //   }))
   },
   setUser: (newUser: null | User): void => {
     user.value = newUser
@@ -239,31 +293,35 @@ export const auth = {
   },
   passwordChange: async (password: string, newPassword: string) => {
     ops.passwordChange.value = op(true)
-    try {
-      const response = await fetch("/api/auth/password/change", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password, newPassword }),
-      })
-      if (!response.ok) {
-        ops.passwordChange.value = op<void>(false, null, await response.json())
-        toast.error({
-          body:
-            "Change password failed. Is your password correct? Is new password longer than 8 symbols?",
-        })
+    return new Promise<void>((resolve, reject) => {
+      if (!user.value) {
+        toast.error({ body: "You need to be signed in to change your password" })
+        ops.passwordChange.value = op<void>(false, null, "Not signed in")
+        reject("Not signed in")
         return
       }
-      ops.passwordChange.value = op(false)
-      toast.success({ body: "Password changed successfully" })
-    } catch (error) {
-      ops.passwordChange.value = op<void>(
-        false,
-        null,
-        error instanceof Error ? error.message : String(error),
-      )
-    }
+      ws.request({
+        message: {
+          e: "user.password",
+          t: WebSocketMessageType.UPDATE,
+          p: [{ password }],
+        },
+        callback: (response) => {
+          if (response.error) {
+            ops.passwordChange.value = op<void>(false, null, response.error)
+            toast.error({
+              body:
+                "Change password failed. Is your password correct? Is new password longer than 8 symbols?",
+            })
+            reject(response.error)
+            return
+          }
+          ops.passwordChange.value = op(false)
+          toast.success({ body: "Password changed successfully" })
+          resolve()
+        },
+      })
+    })
   },
   signOut: async () => {
     ops.signOut.value = op(true)
@@ -315,31 +373,28 @@ export const auth = {
   //   }
   // },
   update: async (data: UserUpdate) => {
-    ops.update.value = op(true)
     try {
-      const response = await fetch(`/api/auth/me`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      ops.update.value = op(true)
+      return new Promise<{ error: string | null; result: User | null }>((resolve) => {
+        if (!user.value) {
+          toast.error({ body: "You need to be signed in to update your profile" })
+          return { error: "You need to be signed in to update your profile", result: null }
+        }
+        ws.request({
+          message: {
+            e: "user",
+            t: WebSocketMessageType.UPDATE,
+            p: [{ ...data, id: user.value.id }],
+          },
+          callback: (response) => {
+            console.log("User update response", response)
+            toast.success({ body: "Profile updated" })
+            ops.update.value = op(false, user.value)
+            user.value = { ...user.value, ...data } as User
+            resolve({ error: null, result: user.value })
+          },
+        })
       })
-      if (!response.ok) {
-        ops.update.value = op<User>(false, null, "Failed to update user")
-        toast.error({ body: "Failed to update user" })
-        return { error: "Failed to update user", result: null }
-      }
-      const responseJson = await response.json()
-      const parseResult = validate(userSchema, responseJson)
-      if (parseResult.error) {
-        ops.update.value = op<User>(false, null, parseResult.error)
-        toast.error({ body: "Failed to update user" })
-        return { error: parseResult.error, result: null }
-      }
-      ops.update.value = op(false, parseResult.data)
-      user.value = parseResult.data
-      toast.success({ body: "Profile updated" })
-      return { error: null, result: parseResult.data }
     } catch (error) {
       ops.update.value = op<User>(
         false,

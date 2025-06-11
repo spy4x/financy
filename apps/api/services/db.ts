@@ -1,7 +1,17 @@
 import {
+  Account,
+  AccountBase,
+  Category,
+  CategoryBase,
+  Group,
+  GroupBase,
+  GroupMembership,
+  GroupMembershipBase,
   SYNC_MODELS,
   SyncModel,
   SyncModelName,
+  Tag,
+  TagBase,
   Transaction,
   TransactionBase,
   User,
@@ -29,13 +39,13 @@ export class DbService extends DbServiceBase {
         ORDER BY u.created_at DESC
       `
     },
-    findChanged: async (updatedAtGt: Date): Promise<(User)[]> => {
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<(User)[]> => {
       return sql<(User)[]>`
         SELECT u.*, uk.identification as username
         FROM users u
         LEFT JOIN user_keys uk
           ON u.id = uk.user_id AND uk.kind = 0
-        WHERE u.updated_at > ${updatedAtGt}
+        WHERE u.updated_at > ${updatedAtGt} AND u.id = ${userId}
         ORDER BY u.created_at DESC
       `
     },
@@ -256,6 +266,136 @@ export class DbService extends DbServiceBase {
     },
   }
 
+  group = {
+    ...this.buildMethods<Group, GroupBase, Partial<GroupBase>>(
+      `groups`,
+      publicAPICache.group,
+    ),
+    findMany: async (userId: number): Promise<Group[]> => {
+      return sql<Group[]>`
+        SELECT g.*
+        FROM groups g
+        JOIN group_memberships gm ON g.id = gm.group_id
+        WHERE gm.user_id = ${userId}
+        ORDER BY g.created_at DESC
+      `
+    },
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<Group[]> => {
+      return sql<Group[]>`
+        SELECT g.*
+        FROM groups g
+        JOIN group_memberships gm ON g.id = gm.group_id
+        WHERE gm.user_id = ${userId}
+        AND g.updated_at > ${updatedAtGt}
+        ORDER BY g.created_at DESC
+      `
+    },
+  }
+
+  groupMembership = {
+    ...this.buildMethods<GroupMembership, GroupMembershipBase, Partial<GroupMembershipBase>>(
+      `groupMemberships`,
+      publicAPICache.groupMembership,
+    ),
+    findMany: async (userId: number): Promise<GroupMembership[]> => {
+      return sql<GroupMembership[]>`
+        SELECT gm.*
+        FROM group_memberships gm
+        WHERE gm.user_id = ${userId}
+        ORDER BY gm.created_at DESC
+      `
+    },
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<GroupMembership[]> => {
+      return sql<GroupMembership[]>`
+        SELECT gm.*
+        FROM group_memberships gm
+        WHERE gm.user_id = ${userId}
+        AND gm.updated_at > ${updatedAtGt}
+        ORDER BY gm.created_at DESC
+      `
+    },
+  }
+
+  account = {
+    ...this.buildMethods<Account, AccountBase, Partial<AccountBase>>(
+      `accounts`,
+      publicAPICache.account,
+    ),
+    findMany: async (userId: number): Promise<Account[]> => {
+      return sql<Account[]>`
+        SELECT a.*
+        FROM accounts a
+        JOIN groups g ON a.group_id = g.id
+        JOIN group_memberships gm ON g.id = gm.group_id
+        WHERE gm.user_id = ${userId}
+        ORDER BY a.created_at DESC
+      `
+    },
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<Account[]> => {
+      return sql<Account[]>`
+        SELECT a.*
+        FROM accounts a
+        JOIN groups g ON a.group_id = g.id
+        JOIN group_memberships gm ON g.id = gm.group_id
+        WHERE gm.user_id = ${userId}
+        AND a.updated_at > ${updatedAtGt}
+        ORDER BY a.created_at DESC
+      `
+    },
+  }
+
+  category = {
+    ...this.buildMethods<Category, CategoryBase, Partial<CategoryBase>>(
+      `categories`,
+      publicAPICache.category,
+    ),
+    findMany: async (userId: number): Promise<Category[]> => {
+      return sql<Category[]>`
+        SELECT c.*
+        FROM categories c
+        JOIN groups g ON c.group_id = g.id
+        JOIN group_memberships gm ON g.id = gm.group_id
+        WHERE gm.user_id = ${userId}
+        ORDER BY c.created_at DESC
+      `
+    },
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<Category[]> => {
+      return sql<Category[]>`
+        SELECT c.*
+        FROM categories c
+        JOIN groups g ON c.group_id = g.id
+        JOIN group_memberships gm ON g.id = gm.group_id
+        WHERE gm.user_id = ${userId}
+        AND c.updated_at > ${updatedAtGt}
+        ORDER BY c.created_at DESC
+      `
+    },
+  }
+
+  tag = {
+    ...this.buildMethods<Tag, TagBase, Partial<TagBase>>(`tags`, publicAPICache.tag),
+    findMany: async (userId: number): Promise<Tag[]> => {
+      // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
+      // -- WHERE t.user_id = ${userId} -- TODO: create tags.group_id
+      return sql<Tag[]>`
+        SELECT t.*
+        FROM tags t
+        ORDER BY t.created_at DESC
+      `
+    },
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<Tag[]> => {
+      // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
+      // -- AND t.user_id = ${userId} -- TODO: create tags.group_id
+      return sql<Tag[]>`
+        SELECT t.*
+        FROM tags t
+        WHERE 1=1 
+        AND t.updated_at > ${updatedAtGt}
+        ORDER BY t.created_at DESC
+      `
+    },
+  }
+
   transaction = {
     ...this.buildMethods<Transaction, TransactionBase, Partial<SyncModel>>(
       `transactions`,
@@ -293,6 +433,7 @@ export class DbService extends DbServiceBase {
     for (let i = 0; i < SYNC_MODELS.length; i += 1) {
       const model = SYNC_MODELS[i]
       let data = []
+      console.log(`🔄 Syncing model: ${model} for userId: ${userId}`)
       if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
         data = await db[model].findChanged(lastSyncAtDate, userId)
       } else {

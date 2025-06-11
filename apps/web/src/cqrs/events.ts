@@ -14,3 +14,8 @@ export class UserSignedUp implements Event {
 }
 
 export class UserSignedOut implements Event {}
+
+export class UserAuthenticationFailed implements Event {
+}
+
+export class WSConnected implements Event {}

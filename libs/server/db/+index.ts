@@ -59,6 +59,10 @@ export class DbServiceBase {
       if (obj[key as keyof Partial<T>] !== undefined) {
         acc[key as keyof Partial<T>] = obj[key as keyof Partial<T>]
       }
+      // remove "updatedAt" field if it exists
+      if (key === "updatedAt") {
+        delete acc[key as keyof Partial<T>]
+      }
       return acc
     }, {})
   }

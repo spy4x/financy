@@ -12,9 +12,11 @@ import { sleep } from "@shared/helpers/async.ts"
 import { eventBus } from "../services/eventBus.ts"
 import {
   UserAuthenticatedOnAppStart,
+  UserAuthenticationFailed,
   UserSignedIn,
   UserSignedOut,
   UserSignedUp,
+  WSConnected,
 } from "../cqrs/events.ts"
 
 const RETRY_INTERVAL = 1500 + Math.random() * 2000 // Retry interval in milliseconds
@@ -86,7 +88,17 @@ export const ws = {
 
     socket.value = new WebSocket(address)
 
-    socket.value.onclose = () => {
+    socket.value.onclose = (event) => {
+      const wasNeverConnected = !connectedAt.value
+      const abnormalClosure = event && event.code === 1006
+      // If never connected and abnormal closure, likely authentication failure
+      if (wasNeverConnected && abnormalClosure) {
+        console.warn("WebSocket closed due to authentication failure (401 or session expired)")
+        status.value = WSStatus.DISCONNECTED
+        eventBus.emit(new UserAuthenticationFailed())
+        // Do not attempt to reconnect
+        return
+      }
       console.log(
         `Disconnected from server. ${
           connectedAt.value
@@ -100,8 +112,12 @@ export const ws = {
     }
 
     socket.value.onerror = (error) => {
+      // Let onclose handle abnormal closure/auth errors
       console.error("WebSocket error:", error)
-      ws.disconnect(true)
+      // Only disconnect and reconnect if not in auth error case
+      if (status.value !== WSStatus.DISCONNECTED) {
+        ws.disconnect(true)
+      }
     }
 
     socket.value.onopen = () => {
@@ -116,6 +132,7 @@ export const ws = {
       // Optional: Implement ping for keep-alive - Ping every X seconds and expect a pong within Y seconds, otherwise close the connection
       ws.setHeartBeat()
       ws.sync()
+      eventBus.emit(new WSConnected())
     }
 
     socket.value.onmessage = (event) => {

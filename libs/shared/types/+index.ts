@@ -216,6 +216,72 @@ export const userPushTokenSchema = BaseModelSchema.and(userPushTokenSchemaBase)
 export type UserPushToken = typeof userPushTokenSchema.infer
 // #endregion Auth
 
+// #region Group
+export const groupBaseSchema = type({
+  name: `string <= ${NAME_MAX_LENGTH} = ''`,
+  defaultCurrency: "string == 3 = 'USD'",
+})
+export type GroupBase = typeof groupBaseSchema.infer
+export const groupSchema = BaseModelSchema.and(groupBaseSchema)
+export type Group = typeof groupSchema.infer
+export const groupUpdateSchema = groupBaseSchema.pick("name", "defaultCurrency")
+export type GroupUpdate = typeof groupUpdateSchema.infer
+// #endregion Group
+
+// #region Group Membership
+export const groupMembershipBaseSchema = type({
+  userId: "number > 0",
+  groupId: "number > 0",
+  role: type.enumerated(...userRoleValues).default(UserRole.VIEWER),
+})
+export type GroupMembershipBase = typeof groupMembershipBaseSchema.infer
+export const groupMembershipSchema = BaseModelSchema.and(
+  groupMembershipBaseSchema,
+)
+export type GroupMembership = typeof groupMembershipSchema.infer
+export const groupMembershipUpdateSchema = groupMembershipBaseSchema.pick(
+  "role",
+)
+export type GroupMembershipUpdate = typeof groupMembershipUpdateSchema.infer
+// #endregion Group Membership
+
+// #region Account
+export const accountBaseSchema = type({
+  name: `string <= ${NAME_MAX_LENGTH} = ''`,
+  groupId: "number > 0",
+  currency: "string == 3 = 'USD'",
+  balance: "number = 0",
+})
+export type AccountBase = typeof accountBaseSchema.infer
+export const accountSchema = BaseModelSchema.and(accountBaseSchema)
+export type Account = typeof accountSchema.infer
+export const accountUpdateSchema = accountBaseSchema.pick("name", "currency")
+export type AccountUpdate = typeof accountUpdateSchema.infer
+// #endregion Account
+
+// #region Category
+export const categoryBaseSchema = type({
+  name: `string <= ${NAME_MAX_LENGTH} = ''`,
+  groupId: "number > 0",
+})
+export type CategoryBase = typeof categoryBaseSchema.infer
+export const categorySchema = BaseModelSchema.and(categoryBaseSchema)
+export type Category = typeof categorySchema.infer
+export const categoryUpdateSchema = categoryBaseSchema.pick("name")
+export type CategoryUpdate = typeof categoryUpdateSchema.infer
+// #endregion Category
+
+// #region Tag
+export const tagBaseSchema = type({
+  name: `string <= ${NAME_MAX_LENGTH} = ''`,
+})
+export type TagBase = typeof tagBaseSchema.infer
+export const tagSchema = BaseModelSchema.and(tagBaseSchema)
+export type Tag = typeof tagSchema.infer
+export const tagUpdateSchema = tagBaseSchema.pick("name")
+export type TagUpdate = typeof tagUpdateSchema.infer
+// #endregion Tag
+
 // #region Transaction
 export enum TransactionType {
   DEBIT = 1,
@@ -247,12 +313,32 @@ export type SyncModel = User
 
 export enum SyncModelName {
   user = "user",
+  group = "group",
+  groupMembership = "groupMembership",
+  account = "account",
+  category = "category",
   transaction = "transaction",
+  tag = "tag",
+  // transactionToTag = "transactionToTag",
+  // groupToTag = "groupToTag",
+  // userKey = "userKey",
+  // userSession = "userSession",
+  // userPushToken = "userPushToken",
 }
 
 export const SYNC_MODELS = [
   SyncModelName.user,
+  SyncModelName.group,
+  SyncModelName.groupMembership,
+  SyncModelName.account,
+  SyncModelName.category,
+  SyncModelName.tag,
   SyncModelName.transaction,
+  // SyncModelName.transactionToTag,
+  // SyncModelName.groupToTag,
+  // SyncModelName.userKey,
+  // SyncModelName.userSession,
+  // SyncModelName.userPushToken,
 ] as const
 
 export enum WSStatus {
@@ -268,8 +354,11 @@ export enum WebSocketMessageType {
   LIST = "list",
   SYNC_START = "start",
   SYNC_FINISHED = "finished",
+  CREATE = "create",
   CREATED = "created",
+  UPDATE = "update",
   UPDATED = "updated",
+  DELETE = "delete",
   DELETED = "deleted",
 }
 export const webSocketMessageSchema = type({

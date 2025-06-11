@@ -1,5 +1,16 @@
 import { KeyValueService } from "@server/kv"
-import { Transaction, User, UserKey, UserSession, ValidationSchema } from "@shared/types"
+import {
+  Account,
+  Category,
+  Group,
+  GroupMembership,
+  Tag,
+  Transaction,
+  User,
+  UserKey,
+  UserSession,
+  ValidationSchema,
+} from "@shared/types"
 import {
   ONE_DAY_IN_SECONDS,
   ONE_HOUR_IN_SECONDS,
@@ -32,6 +43,12 @@ export class PublicAPICache {
   user = buildMethods<User>(`user`)
   userKey = buildMethods<UserKey>(`userKey`)
   userSession = buildMethods<UserSession>(`userSession`)
+  group = buildMethods<Group>(`group`)
+  groupMembership = buildMethods<GroupMembership>(`groupMembership`)
+  account = buildMethods<Account>(`account`)
+  category = buildMethods<Category>(`category`)
+  tag = buildMethods<Tag>(`tag`)
+
   transaction = buildMethods<Transaction>(`transaction`)
 
   isSessionTokenExpired = {
