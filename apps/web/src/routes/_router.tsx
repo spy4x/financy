@@ -3,7 +3,8 @@ import { FunctionalComponent } from "preact"
 import { Profile } from "../routes/profile/page.tsx"
 import { Error404 } from "../routes/_404.tsx"
 import { UIGuide } from "../routes/ui-guide/+page.tsx"
-import { CategoriesPage } from "./categories/+page.tsx"
+import { CategoryList } from "./categories/list.tsx"
+import { CategoryEditor } from "./categories/editor.tsx"
 
 type Route = {
   title: string
@@ -23,7 +24,19 @@ export const routes = {
   categories: {
     title: "Categories",
     href: "/categories",
-    component: CategoriesPage,
+    component: CategoryList,
+    children: {
+      create: {
+        title: "Categories - Create",
+        href: "/categories/create",
+        component: CategoryEditor,
+      },
+      edit: {
+        title: "Categories - Edit",
+        href: "/categories/:id",
+        component: CategoryEditor,
+      },
+    },
   },
   profile: {
     title: "Profile",

@@ -1,39 +1,107 @@
 import { category } from "@web/state/category.ts"
-import { IconLoading, IconPencilSquare, IconTrashBin } from "@client/icons"
+import { useSignal } from "@preact/signals"
+import {
+  IconEllipsisVertical,
+  IconPencilSquare,
+  IconPlus,
+  IconSearch,
+  IconTrashBin,
+} from "@client/icons"
+import { Table } from "@web/components/ui/Table.tsx"
+import { Dropdown } from "@web/components/ui/Dropdown.tsx"
+import { Link } from "wouter-preact"
+import { routes } from "../_router.tsx"
+import { PageTitle } from "@web/components/ui/PageTitle.tsx"
+import type { Category } from "@shared/types"
 
 export function CategoryList() {
+  const search = useSignal("")
+
+  const filteredCategories = category.list.value.filter((cat) =>
+    cat.name.toLowerCase().includes(search.value.toLowerCase())
+  )
+
+  function handleDelete(cat: Category) {
+    if (confirm(`Are you sure you want to delete the category "${cat.name}"?`)) {
+      category.remove(cat.id)
+    }
+  }
+
   return (
-    <ul class="divide-y divide-gray-200">
-      {category.list.value.map((cat) => (
-        <li key={cat.id} class="flex items-center justify-between py-2">
-          <span>{cat.name}</span>
-          <div class="flex items-center space-x-2">
-            <button
-              title="Edit Category"
-              onClick={() =>
-                category.update(cat.id, prompt("Edit name", cat.name) || cat.name)}
-              disabled={category.ops.update.value.inProgress}
-              class="btn btn-warning btn-icon mr-2"
-              type="button"
-            >
-              {category.ops.update.value.inProgress ? <IconLoading /> : <IconPencilSquare />}
-              <span class="sr-only">Edit Category</span>
-            </button>
-            <button
-              title="Delete Category"
-              onClick={() =>
-                confirm(`Are you sure you want to remove category "${cat.name}"?`) &&
-                category.remove(cat.id)}
-              disabled={category.ops.delete.value.inProgress}
-              class="btn btn-primary-outline btn-icon btn-error"
-              type="button"
-            >
-              {category.ops.delete.value.inProgress ? <IconLoading /> : <IconTrashBin />}
-              <span class="sr-only">Delete Category</span>
-            </button>
+    <section class="page-layout">
+      <PageTitle>Categories</PageTitle>
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <div class="relative w-60">
+            <input
+              class="input w-full pr-10"
+              placeholder="Search categories"
+              value={search.value}
+              onInput={(e) => search.value = e.currentTarget.value}
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <IconSearch class="size-5 text-gray-600" />
+            </span>
           </div>
-        </li>
-      ))}
-    </ul>
+
+          <Link href={routes.categories.children!.create.href} class="btn btn-primary">
+            <IconPlus class="size-5 mr-2" />
+            Create
+          </Link>
+        </div>
+
+        {filteredCategories.length === 0
+          ? (
+            <div class="text-center py-8 text-gray-500">
+              {search.value
+                ? "No categories found matching your search."
+                : "No categories created yet."}
+            </div>
+          )
+          : (
+            <Table
+              headerSlot={
+                <>
+                  <th class="text-left">Name</th>
+                  <th class="text-right">Actions</th>
+                </>
+              }
+              bodySlots={filteredCategories.map((cat) => (
+                <>
+                  <td class="text-gray-900">{cat.name}</td>
+                  <td class="text-right">
+                    <Dropdown
+                      button={<IconEllipsisVertical class="size-5" />}
+                      buttonClass="btn-input-icon"
+                    >
+                      <div class="py-1" role="none">
+                        <Link
+                          href={routes.categories.children!.edit.href.replace(
+                            ":id",
+                            cat.id.toString(),
+                          )}
+                          class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <IconPencilSquare class="size-4 mr-2" />
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(cat)}
+                          type="button"
+                          class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                          disabled={category.ops.delete.value.inProgress}
+                        >
+                          <IconTrashBin class="size-4 mr-2" />
+                          Delete
+                        </button>
+                      </div>
+                    </Dropdown>
+                  </td>
+                </>
+              ))}
+            />
+          )}
+      </div>
+    </section>
   )
 }
