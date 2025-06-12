@@ -35,7 +35,7 @@ export function CategoryList() {
           <div class="relative w-60">
             <input
               class="input w-full pr-10"
-              placeholder="Search categories"
+              placeholder="Search"
               value={search.value}
               onInput={(e) => search.value = e.currentTarget.value}
             />
