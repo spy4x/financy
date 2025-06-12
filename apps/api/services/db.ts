@@ -32,7 +32,7 @@ export class DbService extends DbServiceBase {
     ...this.buildMethods<User, UserBase, Partial<UserBase>>(`users`, publicAPICache.user),
     findMany: async (): Promise<User[]> => {
       return sql<User[]>`
-        SELECT u.*, uk.identification as username 
+        SELECT u.*
         FROM users u
         LEFT JOIN user_keys uk
           ON u.id = uk.user_id AND uk.kind = 0
@@ -41,7 +41,7 @@ export class DbService extends DbServiceBase {
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<(User)[]> => {
       return sql<(User)[]>`
-        SELECT u.*, uk.identification as username
+        SELECT u.*
         FROM users u
         LEFT JOIN user_keys uk
           ON u.id = uk.user_id AND uk.kind = 0
