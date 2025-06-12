@@ -1,5 +1,7 @@
 import { configure } from "arktype/config"
-configure({ onUndeclaredKey: "delete" }) // delete all fields that are not in the schema
+// configure MUST be called before importing Arktype
+// This configures Arktype to throw an error when undeclared keys are encountered
+configure({ onUndeclaredKey: "reject", onDeepUndeclaredKey: "reject" }) // TODO: this is not respected for some reason, need to investigate
 import { Type, type } from "arktype" // The core arktype import must be AFTER the config has been set
 
 // #region Helpers
@@ -72,7 +74,6 @@ export type DateType = typeof dateSchema.infer
 export const DateNullableSchema = dateSchema.or("null").default(null)
 
 export const ImmutableBaseModelSchema = type({
-  //   "+": "delete", // delete all fields that are not in the schema
   id: "number",
   createdAt: dateSchema,
 })
@@ -267,7 +268,7 @@ export const categoryBaseSchema = type({
 export type CategoryBase = typeof categoryBaseSchema.infer
 export const categorySchema = BaseModelSchema.and(categoryBaseSchema)
 export type Category = typeof categorySchema.infer
-export const categoryUpdateSchema = categoryBaseSchema.pick("name")
+export const categoryUpdateSchema = categorySchema.pick("id", "name")
 export type CategoryUpdate = typeof categoryUpdateSchema.infer
 // #endregion Category
 
@@ -309,7 +310,17 @@ export type TransactionUpdate = typeof transactionUpdateSchema.infer
 
 // #region Sync
 // TODO: Actualize sync functionality
-export type SyncModel = User
+export type SyncModel =
+  | User
+  | Transaction
+  | Account
+  | Category
+  | Tag
+  | Group
+  | GroupMembership
+  | UserKey
+  | UserSession
+  | UserPushToken
 
 export enum SyncModelName {
   user = "user",
@@ -360,7 +371,9 @@ export enum WebSocketMessageType {
   UPDATED = "updated",
   DELETE = "delete",
   DELETED = "deleted",
+  ERROR_VALIDATION = "error_validation",
 }
+
 export const webSocketMessageSchema = type({
   /** Entity: "system" or one of database models, like "zone", "lampBox" or "zoneLampBox" */
   e: "string",

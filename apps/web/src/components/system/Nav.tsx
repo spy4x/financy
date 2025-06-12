@@ -37,6 +37,7 @@ type NavItem =
 const navItems: NavItem[] = [
   { name: routes.dashboard.title, href: routes.dashboard.href, Icon: IconHome },
   { name: routes.todos.title, href: routes.todos.href, Icon: IconCpuChip },
+  { name: routes.categories.title, href: routes.categories.href, Icon: IconCpuChip },
   ...(!isProd
     ? [{
       name: "Dev",

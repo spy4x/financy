@@ -49,6 +49,11 @@ export const routes = {
     href: "/404",
     component: Error404,
   },
+  categories: {
+    title: "Categories",
+    href: "/categories",
+    component: (await import("./categories/+page.tsx")).default,
+  },
 } as const satisfies Routes
 
 // Helper to flatten routes into a list, with children first (more specific first)

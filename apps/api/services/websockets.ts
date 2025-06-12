@@ -1,11 +1,13 @@
 import { WSContext } from "hono/ws"
-
+import type { SyncModel, WebSocketMessage } from "@shared/types"
 import {
-  SyncModel,
+  categoryBaseSchema,
+  categoryUpdateSchema,
   SyncModelName,
-  Transaction,
+  transactionBaseSchema,
+  transactionSchema,
+  userSchema,
   validate,
-  WebSocketMessage,
   webSocketMessageSchema,
   WebSocketMessageType,
 } from "@shared/types"
@@ -104,6 +106,11 @@ export const websockets = {
     }
 
     const acknoledgmentId = parseResult.data.id
+    const userId = userBySocket.get(ws)
+    if (!userId) {
+      console.error("No userId found for websocket, cannot process message")
+      return
+    }
 
     if (
       !(parseResult.data.e === "client" && (
@@ -135,28 +142,306 @@ export const websockets = {
     }
 
     if (parseResult.data.e === "transaction") {
-      if (parseResult.data.t === WebSocketMessageType.CREATED) {
-        db.transaction.createOne({ data: parseResult.data.p?.[0] as Transaction })
-      } else if (parseResult.data.t === WebSocketMessageType.UPDATED) {
-        db.transaction.updateOne({
-          id: (parseResult.data.p?.[0] as Transaction).id as number,
-          data: parseResult.data.p?.[0] as Transaction,
+      const acknowledgmentId = parseResult.data.id
+      const payload = parseResult.data.p?.[0]
+
+      if (parseResult.data.t === WebSocketMessageType.CREATE) {
+        // Validate with transactionBaseSchema for CREATE
+        const validation = validate(transactionBaseSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid transaction data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const tx = validation.data
+        // Verify legitimacy of the transaction
+        if (await db.transaction.verifyLegitimacy(tx, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Transaction is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const created = await db.transaction.createOne({ data: tx })
+        websockets.onModelChange(
+          SyncModelName.transaction,
+          [created],
+          WebSocketMessageType.CREATED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
+        // Validate with transactionSchema for UPDATE/DELETE
+        const validation = validate(transactionSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid transaction data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const tx = validation.data
+        // Verify legitimacy of the transaction
+        if (await db.transaction.verifyLegitimacy(tx, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Transaction is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const updated = await db.transaction.updateOne({
+          id: tx.id,
+          data: tx,
         })
-      } else if (parseResult.data.t === WebSocketMessageType.DELETED) {
-        db.transaction.deleteOne({ id: (parseResult.data.p?.[0] as Transaction).id as number })
+        websockets.onModelChange(
+          SyncModelName.transaction,
+          [updated],
+          WebSocketMessageType.UPDATED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid payload: missing or invalid 'id'"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        if (await db.transaction.verifyLegitimacyById(id, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Transaction is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const deleted = await db.transaction.deleteOne({ id })
+        websockets.onModelChange(
+          SyncModelName.transaction,
+          [deleted],
+          WebSocketMessageType.DELETED,
+          acknowledgmentId,
+        )
+      } else {
+        websockets.send({
+          ws,
+          message: {
+            e: "transaction",
+            t: WebSocketMessageType.ERROR_VALIDATION,
+            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
+            id: acknowledgmentId,
+          },
+        })
+        return
       }
     }
 
-    if (parseResult.data.e === "user") {
-      if (parseResult.data.t === WebSocketMessageType.UPDATE) {
-        const userId = userBySocket.get(ws)
-        if (!userId) {
-          console.error("No userId found for websocket, cannot update user")
+    // category
+    if (parseResult.data.e === "category") {
+      const acknowledgmentId = parseResult.data.id
+      const payload = parseResult.data.p?.[0]
+
+      if (parseResult.data.t === WebSocketMessageType.CREATE) {
+        const validation = validate(categoryBaseSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid category data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
           return
         }
+        const category = validation.data
+        // Verify legitimacy of the category
+        if (await db.category.verifyLegitimacy(category, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Category is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const created = await db.category.createOne({ data: category })
+        websockets.onModelChange(
+          SyncModelName.category,
+          [created],
+          WebSocketMessageType.CREATED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
+        const validation = validate(categoryUpdateSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid category data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const update = validation.data
+        const existingCategory = await db.category.findOne({ id: update.id })
+        if (!existingCategory) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Category not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        // Verify legitimacy of the category
+        if (
+          await db.category.verifyLegitimacy({
+            ...existingCategory,
+            ...update,
+          }, userId) === false
+        ) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Category is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const updated = await db.category.updateOne({
+          id: update.id,
+          data: update,
+        })
+        websockets.onModelChange(
+          SyncModelName.category,
+          [updated],
+          WebSocketMessageType.UPDATED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
+        // For DELETE, validate the payload to get the category object
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid payload: missing or invalid 'id'"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        if (await db.category.verifyLegitimacyById(id, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Category is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const deleted = await db.category.deleteOne({ id })
+        websockets.onModelChange(
+          SyncModelName.category,
+          [deleted],
+          WebSocketMessageType.DELETED,
+          acknowledgmentId,
+        )
+      } else {
+        websockets.send({
+          ws,
+          message: {
+            e: "category",
+            t: WebSocketMessageType.ERROR_VALIDATION,
+            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
+            id: acknowledgmentId,
+          },
+        })
+        return
+      }
+    }
+
+    // user
+    if (parseResult.data.e === "user") {
+      if (parseResult.data.t === WebSocketMessageType.UPDATE) {
+        const validation = validate(userSchema, parseResult.data.p?.[0])
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "user",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid user data", validation.error],
+              id: acknoledgmentId,
+            },
+          })
+          return
+        }
+        const userData = validation.data
         const updatedUser = await db.user.updateOne({
           id: userId,
-          data: parseResult.data.p?.[0] as SyncModel,
+          data: userData,
         })
         websockets.onModelChange(
           SyncModelName.user,

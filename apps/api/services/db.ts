@@ -342,6 +342,21 @@ export class DbService extends DbServiceBase {
         ORDER BY a.created_at DESC
       `
     },
+    verifyLegitimacy: async (
+      account: AccountBase,
+      userId: number,
+    ): Promise<boolean> => {
+      // check groupId
+      const groupMemberships = await this.groupMembership.findMany(userId)
+      const groupIds = groupMemberships.map((gm) => gm.groupId)
+      if (!groupIds.includes(account.groupId)) {
+        console.warn(
+          `Account groupId "${account.groupId}" does not belong to userId "${userId}"`,
+        )
+        return false
+      }
+      return true
+    },
   }
 
   category = {
@@ -369,6 +384,32 @@ export class DbService extends DbServiceBase {
         AND c.updated_at > ${updatedAtGt}
         ORDER BY c.created_at DESC
       `
+    },
+    verifyLegitimacyById: async (
+      categoryId: number,
+      userId: number,
+    ): Promise<boolean> => {
+      const category = await this.category.findOne({ id: categoryId })
+      if (!category) {
+        console.warn(`Category with id "${categoryId}" not found`)
+        return false
+      }
+      return this.category.verifyLegitimacy(category, userId)
+    },
+    verifyLegitimacy: async (
+      category: CategoryBase,
+      userId: number,
+    ): Promise<boolean> => {
+      // check groupId
+      const groupMemberships = await this.groupMembership.findMany(userId)
+      const groupIds = groupMemberships.map((gm) => gm.groupId)
+      if (!groupIds.includes(category.groupId)) {
+        console.warn(
+          `Category groupId "${category.groupId}" does not belong to userId "${userId}"`,
+        )
+        return false
+      }
+      return true
     },
   }
 
@@ -421,6 +462,53 @@ export class DbService extends DbServiceBase {
         AND t.updated_at > ${updatedAtGt}
         ORDER BY t.created_at DESC
       `
+    },
+    verifyLegitimacyById: async (
+      transactionId: number,
+      userId: number,
+    ): Promise<boolean> => {
+      // check if transaction exists and belongs to user's groups
+      const transaction = await this.transaction.findOne({ id: transactionId })
+      if (!transaction) {
+        console.warn(`Transaction with id "${transactionId}" not found`)
+        return false
+      }
+      return this.transaction.verifyLegitimacy(transaction, userId)
+    },
+    verifyLegitimacy: async (
+      transaction: TransactionBase,
+      userId: number,
+    ): Promise<boolean> => {
+      // check groupId
+      const groupMemberships = await this.groupMembership.findMany(userId)
+      const groupIds = groupMemberships.map((gm) => gm.groupId)
+      if (!groupIds.includes(transaction.groupId)) {
+        console.warn(
+          `Transaction groupId "${transaction.groupId}" does not belong to userId "${userId}"`,
+        )
+        return false
+      }
+      // check accountId
+      const accounts = await this.account.findMany(userId)
+      const accountIds = accounts.map((a) => a.id)
+      if (!accountIds.includes(transaction.accountId)) {
+        console.warn(
+          `Transaction accountId "${transaction.accountId}" does not belong to userId "${userId}"`,
+        )
+        return false
+      }
+      // check categoryId
+      if (transaction.categoryId) {
+        const categories = await this.category.findMany(userId)
+        const categoryIds = categories.map((c) => c.id)
+        if (!categoryIds.includes(transaction.categoryId)) {
+          console.warn(
+            `Transaction categoryId "${transaction.categoryId}" does not belong to userId "${userId}"`,
+          )
+          return false
+        }
+      }
+      return true
     },
   }
 

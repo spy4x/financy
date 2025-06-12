@@ -153,10 +153,7 @@ export const ws = {
         message.e === "server" &&
         message.t === WebSocketMessageType.PING
       ) {
-        socket.value && ws.send({
-          ws: socket.value,
-          message: { e: "client", t: WebSocketMessageType.PONG },
-        })
+        ws.request({ message: { e: "client", t: WebSocketMessageType.PONG } })
       }
       // handle acknowledgement
       if (message.id) {
@@ -191,10 +188,7 @@ export const ws = {
     heartbeatTimer.value = setInterval(
       () => {
         if (!socket.value || socket.value.readyState !== WebSocket.OPEN) return
-        ws.send({
-          ws: socket.value,
-          message: { e: "client", t: WebSocketMessageType.PING },
-        })
+        ws.request({ message: { e: "client", t: WebSocketMessageType.PING } })
         // Set up a pong timeout
         pongCheckTimer.value = setTimeout(() => {
           if (socket.value) {
@@ -237,12 +231,6 @@ export const ws = {
     reconnectIntervalTimer.value = setInterval(ws.connect, RETRY_INTERVAL)
   },
 
-  send: (params: { ws: WebSocket; message: WebSocketMessage }): void => {
-    if (params.ws.readyState === WebSocket.OPEN) {
-      params.ws.send(JSON.stringify(params.message))
-    }
-  },
-
   sync: (): void => {
     if (!socket.value) {
       console.error("Socket is not connected")
@@ -252,10 +240,7 @@ export const ws = {
       return
     }
     syncOp.value = op(true)
-    ws.send({
-      ws: socket.value,
-      message: { e: "sync", t: WebSocketMessageType.SYNC_START, p: [syncedAt.value] },
-    })
+    ws.request({ message: { e: "sync", t: WebSocketMessageType.SYNC_START, p: [syncedAt.value] } })
   },
 
   request: (params: {
@@ -263,7 +248,7 @@ export const ws = {
     params?: AcknowledgementParams
     callback?: AcknowledgementCallback
   }): string => {
-    if (!socket.value) {
+    if (!socket.value || socket.value.readyState !== WebSocket.OPEN) {
       console.error("Socket is not connected")
       return ""
     }
@@ -278,7 +263,7 @@ export const ws = {
         callback: params.callback,
       })
     }
-    ws.send({ ws: socket.value, message: { ...params.message, id } })
+    socket.value.send(JSON.stringify({ ...params.message, id }))
     return id
   },
 
