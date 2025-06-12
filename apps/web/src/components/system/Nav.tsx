@@ -1,6 +1,6 @@
 import { Signal, signal, useSignal } from "@preact/signals"
 import { FunctionalComponent } from "preact"
-import { IconChevronDown, IconCpuChip, IconHome, IconUser } from "@client/icons"
+import { IconChevronDown, IconCpuChip, IconFolder, IconHome, IconUser } from "@client/icons"
 import { WSStatus } from "@shared/types"
 import { Badge, BadgeColor } from "@web/components/ui/Badge.tsx"
 import { auth } from "@web/state/auth.ts"
@@ -36,8 +36,7 @@ type NavItem =
 
 const navItems: NavItem[] = [
   { name: routes.dashboard.title, href: routes.dashboard.href, Icon: IconHome },
-  { name: routes.todos.title, href: routes.todos.href, Icon: IconCpuChip },
-  { name: routes.categories.title, href: routes.categories.href, Icon: IconCpuChip },
+  { name: routes.categories.title, href: routes.categories.href, Icon: IconFolder },
   ...(!isProd
     ? [{
       name: "Dev",

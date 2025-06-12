@@ -3,6 +3,7 @@ import { FunctionalComponent } from "preact"
 import { Profile } from "../routes/profile/page.tsx"
 import { Error404 } from "../routes/_404.tsx"
 import { UIGuide } from "../routes/ui-guide/+page.tsx"
+import { CategoriesPage } from "./categories/+page.tsx"
 
 type Route = {
   title: string
@@ -13,31 +14,21 @@ type Route = {
 
 export type Routes = Record<string, Route>
 
-import { TodoList } from "./todos/index.tsx"
-import { TodoEditor } from "./todos/[id].tsx"
-
 export const routes = {
   dashboard: {
     title: "Dashboard",
     href: "/",
     component: Error404, // Placeholder for the dashboard component
   },
+  categories: {
+    title: "Categories",
+    href: "/categories",
+    component: CategoriesPage,
+  },
   profile: {
     title: "Profile",
     href: "/profile",
     component: Profile,
-  },
-  todos: {
-    title: "Todos",
-    href: "/todos",
-    component: TodoList,
-    children: {
-      detail: {
-        title: "Todo Editor",
-        href: "/todos/:id",
-        component: TodoEditor,
-      },
-    },
   },
   uiGuide: {
     title: "UI Guide",
@@ -48,11 +39,6 @@ export const routes = {
     title: "404 - Not Found",
     href: "/404",
     component: Error404,
-  },
-  categories: {
-    title: "Categories",
-    href: "/categories",
-    component: (await import("./categories/+page.tsx")).default,
   },
 } as const satisfies Routes
 
