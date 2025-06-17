@@ -44,9 +44,13 @@ export function CategoryList() {
             </span>
           </div>
 
-          <Link href={routes.categories.children!.create.href} class="btn btn-primary">
-            <IconPlus class="size-5 mr-2" />
-            Create
+          <Link
+            title="Create Category"
+            href={routes.categories.children!.create.href}
+            class="btn btn-primary flex items-center gap-2"
+          >
+            <IconPlus class="size-5" />
+            <span class="hidden md:inline">Create</span>
           </Link>
         </div>
 

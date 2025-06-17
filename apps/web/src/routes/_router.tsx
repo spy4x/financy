@@ -5,6 +5,8 @@ import { Error404 } from "../routes/_404.tsx"
 import { UIGuide } from "../routes/ui-guide/+page.tsx"
 import { CategoryList } from "./categories/list.tsx"
 import { CategoryEditor } from "./categories/editor.tsx"
+import { GroupList } from "./groups/list.tsx"
+import { GroupEditor } from "./groups/editor.tsx"
 
 type Route = {
   title: string
@@ -20,6 +22,23 @@ export const routes = {
     title: "Dashboard",
     href: "/",
     component: Error404, // Placeholder for the dashboard component
+  },
+  groups: {
+    title: "Groups",
+    href: "/groups",
+    component: GroupList,
+    children: {
+      create: {
+        title: "Groups - Create",
+        href: "/groups/create",
+        component: GroupEditor,
+      },
+      edit: {
+        title: "Groups - Edit",
+        href: "/groups/:id",
+        component: GroupEditor,
+      },
+    },
   },
   categories: {
     title: "Categories",

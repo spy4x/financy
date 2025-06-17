@@ -294,7 +294,7 @@ export class DbService extends DbServiceBase {
 
   groupMembership = {
     ...this.buildMethods<GroupMembership, GroupMembershipBase, Partial<GroupMembershipBase>>(
-      `groupMemberships`,
+      `group_memberships`,
       publicAPICache.groupMembership,
     ),
     findMany: async (userId: number): Promise<GroupMembership[]> => {
@@ -313,6 +313,20 @@ export class DbService extends DbServiceBase {
         AND gm.updated_at > ${updatedAtGt}
         ORDER BY gm.created_at DESC
       `
+    },
+    findByUserAndGroup: async (
+      userId: number,
+      groupId: number,
+    ): Promise<GroupMembership | null> => {
+      const results = await sql<GroupMembership[]>`
+        SELECT gm.*
+        FROM group_memberships gm
+        WHERE gm.user_id = ${userId}
+        AND gm.group_id = ${groupId}
+        AND gm.deleted_at IS NULL
+        LIMIT 1
+      `
+      return results[0] || null
     },
   }
 

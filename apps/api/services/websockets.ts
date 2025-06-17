@@ -3,6 +3,8 @@ import type { SyncModel, WebSocketMessage } from "@shared/types"
 import {
   categoryBaseSchema,
   categoryUpdateSchema,
+  groupBaseSchema,
+  groupUpdateSchema,
   SyncModelName,
   transactionBaseSchema,
   transactionSchema,
@@ -413,6 +415,208 @@ export const websockets = {
           ws,
           message: {
             e: "category",
+            t: WebSocketMessageType.ERROR_VALIDATION,
+            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
+            id: acknowledgmentId,
+          },
+        })
+        return
+      }
+    }
+
+    // group
+    if (parseResult.data.e === "group") {
+      const acknowledgmentId = parseResult.data.id
+      const payload = parseResult.data.p?.[0]
+
+      if (parseResult.data.t === WebSocketMessageType.CREATE) {
+        const validation = validate(groupBaseSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid group data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const group = validation.data
+        // Create the group and its membership in a single transaction
+        try {
+          const { newGroup, newMembership } = await db.begin(async (tx) => {
+            // Create the group
+            const newGroup = await tx.group.createOne({ data: group })
+
+            // Create group membership for the creator as owner
+            const newMembership = await tx.groupMembership.createOne({
+              data: {
+                groupId: newGroup.id,
+                userId,
+                role: 3, // Owner role
+              },
+            })
+
+            return { newGroup, newMembership }
+          })
+
+          // Notify about the new group
+          websockets.onModelChange(
+            SyncModelName.group,
+            [newGroup],
+            WebSocketMessageType.CREATED,
+            acknowledgmentId,
+          )
+
+          // Notify about the new group membership
+          websockets.onModelChange(
+            SyncModelName.groupMembership,
+            [newMembership],
+            WebSocketMessageType.CREATED,
+            acknowledgmentId,
+          )
+        } catch (error) {
+          console.error("Failed to create group and membership:", error)
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Failed to create group and membership"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+      } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
+        const validation = validate(groupUpdateSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid group data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const update = validation.data
+
+        const existingGroup = await db.group.findOne({ id: update.id })
+        if (!existingGroup) {
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Group not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        // Check if user has admin/owner access to this group
+        const membership = await db.groupMembership.findByUserAndGroup(userId, update.id)
+        console.log(
+          `Group update permission check: userId=${userId}, groupId=${update.id}, membership=`,
+          membership,
+        )
+
+        if (!membership || membership.role < 2) { // Admin = 2, Owner = 3
+          console.warn(
+            `User ${userId} lacks permissions to update group ${update.id}. Membership role: ${
+              membership?.role || "none"
+            }`,
+          )
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Insufficient permissions to update group"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const updated = await db.group.updateOne({
+          id: update.id,
+          data: update,
+        })
+        websockets.onModelChange(
+          SyncModelName.group,
+          [updated],
+          WebSocketMessageType.UPDATED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
+        // For DELETE, validate the payload to get the group object
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid group ID"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const existingGroup = await db.group.findOne({ id })
+        if (!existingGroup) {
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Group not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        // Check if user has owner access to this group
+        const membership = await db.groupMembership.findByUserAndGroup(userId, id)
+        if (!membership || membership.role !== 3) { // Only Owner = 3 can delete
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Only group owners can delete groups"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const deleted = await db.group.deleteOne({ id })
+        websockets.onModelChange(
+          SyncModelName.group,
+          [deleted],
+          WebSocketMessageType.DELETED,
+          acknowledgmentId,
+        )
+      } else {
+        websockets.send({
+          ws,
+          message: {
+            e: "group",
             t: WebSocketMessageType.ERROR_VALIDATION,
             p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
             id: acknowledgmentId,

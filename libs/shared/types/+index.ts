@@ -8,6 +8,9 @@ import { Type, type } from "arktype" // The core arktype import must be AFTER th
 export { type }
 export type ValidationSchema = Type
 
+// #region Currency Types
+export type { Currency, CurrencyType } from "./currency.ts"
+
 /**
  * Validate a value against a schema.
  * @param schema The schema to validate against.
@@ -225,7 +228,7 @@ export const groupBaseSchema = type({
 export type GroupBase = typeof groupBaseSchema.infer
 export const groupSchema = BaseModelSchema.and(groupBaseSchema)
 export type Group = typeof groupSchema.infer
-export const groupUpdateSchema = groupBaseSchema.pick("name", "defaultCurrency")
+export const groupUpdateSchema = groupSchema.pick("id", "name", "defaultCurrency")
 export type GroupUpdate = typeof groupUpdateSchema.infer
 // #endregion Group
 

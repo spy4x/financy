@@ -2,7 +2,7 @@ INSERT INTO groups (id, name, default_currency)
 VALUES (1, 'Group 1', 'USD');
 
 INSERT INTO group_memberships (group_id, user_id, role)
-VALUES (1, 1, 1);
+VALUES (1, 1, 3); -- Owner role (3) for the group creator
 
 INSERT INTO categories (group_id, name)
 VALUES (1, 'Groceries'),

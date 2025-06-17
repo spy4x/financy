@@ -106,14 +106,14 @@ export function CategoryEditor() {
             <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div class="sm:col-span-4">
                 <label for="categoryName" class="label">
-                  Category Name
+                  Name:
                 </label>
                 <div class="mt-2">
                   <input
                     type="text"
                     id="categoryName"
                     class="input"
-                    placeholder="Enter category name"
+                    placeholder="Enter name"
                     value={name.value}
                     onBlur={(e) => name.value = e.currentTarget.value.trim()}
                     required
