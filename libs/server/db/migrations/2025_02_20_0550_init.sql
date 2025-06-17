@@ -15,12 +15,12 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
-    role SMALLINT DEFAULT 0 NOT NULL,
+    role INT2 DEFAULT 0 NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_login_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
-    mfa SMALLINT DEFAULT 1 NOT NULL,
+    mfa INT2 DEFAULT 1 NOT NULL,
     CONSTRAINT users_role_check CHECK ((role >= 0) AND (role <= 3)),
     CONSTRAINT users_check_mfa CHECK (mfa = ANY (ARRAY[1, 2, 3]))
 );
@@ -30,8 +30,8 @@ COMMENT ON COLUMN users.mfa IS '1=not_configured, 2=confuration_not_finished, 3=
 
 CREATE TABLE user_keys (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(id),
-    kind SMALLINT NOT NULL,
+    user_id INT4 NOT NULL REFERENCES users(id),
+    kind INT2 NOT NULL,
     identification VARCHAR(50) NOT NULL,
     secret VARCHAR(256),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -44,13 +44,13 @@ COMMENT ON COLUMN user_keys.kind IS '0=login_password';
 CREATE TABLE user_sessions (
     id SERIAL PRIMARY KEY,
     token VARCHAR(256) NOT NULL,
-    user_id INT NOT NULL REFERENCES users(id),
-    key_id INT NOT NULL REFERENCES user_keys(id),
+    user_id INT4 NOT NULL REFERENCES users(id),
+    key_id INT4 NOT NULL REFERENCES user_keys(id),
     expires_at TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    mfa SMALLINT DEFAULT 1 NOT NULL,
-    status SMALLINT DEFAULT 1 NOT NULL,
+    mfa INT2 DEFAULT 1 NOT NULL,
+    status INT2 DEFAULT 1 NOT NULL,
     CONSTRAINT user_sessions_check_mfa CHECK (mfa = ANY (ARRAY[1, 2, 3])),
     CONSTRAINT user_sessions_check_status CHECK (status = ANY (ARRAY[1, 2, 3]))
 );
@@ -60,7 +60,7 @@ COMMENT ON COLUMN user_sessions.status IS '1=active, 2=expired, 3=signed_out';
 
 CREATE TABLE user_push_tokens (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
+    user_id INT4 REFERENCES users(id),
     device_id VARCHAR(256) NOT NULL,
     endpoint VARCHAR(256) NOT NULL,
     auth VARCHAR(256) NOT NULL,
@@ -72,10 +72,10 @@ CREATE TABLE user_push_tokens (
 
 CREATE TABLE accounts (
     id SERIAL PRIMARY KEY,
-    group_id INT REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
+    group_id INT4 REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
     name VARCHAR(100) NOT NULL,
     currency VARCHAR(3) NOT NULL,
-    balance INTEGER NOT NULL DEFAULT 0,
+    balance INT4 NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     deleted_at TIMESTAMPTZ DEFAULT NULL
@@ -88,9 +88,9 @@ CREATE INDEX idx_accounts_sync_retrieval ON accounts (updated_at DESC);
 
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
-    group_id INT REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
+    group_id INT4 REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
     name VARCHAR(100) NOT NULL,
-    usage_count INT DEFAULT 0,
+    usage_count INT4 DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     deleted_at TIMESTAMPTZ DEFAULT NULL
@@ -100,14 +100,14 @@ CREATE INDEX idx_categories_by_group ON categories (group_id ASC);
 
 CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
-    group_id INT REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
-    account_id INT REFERENCES accounts(id) ON DELETE CASCADE NOT NULL,
+    group_id INT4 REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
+    account_id INT4 REFERENCES accounts(id) ON DELETE CASCADE NOT NULL,
     transaction_type INT2 NOT NULL,
-    amount INTEGER NOT NULL,
+    amount INT4 NOT NULL,
     original_currency VARCHAR(3),
-    amount_original INTEGER,
-    category_id INT REFERENCES categories(id),
-    created_by INT REFERENCES users(id) NOT NULL,
+    amount_original INT4,
+    category_id INT4 REFERENCES categories(id),
+    created_by INT4 REFERENCES users(id) NOT NULL,
     memo TEXT DEFAULT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -134,8 +134,8 @@ CREATE TABLE tags (
 );
 
 CREATE TABLE transactions_to_tags (
-    transaction_id INT REFERENCES transactions(id) ON DELETE CASCADE NOT NULL,
-    tag_id INT REFERENCES tags(id) ON DELETE CASCADE NOT NULL,
+    transaction_id INT4 REFERENCES transactions(id) ON DELETE CASCADE NOT NULL,
+    tag_id INT4 REFERENCES tags(id) ON DELETE CASCADE NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     deleted_at TIMESTAMPTZ DEFAULT NULL,
@@ -161,8 +161,8 @@ CREATE INDEX idx_exchange_rates_by_pair ON exchange_rates (pair);
 
 CREATE TABLE group_memberships (
     id SERIAL PRIMARY KEY,
-    group_id INT REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    group_id INT4 REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
+    user_id INT4 REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     role INT2 NOT NULL,
     added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),

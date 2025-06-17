@@ -2,5 +2,21 @@
   "deno.enable": true,
   "deno.lint": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
-  "tailwindCSS.experimental.configFile": "./apps/web/tailwind.config.ts"
+  "tailwindCSS.experimental.configFile": "./apps/web/tailwind.config.ts",
+  "github.copilot.editor.enableCodeActions": true,
+  "github.copilot.chat.useProjectTemplates": true,
+  "github.copilot.advanced": {
+    "inlineSuggestEnable": true,
+    "listCount": 10
+  },
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "file": "libs/server/db/schema.sql",
+      "description": "Complete database schema with tables, relationships, indexes, and constraints. Use this as reference for all database-related code generation."
+    },
+    {
+      "file": ".github/copilot-instructions.md",
+      "description": "Project-specific coding guidelines, patterns, and best practices for the Financy application."
+    }
+  ]
 }
