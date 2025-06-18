@@ -25,13 +25,28 @@ Prerequisites (unix-like OS):
 - [Deno](https://deno.land/): `curl -fsSL https://deno.land/install.sh | sh`
 - [Docker](https://www.docker.com/): `curl -fsSL https://get.docker.com | sudo sh`
 
-To start local development, run:
+To start local development:
 
-```sh
-deno task compose up -d
-```
+1. Clone the repository
+2. **Install git hooks** (important for code quality):
+   ```sh
+   deno task hooks:install
+   ```
+3. Start all services:
+   ```sh
+   deno task compose up -d
+   ```
 
-This command launches all necessary services & apps in Docker Compose.
+## Development Commands
+
+For development and code quality, use these commands:
+
+- **`deno task check`** - Run comprehensive checks (TypeScript, linting, formatting, tests)
+- **`deno task fix`** - Automatically fix linting and formatting issues
+- **`deno task test`** - Run test suite only
+- **`deno task ts:check`** - TypeScript check only
+
+This will launch all necessary services & apps in Docker Compose.
 
 ## Contributing
 

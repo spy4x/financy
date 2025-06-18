@@ -81,7 +81,6 @@
     // #region Dependencies
     // apps/api
     "hono": "jsr:@hono/hono@^4.7.7",
-    "@hono/arktype-validator": "npm:@hono/arktype-validator@^2.0.0",
     "@hectorm/otpauth": "jsr:@hectorm/otpauth",
     "qrcode": "jsr:@libs/qrcode@^3.0.0",
     "webpush": "jsr:@negrel/webpush",

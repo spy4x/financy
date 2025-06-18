@@ -25,7 +25,6 @@
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/testing@^1.0.11": "1.0.11",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.4_vite@6.3.5__picomatch@4.0.2_@types+node@22.15.15",
-    "npm:@hono/arktype-validator@2": "2.0.0_arktype@2.1.20_hono@4.7.7",
     "npm:@preact/preset-vite@^2.10.1": "2.10.1_@babel+core@7.27.4_vite@6.3.5__picomatch@4.0.2_preact@10.26.8_@types+node@22.15.15",
     "npm:@preact/signals-core@^1.9.0": "1.9.0",
     "npm:@preact/signals@^2.2.0": "2.2.0_preact@10.26.8",
@@ -589,13 +588,6 @@
       "integrity": "sha512-TXv6YnJ8ZMVdX+SXWVBo/0p8LTcrUYngpWjvm91TMjjBQii7Oz11Lw5lbDV5Y0TzuhSJHwiH4hEtC1I42mMS0g==",
       "os": ["win32"],
       "cpu": ["x64"]
-    },
-    "@hono/arktype-validator@2.0.0_arktype@2.1.20_hono@4.7.7": {
-      "integrity": "sha512-ICNZrK6Qcw6gyPfW53ONXI4JomRcks0fQhqzn9EWsfr6nlL6BNXQ96vIgVDU8qimcbJ2m3GJFAqgzOvWbZk3jw==",
-      "dependencies": [
-        "arktype",
-        "hono"
-      ]
     },
     "@isaacs/fs-minipass@4.0.1": {
       "integrity": "sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==",
@@ -1435,9 +1427,6 @@
     "he@1.2.0": {
       "integrity": "sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==",
       "bin": true
-    },
-    "hono@4.7.7": {
-      "integrity": "sha512-2PCpQRbN87Crty8/L/7akZN3UyZIAopSoRxCwRbJgUuV1+MHNFHzYFxZTg4v/03cXUm+jce/qa2VSBZpKBm3Qw=="
     },
     "ignore@7.0.5": {
       "integrity": "sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg=="
@@ -2280,7 +2269,6 @@
       "jsr:@std/path@^1.0.3",
       "jsr:@std/testing@^1.0.11",
       "npm:@deno/vite-plugin@^1.0.4",
-      "npm:@hono/arktype-validator@2",
       "npm:@preact/preset-vite@^2.10.1",
       "npm:@preact/signals-core@^1.9.0",
       "npm:@preact/signals@^2.2.0",

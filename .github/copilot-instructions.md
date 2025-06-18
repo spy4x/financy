@@ -137,6 +137,30 @@ The complete database schema is documented in `libs/server/db/schema.sql`. This 
 
 **Important**: The schema.sql file is generated from migrations and serves as documentation. Always create new migration files for schema changes rather than editing schema.sql directly. **When creating a new migration, always regenerate and update the schema.sql file to reflect the current database state.**
 
+## Development Workflow
+
+### Code Quality Checks
+
+Always run code quality checks before making changes and after completing work:
+
+```bash
+# Run all checks (lint, format, TypeScript, tests)
+deno task check
+
+# Apply automatic fixes
+deno task fix
+
+# Individual commands if needed
+deno task lint:check    # Check linting rules
+deno task fmt:check     # Check code formatting  
+deno task ts:check      # Check TypeScript compilation
+deno task test          # Run tests
+deno task lint:fix      # Fix linting issues
+deno task fmt:fix       # Fix code formatting
+```
+
+**Important**: Use `deno task check` and `deno task fix` (not `deno check`, `deno lint`, or `deno fmt`) - these are composite commands that run multiple quality checks and fixes.
+
 ## When Making Changes
 
 0. Suggest best practices - Always recommend better approaches when available, before implementing changes. If major change - stop and ask if unsure. If minor changes, proceed with caution.
@@ -149,3 +173,4 @@ The complete database schema is documented in `libs/server/db/schema.sql`. This 
 4. Test multi-user scenarios and verify mobile responsiveness
 5. Validate security implications and permissions
 6. Update documentation as needed
+7. Run `deno task check` to ensure all quality checks pass
