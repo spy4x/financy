@@ -57,6 +57,7 @@
     // #region Aliases
     "@api/services/": "./apps/api/services/",
     "@api/middlewares/": "./apps/api/middlewares/",
+    "@api/cqrs/": "./apps/api/cqrs/",
     "@web/state/": "./apps/web/src/state/",
     "@web/components/": "./apps/web/src/components/",
     "@shared/types": "./libs/shared/types/+index.ts",

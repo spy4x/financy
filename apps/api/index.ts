@@ -9,6 +9,9 @@ import { APIContext } from "./_types.ts"
 import { getRandomString } from "@shared/helpers/random.ts"
 import { authRoute } from "./routes/auth.ts"
 
+// Initialize event handlers
+import "./cqrs/+init.ts"
+
 const app = new Hono<APIContext>().basePath("/api")
 app.use(
   contextStorage(),

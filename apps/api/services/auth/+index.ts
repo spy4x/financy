@@ -7,6 +7,8 @@ import { db } from "../db.ts"
 import { TOTPMethod } from "./totp.ts"
 import { APIContext } from "../../_types.ts"
 import { UserMFAStatus } from "@shared/types"
+import { eventBus } from "@api/services/eventBus.ts"
+import { UserSignedUpEvent } from "@api/cqrs/events.ts"
 
 class Auth {
   private cookie = new CookieManager()
@@ -73,6 +75,10 @@ class Auth {
       authData.user.id,
       this.session.getIdTokenForCookie(authData.session),
     )
+
+    eventBus.emit(new UserSignedUpEvent({ user: authData.user, username }))
+    console.log("User signed up. Sending response back", { userId: authData.user.id, username })
+
     return authData
   }
 
