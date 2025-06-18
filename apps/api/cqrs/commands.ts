@@ -1,10 +1,10 @@
 import { Command } from "@shared/cqrs/types.ts"
-import { Group, GroupBase, GroupMembership } from "@shared/types"
+import { Group, GroupBase, GroupMembership, GroupRole } from "@shared/types"
 
 export interface GroupCreatePayload {
   group: GroupBase
   userId: number
-  role?: number // Defaults to 3 (Owner)
+  role?: GroupRole // Defaults to Owner
   acknowledgmentId?: string // For WebSocket acknowledgment
 }
 

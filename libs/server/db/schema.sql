@@ -57,7 +57,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
-    role INT2 DEFAULT 0 NOT NULL CHECK (role >= 0 AND role <= 3),
+    role INT2 DEFAULT 1 NOT NULL CHECK (role >= 1 AND role <= 4),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_login_at TIMESTAMPTZ,
@@ -65,7 +65,7 @@ CREATE TABLE users (
     mfa INT2 DEFAULT 1 NOT NULL CHECK (mfa = ANY (ARRAY[1, 2, 3]))
 );
 
-COMMENT ON COLUMN users.role IS '0=viewer, 1=operator, 2=supervisor, 3=administrator';
+COMMENT ON COLUMN users.role IS '1=viewer, 2=operator, 3=supervisor, 4=administrator';
 COMMENT ON COLUMN users.mfa IS '1=not_configured, 2=confuration_not_finished, 3=configured';
 
 CREATE TABLE user_keys (
@@ -78,7 +78,7 @@ CREATE TABLE user_keys (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-COMMENT ON COLUMN user_keys.kind IS '0=login_password';
+COMMENT ON COLUMN user_keys.kind IS '1=login_password, 2=username_2fa_connecting, 3=username_2fa_completed';
 
 CREATE TABLE user_sessions (
     id SERIAL PRIMARY KEY,
@@ -152,13 +152,13 @@ CREATE TABLE group_memberships (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     user_id INT4 NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role INT2 NOT NULL,
+    role INT2 NOT NULL CHECK ((role >= 1) AND (role <= 4)),
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
 );
 
-COMMENT ON COLUMN group_memberships.role IS 'Enum: 0 = Viewer, 1 = Editor, 2 = Admin, 3 = Owner';
+COMMENT ON COLUMN group_memberships.role IS 'Enum: 1 = Viewer, 2 = Editor, 3 = Admin, 4 = Owner';
 
 CREATE INDEX idx_memberships_by_user_group ON group_memberships (user_id, group_id);
 CREATE INDEX idx_memberships_by_group ON group_memberships (group_id);
@@ -195,7 +195,7 @@ CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     account_id INT4 NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-    type INT2 NOT NULL,
+    type INT2 NOT NULL CHECK ((type >= 1) AND (type <= 2)),
     amount INT4 NOT NULL,
     original_currency VARCHAR(3),
     original_amount INT4,
@@ -207,7 +207,7 @@ CREATE TABLE transactions (
     deleted_at TIMESTAMPTZ
 );
 
-COMMENT ON COLUMN transactions.type IS '0 = Expense, 1 = Income';
+COMMENT ON COLUMN transactions.type IS '1 = Debit, 2 = Credit';
 COMMENT ON COLUMN transactions.amount IS 'Stored in smallest unit';
 COMMENT ON COLUMN transactions.original_currency IS 'Vendor''s currency (ISO 4217)';
 COMMENT ON COLUMN transactions.original_amount IS 'Original amount in vendor''s currency';

@@ -1,6 +1,7 @@
 import { CommandHandler } from "@shared/cqrs/types.ts"
 import { GroupCreateCommand } from "@api/cqrs/commands.ts"
 import { GroupCreatedEvent } from "@api/cqrs/events.ts"
+import { GroupRole } from "@shared/types"
 import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 
@@ -8,7 +9,7 @@ import { eventBus } from "@api/services/eventBus.ts"
  * Handler for creating a group with membership in a single transaction
  */
 export const GroupCreateHandler: CommandHandler<GroupCreateCommand> = async (command) => {
-  const { group: groupData, userId, role = 3, acknowledgmentId } = command.data
+  const { group: groupData, userId, role = GroupRole.OWNER, acknowledgmentId } = command.data
 
   console.log(`Creating group "${groupData.name}" with membership for user ${userId}...`)
 

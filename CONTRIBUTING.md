@@ -106,6 +106,7 @@ import { EventBus } from "@shared/cqrs/event-bus.ts"
 - **State**: Use `@preact/signals` instead of hooks
 - **Database**: All queries scoped per user (multi-tenancy)
 - **Transactions**: Use database transactions for consistency
+- **Enums**: Never use 0 as an enum value to avoid falsy condition issues (`if (!enumValue)` bugs)
 
 ### Testing
 

@@ -1,5 +1,6 @@
 import { UserSignedUpEvent } from "@api/cqrs/events.ts"
 import { GroupCreateCommand } from "@api/cqrs/commands.ts"
+import { GroupRole } from "@shared/types"
 import { commandBus } from "@api/services/commandBus.ts"
 
 /**
@@ -19,7 +20,7 @@ export const groupCreateOnUserSignedUpHandler = async (event: UserSignedUpEvent)
           defaultCurrency: "USD",
         },
         userId: user.id,
-        role: 3, // Owner role
+        role: GroupRole.OWNER,
       }),
     )
 

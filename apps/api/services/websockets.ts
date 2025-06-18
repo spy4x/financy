@@ -4,6 +4,8 @@ import {
   categoryBaseSchema,
   categoryUpdateSchema,
   groupBaseSchema,
+  GroupRole,
+  GroupRoleUtils,
   groupUpdateSchema,
   SyncModelName,
   transactionBaseSchema,
@@ -452,7 +454,7 @@ export const websockets = {
             new GroupCreateCommand({
               group,
               userId,
-              role: 3, // Owner role
+              role: GroupRole.OWNER,
               acknowledgmentId,
             }),
           )
@@ -497,16 +499,13 @@ export const websockets = {
             },
           })
           return
-        }
-
-        // Check if user has admin/owner access to this group
+        } // Check if user has admin/owner access to this group
         const membership = await db.groupMembership.findByUserAndGroup(userId, update.id)
         console.log(
           `Group update permission check: userId=${userId}, groupId=${update.id}, membership=`,
           membership,
         )
-
-        if (!membership || membership.role < 2) { // Admin = 2, Owner = 3
+        if (!membership || !GroupRoleUtils.canManage(membership.role)) { // Admin or Owner required
           console.warn(
             `User ${userId} lacks permissions to update group ${update.id}. Membership role: ${
               membership?.role || "none"
@@ -571,7 +570,7 @@ export const websockets = {
 
         // Check if user has owner access to this group
         const membership = await db.groupMembership.findByUserAndGroup(userId, id)
-        if (!membership || membership.role !== 3) { // Only Owner = 3 can delete
+        if (!membership || !GroupRoleUtils.canDelete(membership.role)) { // Only Owner can delete
           websockets.send({
             ws,
             message: {

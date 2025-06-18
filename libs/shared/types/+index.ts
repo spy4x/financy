@@ -91,12 +91,59 @@ export type BaseModel = typeof BaseModelSchema.infer
 // #endregion Base Types
 
 export enum UserRole { //TODO: rethink roles as user.role
-  VIEWER = 0,
-  OPERATOR = 1,
-  SUPERVISOR = 2,
-  ADMIN = 3,
+  VIEWER = 1,
+  OPERATOR = 2,
+  SUPERVISOR = 3,
+  ADMIN = 4,
 }
 export const userRoleValues = Object.values(UserRole) as UserRole[]
+
+export enum GroupRole {
+  VIEWER = 1,
+  EDITOR = 2,
+  ADMIN = 3,
+  OWNER = 4,
+}
+export const groupRoleValues = Object.values(GroupRole) as GroupRole[]
+
+/**
+ * Group role utility functions
+ */
+export const GroupRoleUtils = {
+  /**
+   * Check if a role can edit transactions and categories
+   */
+  canEdit: (role: GroupRole): boolean => role >= GroupRole.EDITOR,
+
+  /**
+   * Check if a role can manage group settings and members
+   */
+  canManage: (role: GroupRole): boolean => role >= GroupRole.ADMIN,
+
+  /**
+   * Check if a role can delete the group
+   */
+  canDelete: (role: GroupRole): boolean => role === GroupRole.OWNER,
+
+  /**
+   * Get human-readable role name
+   */
+  toString: (role: GroupRole): string => {
+    switch (role) {
+      case GroupRole.VIEWER:
+        return "Viewer"
+      case GroupRole.EDITOR:
+        return "Editor"
+      case GroupRole.ADMIN:
+        return "Admin"
+      case GroupRole.OWNER:
+        return "Owner"
+      default:
+        return "Unknown"
+    }
+  },
+}
+
 export enum UserMFAStatus {
   NOT_CONFIGURED = 1,
   CONFIGURATION_NOT_FINISHED = 2,
@@ -150,9 +197,9 @@ export const authPasswordChangeSchema = authPasswordSchema.and({
 export type AuthPasswordChange = typeof authPasswordChangeSchema.infer
 
 export enum UserKeyKind {
-  USERNAME_PASSWORD = 0,
-  USERNAME_2FA_CONNECTING = 1,
-  USERNAME_2FA_COMPLETED = 2,
+  USERNAME_PASSWORD = 1,
+  USERNAME_2FA_CONNECTING = 2,
+  USERNAME_2FA_COMPLETED = 3,
 }
 export const userKeyKindValues = Object.values(UserKeyKind) as UserKeyKind[]
 
@@ -236,7 +283,7 @@ export type GroupUpdate = typeof groupUpdateSchema.infer
 export const groupMembershipBaseSchema = type({
   userId: "number > 0",
   groupId: "number > 0",
-  role: type.enumerated(...userRoleValues).default(UserRole.VIEWER),
+  role: type.enumerated(...groupRoleValues).default(GroupRole.VIEWER),
 })
 export type GroupMembershipBase = typeof groupMembershipBaseSchema.infer
 export const groupMembershipSchema = BaseModelSchema.and(
@@ -291,6 +338,36 @@ export enum TransactionType {
   DEBIT = 1,
   CREDIT = 2,
 }
+
+/**
+ * Transaction type utility functions
+ */
+export const TransactionTypeUtils = {
+  /**
+   * Get human-readable transaction type name
+   */
+  toString: (type: TransactionType): string => {
+    switch (type) {
+      case TransactionType.DEBIT:
+        return "Debit"
+      case TransactionType.CREDIT:
+        return "Credit"
+      default:
+        return "Unknown"
+    }
+  },
+
+  /**
+   * Check if transaction type is debit (money going out)
+   */
+  isDebit: (type: TransactionType): boolean => type === TransactionType.DEBIT,
+
+  /**
+   * Check if transaction type is credit (money coming in)
+   */
+  isCredit: (type: TransactionType): boolean => type === TransactionType.CREDIT,
+}
+
 export const transactionBaseSchema = type({
   createdBy: "number = 0",
   amount: "number = 0",

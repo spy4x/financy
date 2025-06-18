@@ -94,6 +94,7 @@ class MyEvent implements Event<MyEventPayload> {
 - State: Use `@preact/signals` instead of hooks
 - Database: All queries scoped per user (multi-tenancy)
 - Transactions: Use database transactions for consistency
+- Enums: Never use 0 as an enum value to avoid falsy condition issues (`if (!enumValue)` bugs)
 
 ## Domain-Specific Features
 
@@ -103,6 +104,7 @@ class MyEvent implements Event<MyEventPayload> {
 - Group Collaboration: Roles (Viewer, Editor, Admin, Owner)
 - Accounts: Can belong to multiple groups
 - Real-time: WebSocket notifications for shared accounts
+- Transaction Types: Use DEBIT (money out) and CREDIT (money in) for broader applicability beyond simple expense/income (supports lending, debt returns, etc.)
 
 ### Security & Architecture
 
