@@ -43,6 +43,8 @@ Financy is an open-source, self-hostable financial management application built 
 - Functions/Variables: camelCase
 - Constants: UPPER_CASE
 - Imports: Use path aliases from `deno.jsonc`
+- No Barrel Files: Do not create index.ts files for re-exporting. Import directly from source files.
+- File Organization: Use `+` prefix for main files to sort them first (e.g., `+Nav.tsx` or `+my-api.ts`)
 
 ```typescript
 import { db } from "@api/services/db.ts"
