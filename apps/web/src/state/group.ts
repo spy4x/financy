@@ -1,6 +1,6 @@
 import { signal } from "@preact/signals"
 import { ws } from "./ws.ts"
-import { Group, WebSocketMessageType } from "@shared/types"
+import { Group } from "@shared/types"
 import { toast } from "./toast.ts"
 
 // Holds the list of groups for the current user
@@ -33,7 +33,7 @@ export const group = {
     ws.onMessage((msg) => {
       if (msg.e !== "group") return
       switch (msg.t) {
-        case WebSocketMessageType.LIST:
+        case "list":
           group.list.value = Array.isArray(msg.p) ? (msg.p as Group[]) : []
           if (group.list.value.length > 0 && !group.selectedId.value) {
             group.selectedId.value = group.list.value[0].id
@@ -41,7 +41,7 @@ export const group = {
             group.selectedId.value = null
           }
           break
-        case WebSocketMessageType.CREATED: {
+        case "created": {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
             const newGroup = p[0] as Group
@@ -52,7 +52,7 @@ export const group = {
           group.ops.create.value = { inProgress: false, error: null }
           break
         }
-        case WebSocketMessageType.UPDATED: {
+        case "updated": {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
             group.list.value = group.list.value.map((g) =>
@@ -62,7 +62,7 @@ export const group = {
           group.ops.update.value = { inProgress: false, error: null }
           break
         }
-        case WebSocketMessageType.DELETED: {
+        case "deleted": {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
             const deletedGroup = p[0] as Group
@@ -75,7 +75,7 @@ export const group = {
           group.ops.delete.value = { inProgress: false, error: null }
           break
         }
-        case WebSocketMessageType.ERROR_VALIDATION: {
+        case "error_validation": {
           const errorMsg = Array.isArray(msg.p) && typeof msg.p[0] === "string"
             ? msg.p[0]
             : "Validation error"
@@ -97,17 +97,17 @@ export const group = {
   create(name: string, defaultCurrency: string = "USD") {
     group.ops.create.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "group", t: WebSocketMessageType.CREATE, p: [{ name, defaultCurrency }] },
+      message: { e: "group", t: "create", p: [{ name, defaultCurrency }] },
     })
   },
   update(id: number, name: string, defaultCurrency: string) {
     group.ops.update.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "group", t: WebSocketMessageType.UPDATE, p: [{ id, name, defaultCurrency }] },
+      message: { e: "group", t: "update", p: [{ id, name, defaultCurrency }] },
     })
   },
   remove(id: number) {
     group.ops.delete.value = { inProgress: true, error: null }
-    ws.request({ message: { e: "group", t: WebSocketMessageType.DELETE, p: [{ id }] } })
+    ws.request({ message: { e: "group", t: "delete", p: [{ id }] } })
   },
 }

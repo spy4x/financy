@@ -1,14 +1,5 @@
 import { computed, effect, signal } from "@preact/signals"
-import {
-  op,
-  User,
-  UserMFAStatus,
-  UserRole,
-  userSchema,
-  UserUpdate,
-  validate,
-  WebSocketMessageType,
-} from "@shared/types"
+import { op, User, UserMFAStatus, UserRole, userSchema, UserUpdate, validate } from "@shared/types"
 import { toast } from "./toast.ts"
 // import { ws } from "./ws.ts"
 import { makeStorage } from "@shared/local-storage"
@@ -74,7 +65,7 @@ export const auth = {
         console.error("User data missing in WS message", message)
         return
       }
-      if (message.t === WebSocketMessageType.LIST) {
+      if (message.t === "list") {
         const parseResult = validate(userSchema, message.p[0])
         if (parseResult.error) {
           console.error("Failed to parse user data from WS", parseResult.error)
@@ -83,7 +74,7 @@ export const auth = {
         user.value = parseResult.data
         console.log("User data received from WS", user.value)
         // globalThis.location.reload()
-      } else if (message.t === WebSocketMessageType.UPDATED) {
+      } else if (message.t === "updated") {
         const parseResult = validate(userSchema, message.p[0])
         if (parseResult.error) {
           console.error("Failed to parse user data from WS", parseResult.error)
@@ -303,12 +294,12 @@ export const auth = {
       ws.request({
         message: {
           e: "user.password",
-          t: WebSocketMessageType.UPDATE,
+          t: "update",
           p: [{ password }],
         },
         callback: (response) => {
           // Check if response indicates an error
-          if (response.message.t === WebSocketMessageType.ERROR_VALIDATION) {
+          if (response.message.t === "error_validation") {
             const errorMessage = response.message.p?.[0] as string || "Unknown error"
             ops.passwordChange.value = op<void>(false, null, errorMessage)
             toast.error({
@@ -385,7 +376,7 @@ export const auth = {
         ws.request({
           message: {
             e: "user",
-            t: WebSocketMessageType.UPDATE,
+            t: "update",
             p: [{ ...data, id: user.value.id }],
           },
           callback: (response) => {

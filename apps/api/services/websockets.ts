@@ -1,25 +1,10 @@
 import { WSContext } from "hono/ws"
 import type { SyncModel, WebSocketMessage } from "@shared/types"
-import {
-  categoryBaseSchema,
-  categoryUpdateSchema,
-  groupBaseSchema,
-  GroupRole,
-  GroupRoleUtils,
-  groupUpdateSchema,
-  SyncModelName,
-  transactionBaseSchema,
-  transactionSchema,
-  userSchema,
-  validate,
-  webSocketMessageSchema,
-  WebSocketMessageType,
-} from "@shared/types"
+import { SyncModelName } from "@shared/types"
 
 import { db } from "./db.ts"
 import { log } from "./log.ts"
-import { commandBus } from "./commandBus.ts"
-import { GroupCreateCommand } from "@api/cqrs/commands.ts"
+import { WebSocketMessageRouter } from "../routes/websockets/+index.ts"
 
 export type WS = WSContext & { createdAt: number; heartbeatInterval: number }
 
@@ -27,6 +12,9 @@ const all: WS[] = []
 const socketsByUser = new Map<number, WS[]>()
 const userBySocket = new Map<WS, number>()
 const onOpenCallbacks: ((userId: number, wsc: WS) => void)[] = []
+const messageRouter = new WebSocketMessageRouter()
+// Initialize RPC handlers
+messageRouter.initializeRPCHandlers()
 
 function enrichWSC(wsc: WSContext): WS {
   ;(wsc as WS).createdAt = Date.now()
@@ -63,7 +51,7 @@ export const websockets = {
         ws,
         message: {
           e: "server",
-          t: WebSocketMessageType.MESSAGE,
+          t: "message",
           p: [
             `Hello from server! You have ${sockets.length} websocket(s)`,
           ],
@@ -77,7 +65,7 @@ export const websockets = {
           ws,
           message: {
             e: "server",
-            t: WebSocketMessageType.PING,
+            t: "ping",
           },
         })
       }
@@ -89,7 +77,7 @@ export const websockets = {
           ws: userWs,
           message: {
             e: "server",
-            t: WebSocketMessageType.MESSAGE,
+            t: "message",
             p: [
               `Another websocket has connected. You have ${sockets.length} websocket(s)`,
             ],
@@ -105,533 +93,27 @@ export const websockets = {
   onMessage: async (wsc: WSContext, event: MessageEvent) => {
     const ws = wsc as WS
     const json = JSON.parse(event.data)
-    const parseResult = validate(webSocketMessageSchema, json)
-    if (parseResult.error) {
-      console.error("Invalid message", { issues: parseResult.error, json })
-      return
-    }
 
-    const acknoledgmentId = parseResult.data.id
     const userId = userBySocket.get(ws)
     if (!userId) {
       console.error("No userId found for websocket, cannot process message")
       return
     }
 
-    if (
-      !(parseResult.data.e === "client" && (
-        parseResult.data.t === WebSocketMessageType.PING ||
-        parseResult.data.t === WebSocketMessageType.PONG
-      ))
-    ) {
-      log(`Received message from ${parseResult.data.e}:`, parseResult.data)
-    }
+    // Try to handle as RPC message first, then fall back to legacy format
+    const handled = await messageRouter.routeMessage(ws, json, userId)
 
-    if (
-      parseResult.data.e === "client" &&
-      parseResult.data.t === WebSocketMessageType.PING
-    ) {
-      websockets.send({
-        ws,
-        message: {
-          e: "server",
-          t: WebSocketMessageType.PONG,
+    if (!handled) {
+      console.warn(`No handler found for message:`, json)
+      // Send error response for unhandled messages
+      ws.send(JSON.stringify({
+        success: false,
+        error: {
+          code: "UNSUPPORTED_MESSAGE",
+          message: "Unsupported message format",
+          details: { receivedMessage: json },
         },
-      })
-    }
-    if (
-      parseResult.data.e === "sync" &&
-      parseResult.data.t === WebSocketMessageType.SYNC_START &&
-      parseResult.data.p && parseResult.data.p.length > 0
-    ) {
-      await websockets.syncData(ws, parseResult.data.p[0] as number)
-    }
-
-    if (parseResult.data.e === "transaction") {
-      const acknowledgmentId = parseResult.data.id
-      const payload = parseResult.data.p?.[0]
-
-      if (parseResult.data.t === WebSocketMessageType.CREATE) {
-        // Validate with transactionBaseSchema for CREATE
-        const validation = validate(transactionBaseSchema, payload)
-        if (validation.error) {
-          websockets.send({
-            ws,
-            message: {
-              e: "transaction",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid transaction data", validation.error],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const tx = validation.data
-        // Verify legitimacy of the transaction
-        if (await db.transaction.verifyLegitimacy(tx, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "transaction",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Transaction is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const created = await db.transaction.createOne({ data: tx })
-        websockets.onModelChange(
-          SyncModelName.transaction,
-          [created],
-          WebSocketMessageType.CREATED,
-          acknowledgmentId,
-        )
-      } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
-        // Validate with transactionSchema for UPDATE/DELETE
-        const validation = validate(transactionSchema, payload)
-        if (validation.error) {
-          websockets.send({
-            ws,
-            message: {
-              e: "transaction",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid transaction data", validation.error],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const tx = validation.data
-        // Verify legitimacy of the transaction
-        if (await db.transaction.verifyLegitimacy(tx, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "transaction",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Transaction is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-
-        const updated = await db.transaction.updateOne({
-          id: tx.id,
-          data: tx,
-        })
-        websockets.onModelChange(
-          SyncModelName.transaction,
-          [updated],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
-      } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
-        let id: number | undefined
-        if (
-          payload && typeof payload === "object" && "id" in payload &&
-          typeof payload.id === "number"
-        ) {
-          id = payload.id
-        } else {
-          websockets.send({
-            ws,
-            message: {
-              e: "transaction",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid payload: missing or invalid 'id'"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        if (await db.transaction.verifyLegitimacyById(id, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "transaction",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Transaction is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const deleted = await db.transaction.deleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.transaction,
-          [deleted],
-          WebSocketMessageType.DELETED,
-          acknowledgmentId,
-        )
-      } else {
-        websockets.send({
-          ws,
-          message: {
-            e: "transaction",
-            t: WebSocketMessageType.ERROR_VALIDATION,
-            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
-            id: acknowledgmentId,
-          },
-        })
-        return
-      }
-    }
-
-    // category
-    if (parseResult.data.e === "category") {
-      const acknowledgmentId = parseResult.data.id
-      const payload = parseResult.data.p?.[0]
-
-      if (parseResult.data.t === WebSocketMessageType.CREATE) {
-        const validation = validate(categoryBaseSchema, payload)
-        if (validation.error) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid category data", validation.error],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const category = validation.data
-        // Verify legitimacy of the category
-        if (await db.category.verifyLegitimacy(category, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const created = await db.category.createOne({ data: category })
-        websockets.onModelChange(
-          SyncModelName.category,
-          [created],
-          WebSocketMessageType.CREATED,
-          acknowledgmentId,
-        )
-      } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
-        const validation = validate(categoryUpdateSchema, payload)
-        if (validation.error) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid category data", validation.error],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const update = validation.data
-        const existingCategory = await db.category.findOne({ id: update.id })
-        if (!existingCategory) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category not found"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        // Verify legitimacy of the category
-        if (
-          await db.category.verifyLegitimacy({
-            ...existingCategory,
-            ...update,
-          }, userId) === false
-        ) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const updated = await db.category.updateOne({
-          id: update.id,
-          data: update,
-        })
-        websockets.onModelChange(
-          SyncModelName.category,
-          [updated],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
-      } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
-        // For DELETE, validate the payload to get the category object
-        let id: number | undefined
-        if (
-          payload && typeof payload === "object" && "id" in payload &&
-          typeof payload.id === "number"
-        ) {
-          id = payload.id
-        } else {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid payload: missing or invalid 'id'"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        if (await db.category.verifyLegitimacyById(id, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const deleted = await db.category.deleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.category,
-          [deleted],
-          WebSocketMessageType.DELETED,
-          acknowledgmentId,
-        )
-      } else {
-        websockets.send({
-          ws,
-          message: {
-            e: "category",
-            t: WebSocketMessageType.ERROR_VALIDATION,
-            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
-            id: acknowledgmentId,
-          },
-        })
-        return
-      }
-    }
-
-    // group
-    if (parseResult.data.e === "group") {
-      const acknowledgmentId = parseResult.data.id
-      const payload = parseResult.data.p?.[0]
-
-      if (parseResult.data.t === WebSocketMessageType.CREATE) {
-        const validation = validate(groupBaseSchema, payload)
-        if (validation.error) {
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid group data", validation.error],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const group = validation.data
-        // Create the group and its membership using the command
-        try {
-          await commandBus.execute(
-            new GroupCreateCommand({
-              group,
-              userId,
-              role: GroupRole.OWNER,
-              acknowledgmentId,
-            }),
-          )
-        } catch (error) {
-          console.error("Failed to create group and membership:", error)
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Failed to create group and membership"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-      } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
-        const validation = validate(groupUpdateSchema, payload)
-        if (validation.error) {
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid group data", validation.error],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const update = validation.data
-
-        const existingGroup = await db.group.findOne({ id: update.id })
-        if (!existingGroup) {
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Group not found"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        } // Check if user has admin/owner access to this group
-        const membership = await db.groupMembership.findByUserAndGroup(userId, update.id)
-        console.log(
-          `Group update permission check: userId=${userId}, groupId=${update.id}, membership=`,
-          membership,
-        )
-        if (!membership || !GroupRoleUtils.canManage(membership.role)) { // Admin or Owner required
-          console.warn(
-            `User ${userId} lacks permissions to update group ${update.id}. Membership role: ${
-              membership?.role || "none"
-            }`,
-          )
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Insufficient permissions to update group"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-
-        const updated = await db.group.updateOne({
-          id: update.id,
-          data: update,
-        })
-        websockets.onModelChange(
-          SyncModelName.group,
-          [updated],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
-      } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
-        // For DELETE, validate the payload to get the group object
-        let id: number | undefined
-        if (
-          payload && typeof payload === "object" && "id" in payload &&
-          typeof payload.id === "number"
-        ) {
-          id = payload.id
-        } else {
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid group ID"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-
-        const existingGroup = await db.group.findOne({ id })
-        if (!existingGroup) {
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Group not found"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-
-        // Check if user has owner access to this group
-        const membership = await db.groupMembership.findByUserAndGroup(userId, id)
-        if (!membership || !GroupRoleUtils.canDelete(membership.role)) { // Only Owner can delete
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Only group owners can delete groups"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-
-        const deleted = await db.group.deleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.group,
-          [deleted],
-          WebSocketMessageType.DELETED,
-          acknowledgmentId,
-        )
-      } else {
-        websockets.send({
-          ws,
-          message: {
-            e: "group",
-            t: WebSocketMessageType.ERROR_VALIDATION,
-            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
-            id: acknowledgmentId,
-          },
-        })
-        return
-      }
-    }
-
-    // user
-    if (parseResult.data.e === "user") {
-      if (parseResult.data.t === WebSocketMessageType.UPDATE) {
-        const validation = validate(userSchema, parseResult.data.p?.[0])
-        if (validation.error) {
-          websockets.send({
-            ws,
-            message: {
-              e: "user",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Invalid user data", validation.error],
-              id: acknoledgmentId,
-            },
-          })
-          return
-        }
-        const userData = validation.data
-        const updatedUser = await db.user.updateOne({
-          id: userId,
-          data: userData,
-        })
-        websockets.onModelChange(
-          SyncModelName.user,
-          [updatedUser],
-          WebSocketMessageType.UPDATED,
-          acknoledgmentId ?? undefined,
-        )
-      }
+      }))
     }
   },
   closed(wsc: WSContext) {
@@ -658,7 +140,7 @@ export const websockets = {
               ws: userWs,
               message: {
                 e: "server",
-                t: WebSocketMessageType.MESSAGE,
+                t: "message",
                 p: [
                   `One of your websockets disconnected. You have ${sockets.length} websocket(s)`,
                 ],
@@ -702,7 +184,7 @@ export const websockets = {
   onModelChange(
     model: SyncModelName,
     p: SyncModel[],
-    t: WebSocketMessageType,
+    t: string,
     acknowledgmentId?: string,
   ) {
     for (const ws of all) {
@@ -724,7 +206,7 @@ export const websockets = {
       (model, data) => {
         websockets.send({
           ws,
-          message: { e: model, t: WebSocketMessageType.LIST, p: data },
+          message: { e: model, t: "list", p: data },
         })
       },
       userId,
@@ -733,7 +215,7 @@ export const websockets = {
     const newSyncAt = Date.now()
     websockets.send({
       ws,
-      message: { e: "sync", t: WebSocketMessageType.SYNC_FINISHED, p: [newSyncAt] },
+      message: { e: "sync", t: "finished", p: [newSyncAt] },
     })
   },
 }

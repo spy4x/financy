@@ -4,7 +4,6 @@ import {
   validate,
   WebSocketMessage,
   webSocketMessageSchema,
-  WebSocketMessageType,
   WSStatus,
 } from "@shared/types"
 import { signal } from "@preact/signals"
@@ -145,15 +144,15 @@ export const ws = {
         return
       }
       const message = parseResult.data
-      if (message.e === "server" && message.t === WebSocketMessageType.PONG) {
+      if (message.e === "server" && message.t === "pong") {
         clearTimeout(pongCheckTimer.value)
         pongCheckTimer.value = 0
       }
       if (
         message.e === "server" &&
-        message.t === WebSocketMessageType.PING
+        message.t === "ping"
       ) {
-        ws.request({ message: { e: "client", t: WebSocketMessageType.PONG } })
+        ws.request({ message: { e: "client", t: "pong" } })
       }
       // handle acknowledgement
       if (message.id) {
@@ -166,13 +165,13 @@ export const ws = {
         }
       }
 
-      if (message.e === "sync" && message.t === WebSocketMessageType.SYNC_FINISHED) {
+      if (message.e === "sync" && message.t === "sync_finished") {
         syncOp.value = op()
       }
 
       if (
         !(message.e === "server" &&
-          (message.t === WebSocketMessageType.PING || message.t === WebSocketMessageType.PONG))
+          (message.t === "ping" || message.t === "pong"))
       ) {
         console.log(`Message:`, message)
       }
@@ -188,7 +187,7 @@ export const ws = {
     heartbeatTimer.value = setInterval(
       () => {
         if (!socket.value || socket.value.readyState !== WebSocket.OPEN) return
-        ws.request({ message: { e: "client", t: WebSocketMessageType.PING } })
+        ws.request({ message: { e: "client", t: "ping" } })
         // Set up a pong timeout
         pongCheckTimer.value = setTimeout(() => {
           if (socket.value) {
@@ -240,7 +239,7 @@ export const ws = {
       return
     }
     syncOp.value = op(true)
-    ws.request({ message: { e: "sync", t: WebSocketMessageType.SYNC_START, p: [syncedAt.value] } })
+    ws.request({ message: { e: "sync", t: "sync_start", p: [syncedAt.value] } })
   },
 
   request: (params: {

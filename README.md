@@ -101,6 +101,10 @@ and Telegram bot integration.
 ### 🤖 Integrations & API
 
 - [x] **WebSocket API** - Real-time data sync
+- [x] **CQRS WebSocket Handlers** - Modular message handling system
+- [x] **Type-safe RPC** - Shared commands/queries/events between API and Web
+- [ ] **WebSocket Rate Limiting** - Prevent abuse of real-time connections
+- [ ] **WebSocket Message Size Limits** - Protect against large message attacks
 - [ ] **Push Notifications** - Web push notification system
 - [ ] **REST API** - Public API for integrations
 - [ ] **API Authentication** - Token-based API access

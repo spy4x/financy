@@ -17,9 +17,33 @@ export type CommandHandler<T extends Command<unknown, unknown>> = (
   command: T,
 ) => Promise<CommandResult<T>>
 
+// Query interface (similar to Command but for read operations)
+export interface Query<TPayload, TResult> {
+  data: TPayload
+  // Phantom type to help with inference
+  readonly __resultType?: TResult
+}
+
+// deno-lint-ignore no-explicit-any
+export type QueryConstructor<T extends Query<unknown, unknown>> = new (...args: any[]) => T
+
+// Extract result type from query
+export type QueryResult<T extends Query<unknown, unknown>> = T extends Query<unknown, infer R> ? R
+  : never
+
+// Query handler type
+export type QueryHandler<T extends Query<unknown, unknown>> = (
+  query: T,
+) => Promise<QueryResult<T>>
+
 export interface Event<TPayload> {
   data?: TPayload
 }
 
 // deno-lint-ignore no-explicit-any
 export type EventConstructor<T extends Event<unknown>> = new (...args: any[]) => T
+
+// Event handler type
+export type EventHandler<T extends Event<unknown>> = (
+  event: T,
+) => Promise<void>

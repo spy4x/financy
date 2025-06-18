@@ -1,6 +1,6 @@
 import { GroupCreatedEvent } from "@api/cqrs/events.ts"
 import { websockets } from "@api/services/websockets.ts"
-import { SyncModelName, WebSocketMessageType } from "@shared/types"
+import { SyncModelName } from "@shared/types"
 
 /**
  * Handler for sending WebSocket notifications when a group is created
@@ -15,14 +15,14 @@ export const websocketNotifyOnGroupCreatedHandler = async (event: GroupCreatedEv
     websockets.onModelChange(
       SyncModelName.group,
       [group],
-      WebSocketMessageType.CREATED,
+      "created",
       acknowledgmentId,
     )
 
     websockets.onModelChange(
       SyncModelName.groupMembership,
       [membership],
-      WebSocketMessageType.CREATED,
+      "created",
       acknowledgmentId,
     )
 

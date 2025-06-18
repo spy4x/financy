@@ -1,5 +1,10 @@
-// Queries from client to server
+// Shared RPC definitions for type-safe communication between API and Web apps
 
-// Commands from client to server
+// Queries (client to server)
+export * from "./queries.ts"
 
-// Events from server to client
+// Commands (client to server)
+export * from "./commands.ts"
+
+// Events (server to client)
+export * from "./events.ts"

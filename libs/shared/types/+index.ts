@@ -438,31 +438,17 @@ export enum WSStatus {
   DISCONNECTED = 3,
 }
 
-export enum WebSocketMessageType {
-  PING = "ping",
-  PONG = "pong",
-  MESSAGE = "message",
-  LIST = "list",
-  SYNC_START = "start",
-  SYNC_FINISHED = "finished",
-  CREATE = "create",
-  CREATED = "created",
-  UPDATE = "update",
-  UPDATED = "updated",
-  DELETE = "delete",
-  DELETED = "deleted",
-  ERROR_VALIDATION = "error_validation",
-}
-
+// Legacy WebSocket message format for ping/sync compatibility
 export const webSocketMessageSchema = type({
-  /** Entity: "system" or one of database models, like "zone", "lampBox" or "zoneLampBox" */
+  /** Entity */
   e: "string",
-  /** Type */
-  t: type.enumerated(...Object.values(WebSocketMessageType) as WebSocketMessageType[]),
-  /** Payload: Array of Entity data, has to be parsed with a model schema, because whole websocket message was stringified */
+  /** Message type */
+  t: "string",
+  /** Payload */
   p: "unknown[]?",
   /** Acknowledgement id */
   id: "string?",
 })
 export type WebSocketMessage = typeof webSocketMessageSchema.infer
+
 // #endregion Sync

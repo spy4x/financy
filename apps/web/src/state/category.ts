@@ -1,6 +1,6 @@
 import { signal } from "@preact/signals"
 import { ws } from "./ws.ts"
-import { Category, WebSocketMessageType } from "@shared/types"
+import { Category } from "@shared/types"
 import { group } from "./group.ts"
 import { toast } from "./toast.ts"
 
@@ -27,16 +27,16 @@ export const category = {
     ws.onMessage((msg) => {
       if (msg.e !== "category") return
       switch (msg.t) {
-        case WebSocketMessageType.LIST:
+        case "list":
           category.list.value = Array.isArray(msg.p) ? (msg.p as Category[]) : []
           break
-        case WebSocketMessageType.CREATED: {
+        case "created": {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) category.list.value = [...category.list.value, p[0] as Category]
           category.ops.create.value = { inProgress: false, error: null }
           break
         }
-        case WebSocketMessageType.UPDATED: {
+        case "updated": {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
             category.list.value = category.list.value.map((c) =>
@@ -46,7 +46,7 @@ export const category = {
           category.ops.update.value = { inProgress: false, error: null }
           break
         }
-        case WebSocketMessageType.DELETED: {
+        case "deleted": {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
             category.list.value = category.list.value.filter((c) => c.id !== (p[0] as Category).id)
@@ -54,7 +54,7 @@ export const category = {
           category.ops.delete.value = { inProgress: false, error: null }
           break
         }
-        case WebSocketMessageType.ERROR_VALIDATION: {
+        case "error_validation": {
           const errorMsg = Array.isArray(msg.p) && typeof msg.p[0] === "string"
             ? msg.p[0]
             : "Validation error"
@@ -81,7 +81,7 @@ export const category = {
     }
     category.ops.create.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "category", t: WebSocketMessageType.CREATE, p: [{ name, groupId }] },
+      message: { e: "category", t: "create", p: [{ name, groupId }] },
     })
   },
   update(id: number, name: string) {
@@ -92,11 +92,11 @@ export const category = {
     }
     category.ops.update.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "category", t: WebSocketMessageType.UPDATE, p: [{ id, name, groupId }] },
+      message: { e: "category", t: "update", p: [{ id, name, groupId }] },
     })
   },
   remove(id: number) {
     category.ops.delete.value = { inProgress: true, error: null }
-    ws.request({ message: { e: "category", t: WebSocketMessageType.DELETE, p: [{ id }] } })
+    ws.request({ message: { e: "category", t: "delete", p: [{ id }] } })
   },
 }
