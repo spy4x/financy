@@ -16,6 +16,8 @@ import {
 
 import { db } from "./db.ts"
 import { log } from "./log.ts"
+import { commandBus } from "./commandBus.ts"
+import { GroupCreateCommand } from "@api/cqrs/commands.ts"
 
 export type WS = WSContext & { createdAt: number; heartbeatInterval: number }
 
@@ -444,38 +446,15 @@ export const websockets = {
           return
         }
         const group = validation.data
-        // Create the group and its membership in a single transaction
+        // Create the group and its membership using the command
         try {
-          const { newGroup, newMembership } = await db.begin(async (tx) => {
-            // Create the group
-            const newGroup = await tx.group.createOne({ data: group })
-
-            // Create group membership for the creator as owner
-            const newMembership = await tx.groupMembership.createOne({
-              data: {
-                groupId: newGroup.id,
-                userId,
-                role: 3, // Owner role
-              },
-            })
-
-            return { newGroup, newMembership }
-          })
-
-          // Notify about the new group
-          websockets.onModelChange(
-            SyncModelName.group,
-            [newGroup],
-            WebSocketMessageType.CREATED,
-            acknowledgmentId,
-          )
-
-          // Notify about the new group membership
-          websockets.onModelChange(
-            SyncModelName.groupMembership,
-            [newMembership],
-            WebSocketMessageType.CREATED,
-            acknowledgmentId,
+          await commandBus.execute(
+            new GroupCreateCommand({
+              group,
+              userId,
+              role: 3, // Owner role
+              acknowledgmentId,
+            }),
           )
         } catch (error) {
           console.error("Failed to create group and membership:", error)

@@ -44,12 +44,46 @@ Financy is an open-source, self-hostable financial management application built 
 - Constants: UPPER_CASE
 - Imports: Use path aliases from `deno.jsonc`
 - No Barrel Files: Do not create index.ts files for re-exporting. Import directly from source files.
+- No Re-exports: Do not re-export types or classes from modules. Import directly from the source.
 - File Organization: Use `+` prefix for main files to sort them first (e.g., `+Nav.tsx` or `+my-api.ts`)
 
 ```typescript
 import { db } from "@api/services/db.ts"
 import { Component } from "@web/components/ui/component.tsx"
 import { helper } from "@shared/helpers/helper.ts"
+```
+
+### CQRS Imports
+
+The CQRS system is organized into separate files:
+- Types: `@shared/cqrs/types.ts` - Contains Command, Event, CommandHandler, etc.
+- Classes: `@shared/cqrs/command-bus.ts`, `@shared/cqrs/event-bus.ts`
+
+```typescript
+// Import types directly from types.ts
+import { Command, Event, CommandHandler } from "@shared/cqrs/types.ts"
+// Import classes from their respective files
+import { CommandBus } from "@shared/cqrs/command-bus.ts"
+import { EventBus } from "@shared/cqrs/event-bus.ts"
+
+// Example usage with generic types
+interface MyCommandPayload {
+  name: string;
+}
+interface MyCommandResult {
+  userId: number;
+}
+class MyCommand implements Command<MyCommandPayload, MyCommandResult> {
+  __resultType?: MyCommandResult;
+  constructor(public data: MyCommandPayload) {}
+}
+
+interface MyEventPayload {
+  userId: number;
+}
+class MyEvent implements Event<MyEventPayload> {
+  constructor(public data: MyEventPayload) {}
+}
 ```
 
 ### Critical Rules

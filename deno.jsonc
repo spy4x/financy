@@ -64,7 +64,7 @@
     "@shared/constants": "./libs/shared/constants/+index.ts",
     "@shared/helpers/": "./libs/shared/helpers/",
     "@shared/testing": "./libs/shared/testing/+index.ts",
-    "@shared/event-bus": "./libs/shared/event-bus/+index.ts",
+    "@shared/cqrs/": "./libs/shared/cqrs/",
     "@shared/local-storage": "./libs/shared/local-storage/+index.ts",
     "@shared/cache": "./libs/shared/cache/+index.ts",
     "@shared/rpc": "./libs/shared/rpc/+index.ts",
