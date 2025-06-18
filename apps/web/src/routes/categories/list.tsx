@@ -1,5 +1,6 @@
 import { category } from "@web/state/category.ts"
-import { useSignal } from "@preact/signals"
+import { group } from "@web/state/group.ts"
+import { useComputed, useSignal } from "@preact/signals"
 import {
   IconEllipsisVertical,
   IconPencilSquare,
@@ -17,9 +18,17 @@ import type { Category } from "@shared/types"
 export function CategoryList() {
   const search = useSignal("")
 
-  const filteredCategories = category.list.value.filter((cat) =>
-    cat.name.toLowerCase().includes(search.value.toLowerCase())
-  )
+  const filteredCategories = useComputed(() => {
+    return category.list.value.filter((cat) => {
+      // Filter by selected group first
+      if (group.selectedId.value && cat.groupId !== group.selectedId.value) {
+        return false
+      }
+
+      // Then filter by search text
+      return cat.name.toLowerCase().includes(search.value.toLowerCase())
+    })
+  })
 
   function handleDelete(cat: Category) {
     if (confirm(`Are you sure you want to delete the category "${cat.name}"?`)) {
@@ -31,6 +40,16 @@ export function CategoryList() {
     <section class="page-layout">
       <PageTitle>Categories</PageTitle>
       <div>
+        {group.selectedId.value && (
+          <div class="mb-4 text-sm text-gray-600">
+            Showing categories for group:{" "}
+            <span class="font-medium text-gray-900">
+              {group.list.value.find((g) => g.id === group.selectedId.value)?.name ||
+                "Unknown Group"}
+            </span>
+          </div>
+        )}
+
         <div class="flex items-center justify-between mb-6">
           <div class="relative w-60">
             <input
@@ -45,19 +64,28 @@ export function CategoryList() {
           </div>
 
           <Link
-            title="Create Category"
+            title={group.selectedId.value ? "Create Category" : "Please select a group first"}
             href={routes.categories.children!.create.href}
-            class="btn btn-primary flex items-center gap-2"
+            class={`btn flex items-center gap-2 ${
+              group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
+            }`}
+            onClick={(e) => {
+              if (!group.selectedId.value) {
+                e.preventDefault()
+              }
+            }}
           >
             <IconPlus class="size-5" />
             <span class="hidden md:inline">Create</span>
           </Link>
         </div>
 
-        {filteredCategories.length === 0
+        {filteredCategories.value.length === 0
           ? (
             <div class="text-center py-8 text-gray-500">
-              {search.value
+              {!group.selectedId.value
+                ? "Please select a group first to view categories."
+                : search.value
                 ? "No categories found matching your search."
                 : "No categories created yet."}
             </div>
@@ -70,7 +98,7 @@ export function CategoryList() {
                   <th class="text-right">Actions</th>
                 </>
               }
-              bodySlots={filteredCategories.map((cat) => (
+              bodySlots={filteredCategories.value.map((cat) => (
                 <>
                   <td class="text-gray-900">{cat.name}</td>
                   <td class="text-right">
