@@ -86,7 +86,7 @@ export const buildMethods = <T>(
   prefix: string,
   /** Cache expiration time in seconds */
   ttl: number,
-  schema?: ValidationSchema<T>,
+  schema?: ValidationSchema,
 ): PublicAPICacheModel<T> => {
   const key = (id: number): string => `${prefix}_${id}`
   return {

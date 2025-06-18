@@ -4,7 +4,7 @@ import { Currency, CurrencyType } from "@shared/types"
 
 /**
  * A comprehensive list of supported currencies including major fiat currencies and popular cryptocurrencies.
- * 
+ *
  * Includes 60+ currencies:
  * - **Major Fiat**: USD, EUR, GBP, JPY, CAD, AUD, CHF, CNY, SEK, NZD, etc.
  * - **Asian**: SGD, HKD, KRW, INR, THB, MYR, PHP, IDR, VND
@@ -98,10 +98,10 @@ interface CurrencySelectorProps {
 
 /**
  * CurrencySelector - A reusable currency selector component with search functionality
- * 
+ *
  * A comprehensive currency selector supporting both fiat currencies and cryptocurrencies
  * with real-time search, type filtering, and full accessibility support.
- * 
+ *
  * ## Features
  * - **Comprehensive Currency List**: 60+ major fiat currencies and popular cryptocurrencies
  * - **Search Functionality**: Real-time search by currency code or name
@@ -109,19 +109,19 @@ interface CurrencySelectorProps {
  * - **Accessible**: Full keyboard navigation and ARIA attributes
  * - **Mobile-Friendly**: Responsive design with touch-friendly interactions
  * - **Visual Indicators**: Shows currency symbols and crypto badges
- * 
+ *
  * ## Usage Examples
- * 
+ *
  * ### Basic Usage
  * ```tsx
  * const selectedCurrency = useSignal("USD")
- * 
+ *
  * <CurrencySelector
  *   value={selectedCurrency.value}
  *   onChange={(code) => selectedCurrency.value = code}
  * />
  * ```
- * 
+ *
  * ### Fiat Currencies Only
  * ```tsx
  * <CurrencySelector
@@ -131,7 +131,7 @@ interface CurrencySelectorProps {
  *   placeholder="Select fiat currency..."
  * />
  * ```
- * 
+ *
  * ### Crypto Currencies Only
  * ```tsx
  * <CurrencySelector
@@ -141,7 +141,7 @@ interface CurrencySelectorProps {
  *   placeholder="Select cryptocurrency..."
  * />
  * ```
- * 
+ *
  * ### Without Search
  * ```tsx
  * <CurrencySelector
@@ -150,20 +150,20 @@ interface CurrencySelectorProps {
  *   showSearch={false}
  * />
  * ```
- * 
+ *
  * ## Accessibility
  * - Full keyboard navigation (Arrow keys, Enter, Escape)
  * - ARIA attributes for screen readers
  * - Focus management and visual focus indicators
  * - Semantic HTML structure
- * 
+ *
  * ## Styling
  * Uses Tailwind CSS classes following the application's design system:
  * - Consistent input styling with the `input` class
  * - Hover and focus states
  * - Responsive design
  * - Dark/light mode support
- * 
+ *
  * @param props - The component props
  * @returns A currency selector dropdown component
  */

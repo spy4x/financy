@@ -1,3 +1,4 @@
+/// <reference lib="deno.ns" />
 import { ICacheStorage } from "@shared/cache"
 import { RedisClient, Reply } from "@iuioiua/redis"
 

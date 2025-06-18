@@ -82,7 +82,7 @@ p {
   @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
 }
 button {
-  @apply cursor-pointer
+  @apply cursor-pointer;
 }
 @utility btn-sm {
   @apply h-9 px-4;

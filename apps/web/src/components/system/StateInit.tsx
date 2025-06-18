@@ -6,7 +6,7 @@ import { group } from "@web/state/group.ts"
 let isInitialized = false
 
 export function StateInit(
-  props: { ENV: string },
+  _props: { ENV: string },
 ) {
   if (isInitialized) {
     return null

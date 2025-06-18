@@ -429,7 +429,7 @@ export class DbService extends DbServiceBase {
 
   tag = {
     ...this.buildMethods<Tag, TagBase, Partial<TagBase>>(`tags`, publicAPICache.tag),
-    findMany: async (userId: number): Promise<Tag[]> => {
+    findMany: async (_userId: number): Promise<Tag[]> => {
       // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
       // -- WHERE t.user_id = ${userId} -- TODO: create tags.group_id
       return sql<Tag[]>`
@@ -438,7 +438,7 @@ export class DbService extends DbServiceBase {
         ORDER BY t.created_at DESC
       `
     },
-    findChanged: async (updatedAtGt: Date, userId: number): Promise<Tag[]> => {
+    findChanged: async (updatedAtGt: Date, _userId: number): Promise<Tag[]> => {
       // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
       // -- AND t.user_id = ${userId} -- TODO: create tags.group_id
       return sql<Tag[]>`

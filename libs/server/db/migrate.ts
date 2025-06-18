@@ -1,3 +1,4 @@
+/// <reference lib="deno.ns" />
 import { extname, join } from "@std/path"
 import { sql } from "./+index.ts"
 import type postgres from "postgres"
@@ -50,9 +51,9 @@ async function applyMigrations() {
     // read directory and get .sql files
     const files = Deno.readDirSync(migrationsFolder)
     const migrationsToApply = Array.from(files)
-      .filter((file) => extname(file.name) === fileExtension)
-      .map((file) => file.name.replace(fileExtension, ""))
-      .filter((file) => !migrations.includes(file))
+      .filter((file: Deno.DirEntry) => extname(file.name) === fileExtension)
+      .map((file: Deno.DirEntry) => file.name.replace(fileExtension, ""))
+      .filter((file: string) => !migrations.includes(file))
       .sort()
 
     if (!migrationsToApply.length) {

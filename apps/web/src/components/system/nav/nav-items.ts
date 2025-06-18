@@ -1,11 +1,6 @@
 import { Signal, signal } from "@preact/signals"
 import { FunctionalComponent } from "preact"
-import {
-  IconCpuChip,
-  IconFolder,
-  IconHome,
-  IconUser,
-} from "@client/icons"
+import { IconCpuChip, IconFolder, IconHome, IconUser } from "@client/icons"
 import { BadgeColor } from "@web/components/ui/Badge.tsx"
 import { routes } from "../../../routes/_router.tsx"
 import { isProd } from "@client/vite/env.ts"

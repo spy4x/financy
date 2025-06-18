@@ -36,7 +36,7 @@ export function Toastr() {
                       : null}
                     {t.body}
                   </p>
-                  <button onClick={() => toast.remove(t.id)}>
+                  <button type="button" onClick={() => toast.remove(t.id)}>
                     <IconXMark class="size-4" />
                   </button>
                 </div>

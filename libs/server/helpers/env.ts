@@ -1,3 +1,5 @@
+/// <reference lib="deno.ns" />
+
 export function getEnvVar(key: string, isOptional = false): string {
   const value = Deno.env.get(key)
   if (!value && !isOptional) {

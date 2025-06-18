@@ -190,6 +190,7 @@ export function Profile() {
                   <span>Push notifications enabled</span>
                 </div>
                 <button
+                  type="button"
                   class="mt-2 btn btn-danger-outline"
                   onClick={togglePushNotifications}
                 >
@@ -201,7 +202,7 @@ export function Profile() {
 
             {!pushNotification.isSubscribed.value &&
               pushNotification.isServiceWorkerSupported.value && (
-              <button class="btn btn-primary" onClick={togglePushNotifications}>
+              <button type="button" class="btn btn-primary" onClick={togglePushNotifications}>
                 {pushNotification.subscribeOp.value?.inProgress && <IconLoading />}
                 Enable for this device
               </button>
@@ -228,6 +229,7 @@ export function Profile() {
                         </p>
                       </div>
                       <button
+                        type="button"
                         class="btn btn-danger-outline"
                         onClick={() => disableDevicePushNotifications(userPushToken.deviceId)}
                       >
@@ -262,14 +264,18 @@ export function Profile() {
                     <IconCheckCircle class="size-5" />
                     <span>Configured</span>
                   </div>
-                  <button class="mt-2 btn btn-danger-outline" onClick={TOTPDisconnect}>
+                  <button
+                    type="button"
+                    class="mt-2 btn btn-danger-outline"
+                    onClick={TOTPDisconnect}
+                  >
                     Disable
                   </button>
                 </div>
               )}
 
             {vm.value.mfa !== UserMFAStatus.CONFIGURED && !shouldShowTOTPSetup.value && (
-              <button class="btn btn-primary" onClick={TOTPConnectStart}>
+              <button type="button" class="btn btn-primary" onClick={TOTPConnectStart}>
                 Configure
               </button>
             )}
@@ -377,6 +383,7 @@ export function Profile() {
           </div>
           <div class="card-footer">
             <button
+              type="button"
               class="btn btn-primary ml-auto"
               disabled={!password.value || !newPassword.value}
               onClick={passwordChange}

@@ -29,8 +29,9 @@ async function load(): Promise<void> {
       listOp: { inProgress: false, error: null, result: data },
     })
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
     set(store, {
-      listOp: { inProgress: false, error: error.message, result: null },
+      listOp: { inProgress: false, error: errorMessage, result: null },
     })
   }
 }

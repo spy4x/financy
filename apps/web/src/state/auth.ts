@@ -291,7 +291,7 @@ export const auth = {
       )
     }
   },
-  passwordChange: async (password: string, newPassword: string) => {
+  passwordChange: async (password: string, _newPassword: string) => {
     ops.passwordChange.value = op(true)
     return new Promise<void>((resolve, reject) => {
       if (!user.value) {
@@ -307,13 +307,15 @@ export const auth = {
           p: [{ password }],
         },
         callback: (response) => {
-          if (response.error) {
-            ops.passwordChange.value = op<void>(false, null, response.error)
+          // Check if response indicates an error
+          if (response.message.t === WebSocketMessageType.ERROR_VALIDATION) {
+            const errorMessage = response.message.p?.[0] as string || "Unknown error"
+            ops.passwordChange.value = op<void>(false, null, errorMessage)
             toast.error({
               body:
                 "Change password failed. Is your password correct? Is new password longer than 8 symbols?",
             })
-            reject(response.error)
+            reject(errorMessage)
             return
           }
           ops.passwordChange.value = op(false)
