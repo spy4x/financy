@@ -3,7 +3,7 @@ import { Badge } from "@web/components/ui/Badge.tsx"
 import { page } from "@web/state/page.ts"
 import { navigate } from "@client/helpers"
 import { Link } from "wouter-preact"
-import { navItems } from "./nav-types.ts"
+import { navItems } from "./nav-items.ts"
 
 export function NavItems() {
   return (

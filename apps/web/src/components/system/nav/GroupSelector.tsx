@@ -24,6 +24,7 @@ export function GroupSelector() {
         }
         buttonClass="w-full"
         extraClass="w-full min-w-0"
+        containerClass="w-full"
         type="last"
       >
         <div class="py-1">
@@ -36,13 +37,8 @@ export function GroupSelector() {
               }}
               class="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             >
-              <div class="flex flex-col items-start">
-                <span class="font-medium">{g.name}</span>
-                <span class="text-xs text-gray-500">{g.defaultCurrency}</span>
-              </div>
-              {group.selectedId.value === g.id && (
-                <IconCheck class="size-4 text-purple-600" />
-              )}
+              <span class="font-medium">{g.name}</span>
+              {group.selectedId.value === g.id && <IconCheck class="size-4 text-purple-600" />}
             </button>
           ))}
         </div>
