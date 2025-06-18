@@ -63,12 +63,14 @@ export class EventBus {
   }
 
   emit<T extends Event>(event: T): void {
-    const eventClass = event.constructor as EventConstructor<T>
-    const callbacks = this.listeners.get(eventClass)
-    if (callbacks) {
-      for (const callback of callbacks) {
-        callback(event as Event)
+    queueMicrotask(() => {
+      const eventClass = event.constructor as EventConstructor<T>
+      const callbacks = this.listeners.get(eventClass)
+      if (callbacks) {
+        for (const callback of callbacks) {
+          callback(event as Event)
+        }
       }
-    }
+    })
   }
 }
