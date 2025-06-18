@@ -1,7 +1,7 @@
 import { auth } from "@web/state/auth.ts"
 import { ws } from "@web/state/ws.ts"
 import { IconArrowPath, IconBars3, IconLoading, IconXMark } from "@client/icons"
-import { Nav } from "./Nav.tsx"
+import { Nav } from "./nav/+Nav.tsx"
 import { Auth } from "./Auth.tsx"
 import { ComponentChildren } from "preact"
 import { useSignal } from "@preact/signals"
