@@ -45,12 +45,17 @@ export function AccountList() {
     }
   }
 
-  function formatBalance(balance: number, currency: string): string {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency,
+  function formatBalance(balance: number, currency: string): { symbol: string; amount: string } {
+    const currencyInfo = getCurrencyDisplay(currency)
+    const formattedAmount = new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(balance / 100) // Convert from cents to currency units
+
+    return {
+      symbol: currencyInfo.symbol || currencyInfo.code,
+      amount: formattedAmount,
+    }
   }
 
   return (
@@ -94,7 +99,7 @@ export function AccountList() {
               }}
             >
               <IconPlus class="size-5" />
-              <span class="hidden md:inline">Create Account</span>
+              <span class="hidden md:inline">Create</span>
             </Link>
           </div>
 
@@ -102,9 +107,9 @@ export function AccountList() {
             <Table
               headerSlot={
                 <>
-                  <th>Name</th>
-                  <th>Currency</th>
-                  <th>Balance</th>
+                  <th class="text-left">Name</th>
+                  <th class="text-left">Currency</th>
+                  <th class="text-left">Balance</th>
                   <th>Actions</th>
                 </>
               }
@@ -130,7 +135,15 @@ export function AccountList() {
                   </td>
                   <td class="whitespace-nowrap">
                     <div class="text-sm text-gray-900">
-                      {formatBalance(acc.balance, acc.currency)}
+                      {(() => {
+                        const balance = formatBalance(acc.balance, acc.currency)
+                        return (
+                          <>
+                            <span class="font-medium">{balance.symbol}</span>{" "}
+                            <span>{balance.amount}</span>
+                          </>
+                        )
+                      })()}
                     </div>
                   </td>
                   <td class="whitespace-nowrap text-right text-sm font-medium">

@@ -16,6 +16,7 @@ import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import type { Transaction } from "@shared/types"
+import { getCurrencyDisplay } from "@shared/constants/currency.ts"
 
 export function TransactionList() {
   const search = useSignal("")
@@ -86,12 +87,17 @@ export function TransactionList() {
     }
   }
 
-  function formatAmount(amount: number, currency: string): string {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency,
+  function formatAmount(amount: number, currency: string): { symbol: string; amount: string } {
+    const currencyInfo = getCurrencyDisplay(currency)
+    const formattedAmount = new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount / 100) // Convert from cents to currency units
+
+    return {
+      symbol: currencyInfo.symbol || currencyInfo.code,
+      amount: formattedAmount,
+    }
   }
 
   function getAccountName(accountId: number): string {
@@ -152,7 +158,7 @@ export function TransactionList() {
               }}
             >
               <IconPlus class="size-5" />
-              <span class="hidden md:inline">Create Transaction</span>
+              <span class="hidden md:inline">Create</span>
             </Link>
           </div>
 
@@ -232,12 +238,10 @@ export function TransactionList() {
             <Table
               headerSlot={
                 <>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Account</th>
-                  <th>Category</th>
-                  <th>Amount</th>
-                  <th>Memo</th>
+                  <th class="text-left">Date</th>
+                  <th class="text-left">Account &gt; Category</th>
+                  <th class="text-left">Amount</th>
+                  <th class="text-left">Memo</th>
                   <th>Actions</th>
                 </>
               }
@@ -257,24 +261,37 @@ export function TransactionList() {
                       </div>
                     </td>
                     <td class="whitespace-nowrap">
-                      <span class={`text-sm font-medium ${typeDisplay.color}`}>
-                        {typeDisplay.label}
-                      </span>
-                    </td>
-                    <td class="whitespace-nowrap">
-                      <div class="text-sm text-gray-900">{getAccountName(txn.accountId)}</div>
-                    </td>
-                    <td class="whitespace-nowrap">
-                      <div class="text-sm text-gray-900">{getCategoryName(txn.categoryId)}</div>
+                      <div class="text-sm text-gray-900">
+                        {getAccountName(txn.accountId)} &gt; {getCategoryName(txn.categoryId)}
+                      </div>
                     </td>
                     <td class="whitespace-nowrap">
                       <div class={`text-sm font-medium ${typeDisplay.color}`}>
-                        {formatAmount(txn.amount, currency)}
+                        {(() => {
+                          const formattedAmount = formatAmount(txn.amount, currency)
+                          return (
+                            <>
+                              <span class="font-medium">{formattedAmount.symbol}</span>{" "}
+                              <span>{formattedAmount.amount}</span>
+                            </>
+                          )
+                        })()}
                       </div>
-                      {txn.originalCurrency && txn.originalAmount &&
-                        txn.originalCurrency !== currency && (
+                      {txn.originalCurrency && txn.originalAmount && (
                         <div class="text-xs text-gray-500">
-                          {formatAmount(txn.originalAmount, txn.originalCurrency)}
+                          {(() => {
+                            const formattedOriginalAmount = formatAmount(
+                              txn.originalAmount,
+                              txn.originalCurrency,
+                            )
+                            return (
+                              <>
+                                <span class="font-medium">{formattedOriginalAmount.symbol}</span>
+                                {" "}
+                                <span>{formattedOriginalAmount.amount}</span>
+                              </>
+                            )
+                          })()}
                         </div>
                       )}
                     </td>
