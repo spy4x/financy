@@ -1,13 +1,21 @@
 import { signal } from "@preact/signals"
 import { ws } from "./ws.ts"
-import { Group, WebSocketMessageType } from "@shared/types"
+import { Group, type, WebSocketMessageType } from "@shared/types"
 import { toast } from "./toast.ts"
+import { makeStorage } from "@shared/local-storage"
+import { effect } from "@preact/signals"
 
 // Holds the list of groups for the current user
 const list = signal<Group[]>([])
 
 // Holds the currently selected groupId (default: first group)
-const selectedId = signal<number | null>(null)
+const selectedIdStorage = makeStorage<number | null>(
+  localStorage,
+  "selectedGroupId",
+  type("number"),
+)
+const selectedId = signal<number | null>(selectedIdStorage.get() ?? null)
+effect(() => selectedIdStorage.set(selectedId.value))
 
 const ops = {
   create: signal<{ inProgress: boolean; error?: string | null }>({
