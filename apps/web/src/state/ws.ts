@@ -1,6 +1,11 @@
 import {
   op,
   OperationState,
+  RPC,
+  RPCPing,
+  rpcPingSchema,
+  rpcReqSchema,
+  rpcResSchema,
   validate,
   WebSocketMessage,
   webSocketMessageSchema,
@@ -18,6 +23,7 @@ import {
   UserSignedUp,
   WSConnected,
 } from "../cqrs/events.ts"
+import { getRandomString } from "@shared/helpers/random.ts"
 
 const RETRY_INTERVAL = 1500 + Math.random() * 2000 // Retry interval in milliseconds
 const PING_INTERVAL = 15000 // Ping interval
@@ -33,6 +39,19 @@ const acknowledges = new Map<
   {
     params: AcknowledgementParams
     callback: AcknowledgementCallback
+  }
+>()
+
+type RPCParams = {
+  multupleResponsesExpected?: boolean
+  timeoutMs?: number
+}
+type RPCAcknowledgementCallback<T> = <T extends RPC>(res: T["res"]) => void
+const rpcResponses = new Map<
+  string,
+  {
+    params: RPCParams
+    callback: RPCAcknowledgementCallback<unknown>
   }
 >()
 
@@ -136,8 +155,54 @@ export const ws = {
     }
 
     socket.value.onmessage = (event) => {
-      // console.log("Message from server:", event.data)
+      console.log("Message from server:", event.data)
       const json = JSON.parse(event.data)
+
+      // RPC parsing and validation
+      const parseRPCReq = validate(rpcReqSchema, json)
+      if (parseRPCReq.error) {
+        console.log("Not a valid RPCReq, skipping, maybe RPCRes", {
+          data: json,
+          error: parseRPCReq.error,
+        })
+      } else {
+        // Handle RPCReq call
+        const rpcReq = parseRPCReq.data
+
+        // Check if it's RPCPing
+        const rpcPingReq = rpcPingSchema.get("req")
+        // handle ping inline here for now
+        const rpcPingReqParse = validate(rpcPingReq, rpcReq)
+        if (rpcPingReqParse.data) {
+          console.log("Received RPC Ping, sending Pong")
+          ws.res<RPCPing>({
+            rpcRes: {
+              reqId: rpcPingReqParse.data.reqId,
+              result: "system.pong",
+            },
+          })
+          return
+        }
+        console.error("Received RPCReq, but not a valid RPCPing", rpcPingReqParse.error)
+      }
+
+      const parseRPCRes = validate(rpcResSchema, json)
+      if (parseRPCRes.error) {
+        // skip to handle legacy WS messages for now
+        // TODO: remove this after RPC is fully implemented
+        console.log("Not a valid RPCRes, skipping, maybe legacy WS message")
+      } else {
+        // Handle RPCRes call
+        const rpcRes = parseRPCRes.data
+        const acknowledge = rpcResponses.get(rpcRes.reqId)
+        if (acknowledge) {
+          acknowledge.callback(rpcRes)
+          if (!acknowledge.params.multupleResponsesExpected) {
+            acknowledges.delete(rpcRes.reqId)
+          }
+        }
+        return
+      }
 
       const parseResult = validate(webSocketMessageSchema, json)
       if (parseResult.error) {
@@ -148,12 +213,6 @@ export const ws = {
       if (message.e === "server" && message.t === WebSocketMessageType.PONG) {
         clearTimeout(pongCheckTimer.value)
         pongCheckTimer.value = 0
-      }
-      if (
-        message.e === "server" &&
-        message.t === WebSocketMessageType.PING
-      ) {
-        ws.request({ message: { e: "client", t: WebSocketMessageType.PONG } })
       }
       // handle acknowledgement
       if (message.id) {
@@ -188,7 +247,19 @@ export const ws = {
     heartbeatTimer.value = setInterval(
       () => {
         if (!socket.value || socket.value.readyState !== WebSocket.OPEN) return
-        ws.request({ message: { e: "client", t: WebSocketMessageType.PING } })
+        ws.req<RPCPing>({
+          rpc: { reqId: getRandomString(10), path: "system.ping" },
+          params: { timeoutMs: PONG_TIMEOUT },
+          callback: (res) => { // TODO: res should be typed as RPCPing
+            if (res.result !== "system.pong") {
+              console.error("Received unexpected ping response:", res)
+              return
+            }
+            console.log("Received pong from server")
+            clearTimeout(pongCheckTimer.value)
+            pongCheckTimer.value = 0
+          },
+        })
         // Set up a pong timeout
         pongCheckTimer.value = setTimeout(() => {
           if (socket.value) {
@@ -243,6 +314,41 @@ export const ws = {
     ws.request({ message: { e: "sync", t: WebSocketMessageType.SYNC_START, p: [syncedAt.value] } })
   },
 
+  /**
+   * Uses RPCReq to send a request to the server and expects an RPCRes in return.
+   */
+  req<T extends RPC>(params: {
+    rpc: T["req"]
+    params: RPCParams
+    callback: RPCAcknowledgementCallback<T>
+  }): void {
+    if (!socket.value || socket.value.readyState !== WebSocket.OPEN) {
+      console.error("Socket is not connected")
+      return
+    }
+    rpcResponses.set(params.rpc.reqId, {
+      params: {
+        multupleResponsesExpected: params.params.multupleResponsesExpected ?? false,
+        timeoutMs: params.params.timeoutMs || 5000,
+      },
+      callback: params.callback,
+    })
+    socket.value.send(JSON.stringify({ ...params.rpc }))
+  },
+
+  res<T extends RPC>(params: {
+    rpcRes: T["res"]
+  }): void {
+    if (!socket.value || socket.value.readyState !== WebSocket.OPEN) {
+      console.error("Socket is not connected")
+      return
+    }
+    socket.value.send(JSON.stringify(params.rpcRes))
+  },
+
+  /**
+   * @deprecated Use `ws.req` instead
+   */
   request: (params: {
     message: WebSocketMessage
     params?: AcknowledgementParams

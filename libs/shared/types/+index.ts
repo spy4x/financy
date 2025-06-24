@@ -466,3 +466,36 @@ export const webSocketMessageSchema = type({
 })
 export type WebSocketMessage = typeof webSocketMessageSchema.infer
 // #endregion Sync
+
+// #region RPC
+export const rpcReqSchema = type({
+  reqId: `string == 10`, // TODO: remove this, it should be part of WS implementation, not RPC
+  path: "string <= 50",
+  params: "unknown?",
+})
+export type RPCReq = typeof rpcReqSchema.infer
+export const rpcResSchema = type({
+  reqId: `string == 10`, // TODO: remove this, it should be part of WS implementation, not RPC
+  error: "unknown?",
+  result: "unknown?",
+})
+export type RPCRes = typeof rpcResSchema.infer
+
+export const rpcSchema = type({
+  req: rpcReqSchema,
+  res: rpcResSchema,
+})
+export type RPC = typeof rpcSchema.infer
+
+export const rpcPingSchema = rpcSchema.and(type({
+  req: rpcReqSchema.and({
+    path: "'system.ping'",
+    params: "undefined?",
+  }),
+  res: rpcResSchema.and({
+    error: "undefined?",
+    result: "'system.pong'",
+  }),
+}))
+export type RPCPing = typeof rpcPingSchema.infer
+// #endregion RPC
