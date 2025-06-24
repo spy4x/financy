@@ -306,7 +306,7 @@ export const accountBaseSchema = type({
 export type AccountBase = typeof accountBaseSchema.infer
 export const accountSchema = BaseModelSchema.and(accountBaseSchema)
 export type Account = typeof accountSchema.infer
-export const accountUpdateSchema = accountBaseSchema.pick("name", "currency")
+export const accountUpdateSchema = accountSchema.pick("id", "name", "currency")
 export type AccountUpdate = typeof accountUpdateSchema.infer
 // #endregion Account
 

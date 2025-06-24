@@ -2,6 +2,7 @@ import { auth } from "@web/state/auth.ts"
 import { ws } from "@web/state/ws.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
+import { account } from "@web/state/account.ts"
 
 let isInitialized = false
 
@@ -17,6 +18,7 @@ export function StateInit(
   auth.init()
   category.init()
   group.init()
+  account.init()
   ws.init()
   return null
 }

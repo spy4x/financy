@@ -1,5 +1,5 @@
 import { deleteCookie, getSignedCookie, setCookie, setSignedCookie } from "hono/cookie"
-import { USER_ID_COOKIE_NAME } from "@shared/constants"
+import { USER_ID_COOKIE_NAME } from "@shared/constants/+index.ts"
 import { config } from "../config.ts"
 import { Context } from "hono"
 import { SESSION_ID_COOKIE_NAME } from "./types.ts"

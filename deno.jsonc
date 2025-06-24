@@ -61,7 +61,7 @@
     "@web/state/": "./apps/web/src/state/",
     "@web/components/": "./apps/web/src/components/",
     "@shared/types": "./libs/shared/types/+index.ts",
-    "@shared/constants": "./libs/shared/constants/+index.ts",
+    "@shared/constants/": "./libs/shared/constants/",
     "@shared/helpers/": "./libs/shared/helpers/",
     "@shared/testing": "./libs/shared/testing/+index.ts",
     "@shared/cqrs/": "./libs/shared/cqrs/",

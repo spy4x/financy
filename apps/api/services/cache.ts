@@ -17,7 +17,7 @@ import {
   ONE_MONTH_IN_SECONDS,
   ONE_WEEK_IN_SECONDS,
   SECONDS_IN_MINUTE,
-} from "@shared/constants"
+} from "@shared/constants/+index.ts"
 
 import { config } from "../services/config.ts"
 

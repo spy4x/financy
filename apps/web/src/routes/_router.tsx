@@ -7,6 +7,8 @@ import { CategoryList } from "./categories/list.tsx"
 import { CategoryEditor } from "./categories/editor.tsx"
 import { GroupList } from "./groups/list.tsx"
 import { GroupEditor } from "./groups/editor.tsx"
+import { AccountList } from "./accounts/list.tsx"
+import { AccountEditor } from "./accounts/editor.tsx"
 
 type Route = {
   title: string
@@ -54,6 +56,23 @@ export const routes = {
         title: "Categories - Edit",
         href: "/categories/:id",
         component: CategoryEditor,
+      },
+    },
+  },
+  accounts: {
+    title: "Accounts",
+    href: "/accounts",
+    component: AccountList,
+    children: {
+      create: {
+        title: "Accounts - Create",
+        href: "/accounts/create",
+        component: AccountEditor,
+      },
+      edit: {
+        title: "Accounts - Edit",
+        href: "/accounts/:id",
+        component: AccountEditor,
       },
     },
   },

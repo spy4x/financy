@@ -1,5 +1,5 @@
 import { Event } from "@shared/cqrs/types.ts"
-import { Group, GroupMembership, User } from "@shared/types"
+import { Account, Group, GroupMembership, User } from "@shared/types"
 
 /**
  * Event emitted when a user signs up (after user creation and session setup)
@@ -16,4 +16,11 @@ export class GroupCreatedEvent
   constructor(
     public data: { group: Group; membership: GroupMembership; acknowledgmentId?: string },
   ) {}
+}
+
+/**
+ * Event emitted when an account is created
+ */
+export class AccountCreatedEvent implements Event<{ account: Account; acknowledgmentId?: string }> {
+  constructor(public data: { account: Account; acknowledgmentId?: string }) {}
 }

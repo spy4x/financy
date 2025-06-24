@@ -1,6 +1,6 @@
 import { useRef } from "preact/hooks"
 import { useSignal, useSignalEffect } from "@preact/signals"
-import { MIN_PASSWORD_LENGTH } from "@shared/constants"
+import { MIN_PASSWORD_LENGTH } from "@shared/constants/+index.ts"
 import { IconCheckCircle, IconEye, IconEyeOff, IconLoading } from "@client/icons"
 import { set } from "@client/helpers"
 import { User, userBaseSchema, UserMFAStatus, validate } from "@shared/types"

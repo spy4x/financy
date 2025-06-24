@@ -1,6 +1,8 @@
 import { WSContext } from "hono/ws"
 import type { SyncModel, WebSocketMessage } from "@shared/types"
 import {
+  accountBaseSchema,
+  accountUpdateSchema,
   categoryBaseSchema,
   categoryUpdateSchema,
   groupBaseSchema,
@@ -595,6 +597,169 @@ export const websockets = {
           ws,
           message: {
             e: "group",
+            t: WebSocketMessageType.ERROR_VALIDATION,
+            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
+            id: acknowledgmentId,
+          },
+        })
+        return
+      }
+    }
+
+    // account
+    if (parseResult.data.e === "account") {
+      const acknowledgmentId = parseResult.data.id
+      const payload = parseResult.data.p?.[0]
+
+      if (parseResult.data.t === WebSocketMessageType.CREATE) {
+        const validation = validate(accountBaseSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid account data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const account = validation.data
+        // Verify legitimacy of the account
+        if (await db.account.verifyLegitimacy(account, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Account is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const created = await db.account.createOne({ data: account })
+        websockets.onModelChange(
+          SyncModelName.account,
+          [created],
+          WebSocketMessageType.CREATED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
+        const validation = validate(accountUpdateSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid account data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const update = validation.data
+        const existingAccount = await db.account.findOne({ id: update.id })
+        if (!existingAccount) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Account not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        // Verify legitimacy of the account
+        if (
+          await db.account.verifyLegitimacy({
+            ...existingAccount,
+            ...update,
+          }, userId) === false
+        ) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Account is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const updated = await db.account.updateOne({
+          id: update.id,
+          data: update,
+        })
+        websockets.onModelChange(
+          SyncModelName.account,
+          [updated],
+          WebSocketMessageType.UPDATED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
+        // For DELETE, validate the payload to get the account object
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid payload: missing or invalid 'id'"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        // Check if the account exists and user has access
+        const existingAccount = await db.account.findOne({ id })
+        if (!existingAccount) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Account not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        if (await db.account.verifyLegitimacy(existingAccount, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Account is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const deleted = await db.account.deleteOne({ id })
+        websockets.onModelChange(
+          SyncModelName.account,
+          [deleted],
+          WebSocketMessageType.DELETED,
+          acknowledgmentId,
+        )
+      } else {
+        websockets.send({
+          ws,
+          message: {
+            e: "account",
             t: WebSocketMessageType.ERROR_VALIDATION,
             p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
             id: acknowledgmentId,
