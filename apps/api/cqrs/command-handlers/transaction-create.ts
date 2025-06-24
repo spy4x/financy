@@ -20,6 +20,26 @@ export const transactionCreateHandler: CommandHandler<TransactionCreateCommand> 
     // Create transaction data with userId as createdBy
     const transactionToCreate = { ...transactionData, createdBy: userId }
 
+    // SECURITY: Enforce correct sign based on transaction type
+    // Never trust frontend - backend validates and corrects the sign
+    const absoluteAmount = Math.abs(transactionData.amount)
+    const correctedAmount = transactionData.type === TransactionType.DEBIT
+      ? -absoluteAmount // DEBIT: always negative
+      : absoluteAmount // CREDIT: always positive
+
+    // Apply the same correction to original amount if present
+    const correctedOriginalAmount = transactionData.originalAmount
+      ? (transactionData.type === TransactionType.DEBIT
+        ? -Math.abs(transactionData.originalAmount)
+        : Math.abs(transactionData.originalAmount))
+      : undefined
+
+    // Update transaction data with corrected amounts
+    transactionToCreate.amount = correctedAmount
+    if (correctedOriginalAmount !== undefined) {
+      transactionToCreate.originalAmount = correctedOriginalAmount
+    }
+
     // Verify legitimacy before processing
     if (await db.transaction.verifyLegitimacy(transactionToCreate, userId) === false) {
       throw new Error("Transaction is not legitimate for this user")
@@ -32,9 +52,8 @@ export const transactionCreateHandler: CommandHandler<TransactionCreateCommand> 
       })
 
       // Update account balance
-      const balanceChange = transactionData.type === TransactionType.DEBIT
-        ? -transactionData.amount
-        : transactionData.amount
+      // Use the corrected amount (already signed properly)
+      const balanceChange = correctedAmount
       const accountUpdated = await tx.account.updateBalance(
         transactionData.accountId,
         balanceChange,

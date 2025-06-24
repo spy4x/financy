@@ -58,11 +58,12 @@ export function TransactionEditor() {
           accountId.value = existingTransaction.accountId
           categoryId.value = existingTransaction.categoryId
           type.value = existingTransaction.type
-          amount.value = (existingTransaction.amount / 100).toString() // Convert from cents to currency units
+          // Always show positive amount in form - sign is determined by type
+          amount.value = (Math.abs(existingTransaction.amount) / 100).toString()
           memo.value = existingTransaction.memo || ""
           originalCurrency.value = existingTransaction.originalCurrency || ""
           originalAmount.value = existingTransaction.originalAmount
-            ? (existingTransaction.originalAmount / 100).toString()
+            ? (Math.abs(existingTransaction.originalAmount) / 100).toString()
             : ""
           error.value = ""
           state.value = EditorState.IDLE
@@ -164,14 +165,26 @@ export function TransactionEditor() {
     error.value = ""
     state.value = EditorState.IN_PROGRESS
 
+    // Apply correct sign based on transaction type
+    // DEBIT (type 1) = negative amount, CREDIT (type 2) = positive amount
+    const signedAmount = type.value === 1
+      ? -Math.round(parsedAmount * 100) // DEBIT: negative
+      : Math.round(parsedAmount * 100) // CREDIT: positive
+
+    const signedOriginalAmount = parsedOriginalAmount
+      ? (type.value === 1
+        ? -Math.round(parsedOriginalAmount * 100) // DEBIT: negative
+        : Math.round(parsedOriginalAmount * 100)) // CREDIT: positive
+      : undefined
+
     const data = {
       accountId: accountId.value,
       categoryId: categoryId.value,
       type: type.value,
-      amount: Math.round(parsedAmount * 100), // Convert to cents
+      amount: signedAmount,
       memo: memo.value.trim() || undefined,
       originalCurrency: originalCurrency.value.trim() || undefined,
-      originalAmount: parsedOriginalAmount ? Math.round(parsedOriginalAmount * 100) : undefined,
+      originalAmount: signedOriginalAmount,
     }
 
     if (editTransactionId) {

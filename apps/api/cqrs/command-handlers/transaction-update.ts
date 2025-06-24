@@ -29,31 +29,59 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         throw new Error(`Transaction with id ${transactionId} not found`)
       }
 
-      // Verify legitimacy of the updates
+      // SECURITY: Enforce correct sign based on transaction type for any amount updates
+      // Never trust frontend - backend validates and corrects the sign
+      const correctedUpdates = { ...updates }
+
+      if (updates.amount !== undefined || updates.type !== undefined) {
+        const newType = updates.type ?? originalTransaction.type
+        const newAmount = updates.amount ?? originalTransaction.amount
+
+        // Enforce correct sign based on type
+        const absoluteAmount = Math.abs(newAmount)
+        const correctedAmount = newType === TransactionType.DEBIT
+          ? -absoluteAmount // DEBIT: always negative
+          : absoluteAmount // CREDIT: always positive
+
+        correctedUpdates.amount = correctedAmount
+
+        // Apply the same correction to original amount if being updated
+        if (updates.originalAmount !== undefined) {
+          const absoluteOriginalAmount = Math.abs(updates.originalAmount)
+          correctedUpdates.originalAmount = newType === TransactionType.DEBIT
+            ? -absoluteOriginalAmount
+            : absoluteOriginalAmount
+        }
+      }
+
+      // Verify legitimacy of the corrected updates
       if (
-        !(await db.transaction.verifyLegitimacy({ ...originalTransaction, ...updates }, userId))
+        !(await db.transaction.verifyLegitimacy(
+          { ...originalTransaction, ...correctedUpdates },
+          userId,
+        ))
       ) {
         throw new Error("Transaction update is not legitimate")
       }
 
-      // Update the transaction
-      const transaction = await tx.transaction.updateOne({ id: transactionId, data: updates })
+      // Update the transaction with corrected data
+      const transaction = await tx.transaction.updateOne({
+        id: transactionId,
+        data: correctedUpdates,
+      })
 
       let accountUpdated: Account
       let oldCategoryUpdated: Category | undefined
       let newCategoryUpdated: Category | undefined
 
-      // Calculate balance change if amount or type changed
-      if (updates.amount !== undefined || updates.type !== undefined) {
-        const newAmount = updates.amount ?? originalTransaction.amount
-        const newType = updates.type ?? originalTransaction.type
+      // Calculate balance change if amount changed
+      if (correctedUpdates.amount !== undefined) {
+        const newAmount = correctedUpdates.amount
+        const originalAmount = originalTransaction.amount
 
         // Calculate the difference in account balance
-        const originalBalance = originalTransaction.type === TransactionType.DEBIT
-          ? -originalTransaction.amount
-          : originalTransaction.amount
-        const newBalance = newType === TransactionType.DEBIT ? -newAmount : newAmount
-        const balanceDiff = newBalance - originalBalance
+        // Both amounts are already signed (negative for DEBIT, positive for CREDIT)
+        const balanceDiff = newAmount - originalAmount
 
         accountUpdated = await tx.account.updateBalance(
           originalTransaction.accountId,

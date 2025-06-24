@@ -3,7 +3,6 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionDeleteCommand } from "@api/cqrs/commands.ts"
 import { TransactionDeletedEvent } from "@api/cqrs/events.ts"
-import { TransactionType } from "@shared/types"
 
 /**
  * Handler for deleting a transaction
@@ -34,9 +33,8 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
       const transaction = await tx.transaction.deleteOne({ id: transactionId })
 
       // Revert account balance
-      const balanceChange = originalTransaction.type === TransactionType.DEBIT
-        ? originalTransaction.amount
-        : -originalTransaction.amount
+      // Amount is already signed, so we need to subtract it to revert
+      const balanceChange = -originalTransaction.amount
 
       const accountUpdated = await tx.account.updateBalance(
         originalTransaction.accountId,
