@@ -11,7 +11,7 @@ import {
   groupUpdateSchema,
   SyncModelName,
   transactionBaseSchema,
-  transactionSchema,
+  transactionUpdateSchema,
   userSchema,
   validate,
   webSocketMessageSchema,
@@ -21,7 +21,12 @@ import {
 import { db } from "./db.ts"
 import { log } from "./log.ts"
 import { commandBus } from "./commandBus.ts"
-import { GroupCreateCommand } from "@api/cqrs/commands.ts"
+import {
+  GroupCreateCommand,
+  TransactionCreateCommand,
+  TransactionDeleteCommand,
+  TransactionUpdateCommand,
+} from "@api/cqrs/commands.ts"
 
 export type WS = WSContext & { createdAt: number; heartbeatInterval: number }
 
@@ -169,29 +174,32 @@ export const websockets = {
           return
         }
         const tx = validation.data
-        // Verify legitimacy of the transaction
-        if (await db.transaction.verifyLegitimacy(tx, userId) === false) {
+
+        // Create the transaction using CQRS command
+        try {
+          await commandBus.execute(
+            new TransactionCreateCommand({
+              transaction: tx,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to create transaction:", error)
           websockets.send({
             ws,
             message: {
               e: "transaction",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Transaction is not legitimate"],
+              p: [error instanceof Error ? error.message : "Failed to create transaction"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        const created = await db.transaction.createOne({ data: tx })
-        websockets.onModelChange(
-          SyncModelName.transaction,
-          [created],
-          WebSocketMessageType.CREATED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
-        // Validate with transactionSchema for UPDATE/DELETE
-        const validation = validate(transactionSchema, payload)
+        // Validate with transactionUpdateSchema for UPDATE
+        const validation = validate(transactionUpdateSchema, payload)
         if (validation.error) {
           websockets.send({
             ws,
@@ -205,30 +213,31 @@ export const websockets = {
           return
         }
         const tx = validation.data
-        // Verify legitimacy of the transaction
-        if (await db.transaction.verifyLegitimacy(tx, userId) === false) {
+
+        // Update the transaction using CQRS command
+        try {
+          const { id, ...updates } = tx
+          await commandBus.execute(
+            new TransactionUpdateCommand({
+              transactionId: id,
+              updates,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to update transaction:", error)
           websockets.send({
             ws,
             message: {
               e: "transaction",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Transaction is not legitimate"],
+              p: [error instanceof Error ? error.message : "Failed to update transaction"],
               id: acknowledgmentId,
             },
           })
           return
         }
-
-        const updated = await db.transaction.updateOne({
-          id: tx.id,
-          data: tx,
-        })
-        websockets.onModelChange(
-          SyncModelName.transaction,
-          [updated],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
         let id: number | undefined
         if (
@@ -248,25 +257,29 @@ export const websockets = {
           })
           return
         }
-        if (await db.transaction.verifyLegitimacyById(id, userId) === false) {
+
+        // Delete the transaction using CQRS command
+        try {
+          await commandBus.execute(
+            new TransactionDeleteCommand({
+              transactionId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to delete transaction:", error)
           websockets.send({
             ws,
             message: {
               e: "transaction",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Transaction is not legitimate"],
+              p: [error instanceof Error ? error.message : "Failed to delete transaction"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        const deleted = await db.transaction.deleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.transaction,
-          [deleted],
-          WebSocketMessageType.DELETED,
-          acknowledgmentId,
-        )
       } else {
         websockets.send({
           ws,

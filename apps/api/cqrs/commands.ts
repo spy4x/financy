@@ -1,5 +1,14 @@
 import { Command } from "@shared/cqrs/types.ts"
-import { Account, AccountBase, Group, GroupBase, GroupMembership, GroupRole } from "@shared/types"
+import {
+  Account,
+  AccountBase,
+  Group,
+  GroupBase,
+  GroupMembership,
+  GroupRole,
+  Transaction,
+  TransactionBase,
+} from "@shared/types"
 
 export interface GroupCreatePayload {
   group: GroupBase
@@ -31,4 +40,54 @@ export interface AccountCreateResult {
 export class AccountCreateCommand implements Command<AccountCreatePayload, AccountCreateResult> {
   __resultType?: AccountCreateResult
   constructor(public data: AccountCreatePayload) {}
+}
+
+export interface TransactionCreatePayload {
+  transaction: TransactionBase
+  userId: number
+  acknowledgmentId?: string // For WebSocket acknowledgment
+}
+
+export interface TransactionCreateResult {
+  transaction: Transaction
+}
+
+export class TransactionCreateCommand
+  implements Command<TransactionCreatePayload, TransactionCreateResult> {
+  __resultType?: TransactionCreateResult
+  constructor(public data: TransactionCreatePayload) {}
+}
+
+export interface TransactionUpdatePayload {
+  transactionId: number
+  updates: Partial<TransactionBase>
+  userId: number
+  acknowledgmentId?: string // For WebSocket acknowledgment
+}
+
+export interface TransactionUpdateResult {
+  transaction: Transaction
+  originalTransaction: Transaction
+}
+
+export class TransactionUpdateCommand
+  implements Command<TransactionUpdatePayload, TransactionUpdateResult> {
+  __resultType?: TransactionUpdateResult
+  constructor(public data: TransactionUpdatePayload) {}
+}
+
+export interface TransactionDeletePayload {
+  transactionId: number
+  userId: number
+  acknowledgmentId?: string // For WebSocket acknowledgment
+}
+
+export interface TransactionDeleteResult {
+  transaction: Transaction
+}
+
+export class TransactionDeleteCommand
+  implements Command<TransactionDeletePayload, TransactionDeleteResult> {
+  __resultType?: TransactionDeleteResult
+  constructor(public data: TransactionDeletePayload) {}
 }

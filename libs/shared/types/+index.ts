@@ -369,9 +369,8 @@ export const TransactionTypeUtils = {
 }
 
 export const transactionBaseSchema = type({
-  createdBy: "number = 0",
   amount: "number = 0",
-  memo: "string <= 256 = ''",
+  memo: "string <= 500 = ''",
   type: type.enumerated(...Object.values(TransactionType) as TransactionType[]).default(
     TransactionType.CREDIT,
   ),
@@ -382,9 +381,21 @@ export const transactionBaseSchema = type({
   accountId: "number > 0",
 })
 export type TransactionBase = typeof transactionBaseSchema.infer
-export const transactionSchema = BaseModelSchema.and(transactionBaseSchema)
+export const transactionCreateSchema = transactionBaseSchema.and(type({
+  createdBy: "number > 0",
+}))
+export type TransactionCreate = typeof transactionCreateSchema.infer
+export const transactionSchema = BaseModelSchema.and(transactionCreateSchema)
 export type Transaction = typeof transactionSchema.infer
-export const transactionUpdateSchema = transactionSchema.pick("amount", "memo", "type")
+export const transactionUpdateSchema = transactionSchema.pick(
+  "id",
+  "amount",
+  "memo",
+  "type",
+  "categoryId",
+  "originalCurrency",
+  "originalAmount",
+)
 export type TransactionUpdate = typeof transactionUpdateSchema.infer
 // #endregion Transaction
 

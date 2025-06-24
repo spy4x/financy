@@ -9,6 +9,8 @@ import { GroupList } from "./groups/list.tsx"
 import { GroupEditor } from "./groups/editor.tsx"
 import { AccountList } from "./accounts/list.tsx"
 import { AccountEditor } from "./accounts/editor.tsx"
+import { TransactionList } from "./transactions/list.tsx"
+import { TransactionEditor } from "./transactions/editor.tsx"
 
 type Route = {
   title: string
@@ -73,6 +75,23 @@ export const routes = {
         title: "Accounts - Edit",
         href: "/accounts/:id",
         component: AccountEditor,
+      },
+    },
+  },
+  transactions: {
+    title: "Transactions",
+    href: "/transactions",
+    component: TransactionList,
+    children: {
+      create: {
+        title: "Transactions - Create",
+        href: "/transactions/create",
+        component: TransactionEditor,
+      },
+      edit: {
+        title: "Transactions - Edit",
+        href: "/transactions/:id",
+        component: TransactionEditor,
       },
     },
   },

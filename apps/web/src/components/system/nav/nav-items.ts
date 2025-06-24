@@ -1,6 +1,13 @@
 import { Signal, signal } from "@preact/signals"
 import { FunctionalComponent } from "preact"
-import { IconBuildingOffice2, IconCpuChip, IconFolder, IconHome, IconUser } from "@client/icons"
+import {
+  IconArrowPath,
+  IconBuildingOffice2,
+  IconCpuChip,
+  IconFolder,
+  IconHome,
+  IconUser,
+} from "@client/icons"
 import { BadgeColor } from "@web/components/ui/Badge.tsx"
 import { routes } from "../../../routes/_router.tsx"
 import { isProd } from "@client/vite/env.ts"
@@ -32,6 +39,7 @@ export const navItems: NavItem[] = [
   { name: routes.dashboard.title, href: routes.dashboard.href, Icon: IconHome },
   { name: routes.groups.title, href: routes.groups.href, Icon: IconUser },
   { name: routes.accounts.title, href: routes.accounts.href, Icon: IconBuildingOffice2 },
+  { name: routes.transactions.title, href: routes.transactions.href, Icon: IconArrowPath },
   { name: routes.categories.title, href: routes.categories.href, Icon: IconFolder },
   ...(!isProd
     ? [{

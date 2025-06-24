@@ -13,7 +13,7 @@ import {
   Tag,
   TagBase,
   Transaction,
-  TransactionBase,
+  TransactionCreate,
   User,
   UserBase,
   UserKey,
@@ -23,7 +23,7 @@ import {
   UserSession,
   UserSessionBase,
 } from "@shared/types"
-import { DbServiceBase, sql } from "@server/db"
+import { DbServiceBase } from "@server/db"
 import { publicAPICache } from "./cache.ts"
 // import { getLatestMetrics } from "../routes/metric.ts"
 
@@ -31,7 +31,7 @@ export class DbService extends DbServiceBase {
   user = {
     ...this.buildMethods<User, UserBase, Partial<UserBase>>(`users`, publicAPICache.user),
     findMany: async (): Promise<User[]> => {
-      return sql<User[]>`
+      return this.sql<User[]>`
         SELECT u.*
         FROM users u
         LEFT JOIN user_keys uk
@@ -40,7 +40,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<(User)[]> => {
-      return sql<(User)[]>`
+      return this.sql<(User)[]>`
         SELECT u.*
         FROM users u
         LEFT JOIN user_keys uk
@@ -56,9 +56,9 @@ export class DbService extends DbServiceBase {
       data: UserSessionBase
     }): Promise<UserSession> => {
       const created = (
-        await sql<UserSession[]>`
+        await this.sql<UserSession[]>`
             INSERT INTO user_sessions
-            ${sql(this.sanitize(params.data))}
+            ${this.sql(this.sanitize(params.data))}
             RETURNING *`
       )[0]
       if (created) {
@@ -69,17 +69,18 @@ export class DbService extends DbServiceBase {
     findOne: async ({ id }: { id: number }): Promise<null | UserSession> => {
       return publicAPICache.userSession.wrap(
         id,
-        async () => (await sql<UserSession[]>`SELECT * FROM user_sessions WHERE id = ${id}`)[0],
+        async () =>
+          (await this.sql<UserSession[]>`SELECT * FROM user_sessions WHERE id = ${id}`)[0],
       )
     },
     findMany: async (params: {
       userId?: number
     }): Promise<UserSession[]> => {
-      return await sql<
+      return await this.sql<
         UserSession[]
       >`SELECT * FROM user_sessions 
       WHERE TRUE
-      ${params.userId ? sql`AND user_id = ${params.userId}` : sql``}
+      ${params.userId ? this.sql`AND user_id = ${params.userId}` : this.sql``}
       ORDER BY created_at DESC`
     },
     updateOne: async (params: {
@@ -87,9 +88,9 @@ export class DbService extends DbServiceBase {
       data: Partial<UserSessionBase>
     }): Promise<UserSession> => {
       const updated = (
-        await sql<UserSession[]>`
+        await this.sql<UserSession[]>`
             UPDATE user_sessions
-            SET updated_at = NOW(), ${sql(this.sanitize(params.data))}
+            SET updated_at = NOW(), ${this.sql(this.sanitize(params.data))}
             WHERE id = ${params.id}
             RETURNING *`
       )[0]
@@ -105,13 +106,17 @@ export class DbService extends DbServiceBase {
       data: Partial<UserSessionBase>
     }): Promise<UserSession[]> => {
       return (
-        await sql<UserSession[]>`
+        await this.sql<UserSession[]>`
             UPDATE user_sessions
-            SET updated_at = NOW(), ${sql(this.sanitize(params.data))}
+            SET updated_at = NOW(), ${this.sql(this.sanitize(params.data))}
             WHERE TRUE
-            ${params.userId ? sql`AND user_id = ${params.userId}` : sql``}
-            ${params.expiresAt?.lte ? sql`AND expires_at <= ${params.expiresAt.lte}` : sql``}
-            ${params.ids ? sql`AND id = ANY(${sql.array(params.ids)}::int[])` : sql``}
+            ${params.userId ? this.sql`AND user_id = ${params.userId}` : this.sql``}
+            ${
+          params.expiresAt?.lte ? this.sql`AND expires_at <= ${params.expiresAt.lte}` : this.sql``
+        }
+            ${
+          params.ids ? this.sql`AND id = ANY(${this.sql.array(params.ids)}::int[])` : this.sql``
+        }
             RETURNING *`
       )
     },
@@ -125,14 +130,18 @@ export class DbService extends DbServiceBase {
       identification?: string
     }): Promise<null | UserKey> => {
       const found = (
-        await sql<UserKey[]>`
+        await this.sql<UserKey[]>`
             SELECT *
             FROM user_keys
             WHERE TRUE
-            ${params.id ? sql`AND id = ${params.id}` : sql``}
-            ${params.userId ? sql`AND user_id = ${params.userId}` : sql``}
-            ${params.kind !== undefined ? sql`AND kind = ${params.kind}` : sql``}
-            ${params.identification ? sql`AND identification = ${params.identification}` : sql``}
+            ${params.id ? this.sql`AND id = ${params.id}` : this.sql``}
+            ${params.userId ? this.sql`AND user_id = ${params.userId}` : this.sql``}
+            ${params.kind !== undefined ? this.sql`AND kind = ${params.kind}` : this.sql``}
+            ${
+          params.identification
+            ? this.sql`AND identification = ${params.identification}`
+            : this.sql``
+        }
             LIMIT 1`
       )[0]
       if (found) {
@@ -143,19 +152,19 @@ export class DbService extends DbServiceBase {
     findById: async (id: number): Promise<UserKey | null> => {
       return publicAPICache.userKey.wrap(
         id,
-        async () => (await sql<UserKey[]>`SELECT * FROM user_keys WHERE id = ${id}`)[0],
+        async () => (await this.sql<UserKey[]>`SELECT * FROM user_keys WHERE id = ${id}`)[0],
       )
     },
     findMany: async (params: {
       userId?: number
       kind?: UserKeyKind
     }): Promise<UserKey[]> => {
-      return await sql<UserKey[]>`
+      return await this.sql<UserKey[]>`
         SELECT *
         FROM user_keys
         WHERE TRUE
-        ${params.userId ? sql`AND user_id = ${params.userId}` : sql``}
-        ${params.kind !== undefined ? sql`AND kind = ${params.kind}` : sql``}
+        ${params.userId ? this.sql`AND user_id = ${params.userId}` : this.sql``}
+        ${params.kind !== undefined ? this.sql`AND kind = ${params.kind}` : this.sql``}
         ORDER BY created_at DESC`
     },
     createOne: async (params: {
@@ -165,7 +174,7 @@ export class DbService extends DbServiceBase {
       secret: string
     }): Promise<UserKey> => {
       const created = (
-        await sql<UserKey[]>`
+        await this.sql<UserKey[]>`
             INSERT INTO user_keys (user_id, kind, identification, secret)
             VALUES (${params.userId}, ${params.kind}, ${params.identification}, ${params.secret})
             RETURNING *`
@@ -180,9 +189,9 @@ export class DbService extends DbServiceBase {
       data: Partial<UserKey>
     }): Promise<UserKey> => {
       const updated = (
-        await sql<UserKey[]>`
+        await this.sql<UserKey[]>`
             UPDATE user_keys
-            SET updated_at = NOW(), ${sql(this.sanitize(params.data))}
+            SET updated_at = NOW(), ${this.sql(this.sanitize(params.data))}
             WHERE id = ${params.id}
             RETURNING *`
       )[0]
@@ -192,7 +201,7 @@ export class DbService extends DbServiceBase {
       return updated
     },
     deleteOne: async (params: { id: number }): Promise<void> => {
-      const deleted = await sql<UserKey[]>`
+      const deleted = await this.sql<UserKey[]>`
             DELETE FROM user_keys
             WHERE id = ${params.id}
             RETURNING *`
@@ -204,7 +213,7 @@ export class DbService extends DbServiceBase {
 
   userPushToken = {
     findAll: async (): Promise<UserPushToken[]> => {
-      return await sql<UserPushToken[]>`
+      return await this.sql<UserPushToken[]>`
         SELECT *
         FROM user_push_tokens
         WHERE deleted_at IS NULL 
@@ -213,7 +222,7 @@ export class DbService extends DbServiceBase {
     findMany: async (params: {
       userId: number
     }): Promise<UserPushToken[]> => {
-      return await sql<UserPushToken[]>`
+      return await this.sql<UserPushToken[]>`
         SELECT *
         FROM user_push_tokens
         WHERE deleted_at IS NULL AND user_id = ${params.userId} 
@@ -223,16 +232,16 @@ export class DbService extends DbServiceBase {
       { deviceId, userId }: { deviceId: string; userId: number },
     ): Promise<null | UserPushToken> => {
       return (
-        await sql<
+        await this.sql<
           UserPushToken[]
         >`SELECT * FROM user_push_tokens WHERE deleted_at is NULL AND device_id = ${deviceId} AND user_id = ${userId}`
       )[0]
     },
     createOne: async (params: UserPushTokenBase) => {
       return (
-        await sql<UserPushToken[]>`
+        await this.sql<UserPushToken[]>`
             INSERT INTO user_push_tokens
-            ${sql(this.sanitize(params))}
+            ${this.sql(this.sanitize(params))}
             RETURNING *`
       )[0]
     },
@@ -241,24 +250,24 @@ export class DbService extends DbServiceBase {
       data: Partial<UserPushToken>
     }): Promise<UserPushToken> => {
       return (
-        await sql<UserPushToken[]>`
+        await this.sql<UserPushToken[]>`
             UPDATE user_push_tokens
-            SET updated_at = NOW(), ${sql(this.sanitize(params.data))}
+            SET updated_at = NOW(), ${this.sql(this.sanitize(params.data))}
             WHERE id = ${params.id}
             RETURNING *`
       )[0]
     },
     deleteOne: async (params: { deviceId: string; userId?: number }): Promise<void> => {
-      await sql<UserPushToken[]>`
+      await this.sql<UserPushToken[]>`
         UPDATE user_push_tokens
           SET updated_at = NOW(), deleted_at = NOW()
           WHERE device_id = ${params.deviceId} ${
-        params.userId ? sql`AND user_id = ${params.userId}` : sql``
+        params.userId ? this.sql`AND user_id = ${params.userId}` : this.sql``
       }
           RETURNING *`
     },
     deleteByUser: async (params: { userId: number }): Promise<void> => {
-      await sql<UserPushToken[]>`
+      await this.sql<UserPushToken[]>`
             UPDATE user_push_tokens
             SET updated_at = NOW(), deleted_at = NOW()
             WHERE user_id = ${params.userId}
@@ -272,7 +281,7 @@ export class DbService extends DbServiceBase {
       publicAPICache.group,
     ),
     findMany: async (userId: number): Promise<Group[]> => {
-      return sql<Group[]>`
+      return this.sql<Group[]>`
         SELECT g.*
         FROM groups g
         JOIN group_memberships gm ON g.id = gm.group_id
@@ -281,7 +290,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Group[]> => {
-      return sql<Group[]>`
+      return this.sql<Group[]>`
         SELECT g.*
         FROM groups g
         JOIN group_memberships gm ON g.id = gm.group_id
@@ -298,7 +307,7 @@ export class DbService extends DbServiceBase {
       publicAPICache.groupMembership,
     ),
     findMany: async (userId: number): Promise<GroupMembership[]> => {
-      return sql<GroupMembership[]>`
+      return this.sql<GroupMembership[]>`
         SELECT gm.*
         FROM group_memberships gm
         WHERE gm.user_id = ${userId}
@@ -306,7 +315,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<GroupMembership[]> => {
-      return sql<GroupMembership[]>`
+      return this.sql<GroupMembership[]>`
         SELECT gm.*
         FROM group_memberships gm
         WHERE gm.user_id = ${userId}
@@ -318,7 +327,7 @@ export class DbService extends DbServiceBase {
       userId: number,
       groupId: number,
     ): Promise<GroupMembership | null> => {
-      const results = await sql<GroupMembership[]>`
+      const results = await this.sql<GroupMembership[]>`
         SELECT gm.*
         FROM group_memberships gm
         WHERE gm.user_id = ${userId}
@@ -336,7 +345,7 @@ export class DbService extends DbServiceBase {
       publicAPICache.account,
     ),
     findMany: async (userId: number): Promise<Account[]> => {
-      return sql<Account[]>`
+      return this.sql<Account[]>`
         SELECT a.*
         FROM accounts a
         JOIN groups g ON a.group_id = g.id
@@ -346,7 +355,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Account[]> => {
-      return sql<Account[]>`
+      return this.sql<Account[]>`
         SELECT a.*
         FROM accounts a
         JOIN groups g ON a.group_id = g.id
@@ -371,6 +380,17 @@ export class DbService extends DbServiceBase {
       }
       return true
     },
+    updateBalance: async (
+      accountId: number,
+      balanceDiff: number,
+    ): Promise<Account> => {
+      return (await this.sql<Account[]>`
+        UPDATE accounts 
+        SET balance = balance + ${balanceDiff}, updated_at = NOW()
+        WHERE id = ${accountId}
+        RETURNING *
+      `)[0]
+    },
   }
 
   category = {
@@ -379,7 +399,7 @@ export class DbService extends DbServiceBase {
       publicAPICache.category,
     ),
     findMany: async (userId: number): Promise<Category[]> => {
-      return sql<Category[]>`
+      return this.sql<Category[]>`
         SELECT c.*
         FROM categories c
         JOIN groups g ON c.group_id = g.id
@@ -389,7 +409,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Category[]> => {
-      return sql<Category[]>`
+      return this.sql<Category[]>`
         SELECT c.*
         FROM categories c
         JOIN groups g ON c.group_id = g.id
@@ -425,6 +445,26 @@ export class DbService extends DbServiceBase {
       }
       return true
     },
+    incrementUsage: async (
+      categoryId: number,
+    ): Promise<Category> => {
+      return (await this.sql<Category[]>`
+        UPDATE categories 
+        SET usage_count = usage_count + 1, updated_at = NOW()
+        WHERE id = ${categoryId}
+        RETURNING *
+      `)[0]
+    },
+    decrementUsage: async (
+      categoryId: number,
+    ): Promise<Category> => {
+      return (await this.sql<Category[]>`
+        UPDATE categories 
+        SET usage_count = GREATEST(usage_count - 1, 0), updated_at = NOW()
+        WHERE id = ${categoryId}
+        RETURNING *
+      `)[0]
+    },
   }
 
   tag = {
@@ -432,7 +472,7 @@ export class DbService extends DbServiceBase {
     findMany: async (_userId: number): Promise<Tag[]> => {
       // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
       // -- WHERE t.user_id = ${userId} -- TODO: create tags.group_id
-      return sql<Tag[]>`
+      return this.sql<Tag[]>`
         SELECT t.*
         FROM tags t
         ORDER BY t.created_at DESC
@@ -441,7 +481,7 @@ export class DbService extends DbServiceBase {
     findChanged: async (updatedAtGt: Date, _userId: number): Promise<Tag[]> => {
       // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
       // -- AND t.user_id = ${userId} -- TODO: create tags.group_id
-      return sql<Tag[]>`
+      return this.sql<Tag[]>`
         SELECT t.*
         FROM tags t
         WHERE 1=1 
@@ -452,26 +492,49 @@ export class DbService extends DbServiceBase {
   }
 
   transaction = {
-    ...this.buildMethods<Transaction, TransactionBase, Partial<SyncModel>>(
+    ...this.buildMethods<Transaction, TransactionCreate, Partial<TransactionCreate>>(
       `transactions`,
       publicAPICache.transaction,
     ),
-    findMany: async (userId: number): Promise<SyncModel[]> => {
-      return sql<SyncModel[]>`
+    findMany: async (userId: number): Promise<Transaction[]> => {
+      return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
         WHERE t.group_id IN (
-          SELECT group_id FROM group_memberships WHERE user_id = ${userId}
+          SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
         )
+        AND t.deleted_at IS NULL
         ORDER BY t.created_at DESC
       `
     },
-    findChanged: async (updatedAtGt: Date, userId: number): Promise<SyncModel[]> => {
-      return sql<SyncModel[]>`
+    findByGroup: async (groupId: number, _userId: number): Promise<Transaction[]> => {
+      return this.sql<Transaction[]>`
+        SELECT t.*
+        FROM transactions t
+        WHERE t.group_id = ${groupId}
+        AND t.deleted_at IS NULL
+        ORDER BY t.created_at DESC
+      `
+    },
+    findByAccount: async (accountId: number, userId: number): Promise<Transaction[]> => {
+      return this.sql<Transaction[]>`
+        SELECT t.*
+        FROM transactions t
+        JOIN accounts a ON t.account_id = a.id
+        WHERE t.account_id = ${accountId}
+        AND t.group_id IN (
+          SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
+        )
+        AND t.deleted_at IS NULL
+        ORDER BY t.created_at DESC
+      `
+    },
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<Transaction[]> => {
+      return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
         WHERE t.group_id IN (
-          SELECT group_id FROM group_memberships WHERE user_id = ${userId}
+          SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
         )
         AND t.updated_at > ${updatedAtGt}
         ORDER BY t.created_at DESC
@@ -490,7 +553,7 @@ export class DbService extends DbServiceBase {
       return this.transaction.verifyLegitimacy(transaction, userId)
     },
     verifyLegitimacy: async (
-      transaction: TransactionBase,
+      transaction: TransactionCreate,
       userId: number,
     ): Promise<boolean> => {
       // check groupId
@@ -511,16 +574,14 @@ export class DbService extends DbServiceBase {
         )
         return false
       }
-      // check categoryId
-      if (transaction.categoryId) {
-        const categories = await this.category.findMany(userId)
-        const categoryIds = categories.map((c) => c.id)
-        if (!categoryIds.includes(transaction.categoryId)) {
-          console.warn(
-            `Transaction categoryId "${transaction.categoryId}" does not belong to userId "${userId}"`,
-          )
-          return false
-        }
+      // check categoryId - categoryId is now required (NOT NULL)
+      const categories = await this.category.findMany(userId)
+      const categoryIds = categories.map((c) => c.id)
+      if (!categoryIds.includes(transaction.categoryId)) {
+        console.warn(
+          `Transaction categoryId "${transaction.categoryId}" does not belong to userId "${userId}"`,
+        )
+        return false
       }
       return true
     },

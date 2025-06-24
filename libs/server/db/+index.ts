@@ -21,7 +21,7 @@ export { postgres }
 // console.log(query, parameters.length ? parameters : "");
 
 export class DbServiceBase {
-  private sql = sql
+  protected sql = sql
 
   protected setSql(_sql: typeof sql | Transaction): void {
     this.sql = _sql

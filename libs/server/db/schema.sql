@@ -199,9 +199,9 @@ CREATE TABLE transactions (
     amount INT4 NOT NULL,
     original_currency VARCHAR(3),
     original_amount INT4,
-    category_id INT4 REFERENCES categories(id),
+    category_id INT4 NOT NULL REFERENCES categories(id),
     created_by INT4 NOT NULL REFERENCES users(id),
-    memo TEXT,
+    memo TEXT CHECK (LENGTH(memo) <= 500),
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
@@ -212,7 +212,7 @@ COMMENT ON COLUMN transactions.amount IS 'Stored in smallest unit';
 COMMENT ON COLUMN transactions.original_currency IS 'Vendor''s currency (ISO 4217)';
 COMMENT ON COLUMN transactions.original_amount IS 'Original amount in vendor''s currency';
 COMMENT ON COLUMN transactions.category_id IS 'Transaction category';
-COMMENT ON COLUMN transactions.memo IS 'Additional notes';
+COMMENT ON COLUMN transactions.memo IS 'Additional notes (max 500 characters)';
 
 CREATE INDEX idx_transactions_sync_retrieval ON transactions (updated_at DESC);
 CREATE INDEX idx_transactions_by_group ON transactions (group_id);
