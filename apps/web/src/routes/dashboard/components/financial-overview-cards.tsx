@@ -17,27 +17,32 @@ export function FinancialOverviewCards() {
   const currentMonthTransactions = useComputed(() => {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
 
     return transaction.list.value
-      .filter((txn) =>
-        txn.groupId === group.selectedId.value &&
-        new Date(txn.createdAt) >= startOfMonth &&
-        !txn.deletedAt
-      )
+      .filter((txn) => {
+        const txnDate = new Date(txn.createdAt)
+        return (
+          txn.groupId === group.selectedId.value &&
+          txnDate >= startOfMonth &&
+          txnDate <= endOfMonth &&
+          !txn.deletedAt
+        )
+      })
   })
 
-  // Calculate monthly income (CREDIT transactions)
+  // Calculate monthly income (CREDIT transactions - money coming in)
   const monthlyIncome = useComputed(() =>
     currentMonthTransactions.value
       .filter((txn) => txn.type === TransactionType.CREDIT)
-      .reduce((sum, txn) => sum + txn.amount, 0)
+      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
-  // Calculate monthly expenses (DEBIT transactions)
+  // Calculate monthly expenses (DEBIT transactions - money going out)
   const monthlyExpenses = useComputed(() =>
     currentMonthTransactions.value
       .filter((txn) => txn.type === TransactionType.DEBIT)
-      .reduce((sum, txn) => sum + txn.amount, 0)
+      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
   // Calculate net cash flow (income - expenses)
@@ -64,7 +69,7 @@ export function FinancialOverviewCards() {
     },
     {
       title: "Monthly Expenses",
-      amount: monthlyExpenses.value,
+      amount: -monthlyExpenses.value, // Display as negative
       description: "This month",
       positive: false,
     },
@@ -95,7 +100,6 @@ export function FinancialOverviewCards() {
                       class={`text-2xl font-bold ${
                         card.positive ? "text-green-600" : "text-red-600"
                       }`}
-                      highlightNegative={!card.positive}
                     />
                   </div>
                   <p class="text-sm text-gray-500 mt-1">

@@ -9,41 +9,49 @@ export function CashFlowSummary() {
   const currentMonthTransactions = useComputed(() => {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
 
     return transaction.list.value
-      .filter((txn) =>
-        txn.groupId === group.selectedId.value &&
-        new Date(txn.createdAt) >= startOfMonth &&
-        !txn.deletedAt
-      )
+      .filter((txn) => {
+        const txnDate = new Date(txn.createdAt)
+        return (
+          txn.groupId === group.selectedId.value &&
+          txnDate >= startOfMonth &&
+          txnDate <= endOfMonth &&
+          !txn.deletedAt
+        )
+      })
   })
 
   // Get previous month transactions for comparison
   const previousMonthTransactions = useComputed(() => {
     const now = new Date()
     const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+    const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999)
 
     return transaction.list.value
-      .filter((txn) =>
-        txn.groupId === group.selectedId.value &&
-        new Date(txn.createdAt) >= startOfPrevMonth &&
-        new Date(txn.createdAt) <= endOfPrevMonth &&
-        !txn.deletedAt
-      )
+      .filter((txn) => {
+        const txnDate = new Date(txn.createdAt)
+        return (
+          txn.groupId === group.selectedId.value &&
+          txnDate >= startOfPrevMonth &&
+          txnDate <= endOfPrevMonth &&
+          !txn.deletedAt
+        )
+      })
   })
 
   // Calculate current month metrics
   const currentMonthIncome = useComputed(() =>
     currentMonthTransactions.value
       .filter((txn) => txn.type === TransactionType.CREDIT)
-      .reduce((sum, txn) => sum + txn.amount, 0)
+      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
   const currentMonthExpenses = useComputed(() =>
     currentMonthTransactions.value
       .filter((txn) => txn.type === TransactionType.DEBIT)
-      .reduce((sum, txn) => sum + txn.amount, 0)
+      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
   const currentNetFlow = useComputed(() => currentMonthIncome.value - currentMonthExpenses.value)
@@ -52,13 +60,13 @@ export function CashFlowSummary() {
   const previousMonthIncome = useComputed(() =>
     previousMonthTransactions.value
       .filter((txn) => txn.type === TransactionType.CREDIT)
-      .reduce((sum, txn) => sum + txn.amount, 0)
+      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
   const previousMonthExpenses = useComputed(() =>
     previousMonthTransactions.value
       .filter((txn) => txn.type === TransactionType.DEBIT)
-      .reduce((sum, txn) => sum + txn.amount, 0)
+      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
   const previousNetFlow = useComputed(() => previousMonthIncome.value - previousMonthExpenses.value)
@@ -159,7 +167,7 @@ export function CashFlowSummary() {
                 <div class="text-right">
                   <div class="text-lg font-semibold text-red-600">
                     <CurrencyDisplay
-                      amount={currentMonthExpenses.value}
+                      amount={-currentMonthExpenses.value}
                       currency={defaultCurrency.value}
                     />
                   </div>

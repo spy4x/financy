@@ -11,14 +11,19 @@ export function CategorySpendingBreakdown() {
   const currentMonthTransactions = useComputed(() => {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
 
     return transaction.list.value
-      .filter((txn) =>
-        txn.groupId === group.selectedId.value &&
-        txn.type === TransactionType.DEBIT && // Only debit transactions for spending
-        new Date(txn.createdAt) >= startOfMonth &&
-        !txn.deletedAt
-      )
+      .filter((txn) => {
+        const txnDate = new Date(txn.createdAt)
+        return (
+          txn.groupId === group.selectedId.value &&
+          txn.type === TransactionType.DEBIT && // Only debit transactions for spending
+          txnDate >= startOfMonth &&
+          txnDate <= endOfMonth &&
+          !txn.deletedAt
+        )
+      })
   })
 
   // Get categories for selected group
@@ -48,18 +53,24 @@ export function CategorySpendingBreakdown() {
           monthlyLimit: cat?.monthlyLimit || undefined,
         }
       }
-      spending[txn.categoryId].amount += txn.amount
-      totalSpending += txn.amount
+      // Use absolute amount for spending calculations since amounts are stored as positive values
+      // and we've already filtered for DEBIT transactions only
+      const spendingAmount = Math.abs(txn.amount)
+      spending[txn.categoryId].amount += spendingAmount
+      totalSpending += spendingAmount
     })
 
     // Convert to array and add percentages
-    return Object.entries(spending)
+    const spendingArray = Object.entries(spending)
       .map(([categoryId, data]) => ({
         categoryId: parseInt(categoryId),
         ...data,
         percentage: totalSpending > 0 ? (data.amount / totalSpending) * 100 : 0,
+        totalSpending, // Include total for efficiency
       }))
       .sort((a, b) => b.amount - a.amount) // Sort by spending amount descending
+
+    return spendingArray
   })
 
   // Get the default currency from selected group
@@ -68,9 +79,11 @@ export function CategorySpendingBreakdown() {
     return selectedGroup?.defaultCurrency || "USD"
   })
 
-  const totalSpending = useComputed(() =>
-    categorySpendingData.value.reduce((sum, item) => sum + item.amount, 0)
-  )
+  // Get total spending from category data (more efficient than recalculating)
+  const totalSpending = useComputed(() => {
+    const data = categorySpendingData.value
+    return data.length > 0 ? data[0].totalSpending || 0 : 0
+  })
 
   if (categorySpendingData.value.length === 0) {
     return (

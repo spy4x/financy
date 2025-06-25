@@ -24,11 +24,11 @@ export function MonthlySpendingTrends() {
 
       const income = monthTransactions
         .filter((txn) => txn.type === TransactionType.CREDIT)
-        .reduce((sum, txn) => sum + txn.amount, 0)
+        .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
 
       const expenses = monthTransactions
         .filter((txn) => txn.type === TransactionType.DEBIT)
-        .reduce((sum, txn) => sum + txn.amount, 0)
+        .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
 
       data.push({
         month: monthDate.toLocaleDateString("en-US", { month: "short" }),

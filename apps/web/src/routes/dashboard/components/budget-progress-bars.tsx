@@ -11,14 +11,19 @@ export function BudgetProgressBars() {
   const currentMonthTransactions = useComputed(() => {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
 
     return transaction.list.value
-      .filter((txn) =>
-        txn.groupId === group.selectedId.value &&
-        txn.type === TransactionType.DEBIT && // Only debit transactions count towards spending
-        new Date(txn.createdAt) >= startOfMonth &&
-        !txn.deletedAt
-      )
+      .filter((txn) => {
+        const txnDate = new Date(txn.createdAt)
+        return (
+          txn.groupId === group.selectedId.value &&
+          txn.type === TransactionType.DEBIT && // Only debit transactions count towards spending
+          txnDate >= startOfMonth &&
+          txnDate <= endOfMonth &&
+          !txn.deletedAt
+        )
+      })
   })
 
   // Get categories with budgets for selected group
@@ -40,7 +45,7 @@ export function BudgetProgressBars() {
       if (!spending[txn.categoryId]) {
         spending[txn.categoryId] = 0
       }
-      spending[txn.categoryId] += txn.amount
+      spending[txn.categoryId] += Math.abs(txn.amount)
     })
 
     return spending
