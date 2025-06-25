@@ -1,5 +1,6 @@
 import { useComputed } from "@preact/signals"
-import { useLocation } from "wouter-preact"
+import { Link } from "wouter-preact"
+import { navigate } from "@client/helpers"
 import { transaction } from "../../../state/transaction.ts"
 import { account } from "../../../state/account.ts"
 import { category } from "../../../state/category.ts"
@@ -11,8 +12,6 @@ import { IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/ic
 import { TransactionType } from "@shared/types"
 
 export function RecentTransactionsList() {
-  const [, navigate] = useLocation()
-
   // Get recent transactions for selected group
   const recentTransactions = useComputed(() =>
     transaction.list.value
@@ -64,30 +63,38 @@ export function RecentTransactionsList() {
       <div>
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
-          <button
-            type="button"
-            class={`btn btn-sm ${
-              group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
-            }`}
-            onClick={() => group.selectedId.value && navigate("/transactions")}
-            disabled={!group.selectedId.value}
-          >
-            View All
-          </button>
+          {group.selectedId.value
+            ? (
+              <Link
+                href="/transactions"
+                class="btn btn-sm btn-primary"
+              >
+                View All
+              </Link>
+            )
+            : (
+              <div class="btn btn-sm btn-disabled cursor-not-allowed">
+                View All
+              </div>
+            )}
         </div>
         <div class="card">
           <div class="card-body text-center py-12">
             <p class="text-gray-500 mb-4">No transactions yet</p>
-            <button
-              type="button"
-              class={`btn ${
-                group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
-              }`}
-              onClick={() => group.selectedId.value && navigate("/transactions/create")}
-              disabled={!group.selectedId.value}
-            >
-              Add Your First Transaction
-            </button>
+            {group.selectedId.value
+              ? (
+                <Link
+                  href="/transactions/create"
+                  class="btn btn-primary"
+                >
+                  Add Your First Transaction
+                </Link>
+              )
+              : (
+                <div class="btn btn-disabled cursor-not-allowed">
+                  Add Your First Transaction
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -98,13 +105,12 @@ export function RecentTransactionsList() {
     <div>
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
-        <button
-          type="button"
+        <Link
+          href="/transactions"
           class="btn btn-sm btn-primary"
-          onClick={() => navigate("/transactions")}
         >
           View All
-        </button>
+        </Link>
       </div>
 
       <Table

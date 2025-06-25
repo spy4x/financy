@@ -2,7 +2,7 @@ import { transaction } from "@web/state/transaction.ts"
 import { account } from "@web/state/account.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
-import { useComputed, useSignal } from "@preact/signals"
+import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
 import {
   IconEllipsisVertical,
   IconFunnel,
@@ -29,6 +29,19 @@ export function TransactionList() {
     to: useSignal(""),
     status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
+
+  // Initialize filters from URL parameters
+  useSignalEffect(() => {
+    const urlParams = new URLSearchParams(globalThis.location.search)
+    const categoryIdParam = urlParams.get("categoryId")
+
+    if (categoryIdParam) {
+      const categoryId = parseInt(categoryIdParam, 10)
+      if (!isNaN(categoryId)) {
+        filter.categoryId.value = categoryId
+      }
+    }
+  })
 
   const filteredTransactions = useComputed(() => {
     const transactions = transaction.list.value

@@ -1,13 +1,12 @@
 import { useComputed } from "@preact/signals"
-import { useLocation } from "wouter-preact"
+import { Link } from "wouter-preact"
+import { navigate } from "@client/helpers"
 import { account } from "../../../state/account.ts"
 import { group } from "../../../state/group.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { IconHome, IconPlus } from "@client/icons"
 
 export function AccountBalancesOverview() {
-  const [, navigate] = useLocation()
-
   // Get accounts for selected group
   const groupAccounts = useComputed(() =>
     account.list.value
@@ -40,11 +39,6 @@ export function AccountBalancesOverview() {
     navigate(`/accounts/${accountId}`)
   }
 
-  const handleAddAccount = () => {
-    if (!group.selectedId.value) return
-    navigate("/accounts/create")
-  }
-
   if (groupAccounts.value.length === 0) {
     return (
       <div>
@@ -56,17 +50,22 @@ export function AccountBalancesOverview() {
             <p class="text-sm text-gray-400 mb-4">
               Create your first account to start tracking your finances.
             </p>
-            <button
-              type="button"
-              class={`btn ${
-                group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
-              }`}
-              onClick={handleAddAccount}
-              disabled={!group.selectedId.value}
-            >
-              <IconPlus class="size-4 mr-2" />
-              Add Account
-            </button>
+            {group.selectedId.value
+              ? (
+                <Link
+                  href="/accounts/create"
+                  class="btn btn-primary"
+                >
+                  <IconPlus class="size-4 mr-2" />
+                  Add Account
+                </Link>
+              )
+              : (
+                <div class="btn btn-disabled cursor-not-allowed">
+                  <IconPlus class="size-4 mr-2" />
+                  Add Account
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -77,13 +76,12 @@ export function AccountBalancesOverview() {
     <div>
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-medium text-gray-900">Account Balances</h2>
-        <button
-          type="button"
+        <Link
+          href="/accounts"
           class="btn btn-sm btn-primary-outline"
-          onClick={() => navigate("/accounts")}
         >
           View All
-        </button>
+        </Link>
       </div>
 
       <div class="card">
@@ -180,14 +178,13 @@ export function AccountBalancesOverview() {
 
           {/* Add Account Button */}
           <div class="mt-4 pt-4 border-t border-gray-200">
-            <button
-              type="button"
+            <Link
+              href="/accounts/create"
               class="btn btn-sm btn-primary-outline w-full"
-              onClick={handleAddAccount}
             >
               <IconPlus class="size-4 mr-2" />
               Add Account
-            </button>
+            </Link>
           </div>
         </div>
       </div>

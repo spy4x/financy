@@ -1,10 +1,8 @@
-import { useLocation } from "wouter-preact"
+import { Link } from "wouter-preact"
 import { group } from "../../../state/group.ts"
 import { IconChartPie, IconHome, IconPlus } from "@client/icons"
 
 export function QuickActionsPanel() {
-  const [, navigate] = useLocation()
-
   const actions = [
     {
       title: "Add Transaction",
@@ -29,13 +27,6 @@ export function QuickActionsPanel() {
     },
   ]
 
-  const handleActionClick = (href: string) => {
-    if (!group.selectedId.value) {
-      return // Disabled state, do nothing
-    }
-    navigate(href)
-  }
-
   const isDisabled = !group.selectedId.value
 
   return (
@@ -46,23 +37,45 @@ export function QuickActionsPanel() {
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {actions.map((action, index) => {
               const Icon = action.icon
-              const buttonClass = `
+              const linkClass = `
                 btn flex flex-col items-center gap-2 p-4 h-auto min-h-[120px]
                 ${
                 action.primary
-                  ? (isDisabled ? "btn-disabled cursor-not-allowed" : "btn-primary")
-                  : (isDisabled ? "btn-disabled cursor-not-allowed" : "btn-primary-outline")
+                  ? (isDisabled
+                    ? "btn-disabled cursor-not-allowed pointer-events-none"
+                    : "btn-primary")
+                  : (isDisabled
+                    ? "btn-disabled cursor-not-allowed pointer-events-none"
+                    : "btn-primary-outline")
               }
               `.trim()
 
+              if (isDisabled) {
+                return (
+                  <div
+                    key={index}
+                    class={linkClass}
+                    title="Please select a group first"
+                  >
+                    <Icon class="size-8" />
+                    <div class="text-center">
+                      <div class="text-sm font-medium">
+                        {action.title}
+                      </div>
+                      <div class="text-xs opacity-75 mt-1">
+                        {action.description}
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+
               return (
-                <button
+                <Link
                   key={index}
-                  type="button"
-                  class={buttonClass}
-                  onClick={() => handleActionClick(action.href)}
-                  disabled={isDisabled}
-                  title={isDisabled ? "Please select a group first" : action.description}
+                  href={action.href}
+                  class={linkClass}
+                  title={action.description}
                 >
                   <Icon class="size-8" />
                   <div class="text-center">
@@ -73,7 +86,7 @@ export function QuickActionsPanel() {
                       {action.description}
                     </div>
                   </div>
-                </button>
+                </Link>
               )
             })}
           </div>

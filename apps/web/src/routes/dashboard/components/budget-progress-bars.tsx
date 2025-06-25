@@ -1,5 +1,5 @@
 import { useComputed } from "@preact/signals"
-import { useLocation } from "wouter-preact"
+import { Link } from "wouter-preact"
 import { category } from "../../../state/category.ts"
 import { transaction } from "../../../state/transaction.ts"
 import { group } from "../../../state/group.ts"
@@ -7,7 +7,6 @@ import { BudgetProgress } from "../../../components/ui/BudgetProgress.tsx"
 import { TransactionType } from "@shared/types"
 
 export function BudgetProgressBars() {
-  const [, navigate] = useLocation()
   // Get current month transactions for spending calculations
   const currentMonthTransactions = useComputed(() => {
     const now = new Date()
@@ -63,21 +62,20 @@ export function BudgetProgressBars() {
             <p class="text-sm text-gray-400 mb-4">
               Set monthly spending limits for your categories to track budget progress.
             </p>
-            <button
-              type="button"
-              class={`btn btn-sm ${
-                group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
-              }`}
-              onClick={() => {
-                if (group.selectedId.value) {
-                  // Navigate to categories page
-                  globalThis.location.href = "/categories"
-                }
-              }}
-              disabled={!group.selectedId.value}
-            >
-              Manage Categories
-            </button>
+            {group.selectedId.value
+              ? (
+                <Link
+                  href="/categories"
+                  class="btn btn-sm btn-primary"
+                >
+                  Manage Categories
+                </Link>
+              )
+              : (
+                <div class="btn btn-sm btn-disabled cursor-not-allowed">
+                  Manage Categories
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -112,15 +110,12 @@ export function BudgetProgressBars() {
           </div>
 
           <div class="mt-6 pt-4 border-t border-gray-200">
-            <button
-              type="button"
+            <Link
+              href="/categories"
               class="btn btn-sm btn-primary-outline w-full"
-              onClick={() => {
-                navigate("/categories")
-              }}
             >
               Manage Categories & Budgets
-            </button>
+            </Link>
           </div>
         </div>
       </div>

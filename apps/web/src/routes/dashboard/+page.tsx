@@ -8,6 +8,8 @@ import { BudgetProgressBars } from "./components/budget-progress-bars.tsx"
 import { AccountBalancesOverview } from "./components/account-balances-overview.tsx"
 import { CashFlowSummary } from "./components/cash-flow-summary.tsx"
 import { MonthlySpendingTrends } from "./components/monthly-spending-trends.tsx"
+import { CategorySpendingBreakdown } from "./components/category-spending-breakdown.tsx"
+import { ExchangeRateWidget } from "./components/exchange-rate-widget.tsx"
 
 export function Dashboard() {
   const hasSelectedGroup = useComputed(() => !!group.selectedId.value)
@@ -60,6 +62,15 @@ export function Dashboard() {
 
           {/* Monthly Spending Trends */}
           <MonthlySpendingTrends />
+        </div>
+
+        {/* Advanced Analytics Section - Two-column layout */}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Category Spending Breakdown */}
+          <CategorySpendingBreakdown />
+
+          {/* Exchange Rate Widget */}
+          <ExchangeRateWidget />
         </div>
 
         {/* Recent Transactions */}
