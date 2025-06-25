@@ -3,13 +3,13 @@
 Open-source, self-hostable finance tracking for individuals, families, and small
 businesses.
 
-Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
+Check it out at [financy.dev](https://financy.dev).
 
-- 🟡 **Data Cleanup** - Remove expired sessions/data (partial implementation)source** and **self-hostable** double-entry financial
-  management web application focused on personal, family, and business expense
-  management. It emphasizes rich capabilities, transparency, and ease of use while
-  offering advanced features like group collaboration, public API integrations,
-  and Telegram bot integration.
+Financy is a double-entry financial
+management web application focused on personal, family, and business expense
+management. It emphasizes rich capabilities, transparency, and ease of use while
+offering advanced features like group collaboration, public API integrations,
+and Telegram bot integration.
 
 ## 🗺️ Development Roadmap
 
@@ -148,7 +148,7 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 - ⚪ **Data Export** - Backup user data (JSON/SQL)
 - ⚪ **Data Import** - Restore from backups
 - ⚪ **Data Archiving** - Archive old transactions
-- � **Data Cleanup** - Remove expired sessions/data (partial implementation)
+- 🟡 **Data Cleanup** - Remove expired sessions/data (partial implementation)
 
 ### 🏛️ Infrastructure & DevOps
 
