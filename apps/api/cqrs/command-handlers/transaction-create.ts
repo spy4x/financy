@@ -59,10 +59,7 @@ export const transactionCreateHandler: CommandHandler<TransactionCreateCommand> 
         balanceChange,
       )
 
-      // Update category usage count
-      const categoryUpdated = await tx.category.incrementUsage(transactionData.categoryId)
-
-      return { transaction, accountUpdated, categoryUpdated }
+      return { transaction, accountUpdated }
     })
 
     // Emit event for WebSocket notifications and other side effects
@@ -70,7 +67,6 @@ export const transactionCreateHandler: CommandHandler<TransactionCreateCommand> 
       new TransactionCreatedEvent({
         transaction: result.transaction,
         accountUpdated: result.accountUpdated,
-        categoryUpdated: result.categoryUpdated,
         acknowledgmentId,
       }),
     )

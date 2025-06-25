@@ -1,5 +1,5 @@
 import { Event } from "@shared/cqrs/types.ts"
-import { Account, Category, Group, GroupMembership, Transaction, User } from "@shared/types"
+import { Account, Group, GroupMembership, Transaction, User } from "@shared/types"
 
 /**
  * Event emitted when a user signs up (after user creation and session setup)
@@ -32,14 +32,12 @@ export class TransactionCreatedEvent implements
   Event<{
     transaction: Transaction
     accountUpdated: Account
-    categoryUpdated: Category
     acknowledgmentId?: string
   }> {
   constructor(
     public data: {
       transaction: Transaction
       accountUpdated: Account
-      categoryUpdated: Category
       acknowledgmentId?: string
     },
   ) {}
@@ -53,8 +51,6 @@ export class TransactionUpdatedEvent implements
     transaction: Transaction
     originalTransaction: Transaction
     accountUpdated: Account
-    oldCategoryUpdated?: Category // If category changed
-    newCategoryUpdated?: Category // If category changed
     acknowledgmentId?: string
   }> {
   constructor(
@@ -62,8 +58,6 @@ export class TransactionUpdatedEvent implements
       transaction: Transaction
       originalTransaction: Transaction
       accountUpdated: Account
-      oldCategoryUpdated?: Category
-      newCategoryUpdated?: Category
       acknowledgmentId?: string
     },
   ) {}
@@ -76,14 +70,12 @@ export class TransactionDeletedEvent implements
   Event<{
     transaction: Transaction
     accountUpdated: Account
-    categoryUpdated: Category
     acknowledgmentId?: string
   }> {
   constructor(
     public data: {
       transaction: Transaction
       accountUpdated: Account
-      categoryUpdated: Category
       acknowledgmentId?: string
     },
   ) {}

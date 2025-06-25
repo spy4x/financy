@@ -183,11 +183,13 @@ CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
-    usage_count INT4 DEFAULT 0,
+    monthly_limit INT4,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
 );
+
+COMMENT ON COLUMN categories.monthly_limit IS 'Default monthly spending limit in smallest currency unit';
 
 CREATE INDEX idx_categories_by_group ON categories (group_id);
 

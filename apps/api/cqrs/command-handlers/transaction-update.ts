@@ -3,7 +3,7 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionUpdateCommand } from "@api/cqrs/commands.ts"
 import { TransactionUpdatedEvent } from "@api/cqrs/events.ts"
-import { Account, Category, TransactionType } from "@shared/types"
+import { Account, TransactionType } from "@shared/types"
 
 /**
  * Handler for updating a transaction
@@ -71,8 +71,6 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
       })
 
       let accountUpdated: Account
-      let oldCategoryUpdated: Category | undefined
-      let newCategoryUpdated: Category | undefined
 
       // Calculate balance change if amount changed
       if (correctedUpdates.amount !== undefined) {
@@ -96,30 +94,10 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         accountUpdated = account
       }
 
-      // Update category usage count if category changed
-      if (
-        updates.categoryId !== undefined && updates.categoryId !== originalTransaction.categoryId
-      ) {
-        // Decrease old category usage
-        oldCategoryUpdated = await tx.category.decrementUsage(originalTransaction.categoryId)
-
-        // Increase new category usage
-        newCategoryUpdated = await tx.category.incrementUsage(updates.categoryId)
-      } else {
-        // Just fetch the current category
-        const category = await tx.category.findOne({ id: originalTransaction.categoryId })
-        if (!category) {
-          throw new Error(`Category with id ${originalTransaction.categoryId} not found`)
-        }
-        newCategoryUpdated = category
-      }
-
       return {
         transaction,
         originalTransaction,
         accountUpdated,
-        oldCategoryUpdated,
-        newCategoryUpdated,
       }
     })
 
@@ -129,8 +107,6 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         transaction: result.transaction,
         originalTransaction: result.originalTransaction,
         accountUpdated: result.accountUpdated,
-        oldCategoryUpdated: result.oldCategoryUpdated,
-        newCategoryUpdated: result.newCategoryUpdated,
         acknowledgmentId,
       }),
     )

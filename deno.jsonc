@@ -1,13 +1,13 @@
 {
   "tasks": {
-    "dev": "deno run compose up -d",
+    "dev": "deno run compose up -d", // used in terminal to start the development environment
 
     // #region apps/api
-    "api:dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch apps/api/index.ts",
+    "api:dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch apps/api/index.ts", // used in docker-compose to start the API server in development mode
     // #endregion apps/api
 
     // #region apps/web
-    "web:dev": "deno run -A --node-modules-dir npm:vite apps/web",
+    "web:dev": "deno run -A --node-modules-dir npm:vite apps/web", // used in docker-compose to start the web app in development mode
     "web:build": "deno run -A --node-modules-dir npm:vite build apps/web",
     // #endregion apps/web
 

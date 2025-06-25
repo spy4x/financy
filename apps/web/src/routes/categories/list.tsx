@@ -10,6 +10,7 @@ import {
 } from "@client/icons"
 import { Table } from "@web/components/ui/Table.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
+import { BudgetProgress } from "@web/components/ui/BudgetProgress.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
@@ -95,42 +96,57 @@ export function CategoryList() {
               headerSlot={
                 <>
                   <th class="text-left">Name</th>
+                  <th class="text-left">Budget Progress</th>
                   <th class="text-right">Actions</th>
                 </>
               }
-              bodySlots={filteredCategories.value.map((cat) => (
-                <>
-                  <td class="text-gray-900">{cat.name}</td>
-                  <td class="text-right">
-                    <Dropdown
-                      button={<IconEllipsisVertical class="size-5" />}
-                      buttonClass="btn-input-icon"
-                    >
-                      <div class="py-1" role="none">
-                        <Link
-                          href={routes.categories.children!.edit.href.replace(
-                            ":id",
-                            cat.id.toString(),
-                          )}
-                          class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <IconPencilSquare class="size-4 mr-2" />
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(cat)}
-                          type="button"
-                          class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                          disabled={category.ops.delete.value.inProgress}
-                        >
-                          <IconTrashBin class="size-4 mr-2" />
-                          Delete
-                        </button>
-                      </div>
-                    </Dropdown>
-                  </td>
-                </>
-              ))}
+              bodySlots={filteredCategories.value.map((cat) => {
+                const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
+                const currency = selectedGroup?.defaultCurrency || "USD"
+                const monthlySpent = category.getMonthlySpent(cat.id)
+                const monthlyLimit = cat.monthlyLimit || 0
+
+                return (
+                  <>
+                    <td class="text-gray-900">{cat.name}</td>
+                    <td class="min-w-0 w-80">
+                      <BudgetProgress
+                        spentAmount={monthlySpent}
+                        limitAmount={monthlyLimit}
+                        currency={currency}
+                      />
+                    </td>
+                    <td class="text-right">
+                      <Dropdown
+                        button={<IconEllipsisVertical class="size-5" />}
+                        buttonClass="btn-input-icon"
+                      >
+                        <div class="py-1" role="none">
+                          <Link
+                            href={routes.categories.children!.edit.href.replace(
+                              ":id",
+                              cat.id.toString(),
+                            )}
+                            class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            <IconPencilSquare class="size-4 mr-2" />
+                            Edit
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(cat)}
+                            type="button"
+                            class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                            disabled={category.ops.delete.value.inProgress}
+                          >
+                            <IconTrashBin class="size-4 mr-2" />
+                            Delete
+                          </button>
+                        </div>
+                      </Dropdown>
+                    </td>
+                  </>
+                )
+              })}
             />
           )}
       </div>

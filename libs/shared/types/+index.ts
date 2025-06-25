@@ -314,11 +314,12 @@ export type AccountUpdate = typeof accountUpdateSchema.infer
 export const categoryBaseSchema = type({
   name: `string <= ${NAME_MAX_LENGTH} = ''`,
   groupId: "number > 0",
+  "monthlyLimit?": "number >= 0",
 })
 export type CategoryBase = typeof categoryBaseSchema.infer
 export const categorySchema = BaseModelSchema.and(categoryBaseSchema)
 export type Category = typeof categorySchema.infer
-export const categoryUpdateSchema = categorySchema.pick("id", "name")
+export const categoryUpdateSchema = categorySchema.pick("id", "name", "monthlyLimit")
 export type CategoryUpdate = typeof categoryUpdateSchema.infer
 // #endregion Category
 

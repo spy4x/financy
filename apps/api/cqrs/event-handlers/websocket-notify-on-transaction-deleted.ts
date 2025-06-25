@@ -8,7 +8,7 @@ import { SyncModelName, WebSocketMessageType } from "@shared/types"
 export const websocketNotifyOnTransactionDeletedHandler = async (
   event: TransactionDeletedEvent,
 ) => {
-  const { transaction, accountUpdated, categoryUpdated, acknowledgmentId } = event.data
+  const { transaction, accountUpdated, acknowledgmentId } = event.data
 
   console.log(`Sending WebSocket notifications for transaction deletion: ${transaction.id}`)
 
@@ -25,13 +25,6 @@ export const websocketNotifyOnTransactionDeletedHandler = async (
     websockets.onModelChange(
       SyncModelName.account,
       [accountUpdated],
-      WebSocketMessageType.UPDATED,
-    )
-
-    // Send WebSocket notifications for category update
-    websockets.onModelChange(
-      SyncModelName.category,
-      [categoryUpdated],
       WebSocketMessageType.UPDATED,
     )
 

@@ -262,7 +262,25 @@ export function TransactionList() {
                     </td>
                     <td class="whitespace-nowrap">
                       <div class="text-sm text-gray-900">
-                        {getAccountName(txn.accountId)} &gt; {getCategoryName(txn.categoryId)}
+                        <Link
+                          href={routes.accounts.children!.edit.href.replace(
+                            ":id",
+                            txn.accountId.toString(),
+                          )}
+                          class="text-blue-600 hover:underline"
+                        >
+                          {getAccountName(txn.accountId)}
+                        </Link>
+                        {" > "}
+                        <Link
+                          href={routes.categories.children!.edit.href.replace(
+                            ":id",
+                            txn.categoryId.toString(),
+                          )}
+                          class="text-blue-600 hover:underline"
+                        >
+                          {getCategoryName(txn.categoryId)}
+                        </Link>
                       </div>
                     </td>
                     <td class="whitespace-nowrap">

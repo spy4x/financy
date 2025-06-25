@@ -1,8 +1,9 @@
-import { signal } from "@preact/signals"
+import { computed, signal } from "@preact/signals"
 import { ws } from "./ws.ts"
 import { Category, WebSocketMessageType } from "@shared/types"
 import { group } from "./group.ts"
 import { toast } from "./toast.ts"
+import { transaction } from "./transaction.ts"
 
 const list = signal<Category[]>([])
 const ops = {
@@ -20,9 +21,48 @@ const ops = {
   }),
 }
 
+/**
+ * Computed monthly spent amounts for all categories in the current month.
+ * Returns a Map of categoryId -> spent amount in cents.
+ * Only counts DEBIT transactions (money going out) as "spent".
+ */
+const monthlySpent = computed(() => {
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+
+  const selectedGroupId = group.selectedId.value
+  if (!selectedGroupId) return new Map<number, number>()
+
+  const spentByCategory = new Map<number, number>()
+
+  transaction.list.value.forEach((txn) => {
+    // Filter by group and current month
+    if (txn.groupId !== selectedGroupId) return
+
+    const txnDate = new Date(txn.createdAt)
+    if (txnDate < startOfMonth || txnDate > endOfMonth) return
+
+    // Only count debit transactions (money going out) as "spent"
+    if (txn.type !== 1) return // 1 = DEBIT (money out)
+
+    const currentSpent = spentByCategory.get(txn.categoryId) || 0
+    spentByCategory.set(txn.categoryId, currentSpent + txn.amount)
+  })
+
+  return spentByCategory
+})
+
 export const category = {
   list,
   ops,
+  monthlySpent,
+  /**
+   * Get the monthly spent amount for a specific category
+   */
+  getMonthlySpent(categoryId: number): number {
+    return category.monthlySpent.value.get(categoryId) || 0
+  },
   init() {
     ws.onMessage((msg) => {
       if (msg.e !== "category") return
@@ -73,7 +113,7 @@ export const category = {
       }
     })
   },
-  create(name: string) {
+  create(name: string, monthlyLimit?: number | null) {
     const groupId = group.selectedId.value
     if (!groupId) {
       toast.error({ body: "Please select a group first." })
@@ -81,10 +121,14 @@ export const category = {
     }
     category.ops.create.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "category", t: WebSocketMessageType.CREATE, p: [{ name, groupId }] },
+      message: {
+        e: "category",
+        t: WebSocketMessageType.CREATE,
+        p: [{ name, groupId, monthlyLimit }],
+      },
     })
   },
-  update(id: number, name: string) {
+  update(id: number, name: string, monthlyLimit?: number | null) {
     const groupId = group.selectedId.value
     if (!groupId) {
       toast.error({ body: "Please select a group first." })
@@ -92,7 +136,11 @@ export const category = {
     }
     category.ops.update.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "category", t: WebSocketMessageType.UPDATE, p: [{ id, name, groupId }] },
+      message: {
+        e: "category",
+        t: WebSocketMessageType.UPDATE,
+        p: [{ id, name, groupId, monthlyLimit }],
+      },
     })
   },
   remove(id: number) {

@@ -1,8 +1,10 @@
 import { category } from "@web/state/category.ts"
+import { group } from "@web/state/group.ts"
 import { useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
+import { BudgetProgress } from "@web/components/ui/BudgetProgress.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 
@@ -19,6 +21,7 @@ export function CategoryEditor() {
   const editCategoryId = match && params?.id ? parseInt(params.id) : null
 
   const name = useSignal("")
+  const monthlyLimit = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -32,6 +35,9 @@ export function CategoryEditor() {
         const existingCategory = category.list.value.find((c) => c.id === editCategoryId)
         if (existingCategory) {
           name.value = existingCategory.name
+          monthlyLimit.value = existingCategory.monthlyLimit
+            ? (existingCategory.monthlyLimit / 100).toString()
+            : ""
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -40,6 +46,7 @@ export function CategoryEditor() {
         }
       } else {
         name.value = ""
+        monthlyLimit.value = ""
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -81,14 +88,30 @@ export function CategoryEditor() {
       return
     }
 
+    const limitValue = monthlyLimit.value.trim()
+    let limitInCents: number | null = null
+
+    if (limitValue) {
+      const limitFloat = parseFloat(limitValue)
+      if (isNaN(limitFloat) || limitFloat < 0) {
+        error.value = "Monthly limit must be a valid positive number"
+        state.value = EditorState.ERROR
+        return
+      }
+      limitInCents = Math.round(limitFloat * 100) // Convert to cents
+    }
+
     error.value = ""
     state.value = EditorState.IN_PROGRESS
+
     if (editCategoryId) {
-      category.update(editCategoryId, trimmedName)
+      category.update(editCategoryId, trimmedName, limitInCents)
     } else {
-      category.create(trimmedName)
+      category.create(trimmedName, limitInCents)
     }
   }
+
+  const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
 
   return (
     <section class="page-layout">
@@ -113,11 +136,49 @@ export function CategoryEditor() {
                     type="text"
                     id="categoryName"
                     class="input"
-                    placeholder="Enter name"
+                    placeholder="Enter category name"
                     value={name.value}
-                    onBlur={(e) => name.value = e.currentTarget.value.trim()}
+                    onInput={(e) => name.value = e.currentTarget.value}
                     required
                   />
+                </div>
+              </div>
+              <div class="sm:col-span-4">
+                <label for="monthlyLimit" class="label">
+                  Monthly Budget (Optional):
+                </label>
+                <div class="mt-2">
+                  <div class="flex items-center">
+                    <span class="text-gray-500 mr-2">
+                      {selectedGroup?.defaultCurrency || "USD"}
+                    </span>
+                    <input
+                      type="number"
+                      id="monthlyLimit"
+                      class="input"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                      value={monthlyLimit.value}
+                      onInput={(e) => monthlyLimit.value = e.currentTarget.value}
+                    />
+                  </div>
+                  <p class="mt-1 text-sm text-gray-600">
+                    Set a default monthly spending limit for this category. This will be used as the
+                    starting budget for each month.
+                  </p>
+                  {editCategoryId && monthlyLimit.value && (
+                    <div class="mt-3">
+                      <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Current Month Progress:
+                      </label>
+                      <BudgetProgress
+                        spentAmount={category.getMonthlySpent(editCategoryId)}
+                        limitAmount={Math.round(parseFloat(monthlyLimit.value || "0") * 100)}
+                        currency={selectedGroup?.defaultCurrency || "USD"}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

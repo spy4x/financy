@@ -445,26 +445,6 @@ export class DbService extends DbServiceBase {
       }
       return true
     },
-    incrementUsage: async (
-      categoryId: number,
-    ): Promise<Category> => {
-      return (await this.sql<Category[]>`
-        UPDATE categories 
-        SET usage_count = usage_count + 1, updated_at = NOW()
-        WHERE id = ${categoryId}
-        RETURNING *
-      `)[0]
-    },
-    decrementUsage: async (
-      categoryId: number,
-    ): Promise<Category> => {
-      return (await this.sql<Category[]>`
-        UPDATE categories 
-        SET usage_count = GREATEST(usage_count - 1, 0), updated_at = NOW()
-        WHERE id = ${categoryId}
-        RETURNING *
-      `)[0]
-    },
   }
 
   tag = {

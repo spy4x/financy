@@ -11,8 +11,6 @@ export const websocketNotifyOnTransactionUpdatedHandler = async (
   const {
     transaction,
     accountUpdated,
-    oldCategoryUpdated,
-    newCategoryUpdated,
     acknowledgmentId,
   } = event.data
 
@@ -33,23 +31,6 @@ export const websocketNotifyOnTransactionUpdatedHandler = async (
       [accountUpdated],
       WebSocketMessageType.UPDATED,
     )
-
-    // Send WebSocket notifications for category updates
-    if (oldCategoryUpdated) {
-      websockets.onModelChange(
-        SyncModelName.category,
-        [oldCategoryUpdated],
-        WebSocketMessageType.UPDATED,
-      )
-    }
-
-    if (newCategoryUpdated) {
-      websockets.onModelChange(
-        SyncModelName.category,
-        [newCategoryUpdated],
-        WebSocketMessageType.UPDATED,
-      )
-    }
 
     console.log(`✅ WebSocket notifications sent for transaction update: ${transaction.id}`)
   } catch (error) {

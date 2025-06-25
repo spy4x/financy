@@ -6,7 +6,7 @@ import { TransactionDeletedEvent } from "@api/cqrs/events.ts"
 
 /**
  * Handler for deleting a transaction
- * This includes reverting account balance and category usage count
+ * This includes reverting account balance changes
  */
 export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> = async (
   command,
@@ -41,10 +41,7 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
         balanceChange,
       )
 
-      // Decrease category usage count
-      const categoryUpdated = await tx.category.decrementUsage(originalTransaction.categoryId)
-
-      return { transaction, accountUpdated, categoryUpdated }
+      return { transaction, accountUpdated }
     })
 
     // Emit event for WebSocket notifications and other side effects
@@ -52,7 +49,6 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
       new TransactionDeletedEvent({
         transaction: result.transaction,
         accountUpdated: result.accountUpdated,
-        categoryUpdated: result.categoryUpdated,
         acknowledgmentId,
       }),
     )
