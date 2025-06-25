@@ -137,11 +137,14 @@ export function AccountList() {
                     <div class="text-sm text-gray-900">
                       {(() => {
                         const balance = formatBalance(acc.balance, acc.currency)
+                        const isNegative = acc.balance < 0
                         return (
-                          <>
+                          <span class={isNegative ? "text-red-600 font-semibold" : ""}>
                             <span class="font-medium">{balance.symbol}</span>{" "}
-                            <span>{balance.amount}</span>
-                          </>
+                            <span>
+                              {balance.amount}
+                            </span>
+                          </span>
                         )
                       })()}
                     </div>
