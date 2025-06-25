@@ -7,6 +7,7 @@ import { UIGuideOtherComponents } from "./other.tsx"
 import { UIGuideBadges } from "./badges.tsx"
 import { UIGuideEditor } from "./form.tsx"
 import { UIGuideInstructions } from "./instructions.tsx"
+import { UIGuideCurrency } from "./currency.tsx"
 
 export function UIGuide() {
   return (
@@ -18,6 +19,8 @@ export function UIGuide() {
       <UIGuideButtons />
 
       <UIGuideInputs />
+
+      <UIGuideCurrency />
 
       <UIGuideOtherComponents />
 

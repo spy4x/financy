@@ -21,7 +21,7 @@ export function GroupSelector({ variant = "nav" }: Props) {
         </div>
       )}
       <Dropdown
-        button={
+        trigger={
           <div
             class={`flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
               isNavVariant
@@ -36,10 +36,10 @@ export function GroupSelector({ variant = "nav" }: Props) {
             <IconChevronDown class="size-4 ml-2 shrink-0" />
           </div>
         }
-        buttonClass={isNavVariant ? "w-full" : ""}
-        extraClass={isNavVariant ? "w-full min-w-0" : "min-w-48"}
-        containerClass={isNavVariant ? "w-full" : ""}
-        type={isNavVariant ? "last" : undefined}
+        triggerClasses={isNavVariant ? "w-full" : ""}
+        panelClasses={isNavVariant ? "w-full min-w-0" : "min-w-48"}
+        containerClasses={isNavVariant ? "w-full" : ""}
+        vertical={isNavVariant ? "up" : "down"}
       >
         <div class="py-1">
           {group.list.value.map((g) => (

@@ -63,14 +63,15 @@ export function AccountList() {
         <div class="space-y-4">
           <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
             <Dropdown
-              button={
+              trigger={
                 <>
                   <IconFunnel class="size-5" />
                   Filter
                 </>
               }
-              buttonClass="btn btn-primary-outline flex items-center gap-2"
-              extraClass="left-0 right-auto"
+              triggerClasses="btn btn-primary-outline flex items-center gap-2"
+              panelClasses="left-0 right-auto"
+              horizontal="left"
             >
               <div class="p-4 w-80 space-y-4">
                 {/* Search */}
@@ -173,7 +174,7 @@ export function AccountList() {
                   </td>
                   <td class="whitespace-nowrap text-right text-sm font-medium">
                     <Dropdown
-                      button={
+                      trigger={
                         <span class="text-gray-400 hover:text-gray-600 p-2" title="More actions">
                           <IconEllipsisVertical class="size-5" />
                         </span>

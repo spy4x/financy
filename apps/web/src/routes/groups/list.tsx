@@ -65,14 +65,15 @@ export function GroupList() {
       <div>
         <div class="flex items-center justify-between mb-6">
           <Dropdown
-            button={
+            trigger={
               <>
                 <IconFunnel class="size-5" />
                 Filter
               </>
             }
-            buttonClass="btn btn-primary-outline flex items-center gap-2"
-            extraClass="left-0 right-auto"
+            triggerClasses="btn btn-primary-outline flex items-center gap-2"
+            panelClasses="left-0 right-auto"
+            horizontal="left"
           >
             <div class="p-4 w-80 space-y-4">
               {/* Search */}
@@ -188,8 +189,8 @@ export function GroupList() {
                   </td>
                   <td class="text-right">
                     <Dropdown
-                      button={<IconEllipsisVertical class="size-5" />}
-                      buttonClass="btn-input-icon"
+                      trigger={<IconEllipsisVertical class="size-5" />}
+                      triggerClasses="btn-input-icon"
                     >
                       <div class="py-1" role="none">
                         {!grp.deletedAt && (
