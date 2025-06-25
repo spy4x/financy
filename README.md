@@ -21,9 +21,9 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 
 **Progress Overview:**
 
-- 📊 **Overall Progress:** 41% (28 completed + 24 in progress / 98 total features)
-- 🏗️ **Basic Features:** 53% (Core infrastructure, user management, financial features)
-- 🚀 **Advanced Features:** 6% (AI, mobile apps, advanced integrations)
+- 📊 **Overall Progress:** 52% (39 completed + 20 in progress / 102 total features)
+- 🏗️ **Basic Features:** 78% (Core infrastructure, user management, financial features)
+- 🚀 **Advanced Features:** 12% (Dashboard analytics, real-time features, multi-currency)
 
 ### 🏗️ Core Infrastructure
 
@@ -54,30 +54,34 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 - 🟡 **Group Membership** - Role-based access partially implemented
 - ⚪ **Member Invitations** - Invite users via email/link
 - ⚪ **Member Management** - Add/remove group members
+- ⚪ **Group Access Sharing** - Share group access between users with granular permissions
 - ⚪ **Group Analytics** - Usage statistics and insights
 
 ### 🏦 Account Management
 
 - ✅ **Database Schema** - Account table structure
 - ✅ **Backend API** - Account CRUD operations
-- 🟡 **Account Creation** - UI for adding new accounts (editor implemented)
-- 🟡 **Account Management** - Edit account details, currencies (basic UI)
+- ✅ **Account Creation** - UI for adding new accounts (complete)
+- ✅ **Account Management** - Edit account details, currencies (complete UI)
 - ✅ **Account List** - View all accounts with balances
 - 🟡 **Multi-Currency Support** - Display in different currencies (partial)
-- 🟡 **Account Archiving** - Soft delete unused accounts (backend ready)
+- ✅ **Account Archiving** - Soft delete unused accounts (complete with undelete)
+- ⚪ **Cross-Group Account Sharing** - Share accounts between multiple groups
 
 ### 📊 Transaction Management
 
 - ✅ **Database Schema** - Transaction table with full structure
 - ✅ **Backend API** - Transaction CRUD via WebSockets
 - ✅ **Multi-Currency Support** - Original + converted amounts
-- 🟡 **Transaction Creation** - Add income/expense forms (editor implemented)
-- 🟡 **Transaction List** - View/filter transaction history (basic filtering)
-- 🟡 **Transaction Editing** - Modify existing transactions (UI implemented)
+- ✅ **Transaction Creation** - Add income/expense forms (complete)
+- ✅ **Transaction List** - View/filter transaction history (complete)
+- ✅ **Transaction Editing** - Modify existing transactions (complete UI)
+- ✅ **Transaction Archiving** - Soft delete with undelete functionality
 - ⚪ **Bulk Operations** - Import/export transactions
 - ⚪ **Transaction Templates** - Save frequently used transactions
 - ⚪ **Recurring Transactions** - Automated scheduled entries
 - ⚪ **AI-based entry and categorization** - Tell a bot to add transactions - let it figure out the rest (group, account, category, tags, etc.)
+- ⚪ **Free-form Transaction Input** - LLM-powered natural language transaction entry with automatic parsing
 
 ### 🏷️ Organization Features
 
@@ -94,18 +98,18 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 
 #### Dashboard Features
 
-- ⚪ **Financial Overview Cards** - Key metrics: total balance, monthly income/expenses, net worth
-- ⚪ **Recent Transactions List** - Latest 5-10 transactions with quick actions
-- ⚪ **Budget Progress Bars** - Category spending vs monthly limits (uses existing BudgetProgress component)
-- ⚪ **Quick Actions Panel** - Fast access to add transactions, accounts, categories
-- ⚪ **Account Balances Overview** - All account balances with trends and health indicators
-- ⚪ **Monthly Spending Trends** - 6-month spending patterns and comparisons
-- ⚪ **Cash Flow Summary** - Current month income vs expenses with trend indicators
+- ✅ **Financial Overview Cards** - Key metrics: total balance, monthly income/expenses, net worth
+- ✅ **Recent Transactions List** - Latest 10 transactions with quick actions
+- ✅ **Budget Progress Bars** - Category spending vs monthly limits (complete implementation)
+- ✅ **Quick Actions Panel** - Fast access to add transactions, accounts, categories
+- ✅ **Account Balances Overview** - All account balances with trends and health indicators
+- ✅ **Monthly Spending Trends** - 6-month spending patterns and comparisons
+- ✅ **Cash Flow Summary** - Current month income vs expenses with trend indicators
 
 #### Advanced Analytics
 
-- ⚪ **Category Spending Breakdown** - Detailed spending analysis by category
-- ⚪ **Exchange Rate Widget** - Current rates for multi-currency setups
+- ✅ **Category Spending Breakdown** - Detailed spending analysis by category
+- ✅ **Exchange Rate Widget** - Current rates for multi-currency setups
 - ⚪ **Goal Tracking** - Savings goals and progress tracking (future enhancement)
 - ⚪ **Spending Reports** - Monthly/yearly expense analysis
 - ⚪ **Income Analysis** - Revenue tracking and trends
@@ -123,6 +127,7 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 - ⚪ **Historical Rates** - Track exchange rate changes
 - 🟡 **Currency Preferences** - User/group default currencies (basic implementation)
 - 🟡 **Conversion Display** - Show amounts in preferred currency (partial)
+- 🟡 **Proper Multi-Currency Support** - Complete multi-currency functionality (currently early stage)
 
 ### 🤖 Integrations & API
 
@@ -193,7 +198,7 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 
 ---
 
-**Current Focus:** Implementing Dashboard features (Financial Overview, Recent Transactions, Budget Progress), completing Transaction Management UI, and Account Management improvements.
+**Current Focus:** Core functionality is complete! Next priorities: API documentation, bulk operations, AI-powered transaction entry, and advanced integrations (Telegram bot, mobile apps).
 
 ## Contributing
 
