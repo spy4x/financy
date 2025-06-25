@@ -92,11 +92,23 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 
 ### 📈 Reporting & Analytics
 
-- ⚪ **Dashboard** - Financial overview and key metrics
+#### Dashboard Features
+
+- ⚪ **Financial Overview Cards** - Key metrics: total balance, monthly income/expenses, net worth
+- ⚪ **Recent Transactions List** - Latest 5-10 transactions with quick actions
+- ⚪ **Budget Progress Bars** - Category spending vs monthly limits (uses existing BudgetProgress component)
+- ⚪ **Quick Actions Panel** - Fast access to add transactions, accounts, categories
+- ⚪ **Account Balances Overview** - All account balances with trends and health indicators
+- ⚪ **Monthly Spending Trends** - 6-month spending patterns and comparisons
+- ⚪ **Cash Flow Summary** - Current month income vs expenses with trend indicators
+
+#### Advanced Analytics
+
+- ⚪ **Category Spending Breakdown** - Detailed spending analysis by category
+- ⚪ **Exchange Rate Widget** - Current rates for multi-currency setups
+- ⚪ **Goal Tracking** - Savings goals and progress tracking (future enhancement)
 - ⚪ **Spending Reports** - Monthly/yearly expense analysis
 - ⚪ **Income Analysis** - Revenue tracking and trends
-- ⚪ **Cash Flow Reports** - Inflows vs outflows
-- ⚪ **Category Reports** - Breakdown by categories/tags
 - ⚪ **Group Reports** - Shared financial insights
 - ⚪ **Visual Charts** - Pie charts, bar graphs, trends
 - ⚪ **Export Reports** - PDF/CSV report generation
@@ -181,7 +193,7 @@ Financy is an **ope- ⚪ **Data Archiving** - Archive old transactions
 
 ---
 
-**Current Focus:** Completing Transaction Management UI, Account Management improvements, and basic reporting dashboard.
+**Current Focus:** Implementing Dashboard features (Financial Overview, Recent Transactions, Budget Progress), completing Transaction Management UI, and Account Management improvements.
 
 ## Contributing
 
