@@ -2,19 +2,33 @@ import { IconCheck, IconChevronDown } from "@client/icons"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
 import { group } from "@web/state/group.ts"
 
-export function GroupSelector() {
+interface Props {
+  variant?: "nav" | "page"
+}
+
+export function GroupSelector({ variant = "nav" }: Props) {
   if (group.list.value.length === 0) {
     return null
   }
 
+  const isNavVariant = variant === "nav"
+
   return (
-    <div class="border-t border-purple-800 pt-4 mt-4">
-      <div class="text-xs font-medium text-purple-200 mb-2">
-        Selected Group
-      </div>
+    <div class={isNavVariant ? "border-t border-purple-800 pt-4 mt-4" : "-mt-2"}>
+      {isNavVariant && (
+        <div class="text-xs font-medium text-purple-200 mb-2">
+          Selected Group
+        </div>
+      )}
       <Dropdown
         button={
-          <div class="flex items-center justify-between w-full px-3 py-2 text-sm bg-purple-800 hover:bg-purple-700 rounded-md text-purple-100 transition-colors">
+          <div
+            class={`flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
+              isNavVariant
+                ? "bg-purple-800 hover:bg-purple-700 text-purple-100 w-full"
+                : "bg-white border border-gray-300 hover:border-gray-400 text-gray-900 shadow-sm min-w-0"
+            }`}
+          >
             <span class="truncate">
               {group.list.value.find((g) => g.id === group.selectedId.value)?.name ||
                 "Select Group"}
@@ -22,10 +36,10 @@ export function GroupSelector() {
             <IconChevronDown class="size-4 ml-2 shrink-0" />
           </div>
         }
-        buttonClass="w-full"
-        extraClass="w-full min-w-0"
-        containerClass="w-full"
-        type="last"
+        buttonClass={isNavVariant ? "w-full" : ""}
+        extraClass={isNavVariant ? "w-full min-w-0" : "min-w-48"}
+        containerClass={isNavVariant ? "w-full" : ""}
+        type={isNavVariant ? "last" : undefined}
       >
         <div class="py-1">
           {group.list.value.map((g) => (
@@ -38,7 +52,9 @@ export function GroupSelector() {
               class="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             >
               <span class="font-medium">{g.name}</span>
-              {group.selectedId.value === g.id && <IconCheck class="size-4 text-purple-600" />}
+              {group.selectedId.value === g.id && (
+                <IconCheck class={`size-4 ${isNavVariant ? "text-purple-600" : "text-blue-600"}`} />
+              )}
             </button>
           ))}
         </div>

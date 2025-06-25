@@ -201,7 +201,9 @@ export function TransactionEditor() {
 
   return (
     <section class="page-layout">
-      <PageTitle>{editTransactionId ? "Transactions - Edit" : "Transactions - Create"}</PageTitle>
+      <PageTitle showGroupSelector>
+        {editTransactionId ? "Transactions - Edit" : "Transactions - Create"}
+      </PageTitle>
 
       {error.value && (
         <div class="mb-4 p-4 text-red-700 bg-red-50 border border-red-200 rounded-md">

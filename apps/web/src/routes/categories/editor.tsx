@@ -115,7 +115,9 @@ export function CategoryEditor() {
 
   return (
     <section class="page-layout">
-      <PageTitle>{editCategoryId ? "Categories - Edit" : "Categories - Create"}</PageTitle>
+      <PageTitle showGroupSelector>
+        {editCategoryId ? "Categories - Edit" : "Categories - Create"}
+      </PageTitle>
 
       {error.value && (
         <div class="mb-4 p-4 text-red-700 bg-red-50 border border-red-200 rounded-md">

@@ -39,18 +39,8 @@ export function CategoryList() {
 
   return (
     <section class="page-layout">
-      <PageTitle>Categories</PageTitle>
+      <PageTitle showGroupSelector>Categories</PageTitle>
       <div>
-        {group.selectedId.value && (
-          <div class="mb-4 text-sm text-gray-600">
-            Showing categories for group:{" "}
-            <span class="font-medium text-gray-900">
-              {group.list.value.find((g) => g.id === group.selectedId.value)?.name ||
-                "Unknown Group"}
-            </span>
-          </div>
-        )}
-
         <div class="flex items-center justify-between mb-6">
           <div class="relative w-60">
             <input

@@ -105,18 +105,8 @@ export function TransactionList() {
 
   return (
     <section class="page-layout">
-      <PageTitle>Transactions</PageTitle>
+      <PageTitle showGroupSelector>Transactions</PageTitle>
       <div>
-        {group.selectedId.value && (
-          <div class="mb-4 text-sm text-gray-600">
-            Showing transactions for group:{" "}
-            <span class="font-medium text-gray-900">
-              {group.list.value.find((g) => g.id === group.selectedId.value)?.name ||
-                "Unknown Group"}
-            </span>
-          </div>
-        )}
-
         <div class="space-y-4">
           {/* Search and Create Row */}
           <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">

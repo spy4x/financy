@@ -102,7 +102,9 @@ export function AccountEditor() {
 
   return (
     <section class="page-layout">
-      <PageTitle>{editAccountId ? "Accounts - Edit" : "Accounts - Create"}</PageTitle>
+      <PageTitle showGroupSelector>
+        {editAccountId ? "Accounts - Edit" : "Accounts - Create"}
+      </PageTitle>
 
       {error.value && (
         <div class="mb-4 p-4 text-red-700 bg-red-50 border border-red-200 rounded-md">
