@@ -189,7 +189,7 @@ export function GroupEditor() {
               disabled={!name.value.trim() || !defaultCurrency.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
-              {editGroupId ? "Update Group" : "Create Group"}
+              {editGroupId ? "Update" : "Create"}
             </button>
           </div>
         </fieldset>

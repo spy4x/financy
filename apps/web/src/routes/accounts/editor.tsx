@@ -159,7 +159,7 @@ export function AccountEditor() {
               disabled={!name.value.trim() || !currency.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
-              {editAccountId ? "Update Account" : "Create Account"}
+              {editAccountId ? "Update" : "Create"}
             </button>
           </div>
         </fieldset>

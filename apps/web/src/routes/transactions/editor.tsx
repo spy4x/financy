@@ -397,7 +397,7 @@ export function TransactionEditor() {
                 !createdAt.value || !group.selectedId.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
-              {editTransactionId ? "Update Transaction" : "Create Transaction"}
+              {editTransactionId ? "Update" : "Create"}
             </button>
           </div>
         </fieldset>
