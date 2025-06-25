@@ -48,8 +48,9 @@ export const transaction = {
         case WebSocketMessageType.DELETED: {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
-            transaction.list.value = transaction.list.value.filter((t) =>
-              t.id !== (p[0] as Transaction).id
+            // Update the item in place (soft delete) instead of removing from list
+            transaction.list.value = transaction.list.value.map((t) =>
+              t.id === (p[0] as Transaction).id ? p[0] as Transaction : t
             )
           }
           transaction.ops.delete.value = { inProgress: false, error: null }
@@ -117,6 +118,16 @@ export const transaction = {
       message: {
         e: "transaction",
         t: WebSocketMessageType.DELETE,
+        p: [{ id }],
+      },
+    })
+  },
+  undelete(id: number) {
+    transaction.ops.update.value = { inProgress: true, error: null }
+    ws.request({
+      message: {
+        e: "transaction",
+        t: WebSocketMessageType.UNDELETE,
         p: [{ id }],
       },
     })

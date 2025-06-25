@@ -90,6 +90,50 @@ export type BaseModel = typeof BaseModelSchema.infer
 
 // #endregion Base Types
 
+export enum ItemStatus {
+  ACTIVE = "active",
+  DELETED = "deleted",
+  ALL = "all",
+}
+export const itemStatusValues = Object.values(ItemStatus) as ItemStatus[]
+
+/**
+ * Item status utility functions
+ */
+export const ItemStatusUtils = {
+  /**
+   * Check if an item matches the filter status
+   */
+  matches: (item: { deletedAt: Date | null }, status: ItemStatus): boolean => {
+    switch (status) {
+      case ItemStatus.ACTIVE:
+        return !item.deletedAt
+      case ItemStatus.DELETED:
+        return !!item.deletedAt
+      case ItemStatus.ALL:
+        return true
+      default:
+        return true
+    }
+  },
+
+  /**
+   * Get human-readable status name
+   */
+  toString: (status: ItemStatus): string => {
+    switch (status) {
+      case ItemStatus.ACTIVE:
+        return "Active"
+      case ItemStatus.DELETED:
+        return "Deleted"
+      case ItemStatus.ALL:
+        return "All"
+      default:
+        return "Unknown"
+    }
+  },
+}
+
 export enum UserRole { //TODO: rethink roles as user.role
   VIEWER = 1,
   OPERATOR = 2,
@@ -464,6 +508,7 @@ export enum WebSocketMessageType {
   UPDATED = "updated",
   DELETE = "delete",
   DELETED = "deleted",
+  UNDELETE = "undelete",
   ERROR_VALIDATION = "error_validation",
 }
 

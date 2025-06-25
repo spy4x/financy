@@ -80,3 +80,21 @@ export class TransactionDeletedEvent implements
     },
   ) {}
 }
+
+/**
+ * Event emitted when a transaction is undeleted (restored)
+ */
+export class TransactionUndeletedEvent implements
+  Event<{
+    transaction: Transaction
+    accountUpdated: Account
+    acknowledgmentId?: string
+  }> {
+  constructor(
+    public data: {
+      transaction: Transaction
+      accountUpdated: Account
+      acknowledgmentId?: string
+    },
+  ) {}
+}

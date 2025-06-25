@@ -286,6 +286,7 @@ export class DbService extends DbServiceBase {
         FROM groups g
         JOIN group_memberships gm ON g.id = gm.group_id
         WHERE gm.user_id = ${userId}
+        AND gm.deleted_at IS NULL
         ORDER BY g.created_at DESC
       `
     },
@@ -295,6 +296,7 @@ export class DbService extends DbServiceBase {
         FROM groups g
         JOIN group_memberships gm ON g.id = gm.group_id
         WHERE gm.user_id = ${userId}
+        AND gm.deleted_at IS NULL
         AND g.updated_at > ${updatedAtGt}
         ORDER BY g.created_at DESC
       `
@@ -351,6 +353,7 @@ export class DbService extends DbServiceBase {
         JOIN groups g ON a.group_id = g.id
         JOIN group_memberships gm ON g.id = gm.group_id
         WHERE gm.user_id = ${userId}
+        AND gm.deleted_at IS NULL
         ORDER BY a.created_at DESC
       `
     },
@@ -361,6 +364,7 @@ export class DbService extends DbServiceBase {
         JOIN groups g ON a.group_id = g.id
         JOIN group_memberships gm ON g.id = gm.group_id
         WHERE gm.user_id = ${userId}
+        AND gm.deleted_at IS NULL
         AND a.updated_at > ${updatedAtGt}
         ORDER BY a.created_at DESC
       `
@@ -405,6 +409,7 @@ export class DbService extends DbServiceBase {
         JOIN groups g ON c.group_id = g.id
         JOIN group_memberships gm ON g.id = gm.group_id
         WHERE gm.user_id = ${userId}
+        AND gm.deleted_at IS NULL
         ORDER BY c.created_at DESC
       `
     },
@@ -415,6 +420,7 @@ export class DbService extends DbServiceBase {
         JOIN groups g ON c.group_id = g.id
         JOIN group_memberships gm ON g.id = gm.group_id
         WHERE gm.user_id = ${userId}
+        AND gm.deleted_at IS NULL
         AND c.updated_at > ${updatedAtGt}
         ORDER BY c.created_at DESC
       `
@@ -483,7 +489,6 @@ export class DbService extends DbServiceBase {
         WHERE t.group_id IN (
           SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
         )
-        AND t.deleted_at IS NULL
         ORDER BY t.created_at DESC
       `
     },
@@ -492,7 +497,6 @@ export class DbService extends DbServiceBase {
         SELECT t.*
         FROM transactions t
         WHERE t.group_id = ${groupId}
-        AND t.deleted_at IS NULL
         ORDER BY t.created_at DESC
       `
     },
@@ -505,7 +509,6 @@ export class DbService extends DbServiceBase {
         AND t.group_id IN (
           SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
         )
-        AND t.deleted_at IS NULL
         ORDER BY t.created_at DESC
       `
     },

@@ -153,6 +153,15 @@ export class DbServiceBase {
               WHERE id = ${id}
               RETURNING *`,
         ),
+      undeleteOne: async ({ id }: { id: number }) =>
+        this.updateOne<M>(
+          cache,
+          sql<M[]>`
+              UPDATE ${sql(table)}
+              SET updated_at = NOW(), deleted_at = NULL
+              WHERE id = ${id}
+              RETURNING *`,
+        ),
     }
   }
 }

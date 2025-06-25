@@ -89,7 +89,10 @@ export const category = {
         case WebSocketMessageType.DELETED: {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
-            category.list.value = category.list.value.filter((c) => c.id !== (p[0] as Category).id)
+            // Update the item in place (soft delete) instead of removing from list
+            category.list.value = category.list.value.map((c) =>
+              c.id === (p[0] as Category).id ? p[0] as Category : c
+            )
           }
           category.ops.delete.value = { inProgress: false, error: null }
           break
@@ -146,5 +149,9 @@ export const category = {
   remove(id: number) {
     category.ops.delete.value = { inProgress: true, error: null }
     ws.request({ message: { e: "category", t: WebSocketMessageType.DELETE, p: [{ id }] } })
+  },
+  undelete(id: number) {
+    category.ops.update.value = { inProgress: true, error: null }
+    ws.request({ message: { e: "category", t: WebSocketMessageType.UNDELETE, p: [{ id }] } })
   },
 }

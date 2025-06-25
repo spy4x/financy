@@ -49,7 +49,10 @@ export const account = {
         case WebSocketMessageType.DELETED: {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
-            account.list.value = account.list.value.filter((a) => a.id !== (p[0] as Account).id)
+            // Update the item in place (soft delete) instead of removing from list
+            account.list.value = account.list.value.map((a) =>
+              a.id === (p[0] as Account).id ? p[0] as Account : a
+            )
           }
           account.ops.delete.value = { inProgress: false, error: null }
           break
@@ -97,5 +100,9 @@ export const account = {
   remove(id: number) {
     account.ops.delete.value = { inProgress: true, error: null }
     ws.request({ message: { e: "account", t: WebSocketMessageType.DELETE, p: [{ id }] } })
+  },
+  undelete(id: number) {
+    account.ops.update.value = { inProgress: true, error: null }
+    ws.request({ message: { e: "account", t: WebSocketMessageType.UNDELETE, p: [{ id }] } })
   },
 }

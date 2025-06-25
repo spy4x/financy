@@ -74,11 +74,11 @@ export const group = {
           const p = Array.isArray(msg.p) ? msg.p : []
           if (p[0]) {
             const deletedGroup = p[0] as Group
-            group.list.value = group.list.value.filter((g) => g.id !== deletedGroup.id)
-            // If the deleted group was selected, select another one
-            if (group.selectedId.value === deletedGroup.id) {
-              group.selectedId.value = group.list.value.length > 0 ? group.list.value[0].id : null
-            }
+            // Update the item in place (soft delete) instead of removing from list
+            group.list.value = group.list.value.map((g) =>
+              g.id === deletedGroup.id ? deletedGroup : g
+            )
+            // If the deleted group was selected, it stays selected but marked as deleted
           }
           group.ops.delete.value = { inProgress: false, error: null }
           break
@@ -117,5 +117,9 @@ export const group = {
   remove(id: number) {
     group.ops.delete.value = { inProgress: true, error: null }
     ws.request({ message: { e: "group", t: WebSocketMessageType.DELETE, p: [{ id }] } })
+  },
+  undelete(id: number) {
+    group.ops.update.value = { inProgress: true, error: null }
+    ws.request({ message: { e: "group", t: WebSocketMessageType.UNDELETE, p: [{ id }] } })
   },
 }

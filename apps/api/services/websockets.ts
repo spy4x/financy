@@ -25,6 +25,7 @@ import {
   GroupCreateCommand,
   TransactionCreateCommand,
   TransactionDeleteCommand,
+  TransactionUndeleteCommand,
   TransactionUpdateCommand,
 } from "@api/cqrs/commands.ts"
 
@@ -280,6 +281,48 @@ export const websockets = {
           })
           return
         }
+      } else if (parseResult.data.t === WebSocketMessageType.UNDELETE) {
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid payload: missing or invalid 'id'"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        // Undelete the transaction using CQRS command
+        try {
+          await commandBus.execute(
+            new TransactionUndeleteCommand({
+              transactionId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to undelete transaction:", error)
+          websockets.send({
+            ws,
+            message: {
+              e: "transaction",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: [error instanceof Error ? error.message : "Failed to undelete transaction"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
       } else {
         websockets.send({
           ws,
@@ -427,6 +470,59 @@ export const websockets = {
           SyncModelName.category,
           [deleted],
           WebSocketMessageType.DELETED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.UNDELETE) {
+        // For UNDELETE, validate the payload to get the category object
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid category ID"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const existingCategory = await db.category.findOne({ id })
+        if (!existingCategory) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Category not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        if (await db.category.verifyLegitimacy(existingCategory, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "category",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Category is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const undeleted = await db.category.undeleteOne({ id })
+        websockets.onModelChange(
+          SyncModelName.category,
+          [undeleted],
+          WebSocketMessageType.UPDATED,
           acknowledgmentId,
         )
       } else {
@@ -605,6 +701,63 @@ export const websockets = {
           WebSocketMessageType.DELETED,
           acknowledgmentId,
         )
+      } else if (parseResult.data.t === WebSocketMessageType.UNDELETE) {
+        // For UNDELETE, validate the payload to get the group object
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid group ID"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const existingGroup = await db.group.findOne({ id })
+        if (!existingGroup) {
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Group not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        // Check if user has owner access to this group
+        const membership = await db.groupMembership.findByUserAndGroup(userId, id)
+        if (!membership || !GroupRoleUtils.canDelete(membership.role)) { // Only Owner can undelete
+          websockets.send({
+            ws,
+            message: {
+              e: "group",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Only group owners can restore groups"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const undeleted = await db.group.undeleteOne({ id })
+        websockets.onModelChange(
+          SyncModelName.group,
+          [undeleted],
+          WebSocketMessageType.UPDATED,
+          acknowledgmentId,
+        )
       } else {
         websockets.send({
           ws,
@@ -766,6 +919,59 @@ export const websockets = {
           SyncModelName.account,
           [deleted],
           WebSocketMessageType.DELETED,
+          acknowledgmentId,
+        )
+      } else if (parseResult.data.t === WebSocketMessageType.UNDELETE) {
+        // For UNDELETE, validate the payload to get the account object
+        let id: number | undefined
+        if (
+          payload && typeof payload === "object" && "id" in payload &&
+          typeof payload.id === "number"
+        ) {
+          id = payload.id
+        } else {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid account ID"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        const existingAccount = await db.account.findOne({ id })
+        if (!existingAccount) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Account not found"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        if (await db.account.verifyLegitimacy(existingAccount, userId) === false) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Account is not legitimate"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const undeleted = await db.account.undeleteOne({ id })
+        websockets.onModelChange(
+          SyncModelName.account,
+          [undeleted],
+          WebSocketMessageType.UPDATED,
           acknowledgmentId,
         )
       } else {

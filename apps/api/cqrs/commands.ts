@@ -91,3 +91,21 @@ export class TransactionDeleteCommand
   __resultType?: TransactionDeleteResult
   constructor(public data: TransactionDeletePayload) {}
 }
+
+// #region Transaction Undelete
+export interface TransactionUndeletePayload {
+  transactionId: number
+  userId: number
+  acknowledgmentId?: string // For WebSocket acknowledgment
+}
+
+export interface TransactionUndeleteResult {
+  transaction: Transaction
+}
+
+export class TransactionUndeleteCommand
+  implements Command<TransactionUndeletePayload, TransactionUndeleteResult> {
+  __resultType?: TransactionUndeleteResult
+  constructor(public data: TransactionUndeletePayload) {}
+}
+// #endregion Transaction Undelete

@@ -17,12 +17,14 @@ import { getCurrencyDisplay } from "@shared/constants/currency.ts"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
+import { ItemStatus, ItemStatusUtils } from "@shared/types"
 import type { Account } from "@shared/types"
 
 export function AccountList() {
   const filter = {
     search: useSignal(""),
     currency: useSignal<string | null>(null),
+    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
 
   const filteredAccounts = useComputed(() => {
@@ -42,6 +44,11 @@ export function AccountList() {
         return false
       }
 
+      // Status filter
+      if (!ItemStatusUtils.matches(acc, filter.status.value)) {
+        return false
+      }
+
       return true
     })
   })
@@ -53,6 +60,16 @@ export function AccountList() {
       )
     ) {
       account.remove(acc.id)
+    }
+  }
+
+  function handleUndelete(acc: Account) {
+    if (
+      confirm(
+        `Are you sure you want to restore the account "${acc.name}"? This will also restore all associated transactions.`,
+      )
+    ) {
+      account.undelete(acc.id)
     }
   }
 
@@ -100,6 +117,20 @@ export function AccountList() {
                   />
                 </div>
 
+                {/* Status Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    class="input w-full"
+                    value={filter.status.value}
+                    onChange={(e) => filter.status.value = e.currentTarget.value as ItemStatus}
+                  >
+                    <option value={ItemStatus.ACTIVE}>Active</option>
+                    <option value={ItemStatus.DELETED}>Deleted</option>
+                    <option value={ItemStatus.ALL}>All</option>
+                  </select>
+                </div>
+
                 {/* Clear Filters */}
                 <div class="pt-2 border-t">
                   <button
@@ -108,6 +139,7 @@ export function AccountList() {
                     onClick={() => {
                       filter.search.value = ""
                       filter.currency.value = null
+                      filter.status.value = ItemStatus.ACTIVE
                     }}
                   >
                     Clear All Filters
@@ -146,10 +178,21 @@ export function AccountList() {
               bodySlots={filteredAccounts.value.map((acc) => (
                 <>
                   <td class="whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">{acc.name}</div>
+                    <div
+                      class={`text-sm font-medium ${
+                        acc.deletedAt ? "text-gray-400 line-through" : "text-gray-900"
+                      }`}
+                    >
+                      {acc.name}
+                      {acc.deletedAt && <span class="ml-2 text-xs text-red-500">(Deleted)</span>}
+                    </div>
                   </td>
                   <td class="whitespace-nowrap">
-                    <div class="text-sm text-gray-900 flex items-center gap-2">
+                    <div
+                      class={`text-sm flex items-center gap-2 ${
+                        acc.deletedAt ? "text-gray-400" : "text-gray-900"
+                      }`}
+                    >
                       {(() => {
                         const currencyInfo = getCurrencyDisplay(acc.currency)
                         return (
@@ -164,11 +207,11 @@ export function AccountList() {
                     </div>
                   </td>
                   <td class="whitespace-nowrap">
-                    <div class="text-sm text-gray-900">
+                    <div class={`text-sm ${acc.deletedAt ? "text-gray-400" : "text-gray-900"}`}>
                       <CurrencyDisplay
                         amount={acc.balance}
                         currency={acc.currency}
-                        highlightNegative
+                        highlightNegative={!acc.deletedAt}
                       />
                     </div>
                   </td>
@@ -191,15 +234,29 @@ export function AccountList() {
                           <IconPencilSquare class="size-4 mr-2" />
                           Edit
                         </Link>
-                        <button
-                          onClick={() => handleDelete(acc)}
-                          type="button"
-                          class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                          disabled={account.ops.delete.value.inProgress}
-                        >
-                          <IconTrashBin class="size-4 mr-2" />
-                          Delete
-                        </button>
+                        {acc.deletedAt
+                          ? (
+                            <button
+                              onClick={() => handleUndelete(acc)}
+                              type="button"
+                              class="w-full flex items-center px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
+                              disabled={account.ops.update.value.inProgress}
+                            >
+                              <IconTrashBin class="size-4 mr-2" />
+                              Restore
+                            </button>
+                          )
+                          : (
+                            <button
+                              onClick={() => handleDelete(acc)}
+                              type="button"
+                              class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                              disabled={account.ops.delete.value.inProgress}
+                            >
+                              <IconTrashBin class="size-4 mr-2" />
+                              Delete
+                            </button>
+                          )}
                       </div>
                     </Dropdown>
                   </td>

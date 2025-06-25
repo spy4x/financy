@@ -14,13 +14,13 @@ import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
-import type { Group } from "@shared/types"
+import { type Group, ItemStatus, ItemStatusUtils } from "@shared/types"
 
 export function GroupList() {
   const filter = {
     search: useSignal(""),
     currency: useSignal<string | null>(null),
-    status: useSignal<string | null>(null), // "active" or "deleted"
+    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
 
   const filteredGroups = useComputed(() => {
@@ -35,14 +35,9 @@ export function GroupList() {
         return false
       }
 
-      // Status filter
-      if (filter.status.value) {
-        if (filter.status.value === "active" && grp.deletedAt) {
-          return false
-        }
-        if (filter.status.value === "deleted" && !grp.deletedAt) {
-          return false
-        }
+      // Status filter using ItemStatusUtils
+      if (!ItemStatusUtils.matches(grp, filter.status.value)) {
+        return false
       }
 
       return true
@@ -57,6 +52,10 @@ export function GroupList() {
     ) {
       group.remove(grp.id)
     }
+  }
+
+  function handleUndelete(grp: Group) {
+    group.undelete(grp.id)
   }
 
   return (
@@ -107,15 +106,14 @@ export function GroupList() {
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   class="input w-full"
-                  value={filter.status.value || ""}
+                  value={filter.status.value}
                   onChange={(e) => {
-                    const value = e.currentTarget.value
-                    filter.status.value = value || null
+                    filter.status.value = e.currentTarget.value as ItemStatus
                   }}
                 >
-                  <option value="">All Groups</option>
-                  <option value="active">Active Only</option>
-                  <option value="deleted">Deleted Only</option>
+                  <option value={ItemStatus.ACTIVE}>Active</option>
+                  <option value={ItemStatus.DELETED}>Deleted</option>
+                  <option value={ItemStatus.ALL}>All</option>
                 </select>
               </div>
 
@@ -127,7 +125,7 @@ export function GroupList() {
                   onClick={() => {
                     filter.search.value = ""
                     filter.currency.value = null
-                    filter.status.value = null
+                    filter.status.value = ItemStatus.ACTIVE
                   }}
                 >
                   Clear All Filters
@@ -163,73 +161,94 @@ export function GroupList() {
                   <th class="text-right">Actions</th>
                 </>
               }
-              bodySlots={filteredGroups.value.map((grp) => (
-                <>
-                  <td class="text-gray-900 font-medium">
-                    {grp.name}
-                    {group.selectedId.value === grp.id && (
-                      <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Active
-                      </span>
-                    )}
-                  </td>
-                  <td class="text-gray-600">{grp.defaultCurrency}</td>
-                  <td class="text-gray-600">
-                    {grp.deletedAt
-                      ? (
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Deleted
-                        </span>
-                      )
-                      : (
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              bodySlots={filteredGroups.value.map((grp) => {
+                const isDeleted = !!grp.deletedAt
+                return (
+                  <>
+                    <td class={`font-medium ${isDeleted ? "text-gray-400" : "text-gray-900"}`}>
+                      <div class={isDeleted ? "line-through" : ""}>
+                        {grp.name}
+                        {isDeleted && <span class="ml-2 text-xs">(Deleted)</span>}
+                      </div>
+                      {group.selectedId.value === grp.id && (
+                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           Active
                         </span>
                       )}
-                  </td>
-                  <td class="text-right">
-                    <Dropdown
-                      trigger={<IconEllipsisVertical class="size-5" />}
-                      triggerClasses="btn-input-icon"
-                    >
-                      <div class="py-1" role="none">
-                        {!grp.deletedAt && (
-                          <>
+                    </td>
+                    <td class={`${isDeleted ? "text-gray-400 line-through" : "text-gray-600"}`}>
+                      {grp.defaultCurrency}
+                    </td>
+                    <td class="text-gray-600">
+                      {grp.deletedAt
+                        ? (
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Deleted
+                          </span>
+                        )
+                        : (
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Active
+                          </span>
+                        )}
+                    </td>
+                    <td class="text-right">
+                      <Dropdown
+                        trigger={<IconEllipsisVertical class="size-5" />}
+                        triggerClasses="btn-input-icon"
+                      >
+                        <div class="py-1" role="none">
+                          {!grp.deletedAt && (
+                            <>
+                              <button
+                                onClick={() => group.selectedId.value = grp.id}
+                                type="button"
+                                class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                disabled={group.selectedId.value === grp.id}
+                              >
+                                <IconPencilSquare class="size-4 mr-2" />
+                                {group.selectedId.value === grp.id
+                                  ? "Current Group"
+                                  : "Select Group"}
+                              </button>
+                              <Link
+                                href={routes.groups.children!.edit.href.replace(
+                                  ":id",
+                                  grp.id.toString(),
+                                )}
+                                class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
+                                <IconPencilSquare class="size-4 mr-2" />
+                                Edit
+                              </Link>
+                              <button
+                                onClick={() => handleDelete(grp)}
+                                type="button"
+                                class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                disabled={group.ops.delete.value.inProgress}
+                              >
+                                <IconTrashBin class="size-4 mr-2" />
+                                Delete
+                              </button>
+                            </>
+                          )}
+                          {grp.deletedAt && (
                             <button
-                              onClick={() => group.selectedId.value = grp.id}
+                              onClick={() => handleUndelete(grp)}
                               type="button"
-                              class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              disabled={group.selectedId.value === grp.id}
-                            >
-                              <IconPencilSquare class="size-4 mr-2" />
-                              {group.selectedId.value === grp.id ? "Current Group" : "Select Group"}
-                            </button>
-                            <Link
-                              href={routes.groups.children!.edit.href.replace(
-                                ":id",
-                                grp.id.toString(),
-                              )}
-                              class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
-                              <IconPencilSquare class="size-4 mr-2" />
-                              Edit
-                            </Link>
-                            <button
-                              onClick={() => handleDelete(grp)}
-                              type="button"
-                              class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                              disabled={group.ops.delete.value.inProgress}
+                              class="w-full flex items-center px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
+                              disabled={group.ops.update.value.inProgress}
                             >
                               <IconTrashBin class="size-4 mr-2" />
-                              Delete
+                              Restore
                             </button>
-                          </>
-                        )}
-                      </div>
-                    </Dropdown>
-                  </td>
-                </>
-              ))}
+                          )}
+                        </div>
+                      </Dropdown>
+                    </td>
+                  </>
+                )
+              })}
             />
           )}
 

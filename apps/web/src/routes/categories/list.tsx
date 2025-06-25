@@ -15,11 +15,13 @@ import { BudgetProgress } from "@web/components/ui/BudgetProgress.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
+import { ItemStatus, ItemStatusUtils } from "@shared/types"
 import type { Category } from "@shared/types"
 
 export function CategoryList() {
   const filter = {
     search: useSignal(""),
+    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
 
   const filteredCategories = useComputed(() => {
@@ -34,6 +36,11 @@ export function CategoryList() {
         return false
       }
 
+      // Status filter
+      if (!ItemStatusUtils.matches(cat, filter.status.value)) {
+        return false
+      }
+
       return true
     })
   })
@@ -41,6 +48,12 @@ export function CategoryList() {
   function handleDelete(cat: Category) {
     if (confirm(`Are you sure you want to delete the category "${cat.name}"?`)) {
       category.remove(cat.id)
+    }
+  }
+
+  function handleUndelete(cat: Category) {
+    if (confirm(`Are you sure you want to restore the category "${cat.name}"?`)) {
+      category.undelete(cat.id)
     }
   }
 
@@ -77,6 +90,20 @@ export function CategoryList() {
                 </div>
               </div>
 
+              {/* Status Filter */}
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  class="input w-full"
+                  value={filter.status.value}
+                  onChange={(e) => filter.status.value = e.currentTarget.value as ItemStatus}
+                >
+                  <option value={ItemStatus.ACTIVE}>Active</option>
+                  <option value={ItemStatus.DELETED}>Deleted</option>
+                  <option value={ItemStatus.ALL}>All</option>
+                </select>
+              </div>
+
               {/* Clear Filters */}
               <div class="pt-2 border-t">
                 <button
@@ -84,6 +111,7 @@ export function CategoryList() {
                   class="btn btn-link text-sm w-full"
                   onClick={() => {
                     filter.search.value = ""
+                    filter.status.value = ItemStatus.ACTIVE
                   }}
                 >
                   Clear All Filters
@@ -136,7 +164,12 @@ export function CategoryList() {
 
                 return (
                   <>
-                    <td class="text-gray-900">{cat.name}</td>
+                    <td class={`${cat.deletedAt ? "text-gray-400" : "text-gray-900"}`}>
+                      <div class={`${cat.deletedAt ? "line-through" : ""}`}>
+                        {cat.name}
+                        {cat.deletedAt && <span class="ml-2 text-xs text-red-500">(Deleted)</span>}
+                      </div>
+                    </td>
                     <td class="min-w-0 w-80">
                       <BudgetProgress
                         spentAmount={monthlySpent}
@@ -160,15 +193,29 @@ export function CategoryList() {
                             <IconPencilSquare class="size-4 mr-2" />
                             Edit
                           </Link>
-                          <button
-                            onClick={() => handleDelete(cat)}
-                            type="button"
-                            class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                            disabled={category.ops.delete.value.inProgress}
-                          >
-                            <IconTrashBin class="size-4 mr-2" />
-                            Delete
-                          </button>
+                          {cat.deletedAt
+                            ? (
+                              <button
+                                onClick={() => handleUndelete(cat)}
+                                type="button"
+                                class="w-full flex items-center px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
+                                disabled={category.ops.update.value.inProgress}
+                              >
+                                <IconTrashBin class="size-4 mr-2" />
+                                Restore
+                              </button>
+                            )
+                            : (
+                              <button
+                                onClick={() => handleDelete(cat)}
+                                type="button"
+                                class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                disabled={category.ops.delete.value.inProgress}
+                              >
+                                <IconTrashBin class="size-4 mr-2" />
+                                Delete
+                              </button>
+                            )}
                         </div>
                       </Dropdown>
                     </td>

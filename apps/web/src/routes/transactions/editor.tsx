@@ -41,19 +41,45 @@ export function TransactionEditor() {
   // Helper function for cleaner state checks
   const isState = (checkState: EditorState) => state.value === checkState
 
-  // Get accounts and categories for current group
+  // Get accounts and categories for current group, sorted with active items first
   const groupAccounts = useComputed(() => {
     const selectedGroupId = group.selectedId.value
-    return selectedGroupId
-      ? account.list.value.filter((acc) => acc.groupId === selectedGroupId)
-      : []
+    if (!selectedGroupId) return []
+
+    return account.list.value
+      .filter((acc) => acc.groupId === selectedGroupId)
+      .sort((a, b) => {
+        // Active items first, then deleted items
+        const aIsDeleted = !!a.deletedAt
+        const bIsDeleted = !!b.deletedAt
+
+        if (aIsDeleted !== bIsDeleted) {
+          return aIsDeleted ? 1 : -1
+        }
+
+        // Within same status, sort by name
+        return a.name.localeCompare(b.name)
+      })
   })
 
   const groupCategories = useComputed(() => {
     const selectedGroupId = group.selectedId.value
-    return selectedGroupId
-      ? category.list.value.filter((cat) => cat.groupId === selectedGroupId)
-      : []
+    if (!selectedGroupId) return []
+
+    return category.list.value
+      .filter((cat) => cat.groupId === selectedGroupId)
+      .sort((a, b) => {
+        // Active items first, then deleted items
+        const aIsDeleted = !!a.deletedAt
+        const bIsDeleted = !!b.deletedAt
+
+        if (aIsDeleted !== bIsDeleted) {
+          return aIsDeleted ? 1 : -1
+        }
+
+        // Within same status, sort by name
+        return a.name.localeCompare(b.name)
+      })
   })
 
   // Initialize for edit mode
@@ -244,7 +270,12 @@ export function TransactionEditor() {
                   >
                     <option value="">Select an account...</option>
                     {groupAccounts.value.map((acc) => (
-                      <option key={acc.id} value={acc.id}>
+                      <option
+                        key={acc.id}
+                        value={acc.id}
+                        class={acc.deletedAt ? "text-gray-400 italic" : ""}
+                      >
+                        {acc.deletedAt ? "[DELETED] " : ""}
                         {acc.name} ({acc.currency})
                       </option>
                     ))}
@@ -269,7 +300,12 @@ export function TransactionEditor() {
                   >
                     <option value="">Select a category...</option>
                     {groupCategories.value.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
+                      <option
+                        key={cat.id}
+                        value={cat.id}
+                        class={cat.deletedAt ? "text-gray-400 italic" : ""}
+                      >
+                        {cat.deletedAt ? "[DELETED] " : ""}
                         {cat.name}
                       </option>
                     ))}

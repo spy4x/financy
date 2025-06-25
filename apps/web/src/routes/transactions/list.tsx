@@ -17,7 +17,7 @@ import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
-import type { Transaction } from "@shared/types"
+import { ItemStatus, ItemStatusUtils, type Transaction } from "@shared/types"
 
 export function TransactionList() {
   const filter = {
@@ -27,16 +27,19 @@ export function TransactionList() {
     type: useSignal<number | null>(null),
     from: useSignal(""),
     to: useSignal(""),
+    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
 
   const filteredTransactions = useComputed(() => {
     const transactions = transaction.list.value
     const selectedGroupId = group.selectedId.value
 
-    // Filter by selected group first
+    // Filter by selected group and status first
     const groupTransactions = selectedGroupId
-      ? transactions.filter((txn) => txn.groupId === selectedGroupId)
-      : transactions
+      ? transactions.filter((txn) =>
+        txn.groupId === selectedGroupId && ItemStatusUtils.matches(txn, filter.status.value)
+      )
+      : transactions.filter((txn) => ItemStatusUtils.matches(txn, filter.status.value))
 
     let filtered = groupTransactions
 
@@ -80,18 +83,18 @@ export function TransactionList() {
     )
   })
 
-  // Get accounts and categories for current group
+  // Get accounts and categories for current group (only active ones for filtering)
   const groupAccounts = useComputed(() => {
     const selectedGroupId = group.selectedId.value
     return selectedGroupId
-      ? account.list.value.filter((acc) => acc.groupId === selectedGroupId)
+      ? account.list.value.filter((acc) => acc.groupId === selectedGroupId && !acc.deletedAt)
       : []
   })
 
   const groupCategories = useComputed(() => {
     const selectedGroupId = group.selectedId.value
     return selectedGroupId
-      ? category.list.value.filter((cat) => cat.groupId === selectedGroupId)
+      ? category.list.value.filter((cat) => cat.groupId === selectedGroupId && !cat.deletedAt)
       : []
   })
 
@@ -103,6 +106,10 @@ export function TransactionList() {
     ) {
       transaction.remove(txn.id)
     }
+  }
+
+  function handleUndelete(txn: Transaction) {
+    transaction.undelete(txn.id)
   }
 
   function getAccountName(accountId: number): string {
@@ -154,6 +161,22 @@ export function TransactionList() {
                       <IconSearch class="size-5 text-gray-600" />
                     </span>
                   </div>
+                </div>
+
+                {/* Status Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    class="input w-full"
+                    value={filter.status.value}
+                    onChange={(e) => {
+                      filter.status.value = e.currentTarget.value as ItemStatus
+                    }}
+                  >
+                    <option value={ItemStatus.ACTIVE}>Active</option>
+                    <option value={ItemStatus.DELETED}>Deleted</option>
+                    <option value={ItemStatus.ALL}>All</option>
+                  </select>
                 </div>
 
                 {/* Account Filter */}
@@ -247,6 +270,7 @@ export function TransactionList() {
                       filter.search.value = ""
                       filter.from.value = ""
                       filter.to.value = ""
+                      filter.status.value = ItemStatus.ACTIVE
                     }}
                   >
                     Clear All Filters
@@ -287,25 +311,29 @@ export function TransactionList() {
                 const typeDisplay = getTransactionTypeDisplay(txn.type)
                 const acc = account.list.value.find((a) => a.id === txn.accountId)
                 const currency = acc?.currency || "USD"
+                const isDeleted = !!txn.deletedAt
 
                 return (
                   <>
-                    <td class="whitespace-nowrap">
-                      <div class="text-sm text-gray-900">
+                    <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
+                      <div class={`text-sm ${isDeleted ? "line-through" : "text-gray-900"}`}>
                         {new Date(txn.createdAt).toLocaleDateString()}
+                        {isDeleted && <span class="ml-2 text-xs">(Deleted)</span>}
                       </div>
                       <div class="text-xs text-gray-500">
                         {new Date(txn.createdAt).toLocaleTimeString()}
                       </div>
                     </td>
-                    <td class="whitespace-nowrap">
-                      <div class="text-sm text-gray-900">
+                    <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
+                      <div class={`text-sm ${isDeleted ? "line-through" : "text-gray-900"}`}>
                         <Link
                           href={routes.accounts.children!.edit.href.replace(
                             ":id",
                             txn.accountId.toString(),
                           )}
-                          class="text-blue-600 hover:underline"
+                          class={isDeleted
+                            ? "text-gray-400 hover:underline"
+                            : "text-blue-600 hover:underline"}
                         >
                           {getAccountName(txn.accountId)}
                         </Link>
@@ -315,14 +343,20 @@ export function TransactionList() {
                             ":id",
                             txn.categoryId.toString(),
                           )}
-                          class="text-blue-600 hover:underline"
+                          class={isDeleted
+                            ? "text-gray-400 hover:underline"
+                            : "text-blue-600 hover:underline"}
                         >
                           {getCategoryName(txn.categoryId)}
                         </Link>
                       </div>
                     </td>
-                    <td class="whitespace-nowrap">
-                      <div class={`text-sm font-medium ${typeDisplay.color}`}>
+                    <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
+                      <div
+                        class={`text-sm font-medium ${
+                          isDeleted ? "line-through text-gray-400" : typeDisplay.color
+                        }`}
+                      >
                         <CurrencyDisplay
                           amount={txn.amount}
                           currency={currency}
@@ -337,8 +371,13 @@ export function TransactionList() {
                         </div>
                       )}
                     </td>
-                    <td class="max-w-xs">
-                      <div class="text-sm text-gray-900 truncate" title={txn.memo}>
+                    <td class={`max-w-xs ${isDeleted ? "text-gray-400" : ""}`}>
+                      <div
+                        class={`text-sm truncate ${
+                          isDeleted ? "line-through text-gray-400" : "text-gray-900"
+                        }`}
+                        title={txn.memo}
+                      >
                         {txn.memo || "-"}
                       </div>
                     </td>
@@ -361,15 +400,29 @@ export function TransactionList() {
                             <IconPencilSquare class="size-4 mr-2" />
                             Edit
                           </Link>
-                          <button
-                            onClick={() => handleDelete(txn)}
-                            type="button"
-                            class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                            disabled={transaction.ops.delete.value.inProgress}
-                          >
-                            <IconTrashBin class="size-4 mr-2" />
-                            Delete
-                          </button>
+                          {txn.deletedAt
+                            ? (
+                              <button
+                                onClick={() => handleUndelete(txn)}
+                                type="button"
+                                class="w-full flex items-center px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
+                                disabled={transaction.ops.update.value.inProgress}
+                              >
+                                <IconTrashBin class="size-4 mr-2" />
+                                Restore
+                              </button>
+                            )
+                            : (
+                              <button
+                                onClick={() => handleDelete(txn)}
+                                type="button"
+                                class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                disabled={transaction.ops.delete.value.inProgress}
+                              >
+                                <IconTrashBin class="size-4 mr-2" />
+                                Delete
+                              </button>
+                            )}
                         </div>
                       </Dropdown>
                     </td>
@@ -385,7 +438,8 @@ export function TransactionList() {
                 ? "Please select a group first to view transactions."
                 : filter.search.value || filter.accountId.value !== null ||
                     filter.categoryId.value !== null || filter.type.value !== null ||
-                    filter.from.value || filter.to.value
+                    filter.from.value || filter.to.value ||
+                    filter.status.value !== ItemStatus.ACTIVE
                 ? "No transactions found matching your filters."
                 : "No transactions created yet."}
             </div>
