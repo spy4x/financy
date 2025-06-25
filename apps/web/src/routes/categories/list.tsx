@@ -3,6 +3,7 @@ import { group } from "@web/state/group.ts"
 import { useComputed, useSignal } from "@preact/signals"
 import {
   IconEllipsisVertical,
+  IconFunnel,
   IconPencilSquare,
   IconPlus,
   IconSearch,
@@ -17,7 +18,9 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import type { Category } from "@shared/types"
 
 export function CategoryList() {
-  const search = useSignal("")
+  const filter = {
+    search: useSignal(""),
+  }
 
   const filteredCategories = useComputed(() => {
     return category.list.value.filter((cat) => {
@@ -26,8 +29,12 @@ export function CategoryList() {
         return false
       }
 
-      // Then filter by search text
-      return cat.name.toLowerCase().includes(search.value.toLowerCase())
+      // Search filter
+      if (!cat.name.toLowerCase().includes(filter.search.value.toLowerCase())) {
+        return false
+      }
+
+      return true
     })
   })
 
@@ -42,17 +49,47 @@ export function CategoryList() {
       <PageTitle showGroupSelector>Categories</PageTitle>
       <div>
         <div class="flex items-center justify-between mb-6">
-          <div class="relative w-60">
-            <input
-              class="input w-full pr-10"
-              placeholder="Search"
-              value={search.value}
-              onInput={(e) => search.value = e.currentTarget.value}
-            />
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <IconSearch class="size-5 text-gray-600" />
-            </span>
-          </div>
+          <Dropdown
+            button={
+              <>
+                <IconFunnel class="size-5" />
+                Filter
+              </>
+            }
+            buttonClass="btn btn-primary-outline flex items-center gap-2"
+            extraClass="left-0 right-auto"
+          >
+            <div class="p-4 w-80 space-y-4">
+              {/* Search */}
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <div class="relative">
+                  <input
+                    class="input w-full pr-10"
+                    placeholder="Search categories..."
+                    value={filter.search.value}
+                    onInput={(e) => filter.search.value = e.currentTarget.value}
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                    <IconSearch class="size-5 text-gray-600" />
+                  </span>
+                </div>
+              </div>
+
+              {/* Clear Filters */}
+              <div class="pt-2 border-t">
+                <button
+                  type="button"
+                  class="btn btn-link text-sm w-full"
+                  onClick={() => {
+                    filter.search.value = ""
+                  }}
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            </div>
+          </Dropdown>
 
           <Link
             title={group.selectedId.value ? "Create Category" : "Please select a group first"}
@@ -76,7 +113,7 @@ export function CategoryList() {
             <div class="text-center py-8 text-gray-500">
               {!group.selectedId.value
                 ? "Please select a group first to view categories."
-                : search.value
+                : filter.search.value
                 ? "No categories found matching your search."
                 : "No categories created yet."}
             </div>

@@ -1,7 +1,8 @@
 import { group } from "@web/state/group.ts"
-import { useSignal } from "@preact/signals"
+import { useComputed, useSignal } from "@preact/signals"
 import {
   IconEllipsisVertical,
+  IconFunnel,
   IconPencilSquare,
   IconPlus,
   IconSearch,
@@ -9,17 +10,44 @@ import {
 } from "@client/icons"
 import { Table } from "@web/components/ui/Table.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
+import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import type { Group } from "@shared/types"
 
 export function GroupList() {
-  const search = useSignal("")
+  const filter = {
+    search: useSignal(""),
+    currency: useSignal<string | null>(null),
+    status: useSignal<string | null>(null), // "active" or "deleted"
+  }
 
-  const filteredGroups = group.list.value.filter((grp) =>
-    grp.name.toLowerCase().includes(search.value.toLowerCase())
-  )
+  const filteredGroups = useComputed(() => {
+    return group.list.value.filter((grp) => {
+      // Search filter
+      if (!grp.name.toLowerCase().includes(filter.search.value.toLowerCase())) {
+        return false
+      }
+
+      // Currency filter
+      if (filter.currency.value && grp.defaultCurrency !== filter.currency.value) {
+        return false
+      }
+
+      // Status filter
+      if (filter.status.value) {
+        if (filter.status.value === "active" && grp.deletedAt) {
+          return false
+        }
+        if (filter.status.value === "deleted" && !grp.deletedAt) {
+          return false
+        }
+      }
+
+      return true
+    })
+  })
 
   function handleDelete(grp: Group) {
     if (
@@ -36,20 +64,78 @@ export function GroupList() {
       <PageTitle>Groups</PageTitle>
       <div>
         <div class="flex items-center justify-between mb-6">
-          <div class="relative w-60">
-            <input
-              class="input w-full pr-10"
-              placeholder="Search groups"
-              value={search.value}
-              onInput={(e) => search.value = e.currentTarget.value}
-            />
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <IconSearch class="size-5 text-gray-600" />
-            </span>
-          </div>
+          <Dropdown
+            button={
+              <>
+                <IconFunnel class="size-5" />
+                Filter
+              </>
+            }
+            buttonClass="btn btn-primary-outline flex items-center gap-2"
+            extraClass="left-0 right-auto"
+          >
+            <div class="p-4 w-80 space-y-4">
+              {/* Search */}
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <div class="relative">
+                  <input
+                    class="input w-full pr-10"
+                    placeholder="Search groups..."
+                    value={filter.search.value}
+                    onInput={(e) => filter.search.value = e.currentTarget.value}
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                    <IconSearch class="size-5 text-gray-600" />
+                  </span>
+                </div>
+              </div>
+
+              {/* Currency Filter */}
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                <CurrencySelector
+                  value={filter.currency.value || ""}
+                  onChange={(code) => filter.currency.value = code || null}
+                  placeholder="All Currencies"
+                />
+              </div>
+
+              {/* Status Filter */}
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  class="input w-full"
+                  value={filter.status.value || ""}
+                  onChange={(e) => {
+                    const value = e.currentTarget.value
+                    filter.status.value = value || null
+                  }}
+                >
+                  <option value="">All Groups</option>
+                  <option value="active">Active Only</option>
+                  <option value="deleted">Deleted Only</option>
+                </select>
+              </div>
+
+              {/* Clear Filters */}
+              <div class="pt-2 border-t">
+                <button
+                  type="button"
+                  class="btn btn-link text-sm w-full"
+                  onClick={() => {
+                    filter.search.value = ""
+                    filter.currency.value = null
+                    filter.status.value = null
+                  }}
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            </div>
+          </Dropdown>
 
           <Link
-            title="Create Group"
             href={routes.groups.children!.create.href}
             class="btn btn-primary flex items-center gap-2"
           >
@@ -58,10 +144,12 @@ export function GroupList() {
           </Link>
         </div>
 
-        {filteredGroups.length === 0
+        {filteredGroups.value.length === 0
           ? (
             <div class="text-center py-8 text-gray-500">
-              {search.value ? "No groups found matching your search." : "No groups created yet."}
+              {filter.search.value
+                ? "No groups found matching your search."
+                : "No groups created yet."}
             </div>
           )
           : (
@@ -74,7 +162,7 @@ export function GroupList() {
                   <th class="text-right">Actions</th>
                 </>
               }
-              bodySlots={filteredGroups.map((grp) => (
+              bodySlots={filteredGroups.value.map((grp) => (
                 <>
                   <td class="text-gray-900 font-medium">
                     {grp.name}

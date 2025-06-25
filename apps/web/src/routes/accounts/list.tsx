@@ -3,6 +3,7 @@ import { group } from "@web/state/group.ts"
 import { useComputed, useSignal } from "@preact/signals"
 import {
   IconEllipsisVertical,
+  IconFunnel,
   IconPencilSquare,
   IconPlus,
   IconSearch,
@@ -11,29 +12,38 @@ import {
 import { Table } from "@web/components/ui/Table.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
+import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
+import { getCurrencyDisplay } from "@shared/constants/currency.ts"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import type { Account } from "@shared/types"
-import { getCurrencyDisplay } from "@shared/constants/currency.ts"
 
 export function AccountList() {
-  const search = useSignal("")
+  const filter = {
+    search: useSignal(""),
+    currency: useSignal<string | null>(null),
+  }
 
   const filteredAccounts = useComputed(() => {
-    const accounts = account.list.value
-    const selectedGroupId = group.selectedId.value
+    return account.list.value.filter((acc) => {
+      // Filter by selected group first
+      if (group.selectedId.value && acc.groupId !== group.selectedId.value) {
+        return false
+      }
 
-    // Filter by selected group first
-    const groupAccounts = selectedGroupId
-      ? accounts.filter((acc) => acc.groupId === selectedGroupId)
-      : accounts
+      // Search filter
+      if (!acc.name.toLowerCase().includes(filter.search.value.toLowerCase())) {
+        return false
+      }
 
-    // Then filter by search term
-    if (!search.value) return groupAccounts
-    return groupAccounts.filter((acc) =>
-      acc.name.toLowerCase().includes(search.value.toLowerCase())
-    )
+      // Currency filter
+      if (filter.currency.value && acc.currency !== filter.currency.value) {
+        return false
+      }
+
+      return true
+    })
   })
 
   function handleDelete(acc: Account) {
@@ -52,17 +62,58 @@ export function AccountList() {
       <div>
         <div class="space-y-4">
           <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-            <div class="relative">
-              <input
-                class="input w-full pr-10"
-                placeholder="Search accounts..."
-                value={search.value}
-                onInput={(e) => search.value = e.currentTarget.value}
-              />
-              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                <IconSearch class="size-5 text-gray-600" />
-              </span>
-            </div>
+            <Dropdown
+              button={
+                <>
+                  <IconFunnel class="size-5" />
+                  Filter
+                </>
+              }
+              buttonClass="btn btn-primary-outline flex items-center gap-2"
+              extraClass="left-0 right-auto"
+            >
+              <div class="p-4 w-80 space-y-4">
+                {/* Search */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                  <div class="relative">
+                    <input
+                      class="input w-full pr-10"
+                      placeholder="Search accounts..."
+                      value={filter.search.value}
+                      onInput={(e) => filter.search.value = e.currentTarget.value}
+                    />
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                      <IconSearch class="size-5 text-gray-600" />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Currency Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                  <CurrencySelector
+                    value={filter.currency.value || ""}
+                    onChange={(code) => filter.currency.value = code || null}
+                    placeholder="All Currencies"
+                  />
+                </div>
+
+                {/* Clear Filters */}
+                <div class="pt-2 border-t">
+                  <button
+                    type="button"
+                    class="btn btn-link text-sm w-full"
+                    onClick={() => {
+                      filter.search.value = ""
+                      filter.currency.value = null
+                    }}
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              </div>
+            </Dropdown>
 
             <Link
               title={group.selectedId.value ? "Create Account" : "Please select a group first"}
@@ -160,7 +211,7 @@ export function AccountList() {
             <div class="text-center py-8 text-gray-500">
               {!group.selectedId.value
                 ? "Please select a group first to view accounts."
-                : search.value
+                : filter.search.value
                 ? "No accounts found matching your search."
                 : "No accounts created yet."}
             </div>

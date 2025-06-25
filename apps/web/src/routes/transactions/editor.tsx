@@ -34,6 +34,7 @@ export function TransactionEditor() {
   const memo = useSignal("")
   const originalCurrency = useSignal("")
   const originalAmount = useSignal("")
+  const createdAt = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -71,6 +72,8 @@ export function TransactionEditor() {
           originalAmount.value = existingTransaction.originalAmount
             ? formatCentsToInput(existingTransaction.originalAmount)
             : ""
+          // Format createdAt as datetime-local input value (YYYY-MM-DDTHH:mm)
+          createdAt.value = new Date(existingTransaction.createdAt).toISOString().slice(0, 16)
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -89,6 +92,8 @@ export function TransactionEditor() {
         memo.value = ""
         originalCurrency.value = ""
         originalAmount.value = ""
+        // Default to current date and time
+        createdAt.value = new Date().toISOString().slice(0, 16)
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -187,6 +192,7 @@ export function TransactionEditor() {
       memo: memo.value.trim() || undefined,
       originalCurrency: originalCurrency.value.trim() || undefined,
       originalAmount: signedOriginalAmount,
+      createdAt: createdAt.value ? new Date(createdAt.value).toISOString() : undefined,
     }
 
     if (editTransactionId) {
@@ -343,6 +349,22 @@ export function TransactionEditor() {
                 </div>
               </div>
 
+              <div class="sm:col-span-2">
+                <label for="createdAt" class="label">
+                  Date & Time:
+                </label>
+                <div class="mt-2">
+                  <input
+                    type="datetime-local"
+                    id="createdAt"
+                    class="input"
+                    value={createdAt.value}
+                    onInput={(e) => createdAt.value = e.currentTarget.value}
+                    required
+                  />
+                </div>
+              </div>
+
               <div class="sm:col-span-6">
                 <label for="memo" class="label">
                   Memo (optional):
@@ -372,7 +394,7 @@ export function TransactionEditor() {
               type="submit"
               class="btn btn-primary"
               disabled={!accountId.value || !categoryId.value || !amount.value.trim() ||
-                !group.selectedId.value}
+                !createdAt.value || !group.selectedId.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editTransactionId ? "Update Transaction" : "Create Transaction"}

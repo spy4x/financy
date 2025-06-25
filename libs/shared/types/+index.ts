@@ -396,6 +396,7 @@ export const transactionUpdateSchema = transactionSchema.pick(
   "categoryId",
   "originalCurrency",
   "originalAmount",
+  "createdAt",
 )
 export type TransactionUpdate = typeof transactionUpdateSchema.infer
 // #endregion Transaction

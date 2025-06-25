@@ -5,6 +5,7 @@ import { group } from "@web/state/group.ts"
 import { useComputed, useSignal } from "@preact/signals"
 import {
   IconEllipsisVertical,
+  IconFunnel,
   IconPencilSquare,
   IconPlus,
   IconSearch,
@@ -19,10 +20,14 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import type { Transaction } from "@shared/types"
 
 export function TransactionList() {
-  const search = useSignal("")
-  const selectedAccountId = useSignal<number | null>(null)
-  const selectedCategoryId = useSignal<number | null>(null)
-  const selectedType = useSignal<number | null>(null)
+  const filter = {
+    search: useSignal(""),
+    accountId: useSignal<number | null>(null),
+    categoryId: useSignal<number | null>(null),
+    type: useSignal<number | null>(null),
+    from: useSignal(""),
+    to: useSignal(""),
+  }
 
   const filteredTransactions = useComputed(() => {
     const transactions = transaction.list.value
@@ -36,24 +41,37 @@ export function TransactionList() {
     let filtered = groupTransactions
 
     // Filter by account
-    if (selectedAccountId.value !== null) {
-      filtered = filtered.filter((txn) => txn.accountId === selectedAccountId.value)
+    if (filter.accountId.value !== null) {
+      filtered = filtered.filter((txn) => txn.accountId === filter.accountId.value)
     }
 
     // Filter by category
-    if (selectedCategoryId.value !== null) {
-      filtered = filtered.filter((txn) => txn.categoryId === selectedCategoryId.value)
+    if (filter.categoryId.value !== null) {
+      filtered = filtered.filter((txn) => txn.categoryId === filter.categoryId.value)
     }
 
     // Filter by type
-    if (selectedType.value !== null) {
-      filtered = filtered.filter((txn) => txn.type === selectedType.value)
+    if (filter.type.value !== null) {
+      filtered = filtered.filter((txn) => txn.type === filter.type.value)
     }
 
     // Filter by search term
-    if (search.value) {
-      const searchLower = search.value.toLowerCase()
+    if (filter.search.value) {
+      const searchLower = filter.search.value.toLowerCase()
       filtered = filtered.filter((txn) => txn.memo?.toLowerCase().includes(searchLower))
+    }
+
+    // Filter by date range
+    if (filter.from.value) {
+      const fromDate = new Date(filter.from.value)
+      fromDate.setHours(0, 0, 0, 0) // Start of day
+      filtered = filtered.filter((txn) => new Date(txn.createdAt) >= fromDate)
+    }
+
+    if (filter.to.value) {
+      const toDate = new Date(filter.to.value)
+      toDate.setHours(23, 59, 59, 999) // End of day
+      filtered = filtered.filter((txn) => new Date(txn.createdAt) <= toDate)
     }
 
     // Sort by creation date (newest first)
@@ -108,19 +126,133 @@ export function TransactionList() {
       <PageTitle showGroupSelector>Transactions</PageTitle>
       <div>
         <div class="space-y-4">
-          {/* Search and Create Row */}
-          <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-            <div class="relative flex-1 max-w-md">
-              <input
-                class="input w-full pr-10"
-                placeholder="Search transactions..."
-                value={search.value}
-                onInput={(e) => search.value = e.currentTarget.value}
-              />
-              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                <IconSearch class="size-5 text-gray-600" />
-              </span>
-            </div>
+          {/* Filter and Create Row */}
+          <div class="flex items-center justify-between">
+            <Dropdown
+              button={
+                <>
+                  <IconFunnel class="size-5" />
+                  Filter
+                </>
+              }
+              buttonClass="btn btn-primary-outline flex items-center gap-2"
+              extraClass="left-0 right-auto"
+            >
+              <div class="p-4 w-80 space-y-4">
+                {/* Search */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                  <div class="relative">
+                    <input
+                      class="input w-full pr-10"
+                      placeholder="Search transactions..."
+                      value={filter.search.value}
+                      onInput={(e) => filter.search.value = e.currentTarget.value}
+                    />
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                      <IconSearch class="size-5 text-gray-600" />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Account Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
+                  <select
+                    class="input w-full"
+                    value={filter.accountId.value || ""}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value
+                      filter.accountId.value = value ? parseInt(value) : null
+                    }}
+                  >
+                    <option value="">All Accounts</option>
+                    {groupAccounts.value.map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Category Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <select
+                    class="input w-full"
+                    value={filter.categoryId.value || ""}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value
+                      filter.categoryId.value = value ? parseInt(value) : null
+                    }}
+                  >
+                    <option value="">All Categories</option>
+                    {groupCategories.value.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Type Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    class="input w-full"
+                    value={filter.type.value || ""}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value
+                      filter.type.value = value ? parseInt(value) : null
+                    }}
+                  >
+                    <option value="">All Types</option>
+                    <option value="1">Debit</option>
+                    <option value="2">Credit</option>
+                  </select>
+                </div>
+
+                {/* Date Filters */}
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                    <input
+                      type="date"
+                      class="input w-full"
+                      value={filter.from.value}
+                      onInput={(e) => filter.from.value = e.currentTarget.value}
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                    <input
+                      type="date"
+                      class="input w-full"
+                      value={filter.to.value}
+                      onInput={(e) => filter.to.value = e.currentTarget.value}
+                    />
+                  </div>
+                </div>
+
+                {/* Clear Filters */}
+                <div class="pt-2 border-t">
+                  <button
+                    type="button"
+                    class="btn btn-link text-sm w-full"
+                    onClick={() => {
+                      filter.accountId.value = null
+                      filter.categoryId.value = null
+                      filter.type.value = null
+                      filter.search.value = ""
+                      filter.from.value = ""
+                      filter.to.value = ""
+                    }}
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              </div>
+            </Dropdown>
 
             <Link
               title={group.selectedId.value ? "Create Transaction" : "Please select a group first"}
@@ -137,78 +269,6 @@ export function TransactionList() {
               <IconPlus class="size-5" />
               <span class="hidden md:inline">Create</span>
             </Link>
-          </div>
-
-          {/* Filters Row */}
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
-              <select
-                class="input"
-                value={selectedAccountId.value || ""}
-                onChange={(e) => {
-                  const value = e.currentTarget.value
-                  selectedAccountId.value = value ? parseInt(value) : null
-                }}
-              >
-                <option value="">All Accounts</option>
-                {groupAccounts.value.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select
-                class="input"
-                value={selectedCategoryId.value || ""}
-                onChange={(e) => {
-                  const value = e.currentTarget.value
-                  selectedCategoryId.value = value ? parseInt(value) : null
-                }}
-              >
-                <option value="">All Categories</option>
-                {groupCategories.value.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-              <select
-                class="input"
-                value={selectedType.value || ""}
-                onChange={(e) => {
-                  const value = e.currentTarget.value
-                  selectedType.value = value ? parseInt(value) : null
-                }}
-              >
-                <option value="">All Types</option>
-                <option value="1">Debit</option>
-                <option value="2">Credit</option>
-              </select>
-            </div>
-
-            <div class="flex items-end">
-              <button
-                type="button"
-                class="btn btn-link text-sm"
-                onClick={() => {
-                  selectedAccountId.value = null
-                  selectedCategoryId.value = null
-                  selectedType.value = null
-                  search.value = ""
-                }}
-              >
-                Clear Filters
-              </button>
-            </div>
           </div>
 
           {filteredTransactions.value.length > 0 && (
@@ -322,8 +382,9 @@ export function TransactionList() {
             <div class="text-center py-8 text-gray-500">
               {!group.selectedId.value
                 ? "Please select a group first to view transactions."
-                : search.value || selectedAccountId.value !== null ||
-                    selectedCategoryId.value !== null || selectedType.value !== null
+                : filter.search.value || filter.accountId.value !== null ||
+                    filter.categoryId.value !== null || filter.type.value !== null ||
+                    filter.from.value || filter.to.value
                 ? "No transactions found matching your filters."
                 : "No transactions created yet."}
             </div>
