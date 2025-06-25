@@ -15,6 +15,7 @@ import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { type Group, ItemStatus, ItemStatusUtils } from "@shared/types"
+import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function GroupList() {
   const filter = {
@@ -161,8 +162,9 @@ export function GroupList() {
                   <th class="text-right">Actions</th>
                 </>
               }
-              bodySlots={filteredGroups.value.map((grp) => {
+              bodySlots={filteredGroups.value.map((grp, index) => {
                 const isDeleted = !!grp.deletedAt
+
                 return (
                   <>
                     <td class={`font-medium ${isDeleted ? "text-gray-400" : "text-gray-900"}`}>
@@ -196,6 +198,9 @@ export function GroupList() {
                       <Dropdown
                         trigger={<IconEllipsisVertical class="size-5" />}
                         triggerClasses="btn-input-icon"
+                        vertical={shouldDropdownOpenUp(index, filteredGroups.value.length)
+                          ? "up"
+                          : "down"}
                       >
                         <div class="py-1" role="none">
                           {!grp.deletedAt && (

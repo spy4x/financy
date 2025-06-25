@@ -19,6 +19,7 @@ import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { ItemStatus, ItemStatusUtils } from "@shared/types"
 import type { Account } from "@shared/types"
+import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function AccountList() {
   const filter = {
@@ -175,7 +176,7 @@ export function AccountList() {
                   <th>Actions</th>
                 </>
               }
-              bodySlots={filteredAccounts.value.map((acc) => (
+              bodySlots={filteredAccounts.value.map((acc, index) => (
                 <>
                   <td class="whitespace-nowrap">
                     <div
@@ -222,6 +223,9 @@ export function AccountList() {
                           <IconEllipsisVertical class="size-5" />
                         </span>
                       }
+                      vertical={shouldDropdownOpenUp(index, filteredAccounts.value.length)
+                        ? "up"
+                        : "down"}
                     >
                       <div class="py-1">
                         <Link

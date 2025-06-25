@@ -10,6 +10,7 @@ import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { Dropdown } from "../../../components/ui/Dropdown.tsx"
 import { IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/icons"
 import { TransactionType } from "@shared/types"
+import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function RecentTransactionsList() {
   // Get recent transactions for selected group
@@ -124,7 +125,7 @@ export function RecentTransactionsList() {
             <th scope="col" class="text-right">Actions</th>
           </>
         }
-        bodySlots={recentTransactions.value.map((txn) => (
+        bodySlots={recentTransactions.value.map((txn, index) => (
           <>
             <td class="text-gray-900">
               {formatDate(txn.createdAt)}
@@ -152,6 +153,9 @@ export function RecentTransactionsList() {
               <Dropdown
                 trigger={<IconEllipsisVertical class="size-5" />}
                 triggerClasses="btn-input-icon"
+                vertical={shouldDropdownOpenUp(index, recentTransactions.value.length)
+                  ? "up"
+                  : "down"}
               >
                 <div class="py-1" role="none">
                   <button

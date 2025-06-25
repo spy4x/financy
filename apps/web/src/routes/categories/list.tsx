@@ -17,6 +17,7 @@ import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { ItemStatus, ItemStatusUtils } from "@shared/types"
 import type { Category } from "@shared/types"
+import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function CategoryList() {
   const filter = {
@@ -156,7 +157,7 @@ export function CategoryList() {
                   <th class="text-right">Actions</th>
                 </>
               }
-              bodySlots={filteredCategories.value.map((cat) => {
+              bodySlots={filteredCategories.value.map((cat, index) => {
                 const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
                 const currency = selectedGroup?.defaultCurrency || "USD"
                 const monthlySpent = category.getMonthlySpent(cat.id)
@@ -181,6 +182,9 @@ export function CategoryList() {
                       <Dropdown
                         trigger={<IconEllipsisVertical class="size-5" />}
                         triggerClasses="btn-input-icon"
+                        vertical={shouldDropdownOpenUp(index, filteredCategories.value.length)
+                          ? "up"
+                          : "down"}
                       >
                         <div class="py-1" role="none">
                           <Link

@@ -18,6 +18,7 @@ import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { ItemStatus, ItemStatusUtils, type Transaction } from "@shared/types"
+import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function TransactionList() {
   const filter = {
@@ -320,7 +321,7 @@ export function TransactionList() {
                   <th>Actions</th>
                 </>
               }
-              bodySlots={filteredTransactions.value.map((txn) => {
+              bodySlots={filteredTransactions.value.map((txn, index) => {
                 const typeDisplay = getTransactionTypeDisplay(txn.type)
                 const acc = account.list.value.find((a) => a.id === txn.accountId)
                 const currency = acc?.currency || "USD"
@@ -401,6 +402,9 @@ export function TransactionList() {
                             <IconEllipsisVertical class="size-5" />
                           </span>
                         }
+                        vertical={shouldDropdownOpenUp(index, filteredTransactions.value.length)
+                          ? "up"
+                          : "down"}
                       >
                         <div class="py-1">
                           <Link

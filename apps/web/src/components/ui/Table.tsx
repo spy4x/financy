@@ -7,7 +7,7 @@ interface Props {
 
 export function Table({ headerSlot, bodySlots }: Props) {
   return (
-    <div class="-mx-4 md:mx-0 bg-white ring-1 ring-gray-200 sm:rounded-lg pb-px scrollbar overflow-x-auto">
+    <div class="-mx-4 md:mx-0 bg-white ring-1 ring-gray-200 sm:rounded-lg pb-px scrollbar overflow-x-auto min-h-[300px]">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr class="*:whitespace-nowrap *:px-6 *:py-3 text-sm font-medium text-gray-900">
