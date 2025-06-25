@@ -7,6 +7,7 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { BudgetProgress } from "@web/components/ui/BudgetProgress.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
+import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
 
 enum EditorState {
   INITIALIZING = "initializing",
@@ -36,7 +37,7 @@ export function CategoryEditor() {
         if (existingCategory) {
           name.value = existingCategory.name
           monthlyLimit.value = existingCategory.monthlyLimit
-            ? (existingCategory.monthlyLimit / 100).toString()
+            ? formatCentsToInput(existingCategory.monthlyLimit)
             : ""
           error.value = ""
           state.value = EditorState.IDLE
@@ -92,13 +93,12 @@ export function CategoryEditor() {
     let limitInCents: number | null = null
 
     if (limitValue) {
-      const limitFloat = parseFloat(limitValue)
-      if (isNaN(limitFloat) || limitFloat < 0) {
+      limitInCents = parseCurrencyInput(limitValue)
+      if (limitInCents === null) {
         error.value = "Monthly limit must be a valid positive number"
         state.value = EditorState.ERROR
         return
       }
-      limitInCents = Math.round(limitFloat * 100) // Convert to cents
     }
 
     error.value = ""
@@ -174,7 +174,7 @@ export function CategoryEditor() {
                       </label>
                       <BudgetProgress
                         spentAmount={category.getMonthlySpent(editCategoryId)}
-                        limitAmount={Math.round(parseFloat(monthlyLimit.value || "0") * 100)}
+                        limitAmount={parseCurrencyInput(monthlyLimit.value || "0") || 0}
                         currency={selectedGroup?.defaultCurrency || "USD"}
                       />
                     </div>

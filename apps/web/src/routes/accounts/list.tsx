@@ -10,6 +10,7 @@ import {
 } from "@client/icons"
 import { Table } from "@web/components/ui/Table.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
@@ -42,19 +43,6 @@ export function AccountList() {
       )
     ) {
       account.remove(acc.id)
-    }
-  }
-
-  function formatBalance(balance: number, currency: string): { symbol: string; amount: string } {
-    const currencyInfo = getCurrencyDisplay(currency)
-    const formattedAmount = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(balance / 100) // Convert from cents to currency units
-
-    return {
-      symbol: currencyInfo.symbol || currencyInfo.code,
-      amount: formattedAmount,
     }
   }
 
@@ -135,18 +123,11 @@ export function AccountList() {
                   </td>
                   <td class="whitespace-nowrap">
                     <div class="text-sm text-gray-900">
-                      {(() => {
-                        const balance = formatBalance(acc.balance, acc.currency)
-                        const isNegative = acc.balance < 0
-                        return (
-                          <span class={isNegative ? "text-red-600 font-semibold" : ""}>
-                            <span class="font-medium">{balance.symbol}</span>{" "}
-                            <span>
-                              {balance.amount}
-                            </span>
-                          </span>
-                        )
-                      })()}
+                      <CurrencyDisplay
+                        amount={acc.balance}
+                        currency={acc.currency}
+                        highlightNegative
+                      />
                     </div>
                   </td>
                   <td class="whitespace-nowrap text-right text-sm font-medium">

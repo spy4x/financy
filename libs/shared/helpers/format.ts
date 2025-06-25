@@ -1,3 +1,6 @@
+import { getCurrencyDisplay } from "@shared/constants/currency.ts"
+import { TransactionType } from "@shared/types"
+
 /** Formats a decimal number like 13.50354562 to a number with two decimal points, like 13.50 */
 export function formatDecimal(value: number): string {
   return value.toFixed(2)
@@ -70,4 +73,77 @@ export function urlBase64ToUint8Array(b64: string): Uint8Array {
   }
 
   return outputArray
+}
+
+/**
+ * Formats a monetary amount stored as cents to a currency display object
+ * @param amount Amount in smallest currency unit (cents)
+ * @param currency ISO 4217 currency code
+ * @returns Object with separate symbol and formatted amount
+ */
+export function formatCurrency(
+  amount: number,
+  currency: string,
+): { symbol: string; amount: string } {
+  const currencyInfo = getCurrencyDisplay(currency)
+  const formattedAmount = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount / 100) // Convert from cents to currency units
+
+  return {
+    symbol: currencyInfo.symbol || currencyInfo.code,
+    amount: formattedAmount,
+  }
+}
+
+/**
+ * Formats a monetary amount stored as cents to a full currency string
+ * @param amount Amount in smallest currency unit (cents)
+ * @param currency ISO 4217 currency code
+ * @returns Formatted currency string (e.g., "$1,234.56")
+ */
+export function formatMoney(amount: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount / 100) // Convert from cents to currency unit
+}
+
+/**
+ * Converts cents to a decimal string for form inputs (always positive)
+ * @param amount Amount in smallest currency unit (cents)
+ * @returns Decimal string representation (e.g., "12.34")
+ */
+export function formatCentsToInput(amount: number): string {
+  return (Math.abs(amount) / 100).toFixed(2)
+}
+
+/**
+ * Parses currency input string and converts to cents
+ * @param value String input from user (e.g., "12.34" or "12")
+ * @returns Amount in cents, or null if invalid input
+ */
+export function parseCurrencyInput(value: string): number | null {
+  const trimmed = value.trim()
+  if (!trimmed) return null
+
+  const parsed = parseFloat(trimmed)
+  if (isNaN(parsed) || parsed < 0) return null
+
+  return Math.round(parsed * 100) // Convert to cents
+}
+
+/**
+ * Converts a signed amount in cents to cents with proper sign based on transaction type
+ * @param amount Amount in cents (can be positive or negative)
+ * @param transactionType Transaction type (DEBIT or CREDIT)
+ * @returns Signed amount in cents (negative for debit, positive for credit)
+ */
+export function applyCurrencySign(amount: number, transactionType: TransactionType): number {
+  const absoluteAmount = Math.abs(amount)
+  if (absoluteAmount === 0) return 0 // Avoid negative zero
+  return transactionType === TransactionType.DEBIT ? -absoluteAmount : absoluteAmount
 }

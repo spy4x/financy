@@ -39,8 +39,8 @@ export const navItems: NavItem[] = [
   { name: routes.dashboard.title, href: routes.dashboard.href, Icon: IconHome },
   { name: routes.groups.title, href: routes.groups.href, Icon: IconUser },
   { name: routes.accounts.title, href: routes.accounts.href, Icon: IconBuildingOffice2 },
-  { name: routes.transactions.title, href: routes.transactions.href, Icon: IconArrowPath },
   { name: routes.categories.title, href: routes.categories.href, Icon: IconFolder },
+  { name: routes.transactions.title, href: routes.transactions.href, Icon: IconArrowPath },
   ...(!isProd
     ? [{
       name: "Dev",

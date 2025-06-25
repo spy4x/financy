@@ -1,21 +1,10 @@
 import { type JSX } from "preact"
+import { formatMoney } from "@shared/helpers/format.ts"
 
 interface BudgetProgressProps {
   spentAmount: number
   limitAmount: number
   currency: string
-}
-
-/**
- * Formats monetary amounts using Intl.NumberFormat
- */
-function formatMoney(amount: number, currency: string): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount / 100) // Convert from cents to currency unit
 }
 
 export function BudgetProgress(

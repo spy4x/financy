@@ -12,11 +12,11 @@ import {
 } from "@client/icons"
 import { Table } from "@web/components/ui/Table.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import type { Transaction } from "@shared/types"
-import { getCurrencyDisplay } from "@shared/constants/currency.ts"
 
 export function TransactionList() {
   const search = useSignal("")
@@ -84,19 +84,6 @@ export function TransactionList() {
       )
     ) {
       transaction.remove(txn.id)
-    }
-  }
-
-  function formatAmount(amount: number, currency: string): { symbol: string; amount: string } {
-    const currencyInfo = getCurrencyDisplay(currency)
-    const formattedAmount = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount / 100) // Convert from cents to currency units
-
-    return {
-      symbol: currencyInfo.symbol || currencyInfo.code,
-      amount: formattedAmount,
     }
   }
 
@@ -285,31 +272,17 @@ export function TransactionList() {
                     </td>
                     <td class="whitespace-nowrap">
                       <div class={`text-sm font-medium ${typeDisplay.color}`}>
-                        {(() => {
-                          const formattedAmount = formatAmount(txn.amount, currency)
-                          return (
-                            <>
-                              <span class="font-medium">{formattedAmount.symbol}</span>{" "}
-                              <span>{formattedAmount.amount}</span>
-                            </>
-                          )
-                        })()}
+                        <CurrencyDisplay
+                          amount={txn.amount}
+                          currency={currency}
+                        />
                       </div>
                       {txn.originalCurrency && txn.originalAmount && (
                         <div class="text-xs text-gray-500">
-                          {(() => {
-                            const formattedOriginalAmount = formatAmount(
-                              txn.originalAmount,
-                              txn.originalCurrency,
-                            )
-                            return (
-                              <>
-                                <span class="font-medium">{formattedOriginalAmount.symbol}</span>
-                                {" "}
-                                <span>{formattedOriginalAmount.amount}</span>
-                              </>
-                            )
-                          })()}
+                          <CurrencyDisplay
+                            amount={txn.originalAmount}
+                            currency={txn.originalCurrency}
+                          />
                         </div>
                       )}
                     </td>

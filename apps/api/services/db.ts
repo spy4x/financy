@@ -576,7 +576,6 @@ export class DbService extends DbServiceBase {
     for (let i = 0; i < SYNC_MODELS.length; i += 1) {
       const model = SYNC_MODELS[i]
       let data = []
-      console.log(`🔄 Syncing model: ${model} for userId: ${userId}`)
       if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
         data = await db[model].findChanged(lastSyncAtDate, userId)
       } else {

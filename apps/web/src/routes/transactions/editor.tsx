@@ -8,6 +8,12 @@ import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
+import { TransactionType } from "@shared/types"
+import {
+  applyCurrencySign,
+  formatCentsToInput,
+  parseCurrencyInput,
+} from "@shared/helpers/format.ts"
 
 enum EditorState {
   INITIALIZING = "initializing",
@@ -59,11 +65,11 @@ export function TransactionEditor() {
           categoryId.value = existingTransaction.categoryId
           type.value = existingTransaction.type
           // Always show positive amount in form - sign is determined by type
-          amount.value = (Math.abs(existingTransaction.amount) / 100).toString()
+          amount.value = formatCentsToInput(existingTransaction.amount)
           memo.value = existingTransaction.memo || ""
           originalCurrency.value = existingTransaction.originalCurrency || ""
           originalAmount.value = existingTransaction.originalAmount
-            ? (Math.abs(existingTransaction.originalAmount) / 100).toString()
+            ? formatCentsToInput(existingTransaction.originalAmount)
             : ""
           error.value = ""
           state.value = EditorState.IDLE
@@ -144,37 +150,33 @@ export function TransactionEditor() {
       return
     }
 
-    const parsedAmount = parseFloat(trimmedAmount)
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    const amountInCents = parseCurrencyInput(trimmedAmount)
+    if (amountInCents === null || amountInCents <= 0) {
       error.value = "Amount must be a positive number"
       state.value = EditorState.ERROR
       return
     }
 
     // Validate original amount if provided
-    let parsedOriginalAmount: number | undefined
+    let originalAmountInCents: number | undefined
     if (originalAmount.value.trim()) {
-      parsedOriginalAmount = parseFloat(originalAmount.value.trim())
-      if (isNaN(parsedOriginalAmount) || parsedOriginalAmount <= 0) {
+      const parsedOriginal = parseCurrencyInput(originalAmount.value.trim())
+      if (parsedOriginal === null || parsedOriginal <= 0) {
         error.value = "Original amount must be a positive number"
         state.value = EditorState.ERROR
         return
       }
+      originalAmountInCents = parsedOriginal
     }
 
     error.value = ""
     state.value = EditorState.IN_PROGRESS
 
     // Apply correct sign based on transaction type
-    // DEBIT (type 1) = negative amount, CREDIT (type 2) = positive amount
-    const signedAmount = type.value === 1
-      ? -Math.round(parsedAmount * 100) // DEBIT: negative
-      : Math.round(parsedAmount * 100) // CREDIT: positive
-
-    const signedOriginalAmount = parsedOriginalAmount
-      ? (type.value === 1
-        ? -Math.round(parsedOriginalAmount * 100) // DEBIT: negative
-        : Math.round(parsedOriginalAmount * 100)) // CREDIT: positive
+    // DEBIT = negative amount, CREDIT = positive amount
+    const signedAmount = applyCurrencySign(amountInCents, type.value as TransactionType)
+    const signedOriginalAmount = originalAmountInCents
+      ? applyCurrencySign(originalAmountInCents, type.value as TransactionType)
       : undefined
 
     const data = {
