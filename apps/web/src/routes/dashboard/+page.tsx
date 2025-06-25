@@ -6,6 +6,8 @@ import { QuickActionsPanel } from "./components/quick-actions-panel.tsx"
 import { RecentTransactionsList } from "./components/recent-transactions-list.tsx"
 import { BudgetProgressBars } from "./components/budget-progress-bars.tsx"
 import { AccountBalancesOverview } from "./components/account-balances-overview.tsx"
+import { CashFlowSummary } from "./components/cash-flow-summary.tsx"
+import { MonthlySpendingTrends } from "./components/monthly-spending-trends.tsx"
 
 export function Dashboard() {
   const hasSelectedGroup = useComputed(() => !!group.selectedId.value)
@@ -49,6 +51,15 @@ export function Dashboard() {
 
           {/* Account Balances Overview */}
           <AccountBalancesOverview />
+        </div>
+
+        {/* Analytics Section - Two-column layout for Cash Flow and Spending Trends */}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Cash Flow Summary */}
+          <CashFlowSummary />
+
+          {/* Monthly Spending Trends */}
+          <MonthlySpendingTrends />
         </div>
 
         {/* Recent Transactions */}
