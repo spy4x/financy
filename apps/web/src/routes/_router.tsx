@@ -3,6 +3,7 @@ import { FunctionalComponent } from "preact"
 import { Profile } from "../routes/profile/page.tsx"
 import { Error404 } from "../routes/_404.tsx"
 import { UIGuide } from "../routes/ui-guide/+page.tsx"
+import { Dashboard } from "./dashboard/+page.tsx"
 import { CategoryList } from "./categories/list.tsx"
 import { CategoryEditor } from "./categories/editor.tsx"
 import { GroupList } from "./groups/list.tsx"
@@ -25,7 +26,7 @@ export const routes = {
   dashboard: {
     title: "Dashboard",
     href: "/",
-    component: Error404, // Placeholder for the dashboard component
+    component: Dashboard,
   },
   groups: {
     title: "Groups",

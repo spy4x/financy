@@ -1,0 +1,175 @@
+import { useComputed } from "@preact/signals"
+import { useLocation } from "wouter-preact"
+import { transaction } from "../../../state/transaction.ts"
+import { account } from "../../../state/account.ts"
+import { category } from "../../../state/category.ts"
+import { group } from "../../../state/group.ts"
+import { Table } from "../../../components/ui/Table.tsx"
+import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
+import { Dropdown } from "../../../components/ui/Dropdown.tsx"
+import { IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/icons"
+import { TransactionType } from "@shared/types"
+
+export function RecentTransactionsList() {
+  const [, navigate] = useLocation()
+
+  // Get recent transactions for selected group
+  const recentTransactions = useComputed(() =>
+    transaction.list.value
+      .filter((txn) =>
+        txn.groupId === group.selectedId.value &&
+        !txn.deletedAt
+      )
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10) // Show latest 10 transactions
+  )
+
+  // Helper functions to get names
+  const getAccountName = (accountId: number) => {
+    const acc = account.list.value.find((a) => a.id === accountId)
+    return acc?.name || "Unknown Account"
+  }
+
+  const getCategoryName = (categoryId: number) => {
+    const cat = category.list.value.find((c) => c.id === categoryId)
+    return cat?.name || "Unknown Category"
+  }
+
+  const getAccountCurrency = (accountId: number) => {
+    const acc = account.list.value.find((a) => a.id === accountId)
+    return acc?.currency || "USD"
+  }
+
+  const formatDate = (dateString: string | Date) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+    })
+  }
+
+  const handleEdit = (transactionId: number) => {
+    navigate(`/transactions/${transactionId}`)
+  }
+
+  const handleDelete = async (transactionId: number) => {
+    if (confirm("Are you sure you want to delete this transaction?")) {
+      await transaction.remove(transactionId)
+    }
+  }
+
+  if (recentTransactions.value.length === 0) {
+    return (
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
+          <button
+            type="button"
+            class={`btn btn-sm ${
+              group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
+            }`}
+            onClick={() => group.selectedId.value && navigate("/transactions")}
+            disabled={!group.selectedId.value}
+          >
+            View All
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-body text-center py-12">
+            <p class="text-gray-500 mb-4">No transactions yet</p>
+            <button
+              type="button"
+              class={`btn ${
+                group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
+              }`}
+              onClick={() => group.selectedId.value && navigate("/transactions/create")}
+              disabled={!group.selectedId.value}
+            >
+              Add Your First Transaction
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          onClick={() => navigate("/transactions")}
+        >
+          View All
+        </button>
+      </div>
+
+      <Table
+        headerSlot={
+          <>
+            <th scope="col" class="text-left">Date</th>
+            <th scope="col" class="text-left">Description</th>
+            <th scope="col" class="text-left">Category</th>
+            <th scope="col" class="text-left">Account</th>
+            <th scope="col" class="text-right">Amount</th>
+            <th scope="col" class="text-right">Actions</th>
+          </>
+        }
+        bodySlots={recentTransactions.value.map((txn) => (
+          <>
+            <td class="text-gray-900">
+              {formatDate(txn.createdAt)}
+            </td>
+            <td class="text-gray-900">
+              <div class="max-w-xs truncate" title={txn.memo || "No description"}>
+                {txn.memo || <span class="text-gray-400 italic">No description</span>}
+              </div>
+            </td>
+            <td class="text-gray-500">
+              {getCategoryName(txn.categoryId)}
+            </td>
+            <td class="text-gray-500">
+              {getAccountName(txn.accountId)}
+            </td>
+            <td class="text-right">
+              <CurrencyDisplay
+                amount={txn.type === TransactionType.DEBIT ? -txn.amount : txn.amount}
+                currency={getAccountCurrency(txn.accountId)}
+                class={txn.type === TransactionType.DEBIT ? "text-red-600" : "text-green-600"}
+                highlightNegative={txn.type === TransactionType.DEBIT}
+              />
+            </td>
+            <td class="text-right">
+              <Dropdown
+                trigger={<IconEllipsisVertical class="size-5" />}
+                triggerClasses="btn-input-icon"
+              >
+                <div class="py-1" role="none">
+                  <button
+                    onClick={() => handleEdit(txn.id)}
+                    type="button"
+                    class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <IconPencilSquare class="size-4 mr-2" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(txn.id)}
+                    type="button"
+                    class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                  >
+                    <IconTrashBin class="size-4 mr-2" />
+                    Delete
+                  </button>
+                </div>
+              </Dropdown>
+            </td>
+          </>
+        ))}
+      />
+    </div>
+  )
+}
