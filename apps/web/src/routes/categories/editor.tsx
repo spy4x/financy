@@ -8,6 +8,7 @@ import { BudgetProgress } from "@web/components/ui/BudgetProgress.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
+import { CategoryType, CategoryTypeUtils } from "@shared/types"
 
 enum EditorState {
   INITIALIZING = "initializing",
@@ -22,6 +23,7 @@ export function CategoryEditor() {
   const editCategoryId = match && params?.id ? parseInt(params.id) : null
 
   const name = useSignal("")
+  const categoryType = useSignal<CategoryType>(CategoryType.EXPENSE)
   const monthlyLimit = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
@@ -36,6 +38,7 @@ export function CategoryEditor() {
         const existingCategory = category.list.value.find((c) => c.id === editCategoryId)
         if (existingCategory) {
           name.value = existingCategory.name
+          categoryType.value = existingCategory.type || CategoryType.EXPENSE
           monthlyLimit.value = existingCategory.monthlyLimit
             ? formatCentsToInput(existingCategory.monthlyLimit)
             : ""
@@ -47,6 +50,7 @@ export function CategoryEditor() {
         }
       } else {
         name.value = ""
+        categoryType.value = CategoryType.EXPENSE
         monthlyLimit.value = ""
         error.value = ""
         state.value = EditorState.IDLE
@@ -92,7 +96,8 @@ export function CategoryEditor() {
     const limitValue = monthlyLimit.value.trim()
     let limitInCents: number | null = null
 
-    if (limitValue) {
+    // Only process monthly limit for expense categories
+    if (categoryType.value === CategoryType.EXPENSE && limitValue) {
       limitInCents = parseCurrencyInput(limitValue)
       if (limitInCents === null) {
         error.value = "Monthly limit must be a valid positive number"
@@ -101,13 +106,16 @@ export function CategoryEditor() {
       }
     }
 
+    // For income categories, ensure monthlyLimit is undefined
+    const finalMonthlyLimit = categoryType.value === CategoryType.INCOME ? undefined : limitInCents
+
     error.value = ""
     state.value = EditorState.IN_PROGRESS
 
     if (editCategoryId) {
-      category.update(editCategoryId, trimmedName, limitInCents)
+      category.update(editCategoryId, trimmedName, categoryType.value, finalMonthlyLimit)
     } else {
-      category.create(trimmedName, limitInCents)
+      category.create(trimmedName, categoryType.value, finalMonthlyLimit)
     }
   }
 
@@ -145,9 +153,46 @@ export function CategoryEditor() {
                   />
                 </div>
               </div>
+
+              <div class="sm:col-span-2">
+                <label for="categoryType" class="label">
+                  Type:
+                </label>
+                <div class="mt-2">
+                  <select
+                    id="categoryType"
+                    class="input"
+                    value={categoryType.value}
+                    onChange={(e) => {
+                      const newType = parseInt(e.currentTarget.value) as CategoryType
+                      categoryType.value = newType
+                      // Clear monthly limit when switching to income type
+                      if (newType === CategoryType.INCOME) {
+                        monthlyLimit.value = ""
+                      }
+                    }}
+                  >
+                    <option value={CategoryType.EXPENSE}>
+                      {CategoryTypeUtils.toString(CategoryType.EXPENSE)}
+                    </option>
+                    <option value={CategoryType.INCOME}>
+                      {CategoryTypeUtils.toString(CategoryType.INCOME)}
+                    </option>
+                  </select>
+                  <p class="mt-1 text-sm text-gray-600">
+                    Choose whether this category is for expenses or income
+                  </p>
+                </div>
+              </div>
+
               <div class="sm:col-span-4">
                 <label for="monthlyLimit" class="label">
                   Monthly Budget (Optional):
+                  {categoryType.value === CategoryType.INCOME && (
+                    <span class="text-gray-500 text-sm ml-1">
+                      (Not applicable for income categories)
+                    </span>
+                  )}
                 </label>
                 <div class="mt-2">
                   <div class="flex items-center">
@@ -163,11 +208,13 @@ export function CategoryEditor() {
                       min="0"
                       value={monthlyLimit.value}
                       onInput={(e) => monthlyLimit.value = e.currentTarget.value}
+                      disabled={categoryType.value === CategoryType.INCOME}
                     />
                   </div>
                   <p class="mt-1 text-sm text-gray-600">
-                    Set a default monthly spending limit for this category. This will be used as the
-                    starting budget for each month.
+                    {categoryType.value === CategoryType.EXPENSE
+                      ? "Set a default monthly spending limit for this category. This will be used as the starting budget for each month."
+                      : "Income categories don't have spending limits."}
                   </p>
                   {editCategoryId && monthlyLimit.value && (
                     <div class="mt-3">

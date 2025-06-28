@@ -355,15 +355,52 @@ export type AccountUpdate = typeof accountUpdateSchema.infer
 // #endregion Account
 
 // #region Category
+export enum CategoryType {
+  EXPENSE = 1,
+  INCOME = 2,
+}
+
+/**
+ * Category type utility functions
+ */
+export const CategoryTypeUtils = {
+  /**
+   * Get human-readable category type name
+   */
+  toString: (type: CategoryType): string => {
+    switch (type) {
+      case CategoryType.EXPENSE:
+        return "Expense"
+      case CategoryType.INCOME:
+        return "Income"
+      default:
+        return "Unknown"
+    }
+  },
+
+  /**
+   * Check if category type is expense
+   */
+  isExpense: (type: CategoryType): boolean => type === CategoryType.EXPENSE,
+
+  /**
+   * Check if category type is income
+   */
+  isIncome: (type: CategoryType): boolean => type === CategoryType.INCOME,
+}
+
 export const categoryBaseSchema = type({
   name: `string <= ${NAME_MAX_LENGTH} = ''`,
   groupId: "number > 0",
-  "monthlyLimit?": "number >= 0",
+  type: type.enumerated(...Object.values(CategoryType) as CategoryType[]).default(
+    CategoryType.EXPENSE,
+  ),
+  "monthlyLimit?": "number >= 0 | null",
 })
 export type CategoryBase = typeof categoryBaseSchema.infer
 export const categorySchema = BaseModelSchema.and(categoryBaseSchema)
 export type Category = typeof categorySchema.infer
-export const categoryUpdateSchema = categorySchema.pick("id", "name", "monthlyLimit")
+export const categoryUpdateSchema = categorySchema.pick("id", "name", "type", "monthlyLimit")
 export type CategoryUpdate = typeof categoryUpdateSchema.infer
 // #endregion Category
 

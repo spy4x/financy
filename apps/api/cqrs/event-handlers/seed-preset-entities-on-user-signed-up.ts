@@ -4,7 +4,7 @@ import {
   CategoryCreateCommand,
   GroupCreateCommand,
 } from "@api/cqrs/commands.ts"
-import { GroupRole } from "@shared/types"
+import { CategoryType, GroupRole } from "@shared/types"
 import { commandBus } from "@api/services/commandBus.ts"
 
 // Common account presets for new users
@@ -23,18 +23,18 @@ const DEFAULT_ACCOUNTS = [
 
 // Common category presets with reasonable monthly limits (in cents)
 const DEFAULT_CATEGORIES = [
-  { name: "Groceries", monthlyLimit: 50000 }, // $500
-  { name: "Restaurants", monthlyLimit: 30000 }, // $300
-  { name: "Transportation", monthlyLimit: 25000 }, // $250
-  { name: "Utilities", monthlyLimit: 20000 }, // $200
-  { name: "Entertainment", monthlyLimit: 15000 }, // $150
-  { name: "Healthcare", monthlyLimit: 25000 }, // $250
-  { name: "Shopping", monthlyLimit: 20000 }, // $200
-  { name: "Gas", monthlyLimit: 15000 }, // $150
-  { name: "Coffee & Snacks", monthlyLimit: 10000 }, // $100
-  { name: "Subscriptions", monthlyLimit: 5000 }, // $50
-  { name: "Salary", monthlyLimit: undefined }, // No limit for income
-  { name: "Freelance", monthlyLimit: undefined }, // No limit for income
+  { name: "Groceries", type: CategoryType.EXPENSE, monthlyLimit: 50000 }, // $500
+  { name: "Restaurants", type: CategoryType.EXPENSE, monthlyLimit: 30000 }, // $300
+  { name: "Transportation", type: CategoryType.EXPENSE, monthlyLimit: 25000 }, // $250
+  { name: "Utilities", type: CategoryType.EXPENSE, monthlyLimit: 20000 }, // $200
+  { name: "Entertainment", type: CategoryType.EXPENSE, monthlyLimit: 15000 }, // $150
+  { name: "Healthcare", type: CategoryType.EXPENSE, monthlyLimit: 25000 }, // $250
+  { name: "Shopping", type: CategoryType.EXPENSE, monthlyLimit: 20000 }, // $200
+  { name: "Gas", type: CategoryType.EXPENSE, monthlyLimit: 15000 }, // $150
+  { name: "Coffee & Snacks", type: CategoryType.EXPENSE, monthlyLimit: 10000 }, // $100
+  { name: "Subscriptions", type: CategoryType.EXPENSE, monthlyLimit: 5000 }, // $50
+  { name: "Salary", type: CategoryType.INCOME, monthlyLimit: undefined }, // No limit for income
+  { name: "Freelance", type: CategoryType.INCOME, monthlyLimit: undefined }, // No limit for income
 ]
 
 /**

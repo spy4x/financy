@@ -1,6 +1,6 @@
 import { computed, signal } from "@preact/signals"
 import { ws } from "./ws.ts"
-import { Category, WebSocketMessageType } from "@shared/types"
+import { Category, CategoryType, WebSocketMessageType } from "@shared/types"
 import { group } from "./group.ts"
 import { toast } from "./toast.ts"
 import { transaction } from "./transaction.ts"
@@ -116,33 +116,54 @@ export const category = {
       }
     })
   },
-  create(name: string, monthlyLimit?: number | null) {
+  create(name: string, type: CategoryType = CategoryType.EXPENSE, monthlyLimit?: number | null) {
     const groupId = group.selectedId.value
     if (!groupId) {
       toast.error({ body: "Please select a group first." })
       return
     }
     category.ops.create.value = { inProgress: true, error: null }
+
+    // Build payload conditionally to avoid sending null monthlyLimit for income categories
+    const payload = {
+      name,
+      groupId,
+      type,
+      ...(type === CategoryType.EXPENSE && monthlyLimit !== undefined && monthlyLimit !== null &&
+        { monthlyLimit }),
+    }
+
     ws.request({
       message: {
         e: "category",
         t: WebSocketMessageType.CREATE,
-        p: [{ name, groupId, monthlyLimit }],
+        p: [payload],
       },
     })
   },
-  update(id: number, name: string, monthlyLimit?: number | null) {
+  update(id: number, name: string, type: CategoryType, monthlyLimit?: number | null) {
     const groupId = group.selectedId.value
     if (!groupId) {
       toast.error({ body: "Please select a group first." })
       return
     }
     category.ops.update.value = { inProgress: true, error: null }
+
+    // Build payload conditionally to avoid sending null monthlyLimit for income categories
+    const payload = {
+      id,
+      name,
+      groupId,
+      type,
+      ...(type === CategoryType.EXPENSE && monthlyLimit !== undefined && monthlyLimit !== null &&
+        { monthlyLimit }),
+    }
+
     ws.request({
       message: {
         e: "category",
         t: WebSocketMessageType.UPDATE,
-        p: [{ id, name, groupId, monthlyLimit }],
+        p: [payload],
       },
     })
   },

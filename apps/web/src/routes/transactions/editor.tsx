@@ -8,7 +8,7 @@ import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
-import { TransactionType } from "@shared/types"
+import { CategoryType, TransactionType } from "@shared/types"
 import {
   applyCurrencySign,
   formatCentsToInput,
@@ -66,8 +66,20 @@ export function TransactionEditor() {
     const selectedGroupId = group.selectedId.value
     if (!selectedGroupId) return []
 
+    const currentTransactionType = type.value
+    const expectedCategoryType = currentTransactionType === TransactionType.CREDIT
+      ? CategoryType.INCOME
+      : CategoryType.EXPENSE
+
     return category.list.value
-      .filter((cat) => cat.groupId === selectedGroupId)
+      .filter((cat) => {
+        // Filter by group
+        if (cat.groupId !== selectedGroupId) return false
+
+        // Filter by appropriate category type for transaction type
+        const catType = cat.type || CategoryType.EXPENSE // Default to expense for backward compatibility
+        return catType === expectedCategoryType
+      })
       .sort((a, b) => {
         // Active items first, then deleted items
         const aIsDeleted = !!a.deletedAt
