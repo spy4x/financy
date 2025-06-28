@@ -163,6 +163,52 @@ deno task fmt:fix       # Fix code formatting
 
 **Important**: Use `deno task check` and `deno task fix` (not `deno check`, `deno lint`, or `deno fmt`) - these are composite commands that run multiple quality checks and fixes.
 
+## Testing with Playwright MCP
+
+### End-to-End Testing
+
+For testing the application's behavior and functionality, use the #playwright MCP tool to interact with the running application:
+
+**Application URL**: `http://mk.localhost`
+
+**Test Credentials**:
+
+- Email: `test@test.com`
+- Password: `pass1234`
+
+**Testing Workflow**:
+
+1. Use #playwright MCP to navigate to the application URL.
+
+- If Playwright MCP is not started (and you don't see it's tools) - ask developer to start it by pressing `F1` and selecting `MCP: List Servers` > `Start`.
+- The app is usually running, so try access the app using Playwright first. If not running, use `deno task dev` (app will run in the background, so don't expect logs in the terminal).
+- The web app is SPA, so give it a few seconds to connect to WS, load and display data.
+
+2. Either create a new account or sign in with the test credentials above
+3. Test the application's functionality.
+
+**Example Playwright Commands**:
+
+```typescript
+// Navigate to the application
+await page.goto("http://mk.localhost")
+
+// Sign in with test credentials
+await page.fill('[data-testid="email-input"]', "test@test.com")
+await page.fill('[data-testid="password-input"]', "pass1234")
+await page.click('[data-testid="sign-in-button"]')
+
+// Test specific functionality as needed
+```
+
+Use Playwright MCP whenever you need to:
+
+- Verify UI/UX changes work correctly
+- Test new features end-to-end
+- Validate mobile responsiveness
+- Check PWA functionality
+- Test real-time features and WebSocket connections
+
 ## When Making Changes
 
 0. Suggest best practices - Always recommend better approaches when available, before implementing changes. If major change - stop and ask if unsure. If minor changes, proceed with caution.
