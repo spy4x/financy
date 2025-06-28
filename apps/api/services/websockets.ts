@@ -7,7 +7,6 @@ import {
   categoryUpdateSchema,
   groupBaseSchema,
   GroupRole,
-  GroupRoleUtils,
   groupUpdateSchema,
   SyncModelName,
   transactionBaseSchema,
@@ -23,12 +22,22 @@ import { log } from "./log.ts"
 import { commandBus } from "./commandBus.ts"
 import {
   AccountCreateCommand,
+  AccountDeleteCommand,
+  AccountUndeleteCommand,
+  AccountUpdateCommand,
   CategoryCreateCommand,
+  CategoryDeleteCommand,
+  CategoryUndeleteCommand,
+  CategoryUpdateCommand,
   GroupCreateCommand,
+  GroupDeleteCommand,
+  GroupUndeleteCommand,
+  GroupUpdateCommand,
   TransactionCreateCommand,
   TransactionDeleteCommand,
   TransactionUndeleteCommand,
   TransactionUpdateCommand,
+  UserUpdateCommand,
 } from "@api/cqrs/commands.ts"
 
 export type WS = WSContext & { createdAt: number; heartbeatInterval: number }
@@ -397,47 +406,31 @@ export const websockets = {
           return
         }
         const update = validation.data
-        const existingCategory = await db.category.findOne({ id: update.id })
-        if (!existingCategory) {
+
+        // Update the category using CQRS command
+        try {
+          const { id, ...updates } = update
+          await commandBus.execute(
+            new CategoryUpdateCommand({
+              categoryId: id,
+              updates,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to update category:", error)
           websockets.send({
             ws,
             message: {
               e: "category",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category not found"],
+              p: [error instanceof Error ? error.message : "Failed to update category"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        // Verify legitimacy of the category
-        if (
-          await db.category.verifyLegitimacy({
-            ...existingCategory,
-            ...update,
-          }, userId) === false
-        ) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const updated = await db.category.updateOne({
-          id: update.id,
-          data: update,
-        })
-        websockets.onModelChange(
-          SyncModelName.category,
-          [updated],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
         // For DELETE, validate the payload to get the category object
         let id: number | undefined
@@ -458,25 +451,29 @@ export const websockets = {
           })
           return
         }
-        if (await db.category.verifyLegitimacyById(id, userId) === false) {
+
+        // Delete the category using CQRS command
+        try {
+          await commandBus.execute(
+            new CategoryDeleteCommand({
+              categoryId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to delete category:", error)
           websockets.send({
             ws,
             message: {
               e: "category",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category is not legitimate"],
+              p: [error instanceof Error ? error.message : "Failed to delete category"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        const deleted = await db.category.deleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.category,
-          [deleted],
-          WebSocketMessageType.DELETED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.UNDELETE) {
         // For UNDELETE, validate the payload to get the category object
         let id: number | undefined
@@ -498,38 +495,28 @@ export const websockets = {
           return
         }
 
-        const existingCategory = await db.category.findOne({ id })
-        if (!existingCategory) {
+        // Undelete the category using CQRS command
+        try {
+          await commandBus.execute(
+            new CategoryUndeleteCommand({
+              categoryId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to undelete category:", error)
           websockets.send({
             ws,
             message: {
               e: "category",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category not found"],
+              p: [error instanceof Error ? error.message : "Failed to undelete category"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        if (await db.category.verifyLegitimacy(existingCategory, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "category",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const undeleted = await db.category.undeleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.category,
-          [undeleted],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
       } else {
         websockets.send({
           ws,
@@ -603,52 +590,30 @@ export const websockets = {
         }
         const update = validation.data
 
-        const existingGroup = await db.group.findOne({ id: update.id })
-        if (!existingGroup) {
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Group not found"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        } // Check if user has admin/owner access to this group
-        const membership = await db.groupMembership.findByUserAndGroup(userId, update.id)
-        console.log(
-          `Group update permission check: userId=${userId}, groupId=${update.id}, membership=`,
-          membership,
-        )
-        if (!membership || !GroupRoleUtils.canManage(membership.role)) { // Admin or Owner required
-          console.warn(
-            `User ${userId} lacks permissions to update group ${update.id}. Membership role: ${
-              membership?.role || "none"
-            }`,
+        // Update the group using CQRS command
+        try {
+          const { id, ...updates } = update
+          await commandBus.execute(
+            new GroupUpdateCommand({
+              groupId: id,
+              updates,
+              userId,
+              acknowledgmentId,
+            }),
           )
+        } catch (error) {
+          console.error("Failed to update group:", error)
           websockets.send({
             ws,
             message: {
               e: "group",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Insufficient permissions to update group"],
+              p: [error instanceof Error ? error.message : "Failed to update group"],
               id: acknowledgmentId,
             },
           })
           return
         }
-
-        const updated = await db.group.updateOne({
-          id: update.id,
-          data: update,
-        })
-        websockets.onModelChange(
-          SyncModelName.group,
-          [updated],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
         // For DELETE, validate the payload to get the group object
         let id: number | undefined
@@ -670,42 +635,28 @@ export const websockets = {
           return
         }
 
-        const existingGroup = await db.group.findOne({ id })
-        if (!existingGroup) {
+        // Delete the group using CQRS command
+        try {
+          await commandBus.execute(
+            new GroupDeleteCommand({
+              groupId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to delete group:", error)
           websockets.send({
             ws,
             message: {
               e: "group",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Group not found"],
+              p: [error instanceof Error ? error.message : "Failed to delete group"],
               id: acknowledgmentId,
             },
           })
           return
         }
-
-        // Check if user has owner access to this group
-        const membership = await db.groupMembership.findByUserAndGroup(userId, id)
-        if (!membership || !GroupRoleUtils.canDelete(membership.role)) { // Only Owner can delete
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Only group owners can delete groups"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-
-        const deleted = await db.group.deleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.group,
-          [deleted],
-          WebSocketMessageType.DELETED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.UNDELETE) {
         // For UNDELETE, validate the payload to get the group object
         let id: number | undefined
@@ -727,42 +678,28 @@ export const websockets = {
           return
         }
 
-        const existingGroup = await db.group.findOne({ id })
-        if (!existingGroup) {
+        // Undelete the group using CQRS command
+        try {
+          await commandBus.execute(
+            new GroupUndeleteCommand({
+              groupId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to undelete group:", error)
           websockets.send({
             ws,
             message: {
               e: "group",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Group not found"],
+              p: [error instanceof Error ? error.message : "Failed to undelete group"],
               id: acknowledgmentId,
             },
           })
           return
         }
-
-        // Check if user has owner access to this group
-        const membership = await db.groupMembership.findByUserAndGroup(userId, id)
-        if (!membership || !GroupRoleUtils.canDelete(membership.role)) { // Only Owner can undelete
-          websockets.send({
-            ws,
-            message: {
-              e: "group",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Only group owners can restore groups"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-
-        const undeleted = await db.group.undeleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.group,
-          [undeleted],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
       } else {
         websockets.send({
           ws,
@@ -835,47 +772,31 @@ export const websockets = {
           return
         }
         const update = validation.data
-        const existingAccount = await db.account.findOne({ id: update.id })
-        if (!existingAccount) {
+
+        // Update the account using CQRS command
+        try {
+          const { id, ...updates } = update
+          await commandBus.execute(
+            new AccountUpdateCommand({
+              accountId: id,
+              updates,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to update account:", error)
           websockets.send({
             ws,
             message: {
               e: "account",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Account not found"],
+              p: [error instanceof Error ? error.message : "Failed to update account"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        // Verify legitimacy of the account
-        if (
-          await db.account.verifyLegitimacy({
-            ...existingAccount,
-            ...update,
-          }, userId) === false
-        ) {
-          websockets.send({
-            ws,
-            message: {
-              e: "account",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Account is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const updated = await db.account.updateOne({
-          id: update.id,
-          data: update,
-        })
-        websockets.onModelChange(
-          SyncModelName.account,
-          [updated],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.DELETE) {
         // For DELETE, validate the payload to get the account object
         let id: number | undefined
@@ -896,39 +817,29 @@ export const websockets = {
           })
           return
         }
-        // Check if the account exists and user has access
-        const existingAccount = await db.account.findOne({ id })
-        if (!existingAccount) {
+
+        // Delete the account using CQRS command
+        try {
+          await commandBus.execute(
+            new AccountDeleteCommand({
+              accountId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to delete account:", error)
           websockets.send({
             ws,
             message: {
               e: "account",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Account not found"],
+              p: [error instanceof Error ? error.message : "Failed to delete account"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        if (await db.account.verifyLegitimacy(existingAccount, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "account",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Account is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const deleted = await db.account.deleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.account,
-          [deleted],
-          WebSocketMessageType.DELETED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.UNDELETE) {
         // For UNDELETE, validate the payload to get the account object
         let id: number | undefined
@@ -950,38 +861,28 @@ export const websockets = {
           return
         }
 
-        const existingAccount = await db.account.findOne({ id })
-        if (!existingAccount) {
+        // Undelete the account using CQRS command
+        try {
+          await commandBus.execute(
+            new AccountUndeleteCommand({
+              accountId: id,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to undelete account:", error)
           websockets.send({
             ws,
             message: {
               e: "account",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Account not found"],
+              p: [error instanceof Error ? error.message : "Failed to undelete account"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        if (await db.account.verifyLegitimacy(existingAccount, userId) === false) {
-          websockets.send({
-            ws,
-            message: {
-              e: "account",
-              t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Account is not legitimate"],
-              id: acknowledgmentId,
-            },
-          })
-          return
-        }
-        const undeleted = await db.account.undeleteOne({ id })
-        websockets.onModelChange(
-          SyncModelName.account,
-          [undeleted],
-          WebSocketMessageType.UPDATED,
-          acknowledgmentId,
-        )
       } else {
         websockets.send({
           ws,
@@ -1013,16 +914,29 @@ export const websockets = {
           return
         }
         const userData = validation.data
-        const updatedUser = await db.user.updateOne({
-          id: userId,
-          data: userData,
-        })
-        websockets.onModelChange(
-          SyncModelName.user,
-          [updatedUser],
-          WebSocketMessageType.UPDATED,
-          acknoledgmentId ?? undefined,
-        )
+
+        // Update the user using CQRS command
+        try {
+          await commandBus.execute(
+            new UserUpdateCommand({
+              userId,
+              updates: userData,
+              acknowledgmentId: acknoledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to update user:", error)
+          websockets.send({
+            ws,
+            message: {
+              e: "user",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: [error instanceof Error ? error.message : "Failed to update user"],
+              id: acknoledgmentId,
+            },
+          })
+          return
+        }
       }
     }
   },

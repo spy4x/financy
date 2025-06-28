@@ -106,3 +106,82 @@ export class CategoryCreatedEvent
   implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
   constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
 }
+
+/**
+ * Event emitted when a category is updated
+ */
+export class CategoryUpdatedEvent
+  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when a category is deleted
+ */
+export class CategoryDeletedEvent
+  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when a category is undeleted (restored)
+ */
+export class CategoryUndeletedEvent
+  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when a group is updated
+ */
+export class GroupUpdatedEvent
+  implements Event<{ group: Group; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { group: Group; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when a group is deleted
+ */
+export class GroupDeletedEvent
+  implements Event<{ group: Group; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { group: Group; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when a group is undeleted (restored)
+ */
+export class GroupUndeletedEvent
+  implements Event<{ group: Group; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { group: Group; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when an account is updated
+ */
+export class AccountUpdatedEvent
+  implements Event<{ account: Account; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { account: Account; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when an account is deleted
+ */
+export class AccountDeletedEvent
+  implements Event<{ account: Account; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { account: Account; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when an account is undeleted (restored)
+ */
+export class AccountUndeletedEvent
+  implements Event<{ account: Account; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { account: Account; userId: number; acknowledgmentId?: string }) {}
+}
+
+/**
+ * Event emitted when a user is updated
+ */
+export class UserUpdatedEvent implements Event<{ user: User; acknowledgmentId?: string }> {
+  constructor(public data: { user: User; acknowledgmentId?: string }) {}
+}
