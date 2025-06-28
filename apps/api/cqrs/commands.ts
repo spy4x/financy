@@ -2,6 +2,8 @@ import { Command } from "@shared/cqrs/types.ts"
 import {
   Account,
   AccountBase,
+  Category,
+  CategoryBase,
   Group,
   GroupBase,
   GroupMembership,
@@ -109,3 +111,18 @@ export class TransactionUndeleteCommand
   constructor(public data: TransactionUndeletePayload) {}
 }
 // #endregion Transaction Undelete
+
+export interface CategoryCreatePayload {
+  category: CategoryBase
+  userId: number
+  acknowledgmentId?: string // For WebSocket acknowledgment
+}
+
+export interface CategoryCreateResult {
+  category: Category
+}
+
+export class CategoryCreateCommand implements Command<CategoryCreatePayload, CategoryCreateResult> {
+  __resultType?: CategoryCreateResult
+  constructor(public data: CategoryCreatePayload) {}
+}

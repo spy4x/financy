@@ -1,5 +1,5 @@
 import { Event } from "@shared/cqrs/types.ts"
-import { Account, Group, GroupMembership, Transaction, User } from "@shared/types"
+import { Account, Category, Group, GroupMembership, Transaction, User } from "@shared/types"
 
 /**
  * Event emitted when a user signs up (after user creation and session setup)
@@ -97,4 +97,12 @@ export class TransactionUndeletedEvent implements
       acknowledgmentId?: string
     },
   ) {}
+}
+
+/**
+ * Event emitted when a category is created
+ */
+export class CategoryCreatedEvent
+  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
+  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
 }

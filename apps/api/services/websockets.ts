@@ -22,6 +22,8 @@ import { db } from "./db.ts"
 import { log } from "./log.ts"
 import { commandBus } from "./commandBus.ts"
 import {
+  AccountCreateCommand,
+  CategoryCreateCommand,
   GroupCreateCommand,
   TransactionCreateCommand,
   TransactionDeleteCommand,
@@ -357,26 +359,29 @@ export const websockets = {
           return
         }
         const category = validation.data
-        // Verify legitimacy of the category
-        if (await db.category.verifyLegitimacy(category, userId) === false) {
+
+        // Create the category using CQRS command
+        try {
+          await commandBus.execute(
+            new CategoryCreateCommand({
+              category,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to create category:", error)
           websockets.send({
             ws,
             message: {
               e: "category",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Category is not legitimate"],
+              p: [error instanceof Error ? error.message : "Failed to create category"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        const created = await db.category.createOne({ data: category })
-        websockets.onModelChange(
-          SyncModelName.category,
-          [created],
-          WebSocketMessageType.CREATED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
         const validation = validate(categoryUpdateSchema, payload)
         if (validation.error) {
@@ -792,26 +797,29 @@ export const websockets = {
           return
         }
         const account = validation.data
-        // Verify legitimacy of the account
-        if (await db.account.verifyLegitimacy(account, userId) === false) {
+
+        // Create the account using CQRS command
+        try {
+          await commandBus.execute(
+            new AccountCreateCommand({
+              account,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to create account:", error)
           websockets.send({
             ws,
             message: {
               e: "account",
               t: WebSocketMessageType.ERROR_VALIDATION,
-              p: ["Account is not legitimate"],
+              p: [error instanceof Error ? error.message : "Failed to create account"],
               id: acknowledgmentId,
             },
           })
           return
         }
-        const created = await db.account.createOne({ data: account })
-        websockets.onModelChange(
-          SyncModelName.account,
-          [created],
-          WebSocketMessageType.CREATED,
-          acknowledgmentId,
-        )
       } else if (parseResult.data.t === WebSocketMessageType.UPDATE) {
         const validation = validate(accountUpdateSchema, payload)
         if (validation.error) {
