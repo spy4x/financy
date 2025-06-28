@@ -1,5 +1,6 @@
 import { account } from "@web/state/account.ts"
 import { group } from "@web/state/group.ts"
+import { currency } from "@web/state/currency.ts"
 import { useComputed, useSignal } from "@preact/signals"
 import {
   IconEllipsisVertical,
@@ -13,7 +14,6 @@ import { Table } from "@web/components/ui/Table.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
-import { getCurrencyDisplay } from "@shared/constants/currency.ts"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
@@ -24,7 +24,7 @@ import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 export function AccountList() {
   const filter = {
     search: useSignal(""),
-    currency: useSignal<string | null>(null),
+    currency: useSignal<number | null>(null),
     status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
 
@@ -41,7 +41,7 @@ export function AccountList() {
       }
 
       // Currency filter
-      if (filter.currency.value && acc.currency !== filter.currency.value) {
+      if (filter.currency.value && acc.currencyId !== filter.currency.value) {
         return false
       }
 
@@ -116,8 +116,8 @@ export function AccountList() {
                     Currency
                   </label>
                   <CurrencySelector
-                    value={filter.currency.value || ""}
-                    onChange={(code) => filter.currency.value = code || null}
+                    value={filter.currency.value}
+                    onChange={(id) => filter.currency.value = id || null}
                     placeholder="All Currencies"
                   />
                 </div>
@@ -203,7 +203,7 @@ export function AccountList() {
                       }`}
                     >
                       {(() => {
-                        const currencyInfo = getCurrencyDisplay(acc.currency)
+                        const currencyInfo = currency.getDisplay(acc.currencyId)
                         return (
                           <>
                             <span class="font-mono font-medium">{currencyInfo.code}</span>
@@ -225,7 +225,7 @@ export function AccountList() {
                     >
                       <CurrencyDisplay
                         amount={acc.balance}
-                        currency={acc.currency}
+                        currency={acc.currencyId}
                         highlightNegative={!acc.deletedAt}
                       />
                     </div>

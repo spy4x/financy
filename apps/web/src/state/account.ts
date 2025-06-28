@@ -76,7 +76,7 @@ export const account = {
       }
     })
   },
-  create(name: string, currency: string) {
+  create(name: string, currencyId: number) {
     const groupId = group.selectedId.value
     if (!groupId) {
       toast.error({ body: "Please select a group first." })
@@ -87,14 +87,14 @@ export const account = {
       message: {
         e: "account",
         t: WebSocketMessageType.CREATE,
-        p: [{ name, currency, groupId, balance: 0 }],
+        p: [{ name, currencyId, groupId, balance: 0 }],
       },
     })
   },
-  update(id: number, name: string, currency: string) {
+  update(id: number, name: string, currencyId: number) {
     account.ops.update.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "account", t: WebSocketMessageType.UPDATE, p: [{ id, name, currency }] },
+      message: { e: "account", t: WebSocketMessageType.UPDATE, p: [{ id, name, currencyId }] },
     })
   },
   remove(id: number) {

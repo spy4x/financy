@@ -3,6 +3,7 @@ import { Link } from "wouter-preact"
 import { navigate } from "@client/helpers"
 import { account } from "../../../state/account.ts"
 import { group } from "../../../state/group.ts"
+import { currency } from "../../../state/currency.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { IconHome, IconPlus } from "@client/icons"
 
@@ -20,10 +21,7 @@ export function AccountBalancesOverview() {
   )
 
   // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => {
-    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup?.defaultCurrency || "USD"
-  })
+  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
 
   // Categorize accounts by balance status
   const categorizedAccounts = useComputed(() => {
@@ -92,7 +90,7 @@ export function AccountBalancesOverview() {
               <p class="text-sm text-gray-600 mb-1">Total Balance</p>
               <CurrencyDisplay
                 amount={totalBalance.value}
-                currency={defaultCurrency.value}
+                currency={defaultCurrency.value.id}
                 class={`text-2xl font-bold ${
                   totalBalance.value >= 0 ? "text-green-600" : "text-red-600"
                 }`}
@@ -130,14 +128,14 @@ export function AccountBalancesOverview() {
                         {acc.name}
                       </p>
                       <p class="text-xs text-gray-500">
-                        {acc.currency}
+                        {currency.getDisplay(acc.currencyId).code}
                       </p>
                     </div>
                   </div>
                   <div class="text-right">
                     <CurrencyDisplay
                       amount={acc.balance}
-                      currency={acc.currency}
+                      currency={acc.currencyId}
                       class={`text-sm font-medium ${
                         isPositive ? "text-green-600" : isZero ? "text-gray-600" : "text-red-600"
                       }`}

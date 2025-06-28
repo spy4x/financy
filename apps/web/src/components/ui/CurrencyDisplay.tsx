@@ -1,10 +1,10 @@
-import { formatCurrency } from "@shared/helpers/format.ts"
+import { currency } from "@web/state/currency.ts"
 
 interface CurrencyDisplayProps {
   /** Amount in smallest currency unit (cents) */
   amount: number
-  /** ISO 4217 currency code */
-  currency: string
+  /** Currency ID (number) or legacy currency code (string) - will be migrated to ID only */
+  currency: number | string
   /** Additional CSS classes */
   class?: string
   /** Show negative amounts in red */
@@ -17,16 +17,21 @@ interface CurrencyDisplayProps {
 /**
  * Displays a formatted currency amount with symbol and value
  * Handles conversion from cents to currency units and proper formatting
+ * Supports both currency ID (number) and legacy currency code (string)
  */
 export function CurrencyDisplay({
   amount,
-  currency,
+  currency: currencyIdOrCode,
   class: className = "",
   highlightNegative = false,
-  symbolClass = "font-medium",
-  amountClass = "",
+  symbolClass: _symbolClass = "font-medium",
+  amountClass: _amountClass = "",
 }: CurrencyDisplayProps) {
-  const formatted = formatCurrency(amount, currency)
+  // Handle both currency ID (number) and legacy code (string)
+  const formatted = typeof currencyIdOrCode === "number"
+    ? currency.format(amount, currencyIdOrCode)
+    : currency.format(amount, currency.getByCode(currencyIdOrCode))
+
   const isNegative = amount < 0
 
   const containerClass = `${className} ${
@@ -35,8 +40,7 @@ export function CurrencyDisplay({
 
   return (
     <span class={containerClass}>
-      <span class={symbolClass}>{formatted.symbol}</span>{" "}
-      <span class={amountClass}>{formatted.amount}</span>
+      {formatted}
     </span>
   )
 }

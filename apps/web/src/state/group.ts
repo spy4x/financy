@@ -4,6 +4,7 @@ import { Group, type, WebSocketMessageType } from "@shared/types"
 import { toast } from "./toast.ts"
 import { makeStorage } from "@shared/local-storage"
 import { effect } from "@preact/signals"
+import { currency } from "./currency.ts"
 
 // Holds the list of groups for the current user
 const list = signal<Group[]>([])
@@ -102,16 +103,16 @@ export const group = {
       }
     })
   },
-  create(name: string, defaultCurrency: string = "USD") {
+  create(name: string, currencyId: number) {
     group.ops.create.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "group", t: WebSocketMessageType.CREATE, p: [{ name, defaultCurrency }] },
+      message: { e: "group", t: WebSocketMessageType.CREATE, p: [{ name, currencyId }] },
     })
   },
-  update(id: number, name: string, defaultCurrency: string) {
+  update(id: number, name: string, currencyId: number) {
     group.ops.update.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "group", t: WebSocketMessageType.UPDATE, p: [{ id, name, defaultCurrency }] },
+      message: { e: "group", t: WebSocketMessageType.UPDATE, p: [{ id, name, currencyId }] },
     })
   },
   remove(id: number) {
@@ -121,5 +122,12 @@ export const group = {
   undelete(id: number) {
     group.ops.update.value = { inProgress: true, error: null }
     ws.request({ message: { e: "group", t: WebSocketMessageType.UNDELETE, p: [{ id }] } })
+  },
+  /**
+   * Get the currency display info for the currently selected group
+   */
+  getSelectedCurrency() {
+    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
+    return selectedGroup ? currency.getDisplay(selectedGroup.currencyId) : currency.getByCode("USD")
   },
 }

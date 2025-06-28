@@ -1,16 +1,16 @@
 import { useComputed, useSignal } from "@preact/signals"
 import { IconSearch } from "@client/icons"
-import type { CurrencyType } from "@shared/types"
-import { CURRENCIES } from "@shared/constants/currency.ts"
+import type { Currency, CurrencyType } from "@shared/types"
+import { currency } from "@web/state/currency.ts"
 
 /**
  * Props for the CurrencySelector component
  */
 interface CurrencySelectorProps {
-  /** Currently selected currency code */
-  value: string
+  /** Currently selected currency ID (preferred) or code (legacy) */
+  value: number | string | null
   /** Callback function called when a currency is selected */
-  onChange: (currencyCode: string) => void
+  onChange: (currencyId: number, currencyCode: string) => void
   /** HTML id for the component (defaults to "currency") */
   id?: string
   /** Whether selection is required for form validation */
@@ -21,7 +21,7 @@ interface CurrencySelectorProps {
   placeholder?: string
   /** Whether to show the search input in the dropdown */
   showSearch?: boolean
-  /** Filter currencies by type: 'all', 'fiat', or 'crypto' */
+  /** Filter currencies by type: CurrencyType.FIAT, CurrencyType.CRYPTO, or undefined for all */
   filterType?: CurrencyType
 }
 
@@ -55,8 +55,8 @@ interface CurrencySelectorProps {
  * ```tsx
  * <CurrencySelector
  *   value={currency.value}
- *   onChange={(code) => currency.value = code}
- *   filterType="fiat"
+ *   onChange={(id, code) => currency.value = id}
+ *   filterType={CurrencyType.FIAT}
  *   placeholder="Select fiat currency..."
  * />
  * ```
@@ -65,8 +65,8 @@ interface CurrencySelectorProps {
  * ```tsx
  * <CurrencySelector
  *   value={currency.value}
- *   onChange={(code) => currency.value = code}
- *   filterType="crypto"
+ *   onChange={(id, code) => currency.value = id}
+ *   filterType={CurrencyType.CRYPTO}
  *   placeholder="Select cryptocurrency..."
  * />
  * ```
@@ -105,7 +105,7 @@ export function CurrencySelector({
   disabled = false,
   placeholder = "Select currency...",
   showSearch = true,
-  filterType = "all",
+  filterType,
 }: CurrencySelectorProps) {
   const searchQuery = useSignal("")
   const isOpen = useSignal(false)
@@ -113,21 +113,20 @@ export function CurrencySelector({
   /**
    * Computed signal that filters currencies based on type and search query
    */
-
   const filteredCurrencies = useComputed(() => {
-    let filtered = CURRENCIES
+    let filtered = currency.list.value
 
     // Filter by type
-    if (filterType !== "all") {
-      filtered = filtered.filter((currency) => currency.type === filterType)
+    if (filterType !== undefined) {
+      filtered = filtered.filter((curr) => curr.type === filterType)
     }
 
     // Filter by search query
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter((currency) =>
-        currency.code.toLowerCase().includes(query) ||
-        currency.name.toLowerCase().includes(query)
+      filtered = filtered.filter((curr) =>
+        curr.code.toLowerCase().includes(query) ||
+        curr.name.toLowerCase().includes(query)
       )
     }
 
@@ -135,14 +134,15 @@ export function CurrencySelector({
   })
 
   // Find the currently selected currency object
-  const selectedCurrency = CURRENCIES.find((currency) => currency.code === value)
+  const selectedCurrency = typeof value === "number"
+    ? currency.list.value.find((curr) => curr.id === value)
+    : currency.list.value.find((curr) => curr.code === value)
 
   /**
    * Handles currency selection and closes the dropdown
    */
-
-  function handleSelect(currencyCode: string) {
-    onChange(currencyCode)
+  function handleSelect(curr: Currency) {
+    onChange(curr.id, curr.code)
     isOpen.value = false
     searchQuery.value = ""
   }
@@ -191,7 +191,7 @@ export function CurrencySelector({
       <input
         type="hidden"
         name={id}
-        value={value}
+        value={selectedCurrency?.code || ""}
         required={required}
       />
 
@@ -222,7 +222,7 @@ export function CurrencySelector({
                 <span class="text-gray-700 dark:text-gray-300">
                   {selectedCurrency.name}
                 </span>
-                {selectedCurrency.type === "crypto" && (
+                {selectedCurrency.type === 2 && (
                   <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                     crypto
                   </span>
@@ -277,34 +277,34 @@ export function CurrencySelector({
                 </div>
               )
               : (
-                filteredCurrencies.value.map((currency) => (
+                filteredCurrencies.value.map((curr) => (
                   <button
-                    key={currency.code}
+                    key={curr.code}
                     type="button"
                     class={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none flex items-center gap-2 ${
-                      currency.code === value
+                      (typeof value === "number" ? curr.id === value : curr.code === value)
                         ? "bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
                         : "text-gray-900 dark:text-gray-100"
                     }`}
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      handleSelect(currency.code)
+                      handleSelect(curr)
                     }}
                     onMouseDown={(e) => e.preventDefault()}
                   >
                     <span class="font-mono font-medium min-w-[3rem]">
-                      {currency.code}
+                      {curr.code}
                     </span>
-                    {currency.symbol && (
+                    {curr.symbol && (
                       <span class="text-gray-500 dark:text-gray-400 min-w-[1.5rem]">
-                        {currency.symbol}
+                        {curr.symbol}
                       </span>
                     )}
                     <span class="flex-1">
-                      {currency.name}
+                      {curr.name}
                     </span>
-                    {currency.type === "crypto" && (
+                    {curr.type === 2 && (
                       <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                         crypto
                       </span>

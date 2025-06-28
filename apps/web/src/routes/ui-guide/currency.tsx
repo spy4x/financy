@@ -1,11 +1,12 @@
 import { useSignal } from "@preact/signals"
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
+import { CurrencyType } from "@shared/types"
 
 export function UIGuideCurrency() {
-  const selectedCurrency = useSignal("USD")
-  const selectedFiatCurrency = useSignal("EUR")
-  const selectedCryptoCurrency = useSignal("BTC")
+  const selectedCurrency = useSignal<number | null>(null)
+  const selectedFiatCurrency = useSignal<number | null>(null)
+  const selectedCryptoCurrency = useSignal<number | null>(null)
 
   return (
     <div>
@@ -118,7 +119,7 @@ export function UIGuideCurrency() {
                   <label class="label mb-2">All Currencies</label>
                   <CurrencySelector
                     value={selectedCurrency.value}
-                    onChange={(code) => selectedCurrency.value = code}
+                    onChange={(id) => selectedCurrency.value = id}
                     placeholder="Select any currency..."
                   />
                   <p class="text-xs text-gray-500 mt-1">
@@ -130,8 +131,8 @@ export function UIGuideCurrency() {
                   <label class="label mb-2">Fiat Only</label>
                   <CurrencySelector
                     value={selectedFiatCurrency.value}
-                    onChange={(code) => selectedFiatCurrency.value = code}
-                    filterType="fiat"
+                    onChange={(id) => selectedFiatCurrency.value = id}
+                    filterType={CurrencyType.FIAT}
                     placeholder="Select fiat currency..."
                   />
                   <p class="text-xs text-gray-500 mt-1">
@@ -143,8 +144,8 @@ export function UIGuideCurrency() {
                   <label class="label mb-2">Crypto Only</label>
                   <CurrencySelector
                     value={selectedCryptoCurrency.value}
-                    onChange={(code) => selectedCryptoCurrency.value = code}
-                    filterType="crypto"
+                    onChange={(id) => selectedCryptoCurrency.value = id}
+                    filterType={CurrencyType.CRYPTO}
                     placeholder="Select cryptocurrency..."
                   />
                   <p class="text-xs text-gray-500 mt-1">
@@ -161,7 +162,7 @@ export function UIGuideCurrency() {
                   <label class="label mb-2">Without Search</label>
                   <CurrencySelector
                     value={selectedCurrency.value}
-                    onChange={(code) => selectedCurrency.value = code}
+                    onChange={(id) => selectedCurrency.value = id}
                     showSearch={false}
                     placeholder="No search available..."
                   />
@@ -171,7 +172,7 @@ export function UIGuideCurrency() {
                   <label class="label mb-2">Required Field</label>
                   <CurrencySelector
                     value={selectedCurrency.value}
-                    onChange={(code) => selectedCurrency.value = code}
+                    onChange={(id) => selectedCurrency.value = id}
                     required
                     placeholder="Required currency selection..."
                   />

@@ -3,6 +3,8 @@ import {
   AccountBase,
   Category,
   CategoryBase,
+  Currency,
+  CurrencyBase,
   Group,
   GroupBase,
   GroupMembership,
@@ -579,6 +581,21 @@ export class DbService extends DbServiceBase {
     },
   }
 
+  currency = {
+    ...this.buildMethods<Currency, CurrencyBase, Partial<CurrencyBase>>(
+      `currencies`,
+      publicAPICache.currency,
+    ),
+    // Override findMany to support global currency data (no userId filtering)
+    findMany: async (): Promise<Currency[]> => {
+      return this.sql<Currency[]>`
+        SELECT * FROM currencies 
+        WHERE deleted_at IS NULL 
+        ORDER BY type ASC, code ASC
+      `
+    },
+  }
+
   syncData = async (
     callback: (model: SyncModelName, data: SyncModel[]) => void,
     userId: number,
@@ -588,10 +605,20 @@ export class DbService extends DbServiceBase {
     for (let i = 0; i < SYNC_MODELS.length; i += 1) {
       const model = SYNC_MODELS[i]
       let data = []
-      if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
-        data = await db[model].findChanged(lastSyncAtDate, userId)
+
+      // Handle special case for global currency table
+      if (model === "currency") {
+        if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
+          data = await db[model].findChanged(lastSyncAtDate)
+        } else {
+          data = await db[model].findMany()
+        }
       } else {
-        data = await db[model].findMany(userId)
+        if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
+          data = await db[model].findChanged(lastSyncAtDate, userId)
+        } else {
+          data = await db[model].findMany(userId)
+        }
       }
       callback(model, data)
     }

@@ -135,8 +135,6 @@ export function CategoryEditor() {
     }
   }
 
-  const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-
   return (
     <section class="page-layout">
       <PageTitle showGroupSelector>
@@ -259,7 +257,7 @@ export function CategoryEditor() {
                 <div class="mt-2">
                   <div class="flex items-center">
                     <span class="text-gray-500 mr-2">
-                      {selectedGroup?.defaultCurrency || "USD"}
+                      {group.getSelectedCurrency().code}
                     </span>
                     <input
                       type="number"
@@ -286,7 +284,7 @@ export function CategoryEditor() {
                       <BudgetProgress
                         spentAmount={category.getMonthlySpent(editCategoryId)}
                         limitAmount={parseCurrencyInput(monthlyLimit.value || "0") || 0}
-                        currency={selectedGroup?.defaultCurrency || "USD"}
+                        currency={group.getSelectedCurrency().code}
                       />
                     </div>
                   )}

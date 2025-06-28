@@ -2,6 +2,7 @@ import { transaction } from "@web/state/transaction.ts"
 import { account } from "@web/state/account.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
+import { currency } from "@web/state/currency.ts"
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
@@ -33,7 +34,7 @@ export function TransactionEditor() {
   const type = useSignal<number>(1) // Default to Debit
   const amount = useSignal("")
   const memo = useSignal("")
-  const originalCurrency = useSignal("")
+  const originalCurrencyId = useSignal<number | null>(null)
   const originalAmount = useSignal("")
   const createdAt = useSignal("")
   const error = useSignal("")
@@ -107,7 +108,7 @@ export function TransactionEditor() {
           // Always show positive amount in form - sign is determined by type
           amount.value = formatCentsToInput(existingTransaction.amount)
           memo.value = existingTransaction.memo || ""
-          originalCurrency.value = existingTransaction.originalCurrency || ""
+          originalCurrencyId.value = existingTransaction.originalCurrencyId || null
           originalAmount.value = existingTransaction.originalAmount
             ? formatCentsToInput(existingTransaction.originalAmount)
             : ""
@@ -129,7 +130,7 @@ export function TransactionEditor() {
         type.value = 1 // Default to Debit
         amount.value = ""
         memo.value = ""
-        originalCurrency.value = ""
+        originalCurrencyId.value = null
         originalAmount.value = ""
         // Default to current date and time
         createdAt.value = new Date().toISOString().slice(0, 16)
@@ -229,7 +230,7 @@ export function TransactionEditor() {
       type: type.value,
       amount: signedAmount,
       memo: memo.value.trim() || undefined,
-      originalCurrency: originalCurrency.value.trim() || undefined,
+      originalCurrencyId: originalCurrencyId.value || undefined,
       originalAmount: signedOriginalAmount,
       createdAt: createdAt.value ? new Date(createdAt.value).toISOString() : undefined,
     }
@@ -364,7 +365,7 @@ export function TransactionEditor() {
                         class={acc.deletedAt ? "text-gray-400 italic" : ""}
                       >
                         {acc.deletedAt ? "[DELETED] " : ""}
-                        {acc.name} ({acc.currency})
+                        {acc.name} ({currency.getDisplay(acc.currencyId).code})
                       </option>
                     ))}
                   </select>
@@ -397,10 +398,9 @@ export function TransactionEditor() {
                 <div class="mt-2">
                   <CurrencySelector
                     id="originalCurrency"
-                    value={originalCurrency.value}
-                    onChange={(currencyCode) => originalCurrency.value = currencyCode}
+                    value={originalCurrencyId.value}
+                    onChange={(id) => originalCurrencyId.value = id}
                     placeholder="Select original currency..."
-                    filterType="all"
                     disabled={isState(EditorState.IN_PROGRESS) || !group.selectedId.value}
                   />
                 </div>

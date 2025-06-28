@@ -1,4 +1,3 @@
-import { getCurrencyDisplay } from "@shared/constants/currency.ts"
 import { TransactionType } from "@shared/types"
 
 /** Formats a decimal number like 13.50354562 to a number with two decimal points, like 13.50 */
@@ -80,21 +79,40 @@ export function urlBase64ToUint8Array(b64: string): Uint8Array {
  * @param amount Amount in smallest currency unit (cents)
  * @param currency ISO 4217 currency code
  * @returns Object with separate symbol and formatted amount
+ * @deprecated Use the new formatCurrency from @shared/constants/currency.ts instead
  */
 export function formatCurrency(
   amount: number,
   currency: string,
 ): { symbol: string; amount: string } {
-  const currencyInfo = getCurrencyDisplay(currency)
+  // Temporary fallback for legacy compatibility
+  const symbol = getBasicCurrencySymbol(currency)
   const formattedAmount = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount / 100) // Convert from cents to currency units
 
   return {
-    symbol: currencyInfo.symbol || currencyInfo.code,
+    symbol,
     amount: formattedAmount,
   }
+}
+
+/**
+ * Basic currency symbol fallback for legacy compatibility
+ */
+function getBasicCurrencySymbol(code: string): string {
+  const symbols: Record<string, string> = {
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    JPY: "¥",
+    CAD: "C$",
+    AUD: "A$",
+    CHF: "Fr",
+    CNY: "¥",
+  }
+  return symbols[code] || code
 }
 
 /**

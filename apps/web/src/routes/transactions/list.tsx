@@ -343,7 +343,7 @@ export function TransactionList() {
               bodySlots={filteredTransactions.value.map((txn, index) => {
                 const typeDisplay = getTransactionTypeDisplay(txn.type)
                 const acc = account.list.value.find((a) => a.id === txn.accountId)
-                const currency = acc?.currency || "USD"
+                const currencyId = acc?.currencyId || 1 // Default to currency ID 1 (USD)
                 const isDeleted = !!txn.deletedAt
 
                 return (
@@ -416,14 +416,14 @@ export function TransactionList() {
                       >
                         <CurrencyDisplay
                           amount={txn.amount}
-                          currency={currency}
+                          currency={currencyId}
                         />
                       </div>
-                      {txn.originalCurrency && txn.originalAmount && (
+                      {txn.originalCurrencyId && txn.originalAmount && (
                         <div class="text-xs text-gray-500">
                           <CurrencyDisplay
                             amount={txn.originalAmount}
-                            currency={txn.originalCurrency}
+                            currency={txn.originalCurrencyId}
                           />
                         </div>
                       )}

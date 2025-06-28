@@ -25,7 +25,7 @@
 -- - Foreign key constraints for referential integrity
 -- 
 -- Table Dependencies (ordered from independent to dependent):
--- migrations, users, tags, exchange_rates → user_keys, user_push_tokens, groups
+-- migrations, users, currencies, tags, exchange_rates → user_keys, user_push_tokens, groups
 -- → user_sessions, group_memberships, accounts, categories → transactions
 -- → transactions_to_tags
 -- 
@@ -110,6 +110,27 @@ CREATE TABLE user_push_tokens (
 -- -----------------------------------------------------------------------------
 -- Independent tables
 -- -----------------------------------------------------------------------------
+CREATE TABLE currencies (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(10) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    symbol VARCHAR(10),
+    type INT2 NOT NULL CHECK (type IN (1, 2)),
+    decimal_places INT2 NOT NULL DEFAULT 2 CHECK (decimal_places >= 0),
+    created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    deleted_at TIMESTAMPTZ
+);
+
+COMMENT ON COLUMN currencies.code IS 'ISO 4217 currency code (e.g., USD, EUR, BTC)';
+COMMENT ON COLUMN currencies.name IS 'Full currency name (e.g., US Dollar, Bitcoin)';
+COMMENT ON COLUMN currencies.symbol IS 'Currency symbol (e.g., $, €, ₿)';
+COMMENT ON COLUMN currencies.type IS '1=fiat, 2=crypto';
+COMMENT ON COLUMN currencies.decimal_places IS 'Number of decimal places for display and calculations (e.g., JPY=0, USD=2, BHD=3, BTC=8)';
+
+CREATE INDEX idx_currencies_by_code ON currencies (code);
+CREATE INDEX idx_currencies_by_type ON currencies (type);
+
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -138,15 +159,16 @@ CREATE INDEX idx_exchange_rates_by_pair ON exchange_rates (pair);
 CREATE TABLE groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    default_currency VARCHAR(3) NOT NULL,
+    currency_id INT4 NOT NULL REFERENCES currencies(id),
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
 );
 
-COMMENT ON COLUMN groups.default_currency IS 'ISO 4217 Code (e.g., USD, EUR)';
+COMMENT ON COLUMN groups.currency_id IS 'Default currency for the group (FK to currencies table)';
 
 CREATE INDEX idx_groups_sync_retrieval ON groups (updated_at DESC);
+CREATE INDEX idx_groups_by_currency ON groups (currency_id);
 
 CREATE TABLE group_memberships (
     id SERIAL PRIMARY KEY,
@@ -167,17 +189,18 @@ CREATE TABLE accounts (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
-    currency VARCHAR(3) NOT NULL,
+    currency_id INT4 NOT NULL REFERENCES currencies(id),
     balance INT4 DEFAULT 0 NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
 );
 
-COMMENT ON COLUMN accounts.currency IS 'Account currency ISO 4217';
+COMMENT ON COLUMN accounts.currency_id IS 'Account currency (FK to currencies table)';
 COMMENT ON COLUMN accounts.balance IS 'Stored in smallest currency unit';
 
 CREATE INDEX idx_accounts_sync_retrieval ON accounts (updated_at DESC);
+CREATE INDEX idx_accounts_by_currency ON accounts (currency_id);
 
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
@@ -206,7 +229,7 @@ CREATE TABLE transactions (
     account_id INT4 NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
     type INT2 NOT NULL CHECK ((type >= 1) AND (type <= 2)),
     amount INT4 NOT NULL,
-    original_currency VARCHAR(3),
+    original_currency_id INT4 REFERENCES currencies(id),
     original_amount INT4,
     category_id INT4 NOT NULL REFERENCES categories(id),
     created_by INT4 NOT NULL REFERENCES users(id),
@@ -218,13 +241,15 @@ CREATE TABLE transactions (
 
 COMMENT ON COLUMN transactions.type IS '1 = Debit, 2 = Credit';
 COMMENT ON COLUMN transactions.amount IS 'Stored in smallest unit';
-COMMENT ON COLUMN transactions.original_currency IS 'Vendor''s currency (ISO 4217)';
+COMMENT ON COLUMN transactions.original_currency_id IS 'Original currency from vendor (FK to currencies table), null if same as account currency';
 COMMENT ON COLUMN transactions.original_amount IS 'Original amount in vendor''s currency';
 COMMENT ON COLUMN transactions.category_id IS 'Transaction category';
 COMMENT ON COLUMN transactions.memo IS 'Additional notes (max 500 characters)';
 
 CREATE INDEX idx_transactions_sync_retrieval ON transactions (updated_at DESC);
 CREATE INDEX idx_transactions_by_group ON transactions (group_id);
+CREATE INDEX idx_transactions_by_creator ON transactions (created_by);
+CREATE INDEX idx_transactions_by_original_currency ON transactions (original_currency_id);
 CREATE INDEX idx_transactions_by_creator ON transactions (created_by);
 
 CREATE TABLE transactions_to_tags (

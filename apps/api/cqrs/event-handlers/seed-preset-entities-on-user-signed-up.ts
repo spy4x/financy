@@ -11,12 +11,12 @@ import { commandBus } from "@api/services/commandBus.ts"
 const DEFAULT_ACCOUNTS: Omit<AccountBase, "groupId">[] = [
   {
     name: "Checking Account",
-    currency: "USD" as const,
+    currencyId: 1, // USD - first currency in migration
     balance: 0,
   },
   {
     name: "Savings Account",
-    currency: "USD" as const,
+    currencyId: 1, // USD - first currency in migration
     balance: 0,
   },
 ]
@@ -111,7 +111,7 @@ export const seedPresetEntitiesOnUserSignedUpHandler = async (event: UserSignedU
       new GroupCreateCommand({
         group: {
           name: "Personal",
-          defaultCurrency: "USD",
+          currencyId: 1, // USD - first currency in migration
         },
         userId: user.id,
         role: GroupRole.OWNER,

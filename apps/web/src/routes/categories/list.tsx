@@ -182,10 +182,7 @@ export function CategoryList() {
                   </>
                 }
                 bodySlots={filteredCategories.value.map((cat, index) => {
-                  const selectedGroup = group.list.value.find((g) =>
-                    g.id === group.selectedId.value
-                  )
-                  const currency = selectedGroup?.defaultCurrency || "USD"
+                  const currency = group.getSelectedCurrency().code
                   const monthlySpent = category.getMonthlySpent(cat.id)
                   const monthlyLimit = cat.monthlyLimit || 0
                   const isIncomeCategory = cat.type === CategoryType.INCOME

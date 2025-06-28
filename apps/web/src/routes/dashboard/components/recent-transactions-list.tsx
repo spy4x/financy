@@ -5,6 +5,7 @@ import { transaction } from "../../../state/transaction.ts"
 import { account } from "../../../state/account.ts"
 import { category } from "../../../state/category.ts"
 import { group } from "../../../state/group.ts"
+import { currency } from "../../../state/currency.ts"
 import { Table } from "../../../components/ui/Table.tsx"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { Dropdown } from "../../../components/ui/Dropdown.tsx"
@@ -41,7 +42,7 @@ export function RecentTransactionsList() {
 
   const getAccountCurrency = (accountId: number) => {
     const acc = account.list.value.find((a) => a.id === accountId)
-    return acc?.currency || "USD"
+    return currency.getDisplay(acc?.currencyId || 1).code
   }
 
   const formatDate = (dateString: string | Date) => {

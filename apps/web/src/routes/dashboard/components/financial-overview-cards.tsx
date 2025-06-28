@@ -49,10 +49,7 @@ export function FinancialOverviewCards() {
   const netCashFlow = useComputed(() => monthlyIncome.value - monthlyExpenses.value)
 
   // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => {
-    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup?.defaultCurrency || "USD"
-  })
+  const defaultCurrencyId = useComputed<number>(() => group.getSelectedCurrency().id)
 
   const cards = [
     {
@@ -96,7 +93,7 @@ export function FinancialOverviewCards() {
                   <div class="mt-2">
                     <CurrencyDisplay
                       amount={card.amount}
-                      currency={defaultCurrency.value}
+                      currency={defaultCurrencyId.value}
                       class={`text-2xl font-bold ${
                         card.positive ? "text-green-600" : "text-red-600"
                       }`}

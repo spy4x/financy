@@ -76,10 +76,7 @@ export function CategorySpendingBreakdown() {
   })
 
   // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => {
-    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup?.defaultCurrency || "USD"
-  })
+  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
 
   // Get total spending from category data (more efficient than recalculating)
   const totalSpending = useComputed(() => {
@@ -110,7 +107,8 @@ export function CategorySpendingBreakdown() {
       <div class="card-header">
         <h3 class="card-title">Category Spending Breakdown</h3>
         <div class="text-sm text-gray-600">
-          Total: <CurrencyDisplay amount={totalSpending.value} currency={defaultCurrency.value} />
+          Total:{" "}
+          <CurrencyDisplay amount={totalSpending.value} currency={defaultCurrency.value.id} />
         </div>
       </div>
       <div class="card-body">
@@ -136,7 +134,7 @@ export function CategorySpendingBreakdown() {
                 <div class="text-right">
                   <CurrencyDisplay
                     amount={item.amount}
-                    currency={defaultCurrency.value}
+                    currency={defaultCurrency.value.id}
                     class="font-medium text-gray-900"
                   />
                   {item.monthlyLimit && (
@@ -144,7 +142,7 @@ export function CategorySpendingBreakdown() {
                       of{" "}
                       <CurrencyDisplay
                         amount={item.monthlyLimit}
-                        currency={defaultCurrency.value}
+                        currency={defaultCurrency.value.id}
                       />
                     </div>
                   )}

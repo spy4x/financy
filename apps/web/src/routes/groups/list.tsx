@@ -1,4 +1,5 @@
 import { group } from "@web/state/group.ts"
+import { currency } from "@web/state/currency.ts"
 import { useComputed, useSignal } from "@preact/signals"
 import {
   IconEllipsisVertical,
@@ -20,7 +21,7 @@ import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 export function GroupList() {
   const filter = {
     search: useSignal(""),
-    currency: useSignal<string | null>(null),
+    currency: useSignal<number | null>(null),
     status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
 
@@ -32,7 +33,7 @@ export function GroupList() {
       }
 
       // Currency filter
-      if (filter.currency.value && grp.defaultCurrency !== filter.currency.value) {
+      if (filter.currency.value && grp.currencyId !== filter.currency.value) {
         return false
       }
 
@@ -97,7 +98,7 @@ export function GroupList() {
                 <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
                 <CurrencySelector
                   value={filter.currency.value || ""}
-                  onChange={(code) => filter.currency.value = code || null}
+                  onChange={(id) => filter.currency.value = id || null}
                   placeholder="All Currencies"
                 />
               </div>
@@ -179,7 +180,7 @@ export function GroupList() {
                       )}
                     </td>
                     <td class={`${isDeleted ? "text-gray-400 line-through" : "text-gray-600"}`}>
-                      {grp.defaultCurrency}
+                      {currency.getDisplay(grp.currencyId).code}
                     </td>
                     <td class="text-gray-600">
                       {grp.deletedAt

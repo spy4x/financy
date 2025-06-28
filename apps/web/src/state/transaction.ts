@@ -82,7 +82,7 @@ export const transaction = {
     type: number
     amount: number
     memo?: string
-    originalCurrency?: string
+    originalCurrencyId?: number
     originalAmount?: number
   }) {
     transaction.ops.create.value = { inProgress: true, error: null }
@@ -100,7 +100,7 @@ export const transaction = {
     type?: number
     amount?: number
     memo?: string
-    originalCurrency?: string
+    originalCurrencyId?: number
     originalAmount?: number
   }) {
     transaction.ops.update.value = { inProgress: true, error: null }

@@ -2,6 +2,7 @@ import { KeyValueService } from "@server/kv"
 import {
   Account,
   Category,
+  Currency,
   Group,
   GroupMembership,
   Tag,
@@ -47,6 +48,7 @@ export class PublicAPICache {
   groupMembership = buildMethods<GroupMembership>(`groupMembership`)
   account = buildMethods<Account>(`account`)
   category = buildMethods<Category>(`category`)
+  currency = buildMethods<Currency>(`currency`)
   tag = buildMethods<Tag>(`tag`)
 
   transaction = buildMethods<Transaction>(`transaction`)

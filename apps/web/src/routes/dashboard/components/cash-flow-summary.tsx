@@ -94,10 +94,7 @@ export function CashFlowSummary() {
   })
 
   // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => {
-    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup?.defaultCurrency || "USD"
-  })
+  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
 
   const formatPercentageChange = (change: number) => {
     const isPositive = change >= 0
@@ -129,7 +126,7 @@ export function CashFlowSummary() {
                   <div class="text-lg font-semibold text-green-600">
                     <CurrencyDisplay
                       amount={currentMonthIncome.value}
-                      currency={defaultCurrency.value}
+                      currency={defaultCurrency.value.id}
                     />
                   </div>
                   <div class={`text-xs ${formatPercentageChange(incomeChange.value).className}`}>
@@ -168,7 +165,7 @@ export function CashFlowSummary() {
                   <div class="text-lg font-semibold text-red-600">
                     <CurrencyDisplay
                       amount={-currentMonthExpenses.value}
-                      currency={defaultCurrency.value}
+                      currency={defaultCurrency.value.id}
                     />
                   </div>
                   <div class={`text-xs ${formatPercentageChange(expenseChange.value).className}`}>
@@ -210,7 +207,7 @@ export function CashFlowSummary() {
                 >
                   <CurrencyDisplay
                     amount={currentNetFlow.value}
-                    currency={defaultCurrency.value}
+                    currency={defaultCurrency.value.id}
                   />
                 </div>
                 <div class={`text-xs ${formatPercentageChange(netFlowChange.value).className}`}>

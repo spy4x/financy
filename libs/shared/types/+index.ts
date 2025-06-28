@@ -8,9 +8,6 @@ import { Type, type } from "arktype" // The core arktype import must be AFTER th
 export { type }
 export type ValidationSchema = Type
 
-// #region Currency Types
-export type { Currency, CurrencyType } from "./currency.ts"
-
 /**
  * Validate a value against a schema.
  * @param schema The schema to validate against.
@@ -89,6 +86,35 @@ export const BaseModelSchema = UndeletableBaseModelSchema.and({
 export type BaseModel = typeof BaseModelSchema.infer
 
 // #endregion Base Types
+
+// #region Currency Types
+export enum CurrencyType {
+  FIAT = 1,
+  CRYPTO = 2,
+}
+
+export const currencyBaseSchema = type({
+  code: "string <= 10",
+  name: "string <= 100",
+  "symbol?": "string <= 10 | null",
+  type: type.enumerated(...Object.values(CurrencyType) as CurrencyType[]).default(
+    CurrencyType.FIAT,
+  ),
+  decimalPlaces: "number >= 0 = 2",
+})
+export type CurrencyBase = typeof currencyBaseSchema.infer
+
+export const currencySchema = BaseModelSchema.and(currencyBaseSchema)
+export type Currency = typeof currencySchema.infer
+
+export const currencyUpdateSchema = currencyBaseSchema.pick(
+  "name",
+  "symbol",
+  "type",
+  "decimalPlaces",
+)
+export type CurrencyUpdate = typeof currencyUpdateSchema.infer
+// #endregion Currency Types
 
 export enum ItemStatus {
   ACTIVE = "active",
@@ -314,12 +340,12 @@ export type UserPushToken = typeof userPushTokenSchema.infer
 // #region Group
 export const groupBaseSchema = type({
   name: `string <= ${NAME_MAX_LENGTH} = ''`,
-  defaultCurrency: "string == 3 = 'USD'",
+  currencyId: "number > 0",
 })
 export type GroupBase = typeof groupBaseSchema.infer
 export const groupSchema = BaseModelSchema.and(groupBaseSchema)
 export type Group = typeof groupSchema.infer
-export const groupUpdateSchema = groupSchema.pick("id", "name", "defaultCurrency")
+export const groupUpdateSchema = groupSchema.pick("id", "name", "currencyId")
 export type GroupUpdate = typeof groupUpdateSchema.infer
 // #endregion Group
 
@@ -344,13 +370,13 @@ export type GroupMembershipUpdate = typeof groupMembershipUpdateSchema.infer
 export const accountBaseSchema = type({
   name: `string <= ${NAME_MAX_LENGTH} = ''`,
   groupId: "number > 0",
-  currency: "string == 3 = 'USD'",
+  currencyId: "number > 0",
   balance: "number = 0",
 })
 export type AccountBase = typeof accountBaseSchema.infer
 export const accountSchema = BaseModelSchema.and(accountBaseSchema)
 export type Account = typeof accountSchema.infer
-export const accountUpdateSchema = accountSchema.pick("id", "name", "currency")
+export const accountUpdateSchema = accountSchema.pick("id", "name", "currencyId")
 export type AccountUpdate = typeof accountUpdateSchema.infer
 // #endregion Account
 
@@ -466,7 +492,7 @@ export const transactionBaseSchema = type({
     TransactionType.CREDIT,
   ),
   categoryId: "number > 0",
-  originalCurrency: "string == 3 = 'USD'",
+  originalCurrencyId: "number > 0 | undefined",
   originalAmount: "number = 0",
   groupId: "number > 0",
   accountId: "number > 0",
@@ -484,7 +510,7 @@ export const transactionUpdateSchema = transactionSchema.pick(
   "memo",
   "type",
   "categoryId",
-  "originalCurrency",
+  "originalCurrencyId",
   "originalAmount",
   "createdAt",
 )
@@ -498,6 +524,7 @@ export type SyncModel =
   | Transaction
   | Account
   | Category
+  | Currency
   | Tag
   | Group
   | GroupMembership
@@ -511,6 +538,7 @@ export enum SyncModelName {
   groupMembership = "groupMembership",
   account = "account",
   category = "category",
+  currency = "currency",
   transaction = "transaction",
   tag = "tag",
   // transactionToTag = "transactionToTag",
@@ -526,6 +554,7 @@ export const SYNC_MODELS = [
   SyncModelName.groupMembership,
   SyncModelName.account,
   SyncModelName.category,
+  SyncModelName.currency,
   SyncModelName.tag,
   SyncModelName.transaction,
   // SyncModelName.transactionToTag,

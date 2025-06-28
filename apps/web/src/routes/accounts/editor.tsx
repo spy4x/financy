@@ -1,4 +1,5 @@
 import { account } from "@web/state/account.ts"
+import { currency } from "@web/state/currency.ts"
 import { useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
@@ -20,7 +21,7 @@ export function AccountEditor() {
   const editAccountId = match && params?.id ? parseInt(params.id) : null
 
   const name = useSignal("")
-  const currency = useSignal("USD")
+  const currencyId = useSignal<number | null>(null)
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -34,7 +35,7 @@ export function AccountEditor() {
         const existingAccount = account.list.value.find((a) => a.id === editAccountId)
         if (existingAccount) {
           name.value = existingAccount.name
-          currency.value = existingAccount.currency
+          currencyId.value = existingAccount.currencyId
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -43,7 +44,9 @@ export function AccountEditor() {
         }
       } else {
         name.value = ""
-        currency.value = "USD"
+        // Default to USD currency ID if available, otherwise null
+        const usdCurrency = currency.findByCode("USD")
+        currencyId.value = usdCurrency?.id || null
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -85,7 +88,7 @@ export function AccountEditor() {
       return
     }
 
-    if (!currency.value) {
+    if (!currencyId.value) {
       error.value = "Currency is required"
       state.value = EditorState.ERROR
       return
@@ -94,9 +97,9 @@ export function AccountEditor() {
     error.value = ""
     state.value = EditorState.IN_PROGRESS
     if (editAccountId) {
-      account.update(editAccountId, trimmedName, currency.value)
+      account.update(editAccountId, trimmedName, currencyId.value)
     } else {
-      account.create(trimmedName, currency.value)
+      account.create(trimmedName, currencyId.value)
     }
   }
 
@@ -140,8 +143,8 @@ export function AccountEditor() {
                 <div class="mt-2">
                   <CurrencySelector
                     id="currency"
-                    value={currency.value}
-                    onChange={(currencyCode) => currency.value = currencyCode}
+                    value={currencyId.value}
+                    onChange={(id) => currencyId.value = id}
                     required
                     placeholder="Select account currency..."
                   />
@@ -156,7 +159,7 @@ export function AccountEditor() {
             <button
               type="submit"
               class="btn btn-primary"
-              disabled={!name.value.trim() || !currency.value}
+              disabled={!name.value.trim() || !currencyId.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editAccountId ? "Update" : "Create"}

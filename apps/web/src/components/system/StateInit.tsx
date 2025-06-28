@@ -1,6 +1,7 @@
 import { auth } from "@web/state/auth.ts"
 import { ws } from "@web/state/ws.ts"
 import { category } from "@web/state/category.ts"
+import { currency } from "@web/state/currency.ts"
 import { group } from "@web/state/group.ts"
 import { account } from "@web/state/account.ts"
 import { transaction } from "@web/state/transaction.ts"
@@ -17,6 +18,7 @@ export function StateInit(
   // TODO: set url, ENV, WEB_API_PREFIX in states
   // if (!IS_BROWSER) return
   auth.init()
+  currency.init()
   category.init()
   group.init()
   account.init()

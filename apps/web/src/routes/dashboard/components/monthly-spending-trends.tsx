@@ -48,6 +48,8 @@ export function MonthlySpendingTrends() {
 
   const maxExpenses = useComputed(() => Math.max(...monthlyData.value.map((m) => m.expenses), 1))
 
+  const defaultCurrencyId = useComputed<number>(() => group.getSelectedCurrency().id)
+
   // Calculate trends
   const trends = useComputed(() => {
     const data = monthlyData.value
@@ -65,12 +67,6 @@ export function MonthlySpendingTrends() {
       : ((currentMonth.expenses - previousMonth.expenses) / previousMonth.expenses) * 100
 
     return { income: incomeChange, expenses: expenseChange }
-  })
-
-  // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => {
-    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup?.defaultCurrency || "USD"
   })
 
   const formatTrend = (change: number) => {
@@ -106,7 +102,10 @@ export function MonthlySpendingTrends() {
           <div class="text-center">
             <div class="text-sm text-gray-600 mb-1">Average Income</div>
             <div class="text-lg font-semibold text-green-600">
-              <CurrencyDisplay amount={averageIncome.value} currency={defaultCurrency.value} />
+              <CurrencyDisplay
+                amount={averageIncome.value}
+                currency={defaultCurrencyId.value}
+              />
             </div>
             <div class={formatTrend(trends.value.income).className}>
               {formatTrend(trends.value.income).icon} {formatTrend(trends.value.income).value}
@@ -115,7 +114,10 @@ export function MonthlySpendingTrends() {
           <div class="text-center">
             <div class="text-sm text-gray-600 mb-1">Average Expenses</div>
             <div class="text-lg font-semibold text-red-600">
-              <CurrencyDisplay amount={averageExpenses.value} currency={defaultCurrency.value} />
+              <CurrencyDisplay
+                amount={averageExpenses.value}
+                currency={defaultCurrencyId.value}
+              />
             </div>
             <div class={formatTrend(trends.value.expenses).className}>
               {formatTrend(trends.value.expenses).icon} {formatTrend(trends.value.expenses).value}
@@ -143,7 +145,10 @@ export function MonthlySpendingTrends() {
                 <div class="text-right">
                   <div class="text-xs text-gray-500">
                     Net: {month.netFlow >= 0 ? "+" : ""}
-                    <CurrencyDisplay amount={month.netFlow} currency={defaultCurrency.value} />
+                    <CurrencyDisplay
+                      amount={month.netFlow}
+                      currency={defaultCurrencyId.value}
+                    />
                   </div>
                 </div>
               </div>
@@ -152,7 +157,10 @@ export function MonthlySpendingTrends() {
               <div class="space-y-1">
                 <div class="flex items-center justify-between text-xs">
                   <span class="text-green-600">Income</span>
-                  <CurrencyDisplay amount={month.income} currency={defaultCurrency.value} />
+                  <CurrencyDisplay
+                    amount={month.income}
+                    currency={defaultCurrencyId.value}
+                  />
                 </div>
                 <div class="bg-gray-200 rounded-full h-2">
                   <div
@@ -170,7 +178,10 @@ export function MonthlySpendingTrends() {
               <div class="space-y-1">
                 <div class="flex items-center justify-between text-xs">
                   <span class="text-red-600">Expenses</span>
-                  <CurrencyDisplay amount={month.expenses} currency={defaultCurrency.value} />
+                  <CurrencyDisplay
+                    amount={month.expenses}
+                    currency={defaultCurrencyId.value}
+                  />
                 </div>
                 <div class="bg-gray-200 rounded-full h-2">
                   <div

@@ -1,6 +1,7 @@
 import { useComputed } from "@preact/signals"
 import { account } from "../../../state/account.ts"
 import { group } from "../../../state/group.ts"
+import { currency } from "../../../state/currency.ts"
 import { IconArrowPath, IconChartPie } from "@client/icons"
 
 export function ExchangeRateWidget() {
@@ -10,20 +11,17 @@ export function ExchangeRateWidget() {
 
     account.list.value
       .filter((acc) => acc.groupId === group.selectedId.value && !acc.deletedAt)
-      .forEach((acc) => currencies.add(acc.currency))
+      .forEach((acc) => currencies.add(currency.getDisplay(acc.currencyId).code))
 
     return Array.from(currencies)
   })
 
   // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => {
-    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup?.defaultCurrency || "USD"
-  })
+  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
 
   // Filter out the default currency from exchange rates display
   const foreignCurrencies = useComputed(() =>
-    usedCurrencies.value.filter((currency) => currency !== defaultCurrency.value)
+    usedCurrencies.value.filter((currencyCode) => currencyCode !== defaultCurrency.value.code)
   )
 
   // Mock exchange rates - in a real app, this would come from an API/service
@@ -70,14 +68,16 @@ export function ExchangeRateWidget() {
           </button>
         </div>
         <div class="text-sm text-gray-600">
-          Base: {defaultCurrency.value}
+          Base: {defaultCurrency.value.code}
         </div>
       </div>
       <div class="card-body">
         {foreignCurrencies.value.length === 0
           ? (
             <div class="text-center py-4">
-              <div class="text-gray-500 text-sm">All accounts use {defaultCurrency.value}</div>
+              <div class="text-gray-500 text-sm">
+                All accounts use {defaultCurrency.value.code}
+              </div>
             </div>
           )
           : (
@@ -96,7 +96,7 @@ export function ExchangeRateWidget() {
                         {currency}
                       </div>
                       <div class="text-sm text-gray-600">
-                        1 {defaultCurrency.value} = {rate} {currency}
+                        1 {defaultCurrency.value.code} = {rate} {currency}
                       </div>
                     </div>
 

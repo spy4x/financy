@@ -1,4 +1,5 @@
 import { group } from "@web/state/group.ts"
+import { currency } from "@web/state/currency.ts"
 import { useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
@@ -20,7 +21,7 @@ export function GroupEditor() {
   const editGroupId = match && params?.id ? parseInt(params.id) : null
 
   const name = useSignal("")
-  const defaultCurrency = useSignal("USD")
+  const currencyId = useSignal<number | null>(null)
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -34,7 +35,7 @@ export function GroupEditor() {
         const existingGroup = group.list.value.find((g) => g.id === editGroupId)
         if (existingGroup) {
           name.value = existingGroup.name
-          defaultCurrency.value = existingGroup.defaultCurrency
+          currencyId.value = existingGroup.currencyId
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -43,7 +44,9 @@ export function GroupEditor() {
         }
       } else {
         name.value = ""
-        defaultCurrency.value = "USD"
+        // Default to USD currency ID (1) if available, otherwise null
+        const usdCurrency = currency.findByCode("USD")
+        currencyId.value = usdCurrency?.id || null
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -85,8 +88,8 @@ export function GroupEditor() {
       return
     }
 
-    if (!defaultCurrency.value) {
-      error.value = "Default currency is required"
+    if (!currencyId.value) {
+      error.value = "Currency is required"
       state.value = EditorState.ERROR
       return
     }
@@ -94,9 +97,9 @@ export function GroupEditor() {
     error.value = ""
     state.value = EditorState.IN_PROGRESS
     if (editGroupId) {
-      group.update(editGroupId, trimmedName, defaultCurrency.value)
+      group.update(editGroupId, trimmedName, currencyId.value)
     } else {
-      group.create(trimmedName, defaultCurrency.value)
+      group.create(trimmedName, currencyId.value)
     }
   }
 
@@ -136,17 +139,16 @@ export function GroupEditor() {
               </div>
 
               <div class="sm:col-span-3">
-                <label for="defaultCurrency" class="label">
-                  Default Currency:
+                <label for="currency" class="label">
+                  Currency:
                 </label>
                 <div class="mt-2">
                   <CurrencySelector
-                    id="defaultCurrency"
-                    value={defaultCurrency.value}
-                    onChange={(currencyCode) => defaultCurrency.value = currencyCode}
+                    id="currency"
+                    value={currencyId.value}
+                    onChange={(id) => currencyId.value = id}
                     required
-                    placeholder="Select default currency..."
-                    filterType="all"
+                    placeholder="Select currency..."
                   />
                 </div>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -188,7 +190,7 @@ export function GroupEditor() {
             <button
               type="submit"
               class="btn btn-primary"
-              disabled={!name.value.trim() || !defaultCurrency.value}
+              disabled={!name.value.trim() || !currencyId.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editGroupId ? "Update" : "Create"}

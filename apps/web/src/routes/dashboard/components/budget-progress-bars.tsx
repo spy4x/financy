@@ -53,11 +53,7 @@ export function BudgetProgressBars() {
   })
 
   // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => {
-    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup?.defaultCurrency || "USD"
-  })
-
+  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
   if (categoriesWithBudgets.value.length === 0) {
     return (
       <div>
@@ -118,7 +114,7 @@ export function BudgetProgressBars() {
                   <BudgetProgress
                     spentAmount={spentAmount}
                     limitAmount={limitAmount}
-                    currency={defaultCurrency.value}
+                    currency={defaultCurrency.value.code}
                     color={cat.color}
                   />
                 </div>
