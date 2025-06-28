@@ -3,6 +3,7 @@ import { account } from "@web/state/account.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
 import { currency } from "@web/state/currency.ts"
+import { ws } from "@web/state/ws.ts"
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
@@ -100,6 +101,11 @@ export function TransactionEditor() {
   useSignalEffect(() => {
     if (isState(EditorState.INITIALIZING)) {
       if (editTransactionId) {
+        // If sync is in progress, wait for it to complete before checking for transaction
+        if (ws.syncOp.value.inProgress) {
+          return
+        }
+
         const existingTransaction = transaction.list.value.find((t) => t.id === editTransactionId)
         if (existingTransaction) {
           accountId.value = existingTransaction.accountId
@@ -137,6 +143,14 @@ export function TransactionEditor() {
         error.value = ""
         state.value = EditorState.IDLE
       }
+    }
+  })
+
+  // Retry initialization when sync completes (for page refreshes)
+  useSignalEffect(() => {
+    // If we're in error state and sync just completed, retry initialization
+    if (isState(EditorState.ERROR) && !ws.syncOp.value.inProgress && editTransactionId) {
+      state.value = EditorState.INITIALIZING
     }
   })
 

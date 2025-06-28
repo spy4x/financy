@@ -1,5 +1,6 @@
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
+import { ws } from "@web/state/ws.ts"
 import { useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
@@ -37,6 +38,11 @@ export function CategoryEditor() {
   useSignalEffect(() => {
     if (isState(EditorState.INITIALIZING)) {
       if (editCategoryId) {
+        // If sync is in progress, wait for it to complete before checking for category
+        if (ws.syncOp.value.inProgress) {
+          return
+        }
+
         const existingCategory = category.list.value.find((c) => c.id === editCategoryId)
         if (existingCategory) {
           name.value = existingCategory.name
@@ -61,6 +67,14 @@ export function CategoryEditor() {
         error.value = ""
         state.value = EditorState.IDLE
       }
+    }
+  })
+
+  // Retry initialization when sync completes (for page refreshes)
+  useSignalEffect(() => {
+    // If we're in error state and sync just completed, retry initialization
+    if (isState(EditorState.ERROR) && !ws.syncOp.value.inProgress && editCategoryId) {
+      state.value = EditorState.INITIALIZING
     }
   })
 

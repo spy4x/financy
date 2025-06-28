@@ -1,5 +1,6 @@
 import { account } from "@web/state/account.ts"
 import { currency } from "@web/state/currency.ts"
+import { ws } from "@web/state/ws.ts"
 import { useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
@@ -32,6 +33,11 @@ export function AccountEditor() {
   useSignalEffect(() => {
     if (isState(EditorState.INITIALIZING)) {
       if (editAccountId) {
+        // If sync is in progress, wait for it to complete before checking for account
+        if (ws.syncOp.value.inProgress) {
+          return
+        }
+
         const existingAccount = account.list.value.find((a) => a.id === editAccountId)
         if (existingAccount) {
           name.value = existingAccount.name
@@ -50,6 +56,14 @@ export function AccountEditor() {
         error.value = ""
         state.value = EditorState.IDLE
       }
+    }
+  })
+
+  // Retry initialization when sync completes (for page refreshes)
+  useSignalEffect(() => {
+    // If we're in error state and sync just completed, retry initialization
+    if (isState(EditorState.ERROR) && !ws.syncOp.value.inProgress && editAccountId) {
+      state.value = EditorState.INITIALIZING
     }
   })
 
