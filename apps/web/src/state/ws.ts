@@ -18,6 +18,7 @@ import {
   UserSignedUp,
   WSConnected,
 } from "../cqrs/events.ts"
+import { checkAuthStatus } from "../services/auth-checker.ts"
 
 const RETRY_INTERVAL = 1500 + Math.random() * 2000 // Retry interval in milliseconds
 const PING_INTERVAL = 15000 // Ping interval
@@ -88,16 +89,23 @@ export const ws = {
 
     socket.value = new WebSocket(address)
 
-    socket.value.onclose = (event) => {
+    socket.value.onclose = async (event) => {
       const wasNeverConnected = !connectedAt.value
       const abnormalClosure = event && event.code === 1006
-      // If never connected and abnormal closure, likely authentication failure
+      // If never connected and abnormal closure, check auth status before assuming auth failure
       if (wasNeverConnected && abnormalClosure) {
-        console.warn("WebSocket closed due to authentication failure (401 or session expired)")
-        status.value = WSStatus.DISCONNECTED
-        eventBus.emit(new UserAuthenticationFailed())
-        // Do not attempt to reconnect
-        return
+        console.warn("WebSocket closed abnormally on first connection, checking auth status...")
+        const authCheck = await checkAuthStatus()
+        if (!authCheck.isAuthenticated) {
+          console.warn("Auth check confirmed user is not authenticated (401)")
+          status.value = WSStatus.DISCONNECTED
+          eventBus.emit(new UserAuthenticationFailed())
+          // Do not attempt to reconnect
+          return
+        } else {
+          console.log("Auth check confirmed user is still authenticated, treating as network issue")
+          // Continue with normal reconnection logic
+        }
       }
       console.log(
         `Disconnected from server. ${
@@ -228,7 +236,25 @@ export const ws = {
     reconnectIntervalTimer.value = 0
     // Attempt to reconnect only if the closure was not clean
     console.log("Attempting to reconnect every...", { RETRY_INTERVAL })
-    reconnectIntervalTimer.value = setInterval(ws.connect, RETRY_INTERVAL)
+
+    // Create an enhanced reconnect function that checks auth status
+    const reconnectWithAuthCheck = async () => {
+      // Periodically check auth status during reconnection attempts
+      const authCheck = await checkAuthStatus()
+      if (!authCheck.isAuthenticated) {
+        console.warn(
+          "Auth check during reconnection shows user is not authenticated, stopping reconnection",
+        )
+        clearInterval(reconnectIntervalTimer.value)
+        reconnectIntervalTimer.value = 0
+        reconnectOp.value = op()
+        eventBus.emit(new UserAuthenticationFailed())
+        return
+      }
+      ws.connect()
+    }
+
+    reconnectIntervalTimer.value = setInterval(reconnectWithAuthCheck, RETRY_INTERVAL)
   },
 
   sync: (): void => {
