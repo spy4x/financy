@@ -21,9 +21,9 @@ and Telegram bot integration.
 
 **Progress Overview:**
 
-- 📊 **Overall Progress:** 52% (39 completed + 20 in progress / 102 total features)
+- 📊 **Overall Progress:** 53% (40 completed + 20 in progress / 102 total features)
 - 🏗️ **Basic Features:** 78% (Core infrastructure, user management, financial features)
-- 🚀 **Advanced Features:** 12% (Dashboard analytics, real-time features, multi-currency)
+- 🚀 **Advanced Features:** 13% (Dashboard analytics, real-time features, multi-currency)
 
 ### 🏗️ Core Infrastructure
 
@@ -190,7 +190,7 @@ and Telegram bot integration.
 - ✅ **Mobile-First Design** - Responsive UI for mobile
 - ✅ **PWA Features** - App-like experience
 - ✅ **Real-time Updates** - Live data synchronization
-- ⚪ **Dark Mode** - Theme customization
+- 🟡 **Dark Mode** - Theme customization with system preference support
 - 🟡 **Accessibility** - WCAG compliance (needs improvement)
 - ⚪ **Internationalization** - Multi-language support
 - ⚪ **Keyboard Shortcuts** - Power user features

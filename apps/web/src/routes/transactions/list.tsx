@@ -163,7 +163,9 @@ export function TransactionList() {
               <div class="p-4 w-80 space-y-4">
                 {/* Search */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Search
+                  </label>
                   <div class="relative">
                     <input
                       class="input w-full pr-10"
@@ -179,7 +181,9 @@ export function TransactionList() {
 
                 {/* Status Filter */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Status
+                  </label>
                   <select
                     class="input w-full"
                     value={filter.status.value}
@@ -195,7 +199,9 @@ export function TransactionList() {
 
                 {/* Account Filter */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Account
+                  </label>
                   <select
                     class="input w-full"
                     value={filter.accountId.value || ""}
@@ -215,7 +221,9 @@ export function TransactionList() {
 
                 {/* Category Filter */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Category
+                  </label>
                   <select
                     class="input w-full"
                     value={filter.categoryId.value || ""}
@@ -235,7 +243,9 @@ export function TransactionList() {
 
                 {/* Type Filter */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Type
+                  </label>
                   <select
                     class="input w-full"
                     value={filter.type.value || ""}
@@ -253,7 +263,9 @@ export function TransactionList() {
                 {/* Date Filters */}
                 <div class="grid grid-cols-2 gap-2">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      From Date
+                    </label>
                     <input
                       type="date"
                       class="input w-full"
@@ -262,7 +274,9 @@ export function TransactionList() {
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      To Date
+                    </label>
                     <input
                       type="date"
                       class="input w-full"
@@ -330,16 +344,24 @@ export function TransactionList() {
                 return (
                   <>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
-                      <div class={`text-sm ${isDeleted ? "line-through" : "text-gray-900"}`}>
+                      <div
+                        class={`text-sm ${
+                          isDeleted ? "line-through" : "text-gray-900 dark:text-gray-100"
+                        }`}
+                      >
                         {new Date(txn.createdAt).toLocaleDateString()}
                         {isDeleted && <span class="ml-2 text-xs">(Deleted)</span>}
                       </div>
-                      <div class="text-xs text-gray-500">
+                      <div class="text-xs text-gray-500 dark:text-gray-400">
                         {new Date(txn.createdAt).toLocaleTimeString()}
                       </div>
                     </td>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
-                      <div class={`text-sm ${isDeleted ? "line-through" : "text-gray-900"}`}>
+                      <div
+                        class={`text-sm ${
+                          isDeleted ? "line-through" : "text-gray-900 dark:text-gray-100"
+                        }`}
+                      >
                         <Link
                           href={routes.accounts.children!.edit.href.replace(
                             ":id",
@@ -347,7 +369,7 @@ export function TransactionList() {
                           )}
                           class={isDeleted
                             ? "text-gray-400 hover:underline"
-                            : "text-blue-600 hover:underline"}
+                            : "text-blue-600 dark:text-blue-400 hover:underline"}
                         >
                           {getAccountName(txn.accountId)}
                         </Link>
@@ -359,7 +381,7 @@ export function TransactionList() {
                           )}
                           class={isDeleted
                             ? "text-gray-400 hover:underline"
-                            : "text-blue-600 hover:underline"}
+                            : "text-blue-600 dark:text-blue-400 hover:underline"}
                         >
                           {getCategoryName(txn.categoryId)}
                         </Link>

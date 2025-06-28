@@ -63,7 +63,7 @@ export function RecentTransactionsList() {
     return (
       <div>
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
+          <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Recent Transactions</h2>
           {group.selectedId.value
             ? (
               <Link
@@ -105,7 +105,7 @@ export function RecentTransactionsList() {
   return (
     <div>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Recent Transactions</h2>
         <Link
           href="/transactions"
           class="btn btn-sm btn-primary"

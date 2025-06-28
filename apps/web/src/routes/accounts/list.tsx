@@ -94,7 +94,9 @@ export function AccountList() {
               <div class="p-4 w-80 space-y-4">
                 {/* Search */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Search
+                  </label>
                   <div class="relative">
                     <input
                       class="input w-full pr-10"
@@ -102,15 +104,17 @@ export function AccountList() {
                       value={filter.search.value}
                       onInput={(e) => filter.search.value = e.currentTarget.value}
                     />
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                      <IconSearch class="size-5 text-gray-600" />
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">
+                      <IconSearch class="size-5 text-gray-600 dark:text-gray-400" />
                     </span>
                   </div>
                 </div>
 
                 {/* Currency Filter */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Currency
+                  </label>
                   <CurrencySelector
                     value={filter.currency.value || ""}
                     onChange={(code) => filter.currency.value = code || null}
@@ -120,7 +124,9 @@ export function AccountList() {
 
                 {/* Status Filter */}
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Status
+                  </label>
                   <select
                     class="input w-full"
                     value={filter.status.value}
@@ -133,7 +139,7 @@ export function AccountList() {
                 </div>
 
                 {/* Clear Filters */}
-                <div class="pt-2 border-t">
+                <div class="pt-2 border-t dark:border-gray-600">
                   <button
                     type="button"
                     class="btn btn-link text-sm w-full"
@@ -181,7 +187,9 @@ export function AccountList() {
                   <td class="whitespace-nowrap">
                     <div
                       class={`text-sm font-medium ${
-                        acc.deletedAt ? "text-gray-400 line-through" : "text-gray-900"
+                        acc.deletedAt
+                          ? "text-gray-400 line-through"
+                          : "text-gray-900 dark:text-gray-100"
                       }`}
                     >
                       {acc.name}
@@ -191,7 +199,7 @@ export function AccountList() {
                   <td class="whitespace-nowrap">
                     <div
                       class={`text-sm flex items-center gap-2 ${
-                        acc.deletedAt ? "text-gray-400" : "text-gray-900"
+                        acc.deletedAt ? "text-gray-400" : "text-gray-900 dark:text-gray-100"
                       }`}
                     >
                       {(() => {
@@ -200,7 +208,9 @@ export function AccountList() {
                           <>
                             <span class="font-mono font-medium">{currencyInfo.code}</span>
                             {currencyInfo.symbol && (
-                              <span class="text-gray-500">{currencyInfo.symbol}</span>
+                              <span class="text-gray-500 dark:text-gray-400">
+                                {currencyInfo.symbol}
+                              </span>
                             )}
                           </>
                         )
@@ -208,7 +218,11 @@ export function AccountList() {
                     </div>
                   </td>
                   <td class="whitespace-nowrap">
-                    <div class={`text-sm ${acc.deletedAt ? "text-gray-400" : "text-gray-900"}`}>
+                    <div
+                      class={`text-sm ${
+                        acc.deletedAt ? "text-gray-400" : "text-gray-900 dark:text-gray-100"
+                      }`}
+                    >
                       <CurrencyDisplay
                         amount={acc.balance}
                         currency={acc.currency}
@@ -219,7 +233,10 @@ export function AccountList() {
                   <td class="whitespace-nowrap text-right text-sm font-medium">
                     <Dropdown
                       trigger={
-                        <span class="text-gray-400 hover:text-gray-600 p-2" title="More actions">
+                        <span
+                          class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-2"
+                          title="More actions"
+                        >
                           <IconEllipsisVertical class="size-5" />
                         </span>
                       }
@@ -233,7 +250,7 @@ export function AccountList() {
                             ":id",
                             acc.id.toString(),
                           )}
-                          class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          class="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <IconPencilSquare class="size-4 mr-2" />
                           Edit
@@ -243,7 +260,7 @@ export function AccountList() {
                             <button
                               onClick={() => handleUndelete(acc)}
                               type="button"
-                              class="w-full flex items-center px-4 py-2 text-sm text-green-600 hover:bg-gray-100"
+                              class="w-full flex items-center px-4 py-2 text-sm text-green-600 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                               disabled={account.ops.update.value.inProgress}
                             >
                               <IconTrashBin class="size-4 mr-2" />
@@ -254,7 +271,7 @@ export function AccountList() {
                             <button
                               onClick={() => handleDelete(acc)}
                               type="button"
-                              class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                              class="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                               disabled={account.ops.delete.value.inProgress}
                             >
                               <IconTrashBin class="size-4 mr-2" />
@@ -270,7 +287,7 @@ export function AccountList() {
           )}
 
           {filteredAccounts.value.length === 0 && (
-            <div class="text-center py-8 text-gray-500">
+            <div class="text-center py-8 text-gray-500 dark:text-gray-400">
               {!group.selectedId.value
                 ? "Please select a group first to view accounts."
                 : filter.search.value

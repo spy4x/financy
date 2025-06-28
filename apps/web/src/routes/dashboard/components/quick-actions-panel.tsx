@@ -31,7 +31,7 @@ export function QuickActionsPanel() {
 
   return (
     <div>
-      <h2 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
+      <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
       <div class="card">
         <div class="card-body">
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">

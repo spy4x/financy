@@ -215,23 +215,28 @@ export function CurrencySelector({
                   {selectedCurrency.code}
                 </span>
                 {selectedCurrency.symbol && (
-                  <span class="text-gray-500">
+                  <span class="text-gray-500 dark:text-gray-400">
                     {selectedCurrency.symbol}
                   </span>
                 )}
-                <span class="text-gray-700">
+                <span class="text-gray-700 dark:text-gray-300">
                   {selectedCurrency.name}
                 </span>
                 {selectedCurrency.type === "crypto" && (
-                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                     crypto
                   </span>
                 )}
               </>
             )
-            : <span class="text-gray-500">{placeholder}</span>}
+            : <span class="text-gray-500 dark:text-gray-400">{placeholder}</span>}
         </span>
-        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          class="w-4 h-4 text-gray-400 dark:text-gray-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -244,17 +249,17 @@ export function CurrencySelector({
       {/* Dropdown */}
       {isOpen.value && (
         <div
-          class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-hidden"
+          class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {showSearch && (
-            <div class="p-2 border-b border-gray-200">
+            <div class="p-2 border-b border-gray-200 dark:border-gray-600">
               <div class="relative">
-                <IconSearch class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <IconSearch class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   id={`${id}-search`}
-                  class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Search currencies..."
                   value={searchQuery.value}
                   onInput={(e) => searchQuery.value = e.currentTarget.value}
@@ -267,7 +272,7 @@ export function CurrencySelector({
           <div class="max-h-48 overflow-y-auto">
             {filteredCurrencies.value.length === 0
               ? (
-                <div class="px-3 py-2 text-sm text-gray-500 text-center">
+                <div class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
                   No currencies found
                 </div>
               )
@@ -276,8 +281,10 @@ export function CurrencySelector({
                   <button
                     key={currency.code}
                     type="button"
-                    class={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center gap-2 ${
-                      currency.code === value ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                    class={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none flex items-center gap-2 ${
+                      currency.code === value
+                        ? "bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
+                        : "text-gray-900 dark:text-gray-100"
                     }`}
                     onClick={(e) => {
                       e.preventDefault()
@@ -290,7 +297,7 @@ export function CurrencySelector({
                       {currency.code}
                     </span>
                     {currency.symbol && (
-                      <span class="text-gray-500 min-w-[1.5rem]">
+                      <span class="text-gray-500 dark:text-gray-400 min-w-[1.5rem]">
                         {currency.symbol}
                       </span>
                     )}
@@ -298,7 +305,7 @@ export function CurrencySelector({
                       {currency.name}
                     </span>
                     {currency.type === "crypto" && (
-                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                         crypto
                       </span>
                     )}

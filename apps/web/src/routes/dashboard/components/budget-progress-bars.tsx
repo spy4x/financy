@@ -60,7 +60,7 @@ export function BudgetProgressBars() {
   if (categoriesWithBudgets.value.length === 0) {
     return (
       <div>
-        <h2 class="text-lg font-medium text-gray-900 mb-4">Budget Progress</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Budget Progress</h2>
         <div class="card">
           <div class="card-body text-center py-8">
             <p class="text-gray-500 mb-4">No budget limits set</p>
@@ -89,7 +89,7 @@ export function BudgetProgressBars() {
 
   return (
     <div>
-      <h2 class="text-lg font-medium text-gray-900 mb-4">Budget Progress</h2>
+      <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Budget Progress</h2>
       <div class="card">
         <div class="card-body">
           <div class="space-y-6">
@@ -100,7 +100,7 @@ export function BudgetProgressBars() {
               return (
                 <div key={cat.id} class="space-y-2">
                   <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-medium text-gray-900">
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {cat.name}
                     </h3>
                   </div>

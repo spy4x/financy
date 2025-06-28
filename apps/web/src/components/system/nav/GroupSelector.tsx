@@ -14,9 +14,11 @@ export function GroupSelector({ variant = "nav" }: Props) {
   const isNavVariant = variant === "nav"
 
   return (
-    <div class={isNavVariant ? "border-t border-purple-800 pt-4 mt-4" : "-mt-2"}>
+    <div
+      class={isNavVariant ? "border-t border-purple-800 dark:border-purple-600 pt-4 mt-4" : "-mt-2"}
+    >
       {isNavVariant && (
-        <div class="text-xs font-medium text-purple-200 mb-2">
+        <div class="text-xs font-medium text-purple-200 dark:text-purple-300 mb-2">
           Selected Group
         </div>
       )}
@@ -25,8 +27,8 @@ export function GroupSelector({ variant = "nav" }: Props) {
           <div
             class={`flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
               isNavVariant
-                ? "bg-purple-800 hover:bg-purple-700 text-purple-100 w-full"
-                : "bg-white border border-gray-300 hover:border-gray-400 text-gray-900 shadow-sm min-w-0"
+                ? "bg-purple-800 dark:bg-purple-700 hover:bg-purple-700 dark:hover:bg-purple-600 text-purple-100 dark:text-purple-200 w-full"
+                : "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-900 dark:text-gray-100 shadow-sm min-w-0"
             }`}
           >
             <span class="truncate">
@@ -49,11 +51,17 @@ export function GroupSelector({ variant = "nav" }: Props) {
               onClick={() => {
                 group.selectedId.value = g.id
               }}
-              class="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              class="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <span class="font-medium">{g.name}</span>
               {group.selectedId.value === g.id && (
-                <IconCheck class={`size-4 ${isNavVariant ? "text-purple-600" : "text-blue-600"}`} />
+                <IconCheck
+                  class={`size-4 ${
+                    isNavVariant
+                      ? "text-purple-600 dark:text-purple-400"
+                      : "text-blue-600 dark:text-blue-400"
+                  }`}
+                />
               )}
             </button>
           ))}

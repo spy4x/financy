@@ -42,7 +42,7 @@ export function AccountBalancesOverview() {
   if (groupAccounts.value.length === 0) {
     return (
       <div>
-        <h2 class="text-lg font-medium text-gray-900 mb-4">Account Balances</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Account Balances</h2>
         <div class="card">
           <div class="card-body text-center py-8">
             <IconHome class="size-12 text-gray-400 mx-auto mb-4" />
@@ -75,7 +75,7 @@ export function AccountBalancesOverview() {
   return (
     <div>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-medium text-gray-900">Account Balances</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Account Balances</h2>
         <Link
           href="/accounts"
           class="btn btn-sm btn-primary-outline"

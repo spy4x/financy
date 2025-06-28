@@ -95,7 +95,9 @@ export function MonthlySpendingTrends() {
   return (
     <div class="card">
       <div class="card-header">
-        <h3 class="text-lg font-medium text-gray-900">Monthly Spending Trends</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+          Monthly Spending Trends
+        </h3>
         <p class="text-sm text-gray-600">Last 6 months overview</p>
       </div>
       <div class="card-body">

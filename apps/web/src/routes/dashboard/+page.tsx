@@ -21,7 +21,9 @@ export function Dashboard() {
         <div class="mt-8 text-center">
           <div class="card max-w-md mx-auto">
             <div class="card-body">
-              <h3 class="text-lg font-medium text-gray-900 mb-2">Welcome to Financy!</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                Welcome to Financy!
+              </h3>
               <p class="text-gray-600 mb-4">
                 To get started, please select or create a group from the navigation menu.
               </p>

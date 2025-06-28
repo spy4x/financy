@@ -1,29 +1,33 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @utility text-primary {
-  @apply text-purple-600;
+  @apply text-purple-600 dark:text-purple-300;
 }
 @utility rounded-primary {
   @apply rounded-lg;
 }
 @utility bg-primary {
-  @apply bg-purple-900;
+  @apply bg-purple-900 dark:bg-[#191a1e];
 }
 @utility border-primary {
-  @apply border-purple-600;
+  @apply border-purple-600 dark:border-purple-600;
 }
 
 @utility input {
   @apply block w-full h-12 px-3 rounded-primary border border-gray-300 text-gray-900;
   @apply placeholder:text-gray-500;
   @apply focus:border-purple-600 focus:ring-1 focus:ring-inset focus:ring-transparent;
+  @apply dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400;
+  @apply dark:focus:border-purple-600;
 }
 
 @utility html {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-style: normal;
-  @apply text-base text-black;
+  @apply text-base text-black dark:text-white dark:bg-gray-900;
 }
 @utility h1 {
   @apply text-2xl xl:text-3xl font-medium;
@@ -67,6 +71,7 @@ p {
 }
 @utility link {
   @apply underline decoration-gray-300 text-gray-500 hover:text-primary hover:no-underline;
+  @apply dark:decoration-gray-600 dark:text-gray-400 dark:hover:text-purple-400;
 }
 @utility page-layout {
   @apply mx-auto max-w-6xl space-y-4 lg:space-y-8;
@@ -99,10 +104,14 @@ fieldset[disabled] btn {
 @utility btn-primary-outline {
   @apply border border-purple-900 text-purple-900 hover:bg-purple-800 hover:text-purple-100
     focus-visible:outline-purple-800;
+  @apply dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-800
+    dark:hover:text-purple-100 dark:focus-visible:outline-purple-600;
 }
 @utility btn-danger {
   @apply border border-red-600 bg-red-600 text-red-50 hover:bg-red-700 hover:text-red-50
     focus-visible:outline-red-700;
+  @apply dark:border-red-500 dark:bg-red-600 dark:hover:bg-red-700
+    dark:focus-visible:outline-red-500;
 }
 @utility btn-danger-outline {
   @apply border border-red-600 text-red-600 hover:bg-red-700 hover:text-red-50
@@ -136,6 +145,7 @@ fieldset[disabled] btn {
   @apply font-medium transition-colors text-gray-800;
   @apply disabled:opacity-50;
   @apply hover:bg-gray-100 hover:text-black;
+  @apply dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white;
 }
 @utility checkbox {
   @apply size-5 border-gray-400 rounded-sm;
@@ -151,19 +161,62 @@ fieldset[disabled] btn {
   @apply block w-full min-h-24 p-2 rounded-primary border border-gray-300 text-gray-900;
   @apply placeholder:text-gray-500;
   @apply focus:border-purple-600 focus:ring-1 focus:ring-inset focus:ring-transparent;
+  @apply dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400;
+  @apply dark:focus:border-purple-600;
 }
 @utility label {
-  @apply inline-flex text-black text-sm font-medium;
+  @apply inline-flex text-black text-sm font-medium dark:text-white;
 }
 @utility card {
-  @apply rounded-primary border border-gray-200 bg-white;
+  @apply rounded-primary border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800;
 }
 @utility card-body {
   @apply px-4 py-6 sm:p-8;
 }
 @utility card-header {
-  @apply flex items-center justify-between border-b border-gray-200 px-4 py-4 sm:px-8;
+  @apply flex items-center justify-between border-b border-gray-200 px-4 py-4 sm:px-8
+    dark:border-gray-700;
 }
 @utility card-footer {
-  @apply flex flex-wrap items-center gap-4 border-t border-gray-200 px-4 py-4 sm:px-8;
+  @apply flex flex-wrap items-center gap-4 border-t border-gray-200 px-4 py-4 sm:px-8
+    dark:border-gray-700;
+}
+
+/* Global table styles for dark mode */
+.dark table {
+  background-color: rgb(31 41 55); /* gray-800 */
+}
+
+.dark thead {
+  background-color: rgb(55 65 81); /* gray-700 */
+}
+
+.dark th {
+  color: rgb(229 231 235); /* gray-200 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+.dark td {
+  color: rgb(209 213 219); /* gray-300 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+/* Table row hover effects */
+.dark tbody tr:hover {
+  background-color: rgb(55 65 81); /* gray-700 */
+}
+
+/* Generic select and dropdown styling */
+.dark select,
+.dark [role="combobox"],
+.dark [role="listbox"] {
+  background-color: rgb(31 41 55); /* gray-800 */
+  border-color: rgb(75 85 99); /* gray-600 */
+  color: white;
+}
+
+/* Dropdown option styling */
+.dark option {
+  background-color: rgb(31 41 55); /* gray-800 */
+  color: white;
 }

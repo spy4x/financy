@@ -115,7 +115,7 @@ export function CashFlowSummary() {
   return (
     <div class="card">
       <div class="card-header">
-        <h3 class="text-lg font-medium text-gray-900">Cash Flow Summary</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Cash Flow Summary</h3>
         <p class="text-sm text-gray-600">{currentMonth} vs {previousMonth}</p>
       </div>
       <div class="card-body">

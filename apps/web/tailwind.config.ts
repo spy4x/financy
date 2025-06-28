@@ -7,6 +7,7 @@ export default {
     "./src/**/*.{ts,tsx}",
     "../../libs/client/**/*.{ts,tsx}",
   ],
+  darkMode: "class",
   plugins: [tailwindForms],
   theme: {
     extend: {

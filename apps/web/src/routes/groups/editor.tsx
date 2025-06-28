@@ -105,7 +105,7 @@ export function GroupEditor() {
       <PageTitle>{editGroupId ? "Groups - Edit" : "Groups - Create"}</PageTitle>
 
       {error.value && (
-        <div class="mb-4 p-4 text-red-700 bg-red-50 border border-red-200 rounded-md">
+        <div class="mb-4 p-4 text-red-700 dark:text-red-200 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-md">
           {error.value}
         </div>
       )}
@@ -130,7 +130,7 @@ export function GroupEditor() {
                     required
                   />
                 </div>
-                <p class="mt-2 text-sm text-gray-600">
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                   Choose a descriptive name for your financial group.
                 </p>
               </div>
@@ -149,19 +149,21 @@ export function GroupEditor() {
                     filterType="all"
                   />
                 </div>
-                <p class="mt-2 text-sm text-gray-600">
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                   This will be the default currency for new accounts in this group.
                 </p>
               </div>
             </div>
 
             {!editGroupId && (
-              <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                <h3 class="text-sm font-medium text-blue-800 mb-2">What are Groups?</h3>
-                <p class="text-sm text-blue-700">
+              <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-md">
+                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                  What are Groups?
+                </h3>
+                <p class="text-sm text-blue-700 dark:text-blue-300">
                   Groups help you organize your finances by context. For example:
                 </p>
-                <ul class="text-sm text-blue-700 mt-2 list-disc list-inside">
+                <ul class="text-sm text-blue-700 dark:text-blue-300 mt-2 list-disc list-inside">
                   <li>
                     <strong>Personal:</strong> Your individual accounts and expenses
                   </li>
@@ -172,7 +174,7 @@ export function GroupEditor() {
                     <strong>Business:</strong> Company accounts and business expenses
                   </li>
                 </ul>
-                <p class="text-sm text-blue-700 mt-2">
+                <p class="text-sm text-blue-700 dark:text-blue-300 mt-2">
                   You can switch between groups and even collaborate with others by sharing access
                   to groups.
                 </p>

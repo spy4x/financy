@@ -69,7 +69,7 @@ export function Dropdown(
       <div
         class={`${
           !isOpen.value && "hidden"
-        } absolute ${horizontalClass} z-10 whitespace-nowrap rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden ${verticalClass} ${originClass} ${
+        } absolute ${horizontalClass} z-10 whitespace-nowrap rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black/5 dark:ring-gray-600 focus:outline-hidden ${verticalClass} ${originClass} ${
           panelClasses ?? ""
         }`}
         role="menu"

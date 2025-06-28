@@ -83,7 +83,7 @@ export function FinancialOverviewCards() {
 
   return (
     <div>
-      <h2 class="text-lg font-medium text-gray-900 mb-4">Financial Overview</h2>
+      <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Financial Overview</h2>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card, index) => (
           <div key={index} class="card">
