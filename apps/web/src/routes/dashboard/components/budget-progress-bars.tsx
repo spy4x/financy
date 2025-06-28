@@ -26,11 +26,12 @@ export function BudgetProgressBars() {
       })
   })
 
-  // Get categories with budgets for selected group
+  // Get categories with budgets for selected group (only expense categories should have budgets)
   const categoriesWithBudgets = useComputed(() =>
     category.list.value
       .filter((cat) =>
         cat.groupId === group.selectedId.value &&
+        (cat.type === undefined || cat.type === 1) && // Only expense categories (backward compatibility with undefined)
         cat.monthlyLimit &&
         cat.monthlyLimit > 0 &&
         !cat.deletedAt

@@ -6,6 +6,7 @@ import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
+import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 import { CategoryType, TransactionType } from "@shared/types"
@@ -265,37 +266,51 @@ export function TransactionEditor() {
         <fieldset disabled={isState(EditorState.IN_PROGRESS) || !group.selectedId.value}>
           <div class="card-body">
             <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div class="sm:col-span-3">
-                <label for="account" class="label">
-                  Account:
+              <div class="sm:col-span-6">
+                <label class="label">
+                  Transaction Type:
                 </label>
                 <div class="mt-2">
-                  <select
-                    id="account"
-                    class="input"
-                    value={accountId.value || ""}
-                    onChange={(e) => {
-                      const value = e.currentTarget.value
-                      accountId.value = value ? parseInt(value) : null
-                    }}
-                    required
-                  >
-                    <option value="">Select an account...</option>
-                    {groupAccounts.value.map((acc) => (
-                      <option
-                        key={acc.id}
-                        value={acc.id}
-                        class={acc.deletedAt ? "text-gray-400 italic" : ""}
-                      >
-                        {acc.deletedAt ? "[DELETED] " : ""}
-                        {acc.name} ({acc.currency})
-                      </option>
-                    ))}
-                  </select>
+                  <div class="space-y-6 sm:flex sm:items-center sm:space-x-10 sm:space-y-0">
+                    <div class="flex items-center gap-2">
+                      <input
+                        id="type-debit"
+                        name="transaction-type"
+                        type="radio"
+                        checked={type.value === 1}
+                        class="radio"
+                        onChange={() => {
+                          type.value = 1
+                          // Clear category selection when switching type to ensure proper filtering
+                          categoryId.value = null
+                        }}
+                      />
+                      <label for="type-debit" class="label">
+                        Debit (Money Out)
+                      </label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <input
+                        id="type-credit"
+                        name="transaction-type"
+                        type="radio"
+                        checked={type.value === 2}
+                        class="radio"
+                        onChange={() => {
+                          type.value = 2
+                          // Clear category selection when switching type to ensure proper filtering
+                          categoryId.value = null
+                        }}
+                      />
+                      <label for="type-credit" class="label">
+                        Credit (Money In)
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="sm:col-span-3">
+              <div class="sm:col-span-6">
                 <label for="category" class="label">
                   Category:
                 </label>
@@ -325,20 +340,32 @@ export function TransactionEditor() {
                 </div>
               </div>
 
-              <div class="sm:col-span-2">
-                <label for="type" class="label">
-                  Type:
+              <div class="sm:col-span-6">
+                <label for="account" class="label">
+                  Account:
                 </label>
                 <div class="mt-2">
                   <select
-                    id="type"
+                    id="account"
                     class="input"
-                    value={type.value}
-                    onChange={(e) => type.value = parseInt(e.currentTarget.value)}
+                    value={accountId.value || ""}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value
+                      accountId.value = value ? parseInt(value) : null
+                    }}
                     required
                   >
-                    <option value="1">Debit (Money Out)</option>
-                    <option value="2">Credit (Money In)</option>
+                    <option value="">Select an account...</option>
+                    {groupAccounts.value.map((acc) => (
+                      <option
+                        key={acc.id}
+                        value={acc.id}
+                        class={acc.deletedAt ? "text-gray-400 italic" : ""}
+                      >
+                        {acc.deletedAt ? "[DELETED] " : ""}
+                        {acc.name} ({acc.currency})
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -367,14 +394,13 @@ export function TransactionEditor() {
                   Original Currency (optional):
                 </label>
                 <div class="mt-2">
-                  <input
-                    type="text"
+                  <CurrencySelector
                     id="originalCurrency"
-                    class="input"
-                    placeholder="e.g., EUR, GBP"
                     value={originalCurrency.value}
-                    onInput={(e) => originalCurrency.value = e.currentTarget.value}
-                    maxLength={3}
+                    onChange={(currencyCode) => originalCurrency.value = currencyCode}
+                    placeholder="Select original currency..."
+                    filterType="all"
+                    disabled={isState(EditorState.IN_PROGRESS) || !group.selectedId.value}
                   />
                 </div>
               </div>
