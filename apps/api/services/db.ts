@@ -339,6 +339,15 @@ export class DbService extends DbServiceBase {
       `
       return results[0] || null
     },
+    findUserIdsByGroup: async (groupId: number): Promise<number[]> => {
+      const results = await this.sql<{ user_id: number }[]>`
+        SELECT gm.user_id
+        FROM group_memberships gm
+        WHERE gm.group_id = ${groupId}
+        AND gm.deleted_at IS NULL
+      `
+      return results.map((r) => r.user_id)
+    },
   }
 
   account = {

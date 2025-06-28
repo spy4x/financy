@@ -1,16 +1,22 @@
 import { WSContext } from "hono/ws"
 import type { SyncModel, WebSocketMessage } from "@shared/types"
 import {
+  Account,
   accountBaseSchema,
   accountUpdateSchema,
+  Category,
   categoryBaseSchema,
   categoryUpdateSchema,
+  Group,
   groupBaseSchema,
+  GroupMembership,
   GroupRole,
   groupUpdateSchema,
   SyncModelName,
+  Transaction,
   transactionBaseSchema,
   transactionUpdateSchema,
+  User,
   userSchema,
   validate,
   webSocketMessageSchema,
@@ -1005,20 +1011,85 @@ export const websockets = {
       this.send({ ws, message })
     }
   },
+  async sendToRelevantUsers(
+    model: SyncModelName,
+    p: SyncModel[],
+    t: WebSocketMessageType,
+    acknowledgmentId?: string,
+  ) {
+    const message = { e: model, t, p, id: acknowledgmentId }
+
+    // Collect all relevant user IDs for this model change
+    const relevantUserIds = new Set<number>()
+
+    try {
+      for (const item of p) {
+        const itemUserIds = await websockets.getUsersForModel(model, item)
+        itemUserIds.forEach((userId) => relevantUserIds.add(userId))
+      }
+
+      // Send to all relevant users
+      for (const userId of relevantUserIds) {
+        websockets.send({ userId, message })
+      }
+    } catch (error) {
+      console.error("Error sending to relevant users, falling back to send to all:", error)
+      // Fallback to sending to all users if there's an error
+      websockets.sendToAll(message)
+    }
+  },
+  async getUsersForModel(model: SyncModelName, item: SyncModel): Promise<number[]> {
+    // TODO: Optimize this function to avoid unnecessary database calls. Caching or batching could be useful here.
+    switch (model) {
+      case SyncModelName.user:
+        // Users can only see their own data
+        return [(item as User).id]
+
+      case SyncModelName.group:
+        // All members of the group can see group changes
+        return await db.groupMembership.findUserIdsByGroup((item as Group).id)
+
+      case SyncModelName.groupMembership: {
+        // Both the user and other members of the group should see membership changes
+        const membership = item as GroupMembership
+        const groupMemberIds = await db.groupMembership.findUserIdsByGroup(membership.groupId)
+        return [...new Set([membership.userId, ...groupMemberIds])]
+      }
+
+      case SyncModelName.account:
+        // All members of the account's group can see account changes
+        return await db.groupMembership.findUserIdsByGroup((item as Account).groupId)
+
+      case SyncModelName.category:
+        // All members of the category's group can see category changes
+        return await db.groupMembership.findUserIdsByGroup((item as Category).groupId)
+
+      case SyncModelName.transaction:
+        // All members of the transaction's group can see transaction changes
+        return await db.groupMembership.findUserIdsByGroup((item as Transaction).groupId)
+
+      case SyncModelName.tag: {
+        // Tags are global and can be seen by all users (for now)
+        // TODO: In the future, tags might be scoped to groups
+        const allUserIds = Array.from(userBySocket.values())
+        return allUserIds
+      }
+
+      default: {
+        console.warn(`Unknown model type: ${model}, sending to all users`)
+        const allUserIds = Array.from(userBySocket.values())
+        return allUserIds
+      }
+    }
+  },
   onModelChange(
     model: SyncModelName,
     p: SyncModel[],
     t: WebSocketMessageType,
     acknowledgmentId?: string,
   ) {
-    for (const ws of all) {
-      // TODO: right now we send all changes to all websockets, but we could optimize this
-      // by sending only to websockets of the user that owns the model
-      websockets.send({
-        ws,
-        message: { e: model, t, p, id: acknowledgmentId },
-      })
-    }
+    // Optimize by sending changes only to relevant users
+    websockets.sendToRelevantUsers(model, p, t, acknowledgmentId)
   },
   syncData: async (ws: WS, lastSyncAt: number) => {
     const userId = userBySocket.get(ws)
