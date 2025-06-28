@@ -396,11 +396,20 @@ export const categoryBaseSchema = type({
     CategoryType.EXPENSE,
   ),
   "monthlyLimit?": "number >= 0 | null",
+  "icon?": "string <= 10 | null",
+  "color?": "string <= 7 | null",
 })
 export type CategoryBase = typeof categoryBaseSchema.infer
 export const categorySchema = BaseModelSchema.and(categoryBaseSchema)
 export type Category = typeof categorySchema.infer
-export const categoryUpdateSchema = categorySchema.pick("id", "name", "type", "monthlyLimit")
+export const categoryUpdateSchema = categorySchema.pick(
+  "id",
+  "name",
+  "type",
+  "monthlyLimit",
+  "icon",
+  "color",
+)
 export type CategoryUpdate = typeof categoryUpdateSchema.infer
 // #endregion Category
 

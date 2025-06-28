@@ -101,14 +101,25 @@ export function BudgetProgressBars() {
               return (
                 <div key={cat.id} class="space-y-2">
                   <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {cat.name}
-                    </h3>
+                    <div class="flex items-center gap-2">
+                      {cat.icon && <span class="text-lg">{cat.icon}</span>}
+                      {cat.color && (
+                        <div
+                          class="w-3 h-3 rounded-full border border-gray-300"
+                          style={{ backgroundColor: cat.color }}
+                          title={`Category: ${cat.name}`}
+                        />
+                      )}
+                      <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {cat.name}
+                      </h3>
+                    </div>
                   </div>
                   <BudgetProgress
                     spentAmount={spentAmount}
                     limitAmount={limitAmount}
                     currency={defaultCurrency.value}
+                    color={cat.color}
                   />
                 </div>
               )

@@ -333,6 +333,7 @@ export function TransactionEditor() {
                         class={cat.deletedAt ? "text-gray-400 italic" : ""}
                       >
                         {cat.deletedAt ? "[DELETED] " : ""}
+                        {cat.icon ? `${cat.icon} ` : ""}
                         {cat.name}
                       </option>
                     ))}

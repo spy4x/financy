@@ -185,6 +185,8 @@ CREATE TABLE categories (
     name VARCHAR(100) NOT NULL,
     type INT2 DEFAULT 1 NOT NULL CHECK ((type >= 1) AND (type <= 2)),
     monthly_limit INT4,
+    icon VARCHAR(10),
+    color VARCHAR(7),
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
@@ -192,6 +194,8 @@ CREATE TABLE categories (
 
 COMMENT ON COLUMN categories.type IS '1=expense, 2=income';
 COMMENT ON COLUMN categories.monthly_limit IS 'Default monthly spending limit in smallest currency unit';
+COMMENT ON COLUMN categories.icon IS 'Emoji or icon identifier (max 10 chars)';
+COMMENT ON COLUMN categories.color IS 'Hex color code (e.g., #FF5733)';
 
 CREATE INDEX idx_categories_by_group ON categories (group_id);
 CREATE INDEX idx_categories_by_type ON categories (type);

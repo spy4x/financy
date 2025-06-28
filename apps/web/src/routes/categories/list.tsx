@@ -190,8 +190,22 @@ export function CategoryList() {
                 return (
                   <>
                     <td class={`${cat.deletedAt ? "text-gray-400" : "text-gray-900"}`}>
-                      <div class={`${cat.deletedAt ? "line-through" : ""}`}>
-                        {cat.name}
+                      <div class={`flex items-center gap-2 ${cat.deletedAt ? "line-through" : ""}`}>
+                        {cat.icon && (
+                          <span class="text-lg" title={cat.name}>
+                            {cat.icon}
+                          </span>
+                        )}
+                        <div class="flex items-center gap-2">
+                          {cat.color && (
+                            <div
+                              class="w-3 h-3 rounded-full border border-gray-300"
+                              style={{ backgroundColor: cat.color }}
+                              title={`Color: ${cat.color}`}
+                            />
+                          )}
+                          <span>{cat.name}</span>
+                        </div>
                         {cat.deletedAt && <span class="ml-2 text-xs text-red-500">(Deleted)</span>}
                       </div>
                     </td>

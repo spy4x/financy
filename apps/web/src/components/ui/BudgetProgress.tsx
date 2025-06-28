@@ -5,10 +5,11 @@ interface BudgetProgressProps {
   spentAmount: number
   limitAmount: number
   currency: string
+  color?: string | null
 }
 
 export function BudgetProgress(
-  { spentAmount, limitAmount, currency }: BudgetProgressProps,
+  { spentAmount, limitAmount, currency, color }: BudgetProgressProps,
 ): JSX.Element {
   // Use absolute value since spentAmount can be negative (debit transactions)
   const absoluteSpentAmount = Math.abs(spentAmount)
@@ -44,9 +45,18 @@ export function BudgetProgress(
       <div class="w-full bg-gray-200 rounded-full h-2">
         <div
           class={`h-2 rounded-full transition-all duration-300 ${
-            isOverBudget ? "bg-red-500" : percentage > 80 ? "bg-yellow-500" : "bg-green-500"
+            isOverBudget
+              ? "bg-red-500"
+              : percentage > 80
+              ? "bg-yellow-500"
+              : color
+              ? ""
+              : "bg-green-500"
           }`}
-          style={{ width: `${Math.min(percentage, 100)}%` }}
+          style={{
+            width: `${Math.min(percentage, 100)}%`,
+            ...(color && !isOverBudget && percentage <= 80 && { backgroundColor: color }),
+          }}
         />
       </div>
 

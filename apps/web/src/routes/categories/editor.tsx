@@ -25,6 +25,8 @@ export function CategoryEditor() {
   const name = useSignal("")
   const categoryType = useSignal<CategoryType>(CategoryType.EXPENSE)
   const monthlyLimit = useSignal("")
+  const icon = useSignal("")
+  const color = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -42,6 +44,8 @@ export function CategoryEditor() {
           monthlyLimit.value = existingCategory.monthlyLimit
             ? formatCentsToInput(existingCategory.monthlyLimit)
             : ""
+          icon.value = existingCategory.icon || ""
+          color.value = existingCategory.color || ""
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -52,6 +56,8 @@ export function CategoryEditor() {
         name.value = ""
         categoryType.value = CategoryType.EXPENSE
         monthlyLimit.value = ""
+        icon.value = ""
+        color.value = ""
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -112,10 +118,20 @@ export function CategoryEditor() {
     error.value = ""
     state.value = EditorState.IN_PROGRESS
 
+    const iconValue = icon.value.trim() || null
+    const colorValue = color.value.trim() || null
+
     if (editCategoryId) {
-      category.update(editCategoryId, trimmedName, categoryType.value, finalMonthlyLimit)
+      category.update(
+        editCategoryId,
+        trimmedName,
+        categoryType.value,
+        finalMonthlyLimit,
+        iconValue,
+        colorValue,
+      )
     } else {
-      category.create(trimmedName, categoryType.value, finalMonthlyLimit)
+      category.create(trimmedName, categoryType.value, finalMonthlyLimit, iconValue, colorValue)
     }
   }
 
@@ -183,6 +199,52 @@ export function CategoryEditor() {
                     Choose whether this category is for expenses or income
                   </p>
                 </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="categoryIcon" class="label">
+                  Icon (Optional):
+                </label>
+                <div class="mt-2">
+                  <input
+                    type="text"
+                    id="categoryIcon"
+                    class="input"
+                    placeholder="🛒 (emoji or icon)"
+                    maxLength={10}
+                    value={icon.value}
+                    onInput={(e) => icon.value = e.currentTarget.value}
+                  />
+                  <p class="mt-1 text-sm text-gray-600">
+                    Enter an emoji or icon name (max 10 characters)
+                  </p>
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="categoryColor" class="label">
+                  Color (Optional):
+                </label>
+                <div class="mt-2 flex items-center gap-2">
+                  <input
+                    type="color"
+                    id="categoryColor"
+                    class="w-12 h-10 rounded border border-gray-300 cursor-pointer"
+                    value={color.value || "#3B82F6"}
+                    onInput={(e) => color.value = e.currentTarget.value}
+                  />
+                  <input
+                    type="text"
+                    class="input flex-1"
+                    placeholder="#3B82F6"
+                    maxLength={7}
+                    value={color.value}
+                    onInput={(e) => color.value = e.currentTarget.value}
+                  />
+                </div>
+                <p class="mt-1 text-sm text-gray-600">
+                  Pick a color for visual organization
+                </p>
               </div>
 
               <div class="sm:col-span-4">

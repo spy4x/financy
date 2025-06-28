@@ -116,7 +116,13 @@ export const category = {
       }
     })
   },
-  create(name: string, type: CategoryType = CategoryType.EXPENSE, monthlyLimit?: number | null) {
+  create(
+    name: string,
+    type: CategoryType = CategoryType.EXPENSE,
+    monthlyLimit?: number | null,
+    icon?: string | null,
+    color?: string | null,
+  ) {
     const groupId = group.selectedId.value
     if (!groupId) {
       toast.error({ body: "Please select a group first." })
@@ -131,6 +137,8 @@ export const category = {
       type,
       ...(type === CategoryType.EXPENSE && monthlyLimit !== undefined && monthlyLimit !== null &&
         { monthlyLimit }),
+      ...(icon && { icon }),
+      ...(color && { color }),
     }
 
     ws.request({
@@ -141,7 +149,14 @@ export const category = {
       },
     })
   },
-  update(id: number, name: string, type: CategoryType, monthlyLimit?: number | null) {
+  update(
+    id: number,
+    name: string,
+    type: CategoryType,
+    monthlyLimit?: number | null,
+    icon?: string | null,
+    color?: string | null,
+  ) {
     const groupId = group.selectedId.value
     if (!groupId) {
       toast.error({ body: "Please select a group first." })
@@ -157,6 +172,8 @@ export const category = {
       type,
       ...(type === CategoryType.EXPENSE && monthlyLimit !== undefined && monthlyLimit !== null &&
         { monthlyLimit }),
+      ...(icon && { icon }),
+      ...(color && { color }),
     }
 
     ws.request({

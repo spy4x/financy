@@ -131,9 +131,13 @@ export function TransactionList() {
     return acc?.name || "Unknown Account"
   }
 
-  function getCategoryName(categoryId: number): string {
+  function getCategoryDisplay(categoryId: number): { name: string; icon?: string; color?: string } {
     const cat = category.list.value.find((c) => c.id === categoryId)
-    return cat?.name || "Unknown Category"
+    return {
+      name: cat?.name || "Unknown Category",
+      icon: cat?.icon || undefined,
+      color: cat?.color || undefined,
+    }
   }
 
   function getTransactionTypeDisplay(type: number): { label: string; color: string } {
@@ -235,6 +239,7 @@ export function TransactionList() {
                     <option value="">All Categories</option>
                     {groupCategories.value.map((cat) => (
                       <option key={cat.id} value={cat.id}>
+                        {cat.icon ? `${cat.icon} ` : ""}
                         {cat.name}
                       </option>
                     ))}
@@ -383,7 +388,23 @@ export function TransactionList() {
                             ? "text-gray-400 hover:underline"
                             : "text-blue-600 dark:text-blue-400 hover:underline"}
                         >
-                          {getCategoryName(txn.categoryId)}
+                          {(() => {
+                            const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                            return (
+                              <span class="flex items-center gap-1">
+                                {categoryDisplay.icon && (
+                                  <span class="text-sm">{categoryDisplay.icon}</span>
+                                )}
+                                {categoryDisplay.color && (
+                                  <div
+                                    class="w-2 h-2 rounded-full border border-gray-300"
+                                    style={{ backgroundColor: categoryDisplay.color }}
+                                  />
+                                )}
+                                <span>{categoryDisplay.name}</span>
+                              </span>
+                            )
+                          })()}
                         </Link>
                       </div>
                     </td>

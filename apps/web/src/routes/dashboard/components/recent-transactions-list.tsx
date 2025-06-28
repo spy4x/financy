@@ -30,9 +30,13 @@ export function RecentTransactionsList() {
     return acc?.name || "Unknown Account"
   }
 
-  const getCategoryName = (categoryId: number) => {
+  const getCategoryDisplay = (categoryId: number) => {
     const cat = category.list.value.find((c) => c.id === categoryId)
-    return cat?.name || "Unknown Category"
+    return {
+      name: cat?.name || "Unknown Category",
+      icon: cat?.icon || undefined,
+      color: cat?.color || undefined,
+    }
   }
 
   const getAccountCurrency = (accountId: number) => {
@@ -136,7 +140,22 @@ export function RecentTransactionsList() {
               </div>
             </td>
             <td class="text-gray-500">
-              {getCategoryName(txn.categoryId)}
+              {(() => {
+                const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                return (
+                  <div class="flex items-center gap-2">
+                    {categoryDisplay.icon && <span class="text-sm">{categoryDisplay.icon}</span>}
+                    {categoryDisplay.color && (
+                      <div
+                        class="w-3 h-3 rounded-full border border-gray-300"
+                        style={{ backgroundColor: categoryDisplay.color }}
+                        title={`Category: ${categoryDisplay.name}`}
+                      />
+                    )}
+                    <span class="truncate">{categoryDisplay.name}</span>
+                  </div>
+                )
+              })()}
             </td>
             <td class="text-gray-500">
               {getAccountName(txn.accountId)}

@@ -39,7 +39,7 @@ export function CategorySpendingBreakdown() {
   const categorySpendingData = useComputed(() => {
     const spending: Record<
       number,
-      { amount: number; categoryName: string; monthlyLimit?: number }
+      { amount: number; categoryName: string; monthlyLimit?: number; icon?: string; color?: string }
     > = {}
     let totalSpending = 0
 
@@ -51,6 +51,8 @@ export function CategorySpendingBreakdown() {
           amount: 0,
           categoryName: cat?.name || "Unknown Category",
           monthlyLimit: cat?.monthlyLimit || undefined,
+          icon: cat?.icon || undefined,
+          color: cat?.color || undefined,
         }
       }
       // Use absolute amount for spending calculations since amounts are stored as positive values
@@ -121,6 +123,11 @@ export function CategorySpendingBreakdown() {
             >
               <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center space-x-2">
+                  {item.icon && (
+                    <span class="text-lg" title={item.categoryName}>
+                      {item.icon}
+                    </span>
+                  )}
                   <span class="font-medium text-gray-900">{item.categoryName}</span>
                   <span class="text-xs text-gray-500">
                     {item.percentage.toFixed(1)}%
@@ -147,8 +154,11 @@ export function CategorySpendingBreakdown() {
               {/* Visual progress bar */}
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  class="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${item.percentage}%` }}
+                  class="h-2 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${item.percentage}%`,
+                    backgroundColor: item.color || "#3B82F6", // Default to blue if no color
+                  }}
                 />
               </div>
 
@@ -162,10 +172,14 @@ export function CategorySpendingBreakdown() {
                           ? "bg-red-500"
                           : item.amount > item.monthlyLimit * 0.8
                           ? "bg-yellow-500"
+                          : item.color
+                          ? ""
                           : "bg-green-500"
                       }`}
                       style={{
                         width: `${Math.min((item.amount / item.monthlyLimit) * 100, 100)}%`,
+                        ...(item.color && item.amount <= item.monthlyLimit * 0.8 &&
+                          { backgroundColor: item.color }),
                       }}
                     />
                   </div>

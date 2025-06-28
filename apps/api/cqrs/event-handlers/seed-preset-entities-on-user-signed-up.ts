@@ -4,11 +4,11 @@ import {
   CategoryCreateCommand,
   GroupCreateCommand,
 } from "@api/cqrs/commands.ts"
-import { CategoryType, GroupRole } from "@shared/types"
+import { AccountBase, CategoryBase, CategoryType, GroupRole } from "@shared/types"
 import { commandBus } from "@api/services/commandBus.ts"
 
 // Common account presets for new users
-const DEFAULT_ACCOUNTS = [
+const DEFAULT_ACCOUNTS: Omit<AccountBase, "groupId">[] = [
   {
     name: "Checking Account",
     currency: "USD" as const,
@@ -22,19 +22,79 @@ const DEFAULT_ACCOUNTS = [
 ]
 
 // Common category presets with reasonable monthly limits (in cents)
-const DEFAULT_CATEGORIES = [
-  { name: "Groceries", type: CategoryType.EXPENSE, monthlyLimit: 50000 }, // $500
-  { name: "Restaurants", type: CategoryType.EXPENSE, monthlyLimit: 30000 }, // $300
-  { name: "Transportation", type: CategoryType.EXPENSE, monthlyLimit: 25000 }, // $250
-  { name: "Utilities", type: CategoryType.EXPENSE, monthlyLimit: 20000 }, // $200
-  { name: "Entertainment", type: CategoryType.EXPENSE, monthlyLimit: 15000 }, // $150
-  { name: "Healthcare", type: CategoryType.EXPENSE, monthlyLimit: 25000 }, // $250
-  { name: "Shopping", type: CategoryType.EXPENSE, monthlyLimit: 20000 }, // $200
-  { name: "Gas", type: CategoryType.EXPENSE, monthlyLimit: 15000 }, // $150
-  { name: "Coffee & Snacks", type: CategoryType.EXPENSE, monthlyLimit: 10000 }, // $100
-  { name: "Subscriptions", type: CategoryType.EXPENSE, monthlyLimit: 5000 }, // $50
-  { name: "Salary", type: CategoryType.INCOME, monthlyLimit: undefined }, // No limit for income
-  { name: "Freelance", type: CategoryType.INCOME, monthlyLimit: undefined }, // No limit for income
+const DEFAULT_CATEGORIES: Omit<CategoryBase, "groupId">[] = [
+  {
+    name: "Groceries",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 50000,
+    icon: "🛒",
+    color: "#10B981",
+  }, // $500
+  {
+    name: "Restaurants",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 30000,
+    icon: "🍽️",
+    color: "#84CC16",
+  }, // $300
+  {
+    name: "Transportation",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 25000,
+    icon: "🚗",
+    color: "#F59E0B",
+  }, // $250
+  {
+    name: "Utilities",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 20000,
+    icon: "⚡",
+    color: "#3B82F6",
+  }, // $200
+  {
+    name: "Entertainment",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 15000,
+    icon: "🎬",
+    color: "#EC4899",
+  }, // $150
+  {
+    name: "Healthcare",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 25000,
+    icon: "⚕️",
+    color: "#EF4444",
+  }, // $250
+  {
+    name: "Shopping",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 20000,
+    icon: "🛍️",
+    color: "#8B5CF6",
+  }, // $200
+  { name: "Gas", type: CategoryType.EXPENSE, monthlyLimit: 15000, icon: "⛽", color: "#F97316" }, // $150
+  {
+    name: "Coffee & Snacks",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 10000,
+    icon: "☕",
+    color: "#92400E",
+  }, // $100
+  {
+    name: "Subscriptions",
+    type: CategoryType.EXPENSE,
+    monthlyLimit: 5000,
+    icon: "💳",
+    color: "#6B7280",
+  }, // $50
+  { name: "Salary", type: CategoryType.INCOME, monthlyLimit: null, icon: "💰", color: "#059669" }, // No limit for income
+  {
+    name: "Freelance",
+    type: CategoryType.INCOME,
+    monthlyLimit: null,
+    icon: "💻",
+    color: "#7C3AED",
+  }, // No limit for income
 ]
 
 /**
