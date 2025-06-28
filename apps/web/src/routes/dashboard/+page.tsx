@@ -16,9 +16,9 @@ export function Dashboard() {
 
   if (!hasSelectedGroup.value) {
     return (
-      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <section class="page-layout">
         <PageTitle>Dashboard</PageTitle>
-        <div class="mt-8 text-center">
+        <div class="text-center">
           <div class="card max-w-md mx-auto">
             <div class="card-body">
               <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
@@ -33,15 +33,15 @@ export function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     )
   }
 
   return (
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <section class="page-layout">
       <PageTitle>Dashboard</PageTitle>
 
-      <div class="mt-8 space-y-8">
+      <div class="space-y-8">
         {/* Financial Overview Cards */}
         <FinancialOverviewCards />
 
@@ -78,6 +78,6 @@ export function Dashboard() {
         {/* Recent Transactions */}
         <RecentTransactionsList />
       </div>
-    </div>
+    </section>
   )
 }

@@ -11,8 +11,8 @@ import { UIGuideCurrency } from "./currency.tsx"
 
 export function UIGuide() {
   return (
-    <div class="page-layout">
-      <PageTitle class="lg:mb-4">UI Guide</PageTitle>
+    <section class="page-layout">
+      <PageTitle>UI Guide</PageTitle>
 
       <UIGuideInstructions />
 
@@ -31,6 +31,6 @@ export function UIGuide() {
       <UIGuideEditor />
 
       <UIGuideIcons />
-    </div>
+    </section>
   )
 }
