@@ -8,6 +8,7 @@ import { commandBus } from "@api/services/commandBus.ts"
 import {
   AccountCreatedEvent,
   AccountDeletedEvent,
+  AccountTransferEvent,
   AccountUndeletedEvent,
   AccountUpdatedEvent,
   CategoryCreatedEvent,
@@ -28,6 +29,7 @@ import {
 import {
   AccountCreateCommand,
   AccountDeleteCommand,
+  AccountTransferCommand,
   AccountUndeleteCommand,
   AccountUpdateCommand,
   CategoryCreateCommand,
@@ -53,6 +55,7 @@ import { websocketNotifyOnAccountCreatedHandler } from "@api/cqrs/event-handlers
 import { websocketNotifyOnAccountUpdatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-account-updated.ts"
 import { websocketNotifyOnAccountDeletedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-account-deleted.ts"
 import { websocketNotifyOnAccountUndeletedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-account-undeleted.ts"
+import { websocketNotifyOnAccountTransferHandler } from "@api/cqrs/event-handlers/websocket-notify-on-account-transfer.ts"
 import { websocketNotifyOnCategoryCreatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-category-created.ts"
 import { websocketNotifyOnCategoryUpdatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-category-updated.ts"
 import { websocketNotifyOnCategoryDeletedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-category-deleted.ts"
@@ -69,6 +72,7 @@ import { GroupUndeleteHandler as groupUndeleteHandler } from "@api/cqrs/command-
 import { AccountCreateHandler as accountCreateHandler } from "@api/cqrs/command-handlers/account-create.ts"
 import { AccountUpdateHandler as accountUpdateHandler } from "@api/cqrs/command-handlers/account-update.ts"
 import { AccountDeleteHandler as accountDeleteHandler } from "@api/cqrs/command-handlers/account-delete.ts"
+import { AccountTransferHandler as accountTransferHandler } from "@api/cqrs/command-handlers/account-transfer.ts"
 import { AccountUndeleteHandler as accountUndeleteHandler } from "@api/cqrs/command-handlers/account-undelete.ts"
 import { CategoryCreateHandler as categoryCreateHandler } from "@api/cqrs/command-handlers/category-create.ts"
 import { CategoryUpdateHandler as categoryUpdateHandler } from "@api/cqrs/command-handlers/category-update.ts"
@@ -90,6 +94,7 @@ eventBus.on(AccountCreatedEvent, websocketNotifyOnAccountCreatedHandler)
 eventBus.on(AccountUpdatedEvent, websocketNotifyOnAccountUpdatedHandler)
 eventBus.on(AccountDeletedEvent, websocketNotifyOnAccountDeletedHandler)
 eventBus.on(AccountUndeletedEvent, websocketNotifyOnAccountUndeletedHandler)
+eventBus.on(AccountTransferEvent, websocketNotifyOnAccountTransferHandler)
 eventBus.on(CategoryCreatedEvent, websocketNotifyOnCategoryCreatedHandler)
 eventBus.on(CategoryUpdatedEvent, websocketNotifyOnCategoryUpdatedHandler)
 eventBus.on(CategoryDeletedEvent, websocketNotifyOnCategoryDeletedHandler)
@@ -108,6 +113,7 @@ commandBus.register(GroupUndeleteCommand, groupUndeleteHandler)
 commandBus.register(AccountCreateCommand, accountCreateHandler)
 commandBus.register(AccountUpdateCommand, accountUpdateHandler)
 commandBus.register(AccountDeleteCommand, accountDeleteHandler)
+commandBus.register(AccountTransferCommand, accountTransferHandler)
 commandBus.register(AccountUndeleteCommand, accountUndeleteHandler)
 commandBus.register(CategoryCreateCommand, categoryCreateHandler)
 commandBus.register(CategoryUpdateCommand, categoryUpdateHandler)

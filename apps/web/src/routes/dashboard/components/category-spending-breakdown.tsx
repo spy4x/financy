@@ -45,7 +45,7 @@ export function CategorySpendingBreakdown() {
 
     // Calculate spending per category
     currentMonthTransactions.value.forEach((txn) => {
-      if (!spending[txn.categoryId]) {
+      if (txn.categoryId && !spending[txn.categoryId]) {
         const cat = groupCategories.value.find((c) => c.id === txn.categoryId)
         spending[txn.categoryId] = {
           amount: 0,
@@ -58,7 +58,9 @@ export function CategorySpendingBreakdown() {
       // Use absolute amount for spending calculations since amounts are stored as positive values
       // and we've already filtered for DEBIT transactions only
       const spendingAmount = Math.abs(txn.amount)
-      spending[txn.categoryId].amount += spendingAmount
+      if (txn.categoryId) {
+        spending[txn.categoryId].amount += spendingAmount
+      }
       totalSpending += spendingAmount
     })
 

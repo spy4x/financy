@@ -18,23 +18,5 @@
       "file": ".github/copilot-instructions.md",
       "description": "Project-specific coding guidelines, patterns, and best practices for the Financy application."
     }
-  ],
-  "mcp": {
-    "inputs": [],
-    "servers": {
-      "playwright": {
-        "command": "docker",
-        "args": [
-          "run",
-          "-i",
-          "--rm",
-          "--name",
-          "mcp-playwright",
-          "--network",
-          "host",
-          "mcp/playwright"
-        ]
-      }
-    }
-  }
+  ]
 }

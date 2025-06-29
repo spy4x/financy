@@ -46,6 +46,14 @@
         "fmt:fix"
       ]
     },
+    "fix-n-check": {
+      "command": "echo 'Fixes applied and checks passed!'",
+      "description": "Run all fixes and checks",
+      "dependencies": [
+        "fix",
+        "check"
+      ]
+    },
     // #endregion Checks
 
     // #region Git Hooks

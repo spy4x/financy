@@ -180,6 +180,28 @@ export class AccountUndeletedEvent
 }
 
 /**
+ * Event emitted when money is transferred between accounts
+ */
+export class AccountTransferEvent implements
+  Event<{
+    fromTransaction: Transaction
+    toTransaction: Transaction
+    fromAccountUpdated: Account
+    toAccountUpdated: Account
+    acknowledgmentId?: string
+  }> {
+  constructor(
+    public data: {
+      fromTransaction: Transaction
+      toTransaction: Transaction
+      fromAccountUpdated: Account
+      toAccountUpdated: Account
+      acknowledgmentId?: string
+    },
+  ) {}
+}
+
+/**
  * Event emitted when a user is updated
  */
 export class UserUpdatedEvent implements Event<{ user: User; acknowledgmentId?: string }> {

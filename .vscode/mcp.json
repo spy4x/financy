@@ -1,0 +1,19 @@
+{
+  "inputs": [],
+  "servers": {
+    "playwright": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--name",
+        "mcp-playwright",
+        "--network",
+        "host",
+        "mcp/playwright"
+      ],
+      "type": "stdio"
+    }
+  }
+}

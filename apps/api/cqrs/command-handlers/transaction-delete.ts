@@ -3,10 +3,11 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionDeleteCommand } from "@api/cqrs/commands.ts"
 import { TransactionDeletedEvent } from "@api/cqrs/events.ts"
+import { Transaction } from "@shared/types"
 
 /**
  * Handler for deleting a transaction
- * This includes reverting account balance changes
+ * This includes reverting account balance changes and handling transfer pairs
  */
 export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> = async (
   command,
@@ -41,7 +42,31 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
         balanceChange,
       )
 
-      return { transaction, accountUpdated }
+      let linkedTransaction: Transaction | null = null
+      let linkedAccountUpdated = null
+
+      // If this is a transfer, also delete the linked transaction
+      if (originalTransaction.linkedTransactionId) {
+        const linkedTransactionData = await tx.transaction.findOne({
+          id: originalTransaction.linkedTransactionId,
+        })
+
+        if (linkedTransactionData) {
+          linkedTransaction = await tx.transaction.deleteOne({
+            id: originalTransaction.linkedTransactionId,
+          })
+
+          // Revert the linked account balance
+          const linkedBalanceChange = -linkedTransactionData.amount
+
+          linkedAccountUpdated = await tx.account.updateBalance(
+            linkedTransactionData.accountId,
+            linkedBalanceChange,
+          )
+        }
+      }
+
+      return { transaction, accountUpdated, linkedTransaction, linkedAccountUpdated }
     })
 
     // Emit event for WebSocket notifications and other side effects
@@ -52,6 +77,17 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
         acknowledgmentId,
       }),
     )
+
+    // Emit event for linked transaction if deleted
+    if (result.linkedTransaction && result.linkedAccountUpdated) {
+      eventBus.emit(
+        new TransactionDeletedEvent({
+          transaction: result.linkedTransaction,
+          accountUpdated: result.linkedAccountUpdated,
+          acknowledgmentId,
+        }),
+      )
+    }
 
     console.log(`✅ Transaction ${transactionId} deleted successfully for user ${userId}`)
 

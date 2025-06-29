@@ -11,7 +11,7 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
-import { CategoryType, TransactionType } from "@shared/types"
+import { CategoryType, TransactionType, TransactionTypeUtils } from "@shared/types"
 import {
   applyCurrencySign,
   formatCentsToInput,
@@ -31,6 +31,7 @@ export function TransactionEditor() {
   const editTransactionId = match && params?.id ? parseInt(params.id) : null
 
   const accountId = useSignal<number | null>(null)
+  const toAccountId = useSignal<number | null>(null) // Only used for transfers
   const categoryId = useSignal<number | null>(null)
   const type = useSignal<number>(1) // Default to Debit
   const amount = useSignal("")
@@ -40,6 +41,10 @@ export function TransactionEditor() {
   const createdAt = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
+
+  // Track if we're editing a transfer where the UI has been "swapped" for better UX
+  // This happens when editing the credit (positive amount) side of a transfer
+  const isTransferSwapped = useSignal<boolean>(false)
 
   // Helper function for cleaner state checks
   const isState = (checkState: EditorState) => state.value === checkState
@@ -109,14 +114,47 @@ export function TransactionEditor() {
         const existingTransaction = transaction.list.value.find((t) => t.id === editTransactionId)
         if (existingTransaction) {
           accountId.value = existingTransaction.accountId
-          categoryId.value = existingTransaction.categoryId
+          categoryId.value = existingTransaction.categoryId || null
           type.value = existingTransaction.type
+
+          // For transfers, find the linked transaction to get the destination account
+          if (
+            existingTransaction.type === TransactionType.TRANSFER &&
+            existingTransaction.linkedTransactionId
+          ) {
+            const linkedTransaction = transaction.list.value.find((t) =>
+              t.id === existingTransaction.linkedTransactionId
+            )
+            if (linkedTransaction) {
+              // Determine which transaction is the debit (from) and which is the credit (to)
+              // The transaction with negative amount is the debit (from), positive is credit (to)
+              if (existingTransaction.amount < 0) {
+                // Current transaction is the debit (from account)
+                accountId.value = existingTransaction.accountId
+                toAccountId.value = linkedTransaction.accountId
+                isTransferSwapped.value = false
+              } else {
+                // Current transaction is the credit (to account), linked is debit (from account)
+                // For UX, we swap the accounts to show the transfer direction logically
+                accountId.value = linkedTransaction.accountId
+                toAccountId.value = existingTransaction.accountId
+                isTransferSwapped.value = true // Mark that we've swapped for correct submission
+              }
+            } else {
+              toAccountId.value = null
+              isTransferSwapped.value = false
+            }
+          } else {
+            toAccountId.value = null
+            isTransferSwapped.value = false
+          }
+
           // Always show positive amount in form - sign is determined by type
-          amount.value = formatCentsToInput(existingTransaction.amount)
+          amount.value = formatCentsToInput(Math.abs(existingTransaction.amount))
           memo.value = existingTransaction.memo || ""
           originalCurrencyId.value = existingTransaction.originalCurrencyId || null
           originalAmount.value = existingTransaction.originalAmount
-            ? formatCentsToInput(existingTransaction.originalAmount)
+            ? formatCentsToInput(Math.abs(existingTransaction.originalAmount))
             : ""
           // Format createdAt as datetime-local input value (YYYY-MM-DDTHH:mm)
           createdAt.value = new Date(existingTransaction.createdAt).toISOString().slice(0, 16)
@@ -132,6 +170,7 @@ export function TransactionEditor() {
         const categories = groupCategories.value
 
         accountId.value = accounts.length > 0 ? accounts[0].id : null
+        toAccountId.value = accounts.length > 1 ? accounts[1].id : null
         categoryId.value = categories.length > 0 ? categories[0].id : null
         type.value = 1 // Default to Debit
         amount.value = ""
@@ -196,10 +235,32 @@ export function TransactionEditor() {
       return
     }
 
-    if (!categoryId.value) {
-      error.value = "Category is required"
-      state.value = EditorState.ERROR
-      return
+    // For transfers, use simpler validation - just check if toAccountId is set
+    const transactionData = {
+      type: type.value,
+      accountId: accountId.value,
+      categoryId: categoryId.value,
+    }
+
+    // Simpler validation - transfers don't use the complex field validation
+    if (type.value === TransactionType.TRANSFER) {
+      if (!toAccountId.value) {
+        error.value = "Destination account is required for transfers"
+        state.value = EditorState.ERROR
+        return
+      }
+      if (accountId.value === toAccountId.value) {
+        error.value = "Source and destination accounts must be different"
+        state.value = EditorState.ERROR
+        return
+      }
+    } else {
+      const validationError = TransactionTypeUtils.validateFields(transactionData)
+      if (validationError) {
+        error.value = validationError
+        state.value = EditorState.ERROR
+        return
+      }
     }
 
     const trimmedAmount = amount.value.trim()
@@ -238,24 +299,60 @@ export function TransactionEditor() {
       ? applyCurrencySign(originalAmountInCents, type.value as TransactionType)
       : undefined
 
-    const data = {
-      accountId: accountId.value,
-      categoryId: categoryId.value,
-      type: type.value,
-      amount: signedAmount,
-      memo: memo.value.trim() || undefined,
-      originalCurrencyId: originalCurrencyId.value || undefined,
-      originalAmount: signedOriginalAmount,
-      createdAt: createdAt.value ? new Date(createdAt.value).toISOString() : undefined,
-    }
-
     if (editTransactionId) {
-      transaction.update(editTransactionId, data)
+      // For updates, construct the proper data object
+      const updateData: {
+        accountId?: number
+        categoryId?: number
+        type?: number
+        amount?: number
+        memo?: string
+        originalCurrencyId?: number
+        originalAmount?: number
+      } = {
+        type: type.value,
+        amount: signedAmount,
+        memo: memo.value.trim() || undefined,
+        originalCurrencyId: originalCurrencyId.value || undefined,
+        originalAmount: signedOriginalAmount,
+      }
+
+      // For transfers, handle accountId correctly based on whether the UI was swapped
+      if (type.value === TransactionType.TRANSFER) {
+        updateData.categoryId = undefined
+        // If the UI was swapped (editing credit side), we need to use the "to" account
+        // as the actual accountId for this transaction
+        updateData.accountId = isTransferSwapped.value
+          ? toAccountId.value || undefined
+          : accountId.value || undefined
+      } else {
+        updateData.accountId = accountId.value || undefined
+        updateData.categoryId = categoryId.value || undefined
+      }
+
+      transaction.update(editTransactionId, updateData)
     } else {
-      transaction.create({
-        groupId: group.selectedId.value,
-        ...data,
-      })
+      if (type.value === TransactionType.TRANSFER) {
+        // Use account transfer method for transfers
+        account.transfer(
+          accountId.value!,
+          toAccountId.value!,
+          Math.abs(signedAmount),
+          memo.value.trim() || undefined,
+        )
+      } else {
+        // For regular transactions, create with required fields
+        transaction.create({
+          groupId: group.selectedId.value,
+          accountId: accountId.value!,
+          categoryId: categoryId.value!,
+          type: type.value,
+          amount: signedAmount,
+          memo: memo.value.trim() || undefined,
+          originalCurrencyId: originalCurrencyId.value || undefined,
+          originalAmount: signedOriginalAmount,
+        })
+      }
     }
   }
 
@@ -292,12 +389,13 @@ export function TransactionEditor() {
                         id="type-debit"
                         name="transaction-type"
                         type="radio"
-                        checked={type.value === 1}
+                        checked={type.value === TransactionType.DEBIT}
                         class="radio"
                         onChange={() => {
-                          type.value = 1
+                          type.value = TransactionType.DEBIT
                           // Clear category selection when switching type to ensure proper filtering
                           categoryId.value = null
+                          toAccountId.value = null
                         }}
                       />
                       <label for="type-debit" class="label">
@@ -309,56 +407,81 @@ export function TransactionEditor() {
                         id="type-credit"
                         name="transaction-type"
                         type="radio"
-                        checked={type.value === 2}
+                        checked={type.value === TransactionType.CREDIT}
                         class="radio"
                         onChange={() => {
-                          type.value = 2
+                          type.value = TransactionType.CREDIT
                           // Clear category selection when switching type to ensure proper filtering
                           categoryId.value = null
+                          toAccountId.value = null
                         }}
                       />
                       <label for="type-credit" class="label">
                         Credit (Money In)
                       </label>
                     </div>
+                    <div class="flex items-center gap-2">
+                      <input
+                        id="type-transfer"
+                        name="transaction-type"
+                        type="radio"
+                        checked={type.value === TransactionType.TRANSFER}
+                        class="radio"
+                        onChange={() => {
+                          type.value = TransactionType.TRANSFER
+                          // Clear category for transfers
+                          categoryId.value = null
+                          // Set default to account if available
+                          if (groupAccounts.value.length > 1) {
+                            toAccountId.value = groupAccounts.value[1].id
+                          }
+                        }}
+                      />
+                      <label for="type-transfer" class="label">
+                        Transfer (Between Accounts)
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="sm:col-span-6">
-                <label for="category" class="label">
-                  Category:
-                </label>
-                <div class="mt-2">
-                  <select
-                    id="category"
-                    class="input"
-                    value={categoryId.value || ""}
-                    onChange={(e) => {
-                      const value = e.currentTarget.value
-                      categoryId.value = value ? parseInt(value) : null
-                    }}
-                    required
-                  >
-                    <option value="">Select a category...</option>
-                    {groupCategories.value.map((cat) => (
-                      <option
-                        key={cat.id}
-                        value={cat.id}
-                        class={cat.deletedAt ? "text-gray-400 italic" : ""}
-                      >
-                        {cat.deletedAt ? "[DELETED] " : ""}
-                        {cat.icon ? `${cat.icon} ` : ""}
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
+              {/* Category field - only show for non-transfer transactions */}
+              {type.value !== TransactionType.TRANSFER && (
+                <div class="sm:col-span-6">
+                  <label for="category" class="label">
+                    Category:
+                  </label>
+                  <div class="mt-2">
+                    <select
+                      id="category"
+                      class="input"
+                      value={categoryId.value || ""}
+                      onChange={(e) => {
+                        const value = e.currentTarget.value
+                        categoryId.value = value ? parseInt(value) : null
+                      }}
+                      required={type.value !== TransactionType.TRANSFER}
+                    >
+                      <option value="">Select a category...</option>
+                      {groupCategories.value.map((cat) => (
+                        <option
+                          key={cat.id}
+                          value={cat.id}
+                          class={cat.deletedAt ? "text-gray-400 italic" : ""}
+                        >
+                          {cat.deletedAt ? "[DELETED] " : ""}
+                          {cat.icon ? `${cat.icon} ` : ""}
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div class="sm:col-span-6">
                 <label for="account" class="label">
-                  Account:
+                  {type.value === TransactionType.TRANSFER ? "From Account:" : "Account:"}
                 </label>
                 <div class="mt-2">
                   <select
@@ -386,6 +509,41 @@ export function TransactionEditor() {
                 </div>
               </div>
 
+              {/* To Account field - only show for transfers */}
+              {type.value === TransactionType.TRANSFER && (
+                <div class="sm:col-span-6">
+                  <label for="toAccount" class="label">
+                    To Account:
+                  </label>
+                  <div class="mt-2">
+                    <select
+                      id="toAccount"
+                      class="input"
+                      value={toAccountId.value || ""}
+                      onChange={(e) => {
+                        const value = e.currentTarget.value
+                        toAccountId.value = value ? parseInt(value) : null
+                      }}
+                      required={type.value === TransactionType.TRANSFER}
+                    >
+                      <option value="">Select destination account...</option>
+                      {groupAccounts.value
+                        .filter((acc) => acc.id !== accountId.value) // Exclude the from account
+                        .map((acc) => (
+                          <option
+                            key={acc.id}
+                            value={acc.id}
+                            class={acc.deletedAt ? "text-gray-400 italic" : ""}
+                          >
+                            {acc.deletedAt ? "[DELETED] " : ""}
+                            {acc.name} ({currency.getDisplay(acc.currencyId).code})
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
               <div class="sm:col-span-2">
                 <label for="amount" class="label">
                   Amount:
@@ -405,38 +563,44 @@ export function TransactionEditor() {
                 </div>
               </div>
 
-              <div class="sm:col-span-2">
-                <label for="originalCurrency" class="label">
-                  Original Currency (optional):
-                </label>
-                <div class="mt-2">
-                  <CurrencySelector
-                    id="originalCurrency"
-                    value={originalCurrencyId.value}
-                    onChange={(id) => originalCurrencyId.value = id}
-                    placeholder="Select original currency..."
-                    disabled={isState(EditorState.IN_PROGRESS) || !group.selectedId.value}
-                  />
+              {/* Original Currency field - hide for transfers since accounts have different currencies */}
+              {type.value !== TransactionType.TRANSFER && (
+                <div class="sm:col-span-2">
+                  <label for="originalCurrency" class="label">
+                    Original Currency (optional):
+                  </label>
+                  <div class="mt-2">
+                    <CurrencySelector
+                      id="originalCurrency"
+                      value={originalCurrencyId.value}
+                      onChange={(id) => originalCurrencyId.value = id}
+                      placeholder="Select original currency..."
+                      disabled={isState(EditorState.IN_PROGRESS) || !group.selectedId.value}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div class="sm:col-span-2">
-                <label for="originalAmount" class="label">
-                  Original Amount (optional):
-                </label>
-                <div class="mt-2">
-                  <input
-                    type="number"
-                    id="originalAmount"
-                    class="input"
-                    placeholder="0.00"
-                    value={originalAmount.value}
-                    onInput={(e) => originalAmount.value = e.currentTarget.value}
-                    step="0.01"
-                    min="0"
-                  />
+              {/* Original Amount field - hide for transfers */}
+              {type.value !== TransactionType.TRANSFER && (
+                <div class="sm:col-span-2">
+                  <label for="originalAmount" class="label">
+                    Original Amount (optional):
+                  </label>
+                  <div class="mt-2">
+                    <input
+                      type="number"
+                      id="originalAmount"
+                      class="input"
+                      placeholder="0.00"
+                      value={originalAmount.value}
+                      onInput={(e) => originalAmount.value = e.currentTarget.value}
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div class="sm:col-span-2">
                 <label for="createdAt" class="label">
@@ -462,7 +626,9 @@ export function TransactionEditor() {
                   <textarea
                     id="memo"
                     class="input"
-                    placeholder="Notes about this transaction..."
+                    placeholder={type.value === TransactionType.TRANSFER
+                      ? "Notes about this transfer..."
+                      : "Notes about this transaction..."}
                     value={memo.value}
                     onInput={(e) => memo.value = e.currentTarget.value}
                     rows={3}
@@ -482,8 +648,12 @@ export function TransactionEditor() {
             <button
               type="submit"
               class="btn btn-primary"
-              disabled={!accountId.value || !categoryId.value || !amount.value.trim() ||
-                !createdAt.value || !group.selectedId.value}
+              disabled={!accountId.value ||
+                (type.value !== TransactionType.TRANSFER && !categoryId.value) ||
+                (type.value === TransactionType.TRANSFER && !toAccountId.value) ||
+                !amount.value.trim() ||
+                !createdAt.value ||
+                !group.selectedId.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editTransactionId ? "Update" : "Create"}

@@ -3,11 +3,12 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionUpdateCommand } from "@api/cqrs/commands.ts"
 import { TransactionUpdatedEvent } from "@api/cqrs/events.ts"
-import { Account, TransactionType } from "@shared/types"
+import { Account, Transaction, TransactionType, TransactionTypeUtils } from "@shared/types"
 
 /**
  * Handler for updating a transaction
  * This includes updating account balance and category usage count
+ * For transfers, also updates the linked transaction
  */
 export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> = async (
   command,
@@ -29,6 +30,15 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         throw new Error(`Transaction with id ${transactionId} not found`)
       }
 
+      // Validate fields against transfer business rules
+      const validationError = TransactionTypeUtils.validateFields({
+        ...originalTransaction,
+        ...updates,
+      })
+      if (validationError) {
+        throw new Error(validationError)
+      }
+
       // SECURITY: Enforce correct sign based on transaction type for any amount updates
       // Never trust frontend - backend validates and corrects the sign
       const correctedUpdates = { ...updates }
@@ -41,7 +51,7 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         const absoluteAmount = Math.abs(newAmount)
         const correctedAmount = newType === TransactionType.DEBIT
           ? -absoluteAmount // DEBIT: always negative
-          : absoluteAmount // CREDIT: always positive
+          : absoluteAmount // CREDIT/TRANSFER: always positive
 
         correctedUpdates.amount = correctedAmount
 
@@ -71,20 +81,45 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
       })
 
       let accountUpdated: Account
+      let linkedTransaction: Transaction | null = null
+      let linkedAccountUpdated: Account | null = null
 
-      // Calculate balance change if amount changed
+      // Handle balance updates
       if (correctedUpdates.amount !== undefined) {
         const newAmount = correctedUpdates.amount
         const originalAmount = originalTransaction.amount
 
         // Calculate the difference in account balance
-        // Both amounts are already signed (negative for DEBIT, positive for CREDIT)
+        // Both amounts are already signed (negative for DEBIT, positive for CREDIT/TRANSFER)
         const balanceDiff = newAmount - originalAmount
 
         accountUpdated = await tx.account.updateBalance(
           originalTransaction.accountId,
           balanceDiff,
         )
+
+        // If this is a transfer, update the linked transaction and its account balance
+        if (originalTransaction.linkedTransactionId) {
+          const linkedTransactionData = await tx.transaction.findOne({
+            id: originalTransaction.linkedTransactionId,
+          })
+
+          if (linkedTransactionData) {
+            // For the linked transaction, the amount should be the opposite sign
+            const linkedAmount = -newAmount
+            const linkedBalanceDiff = linkedAmount - (-originalAmount)
+
+            linkedTransaction = await tx.transaction.updateOne({
+              id: originalTransaction.linkedTransactionId,
+              data: { amount: linkedAmount },
+            })
+
+            linkedAccountUpdated = await tx.account.updateBalance(
+              linkedTransactionData.accountId,
+              linkedBalanceDiff,
+            )
+          }
+        }
       } else {
         // Just fetch the account without updating balance
         const account = await tx.account.findOne({ id: originalTransaction.accountId })
@@ -98,6 +133,8 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         transaction,
         originalTransaction,
         accountUpdated,
+        linkedTransaction,
+        linkedAccountUpdated,
       }
     })
 
@@ -110,6 +147,18 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         acknowledgmentId,
       }),
     )
+
+    // Emit event for linked transaction if updated
+    if (result.linkedTransaction && result.linkedAccountUpdated) {
+      eventBus.emit(
+        new TransactionUpdatedEvent({
+          transaction: result.linkedTransaction,
+          originalTransaction: result.linkedTransaction, // Use the updated transaction as both
+          accountUpdated: result.linkedAccountUpdated,
+          acknowledgmentId,
+        }),
+      )
+    }
 
     console.log(`✅ Transaction ${transactionId} updated successfully for user ${userId}`)
 

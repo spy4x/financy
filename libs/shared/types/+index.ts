@@ -454,6 +454,7 @@ export type TagUpdate = typeof tagUpdateSchema.infer
 export enum TransactionType {
   DEBIT = 1,
   CREDIT = 2,
+  TRANSFER = 3,
 }
 
 /**
@@ -469,6 +470,8 @@ export const TransactionTypeUtils = {
         return "Debit"
       case TransactionType.CREDIT:
         return "Credit"
+      case TransactionType.TRANSFER:
+        return "Transfer"
       default:
         return "Unknown"
     }
@@ -483,6 +486,40 @@ export const TransactionTypeUtils = {
    * Check if transaction type is credit (money coming in)
    */
   isCredit: (type: TransactionType): boolean => type === TransactionType.CREDIT,
+
+  /**
+   * Check if transaction type is transfer (between accounts)
+   */
+  isTransfer: (type: TransactionType): boolean => type === TransactionType.TRANSFER,
+
+  /**
+   * Check if transaction affects profit/loss reporting
+   */
+  affectsProfitLoss: (type: TransactionType): boolean => type !== TransactionType.TRANSFER,
+
+  /**
+   * Validate transaction field constraints based on type
+   */
+  validateFields: (transaction: Partial<TransactionBase>): string | null => {
+    if (!transaction.type) return "Transaction type is required"
+
+    if (transaction.type === TransactionType.TRANSFER) {
+      // For transfers: linkedTransactionId will be set after creation, categoryId must be null
+      if (transaction.categoryId !== null && transaction.categoryId !== undefined) {
+        return "Transfer transactions cannot have categoryId"
+      }
+    } else {
+      // For regular transactions: categoryId must be set, linkedTransactionId must be null
+      if (!transaction.categoryId) return "Regular transactions require categoryId"
+      if (
+        transaction.linkedTransactionId !== null && transaction.linkedTransactionId !== undefined
+      ) {
+        return "Regular transactions cannot have linkedTransactionId"
+      }
+    }
+
+    return null // Valid
+  },
 }
 
 export const transactionBaseSchema = type({
@@ -491,11 +528,12 @@ export const transactionBaseSchema = type({
   type: type.enumerated(...Object.values(TransactionType) as TransactionType[]).default(
     TransactionType.CREDIT,
   ),
-  categoryId: "number > 0",
-  originalCurrencyId: "number > 0 | undefined",
+  "categoryId?": "number > 0 | null", // Nullable for transfers
+  "originalCurrencyId?": "number > 0 | undefined",
   originalAmount: "number = 0",
   groupId: "number > 0",
   accountId: "number > 0",
+  "linkedTransactionId?": "number > 0 | null", // For linking transfer pairs
 })
 export type TransactionBase = typeof transactionBaseSchema.infer
 export const transactionCreateSchema = transactionBaseSchema.and(type({
@@ -512,7 +550,8 @@ export const transactionUpdateSchema = transactionSchema.pick(
   "categoryId",
   "originalCurrencyId",
   "originalAmount",
-  "createdAt",
+  "accountId",
+  "linkedTransactionId",
 )
 export type TransactionUpdate = typeof transactionUpdateSchema.infer
 // #endregion Transaction
@@ -584,6 +623,7 @@ export enum WebSocketMessageType {
   DELETE = "delete",
   DELETED = "deleted",
   UNDELETE = "undelete",
+  TRANSFER = "transfer",
   ERROR_VALIDATION = "error_validation",
 }
 

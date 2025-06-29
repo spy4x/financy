@@ -287,6 +287,30 @@ export class AccountUndeleteCommand
 }
 // #endregion Account Undelete
 
+// #region Account Transfer
+export interface AccountTransferPayload {
+  fromAccountId: number
+  toAccountId: number
+  amount: number
+  memo?: string
+  userId: number
+  acknowledgmentId?: string
+}
+
+export interface AccountTransferResult {
+  fromTransaction: Transaction
+  toTransaction: Transaction
+  fromAccountUpdated: Account
+  toAccountUpdated: Account
+}
+
+export class AccountTransferCommand
+  implements Command<AccountTransferPayload, AccountTransferResult> {
+  __resultType?: AccountTransferResult
+  constructor(public data: AccountTransferPayload) {}
+}
+// #endregion Account Transfer
+
 // #region User Update
 export interface UserUpdatePayload {
   userId: number

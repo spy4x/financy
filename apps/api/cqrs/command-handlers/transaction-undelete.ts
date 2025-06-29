@@ -3,10 +3,11 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionUndeleteCommand } from "@api/cqrs/commands.ts"
 import { TransactionUndeletedEvent } from "@api/cqrs/events.ts"
+import { Transaction } from "@shared/types"
 
 /**
  * Handler for undeleting (restoring) a transaction
- * This includes re-applying account balance changes
+ * This includes re-applying account balance changes and handling transfer pairs
  */
 export const transactionUndeleteHandler: CommandHandler<TransactionUndeleteCommand> = async (
   command,
@@ -44,7 +45,31 @@ export const transactionUndeleteHandler: CommandHandler<TransactionUndeleteComma
         balanceChange,
       )
 
-      return { transaction, accountUpdated }
+      let linkedTransaction: Transaction | null = null
+      let linkedAccountUpdated = null
+
+      // If this is a transfer, also restore the linked transaction
+      if (originalTransaction.linkedTransactionId) {
+        const linkedTransactionData = await tx.transaction.findOne({
+          id: originalTransaction.linkedTransactionId,
+        })
+
+        if (linkedTransactionData && linkedTransactionData.deletedAt) {
+          linkedTransaction = await tx.transaction.undeleteOne({
+            id: originalTransaction.linkedTransactionId,
+          })
+
+          // Re-apply the linked account balance
+          const linkedBalanceChange = linkedTransactionData.amount
+
+          linkedAccountUpdated = await tx.account.updateBalance(
+            linkedTransactionData.accountId,
+            linkedBalanceChange,
+          )
+        }
+      }
+
+      return { transaction, accountUpdated, linkedTransaction, linkedAccountUpdated }
     })
 
     // Emit event for WebSocket notifications and other side effects
@@ -55,6 +80,17 @@ export const transactionUndeleteHandler: CommandHandler<TransactionUndeleteComma
         acknowledgmentId,
       }),
     )
+
+    // Emit event for linked transaction if restored
+    if (result.linkedTransaction && result.linkedAccountUpdated) {
+      eventBus.emit(
+        new TransactionUndeletedEvent({
+          transaction: result.linkedTransaction,
+          accountUpdated: result.linkedAccountUpdated,
+          acknowledgmentId,
+        }),
+      )
+    }
 
     console.log(`✅ Transaction ${transactionId} undeleted successfully for user ${userId}`)
 

@@ -139,29 +139,26 @@ The complete database schema is documented in `libs/server/db/schema.sql`. This 
 
 **Important**: The schema.sql file is generated from migrations and serves as documentation. Always create new migration files for schema changes rather than editing schema.sql directly. **When creating a new migration, always regenerate and update the schema.sql file to reflect the current database state.**
 
+## Critical Safety Guidelines
+
+**⚠️ NEVER perform these operations:**
+
+- Database migrations (`deno run --allow-all libs/server/db/migrate.ts` or similar)
+- Git operations (commits, pushes, branch changes, merges, etc.)
+- Direct DB Schema changes - they must always be done through migration files
+- Production environment changes
+- SUDO operations
+
 ## Development Workflow
 
 ### Code Quality Checks
 
-Always run code quality checks before making changes and after completing work:
+Always run code quality checks before making changes and after completing work.
+Use a single command to run fixes (link,fmt) & all checks(link,fmt,typescript,tests):
 
 ```bash
-# Run all checks (lint, format, TypeScript, tests)
-deno task check
-
-# Apply automatic fixes
-deno task fix
-
-# Individual commands if needed
-deno task lint:check    # Check linting rules
-deno task fmt:check     # Check code formatting  
-deno task ts:check      # Check TypeScript compilation
-deno task test          # Run tests
-deno task lint:fix      # Fix linting issues
-deno task fmt:fix       # Fix code formatting
+deno task fix-n-check
 ```
-
-**Important**: Use `deno task check` and `deno task fix` (not `deno check`, `deno lint`, or `deno fmt`) - these are composite commands that run multiple quality checks and fixes.
 
 ## Testing with Playwright MCP
 
@@ -178,7 +175,7 @@ For testing the application's behavior and functionality, use the #playwright MC
 
 **Testing Workflow**:
 
-1. Use #playwright MCP to navigate to the application URL.
+1. Use #playwright MCP to navigate to the application URL. Never use Simple Browser.
 
 - If Playwright MCP is not started (and you don't see it's tools) - ask developer to start it by pressing `F1` and selecting `MCP: List Servers` > `Start`.
 - The app is usually running, so try access the app using Playwright first. If not running, use `deno task dev` (app will run in the background, so don't expect logs in the terminal).

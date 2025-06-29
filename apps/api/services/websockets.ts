@@ -29,6 +29,7 @@ import { commandBus } from "./commandBus.ts"
 import {
   AccountCreateCommand,
   AccountDeleteCommand,
+  AccountTransferCommand,
   AccountUndeleteCommand,
   AccountUpdateCommand,
   CategoryCreateCommand,
@@ -884,6 +885,57 @@ export const websockets = {
               e: "account",
               t: WebSocketMessageType.ERROR_VALIDATION,
               p: [error instanceof Error ? error.message : "Failed to undelete account"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+      } else if (parseResult.data.t === WebSocketMessageType.TRANSFER) {
+        // Handle account transfer
+        const transferData = payload as {
+          fromAccountId?: unknown
+          toAccountId?: unknown
+          amount?: unknown
+          memo?: unknown
+        }
+        if (
+          !transferData || typeof transferData !== "object" ||
+          typeof transferData.fromAccountId !== "number" ||
+          typeof transferData.toAccountId !== "number" ||
+          typeof transferData.amount !== "number"
+        ) {
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid transfer data: missing fromAccountId, toAccountId, or amount"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+
+        // Execute the transfer using CQRS command
+        try {
+          await commandBus.execute(
+            new AccountTransferCommand({
+              fromAccountId: transferData.fromAccountId,
+              toAccountId: transferData.toAccountId,
+              amount: transferData.amount,
+              memo: typeof transferData.memo === "string" ? transferData.memo : undefined,
+              userId,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to transfer funds between accounts:", error)
+          websockets.send({
+            ws,
+            message: {
+              e: "account",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: [error instanceof Error ? error.message : "Failed to transfer funds"],
               id: acknowledgmentId,
             },
           })

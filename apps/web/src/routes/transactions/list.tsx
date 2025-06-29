@@ -17,18 +17,18 @@ import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
-import { ItemStatus, ItemStatusUtils, type Transaction } from "@shared/types"
+import { ItemStatus, ItemStatusUtils, type Transaction, TransactionType } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function TransactionList() {
   const filter = {
     search: useSignal(""),
+    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
+    type: useSignal<number | null>(null),
     accountId: useSignal<number | null>(null),
     categoryId: useSignal<number | null>(null),
-    type: useSignal<number | null>(null),
     from: useSignal(""),
     to: useSignal(""),
-    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
   }
 
   // Initialize filters from URL parameters
@@ -141,9 +141,16 @@ export function TransactionList() {
   }
 
   function getTransactionTypeDisplay(type: number): { label: string; color: string } {
-    return type === 1
-      ? { label: "Debit", color: "text-red-600" }
-      : { label: "Credit", color: "text-green-600" }
+    switch (type) {
+      case TransactionType.DEBIT:
+        return { label: "Debit", color: "text-red-600" }
+      case TransactionType.CREDIT:
+        return { label: "Credit", color: "text-green-600" }
+      case TransactionType.TRANSFER:
+        return { label: "Transfer", color: "text-blue-600" }
+      default:
+        return { label: "Unknown", color: "text-gray-600" }
+    }
   }
 
   return (
@@ -201,10 +208,38 @@ export function TransactionList() {
                   </select>
                 </div>
 
-                {/* Account Filter */}
+                {/* Type Filter */}
                 <div>
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Account
+                    Type
+                  </label>
+                  <select
+                    class="input w-full"
+                    value={filter.type.value || ""}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value
+                      filter.type.value = value ? parseInt(value) : null
+                      // Clear category filter when switching to transfer type
+                      if (value && parseInt(value) === TransactionType.TRANSFER) {
+                        filter.categoryId.value = null
+                      }
+                      // Clear to account filter when switching away from transfer
+                      if (!value || parseInt(value) !== TransactionType.TRANSFER) {
+                        filter.accountId.value = null
+                      }
+                    }}
+                  >
+                    <option value="">All Types</option>
+                    <option value="1">Debit</option>
+                    <option value="2">Credit</option>
+                    <option value="3">Transfer</option>
+                  </select>
+                </div>
+
+                {/* From Account Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {filter.type.value === TransactionType.TRANSFER ? "From Account" : "Account"}
                   </label>
                   <select
                     class="input w-full"
@@ -223,47 +258,30 @@ export function TransactionList() {
                   </select>
                 </div>
 
-                {/* Category Filter */}
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Category
-                  </label>
-                  <select
-                    class="input w-full"
-                    value={filter.categoryId.value || ""}
-                    onChange={(e) => {
-                      const value = e.currentTarget.value
-                      filter.categoryId.value = value ? parseInt(value) : null
-                    }}
-                  >
-                    <option value="">All Categories</option>
-                    {groupCategories.value.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.icon ? `${cat.icon} ` : ""}
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Type Filter */}
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Type
-                  </label>
-                  <select
-                    class="input w-full"
-                    value={filter.type.value || ""}
-                    onChange={(e) => {
-                      const value = e.currentTarget.value
-                      filter.type.value = value ? parseInt(value) : null
-                    }}
-                  >
-                    <option value="">All Types</option>
-                    <option value="1">Debit</option>
-                    <option value="2">Credit</option>
-                  </select>
-                </div>
+                {/* Category Filter - hide for transfers */}
+                {filter.type.value !== TransactionType.TRANSFER && (
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Category
+                    </label>
+                    <select
+                      class="input w-full"
+                      value={filter.categoryId.value || ""}
+                      onChange={(e) => {
+                        const value = e.currentTarget.value
+                        filter.categoryId.value = value ? parseInt(value) : null
+                      }}
+                    >
+                      <option value="">All Categories</option>
+                      {groupCategories.value.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.icon ? `${cat.icon} ` : ""}
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 {/* Date Filters */}
                 <div class="grid grid-cols-2 gap-2">
@@ -334,7 +352,7 @@ export function TransactionList() {
               headerSlot={
                 <>
                   <th class="text-left">Date</th>
-                  <th class="text-left">Account &gt; Category</th>
+                  <th class="text-left">Account / Destination</th>
                   <th class="text-left">Amount</th>
                   <th class="text-left">Memo</th>
                   <th>Actions</th>
@@ -367,45 +385,136 @@ export function TransactionList() {
                           isDeleted ? "line-through" : "text-gray-900 dark:text-gray-100"
                         }`}
                       >
-                        <Link
-                          href={routes.accounts.children!.edit.href.replace(
-                            ":id",
-                            txn.accountId.toString(),
-                          )}
-                          class={isDeleted
-                            ? "text-gray-400 hover:underline"
-                            : "text-blue-600 dark:text-blue-400 hover:underline"}
-                        >
-                          {getAccountName(txn.accountId)}
-                        </Link>
-                        {" > "}
-                        <Link
-                          href={routes.categories.children!.edit.href.replace(
-                            ":id",
-                            txn.categoryId.toString(),
-                          )}
-                          class={isDeleted
-                            ? "text-gray-400 hover:underline"
-                            : "text-blue-600 dark:text-blue-400 hover:underline"}
-                        >
-                          {(() => {
-                            const categoryDisplay = getCategoryDisplay(txn.categoryId)
-                            return (
-                              <span class="flex items-center gap-1">
-                                {categoryDisplay.icon && (
-                                  <span class="text-sm">{categoryDisplay.icon}</span>
+                        {txn.type === TransactionType.TRANSFER
+                          ? (
+                            // Transfer: Show direction based on amount sign
+                            <>
+                              {(() => {
+                                // Find the linked transaction to get the other account
+                                const linkedTransaction = txn.linkedTransactionId
+                                  ? transaction.list.value.find((t) =>
+                                    t.id === txn.linkedTransactionId
+                                  )
+                                  : null
+
+                                if (txn.amount < 0) {
+                                  // Money out: This Account → Other Account
+                                  return (
+                                    <>
+                                      <Link
+                                        href={routes.accounts.children!.edit.href.replace(
+                                          ":id",
+                                          txn.accountId.toString(),
+                                        )}
+                                        class={isDeleted
+                                          ? "text-gray-400 hover:underline"
+                                          : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                      >
+                                        {getAccountName(txn.accountId)}
+                                      </Link>
+                                      <span class="mx-2 text-gray-500">→</span>
+                                      {linkedTransaction
+                                        ? (
+                                          <Link
+                                            href={routes.accounts.children!.edit.href.replace(
+                                              ":id",
+                                              linkedTransaction.accountId.toString(),
+                                            )}
+                                            class={isDeleted
+                                              ? "text-gray-400 hover:underline"
+                                              : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                          >
+                                            {getAccountName(linkedTransaction.accountId)}
+                                          </Link>
+                                        )
+                                        : <span class="text-gray-400">Unknown Account</span>}
+                                    </>
+                                  )
+                                } else {
+                                  // Money in: Other Account → This Account
+                                  return (
+                                    <>
+                                      {linkedTransaction
+                                        ? (
+                                          <Link
+                                            href={routes.accounts.children!.edit.href.replace(
+                                              ":id",
+                                              linkedTransaction.accountId.toString(),
+                                            )}
+                                            class={isDeleted
+                                              ? "text-gray-400 hover:underline"
+                                              : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                          >
+                                            {getAccountName(linkedTransaction.accountId)}
+                                          </Link>
+                                        )
+                                        : <span class="text-gray-400">Unknown Account</span>}
+                                      <span class="mx-2 text-gray-500">→</span>
+                                      <Link
+                                        href={routes.accounts.children!.edit.href.replace(
+                                          ":id",
+                                          txn.accountId.toString(),
+                                        )}
+                                        class={isDeleted
+                                          ? "text-gray-400 hover:underline"
+                                          : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                      >
+                                        {getAccountName(txn.accountId)}
+                                      </Link>
+                                    </>
+                                  )
+                                }
+                              })()}
+                            </>
+                          )
+                          : (
+                            // Regular transaction: Show "Account > Category"
+                            <>
+                              <Link
+                                href={routes.accounts.children!.edit.href.replace(
+                                  ":id",
+                                  txn.accountId.toString(),
                                 )}
-                                {categoryDisplay.color && (
-                                  <div
-                                    class="w-2 h-2 rounded-full border border-gray-300"
-                                    style={{ backgroundColor: categoryDisplay.color }}
-                                  />
-                                )}
-                                <span>{categoryDisplay.name}</span>
-                              </span>
-                            )
-                          })()}
-                        </Link>
+                                class={isDeleted
+                                  ? "text-gray-400 hover:underline"
+                                  : "text-blue-600 dark:text-blue-400 hover:underline"}
+                              >
+                                {getAccountName(txn.accountId)}
+                              </Link>
+                              {" > "}
+                              {txn.categoryId
+                                ? (
+                                  <Link
+                                    href={routes.categories.children!.edit.href.replace(
+                                      ":id",
+                                      txn.categoryId.toString(),
+                                    )}
+                                    class={isDeleted
+                                      ? "text-gray-400 hover:underline"
+                                      : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                  >
+                                    {(() => {
+                                      const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                                      return (
+                                        <span class="flex items-center gap-1">
+                                          {categoryDisplay.icon && (
+                                            <span class="text-sm">{categoryDisplay.icon}</span>
+                                          )}
+                                          {categoryDisplay.color && (
+                                            <div
+                                              class="w-2 h-2 rounded-full border border-gray-300"
+                                              style={{ backgroundColor: categoryDisplay.color }}
+                                            />
+                                          )}
+                                          <span>{categoryDisplay.name}</span>
+                                        </span>
+                                      )
+                                    })()}
+                                  </Link>
+                                )
+                                : <span class="text-gray-500">No Category</span>}
+                            </>
+                          )}
                       </div>
                     </td>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>

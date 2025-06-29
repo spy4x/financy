@@ -142,7 +142,9 @@ export function RecentTransactionsList() {
             </td>
             <td class="text-gray-500">
               {(() => {
-                const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                const categoryDisplay = txn.categoryId
+                  ? getCategoryDisplay(txn.categoryId)
+                  : { name: "N/A", icon: "", color: "#gray" }
                 return (
                   <div class="flex items-center gap-2">
                     {categoryDisplay.icon && <span class="text-sm">{categoryDisplay.icon}</span>}

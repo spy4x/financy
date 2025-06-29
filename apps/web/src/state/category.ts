@@ -46,8 +46,10 @@ const monthlySpent = computed(() => {
     // Only count debit transactions (money going out) as "spent"
     if (txn.type !== 1) return // 1 = DEBIT (money out)
 
-    const currentSpent = spentByCategory.get(txn.categoryId) || 0
-    spentByCategory.set(txn.categoryId, currentSpent + txn.amount)
+    if (txn.categoryId) {
+      const currentSpent = spentByCategory.get(txn.categoryId) || 0
+      spentByCategory.set(txn.categoryId, currentSpent + txn.amount)
+    }
   })
 
   return spentByCategory
@@ -72,27 +74,34 @@ export const category = {
           break
         case WebSocketMessageType.CREATED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) category.list.value = [...category.list.value, p[0] as Category]
+          const newCategories = p.filter((item): item is Category => !!item)
+          if (newCategories.length > 0) {
+            category.list.value = [...category.list.value, ...newCategories]
+          }
           category.ops.create.value = { inProgress: false, error: null }
           break
         }
         case WebSocketMessageType.UPDATED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) {
-            category.list.value = category.list.value.map((c) =>
-              c.id === (p[0] as Category).id ? p[0] as Category : c
-            )
+          const updatedCategories = p.filter((item): item is Category => !!item)
+          if (updatedCategories.length > 0) {
+            category.list.value = category.list.value.map((c) => {
+              const updated = updatedCategories.find((u) => u.id === c.id)
+              return updated ? updated : c
+            })
           }
           category.ops.update.value = { inProgress: false, error: null }
           break
         }
         case WebSocketMessageType.DELETED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) {
-            // Update the item in place (soft delete) instead of removing from list
-            category.list.value = category.list.value.map((c) =>
-              c.id === (p[0] as Category).id ? p[0] as Category : c
-            )
+          const deletedCategories = p.filter((item): item is Category => !!item)
+          if (deletedCategories.length > 0) {
+            // Update the items in place (soft delete) instead of removing from list
+            category.list.value = category.list.value.map((c) => {
+              const deleted = deletedCategories.find((d) => d.id === c.id)
+              return deleted ? deleted : c
+            })
           }
           category.ops.delete.value = { inProgress: false, error: null }
           break

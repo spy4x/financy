@@ -43,10 +43,12 @@ export function BudgetProgressBars() {
     const spending: Record<number, number> = {}
 
     currentMonthTransactions.value.forEach((txn) => {
-      if (!spending[txn.categoryId]) {
+      if (txn.categoryId && !spending[txn.categoryId]) {
         spending[txn.categoryId] = 0
       }
-      spending[txn.categoryId] += Math.abs(txn.amount)
+      if (txn.categoryId) {
+        spending[txn.categoryId] += Math.abs(txn.amount)
+      }
     })
 
     return spending

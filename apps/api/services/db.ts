@@ -568,14 +568,16 @@ export class DbService extends DbServiceBase {
         )
         return false
       }
-      // check categoryId - categoryId is now required (NOT NULL)
-      const categories = await this.category.findMany(userId)
-      const categoryIds = categories.map((c) => c.id)
-      if (!categoryIds.includes(transaction.categoryId)) {
-        console.warn(
-          `Transaction categoryId "${transaction.categoryId}" does not belong to userId "${userId}"`,
-        )
-        return false
+      // check categoryId - only required for non-transfers
+      if (transaction.type !== 3 && transaction.categoryId) { // type 3 = TRANSFER
+        const categories = await this.category.findMany(userId)
+        const categoryIds = categories.map((c) => c.id)
+        if (!categoryIds.includes(transaction.categoryId)) {
+          console.warn(
+            `Transaction categoryId "${transaction.categoryId}" does not belong to userId "${userId}"`,
+          )
+          return false
+        }
       }
       return true
     },

@@ -52,34 +52,37 @@ export const group = {
           break
         case WebSocketMessageType.CREATED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) {
-            const newGroup = p[0] as Group
-            group.list.value = [...group.list.value, newGroup]
-            // Auto-select the newly created group
-            group.selectedId.value = newGroup.id
+          const newGroups = p.filter((item): item is Group => !!item)
+          if (newGroups.length > 0) {
+            group.list.value = [...group.list.value, ...newGroups]
+            // Auto-select the first newly created group (typically there's only one)
+            group.selectedId.value = newGroups[0].id
           }
           group.ops.create.value = { inProgress: false, error: null }
           break
         }
         case WebSocketMessageType.UPDATED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) {
-            group.list.value = group.list.value.map((g) =>
-              g.id === (p[0] as Group).id ? p[0] as Group : g
-            )
+          const updatedGroups = p.filter((item): item is Group => !!item)
+          if (updatedGroups.length > 0) {
+            group.list.value = group.list.value.map((g) => {
+              const updated = updatedGroups.find((u) => u.id === g.id)
+              return updated ? updated : g
+            })
           }
           group.ops.update.value = { inProgress: false, error: null }
           break
         }
         case WebSocketMessageType.DELETED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) {
-            const deletedGroup = p[0] as Group
-            // Update the item in place (soft delete) instead of removing from list
-            group.list.value = group.list.value.map((g) =>
-              g.id === deletedGroup.id ? deletedGroup : g
-            )
-            // If the deleted group was selected, it stays selected but marked as deleted
+          const deletedGroups = p.filter((item): item is Group => !!item)
+          if (deletedGroups.length > 0) {
+            // Update the items in place (soft delete) instead of removing from list
+            group.list.value = group.list.value.map((g) => {
+              const deleted = deletedGroups.find((d) => d.id === g.id)
+              return deleted ? deleted : g
+            })
+            // If any deleted group was selected, it stays selected but marked as deleted
           }
           group.ops.delete.value = { inProgress: false, error: null }
           break

@@ -31,27 +31,34 @@ export const transaction = {
           break
         case WebSocketMessageType.CREATED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) transaction.list.value = [...transaction.list.value, p[0] as Transaction]
+          const newTransactions = p.filter(Boolean) as Transaction[]
+          if (newTransactions.length > 0) {
+            transaction.list.value = [...transaction.list.value, ...newTransactions]
+          }
           transaction.ops.create.value = { inProgress: false, error: null }
           break
         }
         case WebSocketMessageType.UPDATED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) {
-            transaction.list.value = transaction.list.value.map((t) =>
-              t.id === (p[0] as Transaction).id ? p[0] as Transaction : t
-            )
+          const updatedTransactions = p.filter(Boolean) as Transaction[]
+          if (updatedTransactions.length > 0) {
+            transaction.list.value = transaction.list.value.map((t) => {
+              const updated = updatedTransactions.find((updated) => updated.id === t.id)
+              return updated ? updated : t
+            })
           }
           transaction.ops.update.value = { inProgress: false, error: null }
           break
         }
         case WebSocketMessageType.DELETED: {
           const p = Array.isArray(msg.p) ? msg.p : []
-          if (p[0]) {
-            // Update the item in place (soft delete) instead of removing from list
-            transaction.list.value = transaction.list.value.map((t) =>
-              t.id === (p[0] as Transaction).id ? p[0] as Transaction : t
-            )
+          const deletedTransactions = p.filter(Boolean) as Transaction[]
+          if (deletedTransactions.length > 0) {
+            // Update the items in place (soft delete) instead of removing from list
+            transaction.list.value = transaction.list.value.map((t) => {
+              const deleted = deletedTransactions.find((deleted) => deleted.id === t.id)
+              return deleted ? deleted : t
+            })
           }
           transaction.ops.delete.value = { inProgress: false, error: null }
           break
