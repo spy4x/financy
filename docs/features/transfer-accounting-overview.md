@@ -70,15 +70,15 @@ Destination Account (To):  CREDIT  +$100  (money in)
 **Linked Transaction Model**:
 ```sql
 -- Transfer creates two linked records
-Transaction A: from_account_id=1, to_account_id=2, amount=-100, linked_transaction_id=B
-Transaction B: from_account_id=2, to_account_id=1, amount=+100, linked_transaction_id=A
+Transaction A: from_account_id=1, to_account_id=2, amount=-100, linked_transaction_code=ABC123
+Transaction B: from_account_id=2, to_account_id=1, amount=+100, linked_transaction_code=ABC123
 ```
 
 **Key Fields**:
 - `type = 3` (TRANSFER)
 - `category_id = NULL` (no expense/income categorization)
 - `to_account_id` populated (destination account)
-- `linked_transaction_id` creates bidirectional link
+- `linkedTransactionCode` creates bidirectional link
 
 ### Business Logic Constraints
 

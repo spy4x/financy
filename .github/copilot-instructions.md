@@ -123,7 +123,6 @@ class MyEvent implements Event<MyEventPayload> {
 
 ## Common Gotchas
 
-- Money Precision: Store as cents (INT), display as `Intl.NumberFormat` strings on frontend
 - Timezone Handling: Store UTC, display local
 - Currency Conversion: Don't lose original amounts
 - Permissions: Always check user access to groups/accounts
@@ -137,18 +136,39 @@ The complete database schema is documented in `libs/server/db/schema.sql`. This 
 - Foreign key relationships
 - Check constraints and data validation rules
 
-**Important**: The schema.sql file is generated from migrations and serves as documentation. Always create new migration files for schema changes rather than editing schema.sql directly. **When creating a new migration, always regenerate and update the schema.sql file to reflect the current database state.**
-
 ## Critical Safety Guidelines
 
 **⚠️ NEVER perform these operations:**
 
-- Database migrations (`deno run --allow-all libs/server/db/migrate.ts` or similar)
+- Database migrations
 - Git operations (commits, pushes, branch changes, merges, etc.)
 - Direct DB Schema changes - they must always be done through migration files
 - Production environment changes
 - SUDO operations
 
+### Migration Protocol for Development & Testing
+
+When database schema changes are made and need to be tested:
+
+1. **Create Migration Files**: Always create proper migration files in `libs/server/db/migrations/`
+2. **Update Schema Documentation**: Update `libs/server/db/schema.sql` to reflect changes
+3. **Request Migration Execution**: When testing requires the migration to be applied, explicitly ask the developer to run the migration with specific instructions
+4. **Wait for Confirmation**: Do not proceed with testing until the developer confirms the migration has been executed successfully
+5. **Continue Testing**: Only after migration confirmation, proceed with testing the changes
+
+**Example Migration Request Format:**
+
+````
+I need to test the database changes, but the migration needs to be run first. 
+
+Please execute the migration:
+```bash
+deno run compose restart api
+````
+
+Once you've run the migration and confirmed it completed successfully, please let me know so I can continue testing.
+
+````
 ## Development Workflow
 
 ### Code Quality Checks
@@ -158,7 +178,7 @@ Use a single command to run fixes (link,fmt) & all checks(link,fmt,typescript,te
 
 ```bash
 deno task fix-n-check
-```
+````
 
 ## Testing with Playwright MCP
 
@@ -218,4 +238,4 @@ Use Playwright MCP whenever you need to:
 4. Test multi-user scenarios and verify mobile responsiveness
 5. Validate security implications and permissions
 6. Update documentation as needed
-7. Run `deno task check` to ensure all quality checks pass
+7. Run `deno task fix-n-check` to ensure all quality checks pass

@@ -120,10 +120,11 @@ export function TransactionEditor() {
           // For transfers, find the linked transaction to get the destination account
           if (
             existingTransaction.type === TransactionType.TRANSFER &&
-            existingTransaction.linkedTransactionId
+            existingTransaction.linkedTransactionCode
           ) {
             const linkedTransaction = transaction.list.value.find((t) =>
-              t.id === existingTransaction.linkedTransactionId
+              t.linkedTransactionCode === existingTransaction.linkedTransactionCode &&
+              t.id !== existingTransaction.id
             )
             if (linkedTransaction) {
               // Determine which transaction is the debit (from) and which is the credit (to)

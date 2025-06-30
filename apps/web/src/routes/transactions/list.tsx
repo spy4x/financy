@@ -391,9 +391,10 @@ export function TransactionList() {
                             <>
                               {(() => {
                                 // Find the linked transaction to get the other account
-                                const linkedTransaction = txn.linkedTransactionId
+                                const linkedTransaction = txn.linkedTransactionCode
                                   ? transaction.list.value.find((t) =>
-                                    t.id === txn.linkedTransactionId
+                                    t.linkedTransactionCode === txn.linkedTransactionCode &&
+                                    t.id !== txn.id
                                   )
                                   : null
 

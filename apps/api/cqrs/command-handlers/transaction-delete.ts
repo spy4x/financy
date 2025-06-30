@@ -46,14 +46,20 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
       let linkedAccountUpdated = null
 
       // If this is a transfer, also delete the linked transaction
-      if (originalTransaction.linkedTransactionId) {
-        const linkedTransactionData = await tx.transaction.findOne({
-          id: originalTransaction.linkedTransactionId,
-        })
+      if (originalTransaction.linkedTransactionCode) {
+        const linkedTransactions = await tx.transaction.findByLinkedTransactionCode(
+          originalTransaction.linkedTransactionCode,
+          userId,
+        )
+
+        // Find the other transaction in the transfer pair (not the current one)
+        const linkedTransactionData = linkedTransactions.find(
+          (t) => t.id !== originalTransaction.id,
+        )
 
         if (linkedTransactionData) {
           linkedTransaction = await tx.transaction.deleteOne({
-            id: originalTransaction.linkedTransactionId,
+            id: linkedTransactionData.id,
           })
 
           // Revert the linked account balance

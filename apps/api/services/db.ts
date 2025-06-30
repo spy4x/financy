@@ -503,6 +503,20 @@ export class DbService extends DbServiceBase {
         ORDER BY t.created_at DESC
       `
     },
+    findByLinkedTransactionCode: async (
+      linkedTransactionCode: string,
+      userId: number,
+    ): Promise<Transaction[]> => {
+      return this.sql<Transaction[]>`
+        SELECT t.*
+        FROM transactions t
+        WHERE t.linked_transaction_code = ${linkedTransactionCode}
+        AND t.group_id IN (
+          SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
+        )
+        ORDER BY t.created_at DESC
+      `
+    },
     findByGroup: async (groupId: number, _userId: number): Promise<Transaction[]> => {
       return this.sql<Transaction[]>`
         SELECT t.*

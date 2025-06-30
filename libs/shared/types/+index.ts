@@ -504,17 +504,18 @@ export const TransactionTypeUtils = {
     if (!transaction.type) return "Transaction type is required"
 
     if (transaction.type === TransactionType.TRANSFER) {
-      // For transfers: linkedTransactionId will be set after creation, categoryId must be null
+      // For transfers: linkedTransactionCode will be set after creation, categoryId must be null
       if (transaction.categoryId !== null && transaction.categoryId !== undefined) {
         return "Transfer transactions cannot have categoryId"
       }
     } else {
-      // For regular transactions: categoryId must be set, linkedTransactionId must be null
+      // For regular transactions: categoryId must be set, linkedTransactionCode must be null
       if (!transaction.categoryId) return "Regular transactions require categoryId"
       if (
-        transaction.linkedTransactionId !== null && transaction.linkedTransactionId !== undefined
+        transaction.linkedTransactionCode !== null &&
+        transaction.linkedTransactionCode !== undefined
       ) {
-        return "Regular transactions cannot have linkedTransactionId"
+        return "Regular transactions cannot have linkedTransactionCode"
       }
     }
 
@@ -533,7 +534,7 @@ export const transactionBaseSchema = type({
   originalAmount: "number = 0",
   groupId: "number > 0",
   accountId: "number > 0",
-  "linkedTransactionId?": "number > 0 | null", // For linking transfer pairs
+  "linkedTransactionCode?": "string <= 10 | null", // For linking transfer pairs
 })
 export type TransactionBase = typeof transactionBaseSchema.infer
 export const transactionCreateSchema = transactionBaseSchema.and(type({
@@ -551,7 +552,7 @@ export const transactionUpdateSchema = transactionSchema.pick(
   "originalCurrencyId",
   "originalAmount",
   "accountId",
-  "linkedTransactionId",
+  "linkedTransactionCode",
 )
 export type TransactionUpdate = typeof transactionUpdateSchema.infer
 // #endregion Transaction

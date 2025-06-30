@@ -227,7 +227,7 @@ CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     account_id INT4 NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-    linked_transaction_id INT4 REFERENCES transactions(id),
+    linked_transaction_code VARCHAR(10),
     type INT2 NOT NULL CHECK (type IN (1, 2, 3)),
     amount INT4 NOT NULL,
     original_currency_id INT4 REFERENCES currencies(id),
@@ -245,7 +245,7 @@ CREATE TABLE transactions (
 );
 
 COMMENT ON COLUMN transactions.account_id IS 'Account for the transaction (single field approach)';
-COMMENT ON COLUMN transactions.linked_transaction_id IS 'Links to the corresponding transaction in transfer pairs';
+COMMENT ON COLUMN transactions.linked_transaction_code IS 'Random string linking transfer transaction pairs (e.g., "abc123xyz0")';
 COMMENT ON COLUMN transactions.type IS '1=DEBIT (money out), 2=CREDIT (money in), 3=TRANSFER (linked pair)';
 COMMENT ON COLUMN transactions.amount IS 'Stored in smallest unit';
 COMMENT ON COLUMN transactions.original_currency_id IS 'Original currency from vendor (FK to currencies table), null if same as account currency';
@@ -258,7 +258,7 @@ CREATE INDEX idx_transactions_by_group ON transactions (group_id);
 CREATE INDEX idx_transactions_by_creator ON transactions (created_by);
 CREATE INDEX idx_transactions_by_original_currency ON transactions (original_currency_id);
 CREATE INDEX idx_transactions_by_account ON transactions (account_id);
-CREATE INDEX idx_transactions_linked_transaction_id ON transactions(linked_transaction_id) WHERE linked_transaction_id IS NOT NULL;
+CREATE INDEX idx_transactions_linked_transaction_code ON transactions(linked_transaction_code) WHERE linked_transaction_code IS NOT NULL;
 CREATE INDEX idx_transactions_type ON transactions(type);
 
 CREATE TABLE transactions_to_tags (

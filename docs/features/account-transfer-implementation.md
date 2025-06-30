@@ -10,7 +10,7 @@ Added account-to-account transfer functionality to the Financy application, foll
 
 The transfer implementation uses a **single account field architecture**:
 - Each transaction has one `accountId` field (the account it belongs to)
-- Transfers create **two linked transactions** via `linkedTransactionId`
+- Transfers create **two linked transactions** via `linkedTransactionCode`
 - No separate "from/to" account fields - transfers are represented by transaction pairs
 
 ### Transfer Transaction Pair
@@ -21,13 +21,13 @@ When transferring money from Account A to Account B:
    - `accountId`: Account A
    - `amount`: -100 (negative = money out)
    - `type`: TRANSFER
-   - `linkedTransactionId`: points to Transaction 2
+   - `linkedTransactionCode`: points to shared code
 
 2. **Transaction 2** (Destination Account):
    - `accountId`: Account B  
    - `amount`: +100 (positive = money in)
    - `type`: TRANSFER
-   - `linkedTransactionId`: points to Transaction 1
+   - `linkedTransactionCode`: points to shared code
 
 ## Features Implemented
 
@@ -45,7 +45,7 @@ When transferring money from Account A to Account B:
 
 3. **Database Schema**
    - Single `account_id` field per transaction (simplified from previous from/to model)
-   - `linked_transaction_id` for connecting transfer pairs
+   - `linkedTransactionCode` for connecting transfer pairs
    - `transfer_logic_check` constraint: transfers must have no category
 
 ### Frontend (Web)
@@ -74,10 +74,10 @@ The transfer is handled atomically within a database transaction:
    - Check that accounts belong to the same group
    - Ensure transfer amount is positive
 
-2. **Transaction Creation (Two-Phase)**
-   - **Phase 1**: Create first TRANSFER transaction with `linkedTransactionId: null`
-   - **Phase 2**: Create second TRANSFER transaction, linking back to first
-   - **Phase 3**: Update first transaction to link to second (bidirectional linking)
+2. **Transaction Creation (Linked Code)**
+   - **Phase 1**: Create first TRANSFER transaction with unique `linkedTransactionCode`
+   - **Phase 2**: Create second TRANSFER transaction with same `linkedTransactionCode`
+   - Both transactions share the same random code for linking
 
 3. **Balance Updates**
    - Update source account balance (subtract amount)
@@ -186,7 +186,7 @@ ws.request({
 - ✅ **Simplified UI logic** - no confusing "From/To" account filters
 
 ### Transfer Functionality Preserved
-- ✅ **Proper linking** - transfers maintain relationships via `linkedTransactionId`
+- ✅ **Proper linking** - transfers maintain relationships via `linkedTransactionCode`
 - ✅ **Balance integrity** - atomic updates to both accounts
 - ✅ **Smart display** - UI shows transfer direction intelligently
 - ✅ **Full audit trail** - both sides of transfer are tracked

@@ -4,6 +4,7 @@ import { AccountTransferEvent } from "@api/cqrs/events.ts"
 import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionType } from "@shared/types"
+import { getRandomString } from "@shared/helpers/random.ts"
 
 /**
  * Handler for transferring money between accounts
@@ -53,6 +54,9 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
         ? `Transfer: ${memo}`
         : `Transfer from ${fromAccount.name} to ${toAccount.name}`
 
+      // Generate a unique code to link the two transfer transactions
+      const linkedTransactionCode = getRandomString(10)
+
       // Create first TRANSFER transaction (from source account)
       const fromTransaction = await tx.transaction.createOne({
         data: {
@@ -65,7 +69,7 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           createdBy: userId,
           originalCurrencyId: undefined,
           originalAmount: 0,
-          linkedTransactionId: null, // Will be updated after creating the second transaction
+          linkedTransactionCode, // Link both transactions with the same code
         },
       })
 
@@ -81,18 +85,9 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           createdBy: userId,
           originalCurrencyId: undefined,
           originalAmount: 0,
-          linkedTransactionId: fromTransaction.id, // Link to the first transaction
+          linkedTransactionCode, // Link both transactions with the same code
         },
       })
-
-      // Update the first transaction to link back to the second
-      await tx.transaction.updateOne({
-        id: fromTransaction.id,
-        data: { linkedTransactionId: toTransaction.id },
-      })
-
-      // Update the fromTransaction object to reflect the linking
-      fromTransaction.linkedTransactionId = toTransaction.id
 
       // Update account balances
       const fromAccountUpdated = await tx.account.updateBalance(fromAccountId, -Math.abs(amount))

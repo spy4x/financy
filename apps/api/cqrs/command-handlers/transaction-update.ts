@@ -99,10 +99,16 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         )
 
         // If this is a transfer, update the linked transaction and its account balance
-        if (originalTransaction.linkedTransactionId) {
-          const linkedTransactionData = await tx.transaction.findOne({
-            id: originalTransaction.linkedTransactionId,
-          })
+        if (originalTransaction.linkedTransactionCode) {
+          const linkedTransactions = await tx.transaction.findByLinkedTransactionCode(
+            originalTransaction.linkedTransactionCode,
+            userId,
+          )
+
+          // Find the other transaction in the transfer pair (not the current one)
+          const linkedTransactionData = linkedTransactions.find(
+            (t) => t.id !== originalTransaction.id,
+          )
 
           if (linkedTransactionData) {
             // For the linked transaction, the amount should be the opposite sign
@@ -110,7 +116,7 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
             const linkedBalanceDiff = linkedAmount - (-originalAmount)
 
             linkedTransaction = await tx.transaction.updateOne({
-              id: originalTransaction.linkedTransactionId,
+              id: linkedTransactionData.id,
               data: { amount: linkedAmount },
             })
 
