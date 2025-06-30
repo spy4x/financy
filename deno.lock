@@ -10,10 +10,12 @@
     "jsr:@negrel/webpush@*": "0.3.0",
     "jsr:@std/assert@0.224": "0.224.0",
     "jsr:@std/assert@^1.0.12": "1.0.12",
+    "jsr:@std/async@^1.0.12": "1.0.13",
     "jsr:@std/bytes@0.224.0": "0.224.0",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/collections@^1.0.10": "1.0.10",
     "jsr:@std/data-structures@^1.0.6": "1.0.6",
+    "jsr:@std/dotenv@~0.225.5": "0.225.5",
     "jsr:@std/encoding@0.224.0": "0.224.0",
     "jsr:@std/encoding@^1.0.5": "1.0.9",
     "jsr:@std/expect@^1.0.15": "1.0.15",
@@ -25,6 +27,7 @@
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/testing@^1.0.11": "1.0.11",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.4_vite@6.3.5__picomatch@4.0.2_@types+node@22.15.15",
+    "npm:@playwright/test@^1.53.1": "1.53.1",
     "npm:@preact/preset-vite@^2.10.1": "2.10.1_@babel+core@7.27.4_vite@6.3.5__picomatch@4.0.2_preact@10.26.8_@types+node@22.15.15",
     "npm:@preact/signals-core@^1.9.0": "1.9.0",
     "npm:@preact/signals@^2.2.0": "2.2.0_preact@10.26.8",
@@ -33,6 +36,8 @@
     "npm:@tailwindcss/vite@4.1.8": "4.1.8_vite@6.3.5__picomatch@4.0.2__@types+node@22.15.15_@types+node@22.15.15",
     "npm:@types/node@*": "22.15.15",
     "npm:arktype@^2.1.20": "2.1.20",
+    "npm:playwright@*": "1.53.1",
+    "npm:playwright@^1.53.1": "1.53.1",
     "npm:preact@^10.26.2": "10.26.8",
     "npm:redis@*": "4.7.0_@redis+client@1.6.0",
     "npm:tailwindcss@4.1.8": "4.1.8",
@@ -83,6 +88,9 @@
         "jsr:@std/internal"
       ]
     },
+    "@std/async@1.0.13": {
+      "integrity": "1d76ca5d324aef249908f7f7fe0d39aaf53198e5420604a59ab5c035adc97c96"
+    },
     "@std/bytes@0.224.0": {
       "integrity": "a2250e1d0eb7d1c5a426f21267ab9bdeac2447fa87a3d0d1a467d3f7a6058e49"
     },
@@ -94,6 +102,9 @@
     },
     "@std/data-structures@1.0.6": {
       "integrity": "76a7fd8080c66604c0496220a791860492ab21a04a63a969c0b9a0609bbbb760"
+    },
+    "@std/dotenv@0.225.5": {
+      "integrity": "9ce6f9d0ec3311f74a32535aa1b8c62ed88b1ab91b7f0815797d77a6f60c922f"
     },
     "@std/encoding@0.224.0": {
       "integrity": "efb6dca97d3e9c31392bd5c8cfd9f9fc9decf5a1f4d1f78af7900a493bcf89b5"
@@ -133,6 +144,7 @@
       "integrity": "12b3db12d34f0f385a26248933bde766c0f8c5ad8b6ab34d4d38f528ab852f48",
       "dependencies": [
         "jsr:@std/assert@^1.0.12",
+        "jsr:@std/async",
         "jsr:@std/data-structures",
         "jsr:@std/fs",
         "jsr:@std/internal",
@@ -654,6 +666,13 @@
     },
     "@pkgjs/parseargs@0.11.0": {
       "integrity": "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="
+    },
+    "@playwright/test@1.53.1": {
+      "integrity": "sha512-Z4c23LHV0muZ8hfv4jw6HngPJkbbtZxTkxPNIg7cJcTc9C28N/p2q7g3JZS2SiKBBHJ3uM1dgDye66bB7LEk5w==",
+      "dependencies": [
+        "playwright"
+      ],
+      "bin": true
     },
     "@preact/preset-vite@2.10.1_@babel+core@7.27.4_vite@6.3.5__picomatch@4.0.2_preact@10.26.8": {
       "integrity": "sha512-59lyGBXNfZIr5OOuBUB4/IB8AqF/ULbvYnyItgK/2BJnsGJqaeaJobRVtMp1129obHQuj8oZ/dVxB9inmH8Xig==",
@@ -1381,6 +1400,11 @@
         "to-regex-range"
       ]
     },
+    "fsevents@2.3.2": {
+      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
+      "os": ["darwin"],
+      "scripts": true
+    },
     "fsevents@2.3.3": {
       "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
       "os": ["darwin"],
@@ -1678,6 +1702,20 @@
     "pify@2.3.0": {
       "integrity": "sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog=="
     },
+    "playwright-core@1.53.1": {
+      "integrity": "sha512-Z46Oq7tLAyT0lGoFx4DOuB1IA9D1TPj0QkYxpPVUnGDqHHvDpCftu1J2hM2PiWsNMoZh8+LQaarAWcDfPBc6zg==",
+      "bin": true
+    },
+    "playwright@1.53.1": {
+      "integrity": "sha512-LJ13YLr/ocweuwxyGf1XNFWIU4M2zUSo149Qbp+A4cpwDjsxRPj7k6H25LBrEHiEwxvRbD8HdwvQmRMSvquhYw==",
+      "dependencies": [
+        "playwright-core"
+      ],
+      "optionalDependencies": [
+        "fsevents@2.3.2"
+      ],
+      "bin": true
+    },
     "postcss-import@16.1.0_postcss@8.5.4": {
       "integrity": "sha512-7hsAZ4xGXl4MW+OKEWCnF6T5jqBw80/EE9aXg1r2yyn1RsVEU8EtKXbijEODa+rg7iih4bKf7vlvTGYR4CnPNg==",
       "dependencies": [
@@ -1773,7 +1811,7 @@
         "@rollup/rollup-win32-arm64-msvc@4.42.0",
         "@rollup/rollup-win32-ia32-msvc@4.42.0",
         "@rollup/rollup-win32-x64-msvc@4.42.0",
-        "fsevents"
+        "fsevents@2.3.3"
       ],
       "bin": true
     },
@@ -1931,7 +1969,7 @@
         "tinyglobby"
       ],
       "optionalDependencies": [
-        "fsevents"
+        "fsevents@2.3.3"
       ],
       "bin": true
     },
@@ -1947,7 +1985,7 @@
         "tinyglobby"
       ],
       "optionalDependencies": [
-        "fsevents"
+        "fsevents@2.3.3"
       ],
       "optionalPeers": [
         "@types/node"
@@ -2269,12 +2307,14 @@
       "jsr:@std/path@^1.0.3",
       "jsr:@std/testing@^1.0.11",
       "npm:@deno/vite-plugin@^1.0.4",
+      "npm:@playwright/test@^1.53.1",
       "npm:@preact/preset-vite@^2.10.1",
       "npm:@preact/signals-core@^1.9.0",
       "npm:@preact/signals@^2.2.0",
       "npm:@tailwindcss/forms@0.5.10",
       "npm:@tailwindcss/vite@4.1.8",
       "npm:arktype@^2.1.20",
+      "npm:playwright@^1.53.1",
       "npm:preact@^10.26.2",
       "npm:tailwindcss@4.1.8",
       "npm:vite@^6.1.1",

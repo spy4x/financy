@@ -69,6 +69,7 @@ export function Auth() {
                   type="text"
                   autocomplete="email"
                   class="input"
+                  data-e2e="login-email-input"
                   value={login.value}
                   onInput={(e) =>
                     e.target &&
@@ -87,6 +88,7 @@ export function Auth() {
                   type={isPasswordVisible.value ? "text" : "password"}
                   autocomplete="current-password"
                   class="input pr-11"
+                  data-e2e="login-password-input"
                   value={password.value}
                   onInput={(e) =>
                     e.target &&
@@ -146,6 +148,7 @@ export function Auth() {
                   submit(e)
                 }}
                 class="btn btn-primary w-full"
+                data-e2e="login-submit-button"
               >
                 Sign in
               </button>

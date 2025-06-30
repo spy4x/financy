@@ -66,6 +66,30 @@ deno task lint:fix        # Fix linting issues
 deno task fmt:fix         # Fix code formatting
 ```
 
+#### E2E Testing (for UI changes)
+
+When making UI changes or implementing new features, follow this testing workflow:
+
+```sh
+# 1. Implement your feature with proper data-e2e attributes
+# 2. Manual test with Playwright MCP (if available)
+# 3. Write E2E tests in e2e/{feature}/ directory
+# 4. Run E2E tests to validate
+deno task e2e
+```
+
+**Important**: All UI elements should have `data-e2e` attributes for reliable testing:
+
+```tsx
+// ✅ Good
+<button data-e2e="transaction-create-button">Create</button>
+<input data-e2e="transaction-amount-input" />
+
+// ❌ Avoid relying on text or CSS selectors in tests
+```
+
+See [E2E Testing Guidelines](docs/e2e-testing-guidelines.md) for detailed instructions.
+
 ### Development Guidelines
 
 #### Code Style

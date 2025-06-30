@@ -38,6 +38,8 @@
     "lint:check": "deno lint",
     "ts:check": "deno check **/*.ts",
     "test": "deno test",
+    "e2e": "PLAYWRIGHT_HTML_OUTPUT_DIR=./e2e/report deno run -A --node-modules-dir npm:playwright test",
+    "e2e:report": "PLAYWRIGHT_HTML_OUTPUT_DIR=./e2e/report deno run -A --node-modules-dir npm:playwright show-report",
     "fix": {
       "command": "echo 'Fixes applied!'",
       "description": "Run all fixes",
@@ -113,6 +115,8 @@
     "@std/testing": "jsr:@std/testing@^1.0.11",
     "@std/encoding": "jsr:@std/encoding@^1.0.5",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
+    "@playwright/test": "npm:@playwright/test@^1.53.1",
+    "playwright": "npm:playwright@^1.53.1",
 
     // shared/types
     "arktype": "npm:arktype@^2.1.20",

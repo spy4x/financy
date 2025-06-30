@@ -7,6 +7,8 @@ type Props = {
   trigger: ComponentChildren
   /** CSS classes for the trigger button element */
   triggerClasses?: string
+  /** Data-e2e attribute for the trigger button */
+  triggerDataE2E?: string
   /** CSS classes for the root container element */
   containerClasses?: string
   /** Additional CSS classes for the dropdown panel */
@@ -23,6 +25,7 @@ export function Dropdown(
   {
     trigger,
     triggerClasses,
+    triggerDataE2E,
     containerClasses,
     panelClasses,
     children,
@@ -61,6 +64,7 @@ export function Dropdown(
         onClick={() => isOpen.value = !isOpen.value}
         type="button"
         class={triggerClasses ?? "btn-input-icon"}
+        data-e2e={triggerDataE2E}
         aria-expanded="true"
         aria-haspopup="true"
       >

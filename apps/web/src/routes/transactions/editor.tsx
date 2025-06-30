@@ -384,6 +384,7 @@ export function TransactionEditor() {
                         type="radio"
                         checked={type.value === TransactionType.DEBIT}
                         class="radio"
+                        data-e2e="transaction-type-debit"
                         onChange={() => {
                           type.value = TransactionType.DEBIT
                           // Clear category selection when switching type to ensure proper filtering
@@ -402,6 +403,7 @@ export function TransactionEditor() {
                         type="radio"
                         checked={type.value === TransactionType.CREDIT}
                         class="radio"
+                        data-e2e="transaction-type-credit"
                         onChange={() => {
                           type.value = TransactionType.CREDIT
                           // Clear category selection when switching type to ensure proper filtering
@@ -420,6 +422,7 @@ export function TransactionEditor() {
                         type="radio"
                         checked={type.value === TransactionType.TRANSFER}
                         class="radio"
+                        data-e2e="transaction-type-transfer"
                         onChange={() => {
                           type.value = TransactionType.TRANSFER
                           // Clear category for transfers
@@ -480,6 +483,7 @@ export function TransactionEditor() {
                   <select
                     id="account"
                     class="input"
+                    data-e2e="transaction-from-account-select"
                     value={accountId.value || ""}
                     onChange={(e) => {
                       const value = e.currentTarget.value
@@ -512,6 +516,7 @@ export function TransactionEditor() {
                     <select
                       id="toAccount"
                       class="input"
+                      data-e2e="transaction-to-account-select"
                       value={toAccountId.value || ""}
                       onChange={(e) => {
                         const value = e.currentTarget.value
@@ -546,6 +551,7 @@ export function TransactionEditor() {
                     type="number"
                     id="amount"
                     class="input"
+                    data-e2e="transaction-amount-input"
                     placeholder="0.00"
                     value={amount.value}
                     onInput={(e) => amount.value = e.currentTarget.value}
@@ -604,6 +610,7 @@ export function TransactionEditor() {
                     type="datetime-local"
                     id="timestamp"
                     class="input"
+                    data-e2e="transaction-timestamp-input"
                     value={timestamp.value}
                     onInput={(e) => timestamp.value = e.currentTarget.value}
                     required
@@ -619,6 +626,7 @@ export function TransactionEditor() {
                   <textarea
                     id="memo"
                     class="input"
+                    data-e2e="transaction-memo-input"
                     placeholder={type.value === TransactionType.TRANSFER
                       ? "Notes about this transfer..."
                       : "Notes about this transaction..."}
@@ -641,6 +649,7 @@ export function TransactionEditor() {
             <button
               type="submit"
               class="btn btn-primary"
+              data-e2e="transaction-submit-button"
               disabled={!accountId.value ||
                 (type.value !== TransactionType.TRANSFER && !categoryId.value) ||
                 (type.value === TransactionType.TRANSFER && !toAccountId.value) ||

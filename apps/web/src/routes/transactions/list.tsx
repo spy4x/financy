@@ -168,6 +168,7 @@ export function TransactionList() {
                 </>
               }
               triggerClasses="btn btn-primary-outline flex items-center gap-2"
+              triggerDataE2E="transaction-filter-button"
               panelClasses="left-0 right-auto"
               horizontal="left"
             >
@@ -333,6 +334,7 @@ export function TransactionList() {
             <Link
               href={routes.transactions.children!.create.href}
               class="btn btn-primary flex items-center gap-2"
+              data-e2e="transaction-create-button"
             >
               <IconPlus class="size-5" />
               <span class="hidden md:inline">Create</span>
@@ -341,6 +343,7 @@ export function TransactionList() {
 
           {filteredTransactions.value.length > 0 && (
             <Table
+              rowDataE2E="transaction-row"
               headerSlot={
                 <>
                   <th class="text-left">Date</th>
@@ -543,7 +546,11 @@ export function TransactionList() {
                     <td class="whitespace-nowrap text-right text-sm font-medium">
                       <Dropdown
                         trigger={
-                          <span class="text-gray-400 hover:text-gray-600 p-2" title="More actions">
+                          <span
+                            class="text-gray-400 hover:text-gray-600 p-2"
+                            title="More actions"
+                            data-e2e="transaction-actions-button"
+                          >
                             <IconEllipsisVertical class="size-5" />
                           </span>
                         }
@@ -558,6 +565,7 @@ export function TransactionList() {
                               txn.id.toString(),
                             )}
                             class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            data-e2e="transaction-edit-link"
                           >
                             <IconPencilSquare class="size-4 mr-2" />
                             Edit

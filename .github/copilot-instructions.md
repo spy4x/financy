@@ -115,8 +115,8 @@ class MyEvent implements Event<MyEventPayload> {
 
 ## Testing & Performance
 
-- Use Deno's built-in testing framework
-- Test multi-currency and role-based access
+- Use Deno's built-in testing framework for unit tests and Playwright for end-to-end tests
+- Test multi-currency and role-based access scenarios
 - Cache frequently accessed data (Valkey)
 - Optimize for mobile-first PWA
 - Implement proper database indexes
@@ -211,9 +211,9 @@ For testing the application's behavior and functionality, use the #playwright MC
 await page.goto("http://mk.localhost")
 
 // Sign in with test credentials
-await page.fill('[data-testid="email-input"]', "test@test.com")
-await page.fill('[data-testid="password-input"]', "pass1234")
-await page.click('[data-testid="sign-in-button"]')
+await page.fill('[data-e2e="email-input"]', "test@test.com")
+await page.fill('[data-e2e="password-input"]', "pass1234")
+await page.click('[data-e2e="sign-in-button"]')
 
 // Test specific functionality as needed
 ```
@@ -239,3 +239,10 @@ Use Playwright MCP whenever you need to:
 5. Validate security implications and permissions
 6. Update documentation as needed
 7. Run `deno task fix-n-check` to ensure all quality checks pass
+8. Ensure all new UI elements have `data-e2e` attributes
+9. Complete manual testing with Playwright MCP
+10. Write E2E tests for new functionality
+11. Verify all tests pass with `deno task e2e`
+12. Ensure test performance is very fast or fail fast (ideally under 2 seconds)
+13. Handle test data cleanup (use unique identifiers)
+14. Verify code follows established patterns and conventions
