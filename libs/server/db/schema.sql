@@ -80,6 +80,9 @@ CREATE TABLE user_keys (
 
 COMMENT ON COLUMN user_keys.kind IS '1=login_password, 2=username_2fa_connecting, 3=username_2fa_completed';
 
+CREATE INDEX idx_user_keys_by_user_id ON user_keys (user_id);
+CREATE INDEX idx_user_keys_by_identification ON user_keys (identification);
+
 CREATE TABLE user_sessions (
     id SERIAL PRIMARY KEY,
     token VARCHAR(256) NOT NULL,
@@ -95,6 +98,9 @@ CREATE TABLE user_sessions (
 COMMENT ON COLUMN user_sessions.mfa IS '1=not_required, 2=not_passed_yet, 3=completed';
 COMMENT ON COLUMN user_sessions.status IS '1=active, 2=expired, 3=signed_out';
 
+CREATE INDEX idx_user_sessions_by_user_id ON user_sessions (user_id);
+CREATE INDEX idx_user_sessions_by_expires_at ON user_sessions (expires_at);
+
 CREATE TABLE user_push_tokens (
     id SERIAL PRIMARY KEY,
     user_id INT4 REFERENCES users(id),
@@ -106,6 +112,10 @@ CREATE TABLE user_push_tokens (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMPTZ
 );
+
+CREATE INDEX idx_user_push_tokens_by_deleted_at ON user_push_tokens (deleted_at);
+CREATE INDEX idx_user_push_tokens_by_user_id_deleted_at ON user_push_tokens (user_id, deleted_at);
+CREATE INDEX idx_user_push_tokens_by_device_user ON user_push_tokens (device_id, user_id);
 
 -- -----------------------------------------------------------------------------
 -- Independent tables
@@ -129,7 +139,6 @@ COMMENT ON COLUMN currencies.type IS '1=fiat, 2=crypto';
 COMMENT ON COLUMN currencies.decimal_places IS 'Number of decimal places for display and calculations (e.g., JPY=0, USD=2, BHD=3, BTC=8)';
 
 CREATE INDEX idx_currencies_by_code ON currencies (code);
-CREATE INDEX idx_currencies_by_type ON currencies (type);
 
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
@@ -151,8 +160,6 @@ CREATE TABLE exchange_rates (
 
 COMMENT ON COLUMN exchange_rates.pair IS 'Ex: USDUSD, USDEUR';
 
-CREATE INDEX idx_exchange_rates_by_pair ON exchange_rates (pair);
-
 -- -----------------------------------------------------------------------------
 -- Financial management tables
 -- -----------------------------------------------------------------------------
@@ -168,7 +175,6 @@ CREATE TABLE groups (
 COMMENT ON COLUMN groups.currency_id IS 'Default currency for the group (FK to currencies table)';
 
 CREATE INDEX idx_groups_sync_retrieval ON groups (updated_at DESC);
-CREATE INDEX idx_groups_by_currency ON groups (currency_id);
 
 CREATE TABLE group_memberships (
     id SERIAL PRIMARY KEY,
@@ -200,7 +206,6 @@ COMMENT ON COLUMN accounts.currency_id IS 'Account currency (FK to currencies ta
 COMMENT ON COLUMN accounts.balance IS 'Stored in smallest currency unit';
 
 CREATE INDEX idx_accounts_sync_retrieval ON accounts (updated_at DESC);
-CREATE INDEX idx_accounts_by_currency ON accounts (currency_id);
 
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
@@ -221,7 +226,6 @@ COMMENT ON COLUMN categories.icon IS 'Emoji or icon identifier (max 10 chars)';
 COMMENT ON COLUMN categories.color IS 'Hex color code (e.g., #FF5733)';
 
 CREATE INDEX idx_categories_by_group ON categories (group_id);
-CREATE INDEX idx_categories_by_type ON categories (type);
 
 CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
@@ -257,11 +261,8 @@ COMMENT ON COLUMN transactions.timestamp IS 'User-editable transaction timestamp
 
 CREATE INDEX idx_transactions_sync_retrieval ON transactions (updated_at DESC);
 CREATE INDEX idx_transactions_by_group ON transactions (group_id);
-CREATE INDEX idx_transactions_by_creator ON transactions (created_by);
-CREATE INDEX idx_transactions_by_original_currency ON transactions (original_currency_id);
 CREATE INDEX idx_transactions_by_account ON transactions (account_id);
 CREATE INDEX idx_transactions_linked_transaction_code ON transactions(linked_transaction_code) WHERE linked_transaction_code IS NOT NULL;
-CREATE INDEX idx_transactions_type ON transactions(type);
 CREATE INDEX idx_transactions_by_timestamp ON transactions (timestamp DESC);
 
 CREATE TABLE transactions_to_tags (
@@ -272,6 +273,3 @@ CREATE TABLE transactions_to_tags (
     deleted_at TIMESTAMPTZ,
     PRIMARY KEY (transaction_id, tag_id)
 );
-
-CREATE INDEX idx_transactions_to_tags_by_tag ON transactions_to_tags (tag_id);
-CREATE INDEX idx_transactions_to_tags_by_transaction ON transactions_to_tags (transaction_id);

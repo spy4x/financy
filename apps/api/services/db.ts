@@ -31,6 +31,7 @@ import { publicAPICache } from "./cache.ts"
 
 export class DbService extends DbServiceBase {
   user = {
+    // buildMethods generates: findOne (PK), findChanged (no sync index), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<User, UserBase, Partial<UserBase>>(`users`, publicAPICache.user),
     findMany: async (): Promise<User[]> => {
       return this.sql<User[]>`
@@ -78,6 +79,7 @@ export class DbService extends DbServiceBase {
     findMany: async (params: {
       userId?: number
     }): Promise<UserSession[]> => {
+      // INDEX: idx_user_sessions_by_user_id (for user_id filter)
       return await this.sql<
         UserSession[]
       >`SELECT * FROM user_sessions 
@@ -107,6 +109,7 @@ export class DbService extends DbServiceBase {
       ids?: number[]
       data: Partial<UserSessionBase>
     }): Promise<UserSession[]> => {
+      // INDEX: idx_user_sessions_by_user_id (for user_id), idx_user_sessions_by_expires_at (for expires_at)
       return (
         await this.sql<UserSession[]>`
             UPDATE user_sessions
@@ -131,6 +134,7 @@ export class DbService extends DbServiceBase {
       kind?: UserKeyKind
       identification?: string
     }): Promise<null | UserKey> => {
+      // INDEX: idx_user_keys_by_user_id (for user_id), idx_user_keys_by_identification (for identification)
       const found = (
         await this.sql<UserKey[]>`
             SELECT *
@@ -161,6 +165,7 @@ export class DbService extends DbServiceBase {
       userId?: number
       kind?: UserKeyKind
     }): Promise<UserKey[]> => {
+      // INDEX: idx_user_keys_by_user_id (for user_id filter)
       return await this.sql<UserKey[]>`
         SELECT *
         FROM user_keys
@@ -215,6 +220,7 @@ export class DbService extends DbServiceBase {
 
   userPushToken = {
     findAll: async (): Promise<UserPushToken[]> => {
+      // INDEX: idx_user_push_tokens_by_deleted_at (for deleted_at IS NULL filter)
       return await this.sql<UserPushToken[]>`
         SELECT *
         FROM user_push_tokens
@@ -224,6 +230,7 @@ export class DbService extends DbServiceBase {
     findMany: async (params: {
       userId: number
     }): Promise<UserPushToken[]> => {
+      // INDEX: idx_user_push_tokens_by_user_id_deleted_at (for user_id + deleted_at filter)
       return await this.sql<UserPushToken[]>`
         SELECT *
         FROM user_push_tokens
@@ -233,6 +240,7 @@ export class DbService extends DbServiceBase {
     findOne: async (
       { deviceId, userId }: { deviceId: string; userId: number },
     ): Promise<null | UserPushToken> => {
+      // INDEX: idx_user_push_tokens_by_device_user (for device_id + user_id filter)
       return (
         await this.sql<
           UserPushToken[]
@@ -260,6 +268,7 @@ export class DbService extends DbServiceBase {
       )[0]
     },
     deleteOne: async (params: { deviceId: string; userId?: number }): Promise<void> => {
+      // INDEX: idx_user_push_tokens_by_device_user (for device_id filter), idx_user_push_tokens_by_user_id_deleted_at (if userId provided)
       await this.sql<UserPushToken[]>`
         UPDATE user_push_tokens
           SET updated_at = NOW(), deleted_at = NOW()
@@ -269,6 +278,7 @@ export class DbService extends DbServiceBase {
           RETURNING *`
     },
     deleteByUser: async (params: { userId: number }): Promise<void> => {
+      // INDEX: idx_user_push_tokens_by_user_id_deleted_at (for user_id filter)
       await this.sql<UserPushToken[]>`
             UPDATE user_push_tokens
             SET updated_at = NOW(), deleted_at = NOW()
@@ -278,11 +288,13 @@ export class DbService extends DbServiceBase {
   }
 
   group = {
+    // buildMethods generates: findOne (PK), findChanged (idx_groups_sync_retrieval), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<Group, GroupBase, Partial<GroupBase>>(
       `groups`,
       publicAPICache.group,
     ),
     findMany: async (userId: number): Promise<Group[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter and join)
       return this.sql<Group[]>`
         SELECT g.*
         FROM groups g
@@ -293,6 +305,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Group[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter), idx_groups_sync_retrieval (for g.updated_at filter)
       return this.sql<Group[]>`
         SELECT g.*
         FROM groups g
@@ -306,11 +319,13 @@ export class DbService extends DbServiceBase {
   }
 
   groupMembership = {
+    // buildMethods generates: findOne (PK), findChanged (no sync index needed), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<GroupMembership, GroupMembershipBase, Partial<GroupMembershipBase>>(
       `group_memberships`,
       publicAPICache.groupMembership,
     ),
     findMany: async (userId: number): Promise<GroupMembership[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter)
       return this.sql<GroupMembership[]>`
         SELECT gm.*
         FROM group_memberships gm
@@ -319,6 +334,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<GroupMembership[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter)
       return this.sql<GroupMembership[]>`
         SELECT gm.*
         FROM group_memberships gm
@@ -331,6 +347,7 @@ export class DbService extends DbServiceBase {
       userId: number,
       groupId: number,
     ): Promise<GroupMembership | null> => {
+      // INDEX: idx_memberships_by_user_group (for user_id + group_id filter)
       const results = await this.sql<GroupMembership[]>`
         SELECT gm.*
         FROM group_memberships gm
@@ -342,6 +359,7 @@ export class DbService extends DbServiceBase {
       return results[0] || null
     },
     findUserIdsByGroup: async (groupId: number): Promise<number[]> => {
+      // INDEX: idx_memberships_by_group (for gm.group_id filter)
       const results = await this.sql<{ user_id: number }[]>`
         SELECT gm.user_id
         FROM group_memberships gm
@@ -353,11 +371,13 @@ export class DbService extends DbServiceBase {
   }
 
   account = {
+    // buildMethods generates: findOne (PK), findChanged (idx_accounts_sync_retrieval), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<Account, AccountBase, Partial<AccountBase>>(
       `accounts`,
       publicAPICache.account,
     ),
     findMany: async (userId: number): Promise<Account[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter and joins)
       return this.sql<Account[]>`
         SELECT a.*
         FROM accounts a
@@ -369,6 +389,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Account[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter), idx_accounts_sync_retrieval (for a.updated_at filter)
       return this.sql<Account[]>`
         SELECT a.*
         FROM accounts a
@@ -409,11 +430,13 @@ export class DbService extends DbServiceBase {
   }
 
   category = {
+    // buildMethods generates: findOne (PK), findChanged (no sync index needed), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<Category, CategoryBase, Partial<CategoryBase>>(
       `categories`,
       publicAPICache.category,
     ),
     findMany: async (userId: number): Promise<Category[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter), idx_categories_by_group (for c.group_id join)
       return this.sql<Category[]>`
         SELECT c.*
         FROM categories c
@@ -425,6 +448,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Category[]> => {
+      // INDEX: idx_memberships_by_user_group (for gm.user_id filter), idx_categories_by_group (for c.group_id join)
       return this.sql<Category[]>`
         SELECT c.*
         FROM categories c
@@ -465,8 +489,10 @@ export class DbService extends DbServiceBase {
   }
 
   tag = {
+    // buildMethods generates: findOne (PK), findChanged (no sync index needed), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<Tag, TagBase, Partial<TagBase>>(`tags`, publicAPICache.tag),
     findMany: async (_userId: number): Promise<Tag[]> => {
+      // TODO: add group_id scoping
       // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
       // -- WHERE t.user_id = ${userId} -- TODO: create tags.group_id
       return this.sql<Tag[]>`
@@ -476,6 +502,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, _userId: number): Promise<Tag[]> => {
+      // TODO: add group_id scoping
       // -- JOIN groups g ON t.group_id = g.id -- TODO: create tags.group_id
       // -- AND t.user_id = ${userId} -- TODO: create tags.group_id
       return this.sql<Tag[]>`
@@ -489,11 +516,13 @@ export class DbService extends DbServiceBase {
   }
 
   transaction = {
+    // buildMethods generates: findOne (PK), findChanged (idx_transactions_sync_retrieval), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<Transaction, TransactionCreate, Partial<TransactionCreate>>(
       `transactions`,
       publicAPICache.transaction,
     ),
     findMany: async (userId: number): Promise<Transaction[]> => {
+      // INDEX: idx_transactions_by_group (for t.group_id IN subquery), idx_memberships_by_user_group (for subquery)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -507,6 +536,7 @@ export class DbService extends DbServiceBase {
       linkedTransactionCode: string,
       userId: number,
     ): Promise<Transaction[]> => {
+      // INDEX: idx_transactions_linked_transaction_code (for linked_transaction_code), idx_transactions_by_group (for group_id IN subquery)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -518,6 +548,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findByGroup: async (groupId: number, _userId: number): Promise<Transaction[]> => {
+      // INDEX: idx_transactions_by_group (for t.group_id filter)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -526,6 +557,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findByAccount: async (accountId: number, userId: number): Promise<Transaction[]> => {
+      // INDEX: idx_transactions_by_account (for t.account_id filter), idx_transactions_by_group (for group_id IN subquery)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -538,6 +570,7 @@ export class DbService extends DbServiceBase {
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Transaction[]> => {
+      // INDEX: idx_transactions_sync_retrieval (for t.updated_at filter), idx_transactions_by_group (for group_id IN subquery)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -598,12 +631,14 @@ export class DbService extends DbServiceBase {
   }
 
   currency = {
+    // buildMethods generates: findOne (PK), findChanged (no sync index needed), createOne, updateOne, deleteOne, undeleteOne (PK)
     ...this.buildMethods<Currency, CurrencyBase, Partial<CurrencyBase>>(
       `currencies`,
       publicAPICache.currency,
     ),
     // Override findMany to support global currency data (no userId filtering)
     findMany: async (): Promise<Currency[]> => {
+      // INDEX: idx_currencies_by_code (for ORDER BY code)
       return this.sql<Currency[]>`
         SELECT * FROM currencies 
         WHERE deleted_at IS NULL 
