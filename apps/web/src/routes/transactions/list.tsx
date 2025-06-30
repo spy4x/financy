@@ -82,18 +82,18 @@ export function TransactionList() {
     if (filter.from.value) {
       const fromDate = new Date(filter.from.value)
       fromDate.setHours(0, 0, 0, 0) // Start of day
-      filtered = filtered.filter((txn) => new Date(txn.createdAt) >= fromDate)
+      filtered = filtered.filter((txn) => new Date(txn.timestamp).getTime() >= fromDate.getTime())
     }
 
     if (filter.to.value) {
       const toDate = new Date(filter.to.value)
       toDate.setHours(23, 59, 59, 999) // End of day
-      filtered = filtered.filter((txn) => new Date(txn.createdAt) <= toDate)
+      filtered = filtered.filter((txn) => new Date(txn.timestamp).getTime() <= toDate.getTime())
     }
 
-    // Sort by creation date (newest first)
+    // Sort by transaction timestamp (newest first)
     return filtered.sort((a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
   })
 
@@ -364,11 +364,11 @@ export function TransactionList() {
                           isDeleted ? "line-through" : "text-gray-900 dark:text-gray-100"
                         }`}
                       >
-                        {new Date(txn.createdAt).toLocaleDateString()}
+                        {new Date(txn.timestamp).toLocaleDateString()}
                         {isDeleted && <span class="ml-2 text-xs">(Deleted)</span>}
                       </div>
                       <div class="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(txn.createdAt).toLocaleTimeString()}
+                        {new Date(txn.timestamp).toLocaleTimeString()}
                       </div>
                     </td>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>

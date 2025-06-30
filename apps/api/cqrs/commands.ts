@@ -293,6 +293,7 @@ export interface AccountTransferPayload {
   toAccountId: number
   amount: number
   memo?: string
+  timestamp?: Date // Optional transaction timestamp, defaults to now
   userId: number
   acknowledgmentId?: string
 }

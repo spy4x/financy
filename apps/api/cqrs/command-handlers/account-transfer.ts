@@ -12,7 +12,8 @@ import { getRandomString } from "@shared/helpers/random.ts"
  * No categories are used - transfers don't affect profit/loss reporting
  */
 export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = async (command) => {
-  const { fromAccountId, toAccountId, amount, memo, userId, acknowledgmentId } = command.data
+  const { fromAccountId, toAccountId, amount, memo, timestamp, userId, acknowledgmentId } =
+    command.data
 
   console.log(
     `Transferring ${amount} from account ${fromAccountId} to ${toAccountId} for user ${userId}...`,
@@ -66,6 +67,7 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           type: TransactionType.TRANSFER,
           amount: -Math.abs(amount), // Negative amount (money out)
           memo: transferMemo,
+          timestamp: timestamp || new Date(), // Use provided timestamp or current time
           createdBy: userId,
           originalCurrencyId: undefined,
           originalAmount: 0,
@@ -82,6 +84,7 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           type: TransactionType.TRANSFER,
           amount: Math.abs(amount), // Positive amount (money in)
           memo: transferMemo,
+          timestamp: timestamp || new Date(), // Use provided timestamp or current time
           createdBy: userId,
           originalCurrencyId: undefined,
           originalAmount: 0,

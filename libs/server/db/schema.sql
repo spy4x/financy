@@ -235,6 +235,7 @@ CREATE TABLE transactions (
     category_id INT4 REFERENCES categories(id),
     created_by INT4 NOT NULL REFERENCES users(id),
     memo TEXT CHECK (LENGTH(memo) <= 500),
+    timestamp TIMESTAMPTZ DEFAULT now() NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ,
@@ -252,6 +253,7 @@ COMMENT ON COLUMN transactions.original_currency_id IS 'Original currency from v
 COMMENT ON COLUMN transactions.original_amount IS 'Original amount in vendor''s currency';
 COMMENT ON COLUMN transactions.category_id IS 'Transaction category (NULL for transfers)';
 COMMENT ON COLUMN transactions.memo IS 'Additional notes (max 500 characters)';
+COMMENT ON COLUMN transactions.timestamp IS 'User-editable transaction timestamp (when the transaction actually occurred)';
 
 CREATE INDEX idx_transactions_sync_retrieval ON transactions (updated_at DESC);
 CREATE INDEX idx_transactions_by_group ON transactions (group_id);
@@ -260,6 +262,7 @@ CREATE INDEX idx_transactions_by_original_currency ON transactions (original_cur
 CREATE INDEX idx_transactions_by_account ON transactions (account_id);
 CREATE INDEX idx_transactions_linked_transaction_code ON transactions(linked_transaction_code) WHERE linked_transaction_code IS NOT NULL;
 CREATE INDEX idx_transactions_type ON transactions(type);
+CREATE INDEX idx_transactions_by_timestamp ON transactions (timestamp DESC);
 
 CREATE TABLE transactions_to_tags (
     transaction_id INT4 NOT NULL REFERENCES transactions(id) ON DELETE CASCADE,

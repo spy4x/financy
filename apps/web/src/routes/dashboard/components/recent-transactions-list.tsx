@@ -21,7 +21,7 @@ export function RecentTransactionsList() {
         txn.groupId === group.selectedId.value &&
         !txn.deletedAt
       )
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 10) // Show latest 10 transactions
   )
 
@@ -133,7 +133,7 @@ export function RecentTransactionsList() {
         bodySlots={recentTransactions.value.map((txn, index) => (
           <>
             <td class="text-gray-900">
-              {formatDate(txn.createdAt)}
+              {formatDate(txn.timestamp)}
             </td>
             <td class="text-gray-900">
               <div class="max-w-xs truncate" title={txn.memo || "No description"}>

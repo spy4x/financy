@@ -15,7 +15,7 @@ export function CategorySpendingBreakdown() {
 
     return transaction.list.value
       .filter((txn) => {
-        const txnDate = new Date(txn.createdAt)
+        const txnDate = new Date(txn.timestamp)
         return (
           txn.groupId === group.selectedId.value &&
           txn.type === TransactionType.DEBIT && // Only debit transactions for spending

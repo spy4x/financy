@@ -108,7 +108,13 @@ export const account = {
     account.ops.update.value = { inProgress: true, error: null }
     ws.request({ message: { e: "account", t: WebSocketMessageType.UNDELETE, p: [{ id }] } })
   },
-  transfer(fromAccountId: number, toAccountId: number, amount: number, memo?: string) {
+  transfer(
+    fromAccountId: number,
+    toAccountId: number,
+    amount: number,
+    memo?: string,
+    timestamp?: Date,
+  ) {
     // TODO: Add transfer operation state tracking if needed
     ws.request({
       message: {
@@ -119,6 +125,7 @@ export const account = {
           toAccountId,
           amount,
           memo,
+          timestamp,
         }],
       },
     })

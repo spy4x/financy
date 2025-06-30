@@ -135,6 +135,29 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         accountUpdated = account
       }
 
+      // Handle timestamp updates for linked transactions (transfers)
+      if (correctedUpdates.timestamp !== undefined && originalTransaction.linkedTransactionCode) {
+        const linkedTransactions = await tx.transaction.findByLinkedTransactionCode(
+          originalTransaction.linkedTransactionCode,
+          userId,
+        )
+
+        // Update timestamp of all linked transactions (excluding the current one)
+        for (const linkedTxn of linkedTransactions) {
+          if (linkedTxn.id !== originalTransaction.id) {
+            await tx.transaction.updateOne({
+              id: linkedTxn.id,
+              data: { timestamp: correctedUpdates.timestamp },
+            })
+
+            // Update linkedTransaction if it was already set for amount updates
+            if (linkedTransaction && linkedTransaction.id === linkedTxn.id) {
+              linkedTransaction = { ...linkedTransaction, timestamp: correctedUpdates.timestamp }
+            }
+          }
+        }
+      }
+
       return {
         transaction,
         originalTransaction,

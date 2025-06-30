@@ -535,6 +535,7 @@ export const transactionBaseSchema = type({
   groupId: "number > 0",
   accountId: "number > 0",
   "linkedTransactionCode?": "string <= 10 | null", // For linking transfer pairs
+  timestamp: dateSchema.default(() => new Date()),
 })
 export type TransactionBase = typeof transactionBaseSchema.infer
 export const transactionCreateSchema = transactionBaseSchema.and(type({
@@ -553,6 +554,7 @@ export const transactionUpdateSchema = transactionSchema.pick(
   "originalAmount",
   "accountId",
   "linkedTransactionCode",
+  "timestamp",
 )
 export type TransactionUpdate = typeof transactionUpdateSchema.infer
 // #endregion Transaction

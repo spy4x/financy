@@ -38,7 +38,7 @@ export function TransactionEditor() {
   const memo = useSignal("")
   const originalCurrencyId = useSignal<number | null>(null)
   const originalAmount = useSignal("")
-  const createdAt = useSignal("")
+  const timestamp = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -157,8 +157,8 @@ export function TransactionEditor() {
           originalAmount.value = existingTransaction.originalAmount
             ? formatCentsToInput(Math.abs(existingTransaction.originalAmount))
             : ""
-          // Format createdAt as datetime-local input value (YYYY-MM-DDTHH:mm)
-          createdAt.value = new Date(existingTransaction.createdAt).toISOString().slice(0, 16)
+          // Format timestamp as datetime-local input value (YYYY-MM-DDTHH:mm)
+          timestamp.value = new Date(existingTransaction.timestamp).toISOString().slice(0, 16)
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -179,7 +179,7 @@ export function TransactionEditor() {
         originalCurrencyId.value = null
         originalAmount.value = ""
         // Default to current date and time
-        createdAt.value = new Date().toISOString().slice(0, 16)
+        timestamp.value = new Date().toISOString().slice(0, 16)
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -304,12 +304,14 @@ export function TransactionEditor() {
         memo?: string
         originalCurrencyId?: number
         originalAmount?: number
+        timestamp?: Date
       } = {
         type: type.value,
         amount: signedAmount,
         memo: memo.value.trim() || undefined,
         originalCurrencyId: originalCurrencyId.value || undefined,
         originalAmount: signedOriginalAmount,
+        timestamp: new Date(timestamp.value),
       }
 
       // For transfers, handle accountId correctly based on whether the UI was swapped
@@ -334,6 +336,7 @@ export function TransactionEditor() {
           toAccountId.value!,
           Math.abs(signedAmount),
           memo.value.trim() || undefined,
+          new Date(timestamp.value),
         )
       } else {
         // For regular transactions, create with required fields
@@ -346,6 +349,7 @@ export function TransactionEditor() {
           memo: memo.value.trim() || undefined,
           originalCurrencyId: originalCurrencyId.value || undefined,
           originalAmount: signedOriginalAmount,
+          timestamp: new Date(timestamp.value),
         })
       }
     }
@@ -592,16 +596,16 @@ export function TransactionEditor() {
               )}
 
               <div class="sm:col-span-2">
-                <label for="createdAt" class="label">
+                <label for="timestamp" class="label">
                   Date & Time:
                 </label>
                 <div class="mt-2">
                   <input
                     type="datetime-local"
-                    id="createdAt"
+                    id="timestamp"
                     class="input"
-                    value={createdAt.value}
-                    onInput={(e) => createdAt.value = e.currentTarget.value}
+                    value={timestamp.value}
+                    onInput={(e) => timestamp.value = e.currentTarget.value}
                     required
                   />
                 </div>
@@ -641,7 +645,7 @@ export function TransactionEditor() {
                 (type.value !== TransactionType.TRANSFER && !categoryId.value) ||
                 (type.value === TransactionType.TRANSFER && !toAccountId.value) ||
                 !amount.value.trim() ||
-                !createdAt.value}
+                !timestamp.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editTransactionId ? "Update" : "Create"}

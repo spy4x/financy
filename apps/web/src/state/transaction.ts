@@ -91,6 +91,7 @@ export const transaction = {
     memo?: string
     originalCurrencyId?: number
     originalAmount?: number
+    timestamp?: Date
   }) {
     transaction.ops.create.value = { inProgress: true, error: null }
     ws.request({
@@ -109,6 +110,7 @@ export const transaction = {
     memo?: string
     originalCurrencyId?: number
     originalAmount?: number
+    timestamp?: Date
   }) {
     transaction.ops.update.value = { inProgress: true, error: null }
     ws.request({

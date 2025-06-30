@@ -17,8 +17,8 @@ export function MonthlySpendingTrends() {
       const monthTransactions = transaction.list.value
         .filter((txn) =>
           txn.groupId === group.selectedId.value &&
-          new Date(txn.createdAt) >= monthDate &&
-          new Date(txn.createdAt) < nextMonthDate &&
+          new Date(txn.timestamp) >= monthDate &&
+          new Date(txn.timestamp) < nextMonthDate &&
           !txn.deletedAt
         )
 

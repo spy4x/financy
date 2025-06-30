@@ -13,7 +13,7 @@ export function CashFlowSummary() {
 
     return transaction.list.value
       .filter((txn) => {
-        const txnDate = new Date(txn.createdAt)
+        const txnDate = new Date(txn.timestamp)
         return (
           txn.groupId === group.selectedId.value &&
           txnDate >= startOfMonth &&
@@ -31,7 +31,7 @@ export function CashFlowSummary() {
 
     return transaction.list.value
       .filter((txn) => {
-        const txnDate = new Date(txn.createdAt)
+        const txnDate = new Date(txn.timestamp)
         return (
           txn.groupId === group.selectedId.value &&
           txnDate >= startOfPrevMonth &&
