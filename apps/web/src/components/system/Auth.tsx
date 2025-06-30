@@ -3,6 +3,44 @@ import { auth } from "@web/state/auth.ts"
 import { UserMFAStatus } from "@shared/types"
 import { IconEye, IconEyeOff } from "@client/icons"
 
+// Helper function to extract detailed error message from auth operation
+function getErrorMessage(error: unknown): string {
+  if (!error) return ""
+
+  // If error is an object with an error property (HTTP response)
+  if (typeof error === "object" && error !== null && "error" in error) {
+    return (error as { error: string }).error
+  }
+
+  // If error is a string (network error, etc.)
+  if (typeof error === "string") {
+    // Handle common network error messages with human-friendly alternatives
+    if (error.toLowerCase().includes("failed to fetch")) {
+      return "Unable to connect to the server. Please check your internet connection and try again."
+    }
+    if (
+      error.toLowerCase().includes("network error") || error.toLowerCase().includes("networkerror")
+    ) {
+      return "Network connection problem. Please check your internet and try again."
+    }
+    if (error.toLowerCase().includes("timeout")) {
+      return "Connection timed out. The server is taking too long to respond."
+    }
+    if (error.toLowerCase().includes("cors")) {
+      return "Connection blocked. Please try refreshing the page."
+    }
+    if (error.toLowerCase().includes("abort")) {
+      return "Request was cancelled. Please try again."
+    }
+
+    // Return the original string if it's already user-friendly
+    return error
+  }
+
+  // Fallback for unknown error types
+  return "Something went wrong. Please try again."
+}
+
 export function Auth() {
   const login = useSignal("")
   const password = useSignal("")
@@ -14,11 +52,15 @@ export function Auth() {
 
   const handleSignIn = (e: Event) => {
     e.preventDefault()
+    // Clear previous errors
+    auth.ops.passwordSignUp.value = { ...auth.ops.passwordSignUp.value, error: null }
     auth.passwordCheck(login.value, password.value)
   }
 
   const handleSignUp = (e: Event) => {
     e.preventDefault()
+    // Clear previous errors
+    auth.ops.passwordCheck.value = { ...auth.ops.passwordCheck.value, error: null }
     auth.passwordSignUp(login.value, password.value)
   }
 
@@ -69,7 +111,7 @@ export function Auth() {
                   type="text"
                   autocomplete="email"
                   class="input"
-                  data-e2e="login-email-input"
+                  data-e2e="email-input"
                   value={login.value}
                   onInput={(e) =>
                     e.target &&
@@ -88,7 +130,7 @@ export function Auth() {
                   type={isPasswordVisible.value ? "text" : "password"}
                   autocomplete="current-password"
                   class="input pr-11"
-                  data-e2e="login-password-input"
+                  data-e2e="password-input"
                   value={password.value}
                   onInput={(e) =>
                     e.target &&
@@ -120,6 +162,7 @@ export function Auth() {
                       name="otp"
                       type="text"
                       class="input"
+                      data-e2e="otp-input"
                       value={otp.value}
                       onInput={(e) =>
                         e.target &&
@@ -138,26 +181,38 @@ export function Auth() {
                   submit(e)
                 }}
                 class="btn btn-primary-outline w-full"
+                data-e2e="sign-up-button"
               >
                 Sign up
               </button>
               <button
                 type="submit"
                 onClick={(e) => {
-                  mode.value === "sign-in"
+                  mode.value = "sign-in"
                   submit(e)
                 }}
                 class="btn btn-primary w-full"
-                data-e2e="login-submit-button"
+                data-e2e="sign-in-button"
               >
                 Sign in
               </button>
             </div>
 
-            {auth.ops.passwordCheck.value.error && (
-              <p class="text-sm text-red-700">
-                Invalid credentials
-              </p>
+            {(auth.ops.passwordCheck.value.error || auth.ops.passwordSignUp.value.error) && (
+              <div class="text-sm text-red-700 space-y-1" data-e2e="auth-error">
+                {auth.ops.passwordCheck.value.error && (
+                  <p data-e2e="sign-in-error">
+                    <strong>Sign in failed:</strong>{" "}
+                    {getErrorMessage(auth.ops.passwordCheck.value.error)}
+                  </p>
+                )}
+                {auth.ops.passwordSignUp.value.error && (
+                  <p data-e2e="sign-up-error">
+                    <strong>Sign up failed:</strong>{" "}
+                    {getErrorMessage(auth.ops.passwordSignUp.value.error)}
+                  </p>
+                )}
+              </div>
             )}
           </fieldset>
         </form>
