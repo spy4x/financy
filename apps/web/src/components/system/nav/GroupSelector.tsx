@@ -7,10 +7,6 @@ interface Props {
 }
 
 export function GroupSelector({ variant = "nav" }: Props) {
-  if (group.list.value.length === 0) {
-    return null
-  }
-
   const isNavVariant = variant === "nav"
 
   return (

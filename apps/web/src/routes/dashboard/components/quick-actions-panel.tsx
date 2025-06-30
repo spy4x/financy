@@ -1,5 +1,4 @@
 import { Link } from "wouter-preact"
-import { group } from "../../../state/group.ts"
 import { IconChartPie, IconHome, IconPlus } from "@client/icons"
 
 export function QuickActionsPanel() {
@@ -27,8 +26,6 @@ export function QuickActionsPanel() {
     },
   ]
 
-  const isDisabled = !group.selectedId.value
-
   return (
     <div>
       <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
@@ -39,36 +36,8 @@ export function QuickActionsPanel() {
               const Icon = action.icon
               const linkClass = `
                 btn flex flex-col items-center gap-2 p-4 h-auto min-h-[120px]
-                ${
-                action.primary
-                  ? (isDisabled
-                    ? "btn-disabled cursor-not-allowed pointer-events-none"
-                    : "btn-primary")
-                  : (isDisabled
-                    ? "btn-disabled cursor-not-allowed pointer-events-none"
-                    : "btn-primary-outline")
-              }
+                ${action.primary ? "btn-primary" : "btn-primary-outline"}
               `.trim()
-
-              if (isDisabled) {
-                return (
-                  <div
-                    key={index}
-                    class={linkClass}
-                    title="Please select a group first"
-                  >
-                    <Icon class="size-8" />
-                    <div class="text-center">
-                      <div class="text-sm font-medium">
-                        {action.title}
-                      </div>
-                      <div class="text-xs opacity-75 mt-1">
-                        {action.description}
-                      </div>
-                    </div>
-                  </div>
-                )
-              }
 
               return (
                 <Link
@@ -90,14 +59,6 @@ export function QuickActionsPanel() {
               )
             })}
           </div>
-
-          {isDisabled && (
-            <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-              <p class="text-sm text-yellow-800">
-                Please select a group from the navigation menu to enable quick actions.
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

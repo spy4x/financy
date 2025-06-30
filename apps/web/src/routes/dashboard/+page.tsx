@@ -1,5 +1,3 @@
-import { useComputed } from "@preact/signals"
-import { group } from "../../state/group.ts"
 import { PageTitle } from "../../components/ui/PageTitle.tsx"
 import { FinancialOverviewCards } from "./components/financial-overview-cards.tsx"
 import { QuickActionsPanel } from "./components/quick-actions-panel.tsx"
@@ -12,31 +10,6 @@ import { CategorySpendingBreakdown } from "./components/category-spending-breakd
 import { ExchangeRateWidget } from "./components/exchange-rate-widget.tsx"
 
 export function Dashboard() {
-  const hasSelectedGroup = useComputed(() => !!group.selectedId.value)
-
-  if (!hasSelectedGroup.value) {
-    return (
-      <section class="page-layout">
-        <PageTitle>Dashboard</PageTitle>
-        <div class="text-center">
-          <div class="card max-w-md mx-auto">
-            <div class="card-body">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Welcome to Financy!
-              </h3>
-              <p class="text-gray-600 mb-4">
-                To get started, please select or create a group from the navigation menu.
-              </p>
-              <div class="text-sm text-gray-500">
-                Groups help you organize your finances and collaborate with others.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   return (
     <section class="page-layout">
       <PageTitle>Dashboard</PageTitle>

@@ -32,8 +32,6 @@ const monthlySpent = computed(() => {
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
 
   const selectedGroupId = group.selectedId.value
-  if (!selectedGroupId) return new Map<number, number>()
-
   const spentByCategory = new Map<number, number>()
 
   transaction.list.value.forEach((txn) => {
@@ -133,10 +131,6 @@ export const category = {
     color?: string | null,
   ) {
     const groupId = group.selectedId.value
-    if (!groupId) {
-      toast.error({ body: "Please select a group first." })
-      return
-    }
     category.ops.create.value = { inProgress: true, error: null }
 
     // Build payload conditionally to avoid sending null monthlyLimit for income categories
@@ -167,10 +161,6 @@ export const category = {
     color?: string | null,
   ) {
     const groupId = group.selectedId.value
-    if (!groupId) {
-      toast.error({ body: "Please select a group first." })
-      return
-    }
     category.ops.update.value = { inProgress: true, error: null }
 
     // Build payload conditionally to avoid sending null monthlyLimit for income categories

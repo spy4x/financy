@@ -28,8 +28,8 @@ export function CategoryList() {
 
   const filteredCategories = useComputed(() => {
     return category.list.value.filter((cat) => {
-      // Filter by selected group first
-      if (group.selectedId.value && cat.groupId !== group.selectedId.value) {
+      // Filter by selected group
+      if (cat.groupId !== group.selectedId.value) {
         return false
       }
 
@@ -145,16 +145,8 @@ export function CategoryList() {
             </Dropdown>
 
             <Link
-              title={group.selectedId.value ? "Create Category" : "Please select a group first"}
               href={routes.categories.children!.create.href}
-              class={`btn flex items-center gap-2 ${
-                group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
-              }`}
-              onClick={(e) => {
-                if (!group.selectedId.value) {
-                  e.preventDefault()
-                }
-              }}
+              class="btn btn-primary flex items-center gap-2"
             >
               <IconPlus class="size-5" />
               <span class="hidden md:inline">Create</span>
@@ -164,9 +156,7 @@ export function CategoryList() {
           {filteredCategories.value.length === 0
             ? (
               <div class="text-center py-8 text-gray-500">
-                {!group.selectedId.value
-                  ? "Please select a group first to view categories."
-                  : filter.search.value
+                {filter.search.value
                   ? "No categories found matching your search."
                   : "No categories created yet."}
               </div>

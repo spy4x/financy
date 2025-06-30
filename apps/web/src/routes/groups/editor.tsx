@@ -1,6 +1,5 @@
 import { group } from "@web/state/group.ts"
 import { currency } from "@web/state/currency.ts"
-import { ws } from "@web/state/ws.ts"
 import { useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
@@ -33,11 +32,6 @@ export function GroupEditor() {
   useSignalEffect(() => {
     if (isState(EditorState.INITIALIZING)) {
       if (editGroupId) {
-        // If sync is in progress, wait for it to complete before checking for group
-        if (ws.syncOp.value.inProgress) {
-          return
-        }
-
         const existingGroup = group.list.value.find((g) => g.id === editGroupId)
         if (existingGroup) {
           name.value = existingGroup.name
@@ -56,14 +50,6 @@ export function GroupEditor() {
         error.value = ""
         state.value = EditorState.IDLE
       }
-    }
-  })
-
-  // Retry initialization when sync completes (for page refreshes)
-  useSignalEffect(() => {
-    // If we're in error state and sync just completed, retry initialization
-    if (isState(EditorState.ERROR) && !ws.syncOp.value.inProgress && editGroupId) {
-      state.value = EditorState.INITIALIZING
     }
   })
 

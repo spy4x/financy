@@ -85,10 +85,6 @@ export const account = {
   },
   create(name: string, currencyId: number) {
     const groupId = group.selectedId.value
-    if (!groupId) {
-      toast.error({ body: "Please select a group first." })
-      return
-    }
     account.ops.create.value = { inProgress: true, error: null }
     ws.request({
       message: {

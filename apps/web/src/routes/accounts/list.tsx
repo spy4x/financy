@@ -30,8 +30,8 @@ export function AccountList() {
 
   const filteredAccounts = useComputed(() => {
     return account.list.value.filter((acc) => {
-      // Filter by selected group first
-      if (group.selectedId.value && acc.groupId !== group.selectedId.value) {
+      // Filter by selected group
+      if (acc.groupId !== group.selectedId.value) {
         return false
       }
 
@@ -156,16 +156,8 @@ export function AccountList() {
             </Dropdown>
 
             <Link
-              title={group.selectedId.value ? "Create Account" : "Please select a group first"}
               href={routes.accounts.children!.create.href}
-              class={`btn flex items-center gap-2 ${
-                group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
-              }`}
-              onClick={(e) => {
-                if (!group.selectedId.value) {
-                  e.preventDefault()
-                }
-              }}
+              class="btn btn-primary flex items-center gap-2"
             >
               <IconPlus class="size-5" />
               <span class="hidden md:inline">Create</span>
@@ -288,9 +280,7 @@ export function AccountList() {
 
           {filteredAccounts.value.length === 0 && (
             <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-              {!group.selectedId.value
-                ? "Please select a group first to view accounts."
-                : filter.search.value
+              {filter.search.value
                 ? "No accounts found matching your search."
                 : "No accounts created yet."}
             </div>

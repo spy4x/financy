@@ -9,13 +9,13 @@ import { currency } from "./currency.ts"
 // Holds the list of groups for the current user
 const list = signal<Group[]>([])
 
-// Holds the currently selected groupId (default: first group)
-const selectedIdStorage = makeStorage<number | null>(
+// Holds the currently selected groupId (default: 0, will be set to first group when loaded)
+const selectedIdStorage = makeStorage<number>(
   localStorage,
   "selectedGroupId",
   type("number"),
 )
-const selectedId = signal<number | null>(selectedIdStorage.get() ?? null)
+const selectedId = signal<number>(selectedIdStorage.get() ?? 0)
 effect(() => selectedIdStorage.set(selectedId.value))
 
 const ops = {
@@ -44,10 +44,10 @@ export const group = {
       switch (msg.t) {
         case WebSocketMessageType.LIST:
           group.list.value = Array.isArray(msg.p) ? (msg.p as Group[]) : []
-          if (group.list.value.length > 0 && !group.selectedId.value) {
+          if (group.list.value.length > 0 && group.selectedId.value === 0) {
             group.selectedId.value = group.list.value[0].id
           } else if (group.list.value.length === 0) {
-            group.selectedId.value = null
+            group.selectedId.value = 0
           }
           break
         case WebSocketMessageType.CREATED: {

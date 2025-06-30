@@ -1,8 +1,10 @@
 import { auth } from "@web/state/auth.ts"
 import { ws } from "@web/state/ws.ts"
+import { group } from "@web/state/group.ts"
 import { IconArrowPath, IconBars3, IconLoading, IconXMark } from "@client/icons"
 import { Nav } from "./nav/+Nav.tsx"
 import { Auth } from "./Auth.tsx"
+import { LoadingScreen } from "@web/components/ui/LoadingScreen.tsx"
 import { ComponentChildren } from "preact"
 import { useSignal } from "@preact/signals"
 import { WSStatus } from "@shared/types"
@@ -29,6 +31,12 @@ export function Shell({ children }: Props) {
 
   if (!auth.user.value) {
     return <Auth />
+  }
+
+  // Show loading screen until sync is complete and a group is selected
+  const isLoading = ws.syncOp.value.inProgress || group.selectedId.value === 0
+  if (isLoading) {
+    return <LoadingScreen message="Preparing your workspace" />
   }
 
   return (

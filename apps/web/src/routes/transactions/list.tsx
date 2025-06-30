@@ -331,16 +331,8 @@ export function TransactionList() {
             </Dropdown>
 
             <Link
-              title={group.selectedId.value ? "Create Transaction" : "Please select a group first"}
               href={routes.transactions.children!.create.href}
-              class={`btn flex items-center gap-2 ${
-                group.selectedId.value ? "btn-primary" : "btn-disabled cursor-not-allowed"
-              }`}
-              onClick={(e) => {
-                if (!group.selectedId.value) {
-                  e.preventDefault()
-                }
-              }}
+              class="btn btn-primary flex items-center gap-2"
             >
               <IconPlus class="size-5" />
               <span class="hidden md:inline">Create</span>
@@ -604,12 +596,10 @@ export function TransactionList() {
 
           {filteredTransactions.value.length === 0 && (
             <div class="text-center py-8 text-gray-500">
-              {!group.selectedId.value
-                ? "Please select a group first to view transactions."
-                : filter.search.value || filter.accountId.value !== null ||
-                    filter.categoryId.value !== null || filter.type.value !== null ||
-                    filter.from.value || filter.to.value ||
-                    filter.status.value !== ItemStatus.ACTIVE
+              {filter.search.value || filter.accountId.value !== null ||
+                  filter.categoryId.value !== null || filter.type.value !== null ||
+                  filter.from.value || filter.to.value ||
+                  filter.status.value !== ItemStatus.ACTIVE
                 ? "No transactions found matching your filters."
                 : "No transactions created yet."}
             </div>

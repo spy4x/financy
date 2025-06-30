@@ -224,12 +224,6 @@ export function TransactionEditor() {
     e.preventDefault()
 
     // Validation
-    if (!group.selectedId.value) {
-      error.value = "Please select a group first"
-      state.value = EditorState.ERROR
-      return
-    }
-
     if (!accountId.value) {
       error.value = "Account is required"
       state.value = EditorState.ERROR
@@ -369,14 +363,8 @@ export function TransactionEditor() {
         </div>
       )}
 
-      {!group.selectedId.value && (
-        <div class="mb-4 p-4 text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-md">
-          Please select a group first to create a transaction.
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} class="card">
-        <fieldset disabled={isState(EditorState.IN_PROGRESS) || !group.selectedId.value}>
+        <fieldset disabled={isState(EditorState.IN_PROGRESS)}>
           <div class="card-body">
             <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div class="sm:col-span-6">
@@ -576,7 +564,7 @@ export function TransactionEditor() {
                       value={originalCurrencyId.value}
                       onChange={(id) => originalCurrencyId.value = id}
                       placeholder="Select original currency..."
-                      disabled={isState(EditorState.IN_PROGRESS) || !group.selectedId.value}
+                      disabled={isState(EditorState.IN_PROGRESS)}
                     />
                   </div>
                 </div>
@@ -653,8 +641,7 @@ export function TransactionEditor() {
                 (type.value !== TransactionType.TRANSFER && !categoryId.value) ||
                 (type.value === TransactionType.TRANSFER && !toAccountId.value) ||
                 !amount.value.trim() ||
-                !createdAt.value ||
-                !group.selectedId.value}
+                !createdAt.value}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editTransactionId ? "Update" : "Create"}
