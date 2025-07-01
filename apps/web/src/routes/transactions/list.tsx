@@ -114,16 +114,14 @@ export function TransactionList() {
       filtered = filtered.filter((txn) => txn.memo?.toLowerCase().includes(searchLower))
     }
 
-    // Filter by date range
+    // Filter by date and time range (ISO string)
     if (from.value) {
       const fromDate = new Date(from.value)
-      fromDate.setHours(0, 0, 0, 0) // Start of day
       filtered = filtered.filter((txn) => new Date(txn.timestamp).getTime() >= fromDate.getTime())
     }
 
     if (to.value) {
       const toDate = new Date(to.value)
-      toDate.setHours(23, 59, 59, 999) // End of day
       filtered = filtered.filter((txn) => new Date(txn.timestamp).getTime() <= toDate.getTime())
     }
 
@@ -324,28 +322,32 @@ export function TransactionList() {
                   </div>
                 )}
 
-                {/* Date Filters */}
-                <div class="grid grid-cols-2 gap-2">
+                {/* Date & Time Filters */}
+                <div class="flex flex-col gap-2">
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      From Date
+                      From
                     </label>
                     <input
-                      type="date"
+                      type="datetime-local"
                       class="input w-full"
                       value={from.value}
                       onInput={(e) => from.value = e.currentTarget.value}
+                      step="60"
+                      placeholder="--"
                     />
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      To Date
+                      To
                     </label>
                     <input
-                      type="date"
+                      type="datetime-local"
                       class="input w-full"
                       value={to.value}
                       onInput={(e) => to.value = e.currentTarget.value}
+                      step="60"
+                      placeholder="--"
                     />
                   </div>
                 </div>
