@@ -17,7 +17,7 @@ export function AccountBalancesOverview() {
 
   // Calculate total balance across all accounts (converted to group's default currency)
   const totalBalance = useComputed(() =>
-    groupAccounts.value.reduce((sum, acc) => sum + acc.balance, 0)
+    groupAccounts.value.reduce((sum, acc) => sum + account.getCurrentBalance(acc.id), 0)
   )
 
   // Get the default currency from selected group
@@ -27,9 +27,9 @@ export function AccountBalancesOverview() {
   const categorizedAccounts = useComputed(() => {
     const accounts = groupAccounts.value
     return {
-      positive: accounts.filter((acc) => acc.balance > 0),
-      zero: accounts.filter((acc) => acc.balance === 0),
-      negative: accounts.filter((acc) => acc.balance < 0),
+      positive: accounts.filter((acc) => account.getCurrentBalance(acc.id) > 0),
+      zero: accounts.filter((acc) => account.getCurrentBalance(acc.id) === 0),
+      negative: accounts.filter((acc) => account.getCurrentBalance(acc.id) < 0),
     }
   })
 
@@ -106,9 +106,10 @@ export function AccountBalancesOverview() {
           {/* Individual Account List */}
           <div class="space-y-3">
             {groupAccounts.value.map((acc) => {
-              const isPositive = acc.balance > 0
-              const isZero = acc.balance === 0
-              const isNegative = acc.balance < 0
+              const currentBalance = account.getCurrentBalance(acc.id)
+              const isPositive = currentBalance > 0
+              const isZero = currentBalance === 0
+              const isNegative = currentBalance < 0
 
               return (
                 <div
@@ -134,7 +135,7 @@ export function AccountBalancesOverview() {
                   </div>
                   <div class="text-right">
                     <CurrencyDisplay
-                      amount={acc.balance}
+                      amount={currentBalance}
                       currency={acc.currencyId}
                       class={`text-sm font-medium ${
                         isPositive ? "text-green-600" : isZero ? "text-gray-600" : "text-red-600"

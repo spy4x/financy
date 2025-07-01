@@ -8,6 +8,7 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
+import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
 
 enum EditorState {
   INITIALIZING = "initializing",
@@ -23,6 +24,7 @@ export function AccountEditor() {
 
   const name = useSignal("")
   const currencyId = useSignal<number | null>(null)
+  const startingBalance = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -42,6 +44,7 @@ export function AccountEditor() {
         if (existingAccount) {
           name.value = existingAccount.name
           currencyId.value = existingAccount.currencyId
+          startingBalance.value = formatCentsToInput(existingAccount.startingBalance)
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -53,6 +56,7 @@ export function AccountEditor() {
         // Default to USD currency ID if available, otherwise null
         const usdCurrency = currency.getByCode("USD")
         currencyId.value = usdCurrency?.id || null
+        startingBalance.value = "0"
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -108,12 +112,20 @@ export function AccountEditor() {
       return
     }
 
+    // Parse starting balance
+    const startingBalanceCents = parseCurrencyInput(startingBalance.value.trim())
+    if (startingBalanceCents === null) {
+      error.value = "Starting balance must be a valid number"
+      state.value = EditorState.ERROR
+      return
+    }
+
     error.value = ""
     state.value = EditorState.IN_PROGRESS
     if (editAccountId) {
-      account.update(editAccountId, trimmedName, currencyId.value)
+      account.update(editAccountId, trimmedName, currencyId.value, startingBalanceCents)
     } else {
-      account.create(trimmedName, currencyId.value)
+      account.create(trimmedName, currencyId.value, startingBalanceCents)
     }
   }
 
@@ -164,6 +176,47 @@ export function AccountEditor() {
                   />
                 </div>
               </div>
+
+              <div class="sm:col-span-2">
+                <label for="startingBalance" class="label">
+                  Starting Balance:
+                </label>
+                <div class="mt-2">
+                  <input
+                    type="text"
+                    id="startingBalance"
+                    class="input"
+                    placeholder="0.00"
+                    value={startingBalance.value}
+                    onInput={(e) => startingBalance.value = e.currentTarget.value}
+                    onBlur={(e) => {
+                      // Format the input on blur for better UX
+                      const parsed = parseCurrencyInput(e.currentTarget.value)
+                      if (parsed !== null) {
+                        startingBalance.value = formatCentsToInput(parsed)
+                      }
+                    }}
+                  />
+                  <div class="mt-2 p-3 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                    <p class="font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      How Starting Balance Works:
+                    </p>
+                    <p class="mb-2">
+                      Your <strong>starting balance</strong>{" "}
+                      represents how much money was in this account when you first started using
+                      this app. This helps you track your financial progress from a specific point
+                      in time.
+                    </p>
+                    <p class="mb-2">
+                      <strong>Current Balance = Starting Balance + All Transactions</strong>
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500">
+                      Example: If you set starting balance to $1,000 and add a $50 expense
+                      transaction, your current balance will show $950 ($1,000 - $50).
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="card-footer">
@@ -173,7 +226,8 @@ export function AccountEditor() {
             <button
               type="submit"
               class="btn btn-primary"
-              disabled={!name.value.trim() || !currencyId.value}
+              disabled={!name.value.trim() || !currencyId.value ||
+                parseCurrencyInput(startingBalance.value.trim()) === null}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editAccountId ? "Update" : "Create"}

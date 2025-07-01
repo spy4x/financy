@@ -3,6 +3,7 @@ import { ws } from "./ws.ts"
 import { Account, WebSocketMessageType } from "@shared/types"
 import { group } from "./group.ts"
 import { toast } from "./toast.ts"
+import { transaction } from "./transaction.ts"
 
 const list = signal<Account[]>([])
 const ops = {
@@ -20,9 +21,33 @@ const ops = {
   }),
 }
 
+/**
+ * Calculate the current balance for an account
+ * Formula: startingBalance + sum of all transactions
+ */
+function calculateCurrentBalance(accountId: number): number {
+  const accountData = list.value.find((acc) => acc.id === accountId)
+  if (!accountData) return 0
+
+  const accountTransactions = transaction.list.value.filter((txn) =>
+    txn.accountId === accountId && !txn.deletedAt
+  )
+
+  const transactionSum = accountTransactions.reduce((sum, txn) => {
+    // Transactions are already signed correctly based on direction
+    return sum + txn.amount
+  }, 0)
+
+  return accountData.startingBalance + transactionSum
+}
+
 export const account = {
   list,
   ops,
+  /**
+   * Get current balance for an account (derived from startingBalance + transactions)
+   */
+  getCurrentBalance: (accountId: number) => calculateCurrentBalance(accountId),
   init() {
     ws.onMessage((msg) => {
       if (msg.e !== "account") return
@@ -83,21 +108,29 @@ export const account = {
       }
     })
   },
-  create(name: string, currencyId: number) {
+  create(name: string, currencyId: number, startingBalance: number = 0) {
     const groupId = group.selectedId.value
     account.ops.create.value = { inProgress: true, error: null }
     ws.request({
       message: {
         e: "account",
         t: WebSocketMessageType.CREATE,
-        p: [{ name, currencyId, groupId, balance: 0 }],
+        p: [{ name, currencyId, groupId, startingBalance }],
       },
     })
   },
-  update(id: number, name: string, currencyId: number) {
+  update(id: number, name: string, currencyId: number, startingBalance?: number) {
     account.ops.update.value = { inProgress: true, error: null }
+    const updates: { id: number; name: string; currencyId: number; startingBalance?: number } = {
+      id,
+      name,
+      currencyId,
+    }
+    if (startingBalance !== undefined) {
+      updates.startingBalance = startingBalance
+    }
     ws.request({
-      message: { e: "account", t: WebSocketMessageType.UPDATE, p: [{ id, name, currencyId }] },
+      message: { e: "account", t: WebSocketMessageType.UPDATE, p: [updates] },
     })
   },
   remove(id: number) {

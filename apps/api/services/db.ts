@@ -416,17 +416,6 @@ export class DbService extends DbServiceBase {
       }
       return true
     },
-    updateBalance: async (
-      accountId: number,
-      balanceDiff: number,
-    ): Promise<Account> => {
-      return (await this.sql<Account[]>`
-        UPDATE accounts 
-        SET balance = balance + ${balanceDiff}, updated_at = NOW()
-        WHERE id = ${accountId}
-        RETURNING *
-      `)[0]
-    },
   }
 
   category = {

@@ -10,7 +10,6 @@ export const websocketNotifyOnTransactionUpdatedHandler = async (
 ) => {
   const {
     transaction,
-    accountUpdated,
     acknowledgmentId,
   } = event.data
 
@@ -23,13 +22,6 @@ export const websocketNotifyOnTransactionUpdatedHandler = async (
       [transaction],
       WebSocketMessageType.UPDATED,
       acknowledgmentId,
-    )
-
-    // Send WebSocket notifications for account update
-    websockets.onModelChange(
-      SyncModelName.account,
-      [accountUpdated],
-      WebSocketMessageType.UPDATED,
     )
 
     console.log(`✅ WebSocket notifications sent for transaction update: ${transaction.id}`)

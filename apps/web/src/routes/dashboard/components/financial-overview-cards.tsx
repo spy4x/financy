@@ -10,7 +10,7 @@ export function FinancialOverviewCards() {
   const totalBalance = useComputed(() =>
     account.list.value
       .filter((acc) => acc.groupId === group.selectedId.value && !acc.deletedAt)
-      .reduce((sum, acc) => sum + acc.balance, 0)
+      .reduce((sum, acc) => sum + account.getCurrentBalance(acc.id), 0)
   )
 
   // Get current month transactions

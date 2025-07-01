@@ -198,7 +198,7 @@ export function AccountList() {
                   <th class="text-left">Name</th>
                   <th class="text-left">Currency</th>
                   <th class="text-left">Balance</th>
-                  <th>Actions</th>
+                  <th class="text-right">Actions</th>
                 </>
               }
               bodySlots={filteredAccounts.value.map((acc, index) => (
@@ -237,28 +237,11 @@ export function AccountList() {
                     </div>
                   </td>
                   <td class="whitespace-nowrap">
-                    <div
-                      class={`text-sm ${
-                        acc.deletedAt ? "text-gray-400" : "text-gray-900 dark:text-gray-100"
-                      }`}
-                    >
-                      <CurrencyDisplay
-                        amount={acc.balance}
-                        currency={acc.currencyId}
-                        highlightNegative={!acc.deletedAt}
-                      />
-                      {!acc.deletedAt && (
-                        <Link
-                          href={`${
-                            routes.transactions.children!.create.href
-                          }?type=3&fromAccountId=${acc.id}`}
-                          class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-                          title="Transfer money from this account"
-                        >
-                          <IconArrowRight class="size-4" />
-                        </Link>
-                      )}
-                    </div>
+                    <CurrencyDisplay
+                      amount={account.getCurrentBalance(acc.id)}
+                      currency={acc.currencyId}
+                      highlightNegative={!acc.deletedAt}
+                    />
                   </td>
                   <td class="whitespace-nowrap text-right text-sm font-medium">
                     <Dropdown

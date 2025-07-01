@@ -51,7 +51,7 @@ export function TransactionList() {
     accountId: {
       signal: useSignal<number | null>(null),
       initialValue: null,
-      urlParam: "account",
+      urlParam: "accountId",
       parser: (value) => {
         const parsed = value ? parseInt(value) : null
         return isNaN(parsed as number) ? null : parsed
@@ -60,7 +60,7 @@ export function TransactionList() {
     categoryId: {
       signal: useSignal<number | null>(null),
       initialValue: null,
-      urlParam: "category",
+      urlParam: "categoryId",
       parser: (value) => {
         const parsed = value ? parseInt(value) : null
         return isNaN(parsed as number) ? null : parsed

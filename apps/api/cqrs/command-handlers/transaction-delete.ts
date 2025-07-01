@@ -7,7 +7,8 @@ import { Transaction } from "@shared/types"
 
 /**
  * Handler for deleting a transaction
- * This includes reverting account balance changes and handling transfer pairs
+ * Balance is calculated on the frontend from transactions
+ * For transfers, also deletes the linked transaction
  */
 export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> = async (
   command,
@@ -33,17 +34,7 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
       // Soft delete the transaction
       const transaction = await tx.transaction.deleteOne({ id: transactionId })
 
-      // Revert account balance
-      // Amount is already signed, so we need to subtract it to revert
-      const balanceChange = -originalTransaction.amount
-
-      const accountUpdated = await tx.account.updateBalance(
-        originalTransaction.accountId,
-        balanceChange,
-      )
-
       let linkedTransaction: Transaction | null = null
-      let linkedAccountUpdated = null
 
       // If this is a transfer, also delete the linked transaction
       if (originalTransaction.linkedTransactionCode) {
@@ -61,35 +52,25 @@ export const transactionDeleteHandler: CommandHandler<TransactionDeleteCommand> 
           linkedTransaction = await tx.transaction.deleteOne({
             id: linkedTransactionData.id,
           })
-
-          // Revert the linked account balance
-          const linkedBalanceChange = -linkedTransactionData.amount
-
-          linkedAccountUpdated = await tx.account.updateBalance(
-            linkedTransactionData.accountId,
-            linkedBalanceChange,
-          )
         }
       }
 
-      return { transaction, accountUpdated, linkedTransaction, linkedAccountUpdated }
+      return { transaction, linkedTransaction }
     })
 
     // Emit event for WebSocket notifications and other side effects
     eventBus.emit(
       new TransactionDeletedEvent({
         transaction: result.transaction,
-        accountUpdated: result.accountUpdated,
         acknowledgmentId,
       }),
     )
 
     // Emit event for linked transaction if deleted
-    if (result.linkedTransaction && result.linkedAccountUpdated) {
+    if (result.linkedTransaction) {
       eventBus.emit(
         new TransactionDeletedEvent({
           transaction: result.linkedTransaction,
-          accountUpdated: result.linkedAccountUpdated,
           acknowledgmentId,
         }),
       )

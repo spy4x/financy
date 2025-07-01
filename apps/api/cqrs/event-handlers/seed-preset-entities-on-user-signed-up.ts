@@ -12,12 +12,12 @@ const DEFAULT_ACCOUNTS: Omit<AccountBase, "groupId">[] = [
   {
     name: "Checking Account",
     currencyId: 1, // USD - first currency in migration
-    balance: 0,
+    startingBalance: 0,
   },
   {
     name: "Savings Account",
     currencyId: 1, // USD - first currency in migration
-    balance: 0,
+    startingBalance: 0,
   },
 ]
 

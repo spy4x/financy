@@ -371,12 +371,12 @@ export const accountBaseSchema = type({
   name: `string <= ${NAME_MAX_LENGTH} = ''`,
   groupId: "number > 0",
   currencyId: "number > 0",
-  balance: "number = 0",
+  startingBalance: "number = 0",
 })
 export type AccountBase = typeof accountBaseSchema.infer
 export const accountSchema = BaseModelSchema.and(accountBaseSchema)
 export type Account = typeof accountSchema.infer
-export const accountUpdateSchema = accountSchema.pick("id", "name", "currencyId")
+export const accountUpdateSchema = accountSchema.pick("id", "name", "currencyId", "startingBalance")
 export type AccountUpdate = typeof accountUpdateSchema.infer
 // #endregion Account
 

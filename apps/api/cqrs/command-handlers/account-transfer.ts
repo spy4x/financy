@@ -94,15 +94,9 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
         },
       })
 
-      // Update account balances
-      const fromAccountUpdated = await tx.account.updateBalance(fromAccountId, -Math.abs(amount))
-      const toAccountUpdated = await tx.account.updateBalance(toAccountId, Math.abs(amount))
-
       return {
         fromTransaction,
         toTransaction,
-        fromAccountUpdated,
-        toAccountUpdated,
       }
     })
 
@@ -111,8 +105,6 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
       new AccountTransferEvent({
         fromTransaction: result.fromTransaction,
         toTransaction: result.toTransaction,
-        fromAccountUpdated: result.fromAccountUpdated,
-        toAccountUpdated: result.toAccountUpdated,
         acknowledgmentId,
       }),
     )

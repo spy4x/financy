@@ -196,14 +196,14 @@ CREATE TABLE accounts (
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     currency_id INT4 NOT NULL REFERENCES currencies(id),
-    balance INT4 DEFAULT 0 NOT NULL,
+    starting_balance INT4 DEFAULT 0 NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
 );
 
 COMMENT ON COLUMN accounts.currency_id IS 'Account currency (FK to currencies table)';
-COMMENT ON COLUMN accounts.balance IS 'Stored in smallest currency unit';
+COMMENT ON COLUMN accounts.starting_balance IS 'Balance when user started using the app (editable), stored in smallest currency unit';
 
 CREATE INDEX idx_accounts_sync_retrieval ON accounts (updated_at DESC);
 

@@ -31,13 +31,11 @@ export class AccountCreatedEvent implements Event<{ account: Account; acknowledg
 export class TransactionCreatedEvent implements
   Event<{
     transaction: Transaction
-    accountUpdated: Account
     acknowledgmentId?: string
   }> {
   constructor(
     public data: {
       transaction: Transaction
-      accountUpdated: Account
       acknowledgmentId?: string
     },
   ) {}
@@ -50,14 +48,12 @@ export class TransactionUpdatedEvent implements
   Event<{
     transaction: Transaction
     originalTransaction: Transaction
-    accountUpdated: Account
     acknowledgmentId?: string
   }> {
   constructor(
     public data: {
       transaction: Transaction
       originalTransaction: Transaction
-      accountUpdated: Account
       acknowledgmentId?: string
     },
   ) {}
@@ -69,13 +65,11 @@ export class TransactionUpdatedEvent implements
 export class TransactionDeletedEvent implements
   Event<{
     transaction: Transaction
-    accountUpdated: Account
     acknowledgmentId?: string
   }> {
   constructor(
     public data: {
       transaction: Transaction
-      accountUpdated: Account
       acknowledgmentId?: string
     },
   ) {}
@@ -87,13 +81,11 @@ export class TransactionDeletedEvent implements
 export class TransactionUndeletedEvent implements
   Event<{
     transaction: Transaction
-    accountUpdated: Account
     acknowledgmentId?: string
   }> {
   constructor(
     public data: {
       transaction: Transaction
-      accountUpdated: Account
       acknowledgmentId?: string
     },
   ) {}
@@ -186,16 +178,12 @@ export class AccountTransferEvent implements
   Event<{
     fromTransaction: Transaction
     toTransaction: Transaction
-    fromAccountUpdated: Account
-    toAccountUpdated: Account
     acknowledgmentId?: string
   }> {
   constructor(
     public data: {
       fromTransaction: Transaction
       toTransaction: Transaction
-      fromAccountUpdated: Account
-      toAccountUpdated: Account
       acknowledgmentId?: string
     },
   ) {}

@@ -7,7 +7,7 @@ import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 /**
  * Handler for creating a transaction
- * This includes updating account balance and category usage count
+ * Balance is calculated on the frontend from transactions
  */
 export const transactionCreateHandler: CommandHandler<TransactionCreateCommand> = async (
   command,
@@ -55,22 +55,13 @@ export const transactionCreateHandler: CommandHandler<TransactionCreateCommand> 
         data: transactionToCreate,
       })
 
-      // Update account balance
-      // Use the corrected amount (already signed properly)
-      const balanceChange = correctedAmount
-      const accountUpdated = await tx.account.updateBalance(
-        transactionData.accountId,
-        balanceChange,
-      )
-
-      return { transaction, accountUpdated }
+      return { transaction }
     })
 
     // Emit event for WebSocket notifications and other side effects
     eventBus.emit(
       new TransactionCreatedEvent({
         transaction: result.transaction,
-        accountUpdated: result.accountUpdated,
         acknowledgmentId,
       }),
     )

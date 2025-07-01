@@ -3,11 +3,11 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionUpdateCommand } from "@api/cqrs/commands.ts"
 import { TransactionUpdatedEvent } from "@api/cqrs/events.ts"
-import { Account, Transaction, TransactionDirection, TransactionUtils } from "@shared/types"
+import { Transaction, TransactionDirection, TransactionUtils } from "@shared/types"
 
 /**
  * Handler for updating a transaction
- * This includes updating account balance and category usage count
+ * Balance is calculated on the frontend from transactions
  * For transfers, also updates the linked transaction
  */
 export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> = async (
@@ -89,38 +89,24 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         data: correctedUpdates,
       })
 
-      let accountUpdated: Account
       let linkedTransaction: Transaction | null = null
-      let linkedAccountUpdated: Account | null = null
 
-      // Handle balance updates
-      if (correctedUpdates.amount !== undefined) {
-        const newAmount = correctedUpdates.amount
-        const originalAmount = originalTransaction.amount
-
-        // Calculate the difference in account balance
-        // Both amounts are already signed (negative for MONEY_OUT, positive for MONEY_IN)
-        const balanceDiff = newAmount - originalAmount
-
-        accountUpdated = await tx.account.updateBalance(
-          originalTransaction.accountId,
-          balanceDiff,
+      // If this is a transfer, update the linked transaction
+      if (originalTransaction.linkedTransactionCode) {
+        const linkedTransactions = await tx.transaction.findByLinkedTransactionCode(
+          originalTransaction.linkedTransactionCode,
+          userId,
         )
 
-        // If this is a transfer, update the linked transaction and its account balance
-        if (originalTransaction.linkedTransactionCode) {
-          const linkedTransactions = await tx.transaction.findByLinkedTransactionCode(
-            originalTransaction.linkedTransactionCode,
-            userId,
-          )
+        // Find the other transaction in the transfer pair (not the current one)
+        const linkedTransactionData = linkedTransactions.find(
+          (t) => t.id !== originalTransaction.id,
+        )
 
-          // Find the other transaction in the transfer pair (not the current one)
-          const linkedTransactionData = linkedTransactions.find(
-            (t) => t.id !== originalTransaction.id,
-          )
-
-          if (linkedTransactionData) {
-            // For the linked transaction, calculate the opposite direction and correct amount
+        if (linkedTransactionData) {
+          // Handle amount updates for transfers
+          if (correctedUpdates.amount !== undefined) {
+            const newAmount = correctedUpdates.amount
             const originalDirection = originalTransaction.direction
             const newDirection = correctedUpdates.direction ?? originalDirection
 
@@ -135,9 +121,6 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
               ? -absoluteNewAmount
               : absoluteNewAmount
 
-            // Calculate balance difference for linked account
-            const linkedBalanceDiff = linkedAmount - linkedTransactionData.amount
-
             linkedTransaction = await tx.transaction.updateOne({
               id: linkedTransactionData.id,
               data: {
@@ -145,53 +128,21 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
                 direction: linkedDirection,
               },
             })
+          }
 
-            linkedAccountUpdated = await tx.account.updateBalance(
-              linkedTransactionData.accountId,
-              linkedBalanceDiff,
-            )
+          // Handle direction-only updates for transfers
+          if (correctedUpdates.direction !== undefined && correctedUpdates.amount === undefined) {
+            const newDirection = correctedUpdates.direction
+            const linkedDirection = newDirection === TransactionDirection.MONEY_OUT
+              ? TransactionDirection.MONEY_IN
+              : TransactionDirection.MONEY_OUT
+
+            linkedTransaction = await tx.transaction.updateOne({
+              id: linkedTransactionData.id,
+              data: { direction: linkedDirection },
+            })
           }
         }
-      } else if (
-        correctedUpdates.direction !== undefined && originalTransaction.linkedTransactionCode
-      ) {
-        // Handle direction-only updates for transfers
-        const linkedTransactions = await tx.transaction.findByLinkedTransactionCode(
-          originalTransaction.linkedTransactionCode,
-          userId,
-        )
-
-        // Find the other transaction in the transfer pair (not the current one)
-        const linkedTransactionData = linkedTransactions.find(
-          (t) => t.id !== originalTransaction.id,
-        )
-
-        if (linkedTransactionData) {
-          // Linked transaction has opposite direction
-          const newDirection = correctedUpdates.direction
-          const linkedDirection = newDirection === TransactionDirection.MONEY_OUT
-            ? TransactionDirection.MONEY_IN
-            : TransactionDirection.MONEY_OUT
-
-          linkedTransaction = await tx.transaction.updateOne({
-            id: linkedTransactionData.id,
-            data: { direction: linkedDirection },
-          })
-        }
-
-        // Just fetch the account without updating balance
-        const account = await tx.account.findOne({ id: originalTransaction.accountId })
-        if (!account) {
-          throw new Error(`Account with id ${originalTransaction.accountId} not found`)
-        }
-        accountUpdated = account
-      } else {
-        // Just fetch the account without updating balance
-        const account = await tx.account.findOne({ id: originalTransaction.accountId })
-        if (!account) {
-          throw new Error(`Account with id ${originalTransaction.accountId} not found`)
-        }
-        accountUpdated = account
       }
 
       // Handle timestamp updates for linked transactions (transfers)
@@ -220,9 +171,7 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
       return {
         transaction,
         originalTransaction,
-        accountUpdated,
         linkedTransaction,
-        linkedAccountUpdated,
       }
     })
 
@@ -231,18 +180,16 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
       new TransactionUpdatedEvent({
         transaction: result.transaction,
         originalTransaction: result.originalTransaction,
-        accountUpdated: result.accountUpdated,
         acknowledgmentId,
       }),
     )
 
     // Emit event for linked transaction if updated
-    if (result.linkedTransaction && result.linkedAccountUpdated) {
+    if (result.linkedTransaction) {
       eventBus.emit(
         new TransactionUpdatedEvent({
           transaction: result.linkedTransaction,
           originalTransaction: result.linkedTransaction, // Use the updated transaction as both
-          accountUpdated: result.linkedAccountUpdated,
           acknowledgmentId,
         }),
       )

@@ -11,8 +11,6 @@ export const websocketNotifyOnAccountTransferHandler = async (
   const {
     fromTransaction,
     toTransaction,
-    fromAccountUpdated,
-    toAccountUpdated,
     acknowledgmentId,
   } = event.data
 
@@ -27,13 +25,6 @@ export const websocketNotifyOnAccountTransferHandler = async (
       [fromTransaction, toTransaction],
       WebSocketMessageType.CREATED,
       acknowledgmentId,
-    )
-
-    // Send WebSocket notifications for both account updates
-    websockets.onModelChange(
-      SyncModelName.account,
-      [fromAccountUpdated, toAccountUpdated],
-      WebSocketMessageType.UPDATED,
     )
 
     console.log(

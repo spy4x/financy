@@ -301,8 +301,6 @@ export interface AccountTransferPayload {
 export interface AccountTransferResult {
   fromTransaction: Transaction
   toTransaction: Transaction
-  fromAccountUpdated: Account
-  toAccountUpdated: Account
 }
 
 export class AccountTransferCommand

@@ -7,7 +7,8 @@ import { Transaction } from "@shared/types"
 
 /**
  * Handler for undeleting (restoring) a transaction
- * This includes re-applying account balance changes and handling transfer pairs
+ * Balance is calculated on the frontend from transactions
+ * For transfers, also restores the linked transaction
  */
 export const transactionUndeleteHandler: CommandHandler<TransactionUndeleteCommand> = async (
   command,
@@ -36,17 +37,7 @@ export const transactionUndeleteHandler: CommandHandler<TransactionUndeleteComma
       // Restore the transaction
       const transaction = await tx.transaction.undeleteOne({ id: transactionId })
 
-      // Re-apply account balance change
-      // Amount is already signed, so we add it back
-      const balanceChange = originalTransaction.amount
-
-      const accountUpdated = await tx.account.updateBalance(
-        originalTransaction.accountId,
-        balanceChange,
-      )
-
       let linkedTransaction: Transaction | null = null
-      let linkedAccountUpdated = null
 
       // If this is a transfer, also restore the linked transaction
       if (originalTransaction.linkedTransactionCode) {
@@ -64,35 +55,25 @@ export const transactionUndeleteHandler: CommandHandler<TransactionUndeleteComma
           linkedTransaction = await tx.transaction.undeleteOne({
             id: linkedTransactionData.id,
           })
-
-          // Re-apply the linked account balance
-          const linkedBalanceChange = linkedTransactionData.amount
-
-          linkedAccountUpdated = await tx.account.updateBalance(
-            linkedTransactionData.accountId,
-            linkedBalanceChange,
-          )
         }
       }
 
-      return { transaction, accountUpdated, linkedTransaction, linkedAccountUpdated }
+      return { transaction, linkedTransaction }
     })
 
     // Emit event for WebSocket notifications and other side effects
     eventBus.emit(
       new TransactionUndeletedEvent({
         transaction: result.transaction,
-        accountUpdated: result.accountUpdated,
         acknowledgmentId,
       }),
     )
 
     // Emit event for linked transaction if restored
-    if (result.linkedTransaction && result.linkedAccountUpdated) {
+    if (result.linkedTransaction) {
       eventBus.emit(
         new TransactionUndeletedEvent({
           transaction: result.linkedTransaction,
-          accountUpdated: result.linkedAccountUpdated,
           acknowledgmentId,
         }),
       )
