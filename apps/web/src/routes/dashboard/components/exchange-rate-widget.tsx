@@ -1,7 +1,7 @@
 import { useComputed } from "@preact/signals"
-import { account } from "../../../state/account.ts"
-import { group } from "../../../state/group.ts"
-import { currency } from "../../../state/currency.ts"
+import { account } from "@web/state/account.ts"
+import { group } from "@web/state/group.ts"
+import { currency } from "@web/state/currency.ts"
 import { IconArrowPath, IconChartPie } from "@client/icons"
 
 export function ExchangeRateWidget() {

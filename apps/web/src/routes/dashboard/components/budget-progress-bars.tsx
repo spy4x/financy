@@ -1,18 +1,16 @@
 import { useComputed } from "@preact/signals"
 import { Link } from "wouter-preact"
-import { category } from "../../../state/category.ts"
-import { transaction } from "../../../state/transaction.ts"
-import { group } from "../../../state/group.ts"
-import { BudgetProgress } from "../../../components/ui/BudgetProgress.tsx"
+import { category } from "@web/state/category.ts"
+import { transaction } from "@web/state/transaction.ts"
+import { group } from "@web/state/group.ts"
+import { dashboard } from "@web/state/dashboard.ts"
+import { BudgetProgress } from "@web/components/ui/BudgetProgress.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function BudgetProgressBars() {
-  // Get current month transactions for spending calculations
-  const currentMonthTransactions = useComputed(() => {
-    const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
-
+  // Get transactions for the selected date range for spending calculations
+  const rangeTransactions = useComputed(() => {
+    const range = dashboard.current
     return transaction.list.value
       .filter((txn) => {
         const txnDate = new Date(txn.timestamp)
@@ -20,8 +18,8 @@ export function BudgetProgressBars() {
           txn.groupId === group.selectedId.value &&
           txn.direction === TransactionDirection.MONEY_OUT && // Only money out transactions count towards spending
           TransactionUtils.affectsProfitLoss(txn.type) && // Exclude transfers
-          txnDate >= startOfMonth &&
-          txnDate <= endOfMonth &&
+          txnDate >= range.startDate &&
+          txnDate <= range.endDate &&
           !txn.deletedAt
         )
       })
@@ -39,11 +37,11 @@ export function BudgetProgressBars() {
       )
   )
 
-  // Calculate spending per category
+  // Calculate spending per category for the selected date range
   const categorySpending = useComputed(() => {
     const spending: Record<number, number> = {}
 
-    currentMonthTransactions.value.forEach((txn) => {
+    rangeTransactions.value.forEach((txn) => {
       if (txn.categoryId && !spending[txn.categoryId]) {
         spending[txn.categoryId] = 0
       }

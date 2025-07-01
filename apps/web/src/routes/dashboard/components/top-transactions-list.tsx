@@ -1,29 +1,36 @@
 import { useComputed } from "@preact/signals"
 import { Link } from "wouter-preact"
 import { navigate } from "@client/helpers"
-import { transaction } from "../../../state/transaction.ts"
+import { transaction } from "@web/state/transaction.ts"
 import { account } from "../../../state/account.ts"
 import { category } from "../../../state/category.ts"
-import { group } from "../../../state/group.ts"
+import { group } from "@web/state/group.ts"
 import { currency } from "../../../state/currency.ts"
-import { Table } from "../../../components/ui/Table.tsx"
-import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
-import { Dropdown } from "../../../components/ui/Dropdown.tsx"
+import { dashboard } from "@web/state/dashboard.ts"
+import { Table } from "@web/components/ui/Table.tsx"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
+import { Dropdown } from "@web/components/ui/Dropdown.tsx"
 import { IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/icons"
 import { TransactionDirection } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function TopTransactionsList() {
-  // Get the 10 most expensive transactions for selected group (by absolute amount)
-  const recentTransactions = useComputed(() =>
-    transaction.list.value
-      .filter((txn) =>
-        txn.groupId === group.selectedId.value &&
-        !txn.deletedAt
-      )
+  // Get the top transactions by amount within the selected date range
+  const recentTransactions = useComputed(() => {
+    const range = dashboard.current
+    return transaction.list.value
+      .filter((txn) => {
+        const txnDate = new Date(txn.timestamp)
+        return (
+          txn.groupId === group.selectedId.value &&
+          txnDate >= range.startDate &&
+          txnDate <= range.endDate &&
+          !txn.deletedAt
+        )
+      })
       .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))
       .slice(0, 10) // Show top 10 by amount
-  )
+  })
 
   // Helper functions to get names
   const getAccountName = (accountId: number) => {

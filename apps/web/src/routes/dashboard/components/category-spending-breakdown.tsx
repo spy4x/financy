@@ -1,18 +1,16 @@
 import { useComputed } from "@preact/signals"
 import { Link } from "wouter-preact"
-import { transaction } from "../../../state/transaction.ts"
-import { category } from "../../../state/category.ts"
-import { group } from "../../../state/group.ts"
-import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
+import { transaction } from "@web/state/transaction.ts"
+import { category } from "@web/state/category.ts"
+import { group } from "@web/state/group.ts"
+import { dashboard } from "@web/state/dashboard.ts"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function CategorySpendingBreakdown() {
-  // Get current month transactions for spending calculations
-  const currentMonthTransactions = useComputed(() => {
-    const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
-
+  // Get transactions for the selected date range for spending calculations
+  const rangeTransactions = useComputed(() => {
+    const range = dashboard.current
     return transaction.list.value
       .filter((txn) => {
         const txnDate = new Date(txn.timestamp)
@@ -20,8 +18,8 @@ export function CategorySpendingBreakdown() {
           txn.groupId === group.selectedId.value &&
           txn.direction === TransactionDirection.MONEY_OUT && // Only money out transactions for spending
           TransactionUtils.affectsProfitLoss(txn.type) && // Exclude transfers
-          txnDate >= startOfMonth &&
-          txnDate <= endOfMonth &&
+          txnDate >= range.startDate &&
+          txnDate <= range.endDate &&
           !txn.deletedAt
         )
       })
@@ -45,7 +43,7 @@ export function CategorySpendingBreakdown() {
     let totalSpending = 0
 
     // Calculate spending per category
-    currentMonthTransactions.value.forEach((txn) => {
+    rangeTransactions.value.forEach((txn) => {
       if (txn.categoryId && !spending[txn.categoryId]) {
         const cat = groupCategories.value.find((c) => c.id === txn.categoryId)
         spending[txn.categoryId] = {

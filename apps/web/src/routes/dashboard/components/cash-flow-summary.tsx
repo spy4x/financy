@@ -1,49 +1,48 @@
 import { useComputed } from "@preact/signals"
-import { transaction } from "../../../state/transaction.ts"
-import { group } from "../../../state/group.ts"
-import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
+import { transaction } from "@web/state/transaction.ts"
+import { group } from "@web/state/group.ts"
+import { dashboard } from "@web/state/dashboard.ts"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function CashFlowSummary() {
-  // Get current month transactions
-  const currentMonthTransactions = useComputed(() => {
-    const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+  // Get current range transactions
+  const currentRangeTransactions = useComputed(() => {
+    const range = dashboard.current
+    return transaction.list.value
+      .filter((txn) => {
+        const txnDate = new Date(txn.timestamp)
+        return (
+          txn.groupId === group.selectedId.value &&
+          txnDate >= range.startDate &&
+          txnDate <= range.endDate &&
+          !txn.deletedAt
+        )
+      })
+  })
+
+  // Get comparison period transactions (same duration, immediately before current range)
+  const comparisonTransactions = useComputed(() => {
+    const range = dashboard.current
+    const rangeDuration = range.endDate.getTime() - range.startDate.getTime()
+    const comparisonStart = new Date(range.startDate.getTime() - rangeDuration)
+    const comparisonEnd = new Date(range.startDate.getTime() - 1) // Just before current range starts
 
     return transaction.list.value
       .filter((txn) => {
         const txnDate = new Date(txn.timestamp)
         return (
           txn.groupId === group.selectedId.value &&
-          txnDate >= startOfMonth &&
-          txnDate <= endOfMonth &&
+          txnDate >= comparisonStart &&
+          txnDate <= comparisonEnd &&
           !txn.deletedAt
         )
       })
   })
 
-  // Get previous month transactions for comparison
-  const previousMonthTransactions = useComputed(() => {
-    const now = new Date()
-    const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999)
-
-    return transaction.list.value
-      .filter((txn) => {
-        const txnDate = new Date(txn.timestamp)
-        return (
-          txn.groupId === group.selectedId.value &&
-          txnDate >= startOfPrevMonth &&
-          txnDate <= endOfPrevMonth &&
-          !txn.deletedAt
-        )
-      })
-  })
-
-  // Calculate current month metrics
-  const currentMonthIncome = useComputed(() =>
-    currentMonthTransactions.value
+  // Calculate current range metrics
+  const currentIncome = useComputed(() =>
+    currentRangeTransactions.value
       .filter((txn) =>
         txn.direction === TransactionDirection.MONEY_IN &&
         TransactionUtils.affectsProfitLoss(txn.type)
@@ -51,8 +50,8 @@ export function CashFlowSummary() {
       .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
-  const currentMonthExpenses = useComputed(() =>
-    currentMonthTransactions.value
+  const currentExpenses = useComputed(() =>
+    currentRangeTransactions.value
       .filter((txn) =>
         txn.direction === TransactionDirection.MONEY_OUT &&
         TransactionUtils.affectsProfitLoss(txn.type)
@@ -60,11 +59,11 @@ export function CashFlowSummary() {
       .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
-  const currentNetFlow = useComputed(() => currentMonthIncome.value - currentMonthExpenses.value)
+  const currentNetFlow = useComputed(() => currentIncome.value - currentExpenses.value)
 
-  // Calculate previous month metrics for comparison
-  const previousMonthIncome = useComputed(() =>
-    previousMonthTransactions.value
+  // Calculate comparison period metrics
+  const comparisonIncome = useComputed(() =>
+    comparisonTransactions.value
       .filter((txn) =>
         txn.direction === TransactionDirection.MONEY_IN &&
         TransactionUtils.affectsProfitLoss(txn.type)
@@ -72,8 +71,8 @@ export function CashFlowSummary() {
       .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
-  const previousMonthExpenses = useComputed(() =>
-    previousMonthTransactions.value
+  const comparisonExpenses = useComputed(() =>
+    comparisonTransactions.value
       .filter((txn) =>
         txn.direction === TransactionDirection.MONEY_OUT &&
         TransactionUtils.affectsProfitLoss(txn.type)
@@ -81,28 +80,27 @@ export function CashFlowSummary() {
       .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
-  const previousNetFlow = useComputed(() => previousMonthIncome.value - previousMonthExpenses.value)
+  const comparisonNetFlow = useComputed(() => comparisonIncome.value - comparisonExpenses.value)
 
   // Calculate percentage changes
   const incomeChange = useComputed(() => {
-    if (previousMonthIncome.value === 0) return currentMonthIncome.value > 0 ? 100 : 0
-    return ((currentMonthIncome.value - previousMonthIncome.value) / previousMonthIncome.value) *
-      100
+    if (comparisonIncome.value === 0) return currentIncome.value > 0 ? 100 : 0
+    return ((currentIncome.value - comparisonIncome.value) / comparisonIncome.value) * 100
   })
 
   const expenseChange = useComputed(() => {
-    if (previousMonthExpenses.value === 0) return currentMonthExpenses.value > 0 ? 100 : 0
-    return ((currentMonthExpenses.value - previousMonthExpenses.value) /
-      previousMonthExpenses.value) * 100
+    if (comparisonExpenses.value === 0) return currentExpenses.value > 0 ? 100 : 0
+    return ((currentExpenses.value - comparisonExpenses.value) / comparisonExpenses.value) * 100
   })
 
   const netFlowChange = useComputed(() => {
-    if (previousNetFlow.value === 0) {
+    if (comparisonNetFlow.value === 0) {
       if (currentNetFlow.value > 0) return 100
       if (currentNetFlow.value < 0) return -100
       return 0
     }
-    return ((currentNetFlow.value - previousNetFlow.value) / Math.abs(previousNetFlow.value)) * 100
+    return ((currentNetFlow.value - comparisonNetFlow.value) / Math.abs(comparisonNetFlow.value)) *
+      100
   })
 
   // Get the default currency from selected group
@@ -117,15 +115,11 @@ export function CashFlowSummary() {
     }
   }
 
-  const currentMonth = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })
-  const previousMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1)
-    .toLocaleDateString("en-US", { month: "long" })
-
   return (
     <div class="card">
       <div class="card-header">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Cash Flow Summary</h3>
-        <p class="text-sm text-gray-600">{currentMonth} vs {previousMonth}</p>
+        <p class="text-sm text-gray-600">{dashboard.current.label} vs Previous period</p>
       </div>
       <div class="card-body">
         <div class="space-y-6">
@@ -137,7 +131,7 @@ export function CashFlowSummary() {
                 <div class="text-right">
                   <div class="text-lg font-semibold text-green-600">
                     <CurrencyDisplay
-                      amount={currentMonthIncome.value}
+                      amount={currentIncome.value}
                       currency={defaultCurrency.value.id}
                     />
                   </div>
@@ -156,8 +150,8 @@ export function CashFlowSummary() {
                         100,
                         Math.max(
                           0,
-                          (currentMonthIncome.value /
-                            Math.max(currentMonthIncome.value, currentMonthExpenses.value, 1)) *
+                          (currentIncome.value /
+                            Math.max(currentIncome.value, currentExpenses.value, 1)) *
                             100,
                         ),
                       )
@@ -176,7 +170,7 @@ export function CashFlowSummary() {
                 <div class="text-right">
                   <div class="text-lg font-semibold text-red-600">
                     <CurrencyDisplay
-                      amount={-currentMonthExpenses.value}
+                      amount={-currentExpenses.value}
                       currency={defaultCurrency.value.id}
                     />
                   </div>
@@ -195,8 +189,8 @@ export function CashFlowSummary() {
                         100,
                         Math.max(
                           0,
-                          (currentMonthExpenses.value /
-                            Math.max(currentMonthIncome.value, currentMonthExpenses.value, 1)) *
+                          (currentExpenses.value /
+                            Math.max(currentIncome.value, currentExpenses.value, 1)) *
                             100,
                         ),
                       )
@@ -251,7 +245,7 @@ export function CashFlowSummary() {
                         Math.min(
                           50,
                           Math.abs(currentNetFlow.value) /
-                            Math.max(currentMonthIncome.value, currentMonthExpenses.value, 1) * 50,
+                            Math.max(currentIncome.value, currentExpenses.value, 1) * 50,
                         )
                       }%`,
                     }}

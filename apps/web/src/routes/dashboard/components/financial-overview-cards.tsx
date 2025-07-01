@@ -1,40 +1,59 @@
 import { useComputed } from "@preact/signals"
 import { account } from "../../../state/account.ts"
-import { transaction } from "../../../state/transaction.ts"
-import { group } from "../../../state/group.ts"
-import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
+import { transaction } from "@web/state/transaction.ts"
+import { group } from "@web/state/group.ts"
+import { dashboard } from "@web/state/dashboard.ts"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 import { Link } from "wouter-preact"
 
 export function FinancialOverviewCards() {
-  // Calculate total balance across all accounts in selected group
-  const totalBalance = useComputed(() =>
-    account.list.value
+  // Calculate total balance as of the end of the selected date range
+  const totalBalanceAtRangeEnd = useComputed(() => {
+    const range = dashboard.current
+    const rangeEndTime = range.endDate.getTime()
+
+    return account.list.value
       .filter((acc) => acc.groupId === group.selectedId.value && !acc.deletedAt)
-      .reduce((sum, acc) => sum + account.getCurrentBalance(acc.id), 0)
-  )
+      .reduce((sum, acc) => {
+        // Get all transactions for this account up to the end of the selected range
+        const accountTransactions = transaction.list.value
+          .filter((txn) => {
+            const txnTime = new Date(txn.timestamp).getTime()
+            return (
+              txn.accountId === acc.id &&
+              txnTime <= rangeEndTime &&
+              !txn.deletedAt
+            )
+          })
 
-  // Get current month transactions
-  const currentMonthTransactions = useComputed(() => {
-    const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+        // Calculate balance: starting balance + all transactions up to range end
+        const transactionSum = accountTransactions.reduce((txnSum, txn) => {
+          return txnSum + (txn.direction === 1 ? -Math.abs(txn.amount) : Math.abs(txn.amount))
+        }, 0)
 
+        return sum + acc.startingBalance + transactionSum
+      }, 0)
+  })
+
+  // Get transactions for the selected date range
+  const rangeTransactions = useComputed(() => {
+    const range = dashboard.current
     return transaction.list.value
       .filter((txn) => {
         const txnDate = new Date(txn.timestamp)
         return (
           txn.groupId === group.selectedId.value &&
-          txnDate >= startOfMonth &&
-          txnDate <= endOfMonth &&
+          txnDate >= range.startDate &&
+          txnDate <= range.endDate &&
           !txn.deletedAt
         )
       })
   })
 
-  // Calculate monthly income (MONEY_IN transactions, excluding transfers)
-  const monthlyIncome = useComputed(() =>
-    currentMonthTransactions.value
+  // Calculate income for the selected date range (MONEY_IN transactions, excluding transfers)
+  const rangeIncome = useComputed(() =>
+    rangeTransactions.value
       .filter((txn) =>
         txn.direction === TransactionDirection.MONEY_IN &&
         TransactionUtils.affectsProfitLoss(txn.type)
@@ -42,9 +61,9 @@ export function FinancialOverviewCards() {
       .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
-  // Calculate monthly expenses (MONEY_OUT transactions, excluding transfers)
-  const monthlyExpenses = useComputed(() =>
-    currentMonthTransactions.value
+  // Calculate expenses for the selected date range (MONEY_OUT transactions, excluding transfers)
+  const rangeExpenses = useComputed(() =>
+    rangeTransactions.value
       .filter((txn) =>
         txn.direction === TransactionDirection.MONEY_OUT &&
         TransactionUtils.affectsProfitLoss(txn.type)
@@ -53,30 +72,70 @@ export function FinancialOverviewCards() {
   )
 
   // Calculate net cash flow (income - expenses)
-  const netCashFlow = useComputed(() => monthlyIncome.value - monthlyExpenses.value)
+  const netCashFlow = useComputed(() => rangeIncome.value - rangeExpenses.value)
 
   // Get the default currency from selected group
   const defaultCurrencyId = useComputed<number>(() => group.getSelectedCurrency().id)
 
+  // Get period description for card labels
+  const periodDescription = useComputed(() => {
+    const range = dashboard.current
+    const now = new Date()
+
+    // Check if it's current month
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+
+    if (
+      range.startDate.getTime() === currentMonthStart.getTime() &&
+      range.endDate.getTime() === currentMonthEnd.getTime()
+    ) {
+      return "This month"
+    }
+
+    return range.label
+  })
+
+  // Get balance description for Total Balance card
+  const balanceDescription = useComputed(() => {
+    const range = dashboard.current
+    const now = new Date()
+
+    // Check if it's current date
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+
+    if (range.endDate.getTime() >= today.getTime()) {
+      return "Current balance"
+    }
+
+    return `Balance as of ${
+      range.endDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: range.endDate.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+      })
+    }`
+  })
+
   const cards = [
     {
       title: "Total Balance",
-      amount: totalBalance.value,
-      description: "Across all accounts",
-      positive: totalBalance.value >= 0,
+      amount: totalBalanceAtRangeEnd.value,
+      description: balanceDescription.value,
+      positive: totalBalanceAtRangeEnd.value >= 0,
       link: "/accounts",
     },
     {
-      title: "Monthly Income",
-      amount: monthlyIncome.value,
-      description: "This month",
+      title: "Income",
+      amount: rangeIncome.value,
+      description: periodDescription.value,
       positive: true,
       link: "/transactions?type=2",
     },
     {
-      title: "Monthly Expenses",
-      amount: -monthlyExpenses.value, // Display as negative
-      description: "This month",
+      title: "Expenses",
+      amount: -rangeExpenses.value, // Display as negative
+      description: periodDescription.value,
       positive: false,
       link: "/transactions?type=1",
     },

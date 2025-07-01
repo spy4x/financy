@@ -1,7 +1,7 @@
 import { useComputed } from "@preact/signals"
-import { transaction } from "../../../state/transaction.ts"
-import { group } from "../../../state/group.ts"
-import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
+import { transaction } from "@web/state/transaction.ts"
+import { group } from "@web/state/group.ts"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function MonthlySpendingTrends() {

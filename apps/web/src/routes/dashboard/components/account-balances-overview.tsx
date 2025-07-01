@@ -1,8 +1,10 @@
 import { useComputed } from "@preact/signals"
 import { Link } from "wouter-preact"
-import { account } from "../../../state/account.ts"
-import { group } from "../../../state/group.ts"
-import { currency } from "../../../state/currency.ts"
+import { account } from "@web/state/account.ts"
+import { group } from "@web/state/group.ts"
+import { currency } from "@web/state/currency.ts"
+import { transaction } from "@web/state/transaction.ts"
+import { dashboard } from "@web/state/dashboard.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { IconHome } from "@client/icons"
 
@@ -14,10 +16,64 @@ export function AccountBalancesOverview() {
       .sort((a, b) => a.name.localeCompare(b.name))
   )
 
-  // Calculate total balance across all accounts (converted to group's default currency)
-  const totalBalance = useComputed(() =>
-    groupAccounts.value.reduce((sum, acc) => sum + account.getCurrentBalance(acc.id), 0)
-  )
+  // Calculate total balance as of the selected date range end
+  const totalBalanceAtRangeEnd = useComputed(() => {
+    const range = dashboard.current
+    return groupAccounts.value.reduce((sum, acc) => {
+      // Get balance as of range end date
+      const balanceAtDate = transaction.list.value.reduce((txnSum, txn) => {
+        if (txn.accountId === acc.id && !txn.deletedAt) {
+          const txnDate = new Date(txn.timestamp)
+          // Only include transactions up to the range end date
+          if (txnDate <= range.endDate) {
+            return txnSum + txn.amount
+          }
+        }
+        return txnSum
+      }, acc.startingBalance)
+
+      return sum + balanceAtDate
+    }, 0)
+  })
+
+  // Function to get individual account balance as of range end date
+  const getAccountBalanceAtRangeEnd = (accountId: number) => {
+    const range = dashboard.current
+    const acc = groupAccounts.value.find((a) => a.id === accountId)
+    if (!acc) return 0
+
+    return transaction.list.value.reduce((sum, txn) => {
+      if (txn.accountId === accountId && !txn.deletedAt) {
+        const txnDate = new Date(txn.timestamp)
+        // Only include transactions up to the range end date
+        if (txnDate <= range.endDate) {
+          return sum + txn.amount
+        }
+      }
+      return sum
+    }, acc.startingBalance)
+  }
+
+  // Get balance description based on selected date range
+  const balanceDescription = useComputed(() => {
+    const range = dashboard.current
+    const now = new Date()
+
+    // Check if it's current date
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+
+    if (range.endDate.getTime() >= today.getTime()) {
+      return "Current balance"
+    }
+
+    return `Balance as of ${
+      range.endDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: range.endDate.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+      })
+    }`
+  })
 
   // Get the default currency from selected group
   const defaultCurrency = useComputed(() => group.getSelectedCurrency())
@@ -60,14 +116,14 @@ export function AccountBalancesOverview() {
           {/* Total Balance Summary */}
           <div class="mb-6 p-4 bg-gray-50 rounded-lg">
             <div class="text-center">
-              <p class="text-sm text-gray-600 mb-1">Total Balance</p>
+              <p class="text-sm text-gray-600 mb-1">{balanceDescription.value}</p>
               <CurrencyDisplay
-                amount={totalBalance.value}
+                amount={totalBalanceAtRangeEnd.value}
                 currency={defaultCurrency.value.id}
                 class={`text-2xl font-bold ${
-                  totalBalance.value >= 0 ? "text-green-600" : "text-red-600"
+                  totalBalanceAtRangeEnd.value >= 0 ? "text-green-600" : "text-red-600"
                 }`}
-                highlightNegative={totalBalance.value < 0}
+                highlightNegative={totalBalanceAtRangeEnd.value < 0}
               />
               <p class="text-xs text-gray-500 mt-1">
                 Across {groupAccounts.value.length}{" "}
@@ -79,7 +135,7 @@ export function AccountBalancesOverview() {
           {/* Individual Account List */}
           <div class="space-y-3">
             {groupAccounts.value.map((acc) => {
-              const currentBalance = account.getCurrentBalance(acc.id)
+              const balanceAtRangeEnd = getAccountBalanceAtRangeEnd(acc.id)
               return (
                 <Link
                   key={acc.id}
@@ -99,7 +155,7 @@ export function AccountBalancesOverview() {
                   </div>
                   <div class="text-right">
                     <CurrencyDisplay
-                      amount={currentBalance}
+                      amount={balanceAtRangeEnd}
                       currency={acc.currencyId}
                       class="text-sm font-medium"
                     />

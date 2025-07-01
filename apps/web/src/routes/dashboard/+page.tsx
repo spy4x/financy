@@ -12,7 +12,7 @@ import { IncomeByCategoryWidget } from "./components/income-by-category-widget.t
 export function Dashboard() {
   return (
     <section class="page-layout">
-      <PageTitle>Dashboard</PageTitle>
+      <PageTitle showDateRangeSelector>Dashboard</PageTitle>
 
       <div class="space-y-8">
         <FinancialOverviewCards />
