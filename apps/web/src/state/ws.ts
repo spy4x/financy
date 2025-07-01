@@ -116,6 +116,8 @@ export const ws = {
       )
       connectedAt.value = 0
       status.value = WSStatus.DISCONNECTED
+      // Reset sync operation when connection is lost to prevent stuck loading screen
+      syncOp.value = op()
       ws.reconnect()
     }
 
@@ -221,6 +223,8 @@ export const ws = {
       socket.value.close()
       socket.value = null
       reconnectOp.value = op()
+      // Reset sync operation when disconnecting to prevent stuck loading screen
+      syncOp.value = op()
     }
     if (shouldReconnect) {
       ws.reconnect()
@@ -266,7 +270,17 @@ export const ws = {
       return
     }
     syncOp.value = op(true)
-    ws.request({ message: { e: "sync", t: WebSocketMessageType.SYNC_START, p: [syncedAt.value] } })
+    ws.request({
+      message: {
+        e: "sync",
+        t: WebSocketMessageType.SYNC_START,
+        p: [
+          0,
+          // TODO: implement proper offline-storage on frontend side to be able to utilize syncedAt timestamp
+          // syncedAt.value
+        ],
+      },
+    })
   },
 
   request: (params: {
