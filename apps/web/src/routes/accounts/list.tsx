@@ -221,7 +221,7 @@ export function AccountList() {
                 <>
                   <th class="text-left">Name</th>
                   <th class="text-left">Currency</th>
-                  <th class="text-left">Balance</th>
+                  <th class="text-right">Balance</th>
                   <th class="text-right">Actions</th>
                 </>
               }
@@ -265,7 +265,7 @@ export function AccountList() {
                       })()}
                     </div>
                   </td>
-                  <td class="whitespace-nowrap">
+                  <td class="whitespace-nowrap text-right">
                     <CurrencyDisplay
                       amount={account.getCurrentBalance(acc.id)}
                       currency={acc.currencyId}
@@ -354,7 +354,7 @@ export function AccountList() {
                       <td class="px-6 py-3 text-sm text-gray-900 dark:text-gray-100" colSpan={2}>
                         Total ({currency.getById(total.currencyId).code}):
                       </td>
-                      <td class="px-6 py-3 text-sm">
+                      <td class="px-6 py-3 text-sm text-right">
                         <CurrencyDisplay
                           amount={total.total}
                           currency={total.currencyId}
