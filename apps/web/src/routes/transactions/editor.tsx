@@ -11,12 +11,13 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
-import { CategoryType, TransactionType, TransactionTypeUtils } from "@shared/types"
 import {
-  applyCurrencySign,
-  formatCentsToInput,
-  parseCurrencyInput,
-} from "@shared/helpers/format.ts"
+  CategoryType,
+  TransactionDirection,
+  TransactionType,
+  TransactionUtils,
+} from "@shared/types"
+import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
 
 enum EditorState {
   INITIALIZING = "initializing",
@@ -33,7 +34,7 @@ export function TransactionEditor() {
   const accountId = useSignal<number | null>(null)
   const toAccountId = useSignal<number | null>(null) // Only used for transfers
   const categoryId = useSignal<number | null>(null)
-  const type = useSignal<number>(1) // Default to Debit
+  const type = useSignal<number>(1) // Default to Expense
   const amount = useSignal("")
   const memo = useSignal("")
   const originalCurrencyId = useSignal<number | null>(null)
@@ -43,7 +44,7 @@ export function TransactionEditor() {
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
   // Track if we're editing a transfer where the UI has been "swapped" for better UX
-  // This happens when editing the credit (positive amount) side of a transfer
+  // This happens when editing the income (positive amount) side of a transfer
   const isTransferSwapped = useSignal<boolean>(false)
 
   // Helper function for cleaner state checks
@@ -75,7 +76,7 @@ export function TransactionEditor() {
     if (!selectedGroupId) return []
 
     const currentTransactionType = type.value
-    const expectedCategoryType = currentTransactionType === TransactionType.CREDIT
+    const expectedCategoryType = currentTransactionType === TransactionType.INCOME
       ? CategoryType.INCOME
       : CategoryType.EXPENSE
 
@@ -132,15 +133,14 @@ export function TransactionEditor() {
               t.id !== existingTransaction.id
             )
             if (linkedTransaction) {
-              // Determine which transaction is the debit (from) and which is the credit (to)
-              // The transaction with negative amount is the debit (from), positive is credit (to)
-              if (existingTransaction.amount < 0) {
-                // Current transaction is the debit (from account)
+              // Determine which transaction is the source (MONEY_OUT) and which is the destination (MONEY_IN)
+              if (existingTransaction.direction === TransactionDirection.MONEY_OUT) {
+                // Current transaction is the source (from account)
                 accountId.value = existingTransaction.accountId
                 toAccountId.value = linkedTransaction.accountId
                 isTransferSwapped.value = false
               } else {
-                // Current transaction is the credit (to account), linked is debit (from account)
+                // Current transaction is the destination (to account), linked is source (from account)
                 // For UX, we swap the accounts to show the transfer direction logically
                 accountId.value = linkedTransaction.accountId
                 toAccountId.value = existingTransaction.accountId
@@ -179,7 +179,7 @@ export function TransactionEditor() {
         if (urlType && ["1", "2", "3"].includes(urlType)) {
           type.value = parseInt(urlType)
         } else {
-          type.value = 1 // Default to Debit
+          type.value = 1 // Default to Expense
         }
 
         // Set from account from URL parameter if provided
@@ -254,13 +254,6 @@ export function TransactionEditor() {
     }
 
     // For transfers, use simpler validation - just check if toAccountId is set
-    const transactionData = {
-      type: type.value,
-      accountId: accountId.value,
-      categoryId: categoryId.value,
-    }
-
-    // Simpler validation - transfers don't use the complex field validation
     if (type.value === TransactionType.TRANSFER) {
       if (!toAccountId.value) {
         error.value = "Destination account is required for transfers"
@@ -273,7 +266,14 @@ export function TransactionEditor() {
         return
       }
     } else {
-      const validationError = TransactionTypeUtils.validateFields(transactionData)
+      // For non-transfer transactions, validate required fields
+      const transactionData = {
+        type: type.value,
+        accountId: accountId.value,
+        categoryId: categoryId.value,
+      }
+
+      const validationError = TransactionUtils.validateFields(transactionData)
       if (validationError) {
         error.value = validationError
         state.value = EditorState.ERROR
@@ -310,12 +310,10 @@ export function TransactionEditor() {
     error.value = ""
     state.value = EditorState.IN_PROGRESS
 
-    // Apply correct sign based on transaction type
-    // DEBIT = negative amount, CREDIT = positive amount
-    const signedAmount = applyCurrencySign(amountInCents, type.value as TransactionType)
-    const signedOriginalAmount = originalAmountInCents
-      ? applyCurrencySign(originalAmountInCents, type.value as TransactionType)
-      : undefined
+    // Backend will auto-determine direction from transaction type
+    // Just send the amount as positive value and let backend handle signing
+    const amountToSend = Math.abs(amountInCents) // Always send positive
+    const originalAmountToSend = originalAmountInCents ? Math.abs(originalAmountInCents) : undefined
 
     if (editTransactionId) {
       // For updates, construct the proper data object
@@ -330,17 +328,17 @@ export function TransactionEditor() {
         timestamp?: Date
       } = {
         type: type.value,
-        amount: signedAmount,
+        amount: amountToSend,
         memo: memo.value.trim() || undefined,
         originalCurrencyId: originalCurrencyId.value || undefined,
-        originalAmount: signedOriginalAmount,
+        originalAmount: originalAmountToSend,
         timestamp: new Date(timestamp.value),
       }
 
       // For transfers, handle accountId correctly based on whether the UI was swapped
       if (type.value === TransactionType.TRANSFER) {
         updateData.categoryId = undefined
-        // If the UI was swapped (editing credit side), we need to use the "to" account
+        // If the UI was swapped (editing income side), we need to use the "to" account
         // as the actual accountId for this transaction
         updateData.accountId = isTransferSwapped.value
           ? toAccountId.value || undefined
@@ -357,7 +355,7 @@ export function TransactionEditor() {
         account.transfer(
           accountId.value!,
           toAccountId.value!,
-          Math.abs(signedAmount),
+          amountToSend,
           memo.value.trim() || undefined,
           new Date(timestamp.value),
         )
@@ -367,11 +365,12 @@ export function TransactionEditor() {
           groupId: group.selectedId.value,
           accountId: accountId.value!,
           categoryId: categoryId.value!,
+          direction: TransactionUtils.getDirectionFromType(type.value), // Auto-determine direction
           type: type.value,
-          amount: signedAmount,
+          amount: amountToSend,
           memo: memo.value.trim() || undefined,
           originalCurrencyId: originalCurrencyId.value || undefined,
-          originalAmount: signedOriginalAmount,
+          originalAmount: originalAmountToSend,
           timestamp: new Date(timestamp.value),
         })
       }
@@ -402,40 +401,40 @@ export function TransactionEditor() {
                   <div class="space-y-6 sm:flex sm:items-center sm:space-x-10 sm:space-y-0">
                     <div class="flex items-center gap-2">
                       <input
-                        id="type-debit"
+                        id="type-expense"
                         name="transaction-type"
                         type="radio"
-                        checked={type.value === TransactionType.DEBIT}
+                        checked={type.value === TransactionType.EXPENSE}
                         class="radio"
-                        data-e2e="transaction-type-debit"
+                        data-e2e="transaction-type-expense"
                         onChange={() => {
-                          type.value = TransactionType.DEBIT
+                          type.value = TransactionType.EXPENSE
                           // Clear category selection when switching type to ensure proper filtering
                           categoryId.value = null
                           toAccountId.value = null
                         }}
                       />
-                      <label for="type-debit" class="label">
-                        Debit (Money Out)
+                      <label for="type-expense" class="label">
+                        Expense
                       </label>
                     </div>
                     <div class="flex items-center gap-2">
                       <input
-                        id="type-credit"
+                        id="type-income"
                         name="transaction-type"
                         type="radio"
-                        checked={type.value === TransactionType.CREDIT}
+                        checked={type.value === TransactionType.INCOME}
                         class="radio"
-                        data-e2e="transaction-type-credit"
+                        data-e2e="transaction-type-income"
                         onChange={() => {
-                          type.value = TransactionType.CREDIT
+                          type.value = TransactionType.INCOME
                           // Clear category selection when switching type to ensure proper filtering
                           categoryId.value = null
                           toAccountId.value = null
                         }}
                       />
-                      <label for="type-credit" class="label">
-                        Credit (Money In)
+                      <label for="type-income" class="label">
+                        Income
                       </label>
                     </div>
                     <div class="flex items-center gap-2">

@@ -4,7 +4,7 @@ import { transaction } from "../../../state/transaction.ts"
 import { category } from "../../../state/category.ts"
 import { group } from "../../../state/group.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function CategorySpendingBreakdown() {
   // Get current month transactions for spending calculations
@@ -18,7 +18,8 @@ export function CategorySpendingBreakdown() {
         const txnDate = new Date(txn.timestamp)
         return (
           txn.groupId === group.selectedId.value &&
-          txn.type === TransactionType.DEBIT && // Only debit transactions for spending
+          txn.direction === TransactionDirection.MONEY_OUT && // Only money out transactions for spending
+          TransactionUtils.affectsProfitLoss(txn.type) && // Exclude transfers
           txnDate >= startOfMonth &&
           txnDate <= endOfMonth &&
           !txn.deletedAt
@@ -56,7 +57,7 @@ export function CategorySpendingBreakdown() {
         }
       }
       // Use absolute amount for spending calculations since amounts are stored as positive values
-      // and we've already filtered for DEBIT transactions only
+      // and we've already filtered for MONEY_OUT transactions only
       const spendingAmount = Math.abs(txn.amount)
       if (txn.categoryId) {
         spending[txn.categoryId].amount += spendingAmount

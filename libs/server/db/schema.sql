@@ -232,7 +232,8 @@ CREATE TABLE transactions (
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     account_id INT4 NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
     linked_transaction_code VARCHAR(10),
-    type INT2 NOT NULL CHECK (type IN (1, 2, 3)),
+    direction INT2 NOT NULL,
+    type INT2 NOT NULL,
     amount INT4 NOT NULL,
     original_currency_id INT4 REFERENCES currencies(id),
     original_amount INT4,
@@ -251,7 +252,8 @@ CREATE TABLE transactions (
 
 COMMENT ON COLUMN transactions.account_id IS 'Account for the transaction (single field approach)';
 COMMENT ON COLUMN transactions.linked_transaction_code IS 'Random string linking transfer transaction pairs (e.g., "abc123xyz0")';
-COMMENT ON COLUMN transactions.type IS '1=DEBIT (money out), 2=CREDIT (money in), 3=TRANSFER (linked pair)';
+COMMENT ON COLUMN transactions.direction IS '1=MONEY_OUT, 2=MONEY_IN';
+COMMENT ON COLUMN transactions.type IS '1=EXPENSE, 2=INCOME, 3=TRANSFER';
 COMMENT ON COLUMN transactions.amount IS 'Stored in smallest unit';
 COMMENT ON COLUMN transactions.original_currency_id IS 'Original currency from vendor (FK to currencies table), null if same as account currency';
 COMMENT ON COLUMN transactions.original_amount IS 'Original amount in vendor''s currency';

@@ -1,4 +1,4 @@
-import { TransactionType } from "@shared/types"
+import { TransactionDirection } from "@shared/types"
 
 /** Formats a decimal number like 13.50354562 to a number with two decimal points, like 13.50 */
 export function formatDecimal(value: number): string {
@@ -155,13 +155,13 @@ export function parseCurrencyInput(value: string): number | null {
 }
 
 /**
- * Converts a signed amount in cents to cents with proper sign based on transaction type
+ * Converts a signed amount in cents to cents with proper sign based on transaction direction
  * @param amount Amount in cents (can be positive or negative)
- * @param transactionType Transaction type (DEBIT or CREDIT)
- * @returns Signed amount in cents (negative for debit, positive for credit)
+ * @param direction Transaction direction (MONEY_OUT or MONEY_IN)
+ * @returns Signed amount in cents (negative for money out, positive for money in)
  */
-export function applyCurrencySign(amount: number, transactionType: TransactionType): number {
+export function applyCurrencySign(amount: number, direction: TransactionDirection): number {
   const absoluteAmount = Math.abs(amount)
   if (absoluteAmount === 0) return 0 // Avoid negative zero
-  return transactionType === TransactionType.DEBIT ? -absoluteAmount : absoluteAmount
+  return direction === TransactionDirection.MONEY_OUT ? -absoluteAmount : absoluteAmount
 }

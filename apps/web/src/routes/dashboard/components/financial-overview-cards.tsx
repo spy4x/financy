@@ -3,7 +3,7 @@ import { account } from "../../../state/account.ts"
 import { transaction } from "../../../state/transaction.ts"
 import { group } from "../../../state/group.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function FinancialOverviewCards() {
   // Calculate total balance across all accounts in selected group
@@ -31,17 +31,23 @@ export function FinancialOverviewCards() {
       })
   })
 
-  // Calculate monthly income (CREDIT transactions - money coming in)
+  // Calculate monthly income (MONEY_IN transactions, excluding transfers)
   const monthlyIncome = useComputed(() =>
     currentMonthTransactions.value
-      .filter((txn) => txn.type === TransactionType.CREDIT)
+      .filter((txn) =>
+        txn.direction === TransactionDirection.MONEY_IN &&
+        TransactionUtils.affectsProfitLoss(txn.type)
+      )
       .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 
-  // Calculate monthly expenses (DEBIT transactions - money going out)
+  // Calculate monthly expenses (MONEY_OUT transactions, excluding transfers)
   const monthlyExpenses = useComputed(() =>
     currentMonthTransactions.value
-      .filter((txn) => txn.type === TransactionType.DEBIT)
+      .filter((txn) =>
+        txn.direction === TransactionDirection.MONEY_OUT &&
+        TransactionUtils.affectsProfitLoss(txn.type)
+      )
       .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
   )
 

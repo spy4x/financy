@@ -3,7 +3,7 @@ import { AccountTransferCommand } from "@api/cqrs/commands.ts"
 import { AccountTransferEvent } from "@api/cqrs/events.ts"
 import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection, TransactionType } from "@shared/types"
 import { getRandomString } from "@shared/helpers/random.ts"
 
 /**
@@ -65,7 +65,8 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           accountId: fromAccountId, // Source account
           categoryId: null, // No category for transfers
           type: TransactionType.TRANSFER,
-          amount: -Math.abs(amount), // Negative amount (money out)
+          direction: TransactionDirection.MONEY_OUT,
+          amount: -Math.abs(amount), // MONEY_OUT = negative amount
           memo: transferMemo,
           timestamp: timestamp || new Date(), // Use provided timestamp or current time
           createdBy: userId,
@@ -82,7 +83,8 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           accountId: toAccountId, // Destination account
           categoryId: null, // No category for transfers
           type: TransactionType.TRANSFER,
-          amount: Math.abs(amount), // Positive amount (money in)
+          direction: TransactionDirection.MONEY_IN,
+          amount: Math.abs(amount), // MONEY_IN = positive amount
           memo: transferMemo,
           timestamp: timestamp || new Date(), // Use provided timestamp or current time
           createdBy: userId,

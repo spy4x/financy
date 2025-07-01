@@ -451,25 +451,36 @@ export type TagUpdate = typeof tagUpdateSchema.infer
 // #endregion Tag
 
 // #region Transaction
+/**
+ * Transaction direction: money flow relative to account
+ */
+export enum TransactionDirection {
+  MONEY_OUT = 1,
+  MONEY_IN = 2,
+}
+
+/**
+ * Transaction type: business semantics
+ */
 export enum TransactionType {
-  DEBIT = 1,
-  CREDIT = 2,
+  EXPENSE = 1,
+  INCOME = 2,
   TRANSFER = 3,
 }
 
 /**
  * Transaction type utility functions
  */
-export const TransactionTypeUtils = {
+export const TransactionUtils = {
   /**
    * Get human-readable transaction type name
    */
   toString: (type: TransactionType): string => {
     switch (type) {
-      case TransactionType.DEBIT:
-        return "Debit"
-      case TransactionType.CREDIT:
-        return "Credit"
+      case TransactionType.EXPENSE:
+        return "Expense"
+      case TransactionType.INCOME:
+        return "Income"
       case TransactionType.TRANSFER:
         return "Transfer"
       default:
@@ -478,14 +489,16 @@ export const TransactionTypeUtils = {
   },
 
   /**
-   * Check if transaction type is debit (money going out)
+   * Check if transaction direction is money out
    */
-  isDebit: (type: TransactionType): boolean => type === TransactionType.DEBIT,
+  isMoneyOut: (direction: TransactionDirection): boolean =>
+    direction === TransactionDirection.MONEY_OUT,
 
   /**
-   * Check if transaction type is credit (money coming in)
+   * Check if transaction direction is money in
    */
-  isCredit: (type: TransactionType): boolean => type === TransactionType.CREDIT,
+  isMoneyIn: (direction: TransactionDirection): boolean =>
+    direction === TransactionDirection.MONEY_IN,
 
   /**
    * Check if transaction type is transfer (between accounts)
@@ -505,29 +518,49 @@ export const TransactionTypeUtils = {
 
     if (transaction.type === TransactionType.TRANSFER) {
       // For transfers: linkedTransactionCode will be set after creation, categoryId must be null
-      if (transaction.categoryId !== null && transaction.categoryId !== undefined) {
+      if (transaction.categoryId != null) {
         return "Transfer transactions cannot have categoryId"
       }
     } else {
-      // For regular transactions: categoryId must be set, linkedTransactionCode must be null
-      if (!transaction.categoryId) return "Regular transactions require categoryId"
-      if (
-        transaction.linkedTransactionCode !== null &&
-        transaction.linkedTransactionCode !== undefined
-      ) {
-        return "Regular transactions cannot have linkedTransactionCode"
+      // For expense/income: categoryId must be set, linkedTransactionCode must be null
+      if (!transaction.categoryId) {
+        return "Transactions require categoryId"
+      }
+      if (transaction.linkedTransactionCode != null) {
+        return "Transactions cannot have linkedTransactionCode"
       }
     }
 
     return null // Valid
+  },
+
+  /**
+   * Auto-determine direction from transaction type
+   */
+  getDirectionFromType: (type: TransactionType): TransactionDirection => {
+    switch (type) {
+      case TransactionType.EXPENSE:
+        return TransactionDirection.MONEY_OUT
+      case TransactionType.INCOME:
+        return TransactionDirection.MONEY_IN
+      case TransactionType.TRANSFER:
+        // For transfers, direction depends on perspective (source vs destination)
+        // This should be handled at the transaction creation level
+        return TransactionDirection.MONEY_OUT // Default to source perspective
+      default:
+        return TransactionDirection.MONEY_OUT
+    }
   },
 }
 
 export const transactionBaseSchema = type({
   amount: "number = 0",
   memo: "string <= 500 = ''",
+  // Direction of money flow relative to account (optional - auto-determined from type)
+  "direction?": "1 | 2 | undefined", // TransactionDirection enum values (1=MONEY_OUT, 2=MONEY_IN)
+  // Business type of transaction
   type: type.enumerated(...Object.values(TransactionType) as TransactionType[]).default(
-    TransactionType.CREDIT,
+    TransactionType.EXPENSE,
   ),
   "categoryId?": "number > 0 | null", // Nullable for transfers
   "originalCurrencyId?": "number > 0 | undefined",
@@ -548,6 +581,7 @@ export const transactionUpdateSchema = transactionSchema.pick(
   "id",
   "amount",
   "memo",
+  "direction",
   "type",
   "categoryId",
   "originalCurrencyId",

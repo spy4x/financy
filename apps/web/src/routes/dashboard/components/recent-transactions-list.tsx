@@ -10,7 +10,7 @@ import { Table } from "../../../components/ui/Table.tsx"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { Dropdown } from "../../../components/ui/Dropdown.tsx"
 import { IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/icons"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function RecentTransactionsList() {
@@ -165,10 +165,12 @@ export function RecentTransactionsList() {
             </td>
             <td class="text-right">
               <CurrencyDisplay
-                amount={txn.type === TransactionType.DEBIT ? -txn.amount : txn.amount}
+                amount={txn.amount} // Amount is already correctly signed based on direction
                 currency={getAccountCurrency(txn.accountId)}
-                class={txn.type === TransactionType.DEBIT ? "text-red-600" : "text-green-600"}
-                highlightNegative={txn.type === TransactionType.DEBIT}
+                class={txn.direction === TransactionDirection.MONEY_OUT
+                  ? "text-red-600"
+                  : "text-green-600"}
+                highlightNegative={txn.direction === TransactionDirection.MONEY_OUT}
               />
             </td>
             <td class="text-right">

@@ -24,7 +24,7 @@ const ops = {
 /**
  * Computed monthly spent amounts for all categories in the current month.
  * Returns a Map of categoryId -> spent amount in cents.
- * Only counts DEBIT transactions (money going out) as "spent".
+ * Only counts MONEY_OUT transactions as "spent".
  */
 const monthlySpent = computed(() => {
   const now = new Date()
@@ -41,12 +41,12 @@ const monthlySpent = computed(() => {
     const txnDate = new Date(txn.createdAt)
     if (txnDate < startOfMonth || txnDate > endOfMonth) return
 
-    // Only count debit transactions (money going out) as "spent"
-    if (txn.type !== 1) return // 1 = DEBIT (money out)
+    // Only count money out transactions as "spent"
+    if (txn.direction !== 1) return // 1 = MONEY_OUT (money out)
 
     if (txn.categoryId) {
       const currentSpent = spentByCategory.get(txn.categoryId) || 0
-      spentByCategory.set(txn.categoryId, currentSpent + txn.amount)
+      spentByCategory.set(txn.categoryId, currentSpent + Math.abs(txn.amount))
     }
   })
 

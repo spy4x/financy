@@ -89,6 +89,7 @@ class MyEvent implements Event<MyEventPayload> {
 
 ### Critical Rules
 
+- **Never Trust Frontend**: Backend must always validate and auto-determine critical business logic (transaction direction, amounts, permissions, etc.). Frontend data is considered untrusted input.
 - Money: Always store as integers (cents), display with `Intl.NumberFormat`
 - Auth: Validate user permissions for all data access
 - State: Use `@preact/signals` instead of hooks
@@ -112,6 +113,7 @@ class MyEvent implements Event<MyEventPayload> {
 - Permissions: Fine-grained access control
 - Audit Trail: Log all financial changes
 - Offline Support: Queue transactions for sync
+- Backend Validation: Critical business logic auto-determined server-side; never trust frontend input
 
 ## Testing & Performance
 

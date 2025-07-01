@@ -4,7 +4,7 @@ import { category } from "../../../state/category.ts"
 import { transaction } from "../../../state/transaction.ts"
 import { group } from "../../../state/group.ts"
 import { BudgetProgress } from "../../../components/ui/BudgetProgress.tsx"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function BudgetProgressBars() {
   // Get current month transactions for spending calculations
@@ -18,7 +18,8 @@ export function BudgetProgressBars() {
         const txnDate = new Date(txn.timestamp)
         return (
           txn.groupId === group.selectedId.value &&
-          txn.type === TransactionType.DEBIT && // Only debit transactions count towards spending
+          txn.direction === TransactionDirection.MONEY_OUT && // Only money out transactions count towards spending
+          TransactionUtils.affectsProfitLoss(txn.type) && // Exclude transfers
           txnDate >= startOfMonth &&
           txnDate <= endOfMonth &&
           !txn.deletedAt

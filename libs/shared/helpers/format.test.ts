@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@shared/testing"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection } from "@shared/types"
 import {
   applyCurrencySign,
   formatCentsToInput,
@@ -26,14 +26,14 @@ describe("Currency formatting helpers", () => {
   })
 
   it("applyCurrencySign", () => {
-    expect(applyCurrencySign(1234, TransactionType.DEBIT)).toBe(-1234) // DEBIT = negative
-    expect(applyCurrencySign(1234, TransactionType.CREDIT)).toBe(1234) // CREDIT = positive
-    expect(applyCurrencySign(-1234, TransactionType.DEBIT)).toBe(-1234) // Always applies correct sign
-    expect(applyCurrencySign(-1234, TransactionType.CREDIT)).toBe(1234) // Always applies correct sign
+    expect(applyCurrencySign(1234, TransactionDirection.MONEY_OUT)).toBe(-1234) // MONEY_OUT = negative
+    expect(applyCurrencySign(1234, TransactionDirection.MONEY_IN)).toBe(1234) // MONEY_IN = positive
+    expect(applyCurrencySign(-1234, TransactionDirection.MONEY_OUT)).toBe(-1234) // Always applies correct sign
+    expect(applyCurrencySign(-1234, TransactionDirection.MONEY_IN)).toBe(1234) // Always applies correct sign
 
     // Test edge cases
-    expect(applyCurrencySign(0, TransactionType.DEBIT)).toBe(0) // Zero amount
-    expect(applyCurrencySign(0, TransactionType.CREDIT)).toBe(0) // Zero amount
+    expect(applyCurrencySign(0, TransactionDirection.MONEY_OUT)).toBe(0) // Zero amount
+    expect(applyCurrencySign(0, TransactionDirection.MONEY_IN)).toBe(0) // Zero amount
   })
 
   it("formatCurrency", () => {

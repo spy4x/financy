@@ -86,6 +86,7 @@ export const transaction = {
     groupId: number
     accountId: number
     categoryId: number
+    direction?: number // Optional - backend will auto-determine from type
     type: number
     amount: number
     memo?: string
@@ -105,6 +106,7 @@ export const transaction = {
   update(id: number, data: {
     accountId?: number
     categoryId?: number
+    direction?: number
     type?: number
     amount?: number
     memo?: string

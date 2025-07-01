@@ -3,7 +3,7 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionUpdateCommand } from "@api/cqrs/commands.ts"
 import { TransactionUpdatedEvent } from "@api/cqrs/events.ts"
-import { Account, Transaction, TransactionType, TransactionTypeUtils } from "@shared/types"
+import { Account, Transaction, TransactionDirection, TransactionUtils } from "@shared/types"
 
 /**
  * Handler for updating a transaction
@@ -31,7 +31,7 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
       }
 
       // Validate fields against transfer business rules
-      const validationError = TransactionTypeUtils.validateFields({
+      const validationError = TransactionUtils.validateFields({
         ...originalTransaction,
         ...updates,
       })
@@ -39,26 +39,35 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         throw new Error(validationError)
       }
 
-      // SECURITY: Enforce correct sign based on transaction type for any amount updates
-      // Never trust frontend - backend validates and corrects the sign
+      // SECURITY: Auto-determine direction and enforce correct sign
+      // Never trust frontend - backend validates and corrects everything
       const correctedUpdates = { ...updates }
 
-      if (updates.amount !== undefined || updates.type !== undefined) {
-        const newType = updates.type ?? originalTransaction.type
+      // AUTO-DETERMINE DIRECTION: Always set direction based on transaction type if type is being updated
+      if (updates.type !== undefined) {
+        correctedUpdates.direction = TransactionUtils.getDirectionFromType(updates.type)
+      }
+
+      if (
+        updates.amount !== undefined || updates.direction !== undefined ||
+        updates.type !== undefined
+      ) {
+        const newDirection = correctedUpdates.direction ?? updates.direction ??
+          originalTransaction.direction
         const newAmount = updates.amount ?? originalTransaction.amount
 
-        // Enforce correct sign based on type
+        // Enforce correct sign based on direction
         const absoluteAmount = Math.abs(newAmount)
-        const correctedAmount = newType === TransactionType.DEBIT
-          ? -absoluteAmount // DEBIT: always negative
-          : absoluteAmount // CREDIT/TRANSFER: always positive
+        const correctedAmount = newDirection === TransactionDirection.MONEY_OUT
+          ? -absoluteAmount // MONEY_OUT: always negative
+          : absoluteAmount // MONEY_IN: always positive
 
         correctedUpdates.amount = correctedAmount
 
         // Apply the same correction to original amount if being updated
         if (updates.originalAmount !== undefined) {
           const absoluteOriginalAmount = Math.abs(updates.originalAmount)
-          correctedUpdates.originalAmount = newType === TransactionType.DEBIT
+          correctedUpdates.originalAmount = newDirection === TransactionDirection.MONEY_OUT
             ? -absoluteOriginalAmount
             : absoluteOriginalAmount
         }
@@ -90,7 +99,7 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
         const originalAmount = originalTransaction.amount
 
         // Calculate the difference in account balance
-        // Both amounts are already signed (negative for DEBIT, positive for CREDIT/TRANSFER)
+        // Both amounts are already signed (negative for MONEY_OUT, positive for MONEY_IN)
         const balanceDiff = newAmount - originalAmount
 
         accountUpdated = await tx.account.updateBalance(
@@ -111,13 +120,30 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
           )
 
           if (linkedTransactionData) {
-            // For the linked transaction, the amount should be the opposite sign
-            const linkedAmount = -newAmount
-            const linkedBalanceDiff = linkedAmount - (-originalAmount)
+            // For the linked transaction, calculate the opposite direction and correct amount
+            const originalDirection = originalTransaction.direction
+            const newDirection = correctedUpdates.direction ?? originalDirection
+
+            // Linked transaction has opposite direction
+            const linkedDirection = newDirection === TransactionDirection.MONEY_OUT
+              ? TransactionDirection.MONEY_IN
+              : TransactionDirection.MONEY_OUT
+
+            // Amount sign follows the direction
+            const absoluteNewAmount = Math.abs(newAmount)
+            const linkedAmount = linkedDirection === TransactionDirection.MONEY_OUT
+              ? -absoluteNewAmount
+              : absoluteNewAmount
+
+            // Calculate balance difference for linked account
+            const linkedBalanceDiff = linkedAmount - linkedTransactionData.amount
 
             linkedTransaction = await tx.transaction.updateOne({
               id: linkedTransactionData.id,
-              data: { amount: linkedAmount },
+              data: {
+                amount: linkedAmount,
+                direction: linkedDirection,
+              },
             })
 
             linkedAccountUpdated = await tx.account.updateBalance(
@@ -126,6 +152,39 @@ export const transactionUpdateHandler: CommandHandler<TransactionUpdateCommand> 
             )
           }
         }
+      } else if (
+        correctedUpdates.direction !== undefined && originalTransaction.linkedTransactionCode
+      ) {
+        // Handle direction-only updates for transfers
+        const linkedTransactions = await tx.transaction.findByLinkedTransactionCode(
+          originalTransaction.linkedTransactionCode,
+          userId,
+        )
+
+        // Find the other transaction in the transfer pair (not the current one)
+        const linkedTransactionData = linkedTransactions.find(
+          (t) => t.id !== originalTransaction.id,
+        )
+
+        if (linkedTransactionData) {
+          // Linked transaction has opposite direction
+          const newDirection = correctedUpdates.direction
+          const linkedDirection = newDirection === TransactionDirection.MONEY_OUT
+            ? TransactionDirection.MONEY_IN
+            : TransactionDirection.MONEY_OUT
+
+          linkedTransaction = await tx.transaction.updateOne({
+            id: linkedTransactionData.id,
+            data: { direction: linkedDirection },
+          })
+        }
+
+        // Just fetch the account without updating balance
+        const account = await tx.account.findOne({ id: originalTransaction.accountId })
+        if (!account) {
+          throw new Error(`Account with id ${originalTransaction.accountId} not found`)
+        }
+        accountUpdated = account
       } else {
         // Just fetch the account without updating balance
         const account = await tx.account.findOne({ id: originalTransaction.accountId })

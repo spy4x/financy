@@ -3,7 +3,7 @@ import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { TransactionCreateCommand } from "@api/cqrs/commands.ts"
 import { TransactionCreatedEvent } from "@api/cqrs/events.ts"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 /**
  * Handler for creating a transaction
@@ -20,16 +20,20 @@ export const transactionCreateHandler: CommandHandler<TransactionCreateCommand> 
     // Create transaction data with userId as createdBy
     const transactionToCreate = { ...transactionData, createdBy: userId }
 
-    // SECURITY: Enforce correct sign based on transaction type
+    // AUTO-DETERMINE DIRECTION: Always set direction based on transaction type
+    // Never trust frontend - backend always determines the correct direction
+    transactionToCreate.direction = TransactionUtils.getDirectionFromType(transactionData.type)
+
+    // SECURITY: Enforce correct sign based on transaction direction
     // Never trust frontend - backend validates and corrects the sign
     const absoluteAmount = Math.abs(transactionData.amount)
-    const correctedAmount = transactionData.type === TransactionType.DEBIT
-      ? -absoluteAmount // DEBIT: always negative
-      : absoluteAmount // CREDIT: always positive
+    const correctedAmount = transactionToCreate.direction === TransactionDirection.MONEY_OUT
+      ? -absoluteAmount
+      : absoluteAmount
 
     // Apply the same correction to original amount if present
-    const correctedOriginalAmount = transactionData.originalAmount
-      ? (transactionData.type === TransactionType.DEBIT
+    const correctedOriginalAmount = transactionData.originalAmount !== undefined
+      ? (transactionToCreate.direction === TransactionDirection.MONEY_OUT
         ? -Math.abs(transactionData.originalAmount)
         : Math.abs(transactionData.originalAmount))
       : undefined

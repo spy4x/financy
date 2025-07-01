@@ -178,10 +178,10 @@ export function TransactionList() {
 
   function getTransactionTypeDisplay(type: number): { label: string; color: string } {
     switch (type) {
-      case TransactionType.DEBIT:
-        return { label: "Debit", color: "text-red-600" }
-      case TransactionType.CREDIT:
-        return { label: "Credit", color: "text-green-600" }
+      case TransactionType.EXPENSE:
+        return { label: "Expense", color: "text-red-600" }
+      case TransactionType.INCOME:
+        return { label: "Income", color: "text-green-600" }
       case TransactionType.TRANSFER:
         return { label: "Transfer", color: "text-blue-600" }
       default:
@@ -269,8 +269,8 @@ export function TransactionList() {
                     }}
                   >
                     <option value="">All Types</option>
-                    <option value="1">Debit</option>
-                    <option value="2">Credit</option>
+                    <option value="1">Expense</option>
+                    <option value="2">Income</option>
                     <option value="3">Transfer</option>
                   </select>
                 </div>

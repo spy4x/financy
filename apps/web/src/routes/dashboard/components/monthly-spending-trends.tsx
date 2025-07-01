@@ -2,7 +2,7 @@ import { useComputed } from "@preact/signals"
 import { transaction } from "../../../state/transaction.ts"
 import { group } from "../../../state/group.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
-import { TransactionType } from "@shared/types"
+import { TransactionDirection, TransactionUtils } from "@shared/types"
 
 export function MonthlySpendingTrends() {
   // Generate last 6 months of data
@@ -23,11 +23,17 @@ export function MonthlySpendingTrends() {
         )
 
       const income = monthTransactions
-        .filter((txn) => txn.type === TransactionType.CREDIT)
+        .filter((txn) =>
+          txn.direction === TransactionDirection.MONEY_IN &&
+          TransactionUtils.affectsProfitLoss(txn.type)
+        )
         .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
 
       const expenses = monthTransactions
-        .filter((txn) => txn.type === TransactionType.DEBIT)
+        .filter((txn) =>
+          txn.direction === TransactionDirection.MONEY_OUT &&
+          TransactionUtils.affectsProfitLoss(txn.type)
+        )
         .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
 
       data.push({
