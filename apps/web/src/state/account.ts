@@ -21,39 +21,42 @@ const ops = {
   }),
 }
 
-/**
- * Calculate the current balance for an account
- * Formula: startingBalance + sum of all transactions
- */
-function calculateCurrentBalance(accountId: number): number {
-  const accountData = list.value.find((acc) => acc.id === accountId)
-  if (!accountData) return 0
-
-  const accountTransactions = transaction.list.value.filter((txn) =>
-    txn.accountId === accountId && !txn.deletedAt
-  )
-
-  const transactionSum = accountTransactions.reduce((sum, txn) => {
-    // Transactions are already signed correctly based on direction
-    return sum + txn.amount
-  }, 0)
-
-  return accountData.startingBalance + transactionSum
-}
+// Memoization cache for account balances
+const balanceCache = new Map<number, number>()
 
 export const account = {
   list,
   ops,
   /**
-   * Get current balance for an account (derived from startingBalance + transactions)
+   * Get current balance for an account (derived from startingBalance + transactions, memoized)
    */
-  getCurrentBalance: (accountId: number) => calculateCurrentBalance(accountId),
+  getCurrentBalance(accountId: number) {
+    if (balanceCache.has(accountId)) {
+      console.log("Cached", accountId)
+      return balanceCache.get(accountId)!
+    }
+    console.log("Calculating", accountId)
+    const accountData = list.value.find((acc) => acc.id === accountId)
+    if (!accountData) return 0
+
+    const balance = transaction.list.value.reduce((sum, txn) => {
+      if (txn.accountId === accountId && !txn.deletedAt) {
+        // Transactions are already signed correctly based on direction
+        return sum + txn.amount
+      }
+      return sum
+    }, accountData.startingBalance)
+
+    balanceCache.set(accountId, balance)
+    return balance
+  },
   init() {
     ws.onMessage((msg) => {
       if (msg.e !== "account") return
       switch (msg.t) {
         case WebSocketMessageType.LIST:
           account.list.value = Array.isArray(msg.p) ? (msg.p as Account[]) : []
+          balanceCache.clear()
           break
         case WebSocketMessageType.CREATED: {
           const p = Array.isArray(msg.p) ? msg.p : []
@@ -85,6 +88,7 @@ export const account = {
               const deleted = deletedAccounts.find((deleted) => deleted.id === a.id)
               return deleted ? deleted : a
             })
+            deletedAccounts.forEach((a) => balanceCache.delete(a.id))
           }
           account.ops.delete.value = { inProgress: false, error: null }
           break
@@ -106,6 +110,14 @@ export const account = {
           break
         }
       }
+    })
+
+    // Invalidate balance cache for affected account(s) on transaction changes
+    transaction.list.subscribe((txns) => {
+      // Find all accountIds affected by changed transactions
+      const affectedAccountIds = new Set<number>(txns.map((txn) => txn.accountId))
+      // Remove cache for all affected accounts
+      affectedAccountIds.forEach((id) => balanceCache.delete(id))
     })
   },
   create(name: string, currencyId: number, startingBalance: number = 0) {
