@@ -3,10 +3,11 @@ import { ComponentChildren } from "preact"
 interface Props {
   headerSlot: ComponentChildren
   bodySlots: ComponentChildren[]
+  footerSlot?: ComponentChildren // Optional footer content
   rowDataE2E?: string // Optional data-e2e attribute for rows
 }
 
-export function Table({ headerSlot, bodySlots, rowDataE2E }: Props) {
+export function Table({ headerSlot, bodySlots, footerSlot, rowDataE2E }: Props) {
   return (
     <div class="-mx-4 md:mx-0 bg-white dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-600 sm:rounded-lg pb-px scrollbar overflow-x-auto min-h-[300px]">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
@@ -26,6 +27,11 @@ export function Table({ headerSlot, bodySlots, rowDataE2E }: Props) {
             </tr>
           ))}
         </tbody>
+        {footerSlot && (
+          <tfoot class="bg-gray-50 dark:bg-gray-700">
+            {footerSlot}
+          </tfoot>
+        )}
       </table>
     </div>
   )

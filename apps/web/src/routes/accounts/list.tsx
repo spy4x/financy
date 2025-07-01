@@ -80,6 +80,30 @@ export function AccountList() {
     })
   })
 
+  // Calculate totals by currency for account balances
+  const accountTotals = useComputed(() => {
+    const totals = new Map<number, { total: number; currencyId: number }>()
+
+    filteredAccounts.value.forEach((acc) => {
+      if (acc.deletedAt) return // Skip deleted accounts
+
+      const currencyId = acc.currencyId
+
+      if (!totals.has(currencyId)) {
+        totals.set(currencyId, { total: 0, currencyId })
+      }
+
+      const total = totals.get(currencyId)!
+      total.total += account.getCurrentBalance(acc.id)
+    })
+
+    return Array.from(totals.values()).sort((a, b) => {
+      const currA = currency.getById(a.currencyId)
+      const currB = currency.getById(b.currencyId)
+      return currA.code.localeCompare(currB.code)
+    })
+  })
+
   function handleDelete(acc: Account) {
     if (
       confirm(
@@ -323,6 +347,25 @@ export function AccountList() {
                   </td>
                 </>
               ))}
+              footerSlot={accountTotals.value.length > 0 && (
+                <>
+                  {accountTotals.value.map((total) => (
+                    <tr class="bg-gray-50 dark:bg-gray-700 font-medium">
+                      <td class="px-6 py-3 text-sm text-gray-900 dark:text-gray-100" colSpan={2}>
+                        Total ({currency.getById(total.currencyId).code}):
+                      </td>
+                      <td class="px-6 py-3 text-sm">
+                        <CurrencyDisplay
+                          amount={total.total}
+                          currency={total.currencyId}
+                          highlightNegative
+                        />
+                      </td>
+                      <td></td>
+                    </tr>
+                  ))}
+                </>
+              )}
             />
           )}
 
