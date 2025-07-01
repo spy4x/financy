@@ -4,6 +4,7 @@ import { transaction } from "../../../state/transaction.ts"
 import { group } from "../../../state/group.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
+import { Link } from "wouter-preact"
 
 export function FinancialOverviewCards() {
   // Calculate total balance across all accounts in selected group
@@ -63,24 +64,28 @@ export function FinancialOverviewCards() {
       amount: totalBalance.value,
       description: "Across all accounts",
       positive: totalBalance.value >= 0,
+      link: "/accounts",
     },
     {
       title: "Monthly Income",
       amount: monthlyIncome.value,
       description: "This month",
       positive: true,
+      link: "/transactions?type=2",
     },
     {
       title: "Monthly Expenses",
       amount: -monthlyExpenses.value, // Display as negative
       description: "This month",
       positive: false,
+      link: "/transactions?type=1",
     },
     {
       title: "Net Cash Flow",
       amount: netCashFlow.value,
       description: "Income - Expenses",
       positive: netCashFlow.value >= 0,
+      link: "/transactions",
     },
   ]
 
@@ -89,7 +94,12 @@ export function FinancialOverviewCards() {
       <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Financial Overview</h2>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card, index) => (
-          <div key={index} class="card">
+          <Link
+            key={index}
+            href={card.link}
+            class="card hover:shadow-lg transition-shadow"
+            title={card.title}
+          >
             <div class="card-body">
               <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0">
@@ -111,7 +121,7 @@ export function FinancialOverviewCards() {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

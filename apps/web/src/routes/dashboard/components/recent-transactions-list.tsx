@@ -45,12 +45,14 @@ export function RecentTransactionsList() {
     return currency.getById(acc?.currencyId || 1).code
   }
 
-  const formatDate = (dateString: string | Date) => {
+  const formatTimestamp = (dateString: string | Date) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleString(undefined, {
       month: "short",
       day: "numeric",
       year: date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+      hour: "2-digit",
+      minute: "2-digit",
     })
   }
 
@@ -122,87 +124,110 @@ export function RecentTransactionsList() {
       <Table
         headerSlot={
           <>
-            <th scope="col" class="text-left">Date</th>
+            <th scope="col" class="text-left">Timestamp</th>
+            <th scope="col" class="text-right">Amount</th>
             <th scope="col" class="text-left">Description</th>
             <th scope="col" class="text-left">Category</th>
             <th scope="col" class="text-left">Account</th>
-            <th scope="col" class="text-right">Amount</th>
             <th scope="col" class="text-right">Actions</th>
           </>
         }
-        bodySlots={recentTransactions.value.map((txn, index) => (
-          <>
-            <td class="text-gray-900">
-              {formatDate(txn.timestamp)}
-            </td>
-            <td class="text-gray-900">
-              <div class="max-w-xs truncate" title={txn.memo || "No description"}>
-                {txn.memo || <span class="text-gray-400 italic">No description</span>}
-              </div>
-            </td>
-            <td class="text-gray-500">
-              {(() => {
-                const categoryDisplay = txn.categoryId
-                  ? getCategoryDisplay(txn.categoryId)
-                  : { name: "N/A", icon: "", color: "#gray" }
-                return (
-                  <div class="flex items-center gap-2">
-                    {categoryDisplay.icon && <span class="text-sm">{categoryDisplay.icon}</span>}
-                    {categoryDisplay.color && (
-                      <div
-                        class="w-3 h-3 rounded-full border border-gray-300"
-                        style={{ backgroundColor: categoryDisplay.color }}
-                        title={`Category: ${categoryDisplay.name}`}
-                      />
-                    )}
-                    <span class="truncate">{categoryDisplay.name}</span>
-                  </div>
-                )
-              })()}
-            </td>
-            <td class="text-gray-500">
-              {getAccountName(txn.accountId)}
-            </td>
-            <td class="text-right">
-              <CurrencyDisplay
-                amount={txn.amount} // Amount is already correctly signed based on direction
-                currency={getAccountCurrency(txn.accountId)}
-                class={txn.direction === TransactionDirection.MONEY_OUT
-                  ? "text-red-600"
-                  : "text-green-600"}
-                highlightNegative={txn.direction === TransactionDirection.MONEY_OUT}
-              />
-            </td>
-            <td class="text-right">
-              <Dropdown
-                trigger={<IconEllipsisVertical class="size-5" />}
-                triggerClasses="btn-input-icon"
-                vertical={shouldDropdownOpenUp(index, recentTransactions.value.length)
-                  ? "up"
-                  : "down"}
-              >
-                <div class="py-1" role="none">
-                  <button
-                    onClick={() => handleEdit(txn.id)}
-                    type="button"
-                    class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    <IconPencilSquare class="size-4 mr-2" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(txn.id)}
-                    type="button"
-                    class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                  >
-                    <IconTrashBin class="size-4 mr-2" />
-                    Delete
-                  </button>
+        bodySlots={recentTransactions.value.map((txn, index) => {
+          // Determine color for amount: transfers = blue, out = red, in = green
+          let amountClass = ""
+          if (txn.type === 3) {
+            amountClass = "text-blue-600"
+          } else if (txn.direction === TransactionDirection.MONEY_OUT) {
+            amountClass = "text-red-600"
+          } else {
+            amountClass = "text-green-600"
+          }
+          return (
+            <>
+              <td class="text-gray-900">
+                {formatTimestamp(txn.timestamp)}
+              </td>
+              <td class={`text-right ${amountClass}`}>
+                <CurrencyDisplay
+                  amount={txn.amount}
+                  currency={getAccountCurrency(txn.accountId)}
+                  class={amountClass}
+                  highlightNegative={txn.direction === TransactionDirection.MONEY_OUT}
+                />
+              </td>
+              <td class="text-gray-900">
+                <div class="max-w-xs truncate" title={txn.memo || "No description"}>
+                  {txn.memo || <span class="text-gray-400 italic">No description</span>}
                 </div>
-              </Dropdown>
-            </td>
-          </>
-        ))}
+              </td>
+              <td class="text-gray-500">
+                {(() => {
+                  const categoryDisplay = txn.categoryId
+                    ? getCategoryDisplay(txn.categoryId)
+                    : { name: "N/A", icon: "", color: "#gray" }
+                  return txn.categoryId
+                    ? (
+                      <Link
+                        href={`/transactions?categoryId=${txn.categoryId}`}
+                        class="flex items-center gap-2 hover:underline text-blue-700"
+                        title={`View all transactions for ${categoryDisplay.name}`}
+                      >
+                        {categoryDisplay.icon && (
+                          <span class="text-sm">{categoryDisplay.icon}</span>
+                        )}
+                        {categoryDisplay.color && (
+                          <div
+                            class="w-3 h-3 rounded-full border border-gray-300"
+                            style={{ backgroundColor: categoryDisplay.color }}
+                            title={`Category: ${categoryDisplay.name}`}
+                          />
+                        )}
+                        <span class="truncate">{categoryDisplay.name}</span>
+                      </Link>
+                    )
+                    : <span class="truncate">{categoryDisplay.name}</span>
+                })()}
+              </td>
+              <td class="text-gray-500">
+                <Link
+                  href={`/transactions?accountId=${txn.accountId}`}
+                  class="hover:underline text-blue-700"
+                  title={`View all transactions for ${getAccountName(txn.accountId)}`}
+                >
+                  {getAccountName(txn.accountId)}
+                </Link>
+              </td>
+              <td class="text-right">
+                <Dropdown
+                  trigger={<IconEllipsisVertical class="size-5" />}
+                  triggerClasses="btn-input-icon"
+                  vertical={shouldDropdownOpenUp(index, recentTransactions.value.length)
+                    ? "up"
+                    : "down"}
+                >
+                  <div class="py-1" role="none">
+                    <button
+                      onClick={() => handleEdit(txn.id)}
+                      type="button"
+                      class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <IconPencilSquare class="size-4 mr-2" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(txn.id)}
+                      type="button"
+                      class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <IconTrashBin class="size-4 mr-2" />
+                      Delete
+                    </button>
+                  </div>
+                </Dropdown>
+              </td>
+            </>
+          )
+        })}
       />
     </div>
   )

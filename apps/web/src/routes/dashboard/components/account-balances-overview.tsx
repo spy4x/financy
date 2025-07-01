@@ -1,11 +1,10 @@
 import { useComputed } from "@preact/signals"
 import { Link } from "wouter-preact"
-import { navigate } from "@client/helpers"
 import { account } from "../../../state/account.ts"
 import { group } from "../../../state/group.ts"
 import { currency } from "../../../state/currency.ts"
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
-import { IconHome, IconPlus } from "@client/icons"
+import { IconHome } from "@client/icons"
 
 export function AccountBalancesOverview() {
   // Get accounts for selected group
@@ -23,19 +22,9 @@ export function AccountBalancesOverview() {
   // Get the default currency from selected group
   const defaultCurrency = useComputed(() => group.getSelectedCurrency())
 
-  // Categorize accounts by balance status
-  const categorizedAccounts = useComputed(() => {
-    const accounts = groupAccounts.value
-    return {
-      positive: accounts.filter((acc) => account.getCurrentBalance(acc.id) > 0),
-      zero: accounts.filter((acc) => account.getCurrentBalance(acc.id) === 0),
-      negative: accounts.filter((acc) => account.getCurrentBalance(acc.id) < 0),
-    }
-  })
+  // ...existing code...
 
-  const handleAccountClick = (accountId: number) => {
-    navigate(`/accounts/${accountId}`)
-  }
+  // ...existing code...
 
   if (groupAccounts.value.length === 0) {
     return (
@@ -48,22 +37,6 @@ export function AccountBalancesOverview() {
             <p class="text-sm text-gray-400 mb-4">
               Create your first account to start tracking your finances.
             </p>
-            {group.selectedId.value
-              ? (
-                <Link
-                  href="/accounts/create"
-                  class="btn btn-primary"
-                >
-                  <IconPlus class="size-4 mr-2" />
-                  Add Account
-                </Link>
-              )
-              : (
-                <div class="btn btn-disabled cursor-not-allowed">
-                  <IconPlus class="size-4 mr-2" />
-                  Add Account
-                </div>
-              )}
           </div>
         </div>
       </div>
@@ -107,23 +80,14 @@ export function AccountBalancesOverview() {
           <div class="space-y-3">
             {groupAccounts.value.map((acc) => {
               const currentBalance = account.getCurrentBalance(acc.id)
-              const isPositive = currentBalance > 0
-              const isZero = currentBalance === 0
-              const isNegative = currentBalance < 0
-
               return (
-                <div
+                <Link
                   key={acc.id}
+                  href={`/transactions?accountId=${acc.id}`}
                   class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => handleAccountClick(acc.id)}
+                  title="View transactions for this account"
                 >
                   <div class="flex items-center space-x-3">
-                    <div
-                      class={`
-                      w-3 h-3 rounded-full
-                      ${isPositive ? "bg-green-500" : isZero ? "bg-yellow-500" : "bg-red-500"}
-                    `}
-                    />
                     <div>
                       <p class="text-sm font-medium text-gray-900">
                         {acc.name}
@@ -137,54 +101,15 @@ export function AccountBalancesOverview() {
                     <CurrencyDisplay
                       amount={currentBalance}
                       currency={acc.currencyId}
-                      class={`text-sm font-medium ${
-                        isPositive ? "text-green-600" : isZero ? "text-gray-600" : "text-red-600"
-                      }`}
-                      highlightNegative={isNegative}
+                      class="text-sm font-medium"
                     />
                   </div>
-                </div>
+                </Link>
               )
             })}
           </div>
 
-          {/* Account Status Summary */}
-          {(categorizedAccounts.value.negative.length > 0 ||
-            categorizedAccounts.value.zero.length > 0) && (
-            <div class="mt-6 pt-4 border-t border-gray-200">
-              <div class="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p class="text-xs text-gray-500">Positive</p>
-                  <p class="text-sm font-medium text-green-600">
-                    {categorizedAccounts.value.positive.length}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Zero</p>
-                  <p class="text-sm font-medium text-yellow-600">
-                    {categorizedAccounts.value.zero.length}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Negative</p>
-                  <p class="text-sm font-medium text-red-600">
-                    {categorizedAccounts.value.negative.length}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Add Account Button */}
-          <div class="mt-4 pt-4 border-t border-gray-200">
-            <Link
-              href="/accounts/create"
-              class="btn btn-sm btn-primary-outline w-full"
-            >
-              <IconPlus class="size-4 mr-2" />
-              Add Account
-            </Link>
-          </div>
+          {/* ...removed status summary and add account button... */}
         </div>
       </div>
     </div>

@@ -98,21 +98,22 @@ export function BudgetProgressBars() {
               const limitAmount = cat.monthlyLimit || 0
 
               return (
-                <div key={cat.id} class="space-y-2">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      {cat.icon && <span class="text-lg">{cat.icon}</span>}
-                      {cat.color && (
-                        <div
-                          class="w-3 h-3 rounded-full border border-gray-300"
-                          style={{ backgroundColor: cat.color }}
-                          title={`Category: ${cat.name}`}
-                        />
-                      )}
-                      <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {cat.name}
-                      </h3>
-                    </div>
+                <Link
+                  key={cat.id}
+                  href={`/transactions?categoryId=${cat.id}`}
+                  class="block cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors space-y-2"
+                  title={`View transactions for ${cat.name}`}
+                >
+                  <div class="flex items-center space-x-2">
+                    {cat.icon && <span class="text-lg" title={cat.name}>{cat.icon}</span>}
+                    {cat.color && (
+                      <div
+                        class="w-3 h-3 rounded-full border border-gray-300"
+                        style={{ backgroundColor: cat.color }}
+                        title={`Category: ${cat.name}`}
+                      />
+                    )}
+                    <span class="font-medium text-gray-900">{cat.name}</span>
                   </div>
                   <BudgetProgress
                     spentAmount={spentAmount}
@@ -120,7 +121,7 @@ export function BudgetProgressBars() {
                     currency={defaultCurrency.value.code}
                     color={cat.color}
                   />
-                </div>
+                </Link>
               )
             })}
           </div>
