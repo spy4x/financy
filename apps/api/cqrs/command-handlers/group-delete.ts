@@ -26,6 +26,13 @@ export const GroupDeleteHandler: CommandHandler<GroupDeleteCommand> = async (com
       throw new Error("Only group owners can delete groups")
     }
 
+    // Check if this is the last group for the user
+    const userGroups = await db.group.findMany(userId)
+    const activeGroups = userGroups.filter((g) => !g.deletedAt)
+    if (activeGroups.length <= 1) {
+      throw new Error("Cannot delete the last group. At least one group must exist at all times.")
+    }
+
     // Delete the group
     const group = await db.group.deleteOne({ id: groupId })
 

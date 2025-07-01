@@ -70,7 +70,18 @@ export function GroupList() {
     })
   })
 
+  // Count active (non-deleted) groups for deletion prevention
+  const activeGroups = useComputed(() => {
+    return group.list.value.filter((g) => !g.deletedAt)
+  })
+
   function handleDelete(grp: Group) {
+    // Check if this is the last active group
+    if (activeGroups.value.length <= 1) {
+      alert("Cannot delete the last group. At least one group must exist at all times.")
+      return
+    }
+
     if (
       confirm(
         `Are you sure you want to delete the group "${grp.name}"? This will delete all associated accounts, categories, and transactions.`,
@@ -260,8 +271,17 @@ export function GroupList() {
                               <button
                                 onClick={() => handleDelete(grp)}
                                 type="button"
-                                class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                                disabled={group.ops.delete.value.inProgress}
+                                class={`w-full flex items-center px-4 py-2 text-sm ${
+                                  activeGroups.value.length <= 1 ||
+                                    group.ops.delete.value.inProgress
+                                    ? "text-gray-400 cursor-not-allowed"
+                                    : "text-red-600 hover:bg-gray-100"
+                                }`}
+                                disabled={activeGroups.value.length <= 1 ||
+                                  group.ops.delete.value.inProgress}
+                                title={activeGroups.value.length <= 1
+                                  ? "Cannot delete the last group. At least one group must exist at all times."
+                                  : "Delete group"}
                               >
                                 <IconTrashBin class="size-4 mr-2" />
                                 Delete
