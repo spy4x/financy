@@ -7,6 +7,13 @@ import { category } from "../../../state/category.ts"
 import { group } from "@web/state/group.ts"
 import { currency } from "../../../state/currency.ts"
 import { dashboard } from "@web/state/dashboard.ts"
+
+function getDateRangeQuery() {
+  const { startDate, endDate } = dashboard.current
+  return `from=${encodeURIComponent(startDate.toISOString())}&to=${
+    encodeURIComponent(endDate.toISOString())
+  }`
+}
 import { Table } from "@web/components/ui/Table.tsx"
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
@@ -81,7 +88,7 @@ export function TopTransactionsList() {
           {group.selectedId.value
             ? (
               <Link
-                href="/transactions"
+                href={`/transactions?${getDateRangeQuery()}`}
                 class="btn btn-sm btn-primary"
               >
                 View All
@@ -121,7 +128,7 @@ export function TopTransactionsList() {
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Top Transactions</h2>
         <Link
-          href="/transactions"
+          href={`/transactions?${getDateRangeQuery()}`}
           class="btn btn-sm btn-primary"
         >
           View All

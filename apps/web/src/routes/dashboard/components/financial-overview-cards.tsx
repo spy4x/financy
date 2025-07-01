@@ -3,6 +3,13 @@ import { account } from "../../../state/account.ts"
 import { transaction } from "@web/state/transaction.ts"
 import { group } from "@web/state/group.ts"
 import { dashboard } from "@web/state/dashboard.ts"
+
+function getDateRangeQuery() {
+  const { startDate, endDate } = dashboard.current
+  return `from=${encodeURIComponent(startDate.toISOString())}&to=${
+    encodeURIComponent(endDate.toISOString())
+  }`
+}
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 import { Link } from "wouter-preact"
@@ -130,21 +137,21 @@ export function FinancialOverviewCards() {
       amount: rangeIncome.value,
       description: periodDescription.value,
       positive: true,
-      link: "/transactions?type=2",
+      link: `/transactions?type=2&${getDateRangeQuery()}`,
     },
     {
       title: "Expenses",
       amount: -rangeExpenses.value, // Display as negative
       description: periodDescription.value,
       positive: false,
-      link: "/transactions?type=1",
+      link: `/transactions?type=1&${getDateRangeQuery()}`,
     },
     {
       title: "Net Cash Flow",
       amount: netCashFlow.value,
       description: "Income - Expenses",
       positive: netCashFlow.value >= 0,
-      link: "/transactions",
+      link: `/transactions?${getDateRangeQuery()}`,
     },
   ]
 

@@ -5,6 +5,13 @@ import { group } from "@web/state/group.ts"
 import { currency } from "@web/state/currency.ts"
 import { transaction } from "@web/state/transaction.ts"
 import { dashboard } from "@web/state/dashboard.ts"
+
+function getDateRangeQuery() {
+  const { startDate, endDate } = dashboard.current
+  return `from=${encodeURIComponent(startDate.toISOString())}&to=${
+    encodeURIComponent(endDate.toISOString())
+  }`
+}
 import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { IconHome } from "@client/icons"
 
@@ -139,7 +146,7 @@ export function AccountBalancesOverview() {
               return (
                 <Link
                   key={acc.id}
-                  href={`/transactions?accountId=${acc.id}`}
+                  href={`/transactions?accountId=${acc.id}&${getDateRangeQuery()}`}
                   class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                   title="View transactions for this account"
                 >

@@ -4,6 +4,13 @@ import { transaction } from "@web/state/transaction.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
 import { dashboard } from "@web/state/dashboard.ts"
+
+function getDateRangeQuery() {
+  const { startDate, endDate } = dashboard.current
+  return `from=${encodeURIComponent(startDate.toISOString())}&to=${
+    encodeURIComponent(endDate.toISOString())
+  }`
+}
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 
@@ -117,7 +124,7 @@ export function CategorySpendingBreakdown() {
           {categorySpendingData.value.map((item) => (
             <Link
               key={item.categoryId}
-              href={`/transactions?categoryId=${item.categoryId}`}
+              href={`/transactions?categoryId=${item.categoryId}&${getDateRangeQuery()}`}
               class="block cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
             >
               <div class="flex items-center justify-between mb-2">

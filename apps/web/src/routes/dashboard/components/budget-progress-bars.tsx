@@ -4,6 +4,13 @@ import { category } from "@web/state/category.ts"
 import { transaction } from "@web/state/transaction.ts"
 import { group } from "@web/state/group.ts"
 import { dashboard } from "@web/state/dashboard.ts"
+
+function getDateRangeQuery() {
+  const { startDate, endDate } = dashboard.current
+  return `from=${encodeURIComponent(startDate.toISOString())}&to=${
+    encodeURIComponent(endDate.toISOString())
+  }`
+}
 import { BudgetProgress } from "@web/components/ui/BudgetProgress.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 
@@ -98,7 +105,7 @@ export function BudgetProgressBars() {
               return (
                 <Link
                   key={cat.id}
-                  href={`/transactions?categoryId=${cat.id}`}
+                  href={`/transactions?categoryId=${cat.id}&${getDateRangeQuery()}`}
                   class="block cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors space-y-2"
                   title={`View transactions for ${cat.name}`}
                 >
