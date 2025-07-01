@@ -102,9 +102,14 @@ export function TransactionEditor() {
       })
   })
 
-  // Initialize for edit mode
+  // Initialize for edit mode or URL parameters
   useSignalEffect(() => {
     if (isState(EditorState.INITIALIZING)) {
+      // Check URL parameters for pre-filling form (for create mode)
+      const urlParams = new URLSearchParams(globalThis.location.search)
+      const urlType = urlParams.get("type")
+      const urlFromAccountId = urlParams.get("fromAccountId")
+
       if (editTransactionId) {
         // If sync is in progress, wait for it to complete before checking for transaction
         if (ws.syncOp.value.inProgress) {
@@ -166,14 +171,32 @@ export function TransactionEditor() {
           state.value = EditorState.ERROR
         }
       } else {
-        // Create mode - set defaults
+        // Create mode - set defaults and handle URL parameters
         const accounts = groupAccounts.value
         const categories = groupCategories.value
 
-        accountId.value = accounts.length > 0 ? accounts[0].id : null
+        // Set type from URL parameter if provided
+        if (urlType && ["1", "2", "3"].includes(urlType)) {
+          type.value = parseInt(urlType)
+        } else {
+          type.value = 1 // Default to Debit
+        }
+
+        // Set from account from URL parameter if provided
+        if (urlFromAccountId) {
+          const fromAccountIdNum = parseInt(urlFromAccountId)
+          const fromAccount = accounts.find((acc) => acc.id === fromAccountIdNum)
+          if (fromAccount) {
+            accountId.value = fromAccountIdNum
+          } else {
+            accountId.value = accounts.length > 0 ? accounts[0].id : null
+          }
+        } else {
+          accountId.value = accounts.length > 0 ? accounts[0].id : null
+        }
+
         toAccountId.value = accounts.length > 1 ? accounts[1].id : null
         categoryId.value = categories.length > 0 ? categories[0].id : null
-        type.value = 1 // Default to Debit
         amount.value = ""
         memo.value = ""
         originalCurrencyId.value = null
@@ -499,7 +522,7 @@ export function TransactionEditor() {
                         class={acc.deletedAt ? "text-gray-400 italic" : ""}
                       >
                         {acc.deletedAt ? "[DELETED] " : ""}
-                        {acc.name} ({currency.getDisplay(acc.currencyId).code})
+                        {acc.name} ({currency.getById(acc.currencyId).code})
                       </option>
                     ))}
                   </select>
@@ -534,7 +557,7 @@ export function TransactionEditor() {
                             class={acc.deletedAt ? "text-gray-400 italic" : ""}
                           >
                             {acc.deletedAt ? "[DELETED] " : ""}
-                            {acc.name} ({currency.getDisplay(acc.currencyId).code})
+                            {acc.name} ({currency.getById(acc.currencyId).code})
                           </option>
                         ))}
                     </select>

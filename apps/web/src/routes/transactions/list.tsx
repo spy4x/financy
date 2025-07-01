@@ -2,7 +2,8 @@ import { transaction } from "@web/state/transaction.ts"
 import { account } from "@web/state/account.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
-import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
+import { useComputed, useSignal } from "@preact/signals"
+import { useUrlFilters } from "@client/preact/use-url-filters.ts"
 import {
   IconEllipsisVertical,
   IconFunnel,
@@ -21,28 +22,63 @@ import { ItemStatus, ItemStatusUtils, type Transaction, TransactionType } from "
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function TransactionList() {
-  const filter = {
-    search: useSignal(""),
-    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
-    type: useSignal<number | null>(null),
-    accountId: useSignal<number | null>(null),
-    categoryId: useSignal<number | null>(null),
-    from: useSignal(""),
-    to: useSignal(""),
-  }
-
-  // Initialize filters from URL parameters
-  useSignalEffect(() => {
-    const urlParams = new URLSearchParams(globalThis.location.search)
-    const categoryIdParam = urlParams.get("categoryId")
-
-    if (categoryIdParam) {
-      const categoryId = parseInt(categoryIdParam, 10)
-      if (!isNaN(categoryId)) {
-        filter.categoryId.value = categoryId
-      }
-    }
+  const { filters, clearFilters } = useUrlFilters({
+    search: {
+      signal: useSignal(""),
+      initialValue: "",
+      urlParam: "search",
+    },
+    status: {
+      signal: useSignal<ItemStatus>(ItemStatus.ACTIVE),
+      initialValue: ItemStatus.ACTIVE,
+      urlParam: "status",
+      parser: (value) =>
+        value === "deleted"
+          ? ItemStatus.DELETED
+          : value === "all"
+          ? ItemStatus.ALL
+          : ItemStatus.ACTIVE,
+    },
+    type: {
+      signal: useSignal<number | null>(null),
+      initialValue: null,
+      urlParam: "type",
+      parser: (value) => {
+        const parsed = value ? parseInt(value) : null
+        return isNaN(parsed as number) ? null : parsed
+      },
+    },
+    accountId: {
+      signal: useSignal<number | null>(null),
+      initialValue: null,
+      urlParam: "account",
+      parser: (value) => {
+        const parsed = value ? parseInt(value) : null
+        return isNaN(parsed as number) ? null : parsed
+      },
+    },
+    categoryId: {
+      signal: useSignal<number | null>(null),
+      initialValue: null,
+      urlParam: "category",
+      parser: (value) => {
+        const parsed = value ? parseInt(value) : null
+        return isNaN(parsed as number) ? null : parsed
+      },
+    },
+    from: {
+      signal: useSignal(""),
+      initialValue: "",
+      urlParam: "from",
+    },
+    to: {
+      signal: useSignal(""),
+      initialValue: "",
+      urlParam: "to",
+    },
   })
+
+  const { search, status, type, accountId, categoryId, from, to } = filters
 
   const filteredTransactions = useComputed(() => {
     const transactions = transaction.list.value
@@ -51,42 +87,42 @@ export function TransactionList() {
     // Filter by selected group and status first
     const groupTransactions = selectedGroupId
       ? transactions.filter((txn) =>
-        txn.groupId === selectedGroupId && ItemStatusUtils.matches(txn, filter.status.value)
+        txn.groupId === selectedGroupId && ItemStatusUtils.matches(txn, status.value)
       )
-      : transactions.filter((txn) => ItemStatusUtils.matches(txn, filter.status.value))
+      : transactions.filter((txn) => ItemStatusUtils.matches(txn, status.value))
 
     let filtered = groupTransactions
 
     // Filter by account
-    if (filter.accountId.value !== null) {
-      filtered = filtered.filter((txn) => txn.accountId === filter.accountId.value)
+    if (accountId.value !== null) {
+      filtered = filtered.filter((txn) => txn.accountId === accountId.value)
     }
 
     // Filter by category
-    if (filter.categoryId.value !== null) {
-      filtered = filtered.filter((txn) => txn.categoryId === filter.categoryId.value)
+    if (categoryId.value !== null) {
+      filtered = filtered.filter((txn) => txn.categoryId === categoryId.value)
     }
 
     // Filter by type
-    if (filter.type.value !== null) {
-      filtered = filtered.filter((txn) => txn.type === filter.type.value)
+    if (type.value !== null) {
+      filtered = filtered.filter((txn) => txn.type === type.value)
     }
 
     // Filter by search term
-    if (filter.search.value) {
-      const searchLower = filter.search.value.toLowerCase()
+    if (search.value) {
+      const searchLower = search.value.toLowerCase()
       filtered = filtered.filter((txn) => txn.memo?.toLowerCase().includes(searchLower))
     }
 
     // Filter by date range
-    if (filter.from.value) {
-      const fromDate = new Date(filter.from.value)
+    if (from.value) {
+      const fromDate = new Date(from.value)
       fromDate.setHours(0, 0, 0, 0) // Start of day
       filtered = filtered.filter((txn) => new Date(txn.timestamp).getTime() >= fromDate.getTime())
     }
 
-    if (filter.to.value) {
-      const toDate = new Date(filter.to.value)
+    if (to.value) {
+      const toDate = new Date(to.value)
       toDate.setHours(23, 59, 59, 999) // End of day
       filtered = filtered.filter((txn) => new Date(txn.timestamp).getTime() <= toDate.getTime())
     }
@@ -182,8 +218,8 @@ export function TransactionList() {
                     <input
                       class="input w-full pr-10"
                       placeholder="Search transactions..."
-                      value={filter.search.value}
-                      onInput={(e) => filter.search.value = e.currentTarget.value}
+                      value={search.value}
+                      onInput={(e) => search.value = e.currentTarget.value}
                     />
                     <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                       <IconSearch class="size-5 text-gray-600" />
@@ -197,10 +233,11 @@ export function TransactionList() {
                     Status
                   </label>
                   <select
+                    key={status.value}
                     class="input w-full"
-                    value={filter.status.value}
+                    value={status.value}
                     onChange={(e) => {
-                      filter.status.value = e.currentTarget.value as ItemStatus
+                      status.value = e.currentTarget.value as ItemStatus
                     }}
                   >
                     <option value={ItemStatus.ACTIVE}>Active</option>
@@ -215,18 +252,19 @@ export function TransactionList() {
                     Type
                   </label>
                   <select
+                    key={type.value}
                     class="input w-full"
-                    value={filter.type.value || ""}
+                    value={type.value || ""}
                     onChange={(e) => {
                       const value = e.currentTarget.value
-                      filter.type.value = value ? parseInt(value) : null
+                      type.value = value ? parseInt(value) : null
                       // Clear category filter when switching to transfer type
                       if (value && parseInt(value) === TransactionType.TRANSFER) {
-                        filter.categoryId.value = null
+                        categoryId.value = null
                       }
                       // Clear to account filter when switching away from transfer
                       if (!value || parseInt(value) !== TransactionType.TRANSFER) {
-                        filter.accountId.value = null
+                        accountId.value = null
                       }
                     }}
                   >
@@ -240,14 +278,15 @@ export function TransactionList() {
                 {/* From Account Filter */}
                 <div>
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    {filter.type.value === TransactionType.TRANSFER ? "From Account" : "Account"}
+                    {type.value === TransactionType.TRANSFER ? "From Account" : "Account"}
                   </label>
                   <select
+                    key={accountId.value}
                     class="input w-full"
-                    value={filter.accountId.value || ""}
+                    value={accountId.value || ""}
                     onChange={(e) => {
                       const value = e.currentTarget.value
-                      filter.accountId.value = value ? parseInt(value) : null
+                      accountId.value = value ? parseInt(value) : null
                     }}
                   >
                     <option value="">All Accounts</option>
@@ -260,17 +299,18 @@ export function TransactionList() {
                 </div>
 
                 {/* Category Filter - hide for transfers */}
-                {filter.type.value !== TransactionType.TRANSFER && (
+                {type.value !== TransactionType.TRANSFER && (
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Category
                     </label>
                     <select
+                      key={categoryId.value}
                       class="input w-full"
-                      value={filter.categoryId.value || ""}
+                      value={categoryId.value || ""}
                       onChange={(e) => {
                         const value = e.currentTarget.value
-                        filter.categoryId.value = value ? parseInt(value) : null
+                        categoryId.value = value ? parseInt(value) : null
                       }}
                     >
                       <option value="">All Categories</option>
@@ -293,8 +333,8 @@ export function TransactionList() {
                     <input
                       type="date"
                       class="input w-full"
-                      value={filter.from.value}
-                      onInput={(e) => filter.from.value = e.currentTarget.value}
+                      value={from.value}
+                      onInput={(e) => from.value = e.currentTarget.value}
                     />
                   </div>
                   <div>
@@ -304,8 +344,8 @@ export function TransactionList() {
                     <input
                       type="date"
                       class="input w-full"
-                      value={filter.to.value}
-                      onInput={(e) => filter.to.value = e.currentTarget.value}
+                      value={to.value}
+                      onInput={(e) => to.value = e.currentTarget.value}
                     />
                   </div>
                 </div>
@@ -316,13 +356,7 @@ export function TransactionList() {
                     type="button"
                     class="btn btn-link text-sm w-full"
                     onClick={() => {
-                      filter.accountId.value = null
-                      filter.categoryId.value = null
-                      filter.type.value = null
-                      filter.search.value = ""
-                      filter.from.value = ""
-                      filter.to.value = ""
-                      filter.status.value = ItemStatus.ACTIVE
+                      clearFilters()
                     }}
                   >
                     Clear All Filters
@@ -604,10 +638,10 @@ export function TransactionList() {
 
           {filteredTransactions.value.length === 0 && (
             <div class="text-center py-8 text-gray-500">
-              {filter.search.value || filter.accountId.value !== null ||
-                  filter.categoryId.value !== null || filter.type.value !== null ||
-                  filter.from.value || filter.to.value ||
-                  filter.status.value !== ItemStatus.ACTIVE
+              {search.value || accountId.value !== null ||
+                  categoryId.value !== null || type.value !== null ||
+                  from.value || to.value ||
+                  status.value !== ItemStatus.ACTIVE
                 ? "No transactions found matching your filters."
                 : "No transactions created yet."}
             </div>

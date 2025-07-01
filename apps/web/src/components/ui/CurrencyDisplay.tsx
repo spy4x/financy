@@ -1,4 +1,5 @@
 import { currency } from "@web/state/currency.ts"
+import { formatCurrency } from "@shared/constants/currency.ts"
 
 interface CurrencyDisplayProps {
   /** Amount in smallest currency unit (cents) */
@@ -29,8 +30,8 @@ export function CurrencyDisplay({
 }: CurrencyDisplayProps) {
   // Handle both currency ID (number) and legacy code (string)
   const formatted = typeof currencyIdOrCode === "number"
-    ? currency.format(amount, currencyIdOrCode)
-    : currency.format(amount, currency.getByCode(currencyIdOrCode))
+    ? formatCurrency(amount, currency.getById(currencyIdOrCode))
+    : formatCurrency(amount, currency.getByCode(currencyIdOrCode))
 
   const isNegative = amount < 0
 

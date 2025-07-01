@@ -1,6 +1,7 @@
 import { group } from "@web/state/group.ts"
 import { currency } from "@web/state/currency.ts"
 import { useComputed, useSignal } from "@preact/signals"
+import { useUrlFilters } from "@client/preact/use-url-filters.ts"
 import {
   IconEllipsisVertical,
   IconFunnel,
@@ -19,26 +20,49 @@ import { type Group, ItemStatus, ItemStatusUtils } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
 export function GroupList() {
-  const filter = {
-    search: useSignal(""),
-    currency: useSignal<number | null>(null),
-    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
-  }
+  // URL-synced filters using the custom hook
+  const { filters, clearFilters } = useUrlFilters({
+    search: {
+      signal: useSignal(""),
+      initialValue: "",
+      urlParam: "search",
+    },
+    currencyId: {
+      signal: useSignal<number | null>(null),
+      initialValue: null,
+      urlParam: "currencyId",
+      parser: (value) => {
+        const num = value ? parseInt(value, 10) : null
+        return !isNaN(num!) ? num : null
+      },
+    },
+    status: {
+      signal: useSignal<ItemStatus>(ItemStatus.ACTIVE),
+      initialValue: ItemStatus.ACTIVE,
+      urlParam: "status",
+      parser: (value) =>
+        value && Object.values(ItemStatus).includes(value as ItemStatus)
+          ? value as ItemStatus
+          : ItemStatus.ACTIVE,
+    },
+  })
+
+  const { search, currencyId: currencyFilter, status } = filters
 
   const filteredGroups = useComputed(() => {
     return group.list.value.filter((grp) => {
       // Search filter
-      if (!grp.name.toLowerCase().includes(filter.search.value.toLowerCase())) {
+      if (!grp.name.toLowerCase().includes(search.value.toLowerCase())) {
         return false
       }
 
       // Currency filter
-      if (filter.currency.value && grp.currencyId !== filter.currency.value) {
+      if (currencyFilter.value && grp.currencyId !== currencyFilter.value) {
         return false
       }
 
       // Status filter using ItemStatusUtils
-      if (!ItemStatusUtils.matches(grp, filter.status.value)) {
+      if (!ItemStatusUtils.matches(grp, status.value)) {
         return false
       }
 
@@ -84,8 +108,8 @@ export function GroupList() {
                   <input
                     class="input w-full pr-10"
                     placeholder="Search groups..."
-                    value={filter.search.value}
-                    onInput={(e) => filter.search.value = e.currentTarget.value}
+                    value={search.value}
+                    onInput={(e) => search.value = e.currentTarget.value}
                   />
                   <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                     <IconSearch class="size-5 text-gray-600" />
@@ -97,8 +121,8 @@ export function GroupList() {
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
                 <CurrencySelector
-                  value={filter.currency.value || ""}
-                  onChange={(id) => filter.currency.value = id || null}
+                  value={currencyFilter.value || ""}
+                  onChange={(id) => currencyFilter.value = id || null}
                   placeholder="All Currencies"
                 />
               </div>
@@ -107,10 +131,11 @@ export function GroupList() {
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
+                  key={status.value}
                   class="input w-full"
-                  value={filter.status.value}
+                  value={status.value}
                   onChange={(e) => {
-                    filter.status.value = e.currentTarget.value as ItemStatus
+                    status.value = e.currentTarget.value as ItemStatus
                   }}
                 >
                   <option value={ItemStatus.ACTIVE}>Active</option>
@@ -124,11 +149,7 @@ export function GroupList() {
                 <button
                   type="button"
                   class="btn btn-link text-sm w-full"
-                  onClick={() => {
-                    filter.search.value = ""
-                    filter.currency.value = null
-                    filter.status.value = ItemStatus.ACTIVE
-                  }}
+                  onClick={clearFilters}
                 >
                   Clear All Filters
                 </button>
@@ -148,9 +169,7 @@ export function GroupList() {
         {filteredGroups.value.length === 0
           ? (
             <div class="text-center py-8 text-gray-500">
-              {filter.search.value
-                ? "No groups found matching your search."
-                : "No groups created yet."}
+              {search.value ? "No groups found matching your search." : "No groups created yet."}
             </div>
           )
           : (
@@ -180,7 +199,7 @@ export function GroupList() {
                       )}
                     </td>
                     <td class={`${isDeleted ? "text-gray-400 line-through" : "text-gray-600"}`}>
-                      {currency.getDisplay(grp.currencyId).code}
+                      {currency.getById(grp.currencyId).code}
                     </td>
                     <td class="text-gray-600">
                       {grp.deletedAt

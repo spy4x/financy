@@ -131,6 +131,6 @@ export const group = {
    */
   getSelectedCurrency() {
     const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
-    return selectedGroup ? currency.getDisplay(selectedGroup.currencyId) : currency.getByCode("USD")
+    return selectedGroup ? currency.getById(selectedGroup.currencyId) : currency.getByCode("USD")
   },
 }

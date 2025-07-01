@@ -42,7 +42,7 @@ export function RecentTransactionsList() {
 
   const getAccountCurrency = (accountId: number) => {
     const acc = account.list.value.find((a) => a.id === accountId)
-    return currency.getDisplay(acc?.currencyId || 1).code
+    return currency.getById(acc?.currencyId || 1).code
   }
 
   const formatDate = (dateString: string | Date) => {

@@ -31,12 +31,25 @@ export function formatCurrency(amount: number, currency: Currency): string {
   const divisor = Math.pow(10, currency.decimalPlaces)
   const value = amount / divisor
 
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.code,
-    minimumFractionDigits: currency.decimalPlaces,
-    maximumFractionDigits: currency.decimalPlaces,
-  }).format(value)
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency.code,
+      minimumFractionDigits: currency.decimalPlaces,
+      maximumFractionDigits: currency.decimalPlaces,
+    }).format(value)
+  } catch (e) {
+    if (e instanceof RangeError) {
+      // Fallback: format as decimal and append currency code
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "decimal",
+        minimumFractionDigits: currency.decimalPlaces,
+        maximumFractionDigits: currency.decimalPlaces,
+      }).format(value)
+      return `${formatted} ${currency.code}`
+    }
+    throw e
+  }
 }
 
 /**
@@ -83,6 +96,16 @@ export function getCurrenciesByType(
  */
 export function findCurrencyByCode(currencies: Currency[], code: string): Currency | undefined {
   return currencies.find((currency) => currency.code.toLowerCase() === code.toLowerCase())
+}
+
+/**
+ * Find currency by ID
+ * @param currencies - Array of currencies from database
+ * @param id - Currency ID to find
+ * @returns Currency object or undefined if not found
+ */
+export function findCurrencyById(currencies: Currency[], id: number): Currency | undefined {
+  return currencies.find((currency) => currency.id === id)
 }
 
 /**

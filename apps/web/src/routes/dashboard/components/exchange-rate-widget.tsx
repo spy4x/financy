@@ -11,7 +11,7 @@ export function ExchangeRateWidget() {
 
     account.list.value
       .filter((acc) => acc.groupId === group.selectedId.value && !acc.deletedAt)
-      .forEach((acc) => currencies.add(currency.getDisplay(acc.currencyId).code))
+      .forEach((acc) => currencies.add(currency.getById(acc.currencyId).code))
 
     return Array.from(currencies)
   })

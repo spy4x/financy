@@ -51,7 +51,7 @@ export function AccountEditor() {
       } else {
         name.value = ""
         // Default to USD currency ID if available, otherwise null
-        const usdCurrency = currency.findByCode("USD")
+        const usdCurrency = currency.getByCode("USD")
         currencyId.value = usdCurrency?.id || null
         error.value = ""
         state.value = EditorState.IDLE

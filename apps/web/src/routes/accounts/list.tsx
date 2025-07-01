@@ -3,6 +3,7 @@ import { group } from "@web/state/group.ts"
 import { currency } from "@web/state/currency.ts"
 import { useComputed, useSignal } from "@preact/signals"
 import {
+  IconArrowRight,
   IconEllipsisVertical,
   IconFunnel,
   IconPencilSquare,
@@ -20,13 +21,34 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { ItemStatus, ItemStatusUtils } from "@shared/types"
 import type { Account } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
+import { useUrlFilters } from "@client/preact/use-url-filters.ts"
 
 export function AccountList() {
-  const filter = {
-    search: useSignal(""),
-    currency: useSignal<number | null>(null),
-    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
-  }
+  // URL-synced filters using the custom hook
+  const { filters, clearFilters } = useUrlFilters({
+    search: {
+      signal: useSignal(""),
+      initialValue: "",
+      urlParam: "search",
+    },
+    currencyId: {
+      signal: useSignal<number | null>(null),
+      initialValue: null,
+      urlParam: "currencyId",
+      parser: (value) => value ? parseInt(value, 10) || null : null,
+    },
+    status: {
+      signal: useSignal<ItemStatus>(ItemStatus.ACTIVE),
+      initialValue: ItemStatus.ACTIVE,
+      urlParam: "status",
+      parser: (value) =>
+        value && Object.values(ItemStatus).includes(value as ItemStatus)
+          ? value as ItemStatus
+          : ItemStatus.ACTIVE,
+    },
+  })
+
+  const { search, currencyId, status } = filters
 
   const filteredAccounts = useComputed(() => {
     return account.list.value.filter((acc) => {
@@ -36,17 +58,21 @@ export function AccountList() {
       }
 
       // Search filter
-      if (!acc.name.toLowerCase().includes(filter.search.value.toLowerCase())) {
+      if (
+        search.value && typeof search.value === "string" &&
+        !acc.name.toLowerCase().includes(search.value.toLowerCase())
+      ) {
         return false
       }
 
       // Currency filter
-      if (filter.currency.value && acc.currencyId !== filter.currency.value) {
+      if (currencyId.value && acc.currencyId !== currencyId.value) {
         return false
       }
 
-      // Status filter
-      if (!ItemStatusUtils.matches(acc, filter.status.value)) {
+      // Status filter - default to ACTIVE if no status specified
+      const effectiveStatus = status.value || ItemStatus.ACTIVE
+      if (effectiveStatus !== ItemStatus.ALL && !ItemStatusUtils.matches(acc, effectiveStatus)) {
         return false
       }
 
@@ -101,8 +127,8 @@ export function AccountList() {
                     <input
                       class="input w-full pr-10"
                       placeholder="Search accounts..."
-                      value={filter.search.value}
-                      onInput={(e) => filter.search.value = e.currentTarget.value}
+                      value={search.value || ""}
+                      onInput={(e) => search.value = e.currentTarget.value}
                     />
                     <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">
                       <IconSearch class="size-5 text-gray-600 dark:text-gray-400" />
@@ -116,8 +142,10 @@ export function AccountList() {
                     Currency
                   </label>
                   <CurrencySelector
-                    value={filter.currency.value}
-                    onChange={(id) => filter.currency.value = id || null}
+                    value={typeof currencyId.value === "number" ? currencyId.value : null}
+                    onChange={(id) => {
+                      currencyId.value = id || null
+                    }}
                     placeholder="All Currencies"
                   />
                 </div>
@@ -128,9 +156,12 @@ export function AccountList() {
                     Status
                   </label>
                   <select
+                    key={status.value}
                     class="input w-full"
-                    value={filter.status.value}
-                    onChange={(e) => filter.status.value = e.currentTarget.value as ItemStatus}
+                    value={status.value}
+                    onInput={(e) => {
+                      status.value = e.currentTarget.value as ItemStatus
+                    }}
                   >
                     <option value={ItemStatus.ACTIVE}>Active</option>
                     <option value={ItemStatus.DELETED}>Deleted</option>
@@ -143,11 +174,7 @@ export function AccountList() {
                   <button
                     type="button"
                     class="btn btn-link text-sm w-full"
-                    onClick={() => {
-                      filter.search.value = ""
-                      filter.currency.value = null
-                      filter.status.value = ItemStatus.ACTIVE
-                    }}
+                    onClick={clearFilters}
                   >
                     Clear All Filters
                   </button>
@@ -195,7 +222,7 @@ export function AccountList() {
                       }`}
                     >
                       {(() => {
-                        const currencyInfo = currency.getDisplay(acc.currencyId)
+                        const currencyInfo = currency.getById(acc.currencyId)
                         return (
                           <>
                             <span class="font-mono font-medium">{currencyInfo.code}</span>
@@ -220,6 +247,17 @@ export function AccountList() {
                         currency={acc.currencyId}
                         highlightNegative={!acc.deletedAt}
                       />
+                      {!acc.deletedAt && (
+                        <Link
+                          href={`${
+                            routes.transactions.children!.create.href
+                          }?type=3&fromAccountId=${acc.id}`}
+                          class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                          title="Transfer money from this account"
+                        >
+                          <IconArrowRight class="size-4" />
+                        </Link>
+                      )}
                     </div>
                   </td>
                   <td class="whitespace-nowrap text-right text-sm font-medium">
@@ -237,6 +275,28 @@ export function AccountList() {
                         : "down"}
                     >
                       <div class="py-1">
+                        {!acc.deletedAt && (
+                          <>
+                            <Link
+                              href={`${routes.transactions.href}?accountId=${acc.id}`}
+                              class="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              title="Find transactions for this account"
+                            >
+                              <IconSearch class="size-4 mr-2" />
+                              Find Transactions
+                            </Link>
+                            <Link
+                              href={`${
+                                routes.transactions.children!.create.href
+                              }?type=3&fromAccountId=${acc.id}`}
+                              class="w-full flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              title="Transfer money from this account"
+                            >
+                              <IconArrowRight class="size-4 mr-2" />
+                              Transfer Money
+                            </Link>
+                          </>
+                        )}
                         <Link
                           href={routes.accounts.children!.edit.href.replace(
                             ":id",
@@ -280,7 +340,7 @@ export function AccountList() {
 
           {filteredAccounts.value.length === 0 && (
             <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-              {filter.search.value
+              {search.value && typeof search.value === "string"
                 ? "No accounts found matching your search."
                 : "No accounts created yet."}
             </div>

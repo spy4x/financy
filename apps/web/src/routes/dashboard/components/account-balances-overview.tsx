@@ -128,7 +128,7 @@ export function AccountBalancesOverview() {
                         {acc.name}
                       </p>
                       <p class="text-xs text-gray-500">
-                        {currency.getDisplay(acc.currencyId).code}
+                        {currency.getById(acc.currencyId).code}
                       </p>
                     </div>
                   </div>

@@ -18,13 +18,40 @@ import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { CategoryType, CategoryTypeUtils, ItemStatus, ItemStatusUtils } from "@shared/types"
 import type { Category } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
+import { useUrlFilters } from "@client/preact/use-url-filters.ts"
 
 export function CategoryList() {
-  const filter = {
-    search: useSignal(""),
-    status: useSignal<ItemStatus>(ItemStatus.ACTIVE),
-    type: useSignal<CategoryType | "all">("all"),
-  }
+  // URL-synced filters using the custom hook
+  const { filters, clearFilters } = useUrlFilters({
+    search: {
+      signal: useSignal(""),
+      initialValue: "",
+      urlParam: "search",
+    },
+    status: {
+      signal: useSignal<ItemStatus>(ItemStatus.ACTIVE),
+      initialValue: ItemStatus.ACTIVE,
+      urlParam: "status",
+      parser: (value) =>
+        value && Object.values(ItemStatus).includes(value as ItemStatus)
+          ? value as ItemStatus
+          : ItemStatus.ACTIVE,
+    },
+    type: {
+      signal: useSignal<CategoryType | "all">("all"),
+      initialValue: "all",
+      urlParam: "type",
+      parser: (value) => {
+        if (value === "all") return "all"
+        const typeNum = value ? parseInt(value, 10) : null
+        return typeNum && Object.values(CategoryType).includes(typeNum as CategoryType)
+          ? typeNum as CategoryType
+          : "all"
+      },
+    },
+  })
+
+  const { search, status, type } = filters
 
   const filteredCategories = useComputed(() => {
     return category.list.value.filter((cat) => {
@@ -34,17 +61,17 @@ export function CategoryList() {
       }
 
       // Search filter
-      if (!cat.name.toLowerCase().includes(filter.search.value.toLowerCase())) {
+      if (!cat.name.toLowerCase().includes(search.value.toLowerCase())) {
         return false
       }
 
       // Status filter
-      if (!ItemStatusUtils.matches(cat, filter.status.value)) {
+      if (!ItemStatusUtils.matches(cat, status.value)) {
         return false
       }
 
       // Type filter
-      if (filter.type.value !== "all" && cat.type !== filter.type.value) {
+      if (type.value !== "all" && cat.type !== type.value) {
         return false
       }
 
@@ -89,8 +116,10 @@ export function CategoryList() {
                     <input
                       class="input w-full pr-10"
                       placeholder="Search categories..."
-                      value={filter.search.value}
-                      onInput={(e) => filter.search.value = e.currentTarget.value}
+                      value={search.value}
+                      onInput={(e) => {
+                        search.value = e.currentTarget.value
+                      }}
                     />
                     <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                       <IconSearch class="size-5 text-gray-600" />
@@ -102,9 +131,12 @@ export function CategoryList() {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select
+                    key={status.value}
                     class="input w-full"
-                    value={filter.status.value}
-                    onChange={(e) => filter.status.value = e.currentTarget.value as ItemStatus}
+                    value={status.value}
+                    onInput={(e) => {
+                      status.value = e.currentTarget.value as ItemStatus
+                    }}
                   >
                     <option value={ItemStatus.ACTIVE}>Active</option>
                     <option value={ItemStatus.DELETED}>Deleted</option>
@@ -116,10 +148,12 @@ export function CategoryList() {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
                   <select
+                    key={type.value}
                     class="input w-full"
-                    value={filter.type.value}
-                    onChange={(e) =>
-                      filter.type.value = e.currentTarget.value as CategoryType | "all"}
+                    value={type.value}
+                    onInput={(e) => {
+                      type.value = e.currentTarget.value as CategoryType | "all"
+                    }}
                   >
                     <option value="all">All Types</option>
                     <option value={CategoryType.EXPENSE}>Expense</option>
@@ -132,11 +166,7 @@ export function CategoryList() {
                   <button
                     type="button"
                     class="btn btn-link text-sm w-full"
-                    onClick={() => {
-                      filter.search.value = ""
-                      filter.status.value = ItemStatus.ACTIVE
-                      filter.type.value = "all"
-                    }}
+                    onClick={clearFilters}
                   >
                     Clear All Filters
                   </button>
@@ -156,7 +186,7 @@ export function CategoryList() {
           {filteredCategories.value.length === 0
             ? (
               <div class="text-center py-8 text-gray-500">
-                {filter.search.value
+                {search.value
                   ? "No categories found matching your search."
                   : "No categories created yet."}
               </div>
@@ -238,6 +268,16 @@ export function CategoryList() {
                             : "down"}
                         >
                           <div class="py-1" role="none">
+                            {!cat.deletedAt && (
+                              <Link
+                                href={`${routes.transactions.href}?categoryId=${cat.id}`}
+                                class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                title="Find transactions for this category"
+                              >
+                                <IconSearch class="size-4 mr-2" />
+                                Find Transactions
+                              </Link>
+                            )}
                             <Link
                               href={routes.categories.children!.edit.href.replace(
                                 ":id",

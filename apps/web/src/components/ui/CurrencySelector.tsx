@@ -1,5 +1,5 @@
 import { useComputed, useSignal } from "@preact/signals"
-import { IconSearch } from "@client/icons"
+import { IconSearch, IconXMark } from "@client/icons"
 import type { Currency, CurrencyType } from "@shared/types"
 import { currency } from "@web/state/currency.ts"
 
@@ -10,7 +10,7 @@ interface CurrencySelectorProps {
   /** Currently selected currency ID (preferred) or code (legacy) */
   value: number | string | null
   /** Callback function called when a currency is selected */
-  onChange: (currencyId: number, currencyCode: string) => void
+  onChange: (currencyId: number | null, currencyCode: string) => void
   /** HTML id for the component (defaults to "currency") */
   id?: string
   /** Whether selection is required for form validation */
@@ -23,6 +23,8 @@ interface CurrencySelectorProps {
   showSearch?: boolean
   /** Filter currencies by type: CurrencyType.FIAT, CurrencyType.CRYPTO, or undefined for all */
   filterType?: CurrencyType
+  /** Whether to show a clear button when a currency is selected */
+  showClearButton?: boolean
 }
 
 /**
@@ -106,6 +108,7 @@ export function CurrencySelector({
   placeholder = "Select currency...",
   showSearch = true,
   filterType,
+  showClearButton = true,
 }: CurrencySelectorProps) {
   const searchQuery = useSignal("")
   const isOpen = useSignal(false)
@@ -145,6 +148,15 @@ export function CurrencySelector({
     onChange(curr.id, curr.code)
     isOpen.value = false
     searchQuery.value = ""
+  }
+
+  /**
+   * Handles the clear button click
+   */
+  function handleClear(e: Event) {
+    e.preventDefault()
+    e.stopPropagation()
+    onChange(null, "")
   }
 
   /**
@@ -195,56 +207,75 @@ export function CurrencySelector({
         required={required}
       />
 
-      {/* Trigger button */}
-      <button
-        type="button"
-        id={id}
-        class={`input text-left cursor-pointer flex items-center justify-between ${
-          disabled ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        onClick={handleToggleOpen}
-        disabled={disabled}
-        aria-haspopup="listbox"
-        aria-expanded={isOpen.value}
-      >
-        <span class="flex items-center gap-2">
-          {selectedCurrency
-            ? (
-              <>
-                <span class="font-mono text-sm font-medium">
-                  {selectedCurrency.code}
-                </span>
-                {selectedCurrency.symbol && (
-                  <span class="text-gray-500 dark:text-gray-400">
-                    {selectedCurrency.symbol}
-                  </span>
-                )}
-                <span class="text-gray-700 dark:text-gray-300">
-                  {selectedCurrency.name}
-                </span>
-                {selectedCurrency.type === 2 && (
-                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                    crypto
-                  </span>
-                )}
-              </>
-            )
-            : <span class="text-gray-500 dark:text-gray-400">{placeholder}</span>}
-        </span>
-        <svg
-          class="w-4 h-4 text-gray-400 dark:text-gray-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      {/* Main container with flex layout */}
+      <div class="flex items-center gap-1">
+        {/* Trigger button */}
+        <button
+          type="button"
+          id={id}
+          class={`input text-left cursor-pointer flex items-center justify-between flex-1 ${
+            disabled ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          onClick={handleToggleOpen}
+          disabled={disabled}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen.value}
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
+          <span class="flex items-center gap-2">
+            {selectedCurrency
+              ? (
+                <>
+                  <span class="font-mono text-sm font-medium">
+                    {selectedCurrency.code}
+                  </span>
+                  {selectedCurrency.symbol && (
+                    <span class="text-gray-500 dark:text-gray-400">
+                      {selectedCurrency.symbol}
+                    </span>
+                  )}
+                  <span class="text-gray-700 dark:text-gray-300">
+                    {selectedCurrency.name}
+                  </span>
+                  {selectedCurrency.type === 2 && (
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                      crypto
+                    </span>
+                  )}
+                </>
+              )
+              : <span class="text-gray-500 dark:text-gray-400">{placeholder}</span>}
+          </span>
+
+          {/* Right-aligned controls */}
+          <div class="flex items-center gap-1 ml-2">
+            {/* Clear button */}
+            {showClearButton && selectedCurrency && (
+              <button
+                type="button"
+                class="btn-input-icon text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 text-lg"
+                onClick={handleClear}
+                title="Clear currency selection"
+                disabled={disabled}
+              >
+                <IconXMark class="size-5" />
+              </button>
+            )}
+            <svg
+              class="w-4 h-4 text-gray-400 dark:text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        </button>
+      </div>
 
       {/* Dropdown */}
       {isOpen.value && (
