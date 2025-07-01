@@ -39,7 +39,7 @@ export function TopTransactionsList() {
       .slice(0, 10) // Show top 10 by amount
   })
 
-  // Helper functions to get names
+  // Helper functions to get names and display info
   const getAccountName = (accountId: number) => {
     const acc = account.list.value.find((a) => a.id === accountId)
     return acc?.name || "Unknown Account"
@@ -52,6 +52,15 @@ export function TopTransactionsList() {
       icon: cat?.icon || undefined,
       color: cat?.color || undefined,
     }
+  }
+
+  // For transfer, find the linked transaction (other side of transfer)
+  const getLinkedTransaction = (txn: typeof transaction.list.value[number]) => {
+    return txn.linkedTransactionCode
+      ? transaction.list.value.find((t) =>
+        t.linkedTransactionCode === txn.linkedTransactionCode && t.id !== txn.id
+      )
+      : null
   }
 
   const getAccountCurrency = (accountId: number) => {
@@ -125,7 +134,7 @@ export function TopTransactionsList() {
 
   return (
     <div>
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-1">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Top Transactions</h2>
         <Link
           href={`/transactions?${getDateRangeQuery()}`}
@@ -134,20 +143,23 @@ export function TopTransactionsList() {
           View All
         </Link>
       </div>
+      <div class="mb-3">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          These are your most expensive transactions in the selected period.
+        </p>
+      </div>
 
       <Table
         headerSlot={
           <>
             <th scope="col" class="text-left">Timestamp</th>
             <th scope="col" class="text-right">Amount</th>
+            <th scope="col" class="text-left">Account / Category</th>
             <th scope="col" class="text-left">Description</th>
-            <th scope="col" class="text-left">Category</th>
-            <th scope="col" class="text-left">Account</th>
             <th scope="col" class="text-right">Actions</th>
           </>
         }
         bodySlots={recentTransactions.value.map((txn, index) => {
-          // Determine color for amount: transfers = blue, out = red, in = green
           let amountClass = ""
           if (txn.type === 3) {
             amountClass = "text-blue-600"
@@ -170,46 +182,144 @@ export function TopTransactionsList() {
                 />
               </td>
               <td class="text-gray-900">
+                <div class="text-sm">
+                  {txn.type === 3
+                    ? (
+                      // Transfer: Show direction based on amount sign
+                      (() => {
+                        const linkedTransaction = getLinkedTransaction(txn)
+                        if (txn.amount < 0) {
+                          // Money out: This Account → Other Account
+                          return (
+                            <>
+                              <Link
+                                href={`/accounts/${txn.accountId}`}
+                                class="text-blue-600 dark:text-blue-400 hover:underline"
+                              >
+                                {getAccountName(txn.accountId)}
+                              </Link>
+                              <span class="mx-2 text-gray-500">→</span>
+                              {linkedTransaction
+                                ? (
+                                  <Link
+                                    href={`/accounts/${linkedTransaction.accountId}`}
+                                    class="text-blue-600 dark:text-blue-400 hover:underline"
+                                  >
+                                    {getAccountName(linkedTransaction.accountId)}
+                                  </Link>
+                                )
+                                : <span class="text-gray-400">Unknown Account</span>}
+                            </>
+                          )
+                        } else {
+                          // Money in: Other Account → This Account
+                          return (
+                            <>
+                              {linkedTransaction
+                                ? (
+                                  <Link
+                                    href={`/accounts/${linkedTransaction.accountId}`}
+                                    class="text-blue-600 dark:text-blue-400 hover:underline"
+                                  >
+                                    {getAccountName(linkedTransaction.accountId)}
+                                  </Link>
+                                )
+                                : <span class="text-gray-400">Unknown Account</span>}
+                              <span class="mx-2 text-gray-500">→</span>
+                              <Link
+                                href={`/accounts/${txn.accountId}`}
+                                class="text-blue-600 dark:text-blue-400 hover:underline"
+                              >
+                                {getAccountName(txn.accountId)}
+                              </Link>
+                            </>
+                          )
+                        }
+                      })()
+                    )
+                    : txn.type === 2
+                    ? (
+                      // INCOME: Show "Category → Account"
+                      <>
+                        {txn.categoryId
+                          ? (
+                            <Link
+                              href={`/categories/${txn.categoryId}`}
+                              class="text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                              {(() => {
+                                const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                                return (
+                                  <span class="inline-flex items-center gap-1">
+                                    {categoryDisplay.icon && (
+                                      <span class="text-sm">{categoryDisplay.icon}</span>
+                                    )}
+                                    {categoryDisplay.color && (
+                                      <div
+                                        class="w-2 h-2 rounded-full border border-gray-300"
+                                        style={{ backgroundColor: categoryDisplay.color }}
+                                      />
+                                    )}
+                                    <span>{categoryDisplay.name}</span>
+                                  </span>
+                                )
+                              })()}
+                            </Link>
+                          )
+                          : <span class="text-gray-500">No Category</span>}
+                        <span class="mx-2 text-gray-500">→</span>
+                        <Link
+                          href={`/accounts/${txn.accountId}`}
+                          class="text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          {getAccountName(txn.accountId)}
+                        </Link>
+                      </>
+                    )
+                    : (
+                      // EXPENSE: Show "Account → Category"
+                      <>
+                        <Link
+                          href={`/accounts/${txn.accountId}`}
+                          class="text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          {getAccountName(txn.accountId)}
+                        </Link>
+                        <span class="mx-2 text-gray-500">→</span>
+                        {txn.categoryId
+                          ? (
+                            <Link
+                              href={`/categories/${txn.categoryId}`}
+                              class="text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                              {(() => {
+                                const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                                return (
+                                  <span class="inline-flex items-center gap-1">
+                                    {categoryDisplay.icon && (
+                                      <span class="text-sm">{categoryDisplay.icon}</span>
+                                    )}
+                                    {categoryDisplay.color && (
+                                      <div
+                                        class="w-2 h-2 rounded-full border border-gray-300"
+                                        style={{ backgroundColor: categoryDisplay.color }}
+                                      />
+                                    )}
+                                    <span>{categoryDisplay.name}</span>
+                                  </span>
+                                )
+                              })()}
+                            </Link>
+                          )
+                          : <span class="text-gray-500">No Category</span>}
+                      </>
+                    )}
+                </div>
+              </td>
+              <td class="text-gray-900">
                 <div class="max-w-xs truncate" title={txn.memo || "No description"}>
                   {txn.memo || <span class="text-gray-400 italic">No description</span>}
                 </div>
-              </td>
-              <td class="text-gray-500">
-                {(() => {
-                  const categoryDisplay = txn.categoryId
-                    ? getCategoryDisplay(txn.categoryId)
-                    : { name: "N/A", icon: "", color: "#gray" }
-                  return txn.categoryId
-                    ? (
-                      <Link
-                        href={`/transactions?categoryId=${txn.categoryId}`}
-                        class="flex items-center gap-2 hover:underline text-blue-700"
-                        title={`View all transactions for ${categoryDisplay.name}`}
-                      >
-                        {categoryDisplay.icon && (
-                          <span class="text-sm">{categoryDisplay.icon}</span>
-                        )}
-                        {categoryDisplay.color && (
-                          <div
-                            class="w-3 h-3 rounded-full border border-gray-300"
-                            style={{ backgroundColor: categoryDisplay.color }}
-                            title={`Category: ${categoryDisplay.name}`}
-                          />
-                        )}
-                        <span class="truncate">{categoryDisplay.name}</span>
-                      </Link>
-                    )
-                    : <span class="truncate">{categoryDisplay.name}</span>
-                })()}
-              </td>
-              <td class="text-gray-500">
-                <Link
-                  href={`/transactions?accountId=${txn.accountId}`}
-                  class="hover:underline text-blue-700"
-                  title={`View all transactions for ${getAccountName(txn.accountId)}`}
-                >
-                  {getAccountName(txn.accountId)}
-                </Link>
               </td>
               <td class="text-right">
                 <Dropdown

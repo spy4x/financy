@@ -412,141 +412,132 @@ export function TransactionList() {
                     </td>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
                       <div
-                        class={`text-sm ${
-                          isDeleted ? "line-through" : "text-gray-900 dark:text-gray-100"
-                        }`}
+                        class={`text-sm ${isDeleted ? "line-through" : "text-gray-900 dark:text-gray-100"}`}
                       >
-                        {txn.type === TransactionType.TRANSFER
-                          ? (
-                            // Transfer: Show direction based on amount sign
-                            <>
-                              {(() => {
-                                // Find the linked transaction to get the other account
-                                const linkedTransaction = txn.linkedTransactionCode
-                                  ? transaction.list.value.find((t) =>
-                                    t.linkedTransactionCode === txn.linkedTransactionCode &&
-                                    t.id !== txn.id
-                                  )
-                                  : null
-
-                                if (txn.amount < 0) {
-                                  // Money out: This Account → Other Account
-                                  return (
-                                    <>
+                        {txn.type === TransactionType.TRANSFER ? (
+                          // Transfer: Show direction based on amount sign
+                          <>
+                            {(() => {
+                              const linkedTransaction = txn.linkedTransactionCode
+                                ? transaction.list.value.find((t) =>
+                                    t.linkedTransactionCode === txn.linkedTransactionCode && t.id !== txn.id)
+                                : null
+                              if (txn.amount < 0) {
+                                // Money out: This Account → Other Account
+                                return (
+                                  <>
+                                    <Link
+                                      href={routes.accounts.children!.edit.href.replace(":id", txn.accountId.toString())}
+                                      class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                    >
+                                      {getAccountName(txn.accountId)}
+                                    </Link>
+                                    <span class="mx-2 text-gray-500">→</span>
+                                    {linkedTransaction ? (
                                       <Link
-                                        href={routes.accounts.children!.edit.href.replace(
-                                          ":id",
-                                          txn.accountId.toString(),
-                                        )}
-                                        class={isDeleted
-                                          ? "text-gray-400 hover:underline"
-                                          : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                        href={routes.accounts.children!.edit.href.replace(":id", linkedTransaction.accountId.toString())}
+                                        class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
                                       >
-                                        {getAccountName(txn.accountId)}
+                                        {getAccountName(linkedTransaction.accountId)}
                                       </Link>
-                                      <span class="mx-2 text-gray-500">→</span>
-                                      {linkedTransaction
-                                        ? (
-                                          <Link
-                                            href={routes.accounts.children!.edit.href.replace(
-                                              ":id",
-                                              linkedTransaction.accountId.toString(),
-                                            )}
-                                            class={isDeleted
-                                              ? "text-gray-400 hover:underline"
-                                              : "text-blue-600 dark:text-blue-400 hover:underline"}
-                                          >
-                                            {getAccountName(linkedTransaction.accountId)}
-                                          </Link>
-                                        )
-                                        : <span class="text-gray-400">Unknown Account</span>}
-                                    </>
-                                  )
-                                } else {
-                                  // Money in: Other Account → This Account
-                                  return (
-                                    <>
-                                      {linkedTransaction
-                                        ? (
-                                          <Link
-                                            href={routes.accounts.children!.edit.href.replace(
-                                              ":id",
-                                              linkedTransaction.accountId.toString(),
-                                            )}
-                                            class={isDeleted
-                                              ? "text-gray-400 hover:underline"
-                                              : "text-blue-600 dark:text-blue-400 hover:underline"}
-                                          >
-                                            {getAccountName(linkedTransaction.accountId)}
-                                          </Link>
-                                        )
-                                        : <span class="text-gray-400">Unknown Account</span>}
-                                      <span class="mx-2 text-gray-500">→</span>
-                                      <Link
-                                        href={routes.accounts.children!.edit.href.replace(
-                                          ":id",
-                                          txn.accountId.toString(),
-                                        )}
-                                        class={isDeleted
-                                          ? "text-gray-400 hover:underline"
-                                          : "text-blue-600 dark:text-blue-400 hover:underline"}
-                                      >
-                                        {getAccountName(txn.accountId)}
-                                      </Link>
-                                    </>
-                                  )
-                                }
-                              })()}
-                            </>
-                          )
-                          : (
-                            // Regular transaction: Show "Account > Category"
-                            <>
-                              <Link
-                                href={routes.accounts.children!.edit.href.replace(
-                                  ":id",
-                                  txn.accountId.toString(),
-                                )}
-                                class={isDeleted
-                                  ? "text-gray-400 hover:underline"
-                                  : "text-blue-600 dark:text-blue-400 hover:underline"}
-                              >
-                                {getAccountName(txn.accountId)}
-                              </Link>
-                              {" > "}
-                              {txn.categoryId
-                                ? (
-                                  <Link
-                                    href={routes.categories.children!.edit.href.replace(
-                                      ":id",
-                                      txn.categoryId.toString(),
-                                    )}
-                                    class={isDeleted
-                                      ? "text-gray-400 hover:underline"
-                                      : "text-blue-600 dark:text-blue-400 hover:underline"}
-                                  >
-                                    {(() => {
-                                      const categoryDisplay = getCategoryDisplay(txn.categoryId)
-                                      return (
-                                        <span class="flex items-center gap-1">
-                                          {categoryDisplay.icon && (
-                                            <span class="text-sm">{categoryDisplay.icon}</span>
-                                          )}
-                                          {categoryDisplay.color && (
-                                            <div
-                                              class="w-2 h-2 rounded-full border border-gray-300"
-                                              style={{ backgroundColor: categoryDisplay.color }}
-                                            />
-                                          )}
-                                          <span>{categoryDisplay.name}</span>
-                                        </span>
-                                      )
-                                    })()}
-                                  </Link>
+                                    ) : <span class="text-gray-400">Unknown Account</span>}
+                                  </>
                                 )
-                                : <span class="text-gray-500">No Category</span>}
-                            </>
-                          )}
+                              } else {
+                                // Money in: Other Account → This Account
+                                return (
+                                  <>
+                                    {linkedTransaction ? (
+                                      <Link
+                                        href={routes.accounts.children!.edit.href.replace(":id", linkedTransaction.accountId.toString())}
+                                        class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                      >
+                                        {getAccountName(linkedTransaction.accountId)}
+                                      </Link>
+                                    ) : <span class="text-gray-400">Unknown Account</span>}
+                                    <span class="mx-2 text-gray-500">→</span>
+                                    <Link
+                                      href={routes.accounts.children!.edit.href.replace(":id", txn.accountId.toString())}
+                                      class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
+                                    >
+                                      {getAccountName(txn.accountId)}
+                                    </Link>
+                                  </>
+                                )
+                              }
+                            })()}
+                          </>
+                        ) : txn.type === TransactionType.INCOME ? (
+                          // INCOME: Show "Category > Account"
+                          <>
+                            {txn.categoryId ? (
+                              <Link
+                                href={routes.categories.children!.edit.href.replace(":id", txn.categoryId.toString())}
+                                class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
+                              >
+                                {(() => {
+                                  const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                                  return (
+                                    <span class="flex items-center gap-1">
+                                      {categoryDisplay.icon && (
+                                        <span class="text-sm">{categoryDisplay.icon}</span>
+                                      )}
+                                      {categoryDisplay.color && (
+                                        <div
+                                          class="w-2 h-2 rounded-full border border-gray-300"
+                                          style={{ backgroundColor: categoryDisplay.color }}
+                                        />
+                                      )}
+                                      <span>{categoryDisplay.name}</span>
+                                    </span>
+                                  )
+                                })()}
+                              </Link>
+                            ) : <span class="text-gray-500">No Category</span>}
+                            {" > "}
+                            <Link
+                              href={routes.accounts.children!.edit.href.replace(":id", txn.accountId.toString())}
+                              class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
+                            >
+                              {getAccountName(txn.accountId)}
+                            </Link>
+                          </>
+                        ) : (
+                          // EXPENSE: Show "Account > Category"
+                          <>
+                            <Link
+                              href={routes.accounts.children!.edit.href.replace(":id", txn.accountId.toString())}
+                              class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
+                            >
+                              {getAccountName(txn.accountId)}
+                            </Link>
+                            {" > "}
+                            {txn.categoryId ? (
+                              <Link
+                                href={routes.categories.children!.edit.href.replace(":id", txn.categoryId.toString())}
+                                class={isDeleted ? "text-gray-400 hover:underline" : "text-blue-600 dark:text-blue-400 hover:underline"}
+                              >
+                                {(() => {
+                                  const categoryDisplay = getCategoryDisplay(txn.categoryId)
+                                  return (
+                                    <span class="flex items-center gap-1">
+                                      {categoryDisplay.icon && (
+                                        <span class="text-sm">{categoryDisplay.icon}</span>
+                                      )}
+                                      {categoryDisplay.color && (
+                                        <div
+                                          class="w-2 h-2 rounded-full border border-gray-300"
+                                          style={{ backgroundColor: categoryDisplay.color }}
+                                        />
+                                      )}
+                                      <span>{categoryDisplay.name}</span>
+                                    </span>
+                                  )
+                                })()}
+                              </Link>
+                            ) : <span class="text-gray-500">No Category</span>}
+                          </>
+                        )}
                       </div>
                     </td>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
