@@ -13,192 +13,130 @@ and Telegram bot integration.
 
 ## 🗺️ Development Roadmap
 
-**Legend:**
-
-- ✅ **Completed** - Feature is fully implemented and functional
-- 🟡 **In Progress** - Feature is partially implemented, needs improvements, or being worked on
-- ⚪ **Not Started** - Feature has not been implemented yet
-
-**Progress Overview:**
-
-- 📊 **Overall Progress:** 53% (40 completed + 20 in progress / 102 total features)
-- 🏗️ **Basic Features:** 78% (Core infrastructure, user management, financial features)
-- 🚀 **Advanced Features:** 13% (Dashboard analytics, real-time features, multi-currency)
+- ✅ **Completed** - 🟡 **In Progress** - ⚪ **Planned**
 
 ### 🏗️ Core Infrastructure
 
 - ✅ **Database Schema** - Complete PostgreSQL schema with all tables
 - ✅ **CQRS Architecture** - Command/Event pattern with buses
-- 🟡 **Authentication System** - User auth with basic login/signup (2FA in progress)
 - ✅ **Real-time Communication** - WebSocket implementation
-- ✅ **Caching Layer** - Valkey/Redis for performance
+- ✅ **Caching & Performance** - Valkey/Redis caching layer
 - ✅ **Containerization** - Docker setup for all services
 - ✅ **PWA Foundation** - Progressive Web App capabilities
+- 🟡 **Authentication System** - Basic auth complete, 2FA UI pending
 
 ### 👥 User Management
 
-- 🟡 **User Registration/Login** - Basic auth flow implemented (needs profile management)
+- 🟡 **User Registration/Login** - Basic flow complete, profile management needed
 - ✅ **Session Management** - Secure session handling
-- 🟡 **Role-Based Access Control** - Multi-tier permissions (partially implemented)
-- 🟡 **Two-Factor Authentication** - TOTP backend ready (UI needs completion)
-- 🟡 **Password Management** - Basic change functionality (reset needs work)
+- 🟡 **Role-Based Access Control** - Multi-tier permissions partially implemented
+- 🟡 **Two-Factor Authentication** - Backend ready, UI needs completion
+- 🟡 **Password Management** - Basic change functionality, reset needs work
 - ⚪ **User Profile Management** - Profile editing, preferences
 - ⚪ **Account Recovery** - Email-based recovery system
 
 ### 🏢 Group Collaboration
 
-- 🟡 **Group Management** - Create, edit, list groups (delete needs work)
-- 🟡 **Delete dependencies** - Soft-delete group members and data (in progress)
+- 🟡 **Group Management** - Create, edit, list groups
 - ✅ **Group Settings** - Default currencies, preferences
 - ✅ **Real-time Updates** - Live sync across group members
 - 🟡 **Group Membership** - Role-based access partially implemented
 - ⚪ **Member Invitations** - Invite users via email/link
 - ⚪ **Member Management** - Add/remove group members
-- ⚪ **Group Access Sharing** - Share group access between users with granular permissions
-- ⚪ **Group Analytics** - Usage statistics and insights
 
 ### 🏦 Account Management
 
-- ✅ **Database Schema** - Account table structure
-- ✅ **Backend API** - Account CRUD operations
-- ✅ **Account Creation** - UI for adding new accounts (complete)
-- ✅ **Account Management** - Edit account details, currencies (complete UI)
-- ✅ **Account List** - View all accounts with balances
-- 🟡 **Multi-Currency Support** - Display in different currencies (partial)
-- ✅ **Account Archiving** - Soft delete unused accounts (complete with undelete)
-- ⚪ **Cross-Group Account Sharing** - Share accounts between multiple groups
+- ✅ **Account CRUD** - Complete create, read, update, delete
+- ✅ **Account Management UI** - Edit details, currencies, balances
+- ✅ **Account List & Balances** - View all accounts with current balances
+- ✅ **Account Archiving** - Soft delete with undelete functionality
+- 🟡 **Multi-Currency Display** - Show amounts in different currencies
+- ⚪ **Cross-Group Sharing** - Share accounts between multiple groups
 
 ### 📊 Transaction Management
 
-- ✅ **Database Schema** - Transaction table with full structure
-- ✅ **Backend API** - Transaction CRUD via WebSockets
+- ✅ **Transaction CRUD** - Complete transaction management via WebSockets
 - ✅ **Multi-Currency Support** - Original + converted amounts
-- ✅ **Transaction Creation** - Add income/expense forms (complete)
-- ✅ **Transaction List** - View/filter transaction history (complete)
-- ✅ **Transaction Editing** - Modify existing transactions (complete UI)
-- ✅ **Transaction Archiving** - Soft delete with undelete functionality
+- ✅ **Transaction Forms** - Add income/expense/transfer forms
+- ✅ **Transaction History** - View and filter transaction list
+- ✅ **Transaction Editing** - Modify existing transactions
+- ✅ **Transaction Archiving** - Soft delete with undelete
 - ⚪ **Bulk Operations** - Import/export transactions
 - ⚪ **Transaction Templates** - Save frequently used transactions
 - ⚪ **Recurring Transactions** - Automated scheduled entries
-- ⚪ **AI-based entry and categorization** - Tell a bot to add transactions - let it figure out the rest (group, account, category, tags, etc.)
-- ⚪ **Free-form Transaction Input** - LLM-powered natural language transaction entry with automatic parsing
 
-### 🏷️ Organization Features
+### 🏷️ Categories & Tags
 
-- ✅ **Categories** - Complete category management system
-- ✅ **Category CRUD** - Create, edit, delete categories
-- ✅ **Real-time Sync** - Live category updates
-- ✅ **Tags Schema** - Database structure for tags
-- 🟡 **Tag Management** - Create and assign tags to transactions (schema ready)
+- ✅ **Category Management** - Complete CRUD with real-time sync
+- ✅ **Category Analytics** - Spending insights by category
+- ✅ **Monthly Spending Limits** - Budget tracking per category
+- 🟡 **Tag Management** - Schema ready, UI implementation pending
 - ⚪ **Tag-based Filtering** - Search transactions by tags
-- ⚪ **Smart Categorization** - Auto-suggest categories
-- ⚪ **Category Analytics** - Spending by category insights
 
-### 📈 Reporting & Analytics
+### 📈 Dashboard & Analytics
 
-#### Dashboard Features
+- ✅ **Financial Overview Cards** - Balance, income, expenses, net worth
+- ✅ **Recent Transactions** - Latest transactions with quick actions
+- ✅ **Budget Progress Bars** - Category spending vs limits
+- ✅ **Quick Actions Panel** - Fast access to common operations
+- ✅ **Account Balance Overview** - All accounts with trends
+- ✅ **Monthly Spending Trends** - 6-month spending patterns
+- ✅ **Cash Flow Summary** - Income vs expenses with trends
+- ⚪ **Advanced Reports** - Monthly/yearly analysis with charts
+- ⚪ **Goal Setting & Tracking** - Financial goals with progress monitoring
 
-- ✅ **Financial Overview Cards** - Key metrics: total balance, monthly income/expenses, net worth
-- ✅ **Recent Transactions List** - Latest 10 transactions with quick actions
-- ✅ **Budget Progress Bars** - Category spending vs monthly limits (complete implementation)
-- ✅ **Quick Actions Panel** - Fast access to add transactions, accounts, categories
-- ✅ **Account Balances Overview** - All account balances with trends and health indicators
-- ✅ **Monthly Spending Trends** - 6-month spending patterns and comparisons
-- ✅ **Cash Flow Summary** - Current month income vs expenses with trend indicators
+### 💱 Multi-Currency
 
-#### Advanced Analytics
-
-- ✅ **Category Spending Breakdown** - Detailed spending analysis by category
-- ✅ **Exchange Rate Widget** - Current rates for multi-currency setups
-- ⚪ **Goal Tracking** - Savings goals and progress tracking (future enhancement)
-- ⚪ **Spending Reports** - Monthly/yearly expense analysis
-- ⚪ **Income Analysis** - Revenue tracking and trends
-- ⚪ **Group Reports** - Shared financial insights
-- ⚪ **Visual Charts** - Pie charts, bar graphs, trends
-- ⚪ **Export Reports** - PDF/CSV report generation
-- ⚪ **Custom Date Ranges** - Flexible reporting periods
-
-### 💱 Currency & Exchange
-
-- ✅ **Multi-Currency Schema** - Database support for currencies
-- ✅ **Exchange Rates Table** - Rate storage structure
-- ⚪ **Currency Conversion** - Real-time exchange rates
-- ⚪ **Rate Updates** - Automatic rate fetching
-- ⚪ **Historical Rates** - Track exchange rate changes
-- 🟡 **Currency Preferences** - User/group default currencies (basic implementation)
-- 🟡 **Conversion Display** - Show amounts in preferred currency (partial)
-- 🟡 **Proper Multi-Currency Support** - Complete multi-currency functionality (currently early stage)
+- ✅ **Currency Schema** - Database support for multiple currencies
+- ✅ **Exchange Rates** - Rate storage structure
+- 🟡 **Currency Conversion** - Basic conversion display
+- ⚪ **Real-time Exchange Rates** - Automatic rate fetching
+- ⚪ **Historical Rate Tracking** - Exchange rate history
 
 ### 🤖 Integrations & API
 
-- ✅ **WebSocket API** - Real-time data sync
-- 🟡 **Push Notifications** - Web push notification system (backend structure ready)
+- ✅ **WebSocket API** - Real-time data synchronization
+- 🟡 **Push Notifications** - Backend structure ready, UI pending
 - ⚪ **REST API** - Public API for integrations
-- ⚪ **API Authentication** - Token-based API access
-- ⚪ **API Documentation** - Comprehensive API docs
+- ⚪ **API Documentation** - Comprehensive API documentation
 - ⚪ **Telegram Bot** - Natural language transaction entry
-- ⚪ **Webhook Support** - External service integrations
-- ⚪ **Zapier Integration** - Automation platform support
+- ⚪ **AI Transaction Entry** - LLM-powered natural language parsing
 
-### 💾 Data Management
+### �️ Security & Infrastructure
 
-- ✅ **Database Migrations** - Version-controlled schema changes
-- ✅ **Data Validation** - Type-safe validation with Arktype
-- ✅ **Soft Deletes** - Recoverable data deletion
-- ⚪ **Data Export** - Backup user data (JSON/SQL)
-- ⚪ **Data Import** - Restore from backups
-- ⚪ **Data Archiving** - Archive old transactions
-- 🟡 **Data Cleanup** - Remove expired sessions/data (partial implementation)
-
-### 🏛️ Infrastructure & DevOps
-
-- ✅ **Docker Compose** - Development environment
-- ✅ **Code Quality** - Linting, formatting, TypeScript checks
-- ✅ **Git Hooks** - Pre-commit quality checks
-- 🟡 **Production Deployment** - Staging and production configs (needs refinement)
-- 🟡 **Monitoring Stack** - Grafana, Loki, Prometheus setup (configs ready)
-- 🟡 **Automated Testing** - Unit and integration tests (basic tests exist)
-- ⚪ **CI/CD Pipeline** - Automated deployment
-- 🟡 **Database Backups** - Automated backup strategy (scripts exist)
-- ⚪ **Security Scanning** - Vulnerability assessments
-
-### 🔒 Security & Compliance
-
-- ✅ **Authentication** - Secure user authentication
-- ✅ **Session Security** - Secure session management
+- ✅ **Authentication & Sessions** - Secure user authentication
 - ✅ **Input Validation** - Comprehensive data validation
-- ✅ **HTTPS Ready** - SSL/TLS configuration
+- ✅ **HTTPS Configuration** - SSL/TLS setup
+- 🟡 **Production Deployment** - Staging and production configs
+- 🟡 **Monitoring & Logging** - Grafana, Loki, Prometheus setup
+- 🟡 **Automated Testing** - Unit and integration tests
 - ⚪ **Security Headers** - Comprehensive security headers
 - ⚪ **Rate Limiting** - API abuse prevention
-- 🟡 **Audit Logging** - Security event logging (basic implementation)
 - ⚪ **GDPR Compliance** - Data privacy compliance
-- ⚪ **Security Testing** - Penetration testing
+
+### � User Experience
+
+- ✅ **Mobile-First Design** - Responsive UI optimized for mobile
+- ✅ **PWA Features** - App-like experience with offline capabilities
+- ✅ **Real-time Updates** - Live data synchronization
+- 🟡 **Dark Mode** - Theme customization with system preference
+- 🟡 **Accessibility** - WCAG compliance improvements needed
+- 🟡 **Search & Filters** - Basic filtering, advanced search pending
+- ⚪ **Internationalization** - Multi-language support
+- ⚪ **Keyboard Shortcuts** - Power user productivity features
 
 ### 🚀 Advanced Features
 
 - ⚪ **Split Expenses** - Shared expense management
 - ⚪ **Debt Tracking** - Track loans and debts
-- ⚪ **Investment Tracking** - Stocks, crypto portfolio
-- ⚪ **Budget Planning** - Set and track budgets
-- ⚪ **Goal Setting** - Savings goals and progress
+- ⚪ **Investment Tracking** - Stocks and crypto portfolio
 - ⚪ **Receipt Scanning** - OCR for receipt processing
 - ⚪ **Mobile Apps** - Native iOS/Android with Capacitor
-- 🟡 **Offline Mode** - Extended offline capabilities (PWA cache ready)
-
-### 📱 User Experience
-
-- ✅ **Mobile-First Design** - Responsive UI for mobile
-- ✅ **PWA Features** - App-like experience
-- ✅ **Real-time Updates** - Live data synchronization
-- 🟡 **Dark Mode** - Theme customization with system preference support
-- 🟡 **Accessibility** - WCAG compliance (needs improvement)
-- ⚪ **Internationalization** - Multi-language support
-- ⚪ **Keyboard Shortcuts** - Power user features
-- 🟡 **Search & Filters** - Advanced search capabilities (basic filtering implemented)
+- 🟡 **Enhanced Offline Mode** - Extended offline capabilities
 
 ---
 
-**Current Focus:** Core functionality is complete! Next priorities: API documentation, bulk operations, AI-powered transaction entry, and advanced integrations (Telegram bot, mobile apps).
+**Next priorities:** API documentation, AI transaction entry, Telegram bot integration.
 
 ## Contributing
 
