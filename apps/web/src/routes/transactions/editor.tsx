@@ -379,7 +379,7 @@ export function TransactionEditor() {
 
   return (
     <section class="page-layout">
-      <PageTitle showGroupSelector>
+      <PageTitle>
         {editTransactionId ? "Transactions - Edit" : "Transactions - Create"}
       </PageTitle>
 

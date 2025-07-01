@@ -131,7 +131,7 @@ export function AccountEditor() {
 
   return (
     <section class="page-layout">
-      <PageTitle showGroupSelector>
+      <PageTitle>
         {editAccountId ? "Accounts - Edit" : "Accounts - Create"}
       </PageTitle>
 

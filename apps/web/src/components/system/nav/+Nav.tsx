@@ -8,8 +8,9 @@ export function Nav() {
     <>
       <NavHeader />
       <nav class="flex flex-1 flex-col gap-4">
-        <NavItems />
         <GroupSelector />
+        <div class="border-b border-purple-800 dark:border-purple-600"></div>
+        <NavItems />
         <ProfileDropdown />
       </nav>
     </>

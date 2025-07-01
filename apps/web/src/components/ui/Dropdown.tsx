@@ -59,7 +59,7 @@ export function Dropdown(
     : (horizontal === "left" ? "origin-top-left" : "origin-top-right")
 
   return (
-    <div class={`relative inline-block text-left ${containerClasses ?? ""}`} ref={dropdownRef}>
+    <div class={`relative inline-flex text-left ${containerClasses ?? ""}`} ref={dropdownRef}>
       <button
         onClick={() => isOpen.value = !isOpen.value}
         type="button"

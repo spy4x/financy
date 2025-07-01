@@ -189,7 +189,7 @@ export function TransactionList() {
 
   return (
     <section class="page-layout">
-      <PageTitle showGroupSelector>Transactions</PageTitle>
+      <PageTitle>Transactions</PageTitle>
       <div>
         <div class="space-y-4">
           {/* Filter and Create Row */}

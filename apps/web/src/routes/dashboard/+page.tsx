@@ -1,4 +1,5 @@
 import { PageTitle } from "../../components/ui/PageTitle.tsx"
+import { DateRangeSelector } from "../../components/ui/DateRangeSelector.tsx"
 import { FinancialOverviewCards } from "./components/financial-overview-cards.tsx"
 import { TopTransactionsList } from "./components/top-transactions-list.tsx"
 import { BudgetProgressBars } from "./components/budget-progress-bars.tsx"
@@ -12,7 +13,10 @@ import { IncomeByCategoryWidget } from "./components/income-by-category-widget.t
 export function Dashboard() {
   return (
     <section class="page-layout">
-      <PageTitle showDateRangeSelector>Dashboard</PageTitle>
+      <div class="flex flex-col gap-4 mb-6 md:flex-row md:justify-between md:items-center">
+        <PageTitle>Dashboard</PageTitle>
+        <DateRangeSelector />
+      </div>
 
       <div class="space-y-8">
         <FinancialOverviewCards />

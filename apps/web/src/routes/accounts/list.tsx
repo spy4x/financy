@@ -102,7 +102,7 @@ export function AccountList() {
 
   return (
     <section class="page-layout">
-      <PageTitle showGroupSelector>Accounts</PageTitle>
+      <PageTitle>Accounts</PageTitle>
       <div>
         <div class="space-y-4">
           <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">

@@ -93,7 +93,7 @@ export function CategoryList() {
 
   return (
     <section class="page-layout">
-      <PageTitle showGroupSelector>Categories</PageTitle>
+      <PageTitle>Categories</PageTitle>
       <div>
         <div class="space-y-4">
           <div class="flex items-center justify-between">

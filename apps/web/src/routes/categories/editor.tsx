@@ -151,7 +151,7 @@ export function CategoryEditor() {
 
   return (
     <section class="page-layout">
-      <PageTitle showGroupSelector>
+      <PageTitle>
         {editCategoryId ? "Categories - Edit" : "Categories - Create"}
       </PageTitle>
 
