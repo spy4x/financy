@@ -188,10 +188,21 @@ export function GroupList() {
                 return (
                   <>
                     <td class={`font-medium ${isDeleted ? "text-gray-400" : "text-gray-900"}`}>
-                      <div class={isDeleted ? "line-through" : ""}>
+                      <Link
+                        href={routes.groups.children!.edit.href.replace(
+                          ":id",
+                          grp.id.toString(),
+                        )}
+                        class={`hover:underline cursor-pointer ${
+                          isDeleted
+                            ? "line-through text-gray-400"
+                            : "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                        }`}
+                        data-e2e="group-name-link"
+                      >
                         {grp.name}
                         {isDeleted && <span class="ml-2 text-xs">(Deleted)</span>}
-                      </div>
+                      </Link>
                       {group.selectedId.value === grp.id && (
                         <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           Active

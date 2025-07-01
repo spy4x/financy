@@ -204,16 +204,21 @@ export function AccountList() {
               bodySlots={filteredAccounts.value.map((acc, index) => (
                 <>
                   <td class="whitespace-nowrap">
-                    <div
-                      class={`text-sm font-medium ${
+                    <Link
+                      href={routes.accounts.children!.edit.href.replace(
+                        ":id",
+                        acc.id.toString(),
+                      )}
+                      class={`text-sm font-medium hover:underline cursor-pointer ${
                         acc.deletedAt
                           ? "text-gray-400 line-through"
-                          : "text-gray-900 dark:text-gray-100"
+                          : "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                       }`}
+                      data-e2e="account-name-link"
                     >
                       {acc.name}
                       {acc.deletedAt && <span class="ml-2 text-xs text-red-500">(Deleted)</span>}
-                    </div>
+                    </Link>
                   </td>
                   <td class="whitespace-nowrap">
                     <div

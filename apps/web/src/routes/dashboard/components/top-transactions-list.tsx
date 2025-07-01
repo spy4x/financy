@@ -135,7 +135,7 @@ export function TopTransactionsList() {
   return (
     <div>
       <div class="flex items-center justify-between mb-1">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Top Transactions</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Top 10 Transactions</h2>
         <Link
           href={`/transactions?${getDateRangeQuery()}`}
           class="btn btn-sm btn-primary"
@@ -171,15 +171,27 @@ export function TopTransactionsList() {
           return (
             <>
               <td class="text-gray-900">
-                {formatTimestamp(txn.timestamp)}
+                <Link
+                  href={`/transactions/${txn.id}`}
+                  class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                  data-e2e="transaction-timestamp-link"
+                >
+                  {formatTimestamp(txn.timestamp)}
+                </Link>
               </td>
               <td class={`text-right ${amountClass}`}>
-                <CurrencyDisplay
-                  amount={txn.amount}
-                  currency={getAccountCurrency(txn.accountId)}
-                  class={amountClass}
-                  highlightNegative={txn.direction === TransactionDirection.MONEY_OUT}
-                />
+                <Link
+                  href={`/transactions/${txn.id}`}
+                  class={`${amountClass} hover:underline cursor-pointer hover:opacity-80`}
+                  data-e2e="transaction-amount-link"
+                >
+                  <CurrencyDisplay
+                    amount={txn.amount}
+                    currency={getAccountCurrency(txn.accountId)}
+                    class={amountClass}
+                    highlightNegative={txn.direction === TransactionDirection.MONEY_OUT}
+                  />
+                </Link>
               </td>
               <td class="text-gray-900">
                 <div class="text-sm">

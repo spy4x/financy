@@ -210,8 +210,17 @@ export function CategoryList() {
                   return (
                     <>
                       <td class={`${cat.deletedAt ? "text-gray-400" : "text-gray-900"}`}>
-                        <div
-                          class={`flex items-center gap-2 ${cat.deletedAt ? "line-through" : ""}`}
+                        <Link
+                          href={routes.categories.children!.edit.href.replace(
+                            ":id",
+                            cat.id.toString(),
+                          )}
+                          class={`flex items-center gap-2 hover:underline cursor-pointer ${
+                            cat.deletedAt
+                              ? "line-through text-gray-400"
+                              : "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                          }`}
+                          data-e2e="category-name-link"
                         >
                           {cat.icon && (
                             <span class="text-lg" title={cat.name}>
@@ -231,7 +240,7 @@ export function CategoryList() {
                           {cat.deletedAt && (
                             <span class="ml-2 text-xs text-red-500">(Deleted)</span>
                           )}
-                        </div>
+                        </Link>
                       </td>
                       <td class={`${cat.deletedAt ? "text-gray-400" : "text-gray-900"}`}>
                         <span

@@ -398,17 +398,26 @@ export function TransactionList() {
                 return (
                   <>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
-                      <div
-                        class={`text-sm ${
-                          isDeleted ? "line-through" : "text-gray-900 dark:text-gray-100"
+                      <Link
+                        href={routes.transactions.children!.edit.href.replace(
+                          ":id",
+                          txn.id.toString(),
+                        )}
+                        class={`text-sm hover:underline cursor-pointer ${
+                          isDeleted
+                            ? "line-through text-gray-400"
+                            : "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                         }`}
+                        data-e2e="transaction-date-link"
                       >
-                        {new Date(txn.timestamp).toLocaleDateString()}
-                        {isDeleted && <span class="ml-2 text-xs">(Deleted)</span>}
-                      </div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(txn.timestamp).toLocaleTimeString()}
-                      </div>
+                        <div>
+                          {new Date(txn.timestamp).toLocaleDateString()}
+                          {isDeleted && <span class="ml-2 text-xs">(Deleted)</span>}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(txn.timestamp).toLocaleTimeString()}
+                        </div>
+                      </Link>
                     </td>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
                       <div
@@ -598,16 +607,23 @@ export function TransactionList() {
                       </div>
                     </td>
                     <td class={`whitespace-nowrap ${isDeleted ? "text-gray-400" : ""}`}>
-                      <div
-                        class={`text-sm font-medium ${
-                          isDeleted ? "line-through text-gray-400" : typeDisplay.color
+                      <Link
+                        href={routes.transactions.children!.edit.href.replace(
+                          ":id",
+                          txn.id.toString(),
+                        )}
+                        class={`text-sm font-medium hover:underline cursor-pointer ${
+                          isDeleted
+                            ? "line-through text-gray-400"
+                            : `${typeDisplay.color} hover:opacity-80`
                         }`}
+                        data-e2e="transaction-amount-link"
                       >
                         <CurrencyDisplay
                           amount={txn.amount}
                           currency={currencyId}
                         />
-                      </div>
+                      </Link>
                       {txn.originalCurrencyId && txn.originalAmount && (
                         <div class="text-xs text-gray-500">
                           <CurrencyDisplay
