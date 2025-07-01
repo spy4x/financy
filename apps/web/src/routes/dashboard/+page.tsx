@@ -1,6 +1,6 @@
 import { PageTitle } from "../../components/ui/PageTitle.tsx"
 import { FinancialOverviewCards } from "./components/financial-overview-cards.tsx"
-import { RecentTransactionsList } from "./components/recent-transactions-list.tsx"
+import { TopTransactionsList } from "./components/top-transactions-list.tsx"
 import { BudgetProgressBars } from "./components/budget-progress-bars.tsx"
 import { AccountBalancesOverview } from "./components/account-balances-overview.tsx"
 import { CashFlowSummary } from "./components/cash-flow-summary.tsx"
@@ -29,7 +29,7 @@ export function Dashboard() {
           <IncomeByCategoryWidget />
         </div>
         <ExchangeRateWidget />
-        <RecentTransactionsList />
+        <TopTransactionsList />
       </div>
     </section>
   )

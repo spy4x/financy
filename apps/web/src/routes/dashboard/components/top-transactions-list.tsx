@@ -13,16 +13,16 @@ import { IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/ic
 import { TransactionDirection } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 
-export function RecentTransactionsList() {
-  // Get recent transactions for selected group
+export function TopTransactionsList() {
+  // Get the 10 most expensive transactions for selected group (by absolute amount)
   const recentTransactions = useComputed(() =>
     transaction.list.value
       .filter((txn) =>
         txn.groupId === group.selectedId.value &&
         !txn.deletedAt
       )
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, 10) // Show latest 10 transactions
+      .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))
+      .slice(0, 10) // Show top 10 by amount
   )
 
   // Helper functions to get names
@@ -70,7 +70,7 @@ export function RecentTransactionsList() {
     return (
       <div>
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Recent Transactions</h2>
+          <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Top Transactions</h2>
           {group.selectedId.value
             ? (
               <Link
@@ -112,7 +112,7 @@ export function RecentTransactionsList() {
   return (
     <div>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Recent Transactions</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Top Transactions</h2>
         <Link
           href="/transactions"
           class="btn btn-sm btn-primary"
