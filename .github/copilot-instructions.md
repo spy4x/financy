@@ -118,6 +118,8 @@ class MyEvent implements Event<MyEventPayload> {
 ## Testing & Performance
 
 - Use Deno's built-in testing framework for unit tests and Playwright for end-to-end tests
+- **Test Logic, Not DTOs**: Test handlers, calculations, and business logic. Don't test DTO/POJO objects (queries, commands, events) as they contain no logic
+- **Focus on Handlers**: Command handlers, query handlers, event handlers contain the actual business logic and should be thoroughly tested
 - Test multi-currency and role-based access scenarios
 - Cache frequently accessed data (Valkey)
 - Optimize for mobile-first PWA
@@ -227,6 +229,28 @@ Use Playwright MCP whenever you need to:
 - Validate mobile responsiveness
 - Check PWA functionality
 - Test real-time features and WebSocket connections
+
+## Refactoring Principles
+
+When performing major refactoring work, follow these principles:
+
+1. **No barrel files** - Use single entry point files with `+` prefix that import everything they need
+2. **CQRS for all business logic** - Data fetching and mutations must go through CQRS layer
+3. **Break fast, refactor completely** - No backward compatibility during refactoring
+4. **Clean separation** - Services handle specific concerns, handlers only route/parse
+5. **Complete replacement** - Mark old files as `*.old.ts`, delete after testing
+6. **Single entry points** - Use `+` prefix files to prevent circular dependencies
+7. **Comprehensive testing** - Create unit tests using `@shared/testing` following existing patterns
+8. **Clean implementations** - Build new code rather than refactoring existing code
+
+### Refactoring Workflow:
+
+- Mark old files as `*.old.ts` immediately
+- Build clean, new implementations from scratch
+- Use CQRS for all data operations
+- Accept that functionality will be broken during refactoring
+- Create comprehensive unit tests before cleanup
+- Delete `*.old.ts` files only after testing passes
 
 ## When Making Changes
 

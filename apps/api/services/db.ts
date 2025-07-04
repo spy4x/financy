@@ -511,16 +511,36 @@ export class DbService extends DbServiceBase {
       publicAPICache.transaction,
     ),
     findMany: async (params: {
-      filter: { userId: number }
+      filter: { userId: number; timestamp?: { gte?: Date; lte?: Date } }
       pagination?: { offset: number; limit: number }
     }): Promise<Transaction[]> => {
       // INDEX: idx_transactions_by_group (for t.group_id IN subquery), idx_memberships_by_user_group (for subquery), idx_transactions_by_timestamp (for ORDER BY timestamp)
+      let timestampCondition = this.sql``
+      if (params.filter.timestamp) {
+        const conditions = []
+        if (params.filter.timestamp.gte) {
+          conditions.push(this.sql`t.timestamp >= ${params.filter.timestamp.gte}`)
+        }
+        if (params.filter.timestamp.lte) {
+          conditions.push(this.sql`t.timestamp <= ${params.filter.timestamp.lte}`)
+        }
+        if (conditions.length > 0) {
+          timestampCondition = this.sql`AND ${
+            this.sql.unsafe(conditions.map(() => "?").join(" AND "))
+          }`
+          timestampCondition = this.sql`AND (${
+            conditions.reduce((acc, cond, i) => i === 0 ? cond : this.sql`${acc} AND ${cond}`)
+          })`
+        }
+      }
+
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
         WHERE t.group_id IN (
           SELECT group_id FROM group_memberships WHERE user_id = ${params.filter.userId} AND deleted_at IS NULL
         )
+        ${timestampCondition}
         ORDER BY t.timestamp DESC
         ${params.pagination?.limit ? this.sql`LIMIT ${params.pagination.limit}` : this.sql``}
         ${params.pagination?.offset ? this.sql`OFFSET ${params.pagination.offset}` : this.sql``}
@@ -633,11 +653,15 @@ export class DbService extends DbServiceBase {
     // Override findMany to support global currency data (no userId filtering)
     findMany: async (): Promise<Currency[]> => {
       // INDEX: idx_currencies_by_code (for ORDER BY code)
-      return this.sql<Currency[]>`
-        SELECT * FROM currencies 
-        WHERE deleted_at IS NULL 
-        ORDER BY type ASC, code ASC
-      `
+      return publicAPICache.currency.wrapMany(
+        "all",
+        async () =>
+          this.sql<Currency[]>`
+          SELECT * FROM currencies 
+          WHERE deleted_at IS NULL 
+          ORDER BY type ASC, code ASC
+        `,
+      )
     },
   }
 

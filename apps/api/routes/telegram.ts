@@ -1,7 +1,7 @@
 import { Hono } from "hono"
 import { APIContext } from "../_types.ts"
 import { config } from "@api/services/config.ts"
-import { telegramBot, type TelegramUpdate } from "@api/services/telegram-bot.ts"
+import { telegramBot, type TelegramUpdate } from "@api/services/telegram/+bot.ts"
 import { handleTelegramUpdate } from "../handlers/telegram/updates.ts"
 
 export const telegramRoute = new Hono<APIContext>()

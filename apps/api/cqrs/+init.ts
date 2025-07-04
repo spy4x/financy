@@ -1,10 +1,11 @@
 /**
- * Initialize all event handlers and command handlers for the API
+ * Initialize all event handlers, command handlers, and query handlers for the API
  * This file should be imported early in the API startup process
  */
 
 import { eventBus } from "@api/services/eventBus.ts"
 import { commandBus } from "@api/services/commandBus.ts"
+import { queryBus } from "@api/services/queryBus.ts"
 import {
   AccountCreatedEvent,
   AccountDeletedEvent,
@@ -46,6 +47,14 @@ import {
   TransactionUpdateCommand,
   UserUpdateCommand,
 } from "@api/cqrs/commands.ts"
+import {
+  AccountListQuery,
+  AnalyticsQuery,
+  CategoryListQuery,
+  TransactionListQuery,
+  UserDashboardQuery,
+  UserGroupsQuery,
+} from "@api/cqrs/queries.ts"
 import { seedPresetEntitiesOnUserSignedUpHandler } from "./event-handlers/seed-preset-entities-on-user-signed-up.ts"
 import { websocketNotifyOnGroupCreatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-group-created.ts"
 import { websocketNotifyOnGroupUpdatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-group-updated.ts"
@@ -83,6 +92,12 @@ import { transactionUpdateHandler } from "@api/cqrs/command-handlers/transaction
 import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction-delete.ts"
 import { transactionUndeleteHandler } from "@api/cqrs/command-handlers/transaction-undelete.ts"
 import { UserUpdateHandler as userUpdateHandler } from "@api/cqrs/command-handlers/user-update.ts"
+import { accountListHandler } from "@api/cqrs/query-handlers/account-list.ts"
+import { transactionListHandler } from "@api/cqrs/query-handlers/transaction-list.ts"
+import { categoryListHandler } from "@api/cqrs/query-handlers/category-list.ts"
+import { analyticsHandler } from "@api/cqrs/query-handlers/analytics.ts"
+import { userDashboardHandler } from "@api/cqrs/query-handlers/user-dashboard.ts"
+import { userGroupsHandler } from "@api/cqrs/query-handlers/user-groups.ts"
 
 // Register event handlers
 eventBus.on(UserSignedUpEvent, seedPresetEntitiesOnUserSignedUpHandler)
@@ -125,4 +140,12 @@ commandBus.register(TransactionDeleteCommand, transactionDeleteHandler)
 commandBus.register(TransactionUndeleteCommand, transactionUndeleteHandler)
 commandBus.register(UserUpdateCommand, userUpdateHandler)
 
-console.log("✅ Event handlers and command handlers initialized")
+// Register query handlers
+queryBus.register(AccountListQuery, accountListHandler)
+queryBus.register(TransactionListQuery, transactionListHandler)
+queryBus.register(CategoryListQuery, categoryListHandler)
+queryBus.register(AnalyticsQuery, analyticsHandler)
+queryBus.register(UserDashboardQuery, userDashboardHandler)
+queryBus.register(UserGroupsQuery, userGroupsHandler)
+
+console.log("✅ Event handlers, command handlers, and query handlers initialized")

@@ -79,6 +79,7 @@ export type PublicAPICacheModel<T> = {
   set: (id: number, item: T) => Promise<void>
   delete: (id: number) => Promise<void>
   wrap: (id: number, fn: () => Promise<T>) => Promise<T>
+  wrapMany: (prefix: string, fn: () => Promise<T[]>) => Promise<T[]>
 }
 
 export const buildMethods = <T>(
@@ -122,6 +123,9 @@ export const buildMethods = <T>(
         return parseResult.data as T
       }
       return result
+    },
+    wrapMany: async (prfx: string, fn: () => Promise<T[]>): Promise<T[]> => {
+      return cacheService.wrap<T[]>(`${prefix}_${prfx}`, fn, ttl)
     },
   }
 }

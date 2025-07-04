@@ -1,5 +1,5 @@
 import { config } from "@api/services/config.ts"
-import { telegramBot, type TelegramUpdate } from "@api/services/telegram-bot.ts"
+import { telegramBot, type TelegramUpdate } from "@api/services/telegram/+bot.ts"
 import { handleTelegramUpdate } from "../handlers/telegram/updates.ts"
 import { sleep } from "@shared/helpers/async.ts"
 
