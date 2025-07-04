@@ -11,6 +11,7 @@ import { currency } from "@web/state/currency.ts"
 import { Transaction, TransactionType } from "@shared/types"
 import { shouldDropdownOpenUp } from "@shared/helpers/dropdown.ts"
 import { formatTime } from "@shared/helpers/format.ts"
+import { navigate } from "@client/helpers"
 
 interface TransactionTableProps {
   transactions: Signal<Transaction[]>
@@ -106,7 +107,8 @@ export function TransactionTable({
   })
 
   const handleDefaultEdit = (transactionId: number) => {
-    globalThis.location.href = `/transactions/${transactionId}`
+    // Then in the handleDefaultEdit function:
+    navigate(`/transactions/${transactionId}`)
   }
 
   const handleDefaultDelete = async (txn: Transaction) => {

@@ -40,6 +40,9 @@ declare module "@preact/signals" {
   interface Signal<T> {
     map(fn: (value: T) => JSX.Element): JSX.Element
   }
+  interface ReadonlySignal<T> {
+    map(fn: (value: T) => JSX.Element): JSX.Element
+  }
 }
 
 Signal.prototype.map = function <T,>(fn: (value: T) => JSX.Element) {

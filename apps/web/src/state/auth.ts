@@ -387,8 +387,6 @@ export const auth = {
       toast.success({ body: "Signed out" })
       navigate("/")
       eventBus.emit(new UserSignedOut())
-      // globalThis.location.href = "/"
-      // globalThis.location.reload()
     } catch (error) {
       ops.signOut.value = op<void>(
         false,

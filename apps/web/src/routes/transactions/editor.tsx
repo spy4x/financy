@@ -2,13 +2,13 @@ import { transaction } from "@web/state/transaction.ts"
 import { account } from "@web/state/account.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
-import { currency } from "@web/state/currency.ts"
 import { ws } from "@web/state/ws.ts"
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
+import { AccountSelector } from "@web/components/ui/AccountSelector.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 import {
@@ -512,29 +512,15 @@ export function TransactionEditor() {
                   {type.value === TransactionType.TRANSFER ? "From Account:" : "Account:"}
                 </label>
                 <div class="mt-2">
-                  <select
+                  <AccountSelector
                     id="account"
-                    class="input"
-                    data-e2e="transaction-from-account-select"
-                    value={accountId.value || ""}
-                    onChange={(e) => {
-                      const value = e.currentTarget.value
-                      accountId.value = value ? parseInt(value) : null
-                    }}
+                    value={accountId.value}
+                    onChange={(id) => accountId.value = id}
                     required
-                  >
-                    <option value="">Select an account...</option>
-                    {groupAccounts.value.map((acc) => (
-                      <option
-                        key={acc.id}
-                        value={acc.id}
-                        class={acc.deletedAt ? "text-gray-400 italic" : ""}
-                      >
-                        {acc.deletedAt ? "[DELETED] " : ""}
-                        {acc.name} ({currency.getById(acc.currencyId).code})
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Select an account..."
+                    includeDeleted
+                    dataE2E="transaction-from-account-select"
+                  />
                 </div>
               </div>
 
@@ -545,31 +531,16 @@ export function TransactionEditor() {
                     To Account:
                   </label>
                   <div class="mt-2">
-                    <select
+                    <AccountSelector
                       id="toAccount"
-                      class="input"
-                      data-e2e="transaction-to-account-select"
-                      value={toAccountId.value || ""}
-                      onChange={(e) => {
-                        const value = e.currentTarget.value
-                        toAccountId.value = value ? parseInt(value) : null
-                      }}
+                      value={toAccountId.value}
+                      onChange={(id) => toAccountId.value = id}
                       required={type.value === TransactionType.TRANSFER}
-                    >
-                      <option value="">Select destination account...</option>
-                      {groupAccounts.value
-                        .filter((acc) => acc.id !== accountId.value) // Exclude the from account
-                        .map((acc) => (
-                          <option
-                            key={acc.id}
-                            value={acc.id}
-                            class={acc.deletedAt ? "text-gray-400 italic" : ""}
-                          >
-                            {acc.deletedAt ? "[DELETED] " : ""}
-                            {acc.name} ({currency.getById(acc.currencyId).code})
-                          </option>
-                        ))}
-                    </select>
+                      placeholder="Select destination account..."
+                      includeDeleted
+                      excludeAccountId={accountId.value || undefined}
+                      dataE2E="transaction-to-account-select"
+                    />
                   </div>
                 </div>
               )}

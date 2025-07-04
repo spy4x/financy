@@ -1,5 +1,6 @@
 import { account } from "@web/state/account.ts"
 import { group } from "@web/state/group.ts"
+import { currency } from "@web/state/currency.ts"
 import { useComputed } from "@preact/signals"
 
 interface AccountSelectorProps {
@@ -12,6 +13,8 @@ interface AccountSelectorProps {
   disabled?: boolean
   groupId?: number // If provided, filters accounts by group, otherwise uses selected group
   includeDeleted?: boolean // Whether to include soft-deleted accounts in the list
+  excludeAccountId?: number // Exclude a specific account from the list (useful for transfers)
+  dataE2E?: string // Custom data-e2e attribute
 }
 
 export function AccountSelector({
@@ -24,6 +27,8 @@ export function AccountSelector({
   disabled = false,
   groupId,
   includeDeleted = false,
+  excludeAccountId,
+  dataE2E = "account-selector",
 }: AccountSelectorProps) {
   const filteredAccounts = useComputed(() => {
     const targetGroupId = groupId || group.selectedId.value
@@ -36,6 +41,9 @@ export function AccountSelector({
 
         // Filter deleted accounts unless explicitly included
         if (!includeDeleted && acc.deletedAt) return false
+
+        // Exclude specific account if provided
+        if (excludeAccountId && acc.id === excludeAccountId) return false
 
         return true
       })
@@ -67,15 +75,18 @@ export function AccountSelector({
       required={required}
       disabled={disabled}
       class={`input ${className}`}
-      data-e2e="account-selector"
+      data-e2e={dataE2E}
     >
       <option value="">{placeholder}</option>
-      {filteredAccounts.value.map((acc) => (
-        <option key={acc.id} value={acc.id}>
-          {acc.name}
-          {acc.deletedAt ? " (deleted)" : ""}
-        </option>
-      ))}
+      {filteredAccounts.value.map((acc) => {
+        const currencyInfo = currency.getById(acc.currencyId)
+        return (
+          <option key={acc.id} value={acc.id}>
+            {acc.name} ({currencyInfo.code})
+            {acc.deletedAt ? " (deleted)" : ""}
+          </option>
+        )
+      })}
     </select>
   )
 }

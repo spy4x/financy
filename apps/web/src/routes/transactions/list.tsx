@@ -1,5 +1,4 @@
 import { transaction } from "@web/state/transaction.ts"
-import { account } from "@web/state/account.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
 import { useComputed, useSignal } from "@preact/signals"
@@ -7,6 +6,7 @@ import { useUrlFilters } from "@client/preact/use-url-filters.ts"
 import { IconFunnel, IconPlus, IconSearch } from "@client/icons"
 import { TransactionTable } from "@web/components/TransactionTable.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
+import { AccountSelector } from "@web/components/ui/AccountSelector.tsx"
 import { Link } from "wouter-preact"
 import { routes } from "../_router.tsx"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
@@ -122,14 +122,7 @@ export function TransactionList() {
     )
   })
 
-  // Get accounts and categories for current group (only active ones for filtering)
-  const groupAccounts = useComputed(() => {
-    const selectedGroupId = group.selectedId.value
-    return selectedGroupId
-      ? account.list.value.filter((acc) => acc.groupId === selectedGroupId && !acc.deletedAt)
-      : []
-  })
-
+  // Get categories for current group (only active ones for filtering)
   const groupCategories = useComputed(() => {
     const selectedGroupId = group.selectedId.value
     return selectedGroupId
@@ -242,22 +235,11 @@ export function TransactionList() {
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {type.value === TransactionType.TRANSFER ? "From Account" : "Account"}
                   </label>
-                  <select
-                    key={accountId.value}
-                    class="input w-full"
-                    value={accountId.value || ""}
-                    onChange={(e) => {
-                      const value = e.currentTarget.value
-                      accountId.value = value ? parseInt(value) : null
-                    }}
-                  >
-                    <option value="">All Accounts</option>
-                    {groupAccounts.value.map((acc) => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.name}
-                      </option>
-                    ))}
-                  </select>
+                  <AccountSelector
+                    value={accountId.value}
+                    onChange={(id) => accountId.value = id}
+                    placeholder="All Accounts"
+                  />
                 </div>
 
                 {/* Category Filter - hide for transfers */}
