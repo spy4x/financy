@@ -92,6 +92,16 @@ export function Profile() {
     }
   }
 
+  function telegramConnect(e: Event) {
+    e.preventDefault()
+    auth.telegramConnect()
+  }
+
+  function telegramDisconnect(e: Event) {
+    e.preventDefault()
+    auth.telegramDisconnect()
+  }
+
   return (
     <section class="page-layout">
       <PageTitle>Profile</PageTitle>
@@ -321,6 +331,98 @@ export function Profile() {
                   </div>
                 </div>
               )}
+          </div>
+        </fieldset>
+      </form>
+
+      <form class="card">
+        <fieldset
+          disabled={auth.ops.telegramConnect.value.inProgress ||
+            auth.ops.telegramDisconnect.value.inProgress}
+        >
+          <div class="card-body">
+            <div class="h2 mb-6">Telegram</div>
+
+            {!auth.ops.telegramDisconnect.value.result &&
+              !auth.ops.telegramConnect.value.result && (
+              <div>
+                <p class="text-gray-600 mb-6">
+                  Connect your Telegram account to receive notifications and interact with your
+                  financial data through the Telegram bot.
+                </p>
+                <button type="button" class="btn btn-primary" onClick={telegramConnect}>
+                  Connect Telegram
+                </button>
+                {auth.ops.telegramConnect.value.inProgress && <IconLoading />}
+                {auth.ops.telegramConnect.value.error && (
+                  <div class="mt-4 text-red-600">
+                    {auth.ops.telegramConnect.value.error}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {auth.ops.telegramConnect.value.result && !auth.ops.telegramDisconnect.value.result && (
+              <div>
+                <div class="flex gap-2 items-center text-green-700 mb-6">
+                  <IconCheckCircle class="size-5" />
+                  <span>Connection code generated</span>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-md mb-6">
+                  <p class="text-sm text-gray-600 mb-2">
+                    <strong>Connection Code:</strong>
+                  </p>
+                  <code class="text-lg font-mono bg-white px-3 py-2 rounded border">
+                    {auth.ops.telegramConnect.value.result.code}
+                  </code>
+                  <p class="text-sm text-gray-600 mt-3">
+                    1. Open Telegram and search for your Financy bot<br />
+                    2. Send the command:{" "}
+                    <code>/link {auth.ops.telegramConnect.value.result.code}</code>
+                    <br />
+                    3. The bot will confirm when your account is connected
+                  </p>
+                  <p class="text-xs text-gray-500 mt-2">
+                    This code expires in 10 minutes.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onClick={telegramConnect}
+                >
+                  Generate New Code
+                </button>
+              </div>
+            )}
+
+            {(auth.ops.telegramDisconnect.value.result === false ||
+              (auth.ops.telegramConnect.value.error &&
+                String(auth.ops.telegramConnect.value.error).includes("already linked"))) && (
+              <div>
+                <div class="flex gap-2 items-center text-green-700 mb-6">
+                  <IconCheckCircle class="size-5" />
+                  <span>Telegram connected</span>
+                </div>
+                <p class="text-gray-600 mb-6">
+                  Your Telegram account is connected. You can now use the Telegram bot to interact
+                  with your financial data.
+                </p>
+                <button
+                  type="button"
+                  class="btn btn-danger-outline"
+                  onClick={telegramDisconnect}
+                >
+                  Disconnect Telegram
+                </button>
+                {auth.ops.telegramDisconnect.value.inProgress && <IconLoading />}
+                {auth.ops.telegramDisconnect.value.error && (
+                  <div class="mt-4 text-red-600">
+                    {auth.ops.telegramDisconnect.value.error}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </fieldset>
       </form>

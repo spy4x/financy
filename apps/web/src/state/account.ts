@@ -4,6 +4,7 @@ import { Account, WebSocketMessageType } from "@shared/types"
 import { group } from "./group.ts"
 import { toast } from "./toast.ts"
 import { transaction } from "./transaction.ts"
+import { calculateAccountBalance } from "@shared/helpers/account-balance.ts"
 
 const list = signal<Account[]>([])
 const ops = {
@@ -39,13 +40,7 @@ export const account = {
     const accountData = list.value.find((acc) => acc.id === accountId)
     if (!accountData) return 0
 
-    const balance = transaction.list.value.reduce((sum, txn) => {
-      if (txn.accountId === accountId && !txn.deletedAt) {
-        // Transactions are already signed correctly based on direction
-        return sum + txn.amount
-      }
-      return sum
-    }, accountData.startingBalance)
+    const balance = calculateAccountBalance(accountData, transaction.list.value)
 
     balanceCache.set(accountId, balance)
     return balance

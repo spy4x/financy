@@ -270,6 +270,9 @@ export enum UserKeyKind {
   USERNAME_PASSWORD = 1,
   USERNAME_2FA_CONNECTING = 2,
   USERNAME_2FA_COMPLETED = 3,
+  TELEGRAM_AUTH = 4,
+  TELEGRAM_LINKING_CONNECTING = 5,
+  TELEGRAM_LINKING_COMPLETED = 6,
 }
 export const userKeyKindValues = Object.values(UserKeyKind) as UserKeyKind[]
 

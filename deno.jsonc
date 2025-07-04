@@ -95,6 +95,8 @@
     "qrcode": "jsr:@libs/qrcode@^3.0.0",
     "webpush": "jsr:@negrel/webpush",
 
+    // apps/tgbot
+
     // apps/web
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
     "@preact/preset-vite": "npm:@preact/preset-vite@^2.10.1",
@@ -114,7 +116,6 @@
     "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/testing": "jsr:@std/testing@^1.0.11",
     "@std/encoding": "jsr:@std/encoding@^1.0.5",
-    "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
     "@playwright/test": "npm:@playwright/test@^1.53.1",
     "playwright": "npm:playwright@^1.53.1",
 

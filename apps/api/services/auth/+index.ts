@@ -5,6 +5,7 @@ import { SessionManager } from "./session.ts"
 import { PasswordMethod } from "./password.ts"
 import { db } from "../db.ts"
 import { TOTPMethod } from "./totp.ts"
+import { TelegramMethod } from "./telegram.ts"
 import { APIContext } from "../../_types.ts"
 import { UserMFAStatus } from "@shared/types"
 import { eventBus } from "@api/services/eventBus.ts"
@@ -15,6 +16,7 @@ class Auth {
   private session = new SessionManager()
   private totp = new TOTPMethod(this.session)
   private usernamePassword = new PasswordMethod(this.session)
+  private telegram = new TelegramMethod(this.session)
 
   async getForRequest(context: Context<APIContext>): Promise<null | AuthData> {
     const sessionIdToken = await this.cookie.getSessionIdToken(context)
@@ -80,6 +82,109 @@ class Auth {
     console.log("User signed up. Sending response back", { userId: authData.user.id, username })
 
     return authData
+  }
+
+  async signInWithTelegram(
+    telegramId: number,
+    context: Context<APIContext>,
+  ): Promise<null | AuthData> {
+    const authData = await this.telegram.check(telegramId)
+    if (!authData) return null
+    if (authData.user.deletedAt) {
+      return null
+    }
+    await this.cookie.set(
+      context,
+      authData.user.id,
+      this.session.getIdTokenForCookie(authData.session),
+    )
+    authData.user = await db.user.updateOne({
+      id: authData.user.id,
+      data: { lastLoginAt: new Date() },
+    })
+    return authData
+  }
+
+  async signUpWithTelegram(
+    telegramId: number,
+    firstName: string,
+    lastName: string | undefined,
+    context?: Context<APIContext>,
+  ): Promise<null | AuthData> {
+    const authData = await this.telegram.signUp(telegramId, firstName, lastName)
+    if (!authData) return null
+    if (authData.user.deletedAt) {
+      return null
+    }
+
+    // Only set cookie if context is provided (web requests)
+    if (context) {
+      await this.cookie.set(
+        context,
+        authData.user.id,
+        this.session.getIdTokenForCookie(authData.session),
+      )
+    }
+
+    eventBus.emit(
+      new UserSignedUpEvent({
+        user: authData.user,
+        username: `telegram:${telegramId}`,
+      }),
+    )
+    console.log("User signed up via Telegram. Sending response back", {
+      userId: authData.user.id,
+      telegramId,
+    })
+
+    return authData
+  }
+
+  async connectTelegram(
+    authData: AuthData,
+    telegramId: number,
+  ): Promise<null | AuthData> {
+    return await this.telegram.connect(authData.user.id, telegramId)
+  }
+
+  async findUserByTelegramId(telegramId: number): Promise<null | AuthData["user"]> {
+    return await this.telegram.findUserByTelegramId(telegramId)
+  }
+
+  async isTelegramIdRegistered(telegramId: number): Promise<boolean> {
+    return await this.telegram.isTelegramIdRegistered(telegramId)
+  }
+
+  async checkTelegramAuth(telegramId: number): Promise<null | AuthData> {
+    return await this.telegram.check(telegramId)
+  }
+
+  async generateTelegramConnectionCode(userId: number): Promise<
+    {
+      error: string
+      code: null
+    } | {
+      error: null
+      code: string
+    }
+  > {
+    return await this.telegram.generateConnectionCode(userId)
+  }
+
+  async completeTelegramConnection(telegramId: number, connectionCode: string): Promise<
+    {
+      error: string
+      user: null
+    } | {
+      error: null
+      user: { id: number; firstName: string | null }
+    }
+  > {
+    return await this.telegram.completeConnection(telegramId, connectionCode)
+  }
+
+  async disconnectTelegram(userId: number): Promise<boolean> {
+    return await this.telegram.disconnect(userId)
   }
 
   async connectTOTPStart(

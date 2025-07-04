@@ -510,22 +510,27 @@ export class DbService extends DbServiceBase {
       `transactions`,
       publicAPICache.transaction,
     ),
-    findMany: async (userId: number): Promise<Transaction[]> => {
-      // INDEX: idx_transactions_by_group (for t.group_id IN subquery), idx_memberships_by_user_group (for subquery)
+    findMany: async (params: {
+      filter: { userId: number }
+      pagination?: { offset: number; limit: number }
+    }): Promise<Transaction[]> => {
+      // INDEX: idx_transactions_by_group (for t.group_id IN subquery), idx_memberships_by_user_group (for subquery), idx_transactions_by_timestamp (for ORDER BY timestamp)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
         WHERE t.group_id IN (
-          SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
+          SELECT group_id FROM group_memberships WHERE user_id = ${params.filter.userId} AND deleted_at IS NULL
         )
-        ORDER BY t.created_at DESC
+        ORDER BY t.timestamp DESC
+        ${params.pagination?.limit ? this.sql`LIMIT ${params.pagination.limit}` : this.sql``}
+        ${params.pagination?.offset ? this.sql`OFFSET ${params.pagination.offset}` : this.sql``}
       `
     },
     findByLinkedTransactionCode: async (
       linkedTransactionCode: string,
       userId: number,
     ): Promise<Transaction[]> => {
-      // INDEX: idx_transactions_linked_transaction_code (for linked_transaction_code), idx_transactions_by_group (for group_id IN subquery)
+      // INDEX: idx_transactions_linked_transaction_code (for linked_transaction_code), idx_transactions_by_group (for group_id IN subquery), idx_transactions_by_timestamp (for ORDER BY timestamp)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -533,20 +538,20 @@ export class DbService extends DbServiceBase {
         AND t.group_id IN (
           SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
         )
-        ORDER BY t.created_at DESC
+        ORDER BY t.timestamp DESC
       `
     },
     findByGroup: async (groupId: number, _userId: number): Promise<Transaction[]> => {
-      // INDEX: idx_transactions_by_group (for t.group_id filter)
+      // INDEX: idx_transactions_by_group (for t.group_id filter), idx_transactions_by_timestamp (for ORDER BY timestamp)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
         WHERE t.group_id = ${groupId}
-        ORDER BY t.created_at DESC
+        ORDER BY t.timestamp DESC
       `
     },
     findByAccount: async (accountId: number, userId: number): Promise<Transaction[]> => {
-      // INDEX: idx_transactions_by_account (for t.account_id filter), idx_transactions_by_group (for group_id IN subquery)
+      // INDEX: idx_transactions_by_account (for t.account_id filter), idx_transactions_by_group (for group_id IN subquery), idx_transactions_by_timestamp (for ORDER BY timestamp)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -555,11 +560,11 @@ export class DbService extends DbServiceBase {
         AND t.group_id IN (
           SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
         )
-        ORDER BY t.created_at DESC
+        ORDER BY t.timestamp DESC
       `
     },
     findChanged: async (updatedAtGt: Date, userId: number): Promise<Transaction[]> => {
-      // INDEX: idx_transactions_sync_retrieval (for t.updated_at filter), idx_transactions_by_group (for group_id IN subquery)
+      // INDEX: idx_transactions_sync_retrieval (for t.updated_at filter), idx_transactions_by_group (for group_id IN subquery), idx_transactions_by_timestamp (for ORDER BY timestamp)
       return this.sql<Transaction[]>`
         SELECT t.*
         FROM transactions t
@@ -567,7 +572,7 @@ export class DbService extends DbServiceBase {
           SELECT group_id FROM group_memberships WHERE user_id = ${userId} AND deleted_at IS NULL
         )
         AND t.updated_at > ${updatedAtGt}
-        ORDER BY t.created_at DESC
+        ORDER BY t.timestamp DESC
       `
     },
     verifyLegitimacyById: async (
@@ -657,7 +662,12 @@ export class DbService extends DbServiceBase {
         if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
           data = await db[model].findChanged(lastSyncAtDate, userId)
         } else {
-          data = await db[model].findMany(userId)
+          // Handle special case for transaction findMany which uses new parameter structure
+          if (model === "transaction") {
+            data = await db[model].findMany({ filter: { userId } })
+          } else {
+            data = await db[model].findMany(userId)
+          }
         }
       }
       callback(model, data)

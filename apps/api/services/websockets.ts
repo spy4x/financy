@@ -133,7 +133,7 @@ export const websockets = {
     const json = JSON.parse(event.data)
     const parseResult = validate(webSocketMessageSchema, json)
     if (parseResult.error) {
-      console.error("Invalid message", { issues: parseResult.error, json })
+      console.error("Invalid message", { issues: parseResult.error.description, json })
       return
     }
 

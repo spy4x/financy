@@ -71,14 +71,14 @@ COMMENT ON COLUMN users.mfa IS '1=not_configured, 2=confuration_not_finished, 3=
 CREATE TABLE user_keys (
     id SERIAL PRIMARY KEY,
     user_id INT4 NOT NULL REFERENCES users(id),
-    kind INT2 NOT NULL CHECK (kind = ANY (ARRAY[0, 1, 2])),
+    kind INT2 NOT NULL CHECK (kind = ANY (ARRAY[1, 2, 3, 4])),
     identification VARCHAR(50) NOT NULL,
     secret VARCHAR(256),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-COMMENT ON COLUMN user_keys.kind IS '1=login_password, 2=username_2fa_connecting, 3=username_2fa_completed';
+COMMENT ON COLUMN user_keys.kind IS '1=login_password, 2=username_2fa_connecting, 3=username_2fa_completed, 4=telegram_auth, 5=telegram_linking_connecting, 6=telegram_linking_completed';
 
 CREATE INDEX idx_user_keys_by_user_id ON user_keys (user_id);
 CREATE INDEX idx_user_keys_by_identification ON user_keys (identification);

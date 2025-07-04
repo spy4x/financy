@@ -35,6 +35,8 @@ const ops = {
   TOTPConnectStart: signal(op<{ qrcode: string; secret: string }>()),
   TOTPConnectFinish: signal(op<boolean>()),
   TOTPDisconnect: signal(op<boolean>()),
+  telegramConnect: signal(op<{ code: string }>()),
+  telegramDisconnect: signal(op<boolean>()),
 }
 
 effect(() => userStorage.set(user.value)) // Save user to local storage
@@ -285,6 +287,51 @@ export const auth = {
       ops.TOTPDisconnect.value = op(false, true)
     } catch (error) {
       ops.TOTPDisconnect.value = op<boolean>(
+        false,
+        null,
+        error instanceof Error ? error.message : String(error),
+      )
+    }
+  },
+  telegramConnect: async () => {
+    ops.telegramConnect.value = op(true)
+    try {
+      const response = await fetch("/api/auth/telegram/connect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if (!response.ok) {
+        ops.telegramConnect.value = op<{ code: string }>(false, null, await response.json())
+        return
+      }
+      const responseJson = await response.json()
+      ops.telegramConnect.value = op(false, { code: responseJson.code })
+    } catch (error) {
+      ops.telegramConnect.value = op<{ code: string }>(
+        false,
+        null,
+        error instanceof Error ? error.message : String(error),
+      )
+    }
+  },
+  telegramDisconnect: async () => {
+    ops.telegramDisconnect.value = op(true)
+    try {
+      const response = await fetch("/api/auth/telegram/disconnect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if (!response.ok) {
+        ops.telegramDisconnect.value = op<boolean>(false, null, await response.json())
+        return
+      }
+      ops.telegramDisconnect.value = op(false, true)
+    } catch (error) {
+      ops.telegramDisconnect.value = op<boolean>(
         false,
         null,
         error instanceof Error ? error.message : String(error),

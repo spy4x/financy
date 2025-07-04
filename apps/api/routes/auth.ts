@@ -100,6 +100,22 @@ export const authRoute = new Hono<APIContext>()
     }
     return c.json({ success: true })
   })
+  .post(`/telegram/connect`, async (c) => {
+    const authData = c.get("auth")
+    const { error, code } = await auth.generateTelegramConnectionCode(authData.user.id)
+    if (error) {
+      return c.json({ error }, 400)
+    }
+    return c.json({ code })
+  })
+  .post(`/telegram/disconnect`, async (c) => {
+    const authData = c.get("auth")
+    const isSuccess = await auth.disconnectTelegram(authData.user.id)
+    if (!isSuccess) {
+      return c.json({ error: "Telegram not connected to your account" }, 400)
+    }
+    return c.json({ success: true })
+  })
   // .use(rateLimiter)
   .use(isAuthenticated2FA)
   .post(`/totp/disconnect`, async (c) => {

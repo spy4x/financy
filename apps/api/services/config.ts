@@ -17,6 +17,15 @@ export class Config {
     limit: Number(getEnvVar("RATE_LIMITER_LIMIT")),
   }
 
+  // Web App Configuration
+  domain = getEnvVar("DOMAIN")
+  webAppUrl = `http${this.isDev ? "" : "s"}://${this.domain}`
+
+  // Telegram Bot Configuration
+  telegramBotToken = getEnvVar("TELEGRAM_BOT_TOKEN", true)
+  telegramWebhookUrl = this.isDev ? "" : getEnvVar("TELEGRAM_WEBHOOK_URL", true)
+  telegramWebhookSecret = getEnvVar("TELEGRAM_WEBHOOK_SECRET", true)
+
   kv = {
     hostname: getEnvVar("KV_HOSTNAME"),
     port: Number(getEnvVar("KV_PORT")),

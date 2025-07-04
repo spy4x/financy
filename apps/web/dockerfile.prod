@@ -1,5 +1,5 @@
 # Build stage
-FROM denoland/deno:alpine-2.3.5 AS build
+FROM denoland/deno:alpine-2.4.0 AS build
 WORKDIR /app
 COPY . .
 RUN chown -R 1000:1000 /app
