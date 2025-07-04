@@ -57,12 +57,14 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
-    role INT2 DEFAULT 1 NOT NULL CHECK (role >= 1 AND role <= 4),
+    role INT2 DEFAULT 1 NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_login_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
-    mfa INT2 DEFAULT 1 NOT NULL CHECK (mfa = ANY (ARRAY[1, 2, 3]))
+    mfa INT2 DEFAULT 1 NOT NULL,
+    CONSTRAINT users_role_check CHECK (role >= 1 AND role <= 4),
+    CONSTRAINT users_mfa_check CHECK (mfa = ANY (ARRAY[1, 2, 3]))
 );
 
 COMMENT ON COLUMN users.role IS '1=viewer, 2=operator, 3=supervisor, 4=administrator';
@@ -70,12 +72,13 @@ COMMENT ON COLUMN users.mfa IS '1=not_configured, 2=confuration_not_finished, 3=
 
 CREATE TABLE user_keys (
     id SERIAL PRIMARY KEY,
-    user_id INT4 NOT NULL REFERENCES users(id),
-    kind INT2 NOT NULL CHECK (kind = ANY (ARRAY[1, 2, 3, 4])),
+    user_id INT4 NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kind INT2 NOT NULL,
     identification VARCHAR(50) NOT NULL,
     secret VARCHAR(256),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT user_keys_kind_check CHECK (kind = ANY (ARRAY[1, 2, 3, 4, 5, 6]))
 );
 
 COMMENT ON COLUMN user_keys.kind IS '1=login_password, 2=username_2fa_connecting, 3=username_2fa_completed, 4=telegram_auth, 5=telegram_linking_connecting, 6=telegram_linking_completed';
@@ -86,13 +89,15 @@ CREATE INDEX idx_user_keys_by_identification ON user_keys (identification);
 CREATE TABLE user_sessions (
     id SERIAL PRIMARY KEY,
     token VARCHAR(256) NOT NULL,
-    user_id INT4 NOT NULL REFERENCES users(id),
-    key_id INT4 NOT NULL REFERENCES user_keys(id),
+    user_id INT4 NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    key_id INT4 NOT NULL REFERENCES user_keys(id) ON DELETE CASCADE,
     expires_at TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    mfa INT2 DEFAULT 1 NOT NULL CHECK (mfa = ANY (ARRAY[1, 2, 3])),
-    status INT2 DEFAULT 1 NOT NULL CHECK (status = ANY (ARRAY[1, 2, 3]))
+    mfa INT2 DEFAULT 1 NOT NULL,
+    status INT2 DEFAULT 1 NOT NULL,
+    CONSTRAINT user_sessions_mfa_check CHECK (mfa = ANY (ARRAY[1, 2, 3])),
+    CONSTRAINT user_sessions_status_check CHECK (status = ANY (ARRAY[1, 2, 3]))
 );
 
 COMMENT ON COLUMN user_sessions.mfa IS '1=not_required, 2=not_passed_yet, 3=completed';
@@ -103,7 +108,7 @@ CREATE INDEX idx_user_sessions_by_expires_at ON user_sessions (expires_at);
 
 CREATE TABLE user_push_tokens (
     id SERIAL PRIMARY KEY,
-    user_id INT4 REFERENCES users(id),
+    user_id INT4 REFERENCES users(id) ON DELETE CASCADE,
     device_id VARCHAR(256) NOT NULL,
     endpoint VARCHAR(256) NOT NULL,
     auth VARCHAR(256) NOT NULL,
@@ -125,11 +130,13 @@ CREATE TABLE currencies (
     code VARCHAR(10) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     symbol VARCHAR(10),
-    type INT2 NOT NULL CHECK (type IN (1, 2)),
-    decimal_places INT2 NOT NULL DEFAULT 2 CHECK (decimal_places >= 0),
+    type INT2 NOT NULL,
+    decimal_places INT2 NOT NULL DEFAULT 2,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT currencies_type_check CHECK (type IN (1, 2)),
+    CONSTRAINT currencies_decimal_places_check CHECK (decimal_places >= 0)
 );
 
 COMMENT ON COLUMN currencies.code IS 'ISO 4217 currency code (e.g., USD, EUR, BTC)';
@@ -166,7 +173,7 @@ COMMENT ON COLUMN exchange_rates.pair IS 'Ex: USDUSD, USDEUR';
 CREATE TABLE groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    currency_id INT4 NOT NULL REFERENCES currencies(id),
+    currency_id INT4 NOT NULL REFERENCES currencies(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
@@ -180,10 +187,11 @@ CREATE TABLE group_memberships (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     user_id INT4 NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role INT2 NOT NULL CHECK ((role >= 1) AND (role <= 4)),
+    role INT2 NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT group_memberships_role_check CHECK (role >= 1 AND role <= 4)
 );
 
 COMMENT ON COLUMN group_memberships.role IS 'Enum: 1 = Viewer, 2 = Editor, 3 = Admin, 4 = Owner';
@@ -195,7 +203,7 @@ CREATE TABLE accounts (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
-    currency_id INT4 NOT NULL REFERENCES currencies(id),
+    currency_id INT4 NOT NULL REFERENCES currencies(id) ON DELETE CASCADE,
     starting_balance INT4 DEFAULT 0 NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -211,13 +219,14 @@ CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
-    type INT2 DEFAULT 1 NOT NULL CHECK ((type >= 1) AND (type <= 2)),
+    type INT2 DEFAULT 1 NOT NULL,
     monthly_limit INT4,
     icon VARCHAR(10),
     color VARCHAR(7),
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT categories_type_check CHECK (type >= 1 AND type <= 2)
 );
 
 COMMENT ON COLUMN categories.type IS '1=expense, 2=income';
@@ -235,15 +244,17 @@ CREATE TABLE transactions (
     direction INT2 NOT NULL,
     type INT2 NOT NULL,
     amount INT4 NOT NULL,
-    original_currency_id INT4 REFERENCES currencies(id),
+    original_currency_id INT4 REFERENCES currencies(id) ON DELETE CASCADE,
     original_amount INT4,
-    category_id INT4 REFERENCES categories(id),
-    created_by INT4 NOT NULL REFERENCES users(id),
-    memo TEXT CHECK (LENGTH(memo) <= 500),
+    category_id INT4 REFERENCES categories(id) ON DELETE CASCADE,
+    created_by INT4 NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    memo TEXT,
     timestamp TIMESTAMPTZ DEFAULT now() NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ,
+    CONSTRAINT transactions_type_check CHECK (type >= 1 AND type <= 3),
+    CONSTRAINT transactions_memo_length_check CHECK (LENGTH(memo) <= 500),
     CONSTRAINT transfer_logic_check CHECK (
         (type = 3 AND category_id IS NULL) OR
         (type IN (1, 2) AND category_id IS NOT NULL)
