@@ -106,16 +106,24 @@ export const group = {
       }
     })
   },
-  create(name: string, currencyId: number) {
+  create(name: string, currencyId: number, defaultAccountId?: number | null) {
     group.ops.create.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "group", t: WebSocketMessageType.CREATE, p: [{ name, currencyId }] },
+      message: {
+        e: "group",
+        t: WebSocketMessageType.CREATE,
+        p: [{ name, currencyId, defaultAccountId }],
+      },
     })
   },
-  update(id: number, name: string, currencyId: number) {
+  update(id: number, name: string, currencyId: number, defaultAccountId?: number | null) {
     group.ops.update.value = { inProgress: true, error: null }
     ws.request({
-      message: { e: "group", t: WebSocketMessageType.UPDATE, p: [{ id, name, currencyId }] },
+      message: {
+        e: "group",
+        t: WebSocketMessageType.UPDATE,
+        p: [{ id, name, currencyId, defaultAccountId }],
+      },
     })
   },
   remove(id: number) {
@@ -132,5 +140,18 @@ export const group = {
   getSelectedCurrency() {
     const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
     return selectedGroup ? currency.getById(selectedGroup.currencyId) : currency.getByCode("USD")
+  },
+  /**
+   * Get the default account ID for the currently selected group
+   */
+  getSelectedDefaultAccountId(): number | null {
+    const selectedGroup = group.list.value.find((g) => g.id === group.selectedId.value)
+    return selectedGroup?.defaultAccountId ?? null
+  },
+  /**
+   * Get the currently selected group
+   */
+  getSelected(): Group | null {
+    return group.list.value.find((g) => g.id === group.selectedId.value) ?? null
   },
 }

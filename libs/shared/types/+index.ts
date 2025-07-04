@@ -344,11 +344,12 @@ export type UserPushToken = typeof userPushTokenSchema.infer
 export const groupBaseSchema = type({
   name: `string <= ${NAME_MAX_LENGTH} = ''`,
   currencyId: "number > 0",
+  defaultAccountId: "number | null = null",
 })
 export type GroupBase = typeof groupBaseSchema.infer
 export const groupSchema = BaseModelSchema.and(groupBaseSchema)
 export type Group = typeof groupSchema.infer
-export const groupUpdateSchema = groupSchema.pick("id", "name", "currencyId")
+export const groupUpdateSchema = groupSchema.pick("id", "name", "currencyId", "defaultAccountId")
 export type GroupUpdate = typeof groupUpdateSchema.infer
 // #endregion Group
 

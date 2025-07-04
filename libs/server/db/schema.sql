@@ -174,12 +174,14 @@ CREATE TABLE groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     currency_id INT4 NOT NULL REFERENCES currencies(id) ON DELETE CASCADE,
+    default_account_id INT4 REFERENCES accounts(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     deleted_at TIMESTAMPTZ
 );
 
 COMMENT ON COLUMN groups.currency_id IS 'Default currency for the group (FK to currencies table)';
+COMMENT ON COLUMN groups.default_account_id IS 'Default account for new transactions in this group (FK to accounts table)';
 
 CREATE INDEX idx_groups_sync_retrieval ON groups (updated_at DESC);
 

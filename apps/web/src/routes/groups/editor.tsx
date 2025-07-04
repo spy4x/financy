@@ -5,6 +5,7 @@ import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
+import { AccountSelector } from "@web/components/ui/AccountSelector.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 
@@ -22,6 +23,7 @@ export function GroupEditor() {
 
   const name = useSignal("")
   const currencyId = useSignal<number | null>(null)
+  const defaultAccountId = useSignal<number | null>(null)
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
@@ -36,6 +38,7 @@ export function GroupEditor() {
         if (existingGroup) {
           name.value = existingGroup.name
           currencyId.value = existingGroup.currencyId
+          defaultAccountId.value = existingGroup.defaultAccountId || null
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -47,6 +50,7 @@ export function GroupEditor() {
         // Default to USD currency ID (1) if available, otherwise null
         const usdCurrency = currency.getByCode("USD")
         currencyId.value = usdCurrency?.id || null
+        defaultAccountId.value = null
         error.value = ""
         state.value = EditorState.IDLE
       }
@@ -97,9 +101,9 @@ export function GroupEditor() {
     error.value = ""
     state.value = EditorState.IN_PROGRESS
     if (editGroupId) {
-      group.update(editGroupId, trimmedName, currencyId.value)
+      group.update(editGroupId, trimmedName, currencyId.value, defaultAccountId.value)
     } else {
-      group.create(trimmedName, currencyId.value)
+      group.create(trimmedName, currencyId.value, defaultAccountId.value)
     }
   }
 
@@ -153,6 +157,25 @@ export function GroupEditor() {
                 </div>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                   This will be the default currency for new accounts in this group.
+                </p>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="defaultAccount" class="label">
+                  Default Account:
+                </label>
+                <div class="mt-2">
+                  <AccountSelector
+                    id="defaultAccount"
+                    value={defaultAccountId.value}
+                    onChange={(id) => defaultAccountId.value = id}
+                    placeholder="Select default account..."
+                    groupId={editGroupId || undefined}
+                    includeDeleted
+                  />
+                </div>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  This account will be pre-selected when creating new transactions in this group.
                 </p>
               </div>
             </div>

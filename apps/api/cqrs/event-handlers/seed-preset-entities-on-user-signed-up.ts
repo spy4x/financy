@@ -3,6 +3,7 @@ import {
   AccountCreateCommand,
   CategoryCreateCommand,
   GroupCreateCommand,
+  GroupUpdateCommand,
 } from "@api/cqrs/commands.ts"
 import { AccountBase, CategoryBase, CategoryType, GroupRole } from "@shared/types"
 import { commandBus } from "@api/services/commandBus.ts"
@@ -112,6 +113,7 @@ export const seedPresetEntitiesOnUserSignedUpHandler = async (event: UserSignedU
         group: {
           name: "Personal",
           currencyId: 1, // USD - first currency in migration
+          defaultAccountId: null, // Will be set later after creating accounts
         },
         userId: user.id,
         role: GroupRole.OWNER,
@@ -123,6 +125,7 @@ export const seedPresetEntitiesOnUserSignedUpHandler = async (event: UserSignedU
 
     // 2. Create default accounts
     console.log(`Creating default accounts for group ${groupId}...`)
+    let firstAccountId: number | null = null
     for (const accountData of DEFAULT_ACCOUNTS) {
       try {
         const accountResult = await commandBus.execute(
@@ -137,9 +140,29 @@ export const seedPresetEntitiesOnUserSignedUpHandler = async (event: UserSignedU
         console.log(
           `✅ Account "${accountResult.account.name}" created (ID: ${accountResult.account.id})`,
         )
+        // Remember the first account to set as default
+        if (firstAccountId === null) {
+          firstAccountId = accountResult.account.id
+        }
       } catch (error) {
         console.error(`❌ Failed to create account "${accountData.name}":`, error)
         // Continue with other accounts even if one fails
+      }
+    }
+
+    // 2.1. Set the first account as the default account for the group
+    if (firstAccountId) {
+      try {
+        await commandBus.execute(
+          new GroupUpdateCommand({
+            groupId,
+            updates: { defaultAccountId: firstAccountId },
+            userId: user.id,
+          }),
+        )
+        console.log(`✅ Set account ${firstAccountId} as default for group ${groupId}`)
+      } catch (error) {
+        console.error(`❌ Failed to set default account for group ${groupId}:`, error)
       }
     }
 

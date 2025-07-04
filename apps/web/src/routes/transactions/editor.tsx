@@ -189,10 +189,20 @@ export function TransactionEditor() {
           if (fromAccount) {
             accountId.value = fromAccountIdNum
           } else {
-            accountId.value = accounts.length > 0 ? accounts[0].id : null
+            // Fallback to default account or first available account
+            const defaultAccountId = group.getSelectedDefaultAccountId()
+            const defaultAccount = defaultAccountId
+              ? accounts.find((acc) => acc.id === defaultAccountId)
+              : null
+            accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
           }
         } else {
-          accountId.value = accounts.length > 0 ? accounts[0].id : null
+          // Use group's default account if available, otherwise first account
+          const defaultAccountId = group.getSelectedDefaultAccountId()
+          const defaultAccount = defaultAccountId
+            ? accounts.find((acc) => acc.id === defaultAccountId)
+            : null
+          accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
         }
 
         toAccountId.value = accounts.length > 1 ? accounts[1].id : null
