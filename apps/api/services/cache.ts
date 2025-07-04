@@ -10,6 +10,7 @@ import {
   User,
   UserKey,
   UserSession,
+  UserSettings,
   ValidationSchema,
 } from "@shared/types"
 import {
@@ -51,6 +52,7 @@ export class PublicAPICache {
   user = buildMethods<User>(`user`)
   userKey = buildMethods<UserKey>(`userKey`)
   userSession = buildMethods<UserSession>(`userSession`)
+  userSettings = buildMethods<UserSettings>(`userSettings`)
   group = buildMethods<Group>(`group`)
   groupMembership = buildMethods<GroupMembership>(`groupMembership`)
   account = buildMethods<Account>(`account`)

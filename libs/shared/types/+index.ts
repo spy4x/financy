@@ -370,6 +370,28 @@ export const groupMembershipUpdateSchema = groupMembershipBaseSchema.pick(
 export type GroupMembershipUpdate = typeof groupMembershipUpdateSchema.infer
 // #endregion Group Membership
 
+// #region User Settings
+export enum Theme {
+  LIGHT = 1,
+  DARK = 2,
+  SYSTEM = 3,
+}
+
+const themeValues = Object.values(Theme) as Theme[]
+
+export const userSettingsBaseSchema = type({
+  theme: type.enumerated(...themeValues).default(Theme.SYSTEM),
+  selectedGroupId: "number > 0",
+})
+export type UserSettingsBase = typeof userSettingsBaseSchema.infer
+
+export const userSettingsSchema = BaseModelSchema.and(userSettingsBaseSchema)
+export type UserSettings = typeof userSettingsSchema.infer
+
+export const userSettingsUpdateSchema = userSettingsBaseSchema.pick("theme", "selectedGroupId")
+export type UserSettingsUpdate = typeof userSettingsUpdateSchema.infer
+// #endregion User Settings
+
 // #region Account
 export const accountBaseSchema = type({
   name: `string <= ${NAME_MAX_LENGTH} = ''`,
@@ -608,6 +630,7 @@ export type SyncModel =
   | Tag
   | Group
   | GroupMembership
+  | UserSettings
   | UserKey
   | UserSession
   | UserPushToken
@@ -616,6 +639,7 @@ export enum SyncModelName {
   user = "user",
   group = "group",
   groupMembership = "groupMembership",
+  userSettings = "userSettings",
   account = "account",
   category = "category",
   currency = "currency",
@@ -632,6 +656,7 @@ export const SYNC_MODELS = [
   SyncModelName.user,
   SyncModelName.group,
   SyncModelName.groupMembership,
+  SyncModelName.userSettings,
   SyncModelName.account,
   SyncModelName.category,
   SyncModelName.currency,

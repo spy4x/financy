@@ -4,8 +4,9 @@ import {
   CategoryCreateCommand,
   GroupCreateCommand,
   GroupUpdateCommand,
+  UserSettingsUpsertCommand,
 } from "@api/cqrs/commands.ts"
-import { AccountBase, CategoryBase, CategoryType, GroupRole } from "@shared/types"
+import { AccountBase, CategoryBase, CategoryType, GroupRole, Theme } from "@shared/types"
 import { commandBus } from "@api/services/commandBus.ts"
 
 // Common account presets for new users
@@ -122,6 +123,23 @@ export const seedPresetEntitiesOnUserSignedUpHandler = async (event: UserSignedU
 
     const groupId = groupResult.group.id
     console.log(`✅ Default "Personal" group created (ID: ${groupId})`)
+
+    // 1.1. Create default user settings with the newly created group as selected
+    try {
+      await commandBus.execute(
+        new UserSettingsUpsertCommand({
+          userId: user.id,
+          settings: {
+            theme: Theme.SYSTEM,
+            selectedGroupId: groupId,
+          },
+        }),
+      )
+      console.log(`✅ Default user settings created for user ${user.id}`)
+    } catch (error) {
+      console.error(`❌ Failed to create user settings for user ${user.id}:`, error)
+      // Continue anyway as this is not critical for the user experience
+    }
 
     // 2. Create default accounts
     console.log(`Creating default accounts for group ${groupId}...`)

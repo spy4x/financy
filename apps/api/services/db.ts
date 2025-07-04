@@ -24,6 +24,8 @@ import {
   UserPushTokenBase,
   UserSession,
   UserSessionBase,
+  UserSettings,
+  UserSettingsBase,
 } from "@shared/types"
 import { DbServiceBase } from "@server/db"
 import { publicAPICache } from "./cache.ts"
@@ -284,6 +286,21 @@ export class DbService extends DbServiceBase {
             SET updated_at = NOW(), deleted_at = NOW()
             WHERE user_id = ${params.userId}
             RETURNING *`
+    },
+  }
+
+  userSettings = {
+    // buildMethods generates: findOne (PK), findChanged (sync index), createOne, updateOne, deleteOne, undeleteOne (PK)
+    ...this.buildMethods<UserSettings, UserSettingsBase, Partial<UserSettingsBase>>(
+      `user_settings`,
+      publicAPICache.userSettings,
+    ),
+    findChanged: async (updatedAtGt: Date, userId: number): Promise<UserSettings[]> => {
+      return this.sql<UserSettings[]>`
+        SELECT * FROM user_settings 
+        WHERE id = ${userId} AND updated_at > ${updatedAtGt}
+        ORDER BY updated_at DESC
+      `
     },
   }
 
@@ -682,6 +699,10 @@ export class DbService extends DbServiceBase {
         } else {
           data = await db[model].findMany()
         }
+      } else if (model === "userSettings") {
+        // UserSettings is per-user, so find the specific user's settings
+        const userSettings = await db[model].findOne({ id: userId })
+        data = userSettings ? [userSettings] : []
       } else {
         if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
           data = await db[model].findChanged(lastSyncAtDate, userId)

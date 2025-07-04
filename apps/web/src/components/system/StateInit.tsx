@@ -5,6 +5,7 @@ import { currency } from "@web/state/currency.ts"
 import { group } from "@web/state/group.ts"
 import { account } from "@web/state/account.ts"
 import { transaction } from "@web/state/transaction.ts"
+import { userSettings } from "@web/state/user-settings.ts"
 
 let isInitialized = false
 
@@ -23,6 +24,7 @@ export function StateInit(
   group.init()
   account.init()
   transaction.init()
+  userSettings.init()
   ws.init()
   return null
 }

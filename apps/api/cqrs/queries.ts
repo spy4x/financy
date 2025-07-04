@@ -7,6 +7,7 @@ import {
   GroupMembership,
   TransactionDirection,
   TransactionType,
+  UserSettings,
 } from "@shared/types"
 
 // #region Group Queries
@@ -157,3 +158,20 @@ export class UserDashboardQuery implements Query<UserDashboardPayload, UserDashb
 }
 
 // #endregion User Dashboard Query
+
+// #region User Settings Queries
+
+export interface UserSettingsGetPayload {
+  userId: number
+}
+
+export interface UserSettingsGetResult {
+  settings: UserSettings | null
+}
+
+export class UserSettingsGetQuery implements Query<UserSettingsGetPayload, UserSettingsGetResult> {
+  __resultType?: UserSettingsGetResult
+  constructor(public data: UserSettingsGetPayload) {}
+}
+
+// #endregion User Settings Queries

@@ -24,6 +24,7 @@ import {
   TransactionDeletedEvent,
   TransactionUndeletedEvent,
   TransactionUpdatedEvent,
+  UserSettingsUpdatedEvent,
   UserSignedUpEvent,
   UserUpdatedEvent,
 } from "@api/cqrs/events.ts"
@@ -45,6 +46,7 @@ import {
   TransactionDeleteCommand,
   TransactionUndeleteCommand,
   TransactionUpdateCommand,
+  UserSettingsUpsertCommand,
   UserUpdateCommand,
 } from "@api/cqrs/commands.ts"
 import {
@@ -54,6 +56,7 @@ import {
   TransactionListQuery,
   UserDashboardQuery,
   UserGroupsQuery,
+  UserSettingsGetQuery,
 } from "@api/cqrs/queries.ts"
 import { seedPresetEntitiesOnUserSignedUpHandler } from "./event-handlers/seed-preset-entities-on-user-signed-up.ts"
 import { websocketNotifyOnGroupCreatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-group-created.ts"
@@ -74,6 +77,7 @@ import { websocketNotifyOnTransactionUpdatedHandler } from "@api/cqrs/event-hand
 import { websocketNotifyOnTransactionDeletedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-transaction-deleted.ts"
 import { websocketNotifyOnTransactionUndeletedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-transaction-undeleted.ts"
 import { websocketNotifyOnUserUpdatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-user-updated.ts"
+import { websocketNotifyOnUserSettingsUpdatedHandler } from "@api/cqrs/event-handlers/websocket-notify-on-user-settings-updated.ts"
 import { GroupCreateHandler as groupCreateHandler } from "@api/cqrs/command-handlers/group-create.ts"
 import { GroupUpdateHandler as groupUpdateHandler } from "@api/cqrs/command-handlers/group-update.ts"
 import { GroupDeleteHandler as groupDeleteHandler } from "@api/cqrs/command-handlers/group-delete.ts"
@@ -92,12 +96,14 @@ import { transactionUpdateHandler } from "@api/cqrs/command-handlers/transaction
 import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction-delete.ts"
 import { transactionUndeleteHandler } from "@api/cqrs/command-handlers/transaction-undelete.ts"
 import { UserUpdateHandler as userUpdateHandler } from "@api/cqrs/command-handlers/user-update.ts"
+import { UserSettingsUpsertHandler } from "@api/cqrs/command-handlers/user-settings-upsert.ts"
 import { accountListHandler } from "@api/cqrs/query-handlers/account-list.ts"
 import { transactionListHandler } from "@api/cqrs/query-handlers/transaction-list.ts"
 import { categoryListHandler } from "@api/cqrs/query-handlers/category-list.ts"
 import { analyticsHandler } from "@api/cqrs/query-handlers/analytics.ts"
 import { userDashboardHandler } from "@api/cqrs/query-handlers/user-dashboard.ts"
 import { userGroupsHandler } from "@api/cqrs/query-handlers/user-groups.ts"
+import { userSettingsGetHandler } from "@api/cqrs/query-handlers/user-settings-get.ts"
 
 // Register event handlers
 eventBus.on(UserSignedUpEvent, seedPresetEntitiesOnUserSignedUpHandler)
@@ -119,6 +125,7 @@ eventBus.on(TransactionUpdatedEvent, websocketNotifyOnTransactionUpdatedHandler)
 eventBus.on(TransactionDeletedEvent, websocketNotifyOnTransactionDeletedHandler)
 eventBus.on(TransactionUndeletedEvent, websocketNotifyOnTransactionUndeletedHandler)
 eventBus.on(UserUpdatedEvent, websocketNotifyOnUserUpdatedHandler)
+eventBus.on(UserSettingsUpdatedEvent, websocketNotifyOnUserSettingsUpdatedHandler)
 
 // Register command handlers
 commandBus.register(GroupCreateCommand, groupCreateHandler)
@@ -139,6 +146,7 @@ commandBus.register(TransactionUpdateCommand, transactionUpdateHandler)
 commandBus.register(TransactionDeleteCommand, transactionDeleteHandler)
 commandBus.register(TransactionUndeleteCommand, transactionUndeleteHandler)
 commandBus.register(UserUpdateCommand, userUpdateHandler)
+commandBus.register(UserSettingsUpsertCommand, UserSettingsUpsertHandler)
 
 // Register query handlers
 queryBus.register(AccountListQuery, accountListHandler)
@@ -147,5 +155,6 @@ queryBus.register(CategoryListQuery, categoryListHandler)
 queryBus.register(AnalyticsQuery, analyticsHandler)
 queryBus.register(UserDashboardQuery, userDashboardHandler)
 queryBus.register(UserGroupsQuery, userGroupsHandler)
+queryBus.register(UserSettingsGetQuery, userSettingsGetHandler)
 
 console.log("✅ Event handlers, command handlers, and query handlers initialized")

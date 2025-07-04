@@ -12,6 +12,8 @@ import {
   TransactionBase,
   User,
   UserBase,
+  UserSettings,
+  UserSettingsBase,
 } from "@shared/types"
 
 export interface GroupCreatePayload {
@@ -326,3 +328,21 @@ export class UserUpdateCommand implements Command<UserUpdatePayload, UserUpdateR
   constructor(public data: UserUpdatePayload) {}
 }
 // #endregion User Update
+
+// #region User Settings Update/Create
+export interface UserSettingsUpsertPayload {
+  userId: number
+  settings: UserSettingsBase
+  acknowledgmentId?: string
+}
+
+export interface UserSettingsUpsertResult {
+  settings: UserSettings
+}
+
+export class UserSettingsUpsertCommand
+  implements Command<UserSettingsUpsertPayload, UserSettingsUpsertResult> {
+  __resultType?: UserSettingsUpsertResult
+  constructor(public data: UserSettingsUpsertPayload) {}
+}
+// #endregion User Settings Update/Create

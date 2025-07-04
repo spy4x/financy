@@ -18,6 +18,8 @@ import {
   transactionUpdateSchema,
   User,
   userSchema,
+  UserSettings,
+  userSettingsUpdateSchema,
   validate,
   webSocketMessageSchema,
   WebSocketMessageType,
@@ -44,6 +46,7 @@ import {
   TransactionDeleteCommand,
   TransactionUndeleteCommand,
   TransactionUpdateCommand,
+  UserSettingsUpsertCommand,
   UserUpdateCommand,
 } from "@api/cqrs/commands.ts"
 
@@ -997,6 +1000,63 @@ export const websockets = {
         }
       }
     }
+
+    // userSettings
+    if (parseResult.data.e === "userSettings") {
+      const acknowledgmentId = parseResult.data.id
+      const payload = parseResult.data.p?.[0]
+
+      if (parseResult.data.t === WebSocketMessageType.UPDATE) {
+        const validation = validate(userSettingsUpdateSchema, payload)
+        if (validation.error) {
+          websockets.send({
+            ws,
+            message: {
+              e: "userSettings",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: ["Invalid user settings data", validation.error],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+        const settings = validation.data
+
+        // Update user settings using CQRS command
+        try {
+          await commandBus.execute(
+            new UserSettingsUpsertCommand({
+              userId,
+              settings,
+              acknowledgmentId,
+            }),
+          )
+        } catch (error) {
+          console.error("Failed to update user settings:", error)
+          websockets.send({
+            ws,
+            message: {
+              e: "userSettings",
+              t: WebSocketMessageType.ERROR_VALIDATION,
+              p: [error instanceof Error ? error.message : "Failed to update user settings"],
+              id: acknowledgmentId,
+            },
+          })
+          return
+        }
+      } else {
+        websockets.send({
+          ws,
+          message: {
+            e: "userSettings",
+            t: WebSocketMessageType.ERROR_VALIDATION,
+            p: [`Invalid WebSocketMessageType type "${parseResult.data.t}"`],
+            id: acknowledgmentId,
+          },
+        })
+        return
+      }
+    }
   },
   closed(wsc: WSContext) {
     const ws = wsc as WS
@@ -1096,6 +1156,10 @@ export const websockets = {
       case SyncModelName.user:
         // Users can only see their own data
         return [(item as User).id]
+
+      case SyncModelName.userSettings:
+        // Users can only see their own settings
+        return [(item as UserSettings).id]
 
       case SyncModelName.group:
         // All members of the group can see group changes

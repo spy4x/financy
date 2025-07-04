@@ -26,7 +26,7 @@
 -- 
 -- Table Dependencies (ordered from independent to dependent):
 -- migrations, users, currencies, tags, exchange_rates → user_keys, user_push_tokens, groups
--- → user_sessions, group_memberships, accounts, categories → transactions
+-- → user_sessions, group_memberships, user_settings, accounts, categories → transactions
 -- → transactions_to_tags
 -- 
 -- 
@@ -200,6 +200,19 @@ COMMENT ON COLUMN group_memberships.role IS 'Enum: 1 = Viewer, 2 = Editor, 3 = A
 
 CREATE INDEX idx_memberships_by_user_group ON group_memberships (user_id, group_id);
 CREATE INDEX idx_memberships_by_group ON group_memberships (group_id);
+
+CREATE TABLE user_settings (
+    id INT4 PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    theme INT2 DEFAULT 3 NOT NULL,
+    selected_group_id INT4 NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    CONSTRAINT user_settings_theme_check CHECK (theme >= 1 AND theme <= 3)
+);
+
+COMMENT ON COLUMN user_settings.id IS 'User ID - serves as both PK and FK to users table';
+COMMENT ON COLUMN user_settings.theme IS '1=light, 2=dark, 3=system';
+COMMENT ON COLUMN user_settings.selected_group_id IS 'Currently selected group for the user (FK to groups table)';
 
 CREATE TABLE accounts (
     id SERIAL PRIMARY KEY,
