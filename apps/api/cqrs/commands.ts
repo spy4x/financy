@@ -298,6 +298,9 @@ export interface AccountTransferPayload {
   timestamp?: Date // Optional transaction timestamp, defaults to now
   userId: number
   acknowledgmentId?: string
+  // Multi-currency support
+  exchangeRate?: number // Override rate if specified (for manual rate entry)
+  conversionDate?: Date // Date for rate lookup (defaults to timestamp or now)
 }
 
 export interface AccountTransferResult {

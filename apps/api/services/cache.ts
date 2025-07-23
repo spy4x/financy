@@ -3,6 +3,7 @@ import {
   Account,
   Category,
   Currency,
+  ExchangeRate,
   Group,
   GroupMembership,
   Tag,
@@ -58,6 +59,7 @@ export class PublicAPICache {
   account = buildMethods<Account>(`account`)
   category = buildMethods<Category>(`category`)
   currency = buildMethods<Currency>(`currency`)
+  exchangeRate = buildMethods<ExchangeRate>(`exchangeRate`)
   tag = buildMethods<Tag>(`tag`)
 
   transaction = buildMethods<Transaction>(`transaction`)

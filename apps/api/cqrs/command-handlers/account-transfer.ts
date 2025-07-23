@@ -3,6 +3,7 @@ import { AccountTransferCommand } from "@api/cqrs/commands.ts"
 import { AccountTransferEvent } from "@api/cqrs/events.ts"
 import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
+import { convertAmount, getExchangeRate } from "@shared/helpers/currency.ts"
 import { TransactionDirection, TransactionType } from "@shared/types"
 import { getRandomString } from "@shared/helpers/random.ts"
 
@@ -12,8 +13,17 @@ import { getRandomString } from "@shared/helpers/random.ts"
  * No categories are used - transfers don't affect profit/loss reporting
  */
 export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = async (command) => {
-  const { fromAccountId, toAccountId, amount, memo, timestamp, userId, acknowledgmentId } =
-    command.data
+  const {
+    fromAccountId,
+    toAccountId,
+    amount,
+    memo,
+    timestamp,
+    userId,
+    acknowledgmentId,
+    exchangeRate,
+    conversionDate: _conversionDate,
+  } = command.data
 
   console.log(
     `Transferring ${amount} from account ${fromAccountId} to ${toAccountId} for user ${userId}...`,
@@ -51,6 +61,43 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
         throw new Error("Transfers are only allowed between accounts in the same group")
       }
 
+      // Handle cross-currency conversion if accounts have different currencies
+      let convertedAmount = amount
+      let originalCurrencyId: number | undefined
+      let originalAmount: number | undefined
+      let actualExchangeRate: number | undefined
+
+      if (fromAccount.currencyId !== toAccount.currencyId) {
+        // Cross-currency transfer
+        originalCurrencyId = fromAccount.currencyId
+        originalAmount = amount
+
+        if (exchangeRate) {
+          // Use provided exchange rate
+          convertedAmount = Math.round(amount * exchangeRate)
+          actualExchangeRate = exchangeRate
+        } else {
+          // Fetch exchange rates from database within transaction
+          const exchangeRates = await db.exchangeRate.findMany()
+
+          actualExchangeRate = getExchangeRate(
+            fromAccount.currencyId,
+            toAccount.currencyId,
+            exchangeRates,
+          )
+          convertedAmount = convertAmount(
+            amount,
+            fromAccount.currencyId,
+            toAccount.currencyId,
+            exchangeRates,
+          )
+        }
+
+        console.log(
+          `Cross-currency transfer: ${amount} (${fromAccount.currencyId}) = ${convertedAmount} (${toAccount.currencyId}) at rate ${actualExchangeRate}`,
+        )
+      }
+
       const transferMemo = memo
         ? `Transfer: ${memo}`
         : `Transfer from ${fromAccount.name} to ${toAccount.name}`
@@ -66,11 +113,11 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           categoryId: null, // No category for transfers
           type: TransactionType.TRANSFER,
           direction: TransactionDirection.MONEY_OUT,
-          amount: -Math.abs(amount), // MONEY_OUT = negative amount
+          amount: -Math.abs(amount), // MONEY_OUT = negative amount (in source currency)
           memo: transferMemo,
           timestamp: timestamp || new Date(), // Use provided timestamp or current time
           createdBy: userId,
-          originalCurrencyId: undefined,
+          originalCurrencyId: undefined, // Source transaction uses account currency
           originalAmount: 0,
           linkedTransactionCode, // Link both transactions with the same code
         },
@@ -84,12 +131,12 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
           categoryId: null, // No category for transfers
           type: TransactionType.TRANSFER,
           direction: TransactionDirection.MONEY_IN,
-          amount: Math.abs(amount), // MONEY_IN = positive amount
+          amount: Math.abs(convertedAmount), // MONEY_IN = positive amount (in destination currency)
           memo: transferMemo,
           timestamp: timestamp || new Date(), // Use provided timestamp or current time
           createdBy: userId,
-          originalCurrencyId: undefined,
-          originalAmount: 0,
+          originalCurrencyId, // Store original currency info if cross-currency
+          originalAmount: originalAmount || 0,
           linkedTransactionCode, // Link both transactions with the same code
         },
       })

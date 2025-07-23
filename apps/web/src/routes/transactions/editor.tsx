@@ -7,8 +7,8 @@ import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
 import { IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
-import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
 import { AccountSelector } from "@web/components/ui/AccountSelector.tsx"
+import { MultiCurrencyAmountInput } from "@web/components/ui/MultiCurrencyAmountInput.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 import {
@@ -545,64 +545,76 @@ export function TransactionEditor() {
                 </div>
               )}
 
-              <div class="sm:col-span-2">
-                <label for="amount" class="label">
-                  Amount:
-                </label>
-                <div class="mt-2">
-                  <input
-                    type="number"
-                    id="amount"
-                    class="input"
-                    data-e2e="transaction-amount-input"
-                    placeholder="0.00"
-                    value={amount.value}
-                    onInput={(e) => amount.value = e.currentTarget.value}
-                    step="0.01"
-                    min="0"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Original Currency field - hide for transfers since accounts have different currencies */}
-              {type.value !== TransactionType.TRANSFER && (
-                <div class="sm:col-span-2">
-                  <label for="originalCurrency" class="label">
-                    Original Currency (optional):
-                  </label>
-                  <div class="mt-2">
-                    <CurrencySelector
-                      id="originalCurrency"
-                      value={originalCurrencyId.value}
-                      onChange={(id) => originalCurrencyId.value = id}
-                      placeholder="Select original currency..."
-                      disabled={isState(EditorState.IN_PROGRESS)}
-                    />
+              {/* Multi-Currency Amount Input - enhanced for transfers and transactions */}
+              {type.value === TransactionType.TRANSFER
+                ? (
+                  <div class="sm:col-span-4">
+                    <label for="amount" class="label">
+                      Transfer Amount:
+                    </label>
+                    <div class="mt-2">
+                      <MultiCurrencyAmountInput
+                        id="amount"
+                        amount={parseCurrencyInput(amount.value) || 0}
+                        currencyId={accountId.value
+                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
+                            1
+                          : 1}
+                        targetCurrencyId={toAccountId.value
+                          ? account.list.value.find((a) => a.id === toAccountId.value)
+                            ?.currencyId || 1
+                          : 1}
+                        onAmountChange={(value: number) => amount.value = formatCentsToInput(value)}
+                        onCurrencyChange={() => {}} // Currency is determined by account
+                        showCurrencySelector={false}
+                        showConversion
+                        required
+                        data-e2e="transaction-amount-input"
+                        disabled={isState(EditorState.IN_PROGRESS)}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* Original Amount field - hide for transfers */}
-              {type.value !== TransactionType.TRANSFER && (
-                <div class="sm:col-span-2">
-                  <label for="originalAmount" class="label">
-                    Original Amount (optional):
-                  </label>
-                  <div class="mt-2">
-                    <input
-                      type="number"
-                      id="originalAmount"
-                      class="input"
-                      placeholder="0.00"
-                      value={originalAmount.value}
-                      onInput={(e) => originalAmount.value = e.currentTarget.value}
-                      step="0.01"
-                      min="0"
-                    />
+                )
+                : (
+                  <div class="sm:col-span-4">
+                    <label for="amount" class="label">
+                      Amount:
+                    </label>
+                    <div class="mt-2">
+                      <MultiCurrencyAmountInput
+                        id="amount"
+                        amount={parseCurrencyInput(amount.value) || 0}
+                        currencyId={originalCurrencyId.value || (accountId.value
+                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
+                            1
+                          : 1)}
+                        targetCurrencyId={accountId.value
+                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
+                            1
+                          : 1}
+                        onAmountChange={(value: number) => {
+                          amount.value = formatCentsToInput(value)
+                          // If using original currency, also update original amount
+                          if (originalCurrencyId.value) {
+                            originalAmount.value = formatCentsToInput(value)
+                          }
+                        }}
+                        onCurrencyChange={(currencyId: number) => {
+                          originalCurrencyId.value = currencyId
+                          // Reset amounts when currency changes
+                          if (amount.value) {
+                            originalAmount.value = amount.value
+                          }
+                        }}
+                        showCurrencySelector
+                        showConversion
+                        required
+                        data-e2e="transaction-amount-input"
+                        disabled={isState(EditorState.IN_PROGRESS)}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               <div class="sm:col-span-2">
                 <label for="timestamp" class="label">

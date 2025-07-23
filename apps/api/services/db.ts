@@ -5,6 +5,8 @@ import {
   CategoryBase,
   Currency,
   CurrencyBase,
+  ExchangeRate,
+  ExchangeRateBase,
   Group,
   GroupBase,
   GroupMembership,
@@ -682,6 +684,32 @@ export class DbService extends DbServiceBase {
     },
   }
 
+  exchangeRate = {
+    // buildMethods generates: findOne (PK), findChanged (no sync index needed), createOne, updateOne, deleteOne, undeleteOne (PK)
+    ...this.buildMethods<ExchangeRate, ExchangeRateBase, Partial<ExchangeRateBase>>(
+      `exchange_rates`,
+      publicAPICache.exchangeRate,
+    ),
+    // Override findMany to support global exchange rate data (no userId filtering)
+    findMany: async (): Promise<ExchangeRate[]> => {
+      // INDEX: idx_exchange_rates_date (for ORDER BY date DESC)
+      return this.sql<ExchangeRate[]>`
+        SELECT * FROM exchange_rates 
+        WHERE deleted_at IS NULL 
+        ORDER BY date DESC, created_at DESC
+      `
+    },
+    // Override findChanged to support global exchange rate data (no userId filtering)
+    findChanged: async (updatedAtGt: Date): Promise<ExchangeRate[]> => {
+      return this.sql<ExchangeRate[]>`
+        SELECT * FROM exchange_rates 
+        WHERE deleted_at IS NULL 
+        AND updated_at > ${updatedAtGt}
+        ORDER BY date DESC, created_at DESC
+      `
+    },
+  }
+
   syncData = async (
     callback: (model: SyncModelName, data: SyncModel[]) => void,
     userId: number,
@@ -692,8 +720,8 @@ export class DbService extends DbServiceBase {
       const model = SYNC_MODELS[i]
       let data = []
 
-      // Handle special case for global currency table
-      if (model === "currency") {
+      // Handle special case for global tables (currency, exchangeRate)
+      if (model === "currency" || model === "exchangeRate") {
         if ("findChanged" in db[model] && typeof db[model].findChanged === "function") {
           data = await db[model].findChanged(lastSyncAtDate)
         } else {

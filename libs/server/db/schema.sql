@@ -157,15 +157,24 @@ CREATE TABLE tags (
 
 CREATE TABLE exchange_rates (
     id SERIAL PRIMARY KEY,
-    pair CHAR(6) NOT NULL UNIQUE,
-    rate FLOAT8 NOT NULL,
+    from_currency_id INT4 NOT NULL REFERENCES currencies(id) ON DELETE CASCADE,
+    to_currency_id INT4 NOT NULL REFERENCES currencies(id) ON DELETE CASCADE,
+    rate NUMERIC(18, 8) NOT NULL,
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
     fetched_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT unique_rate_per_day UNIQUE (from_currency_id, to_currency_id, date)
 );
 
-COMMENT ON COLUMN exchange_rates.pair IS 'Ex: USDUSD, USDEUR';
+COMMENT ON COLUMN exchange_rates.from_currency_id IS 'Source currency for conversion (FK to currencies table)';
+COMMENT ON COLUMN exchange_rates.to_currency_id IS 'Target currency for conversion (FK to currencies table)';
+COMMENT ON COLUMN exchange_rates.rate IS 'Exchange rate with high precision (18 digits, 8 decimal places)';
+COMMENT ON COLUMN exchange_rates.date IS 'Date for which the exchange rate is valid (daily rates)';
+
+CREATE INDEX idx_exchange_rates_lookup ON exchange_rates (from_currency_id, to_currency_id, date DESC);
+CREATE INDEX idx_exchange_rates_date ON exchange_rates (date DESC);
 
 -- -----------------------------------------------------------------------------
 -- Financial management tables

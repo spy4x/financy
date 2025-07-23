@@ -57,6 +57,15 @@ export function TransactionList() {
         return isNaN(parsed as number) ? null : parsed
       },
     },
+    currencyId: {
+      signal: useSignal<number | null>(null),
+      initialValue: null,
+      urlParam: "currencyId",
+      parser: (value) => {
+        const parsed = value ? parseInt(value) : null
+        return isNaN(parsed as number) ? null : parsed
+      },
+    },
     from: {
       signal: useSignal(""),
       initialValue: "",
@@ -69,7 +78,7 @@ export function TransactionList() {
     },
   })
 
-  const { search, status, type, accountId, categoryId, from, to } = filters
+  const { search, status, type, accountId, categoryId, currencyId, from, to } = filters
 
   const filteredTransactions = useComputed(() => {
     const transactions = transaction.list.value
@@ -92,6 +101,15 @@ export function TransactionList() {
     // Filter by category
     if (categoryId.value !== null) {
       filtered = filtered.filter((txn) => txn.categoryId === categoryId.value)
+    }
+
+    // Filter by currency (either account currency or original currency)
+    if (currencyId.value !== null) {
+      filtered = filtered.filter((txn) => {
+        const acc = account.list.value.find((a) => a.id === txn.accountId)
+        const accountCurrencyId = acc?.currencyId || 1
+        return accountCurrencyId === currencyId.value || txn.originalCurrencyId === currencyId.value
+      })
     }
 
     // Filter by type
@@ -268,6 +286,36 @@ export function TransactionList() {
                   </div>
                 )}
 
+                {/* Currency Filter */}
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Currency
+                  </label>
+                  <select
+                    key={currencyId.value}
+                    class="input w-full"
+                    value={currencyId.value || ""}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value
+                      currencyId.value = value ? parseInt(value) : null
+                    }}
+                  >
+                    <option value="">All Currencies</option>
+                    {currency.list.value
+                      .filter((curr) => !curr.deletedAt)
+                      .sort((a, b) => a.code.localeCompare(b.code))
+                      .map((curr) => (
+                        <option key={curr.id} value={curr.id}>
+                          {curr.symbol ? `${curr.symbol} ` : ""}
+                          {curr.code} - {curr.name}
+                        </option>
+                      ))}
+                  </select>
+                  <div class="text-xs text-gray-500 mt-1">
+                    Filters by account currency or original transaction currency
+                  </div>
+                </div>
+
                 {/* Date & Time Filters */}
                 <div class="flex flex-col gap-2">
                   <div>
@@ -335,7 +383,7 @@ export function TransactionList() {
           {filteredTransactions.value.length === 0 && (
             <div class="text-center py-8 text-gray-500">
               {search.value || accountId.value !== null ||
-                  categoryId.value !== null || type.value !== null ||
+                  categoryId.value !== null || currencyId.value !== null || type.value !== null ||
                   from.value || to.value ||
                   status.value !== ItemStatus.ACTIVE
                 ? "No transactions found matching your filters."

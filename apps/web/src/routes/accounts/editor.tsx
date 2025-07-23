@@ -1,11 +1,13 @@
 import { account } from "@web/state/account.ts"
 import { currency } from "@web/state/currency.ts"
+import { transaction } from "@web/state/transaction.ts"
 import { ws } from "@web/state/ws.ts"
-import { useSignal, useSignalEffect } from "@preact/signals"
-import { IconLoading } from "@client/icons"
+import { useComputed, useSignal, useSignalEffect } from "@preact/signals"
+import { IconAlertTriangle, IconLoading } from "@client/icons"
 import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { CurrencySelector } from "@web/components/ui/CurrencySelector.tsx"
+import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
@@ -24,12 +26,44 @@ export function AccountEditor() {
 
   const name = useSignal("")
   const currencyId = useSignal<number | null>(null)
+  const originalCurrencyId = useSignal<number | null>(null) // Track original currency for change warnings
   const startingBalance = useSignal("")
   const error = useSignal("")
   const state = useSignal<EditorState>(EditorState.INITIALIZING)
 
   // Helper function for cleaner state checks
   const isState = (checkState: EditorState) => state.value === checkState
+
+  // Check if currency is being changed and account has transactions
+  const currencyChangeWarning = useComputed(() => {
+    if (!editAccountId || !originalCurrencyId.value || !currencyId.value) {
+      return null
+    }
+
+    if (originalCurrencyId.value === currencyId.value) {
+      return null // No change
+    }
+
+    // Check if account has any transactions
+    const accountTransactions = transaction.list.value.filter((t) => t.accountId === editAccountId)
+    if (accountTransactions.length === 0) {
+      return null // No transactions, safe to change
+    }
+
+    const oldCurrency = currency.getById(originalCurrencyId.value)
+    const newCurrency = currency.getById(currencyId.value)
+
+    return {
+      transactionCount: accountTransactions.length,
+      oldCurrency: oldCurrency?.code || "Unknown",
+      newCurrency: newCurrency?.code || "Unknown",
+    }
+  })
+
+  // Get currency for formatting the starting balance
+  const selectedCurrency = useComputed(() =>
+    currencyId.value ? currency.getById(currencyId.value) : null
+  )
 
   // Initialize for edit mode
   useSignalEffect(() => {
@@ -44,6 +78,7 @@ export function AccountEditor() {
         if (existingAccount) {
           name.value = existingAccount.name
           currencyId.value = existingAccount.currencyId
+          originalCurrencyId.value = existingAccount.currencyId // Store original currency
           startingBalance.value = formatCentsToInput(existingAccount.startingBalance)
           error.value = ""
           state.value = EditorState.IDLE
@@ -56,6 +91,7 @@ export function AccountEditor() {
         // Default to USD currency ID if available, otherwise null
         const usdCurrency = currency.getByCode("USD")
         currencyId.value = usdCurrency?.id || null
+        originalCurrencyId.value = null // No original currency for new accounts
         startingBalance.value = "0"
         error.value = ""
         state.value = EditorState.IDLE
@@ -175,28 +211,77 @@ export function AccountEditor() {
                     placeholder="Select account currency..."
                   />
                 </div>
+
+                {/* Currency Change Warning */}
+                {currencyChangeWarning.value && (
+                  <div class="mt-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md">
+                    <div class="flex items-start gap-3">
+                      <IconAlertTriangle class="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                      <div class="text-sm">
+                        <h4 class="font-medium text-amber-800 dark:text-amber-200 mb-1">
+                          Currency Change Warning
+                        </h4>
+                        <p class="text-amber-700 dark:text-amber-300 mb-2">
+                          This account has {currencyChangeWarning.value.transactionCount}{" "}
+                          existing transaction{currencyChangeWarning.value.transactionCount === 1
+                            ? ""
+                            : "s"}
+                          in {currencyChangeWarning.value.oldCurrency}. Changing to{" "}
+                          {currencyChangeWarning.value.newCurrency} will:
+                        </p>
+                        <ul class="text-amber-700 dark:text-amber-300 text-xs space-y-1 ml-4 list-disc">
+                          <li>Keep existing transactions in their original currency</li>
+                          <li>
+                            Use {currencyChangeWarning.value.newCurrency} for new transactions
+                          </li>
+                          <li>Require currency conversion for accurate balance calculations</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div class="sm:col-span-2">
                 <label for="startingBalance" class="label">
-                  Starting Balance:
+                  Starting Balance{selectedCurrency.value
+                    ? ` (${selectedCurrency.value.code})`
+                    : ""}:
                 </label>
                 <div class="mt-2">
-                  <input
-                    type="text"
-                    id="startingBalance"
-                    class="input"
-                    placeholder="0.00"
-                    value={startingBalance.value}
-                    onInput={(e) => startingBalance.value = e.currentTarget.value}
-                    onBlur={(e) => {
-                      // Format the input on blur for better UX
-                      const parsed = parseCurrencyInput(e.currentTarget.value)
-                      if (parsed !== null) {
-                        startingBalance.value = formatCentsToInput(parsed)
-                      }
-                    }}
-                  />
+                  <div class="relative">
+                    {selectedCurrency.value?.symbol && (
+                      <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none">
+                        {selectedCurrency.value.symbol}
+                      </div>
+                    )}
+                    <input
+                      type="text"
+                      id="startingBalance"
+                      class={`input ${selectedCurrency.value?.symbol ? "pl-8" : ""}`}
+                      placeholder={selectedCurrency.value
+                        ? `0.${"0".repeat(selectedCurrency.value.decimalPlaces || 2)}`
+                        : "0.00"}
+                      value={startingBalance.value}
+                      onInput={(e) => startingBalance.value = e.currentTarget.value}
+                      onBlur={(e) => {
+                        // Format the input on blur for better UX
+                        const parsed = parseCurrencyInput(e.currentTarget.value)
+                        if (parsed !== null) {
+                          startingBalance.value = formatCentsToInput(parsed)
+                        }
+                      }}
+                    />
+                    {selectedCurrency.value && startingBalance.value &&
+                      parseCurrencyInput(startingBalance.value) !== null && (
+                      <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
+                        <CurrencyDisplay
+                          amount={parseCurrencyInput(startingBalance.value) || 0}
+                          currency={selectedCurrency.value.id}
+                        />
+                      </div>
+                    )}
+                  </div>
                   <div class="mt-2 p-3 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
                     <p class="font-medium text-gray-700 dark:text-gray-300 mb-1">
                       How Starting Balance Works:

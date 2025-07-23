@@ -116,6 +116,26 @@ export const currencyUpdateSchema = currencyBaseSchema.pick(
 export type CurrencyUpdate = typeof currencyUpdateSchema.infer
 // #endregion Currency Types
 
+// #region Exchange Rate Types
+export const exchangeRateBaseSchema = type({
+  fromCurrencyId: "number",
+  toCurrencyId: "number",
+  rate: "number",
+  date: "string",
+  fetchedAt: "Date",
+})
+export type ExchangeRateBase = typeof exchangeRateBaseSchema.infer
+
+export const exchangeRateSchema = BaseModelSchema.and(exchangeRateBaseSchema)
+export type ExchangeRate = typeof exchangeRateSchema.infer
+
+export const exchangeRateUpdateSchema = exchangeRateBaseSchema.pick(
+  "rate",
+  "fetchedAt",
+)
+export type ExchangeRateUpdate = typeof exchangeRateUpdateSchema.infer
+// #endregion Exchange Rate Types
+
 export enum ItemStatus {
   ACTIVE = "active",
   DELETED = "deleted",
@@ -627,6 +647,7 @@ export type SyncModel =
   | Account
   | Category
   | Currency
+  | ExchangeRate
   | Tag
   | Group
   | GroupMembership
@@ -643,6 +664,7 @@ export enum SyncModelName {
   account = "account",
   category = "category",
   currency = "currency",
+  exchangeRate = "exchangeRate",
   transaction = "transaction",
   tag = "tag",
   // transactionToTag = "transactionToTag",
@@ -660,6 +682,7 @@ export const SYNC_MODELS = [
   SyncModelName.account,
   SyncModelName.category,
   SyncModelName.currency,
+  SyncModelName.exchangeRate,
   SyncModelName.tag,
   SyncModelName.transaction,
   // SyncModelName.transactionToTag,

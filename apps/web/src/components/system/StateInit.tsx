@@ -2,6 +2,7 @@ import { auth } from "@web/state/auth.ts"
 import { ws } from "@web/state/ws.ts"
 import { category } from "@web/state/category.ts"
 import { currency } from "@web/state/currency.ts"
+import { exchangeRate } from "@web/state/exchange-rate.ts"
 import { group } from "@web/state/group.ts"
 import { account } from "@web/state/account.ts"
 import { transaction } from "@web/state/transaction.ts"
@@ -20,6 +21,7 @@ export function StateInit(
   // if (!IS_BROWSER) return
   auth.init()
   currency.init()
+  exchangeRate.init()
   category.init()
   group.init()
   account.init()
