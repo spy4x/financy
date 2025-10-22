@@ -139,7 +139,7 @@ services:
     depends_on:
       - minio
     volumes:
-      - ../../infra:/infra:Z
+      - ../../infra:/infra:z
     entrypoint: >
       /bin/sh -c "
       until (/usr/bin/mc alias set myminio http://minio:9000 ${MINIO_USER} ${MINIO_PASS}); do
@@ -193,7 +193,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../../infra/configs/promtail.yml:/etc/promtail/config.yaml:ro
     security_opt:
-      - label:disable
+      - label=disable
     command: -config.file=/etc/promtail/config.yaml
     depends_on:
       - loki
@@ -211,10 +211,10 @@ services:
   prometheus:
     container_name: ${PROJECT}-prometheus
     image: prom/prometheus
+    user: root
     restart: unless-stopped
-    user: '1000'
     volumes:
-      - /tmp/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../../infra/configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro,Z
       - ../../.volumes/prometheus:/prometheus:Z
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -339,14 +339,12 @@ services:
       context: ../..
       dockerfile: apps/api/Dockerfile
     volumes:
-      - ${DENO_DIR}:/deno-dir/
-      - ../../apps:/app/apps
-      - ../../libs:/app/libs
-      - ../../deno.jsonc:/app/deno.jsonc:ro
-      - ../../infra/configs/vapid.json:/app/vapid.json:ro
+      - ${DENO_DIR}:/deno-dir/:z
+      - ../../apps:/app/apps:z
+      - ../../libs:/app/libs:z
+      - ../../deno.jsonc:/app/deno.jsonc:z
+      - ../../infra/configs/vapid.json:/app/vapid.json:Z
     user: "1000:1000"
-    security_opt:
-      - label:disable
     environment:
       - DENO_LOG=${DENO_LOG}
       - DB_HOST=db
@@ -403,13 +401,11 @@ services:
       - DENO_LOG=${DENO_LOG}
       - VITE_ENV=prod
     volumes:
-      - ${DENO_DIR}:/deno-dir/
-      - ../../apps:/app/apps
-      - ../../libs:/app/libs
-      - ../../deno.jsonc:/app/deno.jsonc:ro
+      - ${DENO_DIR}:/deno-dir/:z
+      - ../../apps:/app/apps:z
+      - ../../libs:/app/libs:z
+      - ../../deno.jsonc:/app/deno.jsonc:z
     user: "1000:1000"
-    security_opt:
-      - label:disable
     deploy:
       resources:
         limits:
