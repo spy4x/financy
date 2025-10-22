@@ -32,7 +32,7 @@ export const transaction = {
   },
   nav: {
     create: (p: Page) => role(p, "link", { name: "Create" }).click(),
-    list: (p: Page) => p.goto("http://mk.localhost/transactions"),
+    list: (p: Page) => p.goto("http://fn.localhost/transactions"),
   },
   form: {
     fillAmount: (p: Page, amount: string) =>
@@ -79,7 +79,7 @@ export const group = {
   },
   nav: {
     create: (p: Page) => role(p, "link", { name: "Create" }).click(),
-    list: (p: Page) => p.goto("http://mk.localhost/groups"),
+    list: (p: Page) => p.goto("http://fn.localhost/groups"),
     members: async (p: Page, groupName: string) => {
       await group.actions.openDropdown(p, groupName)
       await p.getByText("Members").click()

@@ -33,7 +33,7 @@ export default defineConfig({
   // Shared settings for all the projects below
   use: {
     // Base URL to use in actions like `await page.goto('/')`
-    baseURL: "http://mk.localhost",
+    baseURL: "http://fn.localhost",
 
     // Action timeout (10 seconds)
     actionTimeout: 10_000,
@@ -88,7 +88,7 @@ export default defineConfig({
   // Run your local dev server before starting the tests
   //   webServer: {
   //     command: "deno task dev",
-  //     url: "http://mk.localhost",
+  //     url: "http://fn.localhost",
   //     reuseExistingServer: !Deno.env.get("CI"),
   //     timeout: 120 * 1000, // 2 minutes to start the dev server
   //   },
