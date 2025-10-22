@@ -5,7 +5,7 @@
 import type { Page } from "@playwright/test"
 import { sel } from "./test-helpers.ts"
 
-const APP_URL = "http://mk.localhost"
+const APP_URL = "http://fn.localhost"
 const TEST_CREDENTIALS = {
   email: "test@test.com",
   password: "pass1234",

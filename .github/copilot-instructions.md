@@ -190,7 +190,7 @@ deno task fix-n-check
 
 For testing the application's behavior and functionality, use the #playwright MCP tool to interact with the running application:
 
-**Application URL**: `http://mk.localhost`
+**Application URL**: `http://fn.localhost`
 
 **Test Credentials**:
 
@@ -212,7 +212,7 @@ For testing the application's behavior and functionality, use the #playwright MC
 
 ```typescript
 // Navigate to the application
-await page.goto("http://mk.localhost")
+await page.goto("http://fn.localhost")
 
 // Sign in with test credentials
 await page.fill('[data-e2e="email-input"]', "test@test.com")
