@@ -71,6 +71,8 @@ services:
     restart: unless-stopped
     volumes:
       - ../../.volumes/kv:/data:Z
+    ports:
+      - ${KV_PORT}:6379
     command:
       [
         'valkey-server',
