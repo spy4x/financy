@@ -1,6 +1,8 @@
 import { transaction } from "@web/state/transaction.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
+import { account } from "@web/state/account.ts"
+import { currency } from "@web/state/currency.ts"
 import { useComputed, useSignal } from "@preact/signals"
 import { useUrlFilters } from "@client/preact/use-url-filters.ts"
 import { IconFunnel, IconPlus, IconSearch } from "@client/icons"

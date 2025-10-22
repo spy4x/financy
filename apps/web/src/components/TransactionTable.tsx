@@ -3,7 +3,7 @@ import { Link } from "wouter-preact"
 import { Table } from "@web/components/ui/Table.tsx"
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { Dropdown } from "@web/components/ui/Dropdown.tsx"
-import { IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/icons"
+import { IconArrowPath, IconEllipsisVertical, IconPencilSquare, IconTrashBin } from "@client/icons"
 import { account } from "@web/state/account.ts"
 import { category } from "@web/state/category.ts"
 import { transaction } from "@web/state/transaction.ts"
@@ -180,13 +180,21 @@ export function TransactionTable({
                 }`}
                 data-e2e="transaction-amount-link"
               >
-                <CurrencyDisplay
-                  amount={txn.amount}
-                  currency={currencyId}
-                />
+                <div class="flex items-center justify-end gap-1">
+                  {txn.originalCurrencyId && txn.originalAmount && (
+                    <div title="Currency conversion">
+                      <IconArrowPath class="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+                    </div>
+                  )}
+                  <CurrencyDisplay
+                    amount={txn.amount}
+                    currency={currencyId}
+                  />
+                </div>
               </Link>
               {txn.originalCurrencyId && txn.originalAmount && (
-                <div class="text-xs text-gray-500">
+                <div class="text-xs text-gray-500 flex items-center justify-end gap-1">
+                  <span>Original:</span>
                   <CurrencyDisplay
                     amount={txn.originalAmount}
                     currency={txn.originalCurrencyId}
