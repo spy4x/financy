@@ -1,9 +1,9 @@
 ---
 name: Question/Discussion
 about: Ask a question or start a discussion about Financy
-title: '[QUESTION] '
-labels: ['question']
-assignees: ''
+title: "[QUESTION] "
+labels: ["question"]
+assignees: ""
 ---
 
 ## Question

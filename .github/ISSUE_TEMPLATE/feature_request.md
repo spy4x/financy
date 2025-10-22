@@ -1,9 +1,9 @@
 ---
 name: Feature Request
 about: Suggest an idea for Financy
-title: '[FEATURE] '
-labels: ['enhancement', 'needs-discussion']
-assignees: ''
+title: "[FEATURE] "
+labels: ["enhancement", "needs-discussion"]
+assignees: ""
 ---
 
 ## Feature Summary
