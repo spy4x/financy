@@ -1,5 +1,6 @@
 import { log } from "@api/services/log.ts"
 import { exchangeRateFetcher as currencyRateFetcher } from "@api/services/exchange-rate-provider.ts"
+import { isProd } from "@server/helpers/env.ts"
 
 /**
  * Background worker for fetching exchange rates
@@ -106,8 +107,10 @@ class ExchangeRateFetcher {
 export const exchangeRateFetcher = new ExchangeRateFetcher()
 
 // Auto-start in production environments
-if (Deno.env.get("DENO_ENV") === "production") {
+if (isProd) {
   exchangeRateFetcher.start().catch((error) => {
     log("Failed to start exchange rate fetcher:", error)
   })
+} else {
+  log("Exchange rate fetcher not started (not in production environment)")
 }

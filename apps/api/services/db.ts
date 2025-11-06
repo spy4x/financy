@@ -693,20 +693,30 @@ export class DbService extends DbServiceBase {
     // Override findMany to support global exchange rate data (no userId filtering)
     findMany: async (): Promise<ExchangeRate[]> => {
       // INDEX: idx_exchange_rates_date (for ORDER BY date DESC)
-      return this.sql<ExchangeRate[]>`
+      const rates = await this.sql<ExchangeRate[]>`
         SELECT * FROM exchange_rates 
         WHERE deleted_at IS NULL 
         ORDER BY date DESC, created_at DESC
       `
+      // Parse rate from string to number (PostgreSQL NUMERIC returns as string)
+      return rates.map((rate) => ({
+        ...rate,
+        rate: typeof rate.rate === "string" ? parseFloat(rate.rate) : rate.rate,
+      }))
     },
     // Override findChanged to support global exchange rate data (no userId filtering)
     findChanged: async (updatedAtGt: Date): Promise<ExchangeRate[]> => {
-      return this.sql<ExchangeRate[]>`
+      const rates = await this.sql<ExchangeRate[]>`
         SELECT * FROM exchange_rates 
         WHERE deleted_at IS NULL 
         AND updated_at > ${updatedAtGt}
         ORDER BY date DESC, created_at DESC
       `
+      // Parse rate from string to number (PostgreSQL NUMERIC returns as string)
+      return rates.map((rate) => ({
+        ...rate,
+        rate: typeof rate.rate === "string" ? parseFloat(rate.rate) : rate.rate,
+      }))
     },
   }
 

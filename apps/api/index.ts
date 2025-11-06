@@ -5,6 +5,7 @@ import { db } from "@api/services/db.ts"
 import { config } from "@api/services/config.ts"
 import { telegramBot } from "@api/services/telegram/+bot.ts"
 import { telegramPollingWorker } from "./workers/telegram-polling.ts"
+import { exchangeRateFetcher } from "./workers/exchange-rate-fetcher.ts"
 import { websocketsRoute } from "./routes/websockets.ts"
 import { telegramRoute } from "./routes/telegram.ts"
 import { logger } from "@api/middlewares/log.ts"
@@ -36,6 +37,11 @@ app.get(
         enabled: !!config.telegramBotToken,
         webhookMode: !!config.telegramWebhookUrl,
         pollingMode: !config.telegramWebhookUrl && config.isDev,
+      },
+      exchangeRates: {
+        enabled: true,
+        fetcherRunning: exchangeRateFetcher.getStatus().isRunning,
+        nextRun: exchangeRateFetcher.getStatus().nextRun?.toISOString(),
       },
       date: Date.now(),
     }),

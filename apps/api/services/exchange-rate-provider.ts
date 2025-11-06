@@ -93,10 +93,14 @@ class ExchangeRateApiProvider implements ExchangeRateProvider {
         responseTimeMs: responseTime,
       })
 
+      // Parse date from API format: "Thu, 06 Nov 2025 00:00:02 +0000"
+      const apiDate = new Date(data.time_last_update_utc)
+      const dateStr = apiDate.toISOString().split("T")[0] // YYYY-MM-DD format
+
       return {
         success: true,
         base: data.base_code,
-        date: data.time_last_update_utc.split(" ")[0], // Extract date
+        date: dateStr,
         rates: data.conversion_rates,
         source: this.name,
       }
