@@ -170,6 +170,21 @@ To start local development:
    deno task compose up -d
    ```
 
+## Seed Data
+
+For development and testing purposes, you can populate the database with comprehensive test data:
+
+```sh
+deno task db:seed
+```
+
+This command wipes all existing data (except migrations) and recreates seed data including:
+
+- Test user account (`test@test.com` / `pass1234`)
+- Sample groups, accounts, categories, and transactions
+- Historical exchange rates and multi-currency data
+- Complete authentication setup for testing
+
 ## Development Commands
 
 For development and code quality, use these commands:

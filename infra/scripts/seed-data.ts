@@ -1,7 +1,54 @@
 #!/usr/bin/env -S deno run --allow-net --allow-env --allow-read
 
-// Financy Seed Data Script
-// Run with: deno run --allow-net --allow-env --allow-read infra/scripts/seed-data.ts
+// =============================================================================
+// Seed Data Script
+// =============================================================================
+// This script creates comprehensive test data to
+// enable thorough testing of UI and API functionality.
+//
+// What it creates:
+// - Test User: test@test.com / pass1234
+// - 2 Groups: Personal Finances (USD), Business Expenses (EUR)
+// - 5 Accounts: Checking/Savings in USD, Business in EUR, BTC/ETH wallets (in Personal group)
+// - 6 Categories: Food, Transport, Travel, Salary, Office Supplies, Mining Rewards
+// - Historical Exchange Rates: 30 days of rates for USD↔EUR, USD↔GBP, USD↔AUD, USD↔NZD, USD↔BTC, USD↔ETH
+// - 15+ Transactions: Expenses, income, transfers, multi-currency transactions, travel expenses
+// - Tags: Vacation, Australia, New Zealand, Business, Urgent (associated with transactions)
+// - User Settings & Sessions: Complete authentication setup
+//
+// Usage:
+// Prerequisites:
+// 1. Ensure the database is running and migrations are applied:
+//    deno task compose up -d
+// 2. Wait for the database to be ready (check logs if needed)
+//
+// Running the Script:
+// Execute the seed script using deno task alias:
+// ```sh
+// deno task db:seed
+// ```
+// or directly with deno:
+// ```sh
+// deno run --allow-net --allow-env --allow-read infra/scripts/seed-data.ts
+// ```
+//
+// Expected Output:
+// 🌱 Starting Financy seed data creation...
+// Creating test user...
+// Creating currencies...
+// Creating historical exchange rates...
+// Creating groups...
+// Creating accounts...
+// Creating categories...
+// Creating tags...
+// Creating transactions...
+// ✅ Seed data created successfully!
+// Test user: test@test.com
+// Password: pass1234
+// Session token: [generated-token]
+// Groups created: Personal Finances, Business Expenses
+// Total transactions: 15+
+// =============================================================================
 
 // Load environment variables from .env file first - this must happen before any imports
 const envFilePath = `./infra/envs/.env`;
@@ -15,7 +62,6 @@ const envVars = Object.fromEntries(
 // Set environment variables
 for (const [key, value] of Object.entries(envVars)) {
   if (value !== undefined) {
-    console.log(`Set ENV: ${key}=${value}`);
     Deno.env.set(key, value);
   }
 }
@@ -54,6 +100,10 @@ function getEnvVar(key: string, isOptional = false): string {
 // Dynamic import of db service after env vars are set
 const { db } = await import("../../apps/api/services/db.ts")
 
+// Test credentials
+const TEST_EMAIL = "test@test.com"
+const TEST_PASSWORD = "pass1234"
+
 // Utility function to generate a random transfer code
 function generateTransferCode(): string {
   return Math.random().toString(36).substring(2, 12).toUpperCase()
@@ -71,21 +121,8 @@ async function cleanupExistingData() {
 
   try {
     await db.begin(async (tx) => {
-      // Delete in reverse dependency order
-      await tx.sql`DELETE FROM transactions_to_tags`
-      await tx.sql`DELETE FROM transactions`
-      await tx.sql`DELETE FROM categories`
-      await tx.sql`DELETE FROM accounts`
-      await tx.sql`DELETE FROM group_memberships`
-      await tx.sql`DELETE FROM groups`
-      await tx.sql`DELETE FROM user_push_tokens`
-      await tx.sql`DELETE FROM user_sessions`
-      await tx.sql`DELETE FROM user_keys`
-      await tx.sql`DELETE FROM user_settings`
-      await tx.sql`DELETE FROM users WHERE first_name = 'Test' AND last_name = 'User'`
-      await tx.sql`DELETE FROM exchange_rates WHERE from_currency_id IN (SELECT id FROM currencies WHERE code IN ('USD', 'EUR', 'GBP', 'BTC', 'ETH', 'AUD', 'NZD'))`
-      await tx.sql`DELETE FROM currencies WHERE code IN ('USD', 'EUR', 'GBP', 'BTC', 'ETH', 'AUD', 'NZD')`
-      await tx.sql`DELETE FROM tags WHERE name IN ('Vacation', 'Business', 'Urgent', 'Australia', 'New Zealand')`
+      // Simple cleanup - just wipe all test data
+      await tx.sql`TRUNCATE transactions_to_tags, transactions, categories, accounts, group_memberships, groups, user_push_tokens, user_sessions, user_keys, user_settings, users, tags, exchange_rates, currencies CASCADE`
     })
     console.log("✅ Cleanup completed")
   } catch (error) {
@@ -118,12 +155,10 @@ async function seedData() {
       // 2. Create user key (password)
       const hashedPassword = await hash(TEST_PASSWORD, getEnvVar("AUTH_PEPPER"))
       const userKey = await tx.userKey.createOne({
-        data: {
-          userId: user.id,
-          kind: UserKeyKind.USERNAME_PASSWORD,
-          identification: TEST_EMAIL,
-          secret: hashedPassword,
-        },
+        userId: user.id,
+        kind: UserKeyKind.USERNAME_PASSWORD,
+        identification: TEST_EMAIL,
+        secret: hashedPassword,
       })
 
       // 3. Create user session
@@ -141,7 +176,7 @@ async function seedData() {
 
       console.log("Creating currencies...")
 
-      // 4. Create currencies (fiat and crypto)
+      // 4. Create currencies (fiat only - no crypto for now)
       const usd = await tx.currency.createOne({
         data: {
           code: "USD",
@@ -192,26 +227,6 @@ async function seedData() {
         },
       })
 
-      const btc = await tx.currency.createOne({
-        data: {
-          code: "BTC",
-          name: "Bitcoin",
-          symbol: "₿",
-          type: CurrencyType.CRYPTO,
-          decimalPlaces: 8,
-        },
-      })
-
-      const eth = await tx.currency.createOne({
-        data: {
-          code: "ETH",
-          name: "Ethereum",
-          symbol: "Ξ",
-          type: CurrencyType.CRYPTO,
-          decimalPlaces: 18,
-        },
-      })
-
       console.log("Creating groups...")
 
       // 5. Create groups
@@ -257,7 +272,7 @@ async function seedData() {
 
       console.log("Creating historical exchange rates...")
 
-      // 8. Create historical exchange rates (last 30 days)
+      // 8. Create historical exchange rates (last 30 days) - fiat only
       const exchangeRates = []
       for (let i = 0; i < 30; i++) {
         const date = daysAgo(i)
@@ -284,7 +299,7 @@ async function seedData() {
             data: {
               fromCurrencyId: usd.id,
               toCurrencyId: aud.id,
-              rate: 0.65 + Math.random() * 0.1,
+              rate: 1.50 + Math.random() * 0.1,
               date: date.toISOString().split('T')[0],
               fetchedAt: date,
             },
@@ -293,25 +308,7 @@ async function seedData() {
             data: {
               fromCurrencyId: usd.id,
               toCurrencyId: nzd.id,
-              rate: 0.60 + Math.random() * 0.1,
-              date: date.toISOString().split('T')[0],
-              fetchedAt: date,
-            },
-          }),
-          tx.exchangeRate.createOne({
-            data: {
-              fromCurrencyId: usd.id,
-              toCurrencyId: btc.id,
-              rate: 50000 + Math.random() * 10000,
-              date: date.toISOString().split('T')[0],
-              fetchedAt: date,
-            },
-          }),
-          tx.exchangeRate.createOne({
-            data: {
-              fromCurrencyId: usd.id,
-              toCurrencyId: eth.id,
-              rate: 3000 + Math.random() * 500,
+              rate: 1.65 + Math.random() * 0.1,
               date: date.toISOString().split('T')[0],
               fetchedAt: date,
             },
@@ -322,7 +319,7 @@ async function seedData() {
 
       console.log("Creating accounts...")
 
-      // 9. Create accounts
+      // 9. Create accounts (no crypto wallets)
       const checkingAccount = await tx.account.createOne({
         data: {
           groupId: personalGroup.id,
@@ -341,30 +338,21 @@ async function seedData() {
         },
       })
 
+      const euroTravelAccount = await tx.account.createOne({
+        data: {
+          groupId: personalGroup.id,
+          name: "EUR Travel Fund",
+          currencyId: eur.id,
+          startingBalance: 0, // €0.00 - will transfer money here
+        },
+      })
+
       const businessAccount = await tx.account.createOne({
         data: {
           groupId: businessGroup.id,
           name: "Business Checking",
           currencyId: eur.id,
           startingBalance: 250000, // €2,500.00
-        },
-      })
-
-      const btcWallet = await tx.account.createOne({
-        data: {
-          groupId: personalGroup.id, // Moved to personal group
-          name: "BTC Wallet",
-          currencyId: btc.id,
-          startingBalance: 50000000, // 0.5 BTC
-        },
-      })
-
-      const ethWallet = await tx.account.createOne({
-        data: {
-          groupId: personalGroup.id, // Moved to personal group
-          name: "ETH Wallet",
-          currencyId: eth.id,
-          startingBalance: 2000000000000000000, // 2 ETH
         },
       })
 
@@ -381,7 +369,7 @@ async function seedData() {
 
       console.log("Creating categories...")
 
-      // 10. Create categories
+      // 10. Create categories (no crypto category)
       const foodCategory = await tx.category.createOne({
         data: {
           groupId: personalGroup.id,
@@ -413,6 +401,36 @@ async function seedData() {
         },
       })
 
+      const entertainmentCategory = await tx.category.createOne({
+        data: {
+          groupId: personalGroup.id,
+          name: "Entertainment",
+          type: 1, // EXPENSE
+          icon: "🎬",
+          color: "#9B59B6",
+        },
+      })
+
+      const shoppingCategory = await tx.category.createOne({
+        data: {
+          groupId: personalGroup.id,
+          name: "Shopping",
+          type: 1, // EXPENSE
+          icon: "🛍️",
+          color: "#E74C3C",
+        },
+      })
+
+      const healthCategory = await tx.category.createOne({
+        data: {
+          groupId: personalGroup.id,
+          name: "Health & Fitness",
+          type: 1, // EXPENSE
+          icon: "💪",
+          color: "#27AE60",
+        },
+      })
+
       const salaryCategory = await tx.category.createOne({
         data: {
           groupId: personalGroup.id,
@@ -423,13 +441,13 @@ async function seedData() {
         },
       })
 
-      const cryptoMining = await tx.category.createOne({
+      const freelanceCategory = await tx.category.createOne({
         data: {
-          groupId: personalGroup.id, // Moved to personal group
-          name: "Crypto Mining",
+          groupId: personalGroup.id,
+          name: "Freelance",
           type: 2, // INCOME
-          icon: "⛏️",
-          color: "#FFD700",
+          icon: "💻",
+          color: "#3498DB",
         },
       })
 
@@ -468,10 +486,10 @@ async function seedData() {
 
       console.log("Creating transactions...")
 
-      // 12. Create transactions (expenses, income, transfers)
+      // 12. Create transactions with realistic smaller amounts
       const transactions = []
 
-      // Personal expenses in USD
+      // Personal expenses in USD - varied daily expenses
       transactions.push(
         await tx.transaction.createOne({
           data: {
@@ -479,11 +497,102 @@ async function seedData() {
             accountId: checkingAccount.id,
             direction: TransactionDirection.MONEY_OUT,
             type: TransactionType.EXPENSE,
-            amount: 2500, // $25.00
+            amount: 1250, // $12.50
             categoryId: foodCategory.id,
             createdBy: user.id,
-            memo: "Lunch at Italian restaurant",
+            memo: "Coffee and pastry",
             timestamp: daysAgo(1),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 3580, // $35.80
+            categoryId: foodCategory.id,
+            createdBy: user.id,
+            memo: "Lunch at local diner",
+            timestamp: daysAgo(1),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 1850, // $18.50
+            categoryId: transportCategory.id,
+            createdBy: user.id,
+            memo: "Uber to work",
+            timestamp: daysAgo(2),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 4299, // $42.99
+            categoryId: shoppingCategory.id,
+            createdBy: user.id,
+            memo: "New t-shirt",
+            timestamp: daysAgo(2),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 15999, // $159.99
+            categoryId: healthCategory.id,
+            createdBy: user.id,
+            memo: "Gym membership - monthly",
+            timestamp: daysAgo(3),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 2450, // $24.50
+            categoryId: entertainmentCategory.id,
+            createdBy: user.id,
+            memo: "Movie tickets",
+            timestamp: daysAgo(4),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 6790, // $67.90
+            categoryId: foodCategory.id,
+            createdBy: user.id,
+            memo: "Grocery shopping",
+            timestamp: daysAgo(5),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 8900, // $89.00
+            categoryId: shoppingCategory.id,
+            createdBy: user.id,
+            memo: "Amazon order - household items",
+            timestamp: daysAgo(6),
           },
         }),
         await tx.transaction.createOne({
@@ -495,8 +604,38 @@ async function seedData() {
             amount: 4500, // $45.00
             categoryId: transportCategory.id,
             createdBy: user.id,
-            memo: "Uber to airport",
-            timestamp: daysAgo(2),
+            memo: "Gas station fill-up",
+            timestamp: daysAgo(7),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 12500, // $125.00
+            categoryId: entertainmentCategory.id,
+            createdBy: user.id,
+            memo: "Concert tickets",
+            timestamp: daysAgo(8),
+          },
+        }),
+      )
+
+      // Income transactions
+      transactions.push(
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_IN,
+            type: TransactionType.INCOME,
+            amount: 450000, // $4,500.00
+            categoryId: salaryCategory.id,
+            createdBy: user.id,
+            memo: "Bi-weekly paycheck",
+            timestamp: daysAgo(3),
           },
         }),
         await tx.transaction.createOne({
@@ -505,11 +644,11 @@ async function seedData() {
             accountId: checkingAccount.id,
             direction: TransactionDirection.MONEY_IN,
             type: TransactionType.INCOME,
-            amount: 300000, // $3,000.00
-            categoryId: salaryCategory.id,
+            amount: 75000, // $750.00
+            categoryId: freelanceCategory.id,
             createdBy: user.id,
-            memo: "Monthly salary",
-            timestamp: daysAgo(3),
+            memo: "Website project payment",
+            timestamp: daysAgo(10),
           },
         }),
       )
@@ -529,26 +668,22 @@ async function seedData() {
             timestamp: daysAgo(4),
           },
         }),
-      )
-
-      // Crypto transactions (moved to personal group)
-      transactions.push(
         await tx.transaction.createOne({
           data: {
-            groupId: personalGroup.id,
-            accountId: btcWallet.id,
-            direction: TransactionDirection.MONEY_IN,
-            type: TransactionType.INCOME,
-            amount: 10000000, // 0.1 BTC
-            categoryId: cryptoMining.id,
+            groupId: businessGroup.id,
+            accountId: businessAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 8500, // €85.00
+            categoryId: businessSupplies.id,
             createdBy: user.id,
-            memo: "Mining reward",
-            timestamp: daysAgo(5),
+            memo: "Printer ink cartridges",
+            timestamp: daysAgo(12),
           },
         }),
       )
 
-      // Transfer between personal accounts
+      // Transfer between personal accounts (USD to USD)
       const transferCode = generateTransferCode()
       const transferOut = await tx.transaction.createOne({
         data: {
@@ -556,7 +691,7 @@ async function seedData() {
           accountId: checkingAccount.id,
           direction: TransactionDirection.MONEY_OUT,
           type: TransactionType.TRANSFER,
-          amount: 100000, // $1,000.00
+          amount: 50000, // $500.00
           linkedTransactionCode: transferCode,
           createdBy: user.id,
           memo: "Transfer to savings",
@@ -570,7 +705,7 @@ async function seedData() {
           accountId: savingsAccount.id,
           direction: TransactionDirection.MONEY_IN,
           type: TransactionType.TRANSFER,
-          amount: 100000, // $1,000.00
+          amount: 50000, // $500.00
           linkedTransactionCode: transferCode,
           createdBy: user.id,
           memo: "Transfer from checking",
@@ -578,105 +713,118 @@ async function seedData() {
         },
       })
 
-      // Multi-currency transaction (European vacation dinner)
+      // Transfer from USD checking to EUR travel fund before Paris trip
+      const euroTransferCode = generateTransferCode()
+      const euroTransferOut = await tx.transaction.createOne({
+        data: {
+          groupId: personalGroup.id,
+          accountId: checkingAccount.id,
+          direction: TransactionDirection.MONEY_OUT,
+          type: TransactionType.TRANSFER,
+          amount: 20000, // $200.00
+          originalCurrencyId: eur.id,
+          originalAmount: 17500, // €175.00 (converted)
+          linkedTransactionCode: euroTransferCode,
+          createdBy: user.id,
+          memo: "Fund EUR travel account for Paris trip",
+          timestamp: daysAgo(8),
+        },
+      })
+
+      const euroTransferIn = await tx.transaction.createOne({
+        data: {
+          groupId: personalGroup.id,
+          accountId: euroTravelAccount.id,
+          direction: TransactionDirection.MONEY_IN,
+          type: TransactionType.TRANSFER,
+          amount: 17500, // €175.00
+          linkedTransactionCode: euroTransferCode,
+          createdBy: user.id,
+          memo: "Received from USD checking for Paris trip",
+          timestamp: daysAgo(8),
+        },
+      })
+
+      // Multi-currency transactions with realistic amounts
       transactions.push(
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: euroTravelAccount.id, // Using EUR travel account now
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 7500, // €75.00 (no conversion needed - same currency)
+            categoryId: foodCategory.id,
+            createdBy: user.id,
+            memo: "Dinner in Paris",
+            timestamp: daysAgo(7),
+          },
+        }),
         await tx.transaction.createOne({
           data: {
             groupId: personalGroup.id,
             accountId: checkingAccount.id,
             direction: TransactionDirection.MONEY_OUT,
             type: TransactionType.EXPENSE,
-            amount: 8500, // $85.00 (converted amount)
-            originalCurrencyId: eur.id,
-            originalAmount: 7500, // €75.00
-            categoryId: foodCategory.id,
+            amount: 12000, // $120.00
+            originalCurrencyId: gbp.id,
+            originalAmount: 9500, // £95.00
+            categoryId: entertainmentCategory.id,
             createdBy: user.id,
-            memo: "European vacation dinner",
-            timestamp: daysAgo(7),
+            memo: "Theatre tickets in London",
+            timestamp: daysAgo(14),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 18500, // $185.00
+            originalCurrencyId: aud.id,
+            originalAmount: 28000, // A$280.00
+            categoryId: travelCategory.id,
+            createdBy: user.id,
+            memo: "Hotel in Sydney - 2 nights",
+            timestamp: daysAgo(20),
+          },
+        }),
+        await tx.transaction.createOne({
+          data: {
+            groupId: personalGroup.id,
+            accountId: checkingAccount.id,
+            direction: TransactionDirection.MONEY_OUT,
+            type: TransactionType.EXPENSE,
+            amount: 14500, // $145.00
+            originalCurrencyId: nzd.id,
+            originalAmount: 24000, // NZ$240.00
+            categoryId: travelCategory.id,
+            createdBy: user.id,
+            memo: "Day trip activities in Queenstown",
+            timestamp: daysAgo(25),
           },
         }),
       )
 
-      // Australia trip expenses (multi-currency)
-      const australiaFlight = await tx.transaction.createOne({
-        data: {
-          groupId: personalGroup.id,
-          accountId: checkingAccount.id,
-          direction: TransactionDirection.MONEY_OUT,
-          type: TransactionType.EXPENSE,
-          amount: 850000, // $8,500.00 (converted amount)
-          originalCurrencyId: aud.id,
-          originalAmount: 1300000, // A$1,300.00
-          categoryId: travelCategory.id,
-          createdBy: user.id,
-          memo: "Flight to Sydney, Australia",
-          timestamp: daysAgo(14),
-        },
-      })
-
-      const australiaHotel = await tx.transaction.createOne({
-        data: {
-          groupId: personalGroup.id,
-          accountId: checkingAccount.id,
-          direction: TransactionDirection.MONEY_OUT,
-          type: TransactionType.EXPENSE,
-          amount: 375000, // $3,750.00 (converted amount)
-          originalCurrencyId: aud.id,
-          originalAmount: 575000, // A$575.00
-          categoryId: travelCategory.id,
-          createdBy: user.id,
-          memo: "Hotel in Sydney for 5 nights",
-          timestamp: daysAgo(13),
-        },
-      })
-
-      // New Zealand trip expenses (multi-currency)
-      const nzFlight = await tx.transaction.createOne({
-        data: {
-          groupId: personalGroup.id,
-          accountId: checkingAccount.id,
-          direction: TransactionDirection.MONEY_OUT,
-          type: TransactionType.EXPENSE,
-          amount: 920000, // $9,200.00 (converted amount)
-          originalCurrencyId: nzd.id,
-          originalAmount: 1540000, // NZ$1,540.00
-          categoryId: travelCategory.id,
-          createdBy: user.id,
-          memo: "Flight to Auckland, New Zealand",
-          timestamp: daysAgo(21),
-        },
-      })
-
-      const nzActivities = await tx.transaction.createOne({
-        data: {
-          groupId: personalGroup.id,
-          accountId: checkingAccount.id,
-          direction: TransactionDirection.MONEY_OUT,
-          type: TransactionType.EXPENSE,
-          amount: 285000, // $2,850.00 (converted amount)
-          originalCurrencyId: nzd.id,
-          originalAmount: 480000, // NZ$480.00
-          categoryId: travelCategory.id,
-          createdBy: user.id,
-          memo: "Adventure activities in Queenstown",
-          timestamp: daysAgo(20),
-        },
-      })
-
       // Add tags to transactions
+      // transactions[0] = coffee (urgent)
+      // transactions[14] = Dinner in Paris (EUR) - from EUR travel account
+      // transactions[15] = Theatre in London (GBP)
+      // transactions[16] = Hotel in Sydney (AUD - Australia tag + vacation)
+      // transactions[17] = Queenstown activities (NZD - New Zealand tag + vacation)
       await tx.sql`
         INSERT INTO transactions_to_tags (transaction_id, tag_id)
         VALUES
           (${transferOut.id}, ${vacationTag.id}),
           (${transferIn.id}, ${vacationTag.id}),
-          (${australiaFlight.id}, ${australiaTag.id}),
-          (${australiaFlight.id}, ${vacationTag.id}),
-          (${australiaHotel.id}, ${australiaTag.id}),
-          (${australiaHotel.id}, ${vacationTag.id}),
-          (${nzFlight.id}, ${newZealandTag.id}),
-          (${nzFlight.id}, ${vacationTag.id}),
-          (${nzActivities.id}, ${newZealandTag.id}),
-          (${nzActivities.id}, ${vacationTag.id}),
+          (${euroTransferOut.id}, ${vacationTag.id}),
+          (${euroTransferIn.id}, ${vacationTag.id}),
+          (${transactions[14].id}, ${vacationTag.id}),
+          (${transactions[16].id}, ${australiaTag.id}),
+          (${transactions[16].id}, ${vacationTag.id}),
+          (${transactions[17].id}, ${newZealandTag.id}),
+          (${transactions[17].id}, ${vacationTag.id}),
           (${transactions[0].id}, ${urgentTag.id})
       `
 
@@ -685,8 +833,12 @@ async function seedData() {
       console.log(`Password: ${TEST_PASSWORD}`)
       console.log(`Session token: ${session.token}`)
       console.log(`Groups created: Personal Finances, Business Expenses`)
-      console.log(`Total transactions: ${transactions.length + 6}`) // +6 for transfers and travel expenses
-      console.log(`Multi-currency transactions: Australia trip (AUD), New Zealand trip (NZD), European dinner (EUR)`)
+      console.log(`Accounts: 4 total (USD Checking, USD Savings, EUR Travel Fund, EUR Business)`)
+      console.log(`Total transactions: ${transactions.length + 4}`) // +4 for two transfer pairs (USD-USD and USD-EUR)
+      console.log(
+        `Multi-currency transactions: Dinner in Paris (EUR), Theatre in London (GBP), Hotel in Sydney (AUD), Activities in Queenstown (NZD)`,
+      )
+      console.log(`✅ Seed data created successfully!`)
     })
   } catch (error) {
     console.error("❌ Error creating seed data:", error)
@@ -697,4 +849,5 @@ async function seedData() {
 // Run the seed script
 if (import.meta.main) {
   await seedData()
+  await db.shutdown()
 }

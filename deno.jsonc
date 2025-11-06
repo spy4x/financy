@@ -12,7 +12,8 @@
     // #endregion apps/web
 
     // #region Scripts
-    "db:migrate": "deno run -N=$DB_HOST:5432 -E -R=./libs/server/db/migrations  ./libs/server/db/migrate.ts",
+    "db:migrate": "deno run -N=$DB_HOST:5432 -E -R=./libs/server/db/migrations ./libs/server/db/migrate.ts",
+    "db:seed": "deno run -N=$DB_HOST:5432,$KV_HOSTNAME:6379 -E -R=infra/envs/.env infra/scripts/seed-data.ts",
     "deps:check": "deno outdated -r",
     "deps:update": "deno outdated -r -u -i",
     "update:ubuntu": "sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo apt --fix-broken install && sudo do-release-upgrade",
