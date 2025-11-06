@@ -9,6 +9,7 @@ import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { AccountSelector } from "@web/components/ui/AccountSelector.tsx"
 import { MultiCurrencyAmountInput } from "@web/components/ui/MultiCurrencyAmountInput.tsx"
+import { EnhancedMultiCurrencyInput } from "@web/components/ui/EnhancedMultiCurrencyInput.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 import {
@@ -307,7 +308,7 @@ export function TransactionEditor() {
 
     // Validate original amount if provided
     let originalAmountInCents: number | undefined
-    if (originalAmount.value.trim()) {
+    if (originalCurrencyId.value && originalAmount.value.trim()) {
       const parsedOriginal = parseCurrencyInput(originalAmount.value.trim())
       if (parsedOriginal === null || parsedOriginal <= 0) {
         error.value = "Original amount must be a positive number"
@@ -315,6 +316,10 @@ export function TransactionEditor() {
         return
       }
       originalAmountInCents = parsedOriginal
+    } else if (originalCurrencyId.value && !originalAmount.value.trim()) {
+      error.value = "Original amount is required when using a different currency"
+      state.value = EditorState.ERROR
+      return
     }
 
     error.value = ""
@@ -577,42 +582,27 @@ export function TransactionEditor() {
                 )
                 : (
                   <div class="sm:col-span-4">
-                    <label for="amount" class="label">
-                      Amount:
-                    </label>
-                    <div class="mt-2">
-                      <MultiCurrencyAmountInput
-                        id="amount"
-                        amount={parseCurrencyInput(amount.value) || 0}
-                        currencyId={originalCurrencyId.value || (accountId.value
-                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
-                            1
-                          : 1)}
-                        targetCurrencyId={accountId.value
-                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
-                            1
-                          : 1}
-                        onAmountChange={(value: number) => {
-                          amount.value = formatCentsToInput(value)
-                          // If using original currency, also update original amount
-                          if (originalCurrencyId.value) {
-                            originalAmount.value = formatCentsToInput(value)
-                          }
-                        }}
-                        onCurrencyChange={(currencyId: number) => {
-                          originalCurrencyId.value = currencyId
-                          // Reset amounts when currency changes
-                          if (amount.value) {
-                            originalAmount.value = amount.value
-                          }
-                        }}
-                        showCurrencySelector
-                        showConversion
-                        required
-                        data-e2e="transaction-amount-input"
-                        disabled={isState(EditorState.IN_PROGRESS)}
-                      />
-                    </div>
+                    <EnhancedMultiCurrencyInput
+                      id="amount"
+                      accountCurrencyId={accountId.value
+                        ? account.list.value.find((a) => a.id === accountId.value)?.currencyId || 1
+                        : 1}
+                      originalCurrencyId={originalCurrencyId}
+                      onOriginalCurrencyChange={(currencyId) => {
+                        originalCurrencyId.value = currencyId
+                      }}
+                      accountAmount={amount}
+                      onAccountAmountChange={(value) => {
+                        amount.value = value
+                      }}
+                      originalAmount={originalAmount}
+                      onOriginalAmountChange={(value) => {
+                        originalAmount.value = value
+                      }}
+                      required
+                      disabled={isState(EditorState.IN_PROGRESS)}
+                      dataE2E="transaction-amount-input"
+                    />
                   </div>
                 )}
 

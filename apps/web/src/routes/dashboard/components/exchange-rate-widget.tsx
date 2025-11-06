@@ -44,7 +44,7 @@ export function ExchangeRateWidget() {
   })
 
   // Debug information
-  const debugInfo = useComputed(() => {
+  const _debugInfo = useComputed(() => {
     const baseCurrencyId = defaultCurrency.value.id
     const baseCurrency = currency.getById(baseCurrencyId)
     const ratesMap = exchangeRate.getRatesForCurrency(baseCurrencyId)
@@ -122,7 +122,7 @@ export function ExchangeRateWidget() {
           /* DEBUG INFO
         <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg overflow-auto">
           <h4 class="font-bold text-sm text-black mb-2">Debug Info:</h4>
-          <pre class="text-xs text-black whitespace-pre-wrap">{JSON.stringify(debugInfo.value, null, 2)}</pre>
+          <pre class="text-xs text-black whitespace-pre-wrap">{JSON.stringify(_debugInfo.value, null, 2)}</pre>
         </div> */
         }
         {rates.value.length === 0
