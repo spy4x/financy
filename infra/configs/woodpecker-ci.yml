@@ -1,0 +1,123 @@
+---
+# Woodpecker CI Pipeline Configuration
+# This pipeline runs quality checks, builds Docker images, and deploys to production
+
+# Trigger configuration
+when:
+  - event: push
+    branch: main
+  - event: pull_request
+
+# Global variables
+variables:
+  - &deno_version '2.1.4'
+
+# Pipeline steps
+steps:
+  # ============================================================================
+  # Step 1: Code Quality Checks
+  # ============================================================================
+  check:
+    image: denoland/deno:${deno_version}
+    commands:
+      - echo "Running code quality checks..."
+      - deno task check
+    when:
+      - event: [push, pull_request]
+
+  # ============================================================================
+  # Step 2: Build Docker Images (Production)
+  # ============================================================================ma
+  build:
+    image: denoland/deno:${deno_version}
+    environment:
+      # These secrets should be configured in Woodpecker CI settings
+      - ENV=prod
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - KV_HOSTNAME=${KV_HOSTNAME}
+      - KV_PORT=${KV_PORT}
+      - API_PORT=${API_PORT}
+      - WEB_PORT=${WEB_PORT}
+      - DOMAIN=${DOMAIN}
+      - TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL}
+    commands:
+      - echo "Creating production environment file..."
+      # Create the .env.prod file from environment variables
+      - |
+        cat > ./infra/envs/.env.prod << EOF
+        ENV=prod
+        DB_HOST=${DB_HOST}
+        DB_PORT=${DB_PORT}
+        DB_NAME=${DB_NAME}
+        DB_USER=${DB_USER}
+        DB_PASSWORD=${DB_PASSWORD}
+        KV_HOSTNAME=${KV_HOSTNAME}
+        KV_PORT=${KV_PORT}
+        API_PORT=${API_PORT}
+        WEB_PORT=${WEB_PORT}
+        DOMAIN=${DOMAIN}
+        TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL}
+        SSH_TO_SERVER=${SSH_TO_SERVER}
+        PATH_ON_SERVER=${PATH_ON_SERVER}
+        EOF
+      - echo "Building Docker images..."
+      - deno task compose --env-file=./infra/envs/.env.prod build
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      - event: push
+        branch: main
+    depends_on:
+      - check
+
+  # ============================================================================
+  # Step 3: Deploy to Production
+  # ============================================================================
+  deploy:
+    image: denoland/deno:${deno_version}
+    environment:
+      - SSH_TO_SERVER=${SSH_TO_SERVER}
+      - PATH_ON_SERVER=${PATH_ON_SERVER}
+    secrets:
+      # SSH private key for deployment
+      - ssh_private_key
+    commands:
+      - echo "Setting up SSH..."
+      # Install rsync and ssh client
+      - apt-get update && apt-get install -y rsync openssh-client
+      # Setup SSH key
+      - mkdir -p ~/.ssh
+      - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+      - chmod 600 ~/.ssh/id_rsa
+      # Add server to known hosts (adjust hostname as needed)
+      - ssh-keyscan -H $(echo $SSH_TO_SERVER | cut -d'@' -f2) >> ~/.ssh/known_hosts
+      - echo "Deploying to production..."
+      - deno task deploy
+    when:
+      - event: push
+        branch: main
+    depends_on:
+      - build
+
+# ============================================================================
+# Service Definitions (if needed for testing)
+# ============================================================================
+# services:
+#   postgres:
+#     image: postgres:16-alpine
+#     environment:
+#       - POSTGRES_DB=financy_test
+#       - POSTGRES_USER=test
+#       - POSTGRES_PASSWORD=test
+#     when:
+#       - event: pull_request
+
+# ============================================================================
+# Labels and Metadata
+# ============================================================================
+labels:
+  platform: linux/amd64
