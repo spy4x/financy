@@ -4,7 +4,7 @@ import { set } from "@client/helpers"
 import { runtimeEnvVars } from "./+helpers.ts"
 import { auth } from "./auth.ts"
 import { toast } from "./toast.ts"
-import { urlBase64ToUint8Array } from "@shared/helpers/format.ts"
+// import { urlBase64ToUint8Array } from "@shared/helpers/format.ts"
 
 interface State {
   isSubscribed: boolean
@@ -158,7 +158,7 @@ export const pushNotification = {
           // Create a push subscription.
           const subscription = await serviceWorkerRegistration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidKey),
+            applicationServerKey: vapidKey, // WAS: urlBase64ToUint8Array(vapidKey),
           })
 
           // Return it.

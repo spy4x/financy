@@ -9,7 +9,7 @@ import { Link, useRoute } from "wouter-preact"
 import { PageTitle } from "@web/components/ui/PageTitle.tsx"
 import { AccountSelector } from "@web/components/ui/AccountSelector.tsx"
 import { MultiCurrencyAmountInput } from "@web/components/ui/MultiCurrencyAmountInput.tsx"
-import { EnhancedMultiCurrencyInput } from "@web/components/ui/EnhancedMultiCurrencyInput.tsx"
+// import { EnhancedMultiCurrencyInput } from "@web/components/ui/EnhancedMultiCurrencyInput.tsx"
 import { navigate } from "@client/helpers"
 import { routes } from "../_router.tsx"
 import {
@@ -582,7 +582,8 @@ export function TransactionEditor() {
                 )
                 : (
                   <div class="sm:col-span-4">
-                    <EnhancedMultiCurrencyInput
+                    {
+                      /* <EnhancedMultiCurrencyInput
                       id="amount"
                       accountCurrencyId={accountId.value
                         ? account.list.value.find((a) => a.id === accountId.value)?.currencyId || 1
@@ -602,7 +603,8 @@ export function TransactionEditor() {
                       required
                       disabled={isState(EditorState.IN_PROGRESS)}
                       dataE2E="transaction-amount-input"
-                    />
+                    /> */
+                    }
                   </div>
                 )}
 

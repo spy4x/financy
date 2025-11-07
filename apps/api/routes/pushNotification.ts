@@ -1,6 +1,6 @@
 import { Hono } from "hono"
 import { APIContext } from "../_types.ts"
-import { webPushService } from "@api/services"
+import { webPushService } from "@api/services/webPush.ts"
 
 export const pushNotificationRoute = new Hono<APIContext>()
   .get(`/public-key`, async (c) => {
