@@ -7,7 +7,7 @@ steps:
   # Step 1: Code Quality Checks
   # ============================================================================
   check:
-    image: denoland/deno:2.1.4
+    image: denoland/deno:2.1.5
     commands:
       - echo "Running code quality checks..."
       - deno task check
@@ -16,7 +16,7 @@ steps:
   # Step 2: Build Docker Images (Production)
   # ============================================================================
   build:
-    image: denoland/deno:2.1.4
+    image: denoland/deno:2.1.5
     environment:
       ENV: prod
       DB_HOST:
@@ -77,7 +77,7 @@ steps:
   # Step 3: Deploy to Production
   # ============================================================================
   deploy:
-    image: denoland/deno:2.1.4
+    image: denoland/deno:2.1.5
     environment:
       SSH_TO_SERVER:
         from_secret: ssh_to_server
