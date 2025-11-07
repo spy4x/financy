@@ -1,6 +1,11 @@
 # Woodpecker CI Pipeline Configuration
 # This pipeline runs quality checks, builds Docker images, and deploys to production
 
+when:
+  - event: push
+    branch: main
+  - event: pull_request
+
 # Pipeline steps
 steps:
   # ============================================================================
@@ -18,19 +23,33 @@ steps:
   build:
     image: denoland/deno:2.1.4
     environment:
-      # These secrets should be configured in Woodpecker CI settings
-      - ENV=prod
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - KV_HOSTNAME=${KV_HOSTNAME}
-      - KV_PORT=${KV_PORT}
-      - API_PORT=${API_PORT}
-      - WEB_PORT=${WEB_PORT}
-      - DOMAIN=${DOMAIN}
-      - TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL}
+      ENV: prod
+      DB_HOST:
+        from_secret: db_host
+      DB_PORT:
+        from_secret: db_port
+      DB_NAME:
+        from_secret: db_name
+      DB_USER:
+        from_secret: db_user
+      DB_PASSWORD:
+        from_secret: db_password
+      KV_HOSTNAME:
+        from_secret: kv_hostname
+      KV_PORT:
+        from_secret: kv_port
+      API_PORT:
+        from_secret: api_port
+      WEB_PORT:
+        from_secret: web_port
+      DOMAIN:
+        from_secret: domain
+      TRAEFIK_ACME_EMAIL:
+        from_secret: traefik_acme_email
+      SSH_TO_SERVER:
+        from_secret: ssh_to_server
+      PATH_ON_SERVER:
+        from_secret: path_on_server
     commands:
       - echo "Creating production environment file..."
       # Create the .env.prod file from environment variables
@@ -53,8 +72,6 @@ steps:
         EOF
       - echo "Building Docker images..."
       - deno task compose --env-file=./infra/envs/.env.prod build
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     when:
       event: push
       branch: main
@@ -67,11 +84,12 @@ steps:
   deploy:
     image: denoland/deno:2.1.4
     environment:
-      - SSH_TO_SERVER=${SSH_TO_SERVER}
-      - PATH_ON_SERVER=${PATH_ON_SERVER}
-    secrets:
-      # SSH private key for deployment
-      - ssh_private_key
+      SSH_TO_SERVER:
+        from_secret: ssh_to_server
+      PATH_ON_SERVER:
+        from_secret: path_on_server
+      SSH_PRIVATE_KEY:
+        from_secret: ssh_private_key
     commands:
       - echo "Setting up SSH..."
       # Install rsync and ssh client
