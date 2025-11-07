@@ -1,16 +1,5 @@
----
 # Woodpecker CI Pipeline Configuration
 # This pipeline runs quality checks, builds Docker images, and deploys to production
-
-# Trigger configuration
-when:
-  - event: push
-    branch: main
-  - event: pull_request
-
-# Global variables
-variables:
-  - &deno_version '2.1.4'
 
 # Pipeline steps
 steps:
@@ -18,18 +7,16 @@ steps:
   # Step 1: Code Quality Checks
   # ============================================================================
   check:
-    image: denoland/deno:${deno_version}
+    image: denoland/deno:2.1.4
     commands:
       - echo "Running code quality checks..."
       - deno task check
-    when:
-      - event: [push, pull_request]
 
   # ============================================================================
   # Step 2: Build Docker Images (Production)
   # ============================================================================
   build:
-    image: denoland/deno:${deno_version}
+    image: denoland/deno:2.1.4
     environment:
       # These secrets should be configured in Woodpecker CI settings
       - ENV=prod
@@ -69,8 +56,8 @@ steps:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
-      - event: push
-        branch: main
+      event: push
+      branch: main
     depends_on:
       - check
 
@@ -78,7 +65,7 @@ steps:
   # Step 3: Deploy to Production
   # ============================================================================
   deploy:
-    image: denoland/deno:${deno_version}
+    image: denoland/deno:2.1.4
     environment:
       - SSH_TO_SERVER=${SSH_TO_SERVER}
       - PATH_ON_SERVER=${PATH_ON_SERVER}
@@ -98,8 +85,8 @@ steps:
       - echo "Deploying to production..."
       - deno task deploy
     when:
-      - event: push
-        branch: main
+      event: push
+      branch: main
     depends_on:
       - build
 
