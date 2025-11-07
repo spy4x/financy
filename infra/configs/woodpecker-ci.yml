@@ -1,11 +1,6 @@
 # Woodpecker CI Pipeline Configuration
 # This pipeline runs quality checks, builds Docker images, and deploys to production
 
-when:
-  - event: push
-    branch: main
-  - event: pull_request
-
 # Pipeline steps
 steps:
   # ============================================================================
