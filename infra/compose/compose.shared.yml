@@ -355,14 +355,13 @@ services:
       args:
         - DENO_VERSION=${DENO_VERSION}
     volumes:
-      - ${DENO_DIR}:/deno-dir/:z
       - ../../apps:/app/apps:z
       - ../../libs:/app/libs:z
       - ../../deno.jsonc:/app/deno.jsonc:z
       - ../../infra/configs/vapid.json:/app/vapid.json:Z
     user: "1000:1000"
     environment:
-      - DENO_DIR=/deno-dir
+      - DENO_DIR=/tmp/deno-cache
       - DENO_LOG=${DENO_LOG}
       - DB_HOST=db
       - DB_PORT=5432
@@ -419,11 +418,10 @@ services:
       args:
         - DENO_VERSION=${DENO_VERSION}
     environment:
-      - DENO_DIR=/deno-dir
+      - DENO_DIR=/tmp/deno-cache
       - DENO_LOG=${DENO_LOG}
       - VITE_ENV=prod
     volumes:
-      - ${DENO_DIR}:/deno-dir/:z
       - ../../apps:/app/apps:z
       - ../../libs:/app/libs:z
       - ../../deno.jsonc:/app/deno.jsonc:z
