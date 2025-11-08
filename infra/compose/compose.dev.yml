@@ -58,6 +58,8 @@ services:
       - 5173:5173
     build:
       dockerfile: apps/web/dockerfile.dev
+      args:
+        - DENO_VERSION=${DENO_VERSION}
     labels:
       - "traefik.http.services.web.loadbalancer.server.port=5173"
     healthcheck:

@@ -12,8 +12,12 @@ steps:
       event:
         - push
         - pull_request
+    environment:
+      DENO_DIR: /deno-dir
+    volumes:
+      - deno-cache:/deno-dir
     commands:
-      - echo "Running code quality checks..."
+      - echo "Running code quality checks with Deno cache..."
       - deno task check
   
   build:
@@ -22,8 +26,12 @@ steps:
       event:
         - push
         - pull_request
+    environment:
+      DENO_DIR: /deno-dir
+    volumes:
+      - deno-cache:/deno-dir
     commands:
-      - echo "Building the project..."
+      - echo "Building the project with Deno cache..."
       - deno task build
     depends_on:
       - check
@@ -35,6 +43,8 @@ steps:
     image: denoland/deno:latest
     environment:
       ENV: prod
+      DENO_VERSION:
+        from_secret: deno_version
       DB_HOST:
         from_secret: db_host
       DB_PORT:
@@ -67,6 +77,7 @@ steps:
       - |
         cat > ./infra/envs/.env.prod << EOF
         ENV=prod
+        DENO_VERSION=${DENO_VERSION}
         DB_HOST=${DB_HOST}
         DB_PORT=${DB_PORT}
         DB_NAME=${DB_NAME}
@@ -137,3 +148,10 @@ steps:
 # ============================================================================
 labels:
   platform: linux/amd64
+
+# ============================================================================
+# Volumes for Caching
+# ============================================================================
+volumes:
+  - name: deno-cache
+    temp: {}

@@ -334,12 +334,26 @@ services:
   # endregion Monitoring
 
   # region Apps
+  # Base image with Deno and dependencies pre-installed for caching
+  deno-base:
+    container_name: ${PROJECT}-deno-base
+    image: financy/deno-base:${DENO_VERSION}
+    build:
+      context: ../..
+      dockerfile: Dockerfile.base
+      args:
+        - DENO_VERSION=${DENO_VERSION}
+    profiles:
+      - donotstart
+
   api:
     container_name: ${PROJECT}-api
     restart: unless-stopped
     build:
       context: ../..
       dockerfile: apps/api/Dockerfile
+      args:
+        - DENO_VERSION=${DENO_VERSION}
     volumes:
       - ${DENO_DIR}:/deno-dir/:z
       - ../../apps:/app/apps:z
@@ -348,6 +362,7 @@ services:
       - ../../infra/configs/vapid.json:/app/vapid.json:Z
     user: "1000:1000"
     environment:
+      - DENO_DIR=/deno-dir
       - DENO_LOG=${DENO_LOG}
       - DB_HOST=db
       - DB_PORT=5432
@@ -401,7 +416,10 @@ services:
     build:
       context: ../..
       dockerfile: apps/web/dockerfile.prod
+      args:
+        - DENO_VERSION=${DENO_VERSION}
     environment:
+      - DENO_DIR=/deno-dir
       - DENO_LOG=${DENO_LOG}
       - VITE_ENV=prod
     volumes:
@@ -421,7 +439,8 @@ services:
         max-size: "10m"
         max-file: "3"
     depends_on:
-      - api
+      api:
+        condition: service_started
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`) && !PathPrefix(`/ws`)"

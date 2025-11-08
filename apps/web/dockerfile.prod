@@ -1,9 +1,10 @@
 # Build stage
-FROM denoland/deno:alpine-2.4.0 AS build
-WORKDIR /app
+ARG DENO_VERSION=2.4.0
+FROM financy/deno-base:${DENO_VERSION} AS build
+
+# Copy application code
 COPY . .
-RUN chown -R 1000:1000 /app
-USER 1000:1000
+
 ARG VITE_ENV=prod
 ENV VITE_ENV=${VITE_ENV}
 RUN deno task web:build

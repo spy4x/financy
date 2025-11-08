@@ -1,0 +1,18 @@
+# Base Dockerfile for Financy
+# This image contains the common setup for all Deno-based services
+# Build: docker build -t financy/deno-base:${DENO_VERSION} -f Dockerfile.base --build-arg DENO_VERSION=2.4.0 .
+
+ARG DENO_VERSION=2.4.0
+FROM denoland/deno:alpine-${DENO_VERSION}
+
+WORKDIR /app
+
+# Copy only dependency manifest for better layer caching
+COPY deno.jsonc ./
+
+# Install dependencies (this layer will be cached if deno.jsonc doesn't change)
+RUN deno install
+
+# Set ownership for non-root user
+RUN chown -R 1000:1000 /app
+USER 1000:1000

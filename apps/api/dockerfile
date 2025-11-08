@@ -1,6 +1,7 @@
-FROM denoland/deno:alpine-2.4.0
-WORKDIR /app
+ARG DENO_VERSION=2.4.0
+FROM financy/deno-base:${DENO_VERSION}
+
+# Copy application code
 COPY . .
-RUN chown -R 1000:1000 /app
-USER 1000:1000
+
 CMD ["sh", "-c", "deno task db:migrate && deno task api:dev"]
