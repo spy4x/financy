@@ -1,6 +1,7 @@
 {
   "tasks": {
     "dev": "deno run compose up -d", // used in terminal to start the development environment
+    "build": "deno task web:build", // used in terminal to build production docker images
 
     // #region apps/api
     "api:dev": "deno serve --allow-net --allow-read=vapid.json --allow-env --watch apps/api/index.ts", // used in docker-compose to start the API server in development mode

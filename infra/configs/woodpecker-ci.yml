@@ -8,14 +8,30 @@ steps:
   # ============================================================================
   check:
     image: denoland/deno:latest
+    when:
+      event:
+        - push
+        - pull_request
     commands:
       - echo "Running code quality checks..."
       - deno task check
+  
+  build:
+    image: denoland/deno:latest
+    when:
+      event:
+        - push
+        - pull_request
+    commands:
+      - echo "Building the project..."
+      - deno task build
+    depends_on:
+      - check
 
   # ============================================================================
   # Step 2: Build Docker Images (Production)
   # ============================================================================
-  build:
+  pre-deploy-build:
     image: denoland/deno:latest
     environment:
       ENV: prod
@@ -71,7 +87,7 @@ steps:
       event: push
       branch: main
     depends_on:
-      - check
+      - build
 
   # ============================================================================
   # Step 3: Deploy to Production
@@ -101,7 +117,7 @@ steps:
       event: push
       branch: main
     depends_on:
-      - build
+      - pre-deploy-build
 
 # ============================================================================
 # Service Definitions (if needed for testing)
