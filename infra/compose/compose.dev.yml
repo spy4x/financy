@@ -1,7 +1,7 @@
 services:
   proxy:
     container_name: ${PROJECT}-proxy
-    image: traefik
+    image: traefik:latest
     restart: unless-stopped
     command:
       - '--log.level=${PROXY_LOG_LEVEL}'
@@ -46,12 +46,16 @@ services:
       retries: 5
 
   api:
+    user: "0:0"  # Run as root in dev mode for Podman compatibility
     environment:
       - ENV=dev
+    security_opt:
+      - label=disable
     healthcheck:
       interval: 3s
 
   web:
+    user: "0:0"  # Run as root in dev mode for Podman compatibility
     environment:
       - VITE_ENV=dev
     ports:
@@ -60,6 +64,8 @@ services:
       dockerfile: apps/web/dockerfile.dev
       args:
         - DENO_VERSION=${DENO_VERSION}
+    security_opt:
+      - label=disable
     labels:
       - "traefik.http.services.web.loadbalancer.server.port=5173"
     healthcheck:

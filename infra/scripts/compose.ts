@@ -8,13 +8,13 @@ const envName = envVars["ENV"];
 const args = Deno.args;
 const composeFile = `./infra/compose/compose.${envName}.yml`;
 const sharedComposeFile = `./infra/compose/compose.shared.yml`;
+const containerProvider: 'docker' | 'podman' = envVars["CONTAINER_PROVIDER"] === "docker" ? "docker" : "podman";
 
 // Build base image first if we're doing "up" or "build"
 const needsBaseImage = args.includes("up") || args.includes("build");
 if (needsBaseImage) {
   console.log("Building base Deno image first...");
   const buildBaseCommand = [
-    "docker",
     "compose",
     "-f",
     sharedComposeFile,
@@ -25,8 +25,8 @@ if (needsBaseImage) {
     "build",
     "deno-base",
   ];
-  const buildProcess = new Deno.Command("docker", {
-    args: buildBaseCommand.slice(1),
+  const buildProcess = new Deno.Command(containerProvider, {
+    args: buildBaseCommand,
     stdout: "inherit",
     stderr: "inherit",
   });
@@ -39,7 +39,6 @@ if (needsBaseImage) {
 }
 
 const composeCommand = [
-  "docker",
   "compose",
   "-f",
   sharedComposeFile,
@@ -50,8 +49,8 @@ const composeCommand = [
   ...args,
 ];
 console.log("Compose command:", composeCommand.join(" "));
-const process = new Deno.Command("docker", {
-  args: composeCommand.slice(1),
+const process = new Deno.Command(containerProvider, {
+  args: composeCommand,
   stdout: "inherit",
   stderr: "inherit",
 });

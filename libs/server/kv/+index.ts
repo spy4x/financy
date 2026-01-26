@@ -3,9 +3,15 @@ import { ICacheStorage } from "@shared/cache"
 import { RedisClient, Reply } from "@iuioiua/redis"
 
 export class KeyValueService implements ICacheStorage {
-  private constructor(private connection: Deno.Conn, private client: RedisClient) {}
+  private constructor(
+    private connection: Deno.Conn,
+    private client: RedisClient,
+  ) {}
 
-  public static async connect(hostname: string, port: number): Promise<KeyValueService> {
+  public static async connet(
+    hostname: string,
+    port: number,
+  ): Promise<KeyValueService> {
     const connection = await Deno.connect({ hostname, port })
     const client = new RedisClient(connection)
     const kv = new KeyValueService(connection, client)
@@ -23,7 +29,11 @@ export class KeyValueService implements ICacheStorage {
   }
 
   /** Sets a key in the database with an expiration time. */
-  public async set(key: string, value: number | string, ttlSec: number): Promise<void> {
+  public async set(
+    key: string,
+    value: number | string,
+    ttlSec: number,
+  ): Promise<void> {
     await this.client.sendCommand(["SET", key, value, "EX", ttlSec])
   }
 

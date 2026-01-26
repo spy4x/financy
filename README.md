@@ -150,6 +150,7 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 - [**Technology Stack**](docs/4.tech-stack.md) - Tools and frameworks used
 - [**Deployment**](docs/5.deployment.md) - Installation and setup instructions
 - [**Infrastructure**](docs/6.infrastructure.md) - Deployment and hosting information
+- [**Recommendations & Gaps**](docs/7.recommendations-expanded.md) - Future improvements and missing pieces
 
 ## Quick Start
 

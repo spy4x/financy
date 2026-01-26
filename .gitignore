@@ -8,7 +8,6 @@
 .env
 .env.*
 !.env.example
-!.env.sg1.example
 
 # Packages
 node_modules

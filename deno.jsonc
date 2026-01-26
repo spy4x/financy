@@ -19,7 +19,7 @@
     "deps:update": "deno outdated -r -u -i",
     "update:ubuntu": "sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo apt --fix-broken install && sudo do-release-upgrade",
     "vapid-key:create": "deno run -W=infra/configs/vapid.json --allow-run=deno ./infra/scripts/vapid-keys-create.ts",
-    "compose": "deno run -R=./infra --allow-run=docker ./infra/scripts/compose.ts",
+    "compose": "deno run -R=./infra --allow-run=docker,podman ./infra/scripts/compose.ts",
     "deploy": "deno run -R=./infra --allow-run=rsync,ssh ./infra/scripts/deploy.ts",
     // #endregion Scripts
 
@@ -118,14 +118,14 @@
     "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/testing": "jsr:@std/testing@^1.0.11",
     "@std/encoding": "jsr:@std/encoding@^1.0.5",
-    "@playwright/test": "npm:@playwright/test@^1.53.1",
-    "playwright": "npm:playwright@^1.53.1",
+    "@playwright/test": "npm:@playwright/test@^1.57.0",
+    "playwright": "npm:playwright@^1.57.0",
 
     // shared/types
-    "arktype": "npm:arktype@^2.1.20",
+    "arktype": "npm:arktype@^2.1.29",
 
     // server/kv
-    "@iuioiua/redis": "jsr:@iuioiua/redis@^1.1.1",
+    "@iuioiua/redis": "jsr:@iuioiua/redis@^1.1.10",
 
     // server/db
     "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
