@@ -1,5 +1,9 @@
 name: ${PROJECT}
 
+networks:
+  proxy:
+    external: true
+
 services:
 
   # region Storages
@@ -101,6 +105,9 @@ services:
     container_name: ${PROJECT}-minio
     image: minio/minio
     restart: unless-stopped
+    networks:
+      - proxy
+      - default
     entrypoint:
       - sh
       - -euc
@@ -131,9 +138,10 @@ services:
         max-file: '3'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.minio.rule=Host(`minio.${DOMAIN}`)'
-      - 'traefik.http.routers.minio.entrypoints=web'
-      - 'traefik.http.services.minio.loadbalancer.server.port=9001'
+      - 'traefik.http.routers.${PROJECT}-minio.rule=Host(`minio.${DOMAIN}`)'
+      - 'traefik.http.routers.${PROJECT}-minio.entrypoints=web'
+      - 'traefik.http.routers.${PROJECT}-minio.service=${PROJECT}-minio'
+      - 'traefik.http.services.${PROJECT}-minio.loadbalancer.server.port=9001'
 
   minio-configure:
     container_name: ${PROJECT}-minio-configure
@@ -256,6 +264,9 @@ services:
     image: grafana/grafana:latest
     restart: unless-stopped
     user: '0'
+    networks:
+      - proxy
+      - default
     volumes:
       - ../../.volumes/grafana:/var/lib/grafana:Z
     environment:
@@ -282,9 +293,10 @@ services:
       retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)'
-      - 'traefik.http.routers.grafana.entrypoints=web'
-      - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.${PROJECT}-grafana.rule=Host(`grafana.${DOMAIN}`)'
+      - 'traefik.http.routers.${PROJECT}-grafana.entrypoints=web'
+      - 'traefik.http.routers.${PROJECT}-grafana.service=${PROJECT}-grafana'
+      - 'traefik.http.services.${PROJECT}-grafana.loadbalancer.server.port=3000'
 
   nodeexporter:
     container_name: ${PROJECT}-nodeexporter
@@ -354,6 +366,9 @@ services:
       dockerfile: apps/api/dockerfile
       args:
         - DENO_VERSION=${DENO_VERSION}
+    networks:
+      - proxy
+      - default
     volumes:
       - ../../apps:/app/apps:z
       - ../../libs:/app/libs:z
@@ -405,13 +420,17 @@ services:
         max-file: '3'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/ws`))'
-      - 'traefik.http.services.api.loadbalancer.server.port=${API_PORT}'
-      - 'traefik.http.routers.api.entrypoints=web'
+      - 'traefik.http.routers.${PROJECT}-api.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/ws`))'
+      - 'traefik.http.routers.${PROJECT}-api.entrypoints=web'
+      - 'traefik.http.routers.${PROJECT}-api.service=${PROJECT}-api'
+      - 'traefik.http.services.${PROJECT}-api.loadbalancer.server.port=${API_PORT}'
 
   web:
     container_name: ${PROJECT}-web
     restart: unless-stopped
+    networks:
+      - proxy
+      - default
     build:
       context: ../..
       dockerfile: apps/web/dockerfile.prod
@@ -441,9 +460,12 @@ services:
         condition: service_started
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.web.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`) && !PathPrefix(`/ws`)"
-      - "traefik.http.routers.web.entrypoints=web"
-      - "traefik.http.services.web.loadbalancer.server.port=8080"
+      - "traefik.http.routers.${PROJECT}-web.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`) && !PathPrefix(`/ws`)"
+      - "traefik.http.routers.${PROJECT}-web.entrypoints=web"
+      - "traefik.http.routers.${PROJECT}-web.service=${PROJECT}-web"
+      - "traefik.http.services.${PROJECT}-web.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.${PROJECT}-web-host.headers.customrequestheaders.Host=localhost:5173"
+      - "traefik.http.routers.${PROJECT}-web.middlewares=${PROJECT}-web-host"
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://127.0.0.1:8080"]
       interval: 10s

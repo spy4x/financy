@@ -48,7 +48,12 @@ export const exchangeRate = {
    * @returns Exchange rate or null if not found
    */
   getRate(fromCurrencyId: number, toCurrencyId: number): number | null {
-    return getExchangeRateForDisplay(fromCurrencyId, toCurrencyId, exchangeRate.list.value)
+    return getExchangeRateForDisplay(
+      fromCurrencyId,
+      toCurrencyId,
+      exchangeRate.list.value,
+      currency.list.value,
+    )
   },
   /**
    * Get the latest exchange rate with metadata.
@@ -58,7 +63,12 @@ export const exchangeRate = {
     fromCurrencyId: number,
     toCurrencyId: number,
   ): CurrencyConversionResult | null {
-    return getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRate.list.value)
+    return getExchangeRate(
+      fromCurrencyId,
+      toCurrencyId,
+      exchangeRate.list.value,
+      currency.list.value,
+    )
   },
   /**
    * Get all rates for a given base currency.
@@ -68,7 +78,11 @@ export const exchangeRate = {
    * @returns Map of currency ID to exchange rate
    */
   getRatesForCurrency(fromCurrencyId: number): Map<number, number> {
-    const conversionResults = getRatesForCurrencyConverter(fromCurrencyId, exchangeRate.list.value)
+    const conversionResults = getRatesForCurrencyConverter(
+      fromCurrencyId,
+      exchangeRate.list.value,
+      currency.list.value,
+    )
     const ratesMap = new Map<number, number>()
 
     conversionResults.forEach((result, currencyId) => {

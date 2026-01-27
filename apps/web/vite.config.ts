@@ -11,7 +11,18 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    host: "0.0.0.0",
+    host: true,
+    port: 5173,
+    proxy: {
+      "/api": {
+        target: "http://fn-api:8000",
+        changeOrigin: true,
+      },
+      "/ws": {
+        target: "ws://fn-api:8000",
+        ws: true,
+      },
+    },
     watch: {
       ignored: ["!../../libs/client/**", "!../../libs/shared/**"],
     },

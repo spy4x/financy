@@ -74,7 +74,10 @@ export const ws = {
       return
     }
     const protocol = globalThis.location.protocol === "https:" ? "wss" : "ws"
-    const address = `${protocol}://${globalThis.location.host}/api/ws`
+    // In dev mode, connect directly to API server to avoid Vite proxy issues with WebSockets
+    const isDev = import.meta.env.DEV
+    const host = isDev ? "localhost:8000" : globalThis.location.host
+    const address = `${protocol}://${host}/api/ws`
     console.log("Connecting WS to", address)
     status.value = WSStatus.CONNECTING
     if (reconnectOp.value.inProgress) {

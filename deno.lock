@@ -4,6 +4,7 @@
     "jsr:@hectorm/otpauth@*": "9.4.0",
     "jsr:@hono/hono@^4.7.7": "4.8.3",
     "jsr:@iuioiua/redis@*": "1.1.1",
+    "jsr:@iuioiua/redis@^1.1.10": "1.1.10",
     "jsr:@libs/qrcode@3": "3.0.0",
     "jsr:@negrel/http-ece@0.6.0": "0.6.0",
     "jsr:@negrel/http-ece@0.7.0": "0.7.0",
@@ -48,6 +49,7 @@
     "npm:@tailwindcss/vite@4.1.8": "4.1.8_vite@6.3.5__@types+node@22.15.15__picomatch@4.0.2_@types+node@22.15.15",
     "npm:@types/node@*": "22.15.15",
     "npm:arktype@^2.1.29": "2.1.29",
+    "npm:playwright@*": "1.57.0",
     "npm:playwright@^1.57.0": "1.57.0",
     "npm:preact@^10.26.2": "10.26.8",
     "npm:redis@*": "4.7.0_@redis+client@1.6.0",
@@ -72,6 +74,9 @@
         "jsr:@std/bytes@^1.0.5",
         "jsr:@std/collections"
       ]
+    },
+    "@iuioiua/redis@1.1.10": {
+      "integrity": "b743e861a77a874fb7b310e0e4e3f5077300f5c8a13c398c31844ef4fc5353bf"
     },
     "@libs/qrcode@3.0.0": {
       "integrity": "f19ae517f67c33cd1c0ed3a54a46540980de45cb3327d09b21479a75d7222953"

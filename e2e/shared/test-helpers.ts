@@ -31,16 +31,15 @@ export const transaction = {
     submitButton: "button[type='submit']",
   },
   nav: {
-    create: (p: Page) => role(p, "link", { name: "Create" }).click(),
+    create: (p: Page) => sel(p, '[data-e2e="transaction-create-button"]').click(),
     list: (p: Page) => p.goto("http://fn.localhost/transactions"),
   },
   form: {
     fillAmount: (p: Page, amount: string) =>
-      role(p, "spinbutton", { name: "Amount:" }).fill(amount),
-    fillMemo: (p: Page, memo: string) =>
-      role(p, "textbox", { name: "Memo (optional):" }).fill(memo),
+      sel(p, '[data-e2e="transaction-amount-input"]').fill(amount),
+    fillMemo: (p: Page, memo: string) => sel(p, '[data-e2e="transaction-memo-input"]').fill(memo),
     fillTimestamp: (p: Page, timestamp: string) =>
-      role(p, "textbox", { name: "Date & Time:" }).fill(timestamp),
+      sel(p, '[data-e2e="transaction-timestamp-input"]').fill(timestamp),
     selectCategory: (p: Page, category: string) =>
       role(p, "combobox", { name: "Category:" }).selectOption({ label: category }),
     selectAccount: (p: Page, account: string) =>

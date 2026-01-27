@@ -7,7 +7,7 @@ import { transaction } from "@web/state/transaction.ts"
 import { currency } from "@web/state/currency.ts"
 import { exchangeRate } from "@web/state/exchange-rate.ts"
 import { group } from "@web/state/group.ts"
-import { convertAmount } from "@shared/helpers/currency.ts"
+import { convertAmount } from "@shared/helpers/currency-converter.ts"
 import type { Transaction as _Transaction } from "@shared/types"
 
 interface MultiCurrencyDashboardProps {
@@ -88,8 +88,14 @@ export function MultiCurrencyDashboard({
         if (currencyId === groupBaseCurrency.value) {
           total += balance
         } else {
-          const converted = convertAmount(balance, currencyId, groupBaseCurrency.value, rates)
-          total += converted
+          const converted = convertAmount(
+            balance,
+            currencyId,
+            groupBaseCurrency.value,
+            rates,
+            currency.list.value,
+          )
+          if (converted !== null) total += converted
         }
       } catch (error) {
         console.warn(`Failed to convert balance for currency ${currencyId}:`, error)
@@ -252,7 +258,8 @@ export function MultiCurrencyDashboard({
                             currencyId,
                             groupBaseCurrency.value,
                             exchangeRate.getAll(),
-                          )}
+                            currency.list.value,
+                          ) || 0}
                           currency={groupBaseCurrency.value}
                         />
                       </div>

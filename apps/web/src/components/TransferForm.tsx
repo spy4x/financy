@@ -207,7 +207,7 @@ export function TransferForm({
             excludeAccountId={toAccountId.value || undefined}
             required
             disabled={disabled}
-            data-e2e="transfer-from-account"
+            dataE2E="transfer-from-account"
           />
           {fromAccount.value && (
             <div class="mt-1 text-sm text-gray-500">
@@ -230,7 +230,7 @@ export function TransferForm({
             excludeAccountId={fromAccountId.value || undefined}
             required
             disabled={disabled}
-            data-e2e="transfer-to-account"
+            dataE2E="transfer-to-account"
           />
           {toAccount.value && (
             <div class="mt-1 text-sm text-gray-500">

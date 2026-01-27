@@ -3,10 +3,12 @@ ARG DENO_VERSION=2.4.0
 FROM financy/deno-base:${DENO_VERSION} AS build
 
 # Copy application code
-COPY . .
+COPY --chown=1000:1000 . .
 
 ARG VITE_ENV=prod
 ENV VITE_ENV=${VITE_ENV}
+ENV DENO_DIR=/deno-dir
+RUN mkdir -p /deno-dir && chown -R 1000:1000 /deno-dir
 RUN deno task web:build
 
 # Production stage with nginx

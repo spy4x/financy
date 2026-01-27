@@ -38,6 +38,7 @@ export function getExchangeRate(
   fromCurrencyId: number,
   toCurrencyId: number,
   exchangeRates: ExchangeRate[],
+  currencies?: Currency[],
 ): CurrencyConversionResult | null {
   // Same currency = 1:1
   if (fromCurrencyId === toCurrencyId) {
@@ -71,11 +72,20 @@ export function getExchangeRate(
     }
   }
 
+  // Determine USD currency id from provided currencies if available
+  const usdId = (() => {
+    if (currencies && currencies.length > 0) {
+      const usd = currencies.find((c) => c.code === "USD")
+      if (usd) return usd.id
+    }
+    return USD_CURRENCY_ID
+  })()
+
   // Try conversion through USD as intermediary
   // Case 1: From → USD → To
-  if (fromCurrencyId !== USD_CURRENCY_ID && toCurrencyId !== USD_CURRENCY_ID) {
-    const fromToUsd = getExchangeRate(fromCurrencyId, USD_CURRENCY_ID, exchangeRates)
-    const usdToTarget = getExchangeRate(USD_CURRENCY_ID, toCurrencyId, exchangeRates)
+  if (fromCurrencyId !== usdId && toCurrencyId !== usdId) {
+    const fromToUsd = getExchangeRate(fromCurrencyId, usdId, exchangeRates, currencies)
+    const usdToTarget = getExchangeRate(usdId, toCurrencyId, exchangeRates, currencies)
 
     if (fromToUsd && usdToTarget) {
       return {
@@ -98,8 +108,9 @@ export function getExchangeRateForDisplay(
   fromCurrencyId: number,
   toCurrencyId: number,
   exchangeRates: ExchangeRate[],
+  currencies?: Currency[],
 ): number | null {
-  const result = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates)
+  const result = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates, currencies)
   return result?.rate ?? null
 }
 
@@ -114,6 +125,7 @@ export function getExchangeRateForDisplay(
 export function getRatesForCurrency(
   fromCurrencyId: number,
   exchangeRates: ExchangeRate[],
+  currencies?: Currency[],
 ): Map<number, CurrencyConversionResult> {
   const ratesMap = new Map<number, CurrencyConversionResult>()
 
@@ -132,7 +144,7 @@ export function getRatesForCurrency(
       return // Skip same currency
     }
 
-    const result = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates)
+    const result = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates, currencies)
     if (result) {
       ratesMap.set(toCurrencyId, result)
     }
@@ -189,7 +201,7 @@ export function convertAmount(
   exchangeRates: ExchangeRate[],
   currencies?: Currency[],
 ): number | null {
-  const conversion = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates)
+  const conversion = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates, currencies)
   if (!conversion) {
     return null
   }

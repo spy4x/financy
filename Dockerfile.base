@@ -13,6 +13,10 @@ COPY deno.jsonc ./
 # Install dependencies (this layer will be cached if deno.jsonc doesn't change)
 RUN deno install
 
+# Ensure Deno cache is writable for non-root user
+ENV DENO_DIR=/deno-dir
+RUN mkdir -p /deno-dir && chown -R 1000:1000 /deno-dir
+
 # Set ownership for non-root user
 RUN chown -R 1000:1000 /app
 USER 1000:1000

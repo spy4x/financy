@@ -1,5 +1,6 @@
 import { transaction } from "@web/state/transaction.ts"
 import { account } from "@web/state/account.ts"
+import { currency } from "@web/state/currency.ts"
 import { category } from "@web/state/category.ts"
 import { group } from "@web/state/group.ts"
 import { ws } from "@web/state/ws.ts"
@@ -198,12 +199,12 @@ export function TransactionEditor() {
             accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
           }
         } else {
-          // Use group's default account if available, otherwise first account
-          const defaultAccountId = group.getSelectedDefaultAccountId()
-          const defaultAccount = defaultAccountId
-            ? accounts.find((acc) => acc.id === defaultAccountId)
-            : null
-          accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
+        // Use group's default account if available, otherwise first account
+        const defaultAccountId = group.getSelectedDefaultAccountId()
+        const defaultAccount = defaultAccountId
+          ? accounts.find((acc) => acc.id === defaultAccountId)
+          : null
+        accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
         }
 
         toAccountId.value = accounts.length > 1 ? accounts[1].id : null
@@ -299,7 +300,14 @@ export function TransactionEditor() {
       return
     }
 
-    const amountInCents = parseCurrencyInput(trimmedAmount)
+    // Parse amount according to source account currency decimals
+    const sourceAccountCurrencyId = type.value === TransactionType.TRANSFER
+      ? accountId.value || undefined
+      : accountId.value || undefined
+    const sourceCurrencyDecimals = sourceAccountCurrencyId
+      ? currency.getById(sourceAccountCurrencyId).decimalPlaces
+      : 2
+    const amountInCents = parseCurrencyInput(trimmedAmount, sourceCurrencyDecimals)
     if (amountInCents === null || amountInCents <= 0) {
       error.value = "Amount must be a positive number"
       state.value = EditorState.ERROR
@@ -309,7 +317,10 @@ export function TransactionEditor() {
     // Validate original amount if provided
     let originalAmountInCents: number | undefined
     if (originalCurrencyId.value && originalAmount.value.trim()) {
-      const parsedOriginal = parseCurrencyInput(originalAmount.value.trim())
+      const parsedOriginal = parseCurrencyInput(
+        originalAmount.value.trim(),
+        currency.getById(originalCurrencyId.value).decimalPlaces,
+      )
       if (parsedOriginal === null || parsedOriginal <= 0) {
         error.value = "Original amount must be a positive number"
         state.value = EditorState.ERROR
@@ -558,18 +569,31 @@ export function TransactionEditor() {
                       Transfer Amount:
                     </label>
                     <div class="mt-2">
-                      <MultiCurrencyAmountInput
-                        id="amount"
-                        amount={parseCurrencyInput(amount.value) || 0}
+                       <MultiCurrencyAmountInput
+                         id="amount"
+                         amount={(() => {
+                           const srcAcc = accountId.value
+                             ? account.list.value.find((a) => a.id === accountId.value)
+                             : null
+                           const srcCurrencyId = srcAcc?.currencyId || 1
+                           const decimals = currency.getById(srcCurrencyId).decimalPlaces
+                           return parseCurrencyInput(amount.value || "0", decimals) || 0
+                         })()}
                         currencyId={accountId.value
-                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
-                            1
-                          : 1}
+                           ? account.list.value.find((a) => a.id === accountId.value)?.currencyId || 1
+                           : 1}
                         targetCurrencyId={toAccountId.value
                           ? account.list.value.find((a) => a.id === toAccountId.value)
                             ?.currencyId || 1
                           : 1}
-                        onAmountChange={(value: number) => amount.value = formatCentsToInput(value)}
+                        onAmountChange={(value: number) => {
+                          const srcAcc = accountId.value
+                            ? account.list.value.find((a) => a.id === accountId.value)
+                            : null
+                          const srcCurrencyId = srcAcc?.currencyId || 1
+                          const decimals = currency.getById(srcCurrencyId).decimalPlaces
+                          amount.value = formatCentsToInput(value, decimals)
+                        }}
                         onCurrencyChange={() => {}} // Currency is determined by account
                         showCurrencySelector={false}
                         showConversion
@@ -582,29 +606,43 @@ export function TransactionEditor() {
                 )
                 : (
                   <div class="sm:col-span-4">
-                    {
-                      /* <EnhancedMultiCurrencyInput
-                      id="amount"
-                      accountCurrencyId={accountId.value
-                        ? account.list.value.find((a) => a.id === accountId.value)?.currencyId || 1
-                        : 1}
-                      originalCurrencyId={originalCurrencyId}
-                      onOriginalCurrencyChange={(currencyId) => {
-                        originalCurrencyId.value = currencyId
-                      }}
-                      accountAmount={amount}
-                      onAccountAmountChange={(value) => {
-                        amount.value = value
-                      }}
-                      originalAmount={originalAmount}
-                      onOriginalAmountChange={(value) => {
-                        originalAmount.value = value
-                      }}
-                      required
-                      disabled={isState(EditorState.IN_PROGRESS)}
-                      dataE2E="transaction-amount-input"
-                    /> */
-                    }
+                    <label for="amount" class="label">
+                      Amount:
+                    </label>
+                    <div class="mt-2">
+                       <MultiCurrencyAmountInput
+                         id="amount"
+                         amount={(() => {
+                           const srcAcc = accountId.value
+                             ? account.list.value.find((a) => a.id === accountId.value)
+                             : null
+                           const srcCurrencyId = srcAcc?.currencyId || 1
+                           const decimals = currency.getById(srcCurrencyId).decimalPlaces
+                           return parseCurrencyInput(amount.value || "0", decimals) || 0
+                         })()}
+                         currencyId={accountId.value
+                           ? account.list.value.find((a) => a.id === accountId.value)?.currencyId || 1
+                           : 1}
+                        targetCurrencyId={accountId.value
+                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
+                            1
+                          : 1}
+                        onAmountChange={(value: number) => {
+                          const srcAcc = accountId.value
+                            ? account.list.value.find((a) => a.id === accountId.value)
+                            : null
+                          const srcCurrencyId = srcAcc?.currencyId || 1
+                          const decimals = currency.getById(srcCurrencyId).decimalPlaces
+                          amount.value = formatCentsToInput(value, decimals)
+                        }}
+                        onCurrencyChange={() => {}} // Currency is determined by account
+                        showCurrencySelector={false}
+                        showConversion={false}
+                        required
+                        data-e2e="transaction-amount-input"
+                        disabled={isState(EditorState.IN_PROGRESS)}
+                      />
+                    </div>
                   </div>
                 )}
 

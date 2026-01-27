@@ -4,8 +4,14 @@ import { group } from "@web/state/group.ts"
 import { dashboard } from "@web/state/dashboard.ts"
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
+import { account } from "@web/state/account.ts"
+import { exchangeRate } from "@web/state/exchange-rate.ts"
 
 export function CashFlowSummary() {
+  const accountById = useComputed(
+    () => new Map(account.list.value.map((acc) => [acc.id, acc])),
+  )
+
   // Get current range transactions
   const currentRangeTransactions = useComputed(() => {
     const range = dashboard.current
@@ -40,6 +46,19 @@ export function CashFlowSummary() {
       })
   })
 
+  // Get the default currency from selected group
+  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
+
+  const convertToBase = (amount: number, currencyId: number) => {
+    if (currencyId === defaultCurrency.value.id) return amount
+    const converted = exchangeRate.convertAmount(
+      amount,
+      currencyId,
+      defaultCurrency.value.id,
+    )
+    return converted === null ? null : converted
+  }
+
   // Calculate current range metrics
   const currentIncome = useComputed(() =>
     currentRangeTransactions.value
@@ -47,7 +66,12 @@ export function CashFlowSummary() {
         txn.direction === TransactionDirection.MONEY_IN &&
         TransactionUtils.affectsProfitLoss(txn.type)
       )
-      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
+      .reduce((sum, txn) => {
+        const acc = accountById.value.get(txn.accountId)
+        if (!acc) return sum
+        const converted = convertToBase(Math.abs(txn.amount), acc.currencyId)
+        return converted === null ? sum : sum + converted
+      }, 0)
   )
 
   const currentExpenses = useComputed(() =>
@@ -56,7 +80,12 @@ export function CashFlowSummary() {
         txn.direction === TransactionDirection.MONEY_OUT &&
         TransactionUtils.affectsProfitLoss(txn.type)
       )
-      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
+      .reduce((sum, txn) => {
+        const acc = accountById.value.get(txn.accountId)
+        if (!acc) return sum
+        const converted = convertToBase(Math.abs(txn.amount), acc.currencyId)
+        return converted === null ? sum : sum + converted
+      }, 0)
   )
 
   const currentNetFlow = useComputed(() => currentIncome.value - currentExpenses.value)
@@ -68,7 +97,12 @@ export function CashFlowSummary() {
         txn.direction === TransactionDirection.MONEY_IN &&
         TransactionUtils.affectsProfitLoss(txn.type)
       )
-      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
+      .reduce((sum, txn) => {
+        const acc = accountById.value.get(txn.accountId)
+        if (!acc) return sum
+        const converted = convertToBase(Math.abs(txn.amount), acc.currencyId)
+        return converted === null ? sum : sum + converted
+      }, 0)
   )
 
   const comparisonExpenses = useComputed(() =>
@@ -77,7 +111,12 @@ export function CashFlowSummary() {
         txn.direction === TransactionDirection.MONEY_OUT &&
         TransactionUtils.affectsProfitLoss(txn.type)
       )
-      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
+      .reduce((sum, txn) => {
+        const acc = accountById.value.get(txn.accountId)
+        if (!acc) return sum
+        const converted = convertToBase(Math.abs(txn.amount), acc.currencyId)
+        return converted === null ? sum : sum + converted
+      }, 0)
   )
 
   const comparisonNetFlow = useComputed(() => comparisonIncome.value - comparisonExpenses.value)
@@ -102,9 +141,6 @@ export function CashFlowSummary() {
     return ((currentNetFlow.value - comparisonNetFlow.value) / Math.abs(comparisonNetFlow.value)) *
       100
   })
-
-  // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
 
   const formatPercentageChange = (change: number) => {
     const isPositive = change >= 0

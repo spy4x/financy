@@ -5,6 +5,8 @@ import { group } from "@web/state/group.ts"
 import { currency } from "@web/state/currency.ts"
 import { transaction } from "@web/state/transaction.ts"
 import { dashboard } from "@web/state/dashboard.ts"
+import { exchangeRate } from "@web/state/exchange-rate.ts"
+import { calculateAccountBalancesAtDate } from "@shared/helpers/account-balance.ts"
 
 function getDateRangeQuery() {
   const { startDate, endDate } = dashboard.current
@@ -16,6 +18,9 @@ import { CurrencyDisplay } from "../../../components/ui/CurrencyDisplay.tsx"
 import { IconHome } from "@client/icons"
 
 export function AccountBalancesOverview() {
+  // Get the default currency from selected group
+  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
+
   // Get accounts for selected group
   const groupAccounts = useComputed(() =>
     account.list.value
@@ -24,41 +29,27 @@ export function AccountBalancesOverview() {
   )
 
   // Calculate total balance as of the selected date range end
-  const totalBalanceAtRangeEnd = useComputed(() => {
-    const range = dashboard.current
-    return groupAccounts.value.reduce((sum, acc) => {
-      // Get balance as of range end date
-      const balanceAtDate = transaction.list.value.reduce((txnSum, txn) => {
-        if (txn.accountId === acc.id && !txn.deletedAt) {
-          const txnDate = new Date(txn.timestamp)
-          // Only include transactions up to the range end date
-          if (txnDate <= range.endDate) {
-            return txnSum + txn.amount
-          }
-        }
-        return txnSum
-      }, acc.startingBalance)
+  const accountBalancesAtRangeEnd = useComputed(() =>
+    calculateAccountBalancesAtDate(
+      groupAccounts.value,
+      transaction.list.value,
+      dashboard.current.endDate,
+    )
+  )
 
-      return sum + balanceAtDate
+  const totalBalanceAtRangeEnd = useComputed(() => {
+    const baseCurrencyId = defaultCurrency.value.id
+    return groupAccounts.value.reduce((sum, acc) => {
+      const balanceAtDate = accountBalancesAtRangeEnd.value.get(acc.id) ?? acc.startingBalance
+      if (acc.currencyId === baseCurrencyId) return sum + balanceAtDate
+      const converted = exchangeRate.convertAmount(balanceAtDate, acc.currencyId, baseCurrencyId)
+      return converted === null ? sum : sum + converted
     }, 0)
   })
 
   // Function to get individual account balance as of range end date
   const getAccountBalanceAtRangeEnd = (accountId: number) => {
-    const range = dashboard.current
-    const acc = groupAccounts.value.find((a) => a.id === accountId)
-    if (!acc) return 0
-
-    return transaction.list.value.reduce((sum, txn) => {
-      if (txn.accountId === accountId && !txn.deletedAt) {
-        const txnDate = new Date(txn.timestamp)
-        // Only include transactions up to the range end date
-        if (txnDate <= range.endDate) {
-          return sum + txn.amount
-        }
-      }
-      return sum
-    }, acc.startingBalance)
+    return accountBalancesAtRangeEnd.value.get(accountId) ?? 0
   }
 
   // Get balance description based on selected date range
@@ -81,9 +72,6 @@ export function AccountBalancesOverview() {
       })
     }`
   })
-
-  // Get the default currency from selected group
-  const defaultCurrency = useComputed(() => group.getSelectedCurrency())
 
   // ...existing code...
 

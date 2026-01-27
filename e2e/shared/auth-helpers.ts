@@ -5,7 +5,13 @@
 import type { Page } from "@playwright/test"
 import { sel } from "./test-helpers.ts"
 
-const APP_URL = "http://fn.localhost"
+/**
+ * Base URL for the application
+ * In dev environment, this should be set to the local dev server
+ * In CI/production, this should be set to the deployed URL
+ * Can be overridden with APP_URL environment variable
+ */
+const APP_URL = Deno.env.get("APP_URL") || "http://fn.localhost"
 const TEST_CREDENTIALS = {
   email: "test@test.com",
   password: "pass1234",
@@ -26,9 +32,9 @@ export async function ensureLoggedIn(page: Page): Promise<void> {
 
   if (!isLoggedIn) {
     // Sign in with test credentials using data-e2e selectors
-    await sel(page, '[data-e2e="login-email-input"]').fill(TEST_CREDENTIALS.email)
-    await sel(page, '[data-e2e="login-password-input"]').fill(TEST_CREDENTIALS.password)
-    await sel(page, '[data-e2e="login-submit-button"]').click()
+    await sel(page, '[data-e2e="email-input"]').fill(TEST_CREDENTIALS.email)
+    await sel(page, '[data-e2e="password-input"]').fill(TEST_CREDENTIALS.password)
+    await sel(page, '[data-e2e="sign-in-button"]').click()
 
     // Wait for login to complete - look for dashboard
     await page.waitForSelector("main", { timeout: 10000 })

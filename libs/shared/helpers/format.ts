@@ -135,8 +135,14 @@ export function formatMoney(amount: number, currency: string): string {
  * @param amount Amount in smallest currency unit (cents)
  * @returns Decimal string representation (e.g., "12.34")
  */
-export function formatCentsToInput(amount: number): string {
-  return (Math.abs(amount) / 100).toFixed(2)
+/**
+ * Formats amount in smallest currency unit to an input-friendly string
+ * @param amount Amount in smallest currency unit (e.g., cents)
+ * @param decimals Number of decimal places for the currency (default 2)
+ */
+export function formatCentsToInput(amount: number, decimals = 2): string {
+  const divisor = Math.pow(10, decimals)
+  return (Math.abs(amount) / divisor).toFixed(decimals)
 }
 
 /**
@@ -144,14 +150,21 @@ export function formatCentsToInput(amount: number): string {
  * @param value String input from user (e.g., "12.34" or "12")
  * @returns Amount in cents, or null if invalid input
  */
-export function parseCurrencyInput(value: string): number | null {
+/**
+ * Parses currency input string and converts to smallest unit
+ * @param value String input from user (e.g., "12.34" or "12")
+ * @param decimals Number of decimal places for target currency (default 2)
+ * @returns Amount in smallest unit, or null if invalid input
+ */
+export function parseCurrencyInput(value: string, decimals = 2): number | null {
   const trimmed = value.trim()
   if (!trimmed) return null
 
   const parsed = parseFloat(trimmed)
   if (isNaN(parsed) || parsed < 0) return null
 
-  return Math.round(parsed * 100) // Convert to cents
+  const multiplier = Math.pow(10, decimals)
+  return Math.round(parsed * multiplier)
 }
 
 /**

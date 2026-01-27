@@ -8,7 +8,7 @@ export class KeyValueService implements ICacheStorage {
     private client: RedisClient,
   ) {}
 
-  public static async connet(
+  public static async connect(
     hostname: string,
     port: number,
   ): Promise<KeyValueService> {

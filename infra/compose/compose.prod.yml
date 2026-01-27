@@ -1,7 +1,3 @@
-networks:
-  proxy:
-    external: true
-
 services:
 
   db:
@@ -12,45 +8,33 @@ services:
       start_period: 40s
   
   minio:
-    networks:
-      - proxy
-      - default
     labels:
       - "traefik.docker.network=proxy"
-      - 'traefik.http.routers.minio.entrypoints=websecure'
-      - 'traefik.http.routers.minio.tls=true'
-      - 'traefik.http.routers.minio.tls.certresolver=myresolver'
+      - 'traefik.http.routers.${PROJECT}-minio.entrypoints=websecure'
+      - 'traefik.http.routers.${PROJECT}-minio.tls=true'
+      - 'traefik.http.routers.${PROJECT}-minio.tls.certresolver=myresolver'
 
   grafana:
-    networks:
-      - proxy
-      - default
     labels:
       - "traefik.docker.network=proxy"
-      - 'traefik.http.routers.grafana.entrypoints=websecure'
-      - 'traefik.http.routers.grafana.tls=true'
-      - 'traefik.http.routers.grafana.tls.certresolver=myresolver'
+      - 'traefik.http.routers.${PROJECT}-grafana.entrypoints=websecure'
+      - 'traefik.http.routers.${PROJECT}-grafana.tls=true'
+      - 'traefik.http.routers.${PROJECT}-grafana.tls.certresolver=myresolver'
 
   api:
-    networks:
-      - proxy
-      - default
     environment:
       - ENV=prod
     labels:
       - "traefik.docker.network=proxy"
-      - 'traefik.http.routers.api.entrypoints=websecure'
-      - 'traefik.http.routers.api.tls=true'
-      - 'traefik.http.routers.api.tls.certresolver=myresolver'
+      - 'traefik.http.routers.${PROJECT}-api.entrypoints=websecure'
+      - 'traefik.http.routers.${PROJECT}-api.tls=true'
+      - 'traefik.http.routers.${PROJECT}-api.tls.certresolver=myresolver'
 
   web:
-    networks:
-      - proxy
-      - default
     build:
       dockerfile: apps/web/dockerfile.prod
     labels:
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.tls=true"
-      - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.routers.${PROJECT}-web.entrypoints=websecure"
+      - "traefik.http.routers.${PROJECT}-web.tls=true"
+      - "traefik.http.routers.${PROJECT}-web.tls.certresolver=myresolver"

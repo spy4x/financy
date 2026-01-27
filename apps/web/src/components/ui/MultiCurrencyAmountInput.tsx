@@ -63,35 +63,25 @@ export function MultiCurrencyAmountInput({
   class: className = "",
   "data-e2e": dataE2e,
 }: MultiCurrencyAmountInputProps) {
-  const inputValue = useSignal(formatCentsToInput(amount))
+  const inputValue = useSignal(formatCentsToInput(amount, currency.getById(currencyId).decimalPlaces))
 
-  // Computed conversion amount and rate
-  const conversion = useComputed(() => {
-    if (!showConversion || currencyId === targetCurrencyId || amount === 0) {
-      return null
-    }
-
+  // Compute conversion amount and rate each render (simpler, deterministic)
+  let conversion: { amount: number; rate: number } | null = null
+  if (showConversion && currencyId !== targetCurrencyId && amount !== 0) {
     try {
-      const exchangeRates = exchangeRate.getAll()
-      const currencies = currency.list.value ?? []
-      const convertedAmount =
-        // Decimal-aware conversion for precise cross-currency amounts.
-        convertAmount(amount, currencyId, targetCurrencyId, exchangeRates, currencies)
+      const convertedAmount = exchangeRate.convertAmount(amount, currencyId, targetCurrencyId)
       const rateResult = exchangeRate.getExchangeRate(currencyId, targetCurrencyId)
-      // Display raw rate (no decimal scaling). Conversion uses smallest units.
       const rate = rateResult?.rate ?? null
-      if (convertedAmount === null || rate === null) {
-        return null
+      if (convertedAmount !== null && rate !== null) {
+        conversion = { amount: convertedAmount, rate }
       }
-      return {
-        amount: convertedAmount,
-        rate: rate,
-      }
-    } catch (error) {
-      console.warn("Conversion failed:", error)
-      return null
+    } catch (err) {
+      console.warn("Conversion compute failed:", err)
+      conversion = null
     }
-  })
+  }
+
+  // no debug logs in production path
 
   function handleAmountInput(e: Event) {
     const input = e.target as HTMLInputElement
@@ -99,9 +89,30 @@ export function MultiCurrencyAmountInput({
     inputValue.value = value
 
     // Parse and convert to cents
-    const parsed = parseCurrencyInput(value)
-    if (parsed !== null) {
-      onAmountChange(parsed)
+    // Prefer currency decimals from the account select DOM when available to avoid
+    // reactivity race between account selection and this component's props.
+    const decimalsFromProp = currency.getById(currencyId).decimalPlaces
+    let decimalsFromDom: number | null = null
+    let decimals = decimalsFromProp
+    try {
+      const accSelect = document.getElementById("account") as HTMLSelectElement | null
+      if (accSelect) {
+        const selected = accSelect.selectedOptions && accSelect.selectedOptions[0]
+        const m = selected?.textContent?.match(/\(([A-Z]{3})\)/)
+        if (m && m[1]) {
+          const domCurr = currency.getByCode(m[1])
+          decimalsFromDom = domCurr.decimalPlaces ?? null
+          decimals = decimalsFromDom ?? decimals
+        }
+      }
+    } catch (err) {
+      // ignore DOM read errors and fall back to prop-based decimals
+    }
+    const parsedFloat = parseFloat(value)
+    const multiplier = Math.pow(10, decimals)
+    const manualParsed = isNaN(parsedFloat) || parsedFloat < 0 ? null : Math.round(parsedFloat * multiplier)
+    if (manualParsed !== null) {
+      onAmountChange(manualParsed)
     }
   }
 
@@ -109,7 +120,7 @@ export function MultiCurrencyAmountInput({
     if (newCurrencyId) {
       onCurrencyChange(newCurrencyId)
       // Keep the same input value but update the currency context
-      inputValue.value = formatCentsToInput(amount)
+      inputValue.value = formatCentsToInput(amount, currency.getById(newCurrencyId).decimalPlaces)
     }
   }
 
@@ -149,21 +160,21 @@ export function MultiCurrencyAmountInput({
       </div>
 
       {/* Conversion Preview */}
-      {conversion.value && (
+      {conversion && (
         <div class="text-sm text-gray-600 dark:text-gray-400 border-l-2 border-blue-200 dark:border-blue-800 pl-3">
           <div class="flex items-center justify-between">
             <span>
               Converts to{" "}
-              <CurrencyDisplay
-                amount={conversion.value.amount}
-                currency={targetCurrencyId}
-                class="font-medium text-gray-900 dark:text-gray-100"
-              />
+               <CurrencyDisplay
+                 amount={conversion.amount}
+                 currency={targetCurrencyId}
+                 class="font-medium text-gray-900 dark:text-gray-100"
+               />
             </span>
             <span class="text-xs">
               Rate: 1 {currency.getById(currencyId).code} ≈{"  "}
               <span class="font-medium">
-                {conversion.value.rate.toFixed(4)} {currency.getById(targetCurrencyId).code}
+                {conversion.rate.toFixed(4)} {currency.getById(targetCurrencyId).code}
               </span>
             </span>
           </div>

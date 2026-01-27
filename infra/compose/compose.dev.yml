@@ -1,43 +1,4 @@
 services:
-  proxy:
-    container_name: ${PROJECT}-proxy
-    image: traefik:latest
-    restart: unless-stopped
-    command:
-      - '--log.level=${PROXY_LOG_LEVEL}'
-      - '--api.insecure=true'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.websecure.address=:443'
-      - '--entrypoints.web.address=:80'
-      - '--ping=true'
-      - '--ping.entryPoint=ping'
-    ports:
-      - '443:443'
-      - '80:80'
-    volumes:
-      - '../../.volumes/traefik/letsencrypt:/letsencrypt'
-      - '/var/run/docker.sock:/var/run/docker.sock:ro,Z'
-    security_opt:
-      - label=disable
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
-    deploy:
-      resources:
-        limits:
-          cpus: ${PROXY_CPU_LIMIT}
-          memory: ${PROXY_MEM_LIMIT}
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.proxy.rule=Host(`proxy.${DOMAIN}`)'
-      - 'traefik.http.routers.proxy.entrypoints=web'
-      - 'traefik.http.services.proxy.loadbalancer.server.port=8080'
-      - 'traefik.http.routers.pingweb.rule=PathPrefix(`/ping`)'
-      - 'traefik.http.routers.pingweb.service=ping@internal'
-      - 'traefik.http.routers.pingweb.entrypoints=web'
       
   db:
     healthcheck:
@@ -47,6 +8,8 @@ services:
 
   api:
     user: "0:0"  # Run as root in dev mode for Podman compatibility
+    ports:
+      - "8000:8000"
     environment:
       - ENV=dev
     security_opt:
@@ -56,18 +19,16 @@ services:
 
   web:
     user: "0:0"  # Run as root in dev mode for Podman compatibility
+    ports:
+      - "5173:5173"
     environment:
       - VITE_ENV=dev
-    ports:
-      - 5173:5173
     build:
       dockerfile: apps/web/dockerfile.dev
       args:
         - DENO_VERSION=${DENO_VERSION}
     security_opt:
       - label=disable
-    labels:
-      - "traefik.http.services.web.loadbalancer.server.port=5173"
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://127.0.0.1:5173"]
       interval: 3s

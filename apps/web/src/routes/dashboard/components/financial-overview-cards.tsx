@@ -13,34 +13,36 @@ function getDateRangeQuery() {
 import { CurrencyDisplay } from "@web/components/ui/CurrencyDisplay.tsx"
 import { TransactionDirection, TransactionUtils } from "@shared/types"
 import { Link } from "wouter-preact"
+import { exchangeRate } from "@web/state/exchange-rate.ts"
+import { calculateAccountBalancesAtDate } from "@shared/helpers/account-balance.ts"
 
 export function FinancialOverviewCards() {
+  // Get the default currency from selected group
+  const defaultCurrencyId = useComputed<number>(() => group.getSelectedCurrency().id)
+
   // Calculate total balance as of the end of the selected date range
+  const accountById = useComputed(
+    () => new Map(account.list.value.map((acc) => [acc.id, acc])),
+  )
+
   const totalBalanceAtRangeEnd = useComputed(() => {
     const range = dashboard.current
-    const rangeEndTime = range.endDate.getTime()
+    const baseCurrencyId = defaultCurrencyId.value
+    const groupAccounts = account.list.value.filter(
+      (acc) => acc.groupId === group.selectedId.value && !acc.deletedAt,
+    )
+    const balances = calculateAccountBalancesAtDate(
+      groupAccounts,
+      transaction.list.value,
+      range.endDate,
+    )
 
-    return account.list.value
-      .filter((acc) => acc.groupId === group.selectedId.value && !acc.deletedAt)
-      .reduce((sum, acc) => {
-        // Get all transactions for this account up to the end of the selected range
-        const accountTransactions = transaction.list.value
-          .filter((txn) => {
-            const txnTime = new Date(txn.timestamp).getTime()
-            return (
-              txn.accountId === acc.id &&
-              txnTime <= rangeEndTime &&
-              !txn.deletedAt
-            )
-          })
-
-        // Calculate balance: starting balance + all transactions up to range end
-        const transactionSum = accountTransactions.reduce((txnSum, txn) => {
-          return txnSum + (txn.direction === 1 ? -Math.abs(txn.amount) : Math.abs(txn.amount))
-        }, 0)
-
-        return sum + acc.startingBalance + transactionSum
-      }, 0)
+    return groupAccounts.reduce((sum, acc) => {
+      const balance = balances.get(acc.id) ?? acc.startingBalance
+      if (acc.currencyId === baseCurrencyId) return sum + balance
+      const converted = exchangeRate.convertAmount(balance, acc.currencyId, baseCurrencyId)
+      return converted === null ? sum : sum + converted
+    }, 0)
   })
 
   // Get transactions for the selected date range
@@ -65,7 +67,18 @@ export function FinancialOverviewCards() {
         txn.direction === TransactionDirection.MONEY_IN &&
         TransactionUtils.affectsProfitLoss(txn.type)
       )
-      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
+      .reduce((sum, txn) => {
+        const acc = accountById.value.get(txn.accountId)
+        if (!acc) return sum
+        const amount = Math.abs(txn.amount)
+        if (acc.currencyId === defaultCurrencyId.value) return sum + amount
+        const converted = exchangeRate.convertAmount(
+          amount,
+          acc.currencyId,
+          defaultCurrencyId.value,
+        )
+        return converted === null ? sum : sum + converted
+      }, 0)
   )
 
   // Calculate expenses for the selected date range (MONEY_OUT transactions, excluding transfers)
@@ -75,14 +88,22 @@ export function FinancialOverviewCards() {
         txn.direction === TransactionDirection.MONEY_OUT &&
         TransactionUtils.affectsProfitLoss(txn.type)
       )
-      .reduce((sum, txn) => sum + Math.abs(txn.amount), 0)
+      .reduce((sum, txn) => {
+        const acc = accountById.value.get(txn.accountId)
+        if (!acc) return sum
+        const amount = Math.abs(txn.amount)
+        if (acc.currencyId === defaultCurrencyId.value) return sum + amount
+        const converted = exchangeRate.convertAmount(
+          amount,
+          acc.currencyId,
+          defaultCurrencyId.value,
+        )
+        return converted === null ? sum : sum + converted
+      }, 0)
   )
 
   // Calculate net cash flow (income - expenses)
   const netCashFlow = useComputed(() => rangeIncome.value - rangeExpenses.value)
-
-  // Get the default currency from selected group
-  const defaultCurrencyId = useComputed<number>(() => group.getSelectedCurrency().id)
 
   // Get period description for card labels
   const periodDescription = useComputed(() => {

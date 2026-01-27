@@ -2,7 +2,7 @@ import { computed } from "@preact/signals"
 import { CurrencyDisplay } from "./CurrencyDisplay.tsx"
 import { currency } from "@web/state/currency.ts"
 import { exchangeRate } from "@web/state/exchange-rate.ts"
-import { convertAmount } from "@shared/helpers/currency.ts"
+import { convertAmount } from "@shared/helpers/currency-converter.ts"
 import type { Account } from "@shared/types"
 
 interface MultiCurrencyAccountBalanceProps {
@@ -49,7 +49,13 @@ export function MultiCurrencyAccountBalance({
 
     try {
       const exchangeRates = exchangeRate.getAll()
-      return convertAmount(currentBalance, account.currencyId, groupBaseCurrencyId, exchangeRates)
+      return convertAmount(
+        currentBalance,
+        account.currencyId,
+        groupBaseCurrencyId,
+        exchangeRates,
+        currency.list.value,
+      )
     } catch (error) {
       console.warn("Balance conversion failed:", error)
       return null
@@ -127,8 +133,9 @@ export function AccountBalanceSummary({
             account.currencyId,
             groupBaseCurrencyId,
             exchangeRates,
+            currency.list.value,
           )
-          total += converted
+          if (converted !== null) total += converted
         }
       } catch (error) {
         console.warn(`Failed to convert balance for account ${account.id}:`, error)

@@ -227,6 +227,16 @@ async function seedData() {
         },
       })
 
+      const jpy = await tx.currency.createOne({
+        data: {
+          code: "JPY",
+          name: "Japanese Yen",
+          symbol: "¥",
+          type: CurrencyType.FIAT,
+          decimalPlaces: 0,
+        },
+      })
+
       console.log("Creating groups...")
 
       // 5. Create groups
@@ -298,6 +308,15 @@ async function seedData() {
           tx.exchangeRate.createOne({
             data: {
               fromCurrencyId: usd.id,
+              toCurrencyId: jpy.id,
+              rate: 155.5954,
+              date: date.toISOString().split('T')[0],
+              fetchedAt: date,
+            },
+          }),
+          tx.exchangeRate.createOne({
+            data: {
+              fromCurrencyId: usd.id,
               toCurrencyId: aud.id,
               rate: 1.50 + Math.random() * 0.1,
               date: date.toISOString().split('T')[0],
@@ -353,6 +372,24 @@ async function seedData() {
           name: "Business Checking",
           currencyId: eur.id,
           startingBalance: 250000, // €2,500.00
+        },
+      })
+
+      const gbpAccount = await tx.account.createOne({
+        data: {
+          groupId: personalGroup.id,
+          name: "GBP Account",
+          currencyId: gbp.id,
+          startingBalance: 100000, // £1,000.00
+        },
+      })
+
+      const jpyAccount = await tx.account.createOne({
+        data: {
+          groupId: personalGroup.id,
+          name: "JPY Account",
+          currencyId: jpy.id,
+          startingBalance: 10000, // ¥10,000 (0 decimal places)
         },
       })
 
