@@ -4,7 +4,7 @@
  * without any database or external dependencies
  */
 
-import type { ExchangeRate } from "@shared/types"
+import type { Currency, ExchangeRate } from "@shared/types"
 
 /**
  * Get exchange rate between two currencies from provided rates array
@@ -16,6 +16,13 @@ export function getExchangeRate(
   toCurrencyId: number,
   exchangeRates: ExchangeRate[],
 ): number {
+  const assertValidRate = (rate: ExchangeRate): void => {
+    // Validation: reject non-finite or non-positive rates from storage.
+    if (!isFinite(rate.rate) || rate.rate <= 0) {
+      throw new Error(`Invalid exchange rate: ${rate.rate}`)
+    }
+  }
+
   // Same currency, rate is 1
   if (fromCurrencyId === toCurrencyId) {
     return 1.0
@@ -30,6 +37,7 @@ export function getExchangeRate(
   )
 
   if (directRate) {
+    assertValidRate(directRate)
     return directRate.rate
   }
 
@@ -39,6 +47,7 @@ export function getExchangeRate(
   )
 
   if (reverseRate) {
+    assertValidRate(reverseRate)
     return 1 / reverseRate.rate
   }
 
@@ -78,14 +87,26 @@ export function getExchangeRate(
 
 /**
  * Convert amount between currencies using provided exchange rates
- * Rounds result to avoid floating point issues
+ * Rates are stored as 1 USD = X target units
+ * Uses division to convert from source to target
  */
 export function convertAmount(
   amount: number,
   fromCurrencyId: number,
   toCurrencyId: number,
   exchangeRates: ExchangeRate[],
+  currencies?: Currency[],
 ): number {
   const rate = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates)
-  return Math.round(amount * rate)
+  const fromDecimals = getDecimalPlaces(fromCurrencyId, currencies)
+  const toDecimals = getDecimalPlaces(toCurrencyId, currencies)
+  // Scale amount between smallest units based on decimal places.
+  const scale = Math.pow(10, toDecimals) / Math.pow(10, fromDecimals)
+  return Math.round(amount * rate * scale)
+}
+
+function getDecimalPlaces(currencyId: number, currencies?: Currency[]): number {
+  if (!currencies || currencies.length === 0) return 2
+  const found = currencies.find((currency) => currency.id === currencyId)
+  return found?.decimalPlaces ?? 2
 }

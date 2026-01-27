@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@shared/testing"
-import type { ExchangeRate } from "@shared/types"
+import type { ExchangeRate, Currency } from "@shared/types"
 import { convertAmount, getExchangeRate, getRatesForCurrency } from "./currency-converter.ts"
 
 // Mock exchange rates (all using USD as base currency, like in production)
@@ -192,5 +192,136 @@ describe("Currency Converter", () => {
 
     const result = getExchangeRate(1, 999, ratesWithDeleted)
     expect(result).toBe(null) // Should not find deleted rate
+  })
+
+  // Decimal-aware conversions tests (realistic rates)
+  const realisticRates: ExchangeRate[] = [
+    // 1 USD = 155.5954 JPY
+    {
+      id: 1001,
+      fromCurrencyId: 1,
+      toCurrencyId: 4, // JPY
+      rate: 155.5954,
+      date: "2026-01-01T00:00:00.000Z",
+      fetchedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+    // 1 USD = 0.7924 GBP
+    {
+      id: 1002,
+      fromCurrencyId: 1,
+      toCurrencyId: 5, // GBP
+      rate: 0.7924,
+      date: "2026-01-01T00:00:00.000Z",
+      fetchedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+    // USD → BTC (1 USD = 0.00005 BTC) => 1 BTC = 20000 USD
+    {
+      id: 1003,
+      fromCurrencyId: 1,
+      toCurrencyId: 100, // BTC
+      rate: 0.00005,
+      date: "2026-01-01T00:00:00.000Z",
+      fetchedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+  ]
+
+  const currencies = [
+    {
+      id: 1,
+      code: "USD",
+      name: "US Dollar",
+      type: "fiat",
+      decimalPlaces: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+    {
+      id: 4,
+      code: "JPY",
+      name: "Yen",
+      type: "fiat",
+      decimalPlaces: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+    {
+      id: 5,
+      code: "GBP",
+      name: "Pound",
+      type: "fiat",
+      decimalPlaces: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+    {
+      id: 100,
+      code: "BTC",
+      name: "Bitcoin",
+      type: "crypto",
+      decimalPlaces: 8,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+  ]
+
+  it("convertAmount - USD → JPY (100 USD -> 15560 JPY)", () => {
+    // 100 USD stored as 10000 cents
+    const result = convertAmount(10000, 1, 4, realisticRates, currencies as unknown as Currency[])
+    // Expect 15560 JPY (JPY has 0 decimals)
+    expect(result).toBe(15560)
+  })
+
+  it("convertAmount - JPY → USD (15560 JPY -> 10000 cents, rounding)", () => {
+    // 15560 JPY (smallest unit for JPY is 1)
+    const result = convertAmount(15560, 4, 1, realisticRates, currencies as unknown as Currency[])
+    // Inverse conversion with rounding -> 10000 cents
+    expect(result).toBe(10000)
+  })
+
+  it("convertAmount - GBP → JPY via USD (cross-rate)", () => {
+    // Convert £100.00 (10000 smallest units) GBP -> JPY using cross-rate GBP->USD->JPY
+    const result = convertAmount(10000, 5, 4, realisticRates, currencies as unknown as Currency[])
+
+    // Compute expected cross-rate: (1/0.7924) * 155.5954 = ~196.280...
+    // £100 -> 10000 * rate * (10^0 / 10^2) -> round
+    const crossRate = (1 / 0.7924) * 155.5954
+    const expected = Math.round(10000 * crossRate * (Math.pow(10, 0) / Math.pow(10, 2)))
+    expect(result).toBe(expected)
+  })
+
+  it("convertAmount - BTC → USD (1 BTC -> USD cents)", () => {
+    // 1 BTC = 100000000 satoshis
+    const result = convertAmount(100000000, 100, 1, realisticRates, currencies as unknown as Currency[])
+    // With USD->BTC = 0.00005 => BTC->USD = 20000
+    // scale = 10^2 / 10^8 = 0.000001
+    // result = round(100000000 * 20000 * 0.000001) = 2000000 cents ($20,000.00)
+    expect(result).toBe(2000000)
+  })
+
+  it("convertAmount - edge cases: very small amounts and rounding", () => {
+    // 1 cent USD -> JPY
+    const oneCentToYen = convertAmount(1, 1, 4, realisticRates, currencies as unknown as Currency[])
+    // 1 cent -> 0.01 USD -> 0.01 * 155.5954 = 1.555954 -> rounds to 2 JPY
+    expect(oneCentToYen).toBe(2)
+
+    // 1 satoshi BTC -> USD cents
+    const oneSatoshiToUsd = convertAmount(1, 100, 1, realisticRates, currencies as unknown as Currency[])
+    // Very small, should round to 0 or 1 depending on rate; compute expected
+    const btcToUsdRate = 1 / 0.00005 // 20000
+    const expectedSatoshi = Math.round(1 * btcToUsdRate * (Math.pow(10, 2) / Math.pow(10, 8)))
+    expect(oneSatoshiToUsd).toBe(expectedSatoshi)
   })
 })

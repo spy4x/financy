@@ -1,4 +1,4 @@
-import type { ExchangeRate } from "@shared/types"
+import type { Currency, ExchangeRate } from "@shared/types"
 
 /**
  * Currency converter that handles conversions through USD as intermediary.
@@ -91,6 +91,19 @@ export function getExchangeRate(
 }
 
 /**
+ * Get exchange rate for display (not for conversion).
+ * Returns raw rate as a decimal number for UI display only.
+ */
+export function getExchangeRateForDisplay(
+  fromCurrencyId: number,
+  toCurrencyId: number,
+  exchangeRates: ExchangeRate[],
+): number | null {
+  const result = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates)
+  return result?.rate ?? null
+}
+
+/**
  * Get all exchange rates for a given base currency.
  * Returns a map of target currency ID to conversion result.
  *
@@ -174,11 +187,21 @@ export function convertAmount(
   fromCurrencyId: number,
   toCurrencyId: number,
   exchangeRates: ExchangeRate[],
+  currencies?: Currency[],
 ): number | null {
   const conversion = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRates)
   if (!conversion) {
     return null
   }
 
-  return Math.round(amount * conversion.rate)
+  const fromDecimals = getDecimalPlaces(fromCurrencyId, currencies)
+  const toDecimals = getDecimalPlaces(toCurrencyId, currencies)
+  const scale = Math.pow(10, toDecimals) / Math.pow(10, fromDecimals)
+  return Math.round(amount * conversion.rate * scale)
+}
+
+function getDecimalPlaces(currencyId: number, currencies?: Currency[]): number {
+  if (!currencies || currencies.length === 0) return 2
+  const found = currencies.find((currency) => currency.id === currencyId)
+  return found?.decimalPlaces ?? 2
 }

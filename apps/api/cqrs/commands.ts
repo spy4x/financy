@@ -299,7 +299,8 @@ export interface AccountTransferPayload {
   userId: number
   acknowledgmentId?: string
   // Multi-currency support
-  exchangeRate?: number // Override rate if specified (for manual rate entry)
+  /** @deprecated Manual exchange rates disabled; ignored server-side. */
+  exchangeRate?: number
   conversionDate?: Date // Date for rate lookup (defaults to timestamp or now)
 }
 

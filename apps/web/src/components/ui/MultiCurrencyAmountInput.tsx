@@ -3,7 +3,7 @@ import { CurrencySelector } from "./CurrencySelector.tsx"
 import { CurrencyDisplay } from "./CurrencyDisplay.tsx"
 import { currency } from "@web/state/currency.ts"
 import { exchangeRate } from "@web/state/exchange-rate.ts"
-import { convertAmount } from "@shared/helpers/currency.ts"
+import { convertAmount } from "@shared/helpers/currency-converter.ts"
 import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
 
 interface MultiCurrencyAmountInputProps {
@@ -73,8 +73,16 @@ export function MultiCurrencyAmountInput({
 
     try {
       const exchangeRates = exchangeRate.getAll()
-      const convertedAmount = convertAmount(amount, currencyId, targetCurrencyId, exchangeRates)
-      const rate = convertAmount(100, currencyId, targetCurrencyId, exchangeRates) // Use 100 cents for display
+      const currencies = currency.list.value ?? []
+      const convertedAmount =
+        // Decimal-aware conversion for precise cross-currency amounts.
+        convertAmount(amount, currencyId, targetCurrencyId, exchangeRates, currencies)
+      const rateResult = exchangeRate.getExchangeRate(currencyId, targetCurrencyId)
+      // Display raw rate (no decimal scaling). Conversion uses smallest units.
+      const rate = rateResult?.rate ?? null
+      if (convertedAmount === null || rate === null) {
+        return null
+      }
       return {
         amount: convertedAmount,
         rate: rate,
@@ -154,11 +162,9 @@ export function MultiCurrencyAmountInput({
             </span>
             <span class="text-xs">
               Rate: 1 {currency.getById(currencyId).code} ≈{"  "}
-              <CurrencyDisplay
-                amount={conversion.value.rate}
-                currency={targetCurrencyId}
-                class="font-medium"
-              />
+              <span class="font-medium">
+                {conversion.value.rate.toFixed(4)} {currency.getById(targetCurrencyId).code}
+              </span>
             </span>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { AccountTransferEvent } from "@api/cqrs/events.ts"
 import { db } from "@api/services/db.ts"
 import { eventBus } from "@api/services/eventBus.ts"
 import { convertAmount, getExchangeRate } from "@shared/helpers/currency.ts"
+import type { Currency } from "@shared/types"
 import { TransactionDirection, TransactionType } from "@shared/types"
 import { getRandomString } from "@shared/helpers/random.ts"
 
@@ -21,7 +22,6 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
     timestamp,
     userId,
     acknowledgmentId,
-    exchangeRate,
     conversionDate: _conversionDate,
   } = command.data
 
@@ -49,8 +49,8 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
       }
 
       // Verify legitimacy for both accounts
-      const hasAccessFrom = await db.account.verifyLegitimacy(fromAccount, userId)
-      const hasAccessTo = await db.account.verifyLegitimacy(toAccount, userId)
+      const hasAccessFrom = await tx.account.verifyLegitimacy(fromAccount, userId)
+      const hasAccessTo = await tx.account.verifyLegitimacy(toAccount, userId)
 
       if (!hasAccessFrom || !hasAccessTo) {
         throw new Error("Access denied to one or both accounts")
@@ -72,26 +72,22 @@ export const AccountTransferHandler: CommandHandler<AccountTransferCommand> = as
         originalCurrencyId = fromAccount.currencyId
         originalAmount = amount
 
-        if (exchangeRate) {
-          // Use provided exchange rate
-          convertedAmount = Math.round(amount * exchangeRate)
-          actualExchangeRate = exchangeRate
-        } else {
-          // Fetch exchange rates from database within transaction
-          const exchangeRates = await db.exchangeRate.findMany()
+        // Manual exchange rates disabled: always use DB rates (validated server-side).
+        const exchangeRates = await tx.exchangeRate.findMany()
+        const currencies: Currency[] = await tx.currency.findMany()
 
-          actualExchangeRate = getExchangeRate(
-            fromAccount.currencyId,
-            toAccount.currencyId,
-            exchangeRates,
-          )
-          convertedAmount = convertAmount(
-            amount,
-            fromAccount.currencyId,
-            toAccount.currencyId,
-            exchangeRates,
-          )
-        }
+        actualExchangeRate = getExchangeRate(
+          fromAccount.currencyId,
+          toAccount.currencyId,
+          exchangeRates,
+        )
+        convertedAmount = convertAmount(
+          amount,
+          fromAccount.currencyId,
+          toAccount.currencyId,
+          exchangeRates,
+          currencies,
+        )
 
         console.log(
           `Cross-currency transfer: ${amount} (${fromAccount.currencyId}) = ${convertedAmount} (${toAccount.currencyId}) at rate ${actualExchangeRate}`,

@@ -6,7 +6,7 @@ import { IconLoading } from "@client/icons"
 import { account } from "@web/state/account.ts"
 import { currency } from "@web/state/currency.ts"
 import { exchangeRate } from "@web/state/exchange-rate.ts"
-import { convertAmount } from "@shared/helpers/currency.ts"
+import { convertAmount } from "@shared/helpers/currency-converter.ts"
 import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
 
 interface TransferFormProps {
@@ -92,9 +92,14 @@ export function TransferForm({
     }
 
     try {
-      const rates = exchangeRate.getAll()
-      const rate =
-        convertAmount(100, fromAccount.value.currencyId, toAccount.value.currencyId, rates) / 100
+      const fromId = fromAccount.value!.currencyId
+      const toId = toAccount.value!.currencyId
+      const rateResult = exchangeRate.getExchangeRate(fromId, toId)
+      // Display raw rate (no decimal scaling). Conversion uses smallest units.
+      const rate = rateResult?.rate ?? null
+      if (rate === null) {
+        throw new Error("Exchange rate not available")
+      }
       return {
         rate,
         isManual: false,
@@ -123,12 +128,20 @@ export function TransferForm({
 
     try {
       const rates = exchangeRate.getAll()
+      const currencies = currency.list.value ?? []
+      const fromId = fromAccount.value!.currencyId
+      const toId = toAccount.value!.currencyId
       const converted = convertAmount(
         amountInCents,
-        fromAccount.value.currencyId,
-        toAccount.value.currencyId,
+        fromId,
+        toId,
         rates,
+        // Decimal-aware conversion for precise cross-currency amounts.
+        currencies,
       )
+      if (converted === null) {
+        return null
+      }
       return converted
     } catch (error) {
       console.warn("Conversion failed:", error)

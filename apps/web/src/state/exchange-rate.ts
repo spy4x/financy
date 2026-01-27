@@ -1,9 +1,12 @@
 import { signal } from "@preact/signals"
 import { ws } from "./ws.ts"
 import { ExchangeRate, WebSocketMessageType } from "@shared/types"
+import { currency } from "@web/state/currency.ts"
+import type { CurrencyConversionResult } from "@shared/helpers/currency-converter.ts"
 import {
   convertAmount,
   getExchangeRate,
+  getExchangeRateForDisplay,
   getRatesForCurrency as getRatesForCurrencyConverter,
 } from "@shared/helpers/currency-converter.ts"
 
@@ -45,8 +48,17 @@ export const exchangeRate = {
    * @returns Exchange rate or null if not found
    */
   getRate(fromCurrencyId: number, toCurrencyId: number): number | null {
-    const result = getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRate.list.value)
-    return result ? result.rate : null
+    return getExchangeRateForDisplay(fromCurrencyId, toCurrencyId, exchangeRate.list.value)
+  },
+  /**
+   * Get the latest exchange rate with metadata.
+   * Supports direct rates, inverse rates, and cross-rates through USD.
+   */
+  getExchangeRate(
+    fromCurrencyId: number,
+    toCurrencyId: number,
+  ): CurrencyConversionResult | null {
+    return getExchangeRate(fromCurrencyId, toCurrencyId, exchangeRate.list.value)
   },
   /**
    * Get all rates for a given base currency.
@@ -74,6 +86,12 @@ export const exchangeRate = {
    * @returns Converted amount in the target currency (in smallest unit), or null if conversion not possible
    */
   convertAmount(amount: number, fromCurrencyId: number, toCurrencyId: number): number | null {
-    return convertAmount(amount, fromCurrencyId, toCurrencyId, exchangeRate.list.value)
+    return convertAmount(
+      amount,
+      fromCurrencyId,
+      toCurrencyId,
+      exchangeRate.list.value,
+      currency.list.value,
+    )
   },
 }
