@@ -53,8 +53,14 @@ export function EnhancedMultiCurrencyInput(props: EnhancedMultiCurrencyInputProp
   const actualRate = useComputed(() => {
     if (!isMultiCurrency.value) return null
 
-    const originalAmountCents = parseCurrencyInput(props.originalAmount.value)
-    const accountAmountCents = parseCurrencyInput(props.accountAmount.value)
+    const originalAmountCents = parseCurrencyInput(
+      props.originalAmount.value,
+      originalCurrency.value?.decimalPlaces ?? 2
+    )
+    const accountAmountCents = parseCurrencyInput(
+      props.accountAmount.value,
+      accountCurrency.value.decimalPlaces
+    )
 
     if (!originalAmountCents || !accountAmountCents || originalAmountCents === 0) {
       return null
@@ -77,11 +83,17 @@ export function EnhancedMultiCurrencyInput(props: EnhancedMultiCurrencyInputProp
       return
     }
 
-    const originalAmountCents = parseCurrencyInput(props.originalAmount.value)
+    const originalAmountCents = parseCurrencyInput(
+      props.originalAmount.value,
+      originalCurrency.value?.decimalPlaces ?? 2
+    )
     if (originalAmountCents === null) return
 
     const convertedAmount = Math.round(originalAmountCents * currentRate.value)
-    const newAccountAmount = formatCentsToInput(convertedAmount)
+    const newAccountAmount = formatCentsToInput(
+      convertedAmount,
+      accountCurrency.value.decimalPlaces
+    )
 
     // Only update if different to avoid infinite loops
     if (newAccountAmount !== props.accountAmount.value) {
@@ -95,11 +107,17 @@ export function EnhancedMultiCurrencyInput(props: EnhancedMultiCurrencyInputProp
       return
     }
 
-    const originalAmountCents = parseCurrencyInput(props.originalAmount.value)
+    const originalAmountCents = parseCurrencyInput(
+      props.originalAmount.value,
+      originalCurrency.value?.decimalPlaces ?? 2
+    )
     if (originalAmountCents === null) return
 
     const convertedAmount = Math.round(originalAmountCents * currentRate.value)
-    const newAccountAmount = formatCentsToInput(convertedAmount)
+    const newAccountAmount = formatCentsToInput(
+      convertedAmount,
+      accountCurrency.value.decimalPlaces
+    )
 
     // Only update if different to avoid infinite loops
     if (newAccountAmount !== props.accountAmount.value) {

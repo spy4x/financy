@@ -45,10 +45,11 @@ export function CategoryEditor() {
 
         const existingCategory = category.list.value.find((c) => c.id === editCategoryId)
         if (existingCategory) {
+          const baseCurrency = group.getSelectedCurrency()
           name.value = existingCategory.name
           categoryType.value = existingCategory.type || CategoryType.EXPENSE
           monthlyLimit.value = existingCategory.monthlyLimit
-            ? formatCentsToInput(existingCategory.monthlyLimit)
+            ? formatCentsToInput(existingCategory.monthlyLimit, baseCurrency.decimalPlaces)
             : ""
           icon.value = existingCategory.icon || ""
           color.value = existingCategory.color || ""
@@ -118,7 +119,8 @@ export function CategoryEditor() {
 
     // Only process monthly limit for expense categories
     if (categoryType.value === CategoryType.EXPENSE && limitValue) {
-      limitInCents = parseCurrencyInput(limitValue)
+      const baseCurrency = group.getSelectedCurrency()
+      limitInCents = parseCurrencyInput(limitValue, baseCurrency.decimalPlaces)
       if (limitInCents === null) {
         error.value = "Monthly limit must be a valid positive number"
         state.value = EditorState.ERROR
@@ -297,7 +299,7 @@ export function CategoryEditor() {
                       </label>
                       <BudgetProgress
                         spentAmount={category.getMonthlySpent(editCategoryId)}
-                        limitAmount={parseCurrencyInput(monthlyLimit.value || "0") || 0}
+                        limitAmount={parseCurrencyInput(monthlyLimit.value || "0", group.getSelectedCurrency().decimalPlaces) || 0}
                         currency={group.getSelectedCurrency().code}
                       />
                     </div>

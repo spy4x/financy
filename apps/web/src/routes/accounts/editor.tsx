@@ -79,7 +79,8 @@ export function AccountEditor() {
           name.value = existingAccount.name
           currencyId.value = existingAccount.currencyId
           originalCurrencyId.value = existingAccount.currencyId // Store original currency
-          startingBalance.value = formatCentsToInput(existingAccount.startingBalance)
+          const accountCurrency = currency.getById(existingAccount.currencyId)
+          startingBalance.value = formatCentsToInput(existingAccount.startingBalance, accountCurrency?.decimalPlaces ?? 2)
           error.value = ""
           state.value = EditorState.IDLE
         } else {
@@ -149,7 +150,9 @@ export function AccountEditor() {
     }
 
     // Parse starting balance
-    const startingBalanceCents = parseCurrencyInput(startingBalance.value.trim())
+    const selectedCurrency = currencyId.value ? currency.getById(currencyId.value) : null
+    const decimals = selectedCurrency?.decimalPlaces ?? 2
+    const startingBalanceCents = parseCurrencyInput(startingBalance.value.trim(), decimals)
     if (startingBalanceCents === null) {
       error.value = "Starting balance must be a valid number"
       state.value = EditorState.ERROR
@@ -266,17 +269,18 @@ export function AccountEditor() {
                       onInput={(e) => startingBalance.value = e.currentTarget.value}
                       onBlur={(e) => {
                         // Format the input on blur for better UX
-                        const parsed = parseCurrencyInput(e.currentTarget.value)
+                        const decimals = selectedCurrency.value?.decimalPlaces ?? 2
+                        const parsed = parseCurrencyInput(e.currentTarget.value, decimals)
                         if (parsed !== null) {
-                          startingBalance.value = formatCentsToInput(parsed)
+                          startingBalance.value = formatCentsToInput(parsed, decimals)
                         }
                       }}
                     />
                     {selectedCurrency.value && startingBalance.value &&
-                      parseCurrencyInput(startingBalance.value) !== null && (
+                      parseCurrencyInput(startingBalance.value, selectedCurrency.value.decimalPlaces ?? 2) !== null && (
                       <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
                         <CurrencyDisplay
-                          amount={parseCurrencyInput(startingBalance.value) || 0}
+                          amount={parseCurrencyInput(startingBalance.value, selectedCurrency.value.decimalPlaces ?? 2) || 0}
                           currency={selectedCurrency.value.id}
                         />
                       </div>
@@ -312,7 +316,7 @@ export function AccountEditor() {
               type="submit"
               class="btn btn-primary"
               disabled={!name.value.trim() || !currencyId.value ||
-                parseCurrencyInput(startingBalance.value.trim()) === null}
+                parseCurrencyInput(startingBalance.value.trim(), selectedCurrency.value?.decimalPlaces ?? 2) === null}
             >
               {isState(EditorState.IN_PROGRESS) && <IconLoading />}
               {editAccountId ? "Update" : "Create"}

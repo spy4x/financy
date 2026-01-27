@@ -54,7 +54,10 @@ export function TransferForm({
   // Form state
   const fromAccountId = useSignal<number | null>(initialFromAccountId || null)
   const toAccountId = useSignal<number | null>(initialToAccountId || null)
-  const amount = useSignal(formatCentsToInput(initialAmount))
+  // Get initial account to determine decimals for initialAmount formatting
+  const initialFromAccount = initialFromAccountId ? account.list.value.find((a) => a.id === initialFromAccountId) : null
+  const initialDecimals = initialFromAccount ? currency.getById(initialFromAccount.currencyId).decimalPlaces : 2
+  const amount = useSignal(formatCentsToInput(initialAmount, initialDecimals))
   const memo = useSignal(initialMemo)
   const timestamp = useSignal(new Date().toISOString().slice(0, 16))
   const showManualRate = useSignal(false)
@@ -117,7 +120,7 @@ export function TransferForm({
 
   // Converted amount calculation
   const convertedAmount = useComputed(() => {
-    const amountInCents = parseCurrencyInput(amount.value)
+    const amountInCents = parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2)
     if (!amountInCents || !fromAccount.value || !toAccount.value) {
       return null
     }
@@ -155,8 +158,8 @@ export function TransferForm({
     toAccountId.value &&
     fromAccountId.value !== toAccountId.value &&
     amount.value.trim() &&
-    parseCurrencyInput(amount.value) &&
-    parseCurrencyInput(amount.value)! > 0 &&
+    parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2) &&
+    parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2)! > 0 &&
     timestamp.value
   )
 
@@ -168,7 +171,7 @@ export function TransferForm({
       return
     }
 
-    const amountInCents = parseCurrencyInput(amount.value)
+    const amountInCents = parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2)
     if (!amountInCents) {
       error.value = "Invalid amount"
       return
@@ -247,10 +250,10 @@ export function TransferForm({
         </label>
         <MultiCurrencyAmountInput
           id="amount"
-          amount={parseCurrencyInput(amount.value) || 0}
+          amount={parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2) || 0}
           currencyId={fromAccount.value?.currencyId || 1}
           targetCurrencyId={toAccount.value?.currencyId || 1}
-          onAmountChange={(value) => amount.value = formatCentsToInput(value)}
+          onAmountChange={(value) => amount.value = formatCentsToInput(value, fromCurrency.value?.decimalPlaces ?? 2)}
           onCurrencyChange={() => {}} // Currency determined by account selection
           showCurrencySelector={false}
           showConversion={!!isDifferentCurrency.value}
@@ -310,7 +313,7 @@ export function TransferForm({
                 <div class="flex justify-between items-center mt-1">
                   <span>
                     <CurrencyDisplay
-                      amount={parseCurrencyInput(amount.value) || 0}
+                      amount={parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2) || 0}
                       currency={fromAccount.value?.currencyId || 1}
                     />
                   </span>
