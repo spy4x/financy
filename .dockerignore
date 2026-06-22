@@ -19,9 +19,10 @@
 **/dockerfile.*
 **/_fresh
 
-# 4. Never bundle .env files (secrets)
+# 4. Never bundle env files or secret keys (secrets)
 **/.env
 **/.env.*
 !.env.example
 !.env.age
 !.env.prod.age
+**/.age/
