@@ -18,3 +18,10 @@
 **/dockerfile
 **/dockerfile.*
 **/_fresh
+
+# 4. Never bundle .env files (secrets)
+**/.env
+**/.env.*
+!.env.example
+!.env.age
+!.env.prod.age

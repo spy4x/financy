@@ -62,7 +62,12 @@
 
     // #region Git Hooks
     "hooks:install": "deno run -R=deno.json,deno.jsonc,.git/hooks/ -W=.git/hooks/ jsr:@hongminhee/deno-task-hooks",
-    "hooks:pre-commit": "deno task check"
+    "hooks:pre-commit": "deno task check",
+    // #endregion
+
+    // #region Encryption
+    "env:encrypt": "deno run -A scripts/encrypt.ts",
+    "env:decrypt": "deno run -A scripts/decrypt.ts"
     // #endregion Git Hooks
   },
   "imports": {

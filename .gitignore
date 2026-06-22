@@ -8,6 +8,12 @@
 .env
 .env.*
 !.env.example
+!.env.age
+!.env.prod.age
+
+# Age encryption key (never commit!)
+.age/
+key.txt
 
 # Packages
 node_modules
