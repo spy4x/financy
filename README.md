@@ -67,4 +67,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE).
+[AGPL-3.0](LICENSE). You can self-host it and modify it freely; if you offer
+a modified version to others over a network, you must publish your changes
+under the same licence. Contribution terms are in `CONTRIBUTING.md`.
