@@ -154,4 +154,9 @@ For database schema changes:
 - Join our community discussions
 - Reach out to maintainers for guidance
 
+## License of contributions
+
+By contributing you agree that your contribution is licensed under AGPL-3.0
+and that Anton Shubin may also license it under other terms.
+
 Thank you for contributing to Financy! 🎉
