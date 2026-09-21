@@ -36,6 +36,14 @@ Thank you for your interest in contributing to Financy! This guide will help you
    deno task compose up -d
    ```
 
+4. **(Optional) Load sample data**:
+   ```sh
+   deno task db:seed
+   ```
+   The seed script (`infra/scripts/seed-data.ts`) wipes existing data and
+   defines a test account plus sample groups, accounts, and transactions for
+   development.
+
 ### Development Workflow
 
 #### Code Quality Checks
