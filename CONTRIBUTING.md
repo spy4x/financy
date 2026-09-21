@@ -207,6 +207,11 @@ deno task ts:check
 
 Please be respectful and constructive in all interactions. We're building an inclusive community focused on creating great financial management software.
 
+## License of contributions
+
+By contributing you agree that your contribution is licensed under AGPL-3.0
+and that Anton Shubin may also license it under other terms.
+
 ---
 
 Thank you for contributing to Financy! 🚀

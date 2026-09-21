@@ -67,4 +67,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE).
+Copyright (C) 2026 Anton Shubin
+
+Licensed under [AGPL-3.0](LICENSE). Contribution terms are in
+[CONTRIBUTING.md](CONTRIBUTING.md).
