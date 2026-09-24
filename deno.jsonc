@@ -66,9 +66,12 @@
     // #endregion
 
     // #region Encryption
-    "env:encrypt": "deno run -A scripts/encrypt.ts",
-    "env:decrypt": "deno run -A scripts/decrypt.ts"
-    // #endregion Git Hooks
+    // Run from the repo root: the CLI finds .age/key.txt under the working directory (or, in a
+    // linked worktree, the main checkout's) and walks it for every .env* file.
+    "env:encrypt": "deno run --no-prompt -R -W=. jsr:@spy4x/server@1.2.0/env-age64/cli encrypt",
+    "env:decrypt": "deno run --no-prompt -R -W=. jsr:@spy4x/server@1.2.0/env-age64/cli decrypt",
+    "env:status": "deno run --no-prompt -R jsr:@spy4x/server@1.2.0/env-age64/cli status"
+    // #endregion Encryption
   },
   "imports": {
     // #region Aliases
