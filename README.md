@@ -39,6 +39,28 @@ starts the stack defined in `infra/compose/compose.shared.yml` plus
 `infra/envs/.env`. See [docs/5.deployment.md](docs/5.deployment.md) for
 details.
 
+## Encrypted env files
+
+The real `infra/envs/.env` and `infra/envs/.env.prod` are committed only in
+encrypted form, as `infra/envs/.env.age` and `infra/envs/.env.prod.age`.
+Every value is encrypted on its own line (`KEY=age64:…`) with
+[`@spy4x/server/env-age64`](https://jsr.io/@spy4x/server/doc/env-age64);
+comments stay in plain text, so never put a secret in a comment.
+
+- `deno task env:decrypt` writes every `.env*.age` back to its plaintext
+  sibling.
+- `deno task env:encrypt` encrypts every `.env*` file into its `.age`
+  sibling. An unchanged value keeps its ciphertext, so only edited lines
+  show up in the diff.
+- `deno task env:status` shows whether the key is found and which files the
+  other two tasks see.
+
+Run them from the repository root. The key is `.age/key.txt` in the main
+checkout. It is gitignored and never committed, so keep a backup of it
+wherever you keep your other secrets; without it the `.age` files cannot be
+decrypted. A linked git worktree has no key of its own and uses the main
+checkout's key automatically.
+
 ## Tech stack
 
 Deno, Hono, Preact, Vite and PostgreSQL, with Valkey for caching and Docker
