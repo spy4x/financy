@@ -11,7 +11,8 @@ import {
 } from "@shared/types"
 import { toast } from "./toast.ts"
 // import { ws } from "./ws.ts"
-import { makeStorage } from "@shared/local-storage"
+import { makeStorage } from "@spy4x/platform/browser/storage"
+import { logRejected, persist, storedValue } from "./storage.ts"
 import { eventBus } from "../services/eventBus.ts"
 import {
   UserAuthenticatedOnAppStart,
@@ -23,8 +24,8 @@ import {
 import { ws } from "./ws.ts"
 import { navigate } from "@client/helpers"
 
-const userStorage = makeStorage<User | null>(localStorage, "user", userSchema)
-const user = signal(userStorage.get())
+const userStorage = makeStorage(localStorage, "user", { schema: userSchema, onReject: logRejected })
+const user = signal<User | null>(storedValue(userStorage.get()))
 const ops = {
   // getMe: signal(op<User>()),
   update: signal(op<User>()),
@@ -39,7 +40,7 @@ const ops = {
   telegramDisconnect: signal(op<boolean>()),
 }
 
-effect(() => userStorage.set(user.value)) // Save user to local storage
+effect(() => persist(userStorage, user.value)) // Save user to local storage, or clear it
 
 export const auth = {
   user,

@@ -2,7 +2,8 @@ import { signal } from "@preact/signals"
 import { ws } from "./ws.ts"
 import { Group, type, WebSocketMessageType } from "@shared/types"
 import { toast } from "./toast.ts"
-import { makeStorage } from "@shared/local-storage"
+import { makeStorage } from "@spy4x/platform/browser/storage"
+import { logRejected, persist, storedValue } from "./storage.ts"
 import { effect } from "@preact/signals"
 import { currency } from "./currency.ts"
 
@@ -10,13 +11,12 @@ import { currency } from "./currency.ts"
 const list = signal<Group[]>([])
 
 // Holds the currently selected groupId (default: 0, will be set to first group when loaded)
-const selectedIdStorage = makeStorage<number>(
-  localStorage,
-  "selectedGroupId",
-  type("number"),
-)
-const selectedId = signal<number>(selectedIdStorage.get() ?? 0)
-effect(() => selectedIdStorage.set(selectedId.value))
+const selectedIdStorage = makeStorage(localStorage, "selectedGroupId", {
+  schema: type("number"),
+  onReject: logRejected,
+})
+const selectedId = signal<number>(storedValue(selectedIdStorage.get()) ?? 0)
+effect(() => persist(selectedIdStorage, selectedId.value))
 
 const ops = {
   create: signal<{ inProgress: boolean; error?: string | null }>({

@@ -84,7 +84,6 @@
     "@shared/constants/": "./libs/shared/constants/",
     "@shared/helpers/": "./libs/shared/helpers/",
     "@shared/testing": "./libs/shared/testing/+index.ts",
-    "@shared/local-storage": "./libs/shared/local-storage/+index.ts",
     "@shared/rpc": "./libs/shared/rpc/+index.ts",
     "@server/db": "./libs/server/db/+index.ts",
     "@server/helpers/": "./libs/server/helpers/",
