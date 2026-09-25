@@ -8,7 +8,7 @@
 
 import { config } from "@api/services/config.ts"
 import { queryBus } from "@api/services/queryBus.ts"
-import { sleep } from "@shared/helpers/async.ts"
+import { sleep } from "@spy4x/platform/universal/async"
 import {
   AccountListQuery,
   AnalyticsQuery,

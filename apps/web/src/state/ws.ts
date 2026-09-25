@@ -8,7 +8,7 @@ import {
   WSStatus,
 } from "@shared/types"
 import { signal } from "@preact/signals"
-import { sleep } from "@shared/helpers/async.ts"
+import { sleep } from "@spy4x/platform/universal/async"
 import { eventBus } from "../services/eventBus.ts"
 import {
   UserAuthenticatedOnAppStart,
