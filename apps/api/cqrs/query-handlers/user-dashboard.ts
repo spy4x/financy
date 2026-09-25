@@ -1,4 +1,4 @@
-import { QueryHandler } from "@shared/cqrs/types.ts"
+import { QueryHandler } from "@spy4x/platform/cqrs"
 import { UserDashboardQuery, UserDashboardResult } from "../queries.ts"
 import { accountListHandler } from "./account-list.ts"
 import { transactionListHandler } from "./transaction-list.ts"

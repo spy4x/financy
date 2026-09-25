@@ -1,4 +1,4 @@
-import { CommandHandler } from "@shared/cqrs/types.ts"
+import { CommandHandler } from "@spy4x/platform/cqrs"
 import { GroupCreateCommand } from "@api/cqrs/commands.ts"
 import { GroupCreatedEvent } from "@api/cqrs/events.ts"
 import { GroupRole } from "@shared/types"

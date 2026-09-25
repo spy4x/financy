@@ -1,4 +1,4 @@
-import { CommandHandler } from "@shared/cqrs/types.ts"
+import { CommandHandler } from "@spy4x/platform/cqrs"
 import { UserSettingsUpsertCommand } from "@api/cqrs/commands.ts"
 import { UserSettingsUpdatedEvent } from "@api/cqrs/events.ts"
 import { UserSettings } from "@shared/types"

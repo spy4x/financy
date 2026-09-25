@@ -1,4 +1,4 @@
-import { Command } from "@shared/cqrs/types.ts"
+import { Command } from "@spy4x/platform/cqrs"
 import {
   Account,
   AccountBase,

@@ -68,7 +68,9 @@ export const auth = {
     // setTimeout - give app some time to init before emitting event, otherwise it may not be handled (other services may not be listening yet)
     if (u) setTimeout(() => eventBus.emit(new UserAuthenticatedOnAppStart(u)))
 
-    eventBus.on(UserAuthenticationFailed, () => user.value = null)
+    eventBus.on(UserAuthenticationFailed, () => {
+      user.value = null
+    })
 
     ws.onMessage((message) => {
       if (message.e !== "user") return

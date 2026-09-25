@@ -1,4 +1,4 @@
-import { CommandHandler } from "@shared/cqrs/types.ts"
+import { CommandHandler } from "@spy4x/platform/cqrs"
 import { GroupUpdateCommand } from "@api/cqrs/commands.ts"
 import { GroupUpdatedEvent } from "@api/cqrs/events.ts"
 import { db } from "@api/services/db.ts"

@@ -1,4 +1,4 @@
-import { QueryHandler } from "@shared/cqrs/types.ts"
+import { QueryHandler } from "@spy4x/platform/cqrs"
 import { CategoryListQuery, CategoryListResult } from "../queries.ts"
 import { db } from "@api/services/db.ts"
 import { formatMoney } from "@shared/helpers/format.ts"

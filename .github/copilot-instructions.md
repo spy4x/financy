@@ -55,17 +55,11 @@ import { helper } from "@shared/helpers/helper.ts"
 
 ### CQRS Imports
 
-The CQRS system is organized into separate files:
-
-- Types: `@shared/cqrs/types.ts` - Contains Command, Event, CommandHandler, etc.
-- Classes: `@shared/cqrs/command-bus.ts`, `@shared/cqrs/event-bus.ts`
+The command, query and event buses and their types (Command, Event, CommandHandler, etc.) come
+from `@spy4x/platform/cqrs` (ts-libs):
 
 ```typescript
-// Import types directly from types.ts
-import { Command, CommandHandler, Event } from "@shared/cqrs/types.ts"
-// Import classes from their respective files
-import { CommandBus } from "@shared/cqrs/command-bus.ts"
-import { EventBus } from "@shared/cqrs/event-bus.ts"
+import { Command, CommandBus, CommandHandler, Event, EventBus } from "@spy4x/platform/cqrs"
 
 // Example usage with generic types
 interface MyCommandPayload {
