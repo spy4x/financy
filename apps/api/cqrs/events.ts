@@ -1,4 +1,4 @@
-import { Event } from "@shared/cqrs/types.ts"
+import { Event } from "@spy4x/platform/cqrs"
 import {
   Account,
   Category,

@@ -5,12 +5,15 @@
     "jsr:@hectorm/otpauth@*": "9.4.0",
     "jsr:@hono/hono@^4.7.7": "4.8.3",
     "jsr:@iuioiua/redis@*": "1.1.1",
-    "jsr:@iuioiua/redis@^1.1.10": "1.1.10",
+    "jsr:@iuioiua/redis@1.1.10": "1.1.10",
     "jsr:@libs/qrcode@3": "3.0.0",
     "jsr:@negrel/http-ece@0.6.0": "0.6.0",
     "jsr:@negrel/http-ece@0.7.0": "0.7.0",
     "jsr:@negrel/webpush@*": "0.5.0",
+    "jsr:@spy4x/platform@1.3.0": "1.3.0",
     "jsr:@spy4x/server@1.2.0": "1.2.0",
+    "jsr:@spy4x/server@1.3.0": "1.3.0",
+    "jsr:@spy4x/validation@^1.3.0": "1.3.0",
     "jsr:@std/assert@0.224": "0.224.0",
     "jsr:@std/assert@^1.0.12": "1.0.12",
     "jsr:@std/assert@^1.0.13": "1.0.13",
@@ -23,23 +26,23 @@
     "jsr:@std/data-structures@^1.0.6": "1.0.6",
     "jsr:@std/data-structures@^1.0.8": "1.0.8",
     "jsr:@std/encoding@0.224.0": "0.224.0",
-    "jsr:@std/encoding@1": "1.0.10",
+    "jsr:@std/encoding@1": "1.0.11",
     "jsr:@std/encoding@1.0.11": "1.0.11",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
-    "jsr:@std/encoding@^1.0.5": "1.0.10",
+    "jsr:@std/encoding@^1.0.5": "1.0.11",
     "jsr:@std/expect@^1.0.15": "1.0.16",
     "jsr:@std/fs@^1.0.16": "1.0.16",
     "jsr:@std/fs@^1.0.18": "1.0.19",
     "jsr:@std/fs@^1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.14": "1.0.14",
-    "jsr:@std/internal@^1.0.6": "1.0.9",
-    "jsr:@std/internal@^1.0.7": "1.0.9",
-    "jsr:@std/internal@^1.0.8": "1.0.9",
+    "jsr:@std/internal@^1.0.6": "1.0.14",
+    "jsr:@std/internal@^1.0.7": "1.0.14",
+    "jsr:@std/internal@^1.0.8": "1.0.14",
     "jsr:@std/internal@^1.0.9": "1.0.9",
     "jsr:@std/media-types@0.224.0": "0.224.0",
     "jsr:@std/path@0.224.0": "0.224.0",
     "jsr:@std/path@1.1.6": "1.1.6",
-    "jsr:@std/path@^1.0.3": "1.1.1",
+    "jsr:@std/path@^1.0.3": "1.1.6",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/path@^1.1.0": "1.1.1",
     "jsr:@std/path@^1.1.1": "1.1.1",
@@ -47,7 +50,7 @@
     "npm:@deno/vite-plugin@^1.0.4": "1.0.4_vite@6.3.5_@types+node@22.15.15",
     "npm:@noble/ciphers@^2.1.1": "2.4.0",
     "npm:@noble/curves@^2.0.1": "2.0.1",
-    "npm:@noble/hashes@^2.0.1": "2.4.0",
+    "npm:@noble/hashes@^2.0.1": "2.0.1",
     "npm:@noble/post-quantum@~0.5.3": "0.5.4",
     "npm:@playwright/test@^1.57.0": "1.57.0",
     "npm:@preact/preset-vite@^2.10.1": "2.10.1_@babel+core@7.27.4_vite@6.3.5_preact@10.26.8_@types+node@22.15.15",
@@ -58,7 +61,7 @@
     "npm:@tailwindcss/upgrade@*": "4.1.8_postcss@8.5.4_tree-sitter@0.22.4",
     "npm:@tailwindcss/vite@4.1.8": "4.1.8_vite@6.3.5_@types+node@22.15.15",
     "npm:@types/node@*": "22.15.15",
-    "npm:arktype@^2.1.29": "2.1.29",
+    "npm:arktype@2.2.3": "2.2.3",
     "npm:playwright@*": "1.57.0",
     "npm:playwright@^1.57.0": "1.57.0",
     "npm:preact@^10.26.2": "10.26.8",
@@ -133,12 +136,31 @@
         "jsr:@std/encoding@1"
       ]
     },
+    "@spy4x/platform@1.3.0": {
+      "integrity": "3693c55f2f0b4cbf5cdd5ea25635a60b4e2233c86f35a3d7b65123ac174c22d5",
+      "dependencies": [
+        "jsr:@spy4x/validation",
+        "npm:arktype"
+      ]
+    },
     "@spy4x/server@1.2.0": {
       "integrity": "4f4c7b7f40efbf48e3f65c844a8700a9f7807c7c5ebbe35d5cf3b698f169a74a",
       "dependencies": [
         "jsr:@age/age-encryption",
         "jsr:@std/encoding@1.0.11",
         "jsr:@std/path@1.1.6"
+      ]
+    },
+    "@spy4x/server@1.3.0": {
+      "integrity": "81c6cca0e5e1961673877d76295e4d7da05da8818c4dc7ca45c1c9e11b3eae5e",
+      "dependencies": [
+        "jsr:@iuioiua/redis@1.1.10"
+      ]
+    },
+    "@spy4x/validation@1.3.0": {
+      "integrity": "a030eb0f8c25388127729dbbd38695e3dd2c0031ef1768b1aaf484e700b3a1f0",
+      "dependencies": [
+        "npm:arktype"
       ]
     },
     "@std/assert@0.224.0": {
@@ -279,14 +301,14 @@
         "@jridgewell/trace-mapping"
       ]
     },
-    "@ark/schema@0.56.0": {
-      "integrity": "sha512-ECg3hox/6Z/nLajxXqNhgPtNdHWC9zNsDyskwO28WinoFEnWow4IsERNz9AnXRhTZJnYIlAJ4uGn3nlLk65vZA==",
+    "@ark/schema@0.56.2": {
+      "integrity": "sha512-Qx4D2JFbBWpntiHZaTv7bGG4H/M2rigiknezKg/WVyDSaLdE4YCcWAOoFB7pjjDqHbbV2OqRfntm1nnXvwMexg==",
       "dependencies": [
         "@ark/util"
       ]
     },
-    "@ark/util@0.56.0": {
-      "integrity": "sha512-BghfRC8b9pNs3vBoDJhcta0/c1J1rsoS1+HgVUreMFPdhz/CRAKReAu57YEllNaSy98rWAdY1gE+gFup7OXpgA=="
+    "@ark/util@0.56.2": {
+      "integrity": "sha512-9kU2sUE38FZEGG7l3hamYMBieLYEJh2L1mrYD2eXpT+78EnQSV1bhjxJhnxGBMSTbtwpBSDNSK+K60WvaI/DTQ=="
     },
     "@babel/code-frame@7.27.1": {
       "integrity": "sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==",
@@ -633,20 +655,17 @@
     "@noble/curves@2.0.1": {
       "integrity": "sha512-vs1Az2OOTBiP4q0pwjW5aF0xp9n4MxVrmkFBxc6EKZc6ddYx5gaZiAsZoq0uRRXWbi3AT/sBqn05eRPtn1JCPw==",
       "dependencies": [
-        "@noble/hashes@2.0.1"
+        "@noble/hashes"
       ]
     },
     "@noble/hashes@2.0.1": {
       "integrity": "sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw=="
     },
-    "@noble/hashes@2.4.0": {
-      "integrity": "sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA=="
-    },
     "@noble/post-quantum@0.5.4": {
       "integrity": "sha512-leww0zzIirrvwaYMPI9fj6aRIlA/c6Y0/lifQQ1YOOyHEr0MNH3yYpjXeiVG+tWdPps4XxGclFWX2INPO3Yo5w==",
       "dependencies": [
         "@noble/curves",
-        "@noble/hashes@2.0.1"
+        "@noble/hashes"
       ]
     },
     "@nodelib/fs.scandir@2.1.5": {
@@ -1028,14 +1047,14 @@
         "undici-types"
       ]
     },
-    "arkregex@0.0.5": {
-      "integrity": "sha512-ncYjBdLlh5/QnVsAA8De16Tc9EqmYM7y/WU9j+236KcyYNUXogpz3sC4ATIZYzzLxwI+0sEOaQLEmLmRleaEXw==",
+    "arkregex@0.0.8": {
+      "integrity": "sha512-PJcx6G1kQTgLKPUbeYlYecDRaKq15AMSGVajlKFYWlPeJRQL+j3dKE6tyMs40HZ99djS1l9Vhl3ezAHy9JBIqQ==",
       "dependencies": [
         "@ark/util"
       ]
     },
-    "arktype@2.1.29": {
-      "integrity": "sha512-jyfKk4xIOzvYNayqnD8ZJQqOwcrTOUbIU4293yrzAjA3O1dWh61j71ArMQ6tS/u4pD7vabSPe7nG3RCyoXW6RQ==",
+    "arktype@2.2.3": {
+      "integrity": "sha512-7W+0RLTUNJiBFIIZXwOQxSR8Z273IAd6IvqBeG9+gHnQKFsIx2C0iOtGTmMrPnlX4qLXyc5+ll7A0BIj9WrbTg==",
       "dependencies": [
         "@ark/schema",
         "@ark/util",
@@ -2037,9 +2056,10 @@
     "dependencies": [
       "jsr:@hectorm/otpauth@*",
       "jsr:@hono/hono@^4.7.7",
-      "jsr:@iuioiua/redis@^1.1.10",
       "jsr:@libs/qrcode@3",
       "jsr:@negrel/webpush@*",
+      "jsr:@spy4x/platform@1.3.0",
+      "jsr:@spy4x/server@1.3.0",
       "jsr:@std/encoding@^1.0.5",
       "jsr:@std/expect@^1.0.15",
       "jsr:@std/path@^1.0.3",
@@ -2051,7 +2071,7 @@
       "npm:@preact/signals@^2.2.0",
       "npm:@tailwindcss/forms@0.5.10",
       "npm:@tailwindcss/vite@4.1.8",
-      "npm:arktype@^2.1.29",
+      "npm:arktype@2.2.3",
       "npm:playwright@^1.57.0",
       "npm:preact@^10.26.2",
       "npm:tailwindcss@4.1.8",

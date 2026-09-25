@@ -11,7 +11,8 @@ import {
 } from "@shared/types"
 import { toast } from "./toast.ts"
 // import { ws } from "./ws.ts"
-import { makeStorage } from "@shared/local-storage"
+import { makeStorage } from "@spy4x/platform/browser/storage"
+import { logRejected, persist, storedValue } from "./storage.ts"
 import { eventBus } from "../services/eventBus.ts"
 import {
   UserAuthenticatedOnAppStart,
@@ -23,8 +24,8 @@ import {
 import { ws } from "./ws.ts"
 import { navigate } from "@client/helpers"
 
-const userStorage = makeStorage<User | null>(localStorage, "user", userSchema)
-const user = signal(userStorage.get())
+const userStorage = makeStorage(localStorage, "user", { schema: userSchema, onReject: logRejected })
+const user = signal<User | null>(storedValue(userStorage.get()))
 const ops = {
   // getMe: signal(op<User>()),
   update: signal(op<User>()),
@@ -39,7 +40,7 @@ const ops = {
   telegramDisconnect: signal(op<boolean>()),
 }
 
-effect(() => userStorage.set(user.value)) // Save user to local storage
+effect(() => persist(userStorage, user.value)) // Save user to local storage, or clear it
 
 export const auth = {
   user,
@@ -68,7 +69,9 @@ export const auth = {
     // setTimeout - give app some time to init before emitting event, otherwise it may not be handled (other services may not be listening yet)
     if (u) setTimeout(() => eventBus.emit(new UserAuthenticatedOnAppStart(u)))
 
-    eventBus.on(UserAuthenticationFailed, () => user.value = null)
+    eventBus.on(UserAuthenticationFailed, () => {
+      user.value = null
+    })
 
     ws.onMessage((message) => {
       if (message.e !== "user") return

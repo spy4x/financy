@@ -1,5 +1,6 @@
 import { computed, effect, signal } from "@preact/signals"
-import { makeStorage } from "@shared/local-storage"
+import { makeStorage } from "@spy4x/platform/browser/storage"
+import { persist, storedValue } from "./storage.ts"
 
 export enum ThemeValue {
   LIGHT = "light",
@@ -26,7 +27,7 @@ const getSystemTheme = (): Theme => {
 const systemTheme = signal<Theme>(getSystemTheme())
 
 // Current theme preference (light/dark/system)
-const preference = signal<ThemePreference>(themeStorage.get() || ThemeValue.SYSTEM)
+const preference = signal<ThemePreference>(storedValue(themeStorage.get()) || ThemeValue.SYSTEM)
 
 // Computed actual theme (light/dark only) - reactive to themePreference and systemTheme changes
 const actual = computed<Theme>(() =>
@@ -49,7 +50,7 @@ const applyTheme = (theme: Theme) => {
 // Set theme preference
 const set = (theme: ThemePreference) => {
   preference.value = theme
-  themeStorage.set(theme)
+  persist(themeStorage, theme)
 }
 
 // Toggle between light and dark (skip system)

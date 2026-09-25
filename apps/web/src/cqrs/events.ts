@@ -1,4 +1,4 @@
-import { Event } from "@shared/cqrs/types.ts"
+import { Event } from "@spy4x/platform/cqrs"
 import { User } from "@shared/types"
 
 export class UserAuthenticatedOnAppStart implements Event<User> {

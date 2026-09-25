@@ -84,12 +84,8 @@
     "@shared/constants/": "./libs/shared/constants/",
     "@shared/helpers/": "./libs/shared/helpers/",
     "@shared/testing": "./libs/shared/testing/+index.ts",
-    "@shared/cqrs/": "./libs/shared/cqrs/",
-    "@shared/local-storage": "./libs/shared/local-storage/+index.ts",
-    "@shared/cache": "./libs/shared/cache/+index.ts",
     "@shared/rpc": "./libs/shared/rpc/+index.ts",
     "@server/db": "./libs/server/db/+index.ts",
-    "@server/kv": "./libs/server/kv/+index.ts",
     "@server/helpers/": "./libs/server/helpers/",
     "@client/preact/": "./libs/client/preact/",
     "@client/vite/": "./libs/client/vite/",
@@ -122,6 +118,8 @@
     "@tailwindcss/vite": "npm:@tailwindcss/vite@4.1.8",
 
     // shared
+    "@spy4x/platform": "jsr:@spy4x/platform@1.3.0",
+    "@spy4x/server": "jsr:@spy4x/server@1.3.0",
     "@std/path": "jsr:@std/path@^1.0.3",
     "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/testing": "jsr:@std/testing@^1.0.11",
@@ -130,10 +128,7 @@
     "playwright": "npm:playwright@^1.57.0",
 
     // shared/types
-    "arktype": "npm:arktype@^2.1.29",
-
-    // server/kv
-    "@iuioiua/redis": "jsr:@iuioiua/redis@^1.1.10",
+    "arktype": "npm:arktype@2.2.3",
 
     // server/db
     "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"

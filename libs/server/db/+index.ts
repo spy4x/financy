@@ -1,6 +1,6 @@
 import postgres from "postgres"
 import { getEnvVar } from "@server/helpers/env.ts"
-import { PublicAPICacheModel } from "@shared/cache"
+import type { PublicAPICacheModel } from "@spy4x/platform/cache"
 
 export const sql = postgres({
   host: getEnvVar("DB_HOST"),

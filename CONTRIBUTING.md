@@ -121,14 +121,11 @@ import { helper } from "@shared/helpers/helper.ts"
 
 #### CQRS System
 
-The CQRS system is organized into separate files:
+The command, query and event buses come from `@spy4x/platform/cqrs` (ts-libs):
 
 ```typescript
-// Import types directly from types.ts
-import { Command, CommandHandler, Event } from "@shared/cqrs/types.ts"
-// Import classes from their respective files
-import { CommandBus } from "@shared/cqrs/command-bus.ts"
-import { EventBus } from "@shared/cqrs/event-bus.ts"
+// The buses and their types come from ts-libs
+import { Command, CommandBus, CommandHandler, Event, EventBus } from "@spy4x/platform/cqrs"
 ```
 
 #### Critical Rules
