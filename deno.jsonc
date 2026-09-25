@@ -128,7 +128,7 @@
     "playwright": "npm:playwright@^1.57.0",
 
     // shared/types
-    "arktype": "npm:arktype@^2.1.29",
+    "arktype": "npm:arktype@2.2.3",
 
     // server/db
     "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
