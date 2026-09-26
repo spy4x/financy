@@ -3,7 +3,10 @@ import { CacheService, type ICacheStorage, reviveIsoDatesEndingInAt } from "@spy
 /**
  * Cached date fields whose names do not end in `At`, so `reviveIsoDatesEndingInAt` alone would
  * leave them as ISO strings: `Transaction.timestamp` and `TelegramBotSession.lastActivity`.
- * `ExchangeRate.date` is not listed on purpose: its type is a plain `YYYY-MM-DD` string.
+ * `ExchangeRate.date` is not listed on purpose. Postgres returns that `DATE` column as a `Date`, so
+ * the cache holds an ISO timestamp and a cache hit returns it as a string, which matches its
+ * declared `string` type. Nothing reads it from the cache today. Reviving the key `date` would also
+ * reach free-form cached data, such as a Telegram session's `data`.
  */
 const DATE_KEYS_NOT_ENDING_IN_AT = new Set([`timestamp`, `lastActivity`])
 
