@@ -62,15 +62,15 @@ describe("buildMethods", () => {
 })
 
 describe("createCacheService", () => {
-  it("rejects a cached session whose expiresAt is in the past", async () => {
+  it("returns a cached session's expiresAt as a Date that isSessionExpired judges", async () => {
     const sessions = buildMethods<UserSession>(
       createCacheService(memoryCacheStorage()),
       `userSession`,
       60,
     )
     const now = new Date(`2026-06-01T12:00:00.000Z`)
-    await sessions.set(1, {
-      id: 1,
+    const session = (id: number, expiresAt: string): UserSession => ({
+      id,
       createdAt: new Date(`2026-01-01T00:00:00.000Z`),
       updatedAt: new Date(`2026-01-01T00:00:00.000Z`),
       token: `hashed`,
@@ -78,22 +78,57 @@ describe("createCacheService", () => {
       keyId: 1,
       status: UserSessionStatus.ACTIVE,
       mfa: SessionMFAStatus.NOT_REQUIRED,
-      expiresAt: new Date(`2026-05-31T12:00:00.000Z`),
+      expiresAt: new Date(expiresAt),
     })
+    await sessions.set(1, session(1, `2026-05-31T12:00:00.000Z`))
+    await sessions.set(2, session(2, `2026-06-02T12:00:00.000Z`))
     // The same read `db.userSession.findOne` makes: a `wrap` that hits the cache.
-    const cached = await sessions.wrap(1, () => Promise.reject(new Error(`cache miss`)))
-    expect(cached.expiresAt).toBeInstanceOf(Date)
-    expect(isSessionExpired(cached, now)).toBe(true)
+    const miss = () => Promise.reject(new Error(`cache miss`))
+    const past = await sessions.wrap(1, miss)
+    const future = await sessions.wrap(2, miss)
+    expect(past.expiresAt).toBeInstanceOf(Date)
+    expect(future.expiresAt).toBeInstanceOf(Date)
+    expect(isSessionExpired(past, now)).toBe(true)
+    expect(isSessionExpired(future, now)).toBe(false)
   })
 
-  it("returns timestamp and lastActivity as dates, and a plain date string as a string", async () => {
+  it("revives timestamp and lastActivity, and leaves memo and date as strings", async () => {
     const cache = createCacheService(memoryCacheStorage())
     const timestamp = new Date(`2026-02-03T04:05:06.007Z`)
-    await cache.set(`k`, { timestamp, lastActivity: timestamp, date: `2026-02-03` }, 60)
+    const iso = `2026-02-03T00:00:00.000Z`
+    await cache.set(`k`, { timestamp, lastActivity: timestamp, memo: iso, date: iso }, 60)
     expect(await cache.get(`k`)).toEqual({
       timestamp,
       lastActivity: timestamp,
-      date: `2026-02-03`,
+      memo: iso,
+      date: iso,
     })
+  })
+})
+
+describe("isSessionExpired", () => {
+  const now = new Date(`2026-06-01T12:00:00.000Z`)
+
+  it("keeps a session whose expiresAt is a Date in the future", () => {
+    expect(isSessionExpired({ expiresAt: new Date(`2026-06-02T00:00:00.000Z`) }, now)).toBe(false)
+  })
+
+  it("expires a session whose expiresAt is a Date in the past or exactly now", () => {
+    expect(isSessionExpired({ expiresAt: new Date(`2026-05-31T00:00:00.000Z`) }, now)).toBe(true)
+    expect(isSessionExpired({ expiresAt: new Date(now) }, now)).toBe(true)
+  })
+
+  it("expires a session whose expiresAt is a string, even a future one", () => {
+    expect(isSessionExpired({ expiresAt: `2026-05-31T00:00:00.000Z` }, now)).toBe(true)
+    expect(isSessionExpired({ expiresAt: `2026-06-02T00:00:00.000Z` }, now)).toBe(true)
+  })
+
+  it("expires a session whose expiresAt is an invalid Date", () => {
+    expect(isSessionExpired({ expiresAt: new Date(`not a date`) }, now)).toBe(true)
+  })
+
+  it("expires a session whose expiresAt is null or undefined", () => {
+    expect(isSessionExpired({ expiresAt: null }, now)).toBe(true)
+    expect(isSessionExpired({ expiresAt: undefined }, now)).toBe(true)
   })
 })
