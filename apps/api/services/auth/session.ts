@@ -5,6 +5,7 @@ import { checkHash, hash } from "@shared/helpers/hash.ts"
 import { db } from "../db.ts"
 import { config } from "../config.ts"
 import { publicAPICache } from "../cache.ts"
+import { isSessionExpired } from "./session-expiry.ts"
 
 export class SessionManager {
   async createBody(
@@ -51,7 +52,7 @@ export class SessionManager {
       !session ||
       session.status !== UserSessionStatus.ACTIVE ||
       !(await checkHash(idToken.token, session.token, config.authPepper)) ||
-      (session.expiresAt && session.expiresAt < new Date())
+      isSessionExpired(session)
     ) {
       void publicAPICache.isSessionTokenExpired.set(sessionIdToken, true)
       return null

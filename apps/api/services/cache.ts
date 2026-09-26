@@ -24,7 +24,8 @@ import {
 import { config } from "../services/config.ts"
 
 import { connectKv } from "./kv.ts"
-import { buildMethods as buildMethodsBase, CacheService } from "@spy4x/platform/cache"
+import { buildMethods as buildMethodsBase } from "@spy4x/platform/cache"
+import { createCacheService } from "./cache-service.ts"
 
 export interface TelegramBotSession {
   chatId: number
@@ -34,7 +35,7 @@ export interface TelegramBotSession {
 }
 
 const kv = await connectKv(config.kv.hostname, config.kv.port)
-const cacheService = new CacheService(kv)
+const cacheService = createCacheService(kv)
 
 function buildMethods<T>(prefix: string, schema?: ValidationSchema) {
   return buildMethodsBase<T>(cacheService, prefix, ONE_MONTH_IN_SECONDS, schema)
