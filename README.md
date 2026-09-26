@@ -59,13 +59,20 @@ Podman.
 
 ```bash
 git clone https://github.com/spy4x/financy.git && cd financy
-cp infra/envs/.env.example infra/envs/.env   # fill in the values
-docker network create proxy                  # once; Compose needs it
+cp infra/envs/.env.example infra/envs/.env   # then edit it, see below
+```
+
+In `infra/envs/.env`, fill in the values, and change the `ENV` line to exactly
+`ENV=dev`, with no comment after it: the compose script reads a trailing comment
+as part of the value. The same file picks Docker or Podman
+(`CONTAINER_PROVIDER`). Then:
+
+```bash
+docker network create proxy   # once; Compose needs it
 deno task compose up -d
 ```
 
-`infra/envs/.env` picks Docker or Podman (`CONTAINER_PROVIDER`) and the dev or
-prod stack (`ENV`). What each step does and why:
+What each step does and why, and a note on `infra/configs/vapid.json`:
 [docs/development.md](docs/development.md#running-the-stack). Deployment:
 [docs/5.deployment.md](docs/5.deployment.md).
 

@@ -12,7 +12,9 @@ Podman.
 2. Copy `infra/envs/.env.example` to `infra/envs/.env` and fill in the
    values. To use Docker rather than Podman, set `CONTAINER_PROVIDER=docker`
    in that file — `infra/scripts/compose.ts` reads it and otherwise runs
-   Podman.
+   Podman. Leave the `ENV` line as exactly `ENV=dev` (or `ENV=prod`), with no
+   comment after it: `infra/scripts/compose.ts` reads a trailing comment as
+   part of the value and then looks for a compose file that does not exist.
 3. Create the reverse-proxy network once: `docker network create proxy`
    (or `podman network create proxy`). The `api`, `web`, `minio` and
    `grafana` services attach to this network as external, and Compose
@@ -24,6 +26,10 @@ starts the stack defined in `infra/compose/compose.shared.yml` plus
 `compose.dev.yml` or `compose.prod.yml`, picked by `ENV` in
 `infra/envs/.env`. See [5.deployment.md](5.deployment.md) for
 details.
+
+`infra/configs/vapid.json` (the web push keys) is optional for now: the API
+starts without it, but if it is missing, Docker creates a root-owned directory
+with that name when it mounts it into the `api` container.
 
 ## Encrypted env files
 
