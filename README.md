@@ -1,95 +1,101 @@
+<div align="center">
+
 # Financy
 
-Self-hosted finance tracker for a person or a family.
+**Self-hosted finance tracker for a person or a family, in any mix of
+currencies.**
 
-**Status: work in progress, not ready for everyday use.** Development is
-paused until 2027. Password reset and two-factor authentication are still
-in progress — see [docs/roadmap.md](docs/roadmap.md) for what is built
-versus still planned.
+[![CI](https://ci.antonshubin.com/api/badges/1/status.svg)](https://ci.antonshubin.com/repos/1)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 
-Financy targets multi-currency accounts and group or family collaboration
+[Features](docs/2.features.md) · [Roadmap](docs/roadmap.md) ·
+[Architecture](docs/3.architecture.md) · [Development](docs/development.md) ·
+[All docs](docs/README.md)
+
+![The Financy dashboard in the dark theme: a "Personal Finances" group with a total balance of $24,177.01 across euro, pound, yen and US dollar accounts, each converted to the base currency.](docs/screenshots/dashboard.png)
+
+</div>
+
+**Status: work in progress, not ready for everyday use.** Development resumes in
+October 2026. Password reset and two-factor authentication are still in progress
+— see [docs/roadmap.md](docs/roadmap.md) for what is built versus still planned.
+
+You record income, expenses and transfers in accounts of any currency, and
+Financy shows every balance in the currency you picked as the group's base. A
+group is a household or a shared budget: its members see each change live, on
+the phone or the desktop, without reloading.
+
+Financy exists because a family's money rarely sits in one currency or with one
+person. It targets multi-currency accounts and group or family collaboration
 with role-based access (see [docs/1.principles.md](docs/1.principles.md),
 [docs/2.features.md](docs/2.features.md) and
-[docs/3.architecture.md](docs/3.architecture.md)). Transfers between
-accounts are recorded as two linked transactions, following double-entry
-principles for that feature (see
-[docs/features/transfer-accounting-overview.md](docs/features/transfer-accounting-overview.md)).
-If you need something finished today, use Actual Budget or Firefly III
-instead.
+[docs/3.architecture.md](docs/3.architecture.md)). If you need something
+finished today, use Actual Budget or Firefly III instead.
+
+## Why Financy
+
+- **Every currency, one total.** Each transaction keeps its original amount and
+  currency next to the converted one.
+- **Shared by design.** Groups with member roles; role-based access is partly
+  built.
+- **Live everywhere.** Changes travel over WebSockets, so every open device
+  updates at once.
+- **Transfers that add up.** A transfer between accounts is recorded as two
+  linked transactions, following double-entry principles for that feature (see
+  [transfer accounting](docs/features/transfer-accounting-overview.md)).
+- **Budgets per category.** Set a monthly limit and watch spending against it on
+  the dashboard.
+- **Yours to host.** An installable web app (PWA) with its API, PostgreSQL and
+  Valkey in Docker Compose on your own server.
+
+**Use it if** you want to follow its development or help shape a self-hosted,
+multi-currency family finance app. **Skip it if** you need a finished budgeting
+tool today.
 
 ## Quick start
 
-Requires [Deno](https://deno.land/) and [Docker](https://www.docker.com/) or
+Requires [Deno](https://deno.com/) and [Docker](https://www.docker.com/) or
 Podman.
 
-1. Clone the repository.
-2. Copy `infra/envs/.env.example` to `infra/envs/.env` and fill in the
-   values. To use Docker rather than Podman, set `CONTAINER_PROVIDER=docker`
-   in that file — `infra/scripts/compose.ts` reads it and otherwise runs
-   Podman.
-3. Create the reverse-proxy network once: `docker network create proxy`
-   (or `podman network create proxy`). The `api`, `web`, `minio` and
-   `grafana` services attach to this network as external, and Compose
-   refuses to start without it.
-4. Run `deno task compose up -d`.
+```bash
+git clone https://github.com/spy4x/financy.git && cd financy
+cp infra/envs/.env.example infra/envs/.env   # then edit it, see below
+```
 
-That task runs `infra/scripts/compose.ts`, which builds the base image and
-starts the stack defined in `infra/compose/compose.shared.yml` plus
-`compose.dev.yml` or `compose.prod.yml`, picked by `ENV` in
-`infra/envs/.env`. See [docs/5.deployment.md](docs/5.deployment.md) for
-details.
+In `infra/envs/.env`, fill in the values, and change the `ENV` line to exactly
+`ENV=dev`, with no comment after it: the compose script reads a trailing comment
+as part of the value. The same file picks Docker or Podman
+(`CONTAINER_PROVIDER`). Then:
 
-## Encrypted env files
+```bash
+docker network create proxy   # once; Compose needs it
+deno task compose up -d
+```
 
-The real `infra/envs/.env` and `infra/envs/.env.prod` are committed only in
-encrypted form, as `infra/envs/.env.age` and `infra/envs/.env.prod.age`.
-Every value is encrypted on its own line (`KEY=age64:…`) with
-[`@spy4x/server/env-age64`](https://jsr.io/@spy4x/server/doc/env-age64);
-comments stay in plain text, so never put a secret in a comment.
+What each step does and why, and a note on `infra/configs/vapid.json`:
+[docs/development.md](docs/development.md#running-the-stack). Deployment:
+[docs/5.deployment.md](docs/5.deployment.md).
 
-- `deno task env:decrypt` writes every `.env*.age` back to its plaintext
-  sibling.
-- `deno task env:encrypt` encrypts every `.env*` file into its `.age`
-  sibling. An unchanged value keeps its ciphertext, so only edited lines
-  show up in the diff.
-- `deno task env:status` shows whether the key is found and which files the
-  other two tasks see.
+## Development
 
-Run them from the repository root. The key is `.age/key.txt` in the main
-checkout. It is gitignored and never committed, so keep a backup of it
-wherever you keep your other secrets; without it the `.age` files cannot be
-decrypted. A linked git worktree has no key of its own and uses the main
-checkout's key automatically.
+```bash
+deno task compose up -d   # the whole stack, with hot reload in dev
+deno task check           # lint, format, type check and tests
+```
 
-## Tech stack
-
-Deno, Hono, Preact, Vite and PostgreSQL, with Valkey for caching and Docker
-Compose for local development and deployment. Details in
-[docs/4.tech-stack.md](docs/4.tech-stack.md).
-
-## Documentation
-
-- [Principles](docs/1.principles.md)
-- [Features](docs/2.features.md)
-- [Architecture](docs/3.architecture.md)
-- [Tech stack](docs/4.tech-stack.md)
-- [Deployment](docs/5.deployment.md)
-- [Infrastructure](docs/6.infrastructure.md)
-- [Roadmap](docs/roadmap.md)
-- [Recommendations and gaps](docs/7.recommendations-expanded.md)
-- [Telegram bot](docs/telegram-bot.md)
-- [Offline-first data with Dexie.js](docs/offline-first-with-dexie.md)
-- [Woodpecker CI setup](docs/woodpecker-ci-setup.md)
-- [Feature notes](docs/features/) - implementation notes for individual UI
-  features
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-Copyright (C) 2026 Anton Shubin
-
-Licensed under [AGPL-3.0](LICENSE). Contribution terms are in
+Encrypted env files, the tech stack and the rest of the reference are in
+[docs/development.md](docs/development.md). Contributions: see
 [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Built by
+
+I'm [Anton Shubin](https://antonshubin.com), a senior full-stack engineer and
+tech lead. Financy is one of the tools I build in the open. Need something like
+it built for your product? [That's my day job →](https://antonshubin.com)
+
+Copyright (C) 2026 Anton Shubin. Licensed under [AGPL-3.0](LICENSE).
+Contribution terms are in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+Made by Anton Shubin · [antonshubin.com/tools](https://antonshubin.com/tools)
