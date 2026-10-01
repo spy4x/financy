@@ -98,4 +98,4 @@ Contribution terms are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-Made by Anton Shubin · [antonshubin.com/tools](https://antonshubin.com/tools)
+Made by Anton Shubin · [antonshubin.com/tools/financy](https://antonshubin.com/tools/financy)
