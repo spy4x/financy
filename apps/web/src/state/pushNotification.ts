@@ -3,6 +3,7 @@ import { OperationState, UserPushToken, userPushTokenSchema, validate } from "@s
 import { set } from "@client/helpers"
 import { runtimeEnvVars } from "./+helpers.ts"
 import { auth } from "./auth.ts"
+import { ensureDeviceId } from "./device-id.ts"
 import { toast } from "./toast.ts"
 // import { urlBase64ToUint8Array } from "@shared/helpers/format.ts"
 
@@ -37,11 +38,7 @@ const store = signal<State>(initialState)
 async function load(): Promise<void> {
   set(store, { listOp: { inProgress: true, error: null, result: null } })
   let isSubscribed = false
-  let deviceId = localStorage.getItem("deviceId")
-  if (!deviceId) {
-    deviceId = crypto.randomUUID()
-    localStorage.setItem("deviceId", deviceId)
-  }
+  const deviceId = ensureDeviceId(localStorage)
   set(store, { deviceId })
 
   try {
