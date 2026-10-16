@@ -41,7 +41,7 @@ test.describe("Transfer - multi currency", () => {
     while (await page.locator(`tr:has-text("${memo}")`).count() > 0) {
       // Open the action dropdown for the specific row
       const row = page.locator(`tr:has-text("${memo}")`).first()
-      await row.locator('button').first().click()
+      await row.locator("button").first().click()
       // Click the Delete button scoped to this row's dropdown
       page.once("dialog", (d) => d.accept())
       await row.getByText("Delete").click()
@@ -96,7 +96,7 @@ test.describe("Transfer - multi currency", () => {
     await sel(page, '[data-e2e="transaction-memo-input"]').fill(memo)
 
     // wait for conversion preview to appear then assert a USD amount is shown
-    await page.waitForSelector('text=Converts to', { timeout: 5000 })
+    await page.waitForSelector("text=Converts to", { timeout: 5000 })
     // 10,000 JPY -> ~64.29 USD (match any USD formatted amount)
     await expect(page.getByText(/\$\d{1,3}(?:,\d{3})*\.\d{2}/)).toBeVisible()
 
@@ -129,7 +129,7 @@ test.describe("Transfer - multi currency", () => {
     await sel(page, '[data-e2e="transaction-memo-input"]').fill(memo)
 
     // wait for conversion preview to appear then assert a USD amount is shown
-    await page.waitForSelector('text=Converts to', { timeout: 5000 })
+    await page.waitForSelector("text=Converts to", { timeout: 5000 })
     // 50 GBP -> ~63.07 USD (match any USD formatted amount)
     await expect(page.getByText(/\$\d{1,3}(?:,\d{3})*\.\d{2}/)).toBeVisible()
 
@@ -145,7 +145,8 @@ test.describe("Transfer - multi currency", () => {
     ]
 
     expect(amounts.some((t) => t.includes("£50.00") || t.includes("GBP"))).toBeTruthy()
-    expect(amounts.some((t) => /\$\d{1,3}(?:,\d{3})*\.\d{2}/.test(t) || t.includes("USD"))).toBeTruthy()
+    expect(amounts.some((t) => /\$\d{1,3}(?:,\d{3})*\.\d{2}/.test(t) || t.includes("USD")))
+      .toBeTruthy()
 
     await cleanupByMemo(page, memo)
   })
@@ -153,12 +154,12 @@ test.describe("Transfer - multi currency", () => {
   test("Exchange rate display matches expected", async ({ page }: { page: Page }) => {
     // Navigate to dashboard where exchange rate widget is rendered
     await page.goto(`${APP_URL}/`)
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState("networkidle")
     // stabilize UI state and allow widget to render
     await page.waitForTimeout(1000)
-    await page.waitForSelector('text=Exchange Rates', { timeout: 10000 })
+    await page.waitForSelector("text=Exchange Rates", { timeout: 10000 })
     // USD -> JPY (verify via UI)
-    await page.waitForSelector('text=1 USD =', { timeout: 5000 })
+    await page.waitForSelector("text=1 USD =", { timeout: 5000 })
     await expect(page.getByText(/1 USD = \d+\.\d{4} JPY/)).toBeVisible()
 
     // Note: GBP->USD may be displayed elsewhere; skip strict check to avoid flakiness

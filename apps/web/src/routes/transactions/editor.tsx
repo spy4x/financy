@@ -199,12 +199,12 @@ export function TransactionEditor() {
             accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
           }
         } else {
-        // Use group's default account if available, otherwise first account
-        const defaultAccountId = group.getSelectedDefaultAccountId()
-        const defaultAccount = defaultAccountId
-          ? accounts.find((acc) => acc.id === defaultAccountId)
-          : null
-        accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
+          // Use group's default account if available, otherwise first account
+          const defaultAccountId = group.getSelectedDefaultAccountId()
+          const defaultAccount = defaultAccountId
+            ? accounts.find((acc) => acc.id === defaultAccountId)
+            : null
+          accountId.value = defaultAccount?.id || (accounts.length > 0 ? accounts[0].id : null)
         }
 
         toAccountId.value = accounts.length > 1 ? accounts[1].id : null
@@ -569,19 +569,20 @@ export function TransactionEditor() {
                       Transfer Amount:
                     </label>
                     <div class="mt-2">
-                       <MultiCurrencyAmountInput
-                         id="amount"
-                         amount={(() => {
-                           const srcAcc = accountId.value
-                             ? account.list.value.find((a) => a.id === accountId.value)
-                             : null
-                           const srcCurrencyId = srcAcc?.currencyId || 1
-                           const decimals = currency.getById(srcCurrencyId).decimalPlaces
-                           return parseCurrencyInput(amount.value || "0", decimals) || 0
-                         })()}
+                      <MultiCurrencyAmountInput
+                        id="amount"
+                        amount={(() => {
+                          const srcAcc = accountId.value
+                            ? account.list.value.find((a) => a.id === accountId.value)
+                            : null
+                          const srcCurrencyId = srcAcc?.currencyId || 1
+                          const decimals = currency.getById(srcCurrencyId).decimalPlaces
+                          return parseCurrencyInput(amount.value || "0", decimals) || 0
+                        })()}
                         currencyId={accountId.value
-                           ? account.list.value.find((a) => a.id === accountId.value)?.currencyId || 1
-                           : 1}
+                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
+                            1
+                          : 1}
                         targetCurrencyId={toAccountId.value
                           ? account.list.value.find((a) => a.id === toAccountId.value)
                             ?.currencyId || 1
@@ -610,19 +611,20 @@ export function TransactionEditor() {
                       Amount:
                     </label>
                     <div class="mt-2">
-                       <MultiCurrencyAmountInput
-                         id="amount"
-                         amount={(() => {
-                           const srcAcc = accountId.value
-                             ? account.list.value.find((a) => a.id === accountId.value)
-                             : null
-                           const srcCurrencyId = srcAcc?.currencyId || 1
-                           const decimals = currency.getById(srcCurrencyId).decimalPlaces
-                           return parseCurrencyInput(amount.value || "0", decimals) || 0
-                         })()}
-                         currencyId={accountId.value
-                           ? account.list.value.find((a) => a.id === accountId.value)?.currencyId || 1
-                           : 1}
+                      <MultiCurrencyAmountInput
+                        id="amount"
+                        amount={(() => {
+                          const srcAcc = accountId.value
+                            ? account.list.value.find((a) => a.id === accountId.value)
+                            : null
+                          const srcCurrencyId = srcAcc?.currencyId || 1
+                          const decimals = currency.getById(srcCurrencyId).decimalPlaces
+                          return parseCurrencyInput(amount.value || "0", decimals) || 0
+                        })()}
+                        currencyId={accountId.value
+                          ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
+                            1
+                          : 1}
                         targetCurrencyId={accountId.value
                           ? account.list.value.find((a) => a.id === accountId.value)?.currencyId ||
                             1

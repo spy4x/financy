@@ -385,7 +385,7 @@ export class DbService extends DbServiceBase {
         WHERE gm.group_id = ${groupId}
         AND gm.deleted_at IS NULL
       `
-      return results.map((r) => r.user_id)
+      return results.map((r: { user_id: number }) => r.user_id)
     },
   }
 
@@ -699,7 +699,7 @@ export class DbService extends DbServiceBase {
         ORDER BY date DESC, created_at DESC
       `
       // Parse rate from string to number (PostgreSQL NUMERIC returns as string)
-      return rates.map((rate) => ({
+      return rates.map((rate: ExchangeRate) => ({
         ...rate,
         rate: typeof rate.rate === "string" ? parseFloat(rate.rate) : rate.rate,
       }))
@@ -713,7 +713,7 @@ export class DbService extends DbServiceBase {
         ORDER BY date DESC, created_at DESC
       `
       // Parse rate from string to number (PostgreSQL NUMERIC returns as string)
-      return rates.map((rate) => ({
+      return rates.map((rate: ExchangeRate) => ({
         ...rate,
         rate: typeof rate.rate === "string" ? parseFloat(rate.rate) : rate.rate,
       }))

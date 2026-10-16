@@ -8,7 +8,7 @@ import { isProd } from "@server/helpers/env.ts"
  */
 class ExchangeRateFetcher {
   private isRunning = false
-  private intervalId?: number
+  private intervalId?: ReturnType<typeof setInterval>
 
   /**
    * Start the exchange rate fetcher

@@ -55,8 +55,12 @@ export function TransferForm({
   const fromAccountId = useSignal<number | null>(initialFromAccountId || null)
   const toAccountId = useSignal<number | null>(initialToAccountId || null)
   // Get initial account to determine decimals for initialAmount formatting
-  const initialFromAccount = initialFromAccountId ? account.list.value.find((a) => a.id === initialFromAccountId) : null
-  const initialDecimals = initialFromAccount ? currency.getById(initialFromAccount.currencyId).decimalPlaces : 2
+  const initialFromAccount = initialFromAccountId
+    ? account.list.value.find((a) => a.id === initialFromAccountId)
+    : null
+  const initialDecimals = initialFromAccount
+    ? currency.getById(initialFromAccount.currencyId).decimalPlaces
+    : 2
   const amount = useSignal(formatCentsToInput(initialAmount, initialDecimals))
   const memo = useSignal(initialMemo)
   const timestamp = useSignal(new Date().toISOString().slice(0, 16))
@@ -253,7 +257,8 @@ export function TransferForm({
           amount={parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2) || 0}
           currencyId={fromAccount.value?.currencyId || 1}
           targetCurrencyId={toAccount.value?.currencyId || 1}
-          onAmountChange={(value) => amount.value = formatCentsToInput(value, fromCurrency.value?.decimalPlaces ?? 2)}
+          onAmountChange={(value) =>
+            amount.value = formatCentsToInput(value, fromCurrency.value?.decimalPlaces ?? 2)}
           onCurrencyChange={() => {}} // Currency determined by account selection
           showCurrencySelector={false}
           showConversion={!!isDifferentCurrency.value}
@@ -313,7 +318,10 @@ export function TransferForm({
                 <div class="flex justify-between items-center mt-1">
                   <span>
                     <CurrencyDisplay
-                      amount={parseCurrencyInput(amount.value, fromCurrency.value?.decimalPlaces ?? 2) || 0}
+                      amount={parseCurrencyInput(
+                        amount.value,
+                        fromCurrency.value?.decimalPlaces ?? 2,
+                      ) || 0}
                       currency={fromAccount.value?.currencyId || 1}
                     />
                   </span>

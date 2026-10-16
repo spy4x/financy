@@ -7,7 +7,7 @@ import {
   convertAmount as convertNew,
   getExchangeRate as _getRateNew,
 } from "@shared/helpers/currency-converter.ts"
-import type { ExchangeRate, Currency } from "@shared/types"
+import type { Currency, ExchangeRate } from "@shared/types"
 
 // Mock rates matching realistic example
 const rates: ExchangeRate[] = [
