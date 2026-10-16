@@ -1,4 +1,4 @@
-import { expect, Page, test } from "@playwright/test"
+import { expect, Page, Response, test } from "@playwright/test"
 
 const BASE = "https://financy.dev"
 const USERNAME = "testuser123"
@@ -58,7 +58,7 @@ test.describe("Multi-Currency Decimal Handling", () => {
     )
     if (await bal.count()) await bal.fill(starting)
     await Promise.all([
-      page.waitForResponse((r: any) => r.url().includes("/api/accounts") && r.status() === 201)
+      page.waitForResponse((r: Response) => r.url().includes("/api/accounts") && r.status() === 201)
         .catch(() => null),
       page.click('button:has-text("Save"), button:has-text("Create")'),
     ])
@@ -83,7 +83,7 @@ test.describe("Multi-Currency Decimal Handling", () => {
     await page.fill('input[name="amount"], input[aria-label="Amount"]', amount)
     await page.fill('input[name="description"], textarea[name="description"]', description)
     await Promise.all([
-      page.waitForResponse((r: any) =>
+      page.waitForResponse((r: Response) =>
         r.url().includes("/api/transactions") && (r.status() === 201 || r.status() === 200)
       ).catch(() => null),
       page.click(
@@ -94,7 +94,7 @@ test.describe("Multi-Currency Decimal Handling", () => {
   }
 
   function fmt(currency: string, amount: number) {
-    const opts: any = { style: "currency", currency }
+    const opts: Intl.NumberFormatOptions = { style: "currency", currency }
     if (currency === "JPY") opts.maximumFractionDigits = 0
     return new Intl.NumberFormat("en-US", opts).format(amount)
   }

@@ -1,10 +1,9 @@
-import { useComputed, useSignal } from "@preact/signals"
+import { useSignal } from "@preact/signals"
 import { CurrencySelector } from "./CurrencySelector.tsx"
 import { CurrencyDisplay } from "./CurrencyDisplay.tsx"
 import { currency } from "@web/state/currency.ts"
 import { exchangeRate } from "@web/state/exchange-rate.ts"
-import { convertAmount } from "@shared/helpers/currency-converter.ts"
-import { formatCentsToInput, parseCurrencyInput } from "@shared/helpers/format.ts"
+import { formatCentsToInput } from "@shared/helpers/format.ts"
 
 interface MultiCurrencyAmountInputProps {
   /** Amount in smallest currency unit (cents) */
@@ -107,7 +106,7 @@ export function MultiCurrencyAmountInput({
           decimals = decimalsFromDom ?? decimals
         }
       }
-    } catch (err) {
+    } catch {
       // ignore DOM read errors and fall back to prop-based decimals
     }
     const parsedFloat = parseFloat(value)
