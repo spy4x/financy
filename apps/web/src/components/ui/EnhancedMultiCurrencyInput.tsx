@@ -55,11 +55,11 @@ export function EnhancedMultiCurrencyInput(props: EnhancedMultiCurrencyInputProp
 
     const originalAmountCents = parseCurrencyInput(
       props.originalAmount.value,
-      originalCurrency.value?.decimalPlaces ?? 2
+      originalCurrency.value?.decimalPlaces ?? 2,
     )
     const accountAmountCents = parseCurrencyInput(
       props.accountAmount.value,
-      accountCurrency.value.decimalPlaces
+      accountCurrency.value.decimalPlaces,
     )
 
     if (!originalAmountCents || !accountAmountCents || originalAmountCents === 0) {
@@ -85,14 +85,14 @@ export function EnhancedMultiCurrencyInput(props: EnhancedMultiCurrencyInputProp
 
     const originalAmountCents = parseCurrencyInput(
       props.originalAmount.value,
-      originalCurrency.value?.decimalPlaces ?? 2
+      originalCurrency.value?.decimalPlaces ?? 2,
     )
     if (originalAmountCents === null) return
 
     const convertedAmount = Math.round(originalAmountCents * currentRate.value)
     const newAccountAmount = formatCentsToInput(
       convertedAmount,
-      accountCurrency.value.decimalPlaces
+      accountCurrency.value.decimalPlaces,
     )
 
     // Only update if different to avoid infinite loops
@@ -109,14 +109,14 @@ export function EnhancedMultiCurrencyInput(props: EnhancedMultiCurrencyInputProp
 
     const originalAmountCents = parseCurrencyInput(
       props.originalAmount.value,
-      originalCurrency.value?.decimalPlaces ?? 2
+      originalCurrency.value?.decimalPlaces ?? 2,
     )
     if (originalAmountCents === null) return
 
     const convertedAmount = Math.round(originalAmountCents * currentRate.value)
     const newAccountAmount = formatCentsToInput(
       convertedAmount,
-      accountCurrency.value.decimalPlaces
+      accountCurrency.value.decimalPlaces,
     )
 
     // Only update if different to avoid infinite loops

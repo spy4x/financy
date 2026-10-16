@@ -1,5 +1,5 @@
 import { log } from "@api/services/log.ts"
-import { sql } from "@server/db"
+import { sql, type Transaction } from "@server/db"
 
 // Types for exchange rate providers
 export interface RateLimit {
@@ -467,7 +467,7 @@ export class ExchangeRateFetcher {
 
     for (const [currencyCode, newRate] of Object.entries(response.rates)) {
       try {
-        await sql.begin(async (tx) => {
+        await sql.begin(async (tx: Transaction) => {
           // Get target currency ID
           const currencyResult = await tx`
             SELECT id FROM currencies WHERE code = ${currencyCode} AND deleted_at IS NULL LIMIT 1

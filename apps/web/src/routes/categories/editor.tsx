@@ -299,7 +299,10 @@ export function CategoryEditor() {
                       </label>
                       <BudgetProgress
                         spentAmount={category.getMonthlySpent(editCategoryId)}
-                        limitAmount={parseCurrencyInput(monthlyLimit.value || "0", group.getSelectedCurrency().decimalPlaces) || 0}
+                        limitAmount={parseCurrencyInput(
+                          monthlyLimit.value || "0",
+                          group.getSelectedCurrency().decimalPlaces,
+                        ) || 0}
                         currency={group.getSelectedCurrency().code}
                       />
                     </div>
