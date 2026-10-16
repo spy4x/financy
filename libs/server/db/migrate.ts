@@ -41,7 +41,7 @@ async function applyMigrations() {
     // get list of migrations from database
     const migrationsResult = await sql<Migration[]>`SELECT name
                                        FROM migrations`
-    migrations = migrationsResult.map((m) => m.name)
+    migrations = migrationsResult.map((m: Migration) => m.name)
   } catch (err) {
     console.error("❌ Failed to get migrations from database", err)
     Deno.exit(1)

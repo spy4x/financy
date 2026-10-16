@@ -37,7 +37,7 @@ export class DbServiceBase {
   }
 
   begin<T>(fn: (tx: this) => Promise<T>): Promise<T> {
-    return this.sql.begin((transaction) => {
+    return this.sql.begin((transaction: Transaction) => {
       const service = Object.create(this) as this
       service.setSql(transaction)
       return fn(service)

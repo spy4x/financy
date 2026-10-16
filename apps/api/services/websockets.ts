@@ -50,7 +50,10 @@ import {
   UserUpdateCommand,
 } from "@api/cqrs/commands.ts"
 
-export type WS = WSContext & { createdAt: number; heartbeatInterval: number }
+export type WS = WSContext & {
+  createdAt: number
+  heartbeatInterval: ReturnType<typeof setInterval>
+}
 
 const all: WS[] = []
 const socketsByUser = new Map<number, WS[]>()

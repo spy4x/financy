@@ -18,7 +18,7 @@ async function purge(): Promise<void> {
         WHERE table_schema = 'public'
         AND table_type = 'BASE TABLE'
     `
-    tables = result.map((r) => r.tableName)
+    tables = result.map((r: { tableName: string }) => r.tableName)
   } catch (err) {
     console.error("❌ Failed to fetch table names", err)
     Deno.exit(1)
