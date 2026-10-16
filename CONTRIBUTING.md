@@ -96,8 +96,6 @@ deno task e2e
 // ❌ Avoid relying on text or CSS selectors in tests
 ```
 
-See [E2E Testing Guidelines](docs/e2e-testing-guidelines.md) for detailed instructions.
-
 ### Development Guidelines
 
 #### Code Style
