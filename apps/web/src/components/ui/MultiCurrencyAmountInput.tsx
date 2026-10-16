@@ -63,7 +63,9 @@ export function MultiCurrencyAmountInput({
   class: className = "",
   "data-e2e": dataE2e,
 }: MultiCurrencyAmountInputProps) {
-  const inputValue = useSignal(formatCentsToInput(amount, currency.getById(currencyId).decimalPlaces))
+  const inputValue = useSignal(
+    formatCentsToInput(amount, currency.getById(currencyId).decimalPlaces),
+  )
 
   // Compute conversion amount and rate each render (simpler, deterministic)
   let conversion: { amount: number; rate: number } | null = null
@@ -110,7 +112,9 @@ export function MultiCurrencyAmountInput({
     }
     const parsedFloat = parseFloat(value)
     const multiplier = Math.pow(10, decimals)
-    const manualParsed = isNaN(parsedFloat) || parsedFloat < 0 ? null : Math.round(parsedFloat * multiplier)
+    const manualParsed = isNaN(parsedFloat) || parsedFloat < 0
+      ? null
+      : Math.round(parsedFloat * multiplier)
     if (manualParsed !== null) {
       onAmountChange(manualParsed)
     }
@@ -165,11 +169,11 @@ export function MultiCurrencyAmountInput({
           <div class="flex items-center justify-between">
             <span>
               Converts to{" "}
-               <CurrencyDisplay
-                 amount={conversion.amount}
-                 currency={targetCurrencyId}
-                 class="font-medium text-gray-900 dark:text-gray-100"
-               />
+              <CurrencyDisplay
+                amount={conversion.amount}
+                currency={targetCurrencyId}
+                class="font-medium text-gray-900 dark:text-gray-100"
+              />
             </span>
             <span class="text-xs">
               Rate: 1 {currency.getById(currencyId).code} ≈{"  "}

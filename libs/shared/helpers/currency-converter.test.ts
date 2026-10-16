@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@shared/testing"
-import type { ExchangeRate, Currency } from "@shared/types"
+import type { Currency, ExchangeRate } from "@shared/types"
 import { convertAmount, getExchangeRate, getRatesForCurrency } from "./currency-converter.ts"
 
 // Mock exchange rates (all using USD as base currency, like in production)
@@ -304,7 +304,13 @@ describe("Currency Converter", () => {
 
   it("convertAmount - BTC → USD (1 BTC -> USD cents)", () => {
     // 1 BTC = 100000000 satoshis
-    const result = convertAmount(100000000, 100, 1, realisticRates, currencies as unknown as Currency[])
+    const result = convertAmount(
+      100000000,
+      100,
+      1,
+      realisticRates,
+      currencies as unknown as Currency[],
+    )
     // With USD->BTC = 0.00005 => BTC->USD = 20000
     // scale = 10^2 / 10^8 = 0.000001
     // result = round(100000000 * 20000 * 0.000001) = 2000000 cents ($20,000.00)
@@ -318,7 +324,13 @@ describe("Currency Converter", () => {
     expect(oneCentToYen).toBe(2)
 
     // 1 satoshi BTC -> USD cents
-    const oneSatoshiToUsd = convertAmount(1, 100, 1, realisticRates, currencies as unknown as Currency[])
+    const oneSatoshiToUsd = convertAmount(
+      1,
+      100,
+      1,
+      realisticRates,
+      currencies as unknown as Currency[],
+    )
     // Very small, should round to 0 or 1 depending on rate; compute expected
     const btcToUsdRate = 1 / 0.00005 // 20000
     const expectedSatoshi = Math.round(1 * btcToUsdRate * (Math.pow(10, 2) / Math.pow(10, 8)))

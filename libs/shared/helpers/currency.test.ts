@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@shared/testing"
-import type { ExchangeRate, Currency } from "@shared/types"
+import type { Currency, ExchangeRate } from "@shared/types"
 import { convertAmount, getExchangeRate } from "./currency.ts"
 
 const rates: ExchangeRate[] = [
