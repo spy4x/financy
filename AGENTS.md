@@ -73,7 +73,7 @@ Resolve conflicts by keeping Financy's version of a file Financy owns (its aggre
 brand, website copy) and Seed's version of anything else. A Seed file
 that Financy deletes is listed in `.seed-skip`, one path per line, in the PR that deletes it, so
 the patch leaves it out.
-Run the full check before the PR. Sync when a Seed change made for Financy merges, and before
+After resolving conflicts, record the synced commit yourself, since the `&&` above skipped it: `git rev-parse FETCH_HEAD > .seed-commit`. Run the full check before the PR. Sync when a Seed change made for Financy merges, and before
 starting work that relies on a recent Seed change.
 
 ## Money and finance data
