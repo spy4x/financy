@@ -19,7 +19,8 @@ transport, state handling and sync are superseded by Seed's, and none of it is p
 says which old parts are still worth taking, and where they go.
 
 **How the rebuild starts.** One PR tags the current `main` as `legacy`, replaces the tree with
-Seed's `main`, and writes the Seed commit it copied into `.seed-commit`. Financy's own code is then
+Seed's `main`, writes the Seed commit it copied into `.seed-commit`, and
+creates an empty `.seed-skip`. Financy's own code is then
 added in later PRs. Until that PR merges, the rest of this file describes the target.
 
 ## Where code goes
@@ -64,19 +65,20 @@ Financy does not share Seed's git history, so Seed's changes come in as a patch 
 
 ```bash
 git fetch https://github.com/spy4x/seed main
-git diff "$(cat .seed-commit)" FETCH_HEAD -- . ':!AGENTS.md' | git apply --3way
-git rev-parse FETCH_HEAD > .seed-commit
+git diff --binary "$(cat .seed-commit)" FETCH_HEAD -- . ':!AGENTS.md' $(sed 's/^/:!/' .seed-skip) \
+  | git apply --3way && git rev-parse FETCH_HEAD > .seed-commit
 ```
 
 Resolve conflicts by keeping Financy's version of a file Financy owns (its aggregates, screens,
-brand, website copy) and Seed's version of anything else. A file Financy deleted stays deleted.
+brand, website copy) and Seed's version of anything else. A Seed file
+that Financy deletes is listed in `.seed-skip`, one path per line, in the PR that deletes it, so
+the patch leaves it out.
 Run the full check before the PR. Sync when a Seed change made for Financy merges, and before
 starting work that relies on a recent Seed change.
 
 ## Money and finance data
 
-- Amounts are integers in the currency's minor unit, which differs per currency (a yen has none,
-  a dinar has three). Never a float.
+- An amount's smallest unit differs per currency: a yen has no minor unit, a dinar has three.
 - A transaction keeps its original amount and currency next to the converted one, so a later rate
   change never rewrites history.
 - Financy's production server holds real people's financial data. Nothing on it is disposable:
