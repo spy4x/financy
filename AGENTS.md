@@ -18,10 +18,13 @@ transport, state handling and sync are superseded by Seed's, and none of it is p
 [extraction inventory](https://github.com/spy4x/seed/blob/main/docs/financy-extraction-inventory.md)
 says which old parts are still worth taking, and where they go.
 
+No fixes or features go into the old code. An issue about it is done in the rebuild, or not at
+all.
+
 **How the rebuild starts.** One PR tags the current `main` as `legacy`, replaces the tree with
-Seed's `main`, writes the Seed commit it copied into `.seed-commit`, and
-creates an empty `.seed-skip`. Financy's own code is then
-added in later PRs. Until that PR merges, the rest of this file describes the target.
+Seed's `main` and sets up the `.seed/` folder as Seed's
+[docs/products.md](https://github.com/spy4x/seed/blob/main/docs/products.md) says. Financy's own
+code is then added in later PRs. Until that PR merges, the rest of this file describes the target.
 
 ## Where code goes
 
@@ -52,7 +55,8 @@ Read Seed's `AGENTS.md` (`~/sync/code/seed/AGENTS.md`, or on GitHub) before work
 sections apply to Financy as written: the three layers of UI, the MPA working without JavaScript,
 the `libs/ui` contract, the aggregate shape copied from `docs/aggregates.md`, the admin panel kept
 in sync with every feature, and the product screenshots. Two sections do not apply: "The live demo
-is not production" and "Financy".
+is not production" and "Financy". "The public demo" applies only if Financy turns the demo
+on.
 
 A Financy aggregate (accounts, transactions, budgets and the rest) copies Seed's aggregate shape
 file by file. Seed's example content (the notes aggregate, the live demo, Seed's own marketing
@@ -60,20 +64,10 @@ pages and pictures) is replaced by Financy's as Financy's own lands.
 
 ## Taking Seed's changes
 
-Financy does not share Seed's git history, so Seed's changes come in as a patch from the commit in
-`.seed-commit` to Seed's current `main`. Each sync is one PR on a `chore/seed-sync-<date>` branch:
-
-```bash
-git fetch https://github.com/spy4x/seed main
-git diff --binary "$(cat .seed-commit)" FETCH_HEAD -- . ':!AGENTS.md' $(sed 's/^/:!/' .seed-skip) \
-  | git apply --3way && git rev-parse FETCH_HEAD > .seed-commit
-```
-
-Resolve conflicts by keeping Financy's version of a file Financy owns (its aggregates, screens,
-brand, website copy) and Seed's version of anything else. A Seed file
-that Financy deletes is listed in `.seed-skip`, one path per line, in the PR that deletes it, so
-the patch leaves it out.
-After resolving conflicts, record the synced commit yourself, since the `&&` above skipped it: `git rev-parse FETCH_HEAD > .seed-commit`. Run the full check before the PR. Sync when a Seed change made for Financy merges, and before
+Financy takes Seed's later changes with the sync in Seed's
+[docs/products.md](https://github.com/spy4x/seed/blob/main/docs/products.md), "Take Seed's
+changes". `.seed/commit` holds the Seed commit Financy last took, and `.seed/skip` the Seed paths
+Financy deleted or owns completely. Sync when a Seed change made for Financy merges, and before
 starting work that relies on a recent Seed change.
 
 ## Money and finance data
