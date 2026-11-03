@@ -57,9 +57,9 @@ natural-language entry, the token API and the MCP server, and the store apps.
 ## Where it runs
 
 financy.dev, with the app and the admin panel on subdomains, with NeatSoft PTE LTD as the data
-controller. The first deploy shares the server of Seed's live demo, as the owner chose for now,
-and uses the services the owner's other server already runs; the lead suggests a server of its
-own in the EU (Hetzner) before the public launch. The public demo is a separate deployment with
+controller. The first deploy runs on the owner's home server, which also runs Seed's live demo,
+and reuses that server's Traefik and shared monitoring. Moving to a server of Financy's own in the
+EU (Hetzner) before the public launch is open, for the owner to decide. The public demo is a separate deployment with
 its own database. The new Financy starts with an empty database: nothing moves from the old one.
 
 ## The owner's decisions
@@ -86,7 +86,7 @@ option carried, or the owner's words.
 | Demo, self-hosting and the guarantee replace the trial | "I like this." |
 | AI providers: any OpenAI-compatible one, at least the three most used; DeepSeek allowed | "Can. We need to support OpenAI API-compatible providers, at least top 3 most popular. I'm ok with deepSeek [...]" |
 | hi@financy.dev on the owner's existing mail server, which the lead found possible and light | "If it's technically possible to have hi@financy.dev there and it makes sense - I would love to reuse existing server [...]" |
-| The first deploy shares the server of Seed's live demo, for now; the other server's role (it already runs mail, analytics and uptime checks) is open | "yes, we can use my [...] home server for now (same as for Seed) and something from cloud's server." |
+| The first deploy runs on the home server that also runs Seed's live demo, and reuses its Traefik and shared monitoring; moving to Financy's own EU server before the public launch is open, for the owner to decide | "yes, we can use my [...] home server for now (same as for Seed) and something from cloud's server." |
 
 ## The lead's picks
 

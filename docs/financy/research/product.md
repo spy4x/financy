@@ -149,7 +149,7 @@ rules engine for imports, opt-in AI categorisation, net worth with manual asset 
   two emails first.
 - **Later add-on, phase 2:** bank sync at cost plus a margin (for example €2 a month per
   household), so the base price never has to rise for those who do not want it.
-- **Founding price:** the first 100 households keep their price for life. True, finite, and
+- **Founding price:** the first 100 households keep their price while they stay subscribed. True, finite, and
   stated once; no countdown.
 
 **Per member or per household?** Per household. Seed's Pro is €9 per member a month, so a couple
