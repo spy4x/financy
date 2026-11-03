@@ -198,7 +198,7 @@ user) is fixed. A finance app that leaks a household's changes, at launch, ends 
 
 ## 5. Website issues (six, one PR each)
 
-Each issue: all nine languages written per language (the owner's rule), Lighthouse budget green (Seed CI
+Each issue: all nine languages written for that language's searchers, Lighthouse budget green (Seed CI
 `browser` step), every page in `pages.ts` so sitemap and `llms.txt` follow, `BreadcrumbList` on
 every page below home, design phase per the `design` skill, and nothing describing an unbuilt
 feature.

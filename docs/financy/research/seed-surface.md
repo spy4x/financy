@@ -340,9 +340,8 @@ translation loop and rules 5 and 6 (`i18n/TRANSLATING.md`); `docs/handoff.md` gr
 is integers, bigint as decimal strings, the group is the only tenancy boundary, Postgres
 authoritative); "Seed's own site" marks (`git grep`) are cleared, never copied into new code.
 
-For the lead: Financy's `AGENTS.md` names exchange rates as Financy-only, while the owner's shared-library rules
-and [libs-gap.md](libs-gap.md) item 3 put an exchange-rate integration in ts-libs. The rates' storage and
-use stay in Financy; the client belongs in ts-libs.
+For the lead: [libs-gap.md](libs-gap.md) item 3 puts the exchange-rate client in ts-libs. The rates'
+storage and use stay in Financy; the client belongs in ts-libs. Financy's `AGENTS.md` now says so.
 
 ## 5. Gaps
 

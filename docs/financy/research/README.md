@@ -2,8 +2,9 @@
 
 These six files are the research behind Financy's rebuild on Seed, written on 2026-11-03 before
 the rebuild's issues were filed. They are kept for their reasoning and evidence. They are not the
-plan: where they disagree with [`docs/financy/product.md`](../product.md), `product.md` wins,
-because it holds the owner's decisions.
+plan: where they disagree with [`docs/financy/product.md`](../product.md) or Financy's
+[`AGENTS.md`](../../../AGENTS.md), those win: `product.md` holds the owner's decisions, and
+`AGENTS.md` says where each part of the code goes.
 
 | File                                         | What it covers                                                                         |
 | -------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -14,12 +15,15 @@ because it holds the owner's decisions.
 | [seed-surface.md](seed-surface.md)           | What Seed already gives Financy, and the changes Seed needs                            |
 | [libs-gap.md](libs-gap.md)                   | What the shared libraries (ts-libs, preact-components) lack for Financy                |
 
-Two things changed after they were written:
+Three things changed after they were written:
 
 - **No trial.** The research recommends a 30-day trial without a card. The owner then asked for
   that advice to be weighed again, and the pick was no trial: the public demo, a 30-day money-back
   guarantee and free self-hosting take its place (`product.md`, "The lead's picks").
-- **Bank statement import** joined the first version afterwards, so these files do not cover it.
+- **Bank statement import.** The research planned CSV import for the first version and the
+  standard bank formats (OFX, QIF, CAMT.053, MT940) for later. The first version now takes CSV,
+  OFX, QIF, CAMT.053, MT940 and PDF statements, with AI help for a layout it does not know.
+- **Crypto precision.** `libs-gap.md` leaves it open; amounts now keep at most 8 decimals.
 
 The item numbers inside these files (such as "S4" in `seed-surface.md`) are the research's own and
 do not match the filed issues. The issues link back here where they rely on a finding.
