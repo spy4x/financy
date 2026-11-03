@@ -39,17 +39,15 @@ natural-language entry, the token API and the MCP server, and the store apps.
 - Accounts and categories, not double-entry: an account holds money, a category says why it
   moved, and a transfer is one record with two sides.
 - A refund is income in an expense category, and it lowers that category's spending.
-- Amounts are integers in each currency's smallest unit, with at most 8 decimals. Every sum and
-  conversion throws instead of rounding when it passes JavaScript's safe-integer range, and each
-  coin gets only the decimals its price needs, so a real holding always fits.
+- Amounts are integers in each currency's smallest unit, with at most 8 decimals.
 - Rates: free ECB rates (via Frankfurter) for everyone, a manual rate on any transaction, and in
   the cloud one paid provider for the currencies the ECB lacks.
 
 ## Price
 
 - **Self-hosted**: free, AGPL-3.0.
-- **Cloud**: $4 a month or $40 a year (US dollars) per household, up to 6 members. Inviting a partner never
-  costs more.
+- **Cloud**: $4 a month or $40 a year (US dollars) per household, up to 6 members. Inviting a
+  partner never costs more.
 - **No trial.** A person tries Financy in the public demo, with sample data and no account, then
   pays from sign-up, with a 30-day money-back guarantee. With no users yet, the first thing to
   learn is whether people pay; a trial delays that answer and costs code (a trial clock, expiry
@@ -59,9 +57,10 @@ natural-language entry, the token API and the MCP server, and the store apps.
 ## Where it runs
 
 financy.dev, with the app and the admin panel on subdomains, with NeatSoft PTE LTD as the data
-controller. The first deploy shares the server of Seed's live demo, as the owner chose for now;
-before the public launch it should move to a server of its own in the EU (Hetzner). The public demo is a separate deployment with its own
-database. The new Financy starts with an empty database: nothing moves from the old one.
+controller. The first deploy shares the server of Seed's live demo, as the owner chose for now,
+and uses the services the owner's other server already runs; the lead suggests a server of its
+own in the EU (Hetzner) before the public launch. The public demo is a separate deployment with
+its own database. The new Financy starts with an empty database: nothing moves from the old one.
 
 ## The owner's decisions
 
@@ -85,9 +84,9 @@ option carried, or the owner's words.
 | $4 a month or $40 a year, in US dollars | "$4/mo and $40/y for a household - sounds good." |
 | Live Stripe from the first deploy | "`live Stripe from the start.` yes!" |
 | Demo, self-hosting and the guarantee replace the trial | "I like this." |
-| AI providers: any OpenAI-compatible one, at least the three most used; DeepSeek allowed | "Can. We need to support OpenAI API-compatible providers, at least top 3 most popular. I'm ok with deepSeek" |
-| hi@financy.dev on the owner's existing mail server | "If it's technically possible to have hi@financy.dev there and it makes sense - I would love to reuse existing server" |
-| The first deploy shares the server of Seed's live demo, for now | "yes, we can use my [...] home server for now (same as for Seed)" |
+| AI providers: any OpenAI-compatible one, at least the three most used; DeepSeek allowed | "Can. We need to support OpenAI API-compatible providers, at least top 3 most popular. I'm ok with deepSeek [...]" |
+| hi@financy.dev on the owner's existing mail server, which the lead found possible and light | "If it's technically possible to have hi@financy.dev there and it makes sense - I would love to reuse existing server [...]" |
+| The first deploy shares the server of Seed's live demo, for now; the other server's role (it already runs mail, analytics and uptime checks) is open | "yes, we can use my [...] home server for now (same as for Seed) and something from cloud's server." |
 
 ## The lead's picks
 
@@ -97,6 +96,10 @@ Not the owner's decisions: defaults the lead took on 2026-11-03, which the owner
   controller, since it contracts and invoices for the owner. The first deploy shares Seed's server
   as the owner chose; the lead suggests a server of its own before the public launch
   (https://github.com/spy4x/financy/issues/88).
+- Every sum and conversion throws instead of rounding when it passes JavaScript's safe-integer
+  range, and each coin gets only the decimals its price needs, so a real holding fits in 8
+  decimals without bigint (the owner asked whether 8 decimals is enough: "Whatever makes more
+  sense.").
 - The statement formats of the first version: CSV, PDF, and the four standard formats banks
   export (OFX, QIF, CAMT.053 and MT940).
 - No trial, as the decisions table says: the owner asked the lead to choose.
