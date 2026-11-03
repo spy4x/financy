@@ -97,7 +97,8 @@ feature; a feature it does not list needs the owner first.
 
 ## No release and no deploy yet
 
-Until the deploy issue in the "MVP" milestone merges, nothing is tagged and nothing is deployed:
+Until the deploy issue ([#88](https://github.com/spy4x/financy/issues/88)) merges, nothing is
+tagged and nothing is deployed:
 the tree still carries Seed's site, prices and author, and a deploy would put them on
 financy.dev. The global rule to release after a green gate starts to apply here then.
 
@@ -107,7 +108,8 @@ financy.dev. The global rule to release after a green gate starts to apply here 
   currency: a yen has none, a dinar has three. A currency's decimals come from ts-libs
   (`@spy4x/platform/universal/money`), never from a table or a constant in Financy. Today that is
   `currencyDecimals`, which asks `Intl`; a crypto currency passes its own `decimals`, at most 8.
-  The ISO 4217 table that replaces `Intl` there is a ts-libs issue of the "MVP" plan.
+  The ISO 4217 table that replaces `Intl` there is
+  [spy4x/ts-libs#815](https://github.com/spy4x/ts-libs/issues/815).
 - A transaction keeps its original amount and currency next to the converted one, so a later rate
   change never rewrites history.
 - Once Financy runs in production, that server holds real people's financial data. Nothing on it
