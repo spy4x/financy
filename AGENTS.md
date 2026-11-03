@@ -12,6 +12,14 @@ Seed commit it last took. Seed and the shared libraries keep growing while Finan
 Financy needs something they lack, or builds something they would benefit from, it goes there
 first and Financy takes it from there.
 
+While Financy is planned and built, every gap in Seed it finds is fixed in Seed, and so is every
+wrong or missing step in Seed's instructions for starting a product: its docs (`docs/products.md`
+first), its README and its blog posts. The fix is a Seed PR of its own; Financy takes it with the
+next sync and never keeps a local workaround. The owner asked for this on 2026-11-03: "While we
+are planning and then building Financy we should update Seed where it lacks or where it's
+instructions about "how to start a product with Seed" are incorrect, including blog posts, docs,
+etc etc. This is a local (or global?) AGENTS.md rule."
+
 ## The old Financy is a reference for what, never for how
 
 The first Financy lives on the branch `legacy`, frozen. Read it, and its docs (`docs/`,

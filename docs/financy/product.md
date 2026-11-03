@@ -39,14 +39,16 @@ natural-language entry, the token API and the MCP server, and the store apps.
 - Accounts and categories, not double-entry: an account holds money, a category says why it
   moved, and a transfer is one record with two sides.
 - A refund is income in an expense category, and it lowers that category's spending.
-- Amounts are integers in each currency's smallest unit, with at most 8 decimals.
+- Amounts are integers in each currency's smallest unit, with at most 8 decimals. Every sum and
+  conversion throws instead of rounding when it passes JavaScript's safe-integer range, and each
+  coin gets only the decimals its price needs, so a real holding always fits.
 - Rates: free ECB rates (via Frankfurter) for everyone, a manual rate on any transaction, and in
   the cloud one paid provider for the currencies the ECB lacks.
 
 ## Price
 
 - **Self-hosted**: free, AGPL-3.0.
-- **Cloud**: €4 a month or €40 a year per household, up to 6 members. Inviting a partner never
+- **Cloud**: $4 a month or $40 a year (US dollars) per household, up to 6 members. Inviting a partner never
   costs more.
 - **No trial.** A person tries Financy in the public demo, with sample data and no account, then
   pays from sign-up, with a 30-day money-back guarantee. With no users yet, the first thing to
@@ -56,8 +58,9 @@ natural-language entry, the token API and the MCP server, and the store apps.
 
 ## Where it runs
 
-financy.dev, with the app and the admin panel on subdomains, hosted in the EU (Hetzner) with
-NeatSoft PTE LTD as the data controller. The public demo is a separate deployment with its own
+financy.dev, with the app and the admin panel on subdomains, with NeatSoft PTE LTD as the data
+controller. The first deploy shares the server of Seed's live demo, as the owner chose for now;
+before the public launch it should move to a server of its own in the EU (Hetzner). The public demo is a separate deployment with its own
 database. The new Financy starts with an empty database: nothing moves from the old one.
 
 ## The owner's decisions
@@ -67,7 +70,7 @@ option carried, or the owner's words.
 
 | Decision | Owner's words |
 | --- | --- |
-| Price per household, €4 a month or €40 a year, up to 6 members, read access and export after a household stops paying | "€4 per household": "€4 a month or €40 a year for up to 6 members, a 30-day trial with no card, then read-only with export." (the trial was replaced by the next row) |
+| Price per household, up to 6 members (in euros at first; the next row set it in dollars), read access and export after a household stops paying | "€4 per household": "€4 a month or €40 a year for up to 6 members, a 30-day trial with no card, then read-only with export." (the trial was replaced by the next row) |
 | No trial: demo, money-back guarantee, pay from sign-up (the owner asked the lead to choose) | "I want you to evaluate this advice and pick what makes more sense for this new business" |
 | Domain financy.dev | "financy.dev" |
 | All nine languages | "All nine, like Seed" |
@@ -79,13 +82,21 @@ option carried, or the owner's words.
 | Accounts and categories, not double-entry | "Accounts + categories" |
 | One level of parent categories | "One level of parents" |
 | A refund lowers its category | "Lowers the category" |
+| $4 a month or $40 a year, in US dollars | "$4/mo and $40/y for a household - sounds good." |
+| Live Stripe from the first deploy | "`live Stripe from the start.` yes!" |
+| Demo, self-hosting and the guarantee replace the trial | "I like this." |
+| AI providers: any OpenAI-compatible one, at least the three most used; DeepSeek allowed | "Can. We need to support OpenAI API-compatible providers, at least top 3 most popular. I'm ok with deepSeek" |
+| hi@financy.dev on the owner's existing mail server | "If it's technically possible to have hi@financy.dev there and it makes sense - I would love to reuse existing server" |
+| The first deploy shares the server of Seed's live demo, for now | "yes, we can use my [...] home server for now (same as for Seed)" |
 
 ## The lead's picks
 
 Not the owner's decisions: defaults the lead took on 2026-11-03, which the owner can change.
 
 - Hosting in the EU (Hetzner, like the owner's other projects), with NeatSoft PTE LTD as the data
-  controller, since it contracts and invoices for the owner.
+  controller, since it contracts and invoices for the owner. The first deploy shares Seed's server
+  as the owner chose; the lead suggests a server of its own before the public launch
+  (https://github.com/spy4x/financy/issues/88).
 - The statement formats of the first version: CSV, PDF, and the four standard formats banks
   export (OFX, QIF, CAMT.053 and MT940).
 - No trial, as the decisions table says: the owner asked the lead to choose.
