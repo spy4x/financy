@@ -55,7 +55,7 @@ ts-libs, preact-components, Seed or Financy, by the order above, and links the l
 issue that must merge first. An implementer who finds an unnamed reusable part stops and reports
 it to the lead instead of writing it locally. The owner asked for this on 2026-11-03: "ensuring
 we are always implementing things in shared libraries and Seed if something that Financy needs is
-actually reusable and helpful for other potential projects".
+actually reusable and and helpful for other potential projects".
 
 Only the owner's own code moves from Financy into Seed or the libraries, because it becomes MIT
 there. Code from an outside contributor stays in Financy.
@@ -65,10 +65,12 @@ there. Code from an outside contributor stays in Financy.
 Read Seed's `AGENTS.md` (`~/sync/code/seed/AGENTS.md`, or on GitHub) before working here. Its
 sections apply to Financy as written, with "Seed" read as "Financy" where they name the product:
 "Three layers of UI", "Adding a feature", "The admin panel stays in sync", "The public website
-stays in sync", "Product screenshots", "Blog" and "Handoff". Three sections do not apply: "The
-live demo is not production", "Products built on Seed" and "Financy". "The public demo" applies
-to Financy's demo, which is its own deployment with its own database: `DEMO_MODE` is never on in
-production.
+stays in sync", "Product screenshots", "Blog" and "Handoff". Under "Blog", Financy's posts are a
+product's: written in Financy's admin app, not as Markdown files in the repository, and the
+monthly changelog is "What's new in Financy". Three sections do not apply: "The live demo is not
+production", "Products built on Seed" (Seed's rule for its own sync doc; "Taking Seed's changes"
+below is Financy's side) and "Financy". "The public demo" applies to Financy's demo, which is its
+own deployment with its own database: `DEMO_MODE` is never on in production.
 
 A Financy aggregate (accounts, transactions, budgets and the rest) copies Seed's aggregate shape
 file by file ([docs/aggregates.md](docs/aggregates.md)). Seed's example content (the notes
@@ -102,8 +104,10 @@ financy.dev. The global rule to release after a green gate starts to apply here 
 ## Money and finance data
 
 - An amount is an integer in its currency's smallest unit, never a float. That unit differs per
-  currency: a yen has none, a dinar has three. A currency's decimals come from the ISO 4217 table
-  in ts-libs, never from `Intl`, and a crypto currency has at most 8.
+  currency: a yen has none, a dinar has three. A currency's decimals come from ts-libs
+  (`@spy4x/platform/universal/money`), never from a table or a constant in Financy. Today that is
+  `currencyDecimals`, which asks `Intl`; a crypto currency passes its own `decimals`, at most 8.
+  The ISO 4217 table that replaces `Intl` there is a ts-libs issue of the "MVP" plan.
 - A transaction keeps its original amount and currency next to the converted one, so a later rate
   change never rewrites history.
 - Once Financy runs in production, that server holds real people's financial data. Nothing on it

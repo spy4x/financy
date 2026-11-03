@@ -62,11 +62,12 @@ database. The new Financy starts with an empty database: nothing moves from the 
 
 ## The owner's decisions
 
-All on 2026-11-03, in chat. The quotes are the options the owner chose, or the owner's words.
+All on 2026-11-03, in chat. The quotes are the options the owner chose, with the description the
+option carried, or the owner's words.
 
 | Decision | Owner's words |
 | --- | --- |
-| Price per household, €4 a month or €40 a year | "€4 per household" |
+| Price per household, €4 a month or €40 a year, up to 6 members, read access and export after a household stops paying | "€4 per household": "€4 a month or €40 a year for up to 6 members, a 30-day trial with no card, then read-only with export." (the trial was replaced by the next row) |
 | No trial: demo, money-back guarantee, pay from sign-up (the owner asked the lead to choose) | "I want you to evaluate this advice and pick what makes more sense for this new business" |
 | Domain financy.dev | "financy.dev" |
 | All nine languages | "All nine, like Seed" |
@@ -74,7 +75,17 @@ All on 2026-11-03, in chat. The quotes are the options the owner chose, or the o
 | Telegram bot, recurring transactions and crypto in the first version | "Core only (Recommended),Telegram bot,Recurring transactions,Crypto holdings" |
 | Bank statement import, with AI help, in the first version | "They require Bank export import (csv? Pdf? Each bank export  is different format (even csv), so we might utilize AI to analyze how to parse it better for our parsing library). Please add that module too." |
 | At most 8 decimals | "Up to 8 decimals" |
-| ECB rates plus a paid fallback | "ECB free + paid fallback" |
+| ECB rates through Frankfurter, plus a paid fallback | "ECB free + paid fallback": "Free ECB rates (via Frankfurter) for everyone, a manual rate on any transaction, and one paid provider in the cloud for the currencies ECB lacks" |
 | Accounts and categories, not double-entry | "Accounts + categories" |
 | One level of parent categories | "One level of parents" |
 | A refund lowers its category | "Lowers the category" |
+
+## The lead's picks
+
+Not the owner's decisions: defaults the lead took on 2026-11-03, which the owner can change.
+
+- Hosting in the EU (Hetzner, like the owner's other projects), with NeatSoft PTE LTD as the data
+  controller, since it contracts and invoices for the owner.
+- The statement formats of the first version: CSV, PDF, and the four standard formats banks
+  export (OFX, QIF, CAMT.053 and MT940).
+- No trial, as the decisions table says: the owner asked the lead to choose.

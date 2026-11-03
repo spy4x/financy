@@ -30,10 +30,10 @@ Financy's name; Financy's own features land one pull request at a time.
 The first version lives on the [`legacy`](https://github.com/spy4x/financy/tree/legacy) branch.
 It is frozen: it shows what Financy did, and nothing more is built on it.
 
-## Development
+## Quick start
 
-Financy develops exactly like Seed: [docs/development.md](docs/development.md). How it keeps
-taking Seed's changes: [AGENTS.md](AGENTS.md).
+Financy runs and develops exactly like Seed: [docs/development.md](docs/development.md) has the
+commands. How it keeps taking Seed's changes: [AGENTS.md](AGENTS.md).
 
 ## Licence
 
