@@ -60,6 +60,7 @@ const FULL: PublicBlogPost = {
   segments: [{ kind: `html`, html: FULL_HTML }],
   headings: [{ id: `why`, text: `Why`, depth: 2 }],
   authorName: `Ada Lovelace`,
+  authorUrl: null,
   translations: [],
 }
 
@@ -85,6 +86,7 @@ const GERMAN_FULL: PublicBlogPost = {
   segments: [{ kind: `html`, html: `<p>Hallo.</p>` }],
   headings: [],
   authorName: null,
+  authorUrl: null,
   translations: [],
 }
 
@@ -354,6 +356,44 @@ describe("a blog post", () => {
     expect(alternates((await get("/de/blog/hallo-welt")).body).sort()).toEqual(versions.sort())
   })
 
+  it("names its live translations under the byline, each in its own language at its own address (#530)", async () => {
+    const english = {
+      ...FULL,
+      translations: [
+        { language: `de` as const, slug: `hallo-welt` },
+        { language: `es` as const, slug: `hola-mundo` },
+      ],
+    }
+    const german = {
+      ...GERMAN_FULL,
+      translations: [{ language: `en` as const, slug: `cron-jobs` }],
+    }
+    const { get } = await blogSite({
+      ...listing([NEWER, GERMAN]),
+      [`/api/blog/posts/cron-jobs`]: () => Response.json({ post: english, readNext: [] }),
+      [`/api/blog/posts/hallo-welt`]: () => Response.json({ post: german, readNext: [] }),
+    })
+    const versions = (html: string) =>
+      html.match(/<p[^>]*data-e2e="blog-post-translations"[\s\S]*?<\/p>/)?.[0] ?? ``
+
+    const englishLine = versions((await get("/blog/cron-jobs")).body)
+    expect(textOf(englishLine).trim()).toBe(`Also in: Deutsch and Español`)
+    expect(englishLine).toMatch(
+      /<a href="\/de\/blog\/hallo-welt" hreflang="de" lang="de"[^>]*>Deutsch<\/a>/,
+    )
+    expect(englishLine).toMatch(
+      /<a href="\/es\/blog\/hola-mundo" hreflang="es" lang="es"[^>]*>Español<\/a>/,
+    )
+    const germanLine = versions((await get("/de/blog/hallo-welt")).body)
+    expect(textOf(germanLine).trim()).toBe(`Auch verfügbar auf: English`)
+    expect(germanLine).toContain(`href="/blog/cron-jobs"`)
+  })
+
+  it("names no other version for a post without translations (#530)", async () => {
+    const { get } = await blogSite(answers(FULL))
+    expect((await get("/blog/cron-jobs")).body).not.toContain(`blog-post-translations`)
+  })
+
   it("sends a post's address in another language to its own for good (#527)", async () => {
     const { get } = await blogSite(answers(FULL))
     const { status, location } = await get("/de/blog/cron-jobs")
@@ -409,6 +449,43 @@ describe("a blog post", () => {
     })
   })
 
+  it("links the author's name to their page with rel=author, and shows it plain without one (#730)", async () => {
+    const linked = { ...FULL, authorUrl: `https://ada.example.org/about` }
+    const { body } = await (await blogSite(answers(linked))).get("/blog/cron-jobs")
+    expect(linkNamed(body, `Ada Lovelace`)).toMatch(
+      /^<a href="https:\/\/ada\.example\.org\/about" rel="author" class="[^"]*focus-visible:ring-2/,
+    )
+    expect(textOf(body)).toContain(`4 min read · Ada Lovelace`)
+
+    const plain = await (await blogSite(answers(FULL))).get("/blog/cron-jobs")
+    expect(linkNamed(plain.body, `Ada Lovelace`)).toBeUndefined()
+    expect(plain.body).not.toContain(`rel="author"`)
+    expect(textOf(plain.body)).toContain(`4 min read · Ada Lovelace`)
+  })
+
+  it("gives the structured data's author the link, and the site author's @id on their own domain (#730)", async () => {
+    const author = async (authorUrl: string | null) => {
+      const { body } = await (await blogSite(answers({ ...FULL, authorUrl }))).get(
+        "/blog/cron-jobs",
+      )
+      return jsonLdGraph(body)[0].author
+    }
+    expect(await author(`https://antonshubin.com/about`)).toEqual({
+      "@type": `Person`,
+      "@id": `https://antonshubin.com/#person`,
+      name: `Ada Lovelace`,
+      url: `https://antonshubin.com/about`,
+    })
+    expect(await author(`https://ada.example.org/about`)).toEqual({
+      "@type": `Person`,
+      name: `Ada Lovelace`,
+      url: `https://ada.example.org/about`,
+    })
+    // A look-alike host is another site, not the site author's.
+    expect(await author(`https://antonshubin.com.example.org/about`)).not.toHaveProperty(`@id`)
+    expect(await author(null)).toEqual({ "@type": `Person`, name: `Ada Lovelace` })
+  })
+
   it("shares the site's own image when the post has no cover", async () => {
     const { get } = await blogSite(answers(LONG))
     const { body } = await get("/blog/cron-jobs")
@@ -444,6 +521,26 @@ describe("a blog post", () => {
     expect(body).toContain(`data-e2e="post-subscribe-email"`)
     expect(body).not.toContain(`data-e2e="footer-subscribe-email"`)
     expect(body).not.toContain(`data-e2e="cta-github"`)
+  })
+
+  it("puts the newsletter and read next in the post's column, under a heading smaller than the title (#416)", async () => {
+    const { get } = await blogSite(answers(FULL))
+    const { body } = await get("/blog/cron-jobs")
+
+    // Each block is the same gutter around the same centred 42 rem column, so at any width the
+    // article, the newsletter and "Read next" start at one left edge.
+    const column = (hook: string) =>
+      body.match(new RegExp(`<div class="([^"]*)"[^>]*data-e2e="${hook}"`))?.[1] ??
+        body.match(new RegExp(`data-e2e="${hook}"[^>]*>\\s*<div class="([^"]*)"`))?.[1]
+    const article = body.match(/<div class="(mx-auto[^"]*)"[^>]*>\s*<article/)?.[1]
+    for (const classes of [article, column(`blog-post-newsletter`), column(`blog-read-next`)]) {
+      expect(classes?.split(` `)).toEqual(
+        expect.arrayContaining([`mx-auto`, `w-full`, `max-w-2xl`]),
+      )
+    }
+    const heading = body.match(/<h2 id="post-news" class="([^"]*)"/)?.[1] ?? ``
+    expect(heading).toContain(`text-2xl`)
+    expect(heading).not.toMatch(/text-[3-9]xl/)
   })
 
   it("ends with the demo's call to action while the newsletter is off", async () => {
@@ -611,6 +708,22 @@ describe("the RSS feed", () => {
 
     expect(status).toBe(502)
   })
+
+  it("answers 429 when the API's read limit refused the reader, for the feed and a post (#416)", async () => {
+    const refused = () =>
+      Response.json({ error: { code: `rate_limited` } }, {
+        status: 429,
+        headers: { "retry-after": `30` },
+      })
+    const { get } = await blogSite({
+      ...listing([NEWER]),
+      "/api/blog/feed": refused,
+      "/api/blog/posts/cron-jobs": refused,
+    })
+
+    expect((await get("/rss.xml")).status).toBe(429)
+    expect((await get("/blog/cron-jobs")).status).toBe(429)
+  })
 })
 
 describe("the blog in the sitemap and llms.txt", () => {
@@ -665,6 +778,31 @@ describe("the blog in the sitemap and llms.txt", () => {
     expect(body).toContain(
       `[Cron jobs without a cron](${site}/blog/cron-jobs): ${NEWER.description}`,
     )
+  })
+})
+
+describe("the language links on the blog (#530)", () => {
+  /** Where the footer's link to `language` goes. */
+  const footerLink = (html: string, language: string) =>
+    footer(html).match(new RegExp(`<a href="([^"]*)" hreflang="${language}"`))?.[1]
+
+  it("send a language with no live post to its home page, never to its empty blog", async () => {
+    const { get } = await blogSite({
+      ...listing([NEWER, GERMAN]),
+      [`/api/blog/posts/cron-jobs`]: () => Response.json({ post: FULL, readNext: [] }),
+    })
+    for (const path of [`/blog`, `/blog/cron-jobs`]) {
+      const { body } = await get(path)
+      expect(footerLink(body, `de`)).toBe(`/de/blog`)
+      expect(footerLink(body, `ru`)).toBe(`/ru`)
+    }
+  })
+
+  it("keep the current language's own link on its empty blog", async () => {
+    const { get } = await blogSite(listing([NEWER]))
+    const { body } = await get(`/ru/blog`)
+    expect(footerLink(body, `ru`)).toBe(`/ru/blog`)
+    expect(footerLink(body, `en`)).toBe(`/blog`)
   })
 })
 

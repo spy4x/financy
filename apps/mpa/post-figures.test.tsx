@@ -16,6 +16,13 @@ import {
 } from "./post-figures.tsx"
 import { figureCatalog, siteTranslator } from "./languages.ts"
 import { PRO_MAX_MEMBERS, PRO_PRICE } from "./islands/post/CostCalculator.tsx"
+import HostingCost, {
+  fallback as hostingFallback,
+  managedMonthly,
+  savings,
+  seedMonthly,
+  toEuro,
+} from "./islands/post/HostingCost.tsx"
 import OfflineSyncDemo, {
   MAX_NOTES,
   reconnect,
@@ -96,6 +103,24 @@ describe(`feedHtml`, () => {
       `<p>Said: &lt;i&gt; &lt;b&gt;</p>\n`,
     )
   })
+
+  it(`makes every relative link and image address absolute, and leaves the rest of the HTML alone (#416)`, () => {
+    const html = `<p>See <a href="/docs/x" title="T">docs</a>, <a href="#part">this</a>, ` +
+      `<a href="other-post">that</a>, <a href="https://example.org/a?b=1&amp;c=2">out</a> and ` +
+      `<a href="mailto:hi@example.com">mail</a>.</p>\n<p><img src="/shots/a.png" alt="A"></p>\n` +
+      `<p><code>href=&quot;/code&quot;</code></p>\n`
+    const { parts } = resolveBody([{ kind: `html`, html }], [], figures)
+
+    expect(feedHtml(parts, `https://www.example.com/blog/a`, t)).toBe(
+      `<p>See <a href="https://www.example.com/docs/x" title="T">docs</a>, ` +
+        `<a href="https://www.example.com/blog/a#part">this</a>, ` +
+        `<a href="https://www.example.com/blog/other-post">that</a>, ` +
+        `<a href="https://example.org/a?b=1&amp;c=2">out</a> and ` +
+        `<a href="mailto:hi@example.com">mail</a>.</p>\n` +
+        `<p><img src="https://www.example.com/shots/a.png" alt="A"></p>\n` +
+        `<p><code>href=&quot;/code&quot;</code></p>\n`,
+    )
+  })
 })
 
 describe(`Seed's own posts`, () => {
@@ -128,6 +153,69 @@ describe(`CostCalculator`, () => {
 
     expect(PRO_PRICE).toEqual({ amount: pro.amount, currency: pro.currency })
     expect(PRO_MAX_MEMBERS).toBe(pro.entitlements.limits.maxMembers)
+  })
+})
+
+describe(`HostingCost`, () => {
+  it(`adds the server, its IPv4 address and the backup store to Seed's month`, () => {
+    expect(seedMonthly(`cx23`)).toBe(549 + 50 + 649)
+    expect(seedMonthly(`cpx32`)).toBe(3549 + 50 + 649)
+  })
+
+  it(`charges the managed stack a seat per developer on top of the database`, () => {
+    expect(managedMonthly(1)).toBe(4500)
+    expect(managedMonthly(3)).toBe(8500)
+  })
+
+  it(`turns dollars into euros at the dated ECB rate`, () => {
+    expect(toEuro(4500)).toBe(4012)
+  })
+
+  it(`draws the post's server and team without JavaScript, and its feed sentence names both totals`, () => {
+    const t = siteTranslator(`en`)
+    const html = renderToString(
+      <HostingCost
+        server={`cpx32`}
+        developers={3}
+        figure={{ id: `hosting-cost`, language: `en`, messages: figureCatalog(`en`) }}
+      />,
+    )
+
+    expect(html).toMatch(/value="cpx32"[^>]*checked/)
+    expect(html).toContain(`€42.48`)
+    expect(html).toContain(`$85.00`)
+    expect(hostingFallback({ server: `cpx32`, developers: 3 }, t)).toBe(
+      `On a Hetzner CPX32, Seed costs €42.48 a month with its IPv4 address and backup storage. ` +
+        `Vercel Pro and Supabase Pro cost $85.00 a month, about €75.78. Developers with a Vercel seat: 3. ` +
+        `Seed saves €33.30 a month, €399.60 a year.`,
+    )
+  })
+
+  it(`names the cheaper side and its saving, never a negative amount`, () => {
+    expect(savings(`cx23`, 1)).toEqual({ cheaper: `seed`, monthly: 2764 })
+    expect(savings(`cpx42`, 1)).toEqual({ cheaper: `managed`, monthly: 3636 })
+
+    const draw = (server: `cx23` | `cpx42`) =>
+      renderToString(
+        <HostingCost
+          server={server}
+          developers={1}
+          figure={{ id: `hosting-cost`, language: `en`, messages: figureCatalog(`en`) }}
+        />,
+      )
+    const seedWins = draw(`cx23`)
+    expect(seedWins).toContain(`Seed saves you`)
+    expect(seedWins).toContain(`€27.64 a month`)
+    expect(seedWins).toContain(`€331.68 a year`)
+
+    const managedWins = draw(`cpx42`)
+    expect(managedWins).toContain(`The managed stack saves you`)
+    expect(managedWins).toContain(`€36.36 a month`)
+    expect(managedWins).toContain(`€436.32 a year`)
+    expect(managedWins).not.toContain(`-€`)
+    expect(hostingFallback({ server: `cpx42`, developers: 1 }, siteTranslator(`en`))).toContain(
+      `The managed stack saves €36.36 a month, €436.32 a year.`,
+    )
   })
 })
 
