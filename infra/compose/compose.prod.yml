@@ -1,3 +1,7 @@
+networks:
+  proxy:
+    external: true
+
 services:
 
   db:
@@ -7,34 +11,101 @@ services:
       retries: 5
       start_period: 40s
   
-  minio:
-    labels:
-      - "traefik.docker.network=proxy"
-      - 'traefik.http.routers.${PROJECT}-minio.entrypoints=websecure'
-      - 'traefik.http.routers.${PROJECT}-minio.tls=true'
-      - 'traefik.http.routers.${PROJECT}-minio.tls.certresolver=myresolver'
-
-  grafana:
-    labels:
-      - "traefik.docker.network=proxy"
-      - 'traefik.http.routers.${PROJECT}-grafana.entrypoints=websecure'
-      - 'traefik.http.routers.${PROJECT}-grafana.tls=true'
-      - 'traefik.http.routers.${PROJECT}-grafana.tls.certresolver=myresolver'
-
   api:
+    networks:
+      - proxy
+      - default
     environment:
       - ENV=prod
     labels:
+      # These override compose.shared.yml's api-${PROJECT} router by name, so this stays one
+      # router (rule from compose.shared.yml, transport from here) instead of a second router
+      # that never matches. Overriding `entrypoints` from `web` to `websecure` drops the plain
+      # HTTP listener for this router; the `http-${PROJECT}` router below redirects
+      # plain HTTP for the whole host instead.
       - "traefik.docker.network=proxy"
-      - 'traefik.http.routers.${PROJECT}-api.entrypoints=websecure'
-      - 'traefik.http.routers.${PROJECT}-api.tls=true'
-      - 'traefik.http.routers.${PROJECT}-api.tls.certresolver=myresolver'
+      - 'traefik.http.routers.api-${PROJECT}.entrypoints=websecure'
+      - 'traefik.http.routers.api-${PROJECT}.tls=true'
+      - 'traefik.http.routers.api-${PROJECT}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-myresolver}'
+      # Keep the CF-Connecting-IP strip from compose.shared.yml's api-${PROJECT} router; see the
+      # comment there for why it is required.
+      - 'traefik.http.routers.api-${PROJECT}.middlewares=strip-cf-ip-${PROJECT}'
+      # Plain HTTP for DOMAIN answers a permanent redirect to HTTPS. A router of its own on the
+      # `web` entry point, because the proxy also serves development hosts over plain HTTP and so
+      # cannot redirect the whole entry point. Let's Encrypt's HTTP challenge still gets through:
+      # Traefik's own challenge router outranks every other. On the API, which always runs, not on
+      # the SPA: with `SPA=false` the website's and the admin host's redirects use this middleware.
+      - "traefik.http.middlewares.https-redirect-${PROJECT}.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect-${PROJECT}.redirectscheme.permanent=true"
+      - "traefik.http.routers.http-${PROJECT}.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.http-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.http-${PROJECT}.middlewares=https-redirect-${PROJECT}"
+      - "traefik.http.routers.http-${PROJECT}.service=noop@internal"
 
-  web:
-    build:
-      dockerfile: apps/web/dockerfile.prod
+  # Only with COMPOSE_PROFILES=files. Overrides compose.shared.yml's files router by name; plain
+  # HTTP for DOMAIN already redirects through the api service's http router.
+  garage:
     labels:
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.${PROJECT}-web.entrypoints=websecure"
-      - "traefik.http.routers.${PROJECT}-web.tls=true"
-      - "traefik.http.routers.${PROJECT}-web.tls.certresolver=myresolver"
+      - "traefik.http.routers.files-${PROJECT}.entrypoints=websecure"
+      - "traefik.http.routers.files-${PROJECT}.tls=true"
+      - "traefik.http.routers.files-${PROJECT}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-myresolver}"
+
+  spa:
+    networks:
+      - proxy
+      - default
+    build:
+      dockerfile: apps/spa/dockerfile.prod
+    labels:
+      # Overrides compose.shared.yml's spa-${PROJECT} router by name; see the api router above.
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.spa-${PROJECT}.entrypoints=websecure"
+      - "traefik.http.routers.spa-${PROJECT}.tls=true"
+      - "traefik.http.routers.spa-${PROJECT}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-myresolver}"
+
+  # Only with COMPOSE_PROFILES=mpa. Overrides compose.shared.yml's mpa-${PROJECT} router by name.
+  mpa:
+    labels:
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.mpa-${PROJECT}.entrypoints=websecure"
+      - "traefik.http.routers.mpa-${PROJECT}.tls=true"
+      - "traefik.http.routers.mpa-${PROJECT}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-myresolver}"
+      # The same redirect for the website's host; the middleware is the API's.
+      - "traefik.http.routers.http-mpa-${PROJECT}.rule=Host(`${MPA_DOMAIN:-}`)"
+      - "traefik.http.routers.http-mpa-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.http-mpa-${PROJECT}.middlewares=https-redirect-${PROJECT}"
+      - "traefik.http.routers.http-mpa-${PROJECT}.service=noop@internal"
+      # Hosts that MPA_REDIRECT_RULE matches, such as www.example.com, answer a permanent redirect to
+      # the same path on MPA_DOMAIN. The default rule is valid and matches no request.
+      - "traefik.http.middlewares.to-mpa-${PROJECT}.redirectregex.regex=^https?://[^/]+(.*)"
+      - "traefik.http.middlewares.to-mpa-${PROJECT}.redirectregex.replacement=https://${MPA_DOMAIN:-}$${1}"
+      - "traefik.http.middlewares.to-mpa-${PROJECT}.redirectregex.permanent=true"
+      - "traefik.http.routers.redirect-mpa-${PROJECT}.rule=${MPA_REDIRECT_RULE:-!PathPrefix(`/`)}"
+      - "traefik.http.routers.redirect-mpa-${PROJECT}.entrypoints=websecure"
+      - "traefik.http.routers.redirect-mpa-${PROJECT}.tls=true"
+      - "traefik.http.routers.redirect-mpa-${PROJECT}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-myresolver}"
+      - "traefik.http.routers.redirect-mpa-${PROJECT}.middlewares=to-mpa-${PROJECT}"
+      - "traefik.http.routers.redirect-mpa-${PROJECT}.service=noop@internal"
+      - "traefik.http.routers.redirect-mpa-http-${PROJECT}.rule=${MPA_REDIRECT_RULE:-!PathPrefix(`/`)}"
+      - "traefik.http.routers.redirect-mpa-http-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.redirect-mpa-http-${PROJECT}.middlewares=to-mpa-${PROJECT}"
+      - "traefik.http.routers.redirect-mpa-http-${PROJECT}.service=noop@internal"
+
+  # Only with COMPOSE_PROFILES=admin. Overrides compose.shared.yml's admin routers by name. No
+  # old-host redirect: the admin app has had no other host.
+  admin:
+    labels:
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.admin-${PROJECT}.entrypoints=websecure"
+      - "traefik.http.routers.admin-${PROJECT}.tls=true"
+      - "traefik.http.routers.admin-${PROJECT}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-myresolver}"
+      - "traefik.http.routers.admin-api-${PROJECT}.entrypoints=websecure"
+      - "traefik.http.routers.admin-api-${PROJECT}.tls=true"
+      - "traefik.http.routers.admin-api-${PROJECT}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-myresolver}"
+      - "traefik.http.routers.admin-api-${PROJECT}.middlewares=strip-cf-ip-${PROJECT}"
+      # Plain HTTP for the admin host redirects to HTTPS; the middleware is the API's.
+      - "traefik.http.routers.http-admin-${PROJECT}.rule=Host(`${ADMIN_DOMAIN:-}`)"
+      - "traefik.http.routers.http-admin-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.http-admin-${PROJECT}.middlewares=https-redirect-${PROJECT}"
+      - "traefik.http.routers.http-admin-${PROJECT}.service=noop@internal"

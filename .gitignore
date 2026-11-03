@@ -5,15 +5,10 @@
 .idea
 
 # Configs
-.env
-.env.*
-!.env.example
-!.env.age
-!.env.prod.age
-
-# Age encryption key (never commit!)
 .age/
-key.txt
+.env*
+!.env.example
+!.env*.age
 
 # Packages
 node_modules
@@ -25,13 +20,30 @@ dist
 package
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+apps/spa/security-headers.conf
+apps/admin/security-headers.conf
 .volumes
+.db-upgrade
 e2e/results
 e2e/report
 playwright-report
+.lighthouseci
 
 # Logs
 *.log
 .vs/
 
-infra/configs/vapid.json
+# The Web Push private key, wherever it is written: infra/configs/ by `deno task vapid-key:create`,
+# the API's working directory by default (apps/api/services/config.ts).
+vapid.json
+vapid.json.tmp
+tests/.scratch-*
+
+# Screenshot masters and the font cache of apps/mpa/screenshots/capture.ts.
+apps/mpa/screenshots/.out/
+
+# The raw take of the demo video (media/demo/recipe/record.ts): frames, kept for a re-encode.
+media/demo/.take/
+
+# What `deno task changelog` writes for the website (apps/mpa/changelog-write.ts).
+apps/mpa/changelog.json

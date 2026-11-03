@@ -1,0 +1,187 @@
+# Publishes the template's images to Docker Hub when a v<digit>* tag is pushed. A product copied
+# from the template changes `IMAGE_PREFIX` below and the secrets in Woodpecker, nothing else.
+#
+# The images, each named `$IMAGE_PREFIX-<name>`:
+#   base  Dockerfile.base: Deno, the system packages and the installed dependencies. Not run by
+#         itself; the other three start from it.
+#   api   apps/api/dockerfile. The worker and the one-shot migration run this same image with
+#         another command (infra/compose/compose.shared.yml), so there is no separate worker image.
+#   spa   apps/spa/dockerfile.prod: nginx with the built SPA.
+#   mpa   apps/mpa/dockerfile.prod: the Fresh website.
+#
+# The repository is untrusted in Woodpecker: no step mounts a volume or runs privileged. The only
+# agent runs on a home server, and a pipeline that could mount its Docker socket would be root on
+# that machine. Kaniko builds the images inside an ordinary container, without a Docker daemon.
+#
+# Building and pushing are separate steps, because kaniko runs the Dockerfiles' RUN lines (deno
+# install, Vite and every dependency) in its own container: a token in that container would be
+# readable by all of them. The `build-*` steps hold no secret and write an image to a tar file in
+# the workspace; the `publish-*` steps run only crane, never repository code, and are the only ones
+# that receive DOCKERHUB_USERNAME and DOCKERHUB_TOKEN (the Woodpecker server's global secrets,
+# enabled for the tag event).
+#
+# The three product images start from the base image, and kaniko can only start from an image in a
+# registry, so `publish-base` runs first and the others pull the base from Docker Hub. The images
+# are therefore public, as the base must be readable without a login.
+#
+# Every runtime variable is written `$$`, so Woodpecker leaves it for the shell. Images are pinned
+# by digest, so a moved tag cannot change what runs next to the token.
+
+depends_on: [ci]
+
+when:
+  - event: tag
+    ref: refs/tags/v[0-9]*
+
+variables:
+  # The one place the image names come from: `<IMAGE_PREFIX>-base`, `-api`, `-spa`, `-mpa`.
+  # Seed's own site: see docs/start-a-product.md
+  - &image_env
+    IMAGE_PREFIX: antonshubin/financy
+  # The kaniko executor from woodpeckerci/plugin-kaniko, run as plain commands. No secret.
+  - &kaniko
+    image: woodpeckerci/plugin-kaniko:2.3.3@sha256:d6ecc0f37561503eeacd8f2189068c5a13c531f5629cf2ce2de0ac144824c9f4
+  # crane v0.22.1 (go-containerregistry commit 8a72a42): its `debug` build, pinned by digest,
+  # because the release builds have no shell. Its shell is /busybox/sh and it has no /bin/sh,
+  # so the entrypoint Woodpecker runs the commands with is named here.
+  - &crane
+    image: gcr.io/go-containerregistry/crane:debug@sha256:e78770b31258a3846f878036d9c1f63fbe4c871f9f56990bf77fd95c013e3c1b
+    entrypoint: ["/busybox/sh", "-c", "echo $$CI_SCRIPT | /busybox/base64 -d | /busybox/sh -e"]
+  - &publish_commands
+    - |
+        set -eu
+        IMAGE="$$IMAGE_PREFIX-$$NAME"
+        # The login stays in this container, outside the workspace.
+        export DOCKER_CONFIG=/tmp/docker
+        printf '%s' "$$DOCKERHUB_TOKEN" |
+          crane auth login index.docker.io -u "$$DOCKERHUB_USERNAME" --password-stdin
+        crane push "$$NAME.tar" "$$IMAGE:$${CI_COMMIT_TAG}"
+        # A pre-release tag (v1.2.3-rc.1) is published under its own name only; it never
+        # moves latest.
+        case "$${CI_COMMIT_TAG}" in
+          *-*) ;;
+          *) crane tag "$$IMAGE:$${CI_COMMIT_TAG}" latest ;;
+        esac
+
+steps:
+  guard:
+    # Stops a mistaken release: a tag pushed on a commit that is not on main fails here. It is not
+    # a security boundary. Woodpecker reads this file from the tagged commit and hands global
+    # secrets out by event only, so a tag on a commit whose own release.yml lacks this step still
+    # reaches the token. The clone is shallow, so main is fetched explicitly.
+    image: alpine/git:2.52.0@sha256:4a0e72d49596a1f5d3701aeedafdadc5c0da4062be4657c7bdc4017387f591cc
+    commands:
+      - git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+      - |
+          if ! git merge-base --is-ancestor "$${CI_COMMIT_SHA}" refs/remotes/origin/main; then
+            echo "Refusing to publish $${CI_COMMIT_TAG}: commit $${CI_COMMIT_SHA} is not on main." >&2
+            exit 1
+          fi
+          echo "$${CI_COMMIT_TAG} ($${CI_COMMIT_SHA}) is on main."
+
+  changelog:
+    # Writes apps/mpa/changelog.json from the history of the tagged commit, for the website's
+    # /changelog and its docs' dates: the MPA image is built without .git. It runs repository code
+    # (deno task changelog), so it holds no secret, like the build steps. The clone is shallow; the
+    # task fetches the rest of the history and fails rather than write an empty changelog.
+    image: denoland/deno:2.9.7@sha256:fa335acdf6b72106eda2cb6a8cb5f4187e7630e357467489db4b2e7352d5e432
+    depends_on: [guard]
+    commands:
+      - apt-get update -qq && apt-get install -y -qq --no-install-recommends git
+      - deno task changelog
+
+  build-base:
+    <<: *kaniko
+    depends_on: [guard]
+    environment:
+      <<: *image_env
+      NAME: base
+    commands:
+      - executor --context "$$PWD" --dockerfile Dockerfile.base
+        --destination "$$IMAGE_PREFIX-$$NAME:$${CI_COMMIT_TAG}"
+        --no-push --tar-path "$$PWD/$$NAME.tar"
+
+  publish-base:
+    <<: *crane
+    depends_on: [build-base]
+    environment:
+      <<: *image_env
+      NAME: base
+      DOCKERHUB_USERNAME:
+        from_secret: DOCKERHUB_USERNAME
+      DOCKERHUB_TOKEN:
+        from_secret: DOCKERHUB_TOKEN
+    commands: *publish_commands
+
+  build-api:
+    <<: *kaniko
+    depends_on: [publish-base]
+    environment:
+      <<: *image_env
+      NAME: api
+    commands:
+      - executor --context "$$PWD" --dockerfile apps/api/dockerfile
+        --build-arg "BASE_IMAGE=$$IMAGE_PREFIX-base:$${CI_COMMIT_TAG}"
+        --build-arg "APP_VERSION=$${CI_COMMIT_TAG}" --build-arg "APP_COMMIT=$${CI_COMMIT_SHA}"
+        --destination "$$IMAGE_PREFIX-$$NAME:$${CI_COMMIT_TAG}"
+        --no-push --tar-path "$$PWD/$$NAME.tar"
+
+  publish-api:
+    <<: *crane
+    depends_on: [build-api]
+    environment:
+      <<: *image_env
+      NAME: api
+      DOCKERHUB_USERNAME:
+        from_secret: DOCKERHUB_USERNAME
+      DOCKERHUB_TOKEN:
+        from_secret: DOCKERHUB_TOKEN
+    commands: *publish_commands
+
+  build-spa:
+    <<: *kaniko
+    depends_on: [publish-base]
+    environment:
+      <<: *image_env
+      NAME: spa
+    commands:
+      - executor --context "$$PWD" --dockerfile apps/spa/dockerfile.prod
+        --build-arg "BASE_IMAGE=$$IMAGE_PREFIX-base:$${CI_COMMIT_TAG}"
+        --destination "$$IMAGE_PREFIX-$$NAME:$${CI_COMMIT_TAG}"
+        --no-push --tar-path "$$PWD/$$NAME.tar"
+
+  publish-spa:
+    <<: *crane
+    depends_on: [build-spa]
+    environment:
+      <<: *image_env
+      NAME: spa
+      DOCKERHUB_USERNAME:
+        from_secret: DOCKERHUB_USERNAME
+      DOCKERHUB_TOKEN:
+        from_secret: DOCKERHUB_TOKEN
+    commands: *publish_commands
+
+  build-mpa:
+    <<: *kaniko
+    depends_on: [publish-base, changelog]
+    environment:
+      <<: *image_env
+      NAME: mpa
+    commands:
+      - executor --context "$$PWD" --dockerfile apps/mpa/dockerfile.prod
+        --build-arg "BASE_IMAGE=$$IMAGE_PREFIX-base:$${CI_COMMIT_TAG}"
+        --destination "$$IMAGE_PREFIX-$$NAME:$${CI_COMMIT_TAG}"
+        --no-push --tar-path "$$PWD/$$NAME.tar"
+
+  publish-mpa:
+    <<: *crane
+    depends_on: [build-mpa]
+    environment:
+      <<: *image_env
+      NAME: mpa
+      DOCKERHUB_USERNAME:
+        from_secret: DOCKERHUB_USERNAME
+      DOCKERHUB_TOKEN:
+        from_secret: DOCKERHUB_TOKEN
+    commands: *publish_commands

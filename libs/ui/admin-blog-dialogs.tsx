@@ -1,0 +1,373 @@
+import type { ComponentChildren, JSX } from "preact"
+import { useState } from "preact/hooks"
+import { Checkbox } from "@spy4x/preact-ui/checkbox"
+import { ConfirmDialog } from "@spy4x/preact-ui/confirm-dialog"
+import { ErrorState } from "@spy4x/preact-ui/error-state"
+import { Field } from "@spy4x/preact-ui/field"
+import { useFormat } from "@spy4x/preact-ui/format"
+import { DateTimeField } from "@spy4x/preact-ui/date-time-field"
+import { Input, Select } from "@spy4x/preact-ui/input"
+import { Stack } from "@spy4x/preact-ui/layout"
+import { RadioGroup } from "@spy4x/preact-ui/radio"
+import { BLOG_SLUG_MAX_LENGTH, BLOG_SLUG_PATTERN, blogPostPath } from "@domain/blog"
+import type { AdminBlogEditorScreenProps } from "./admin-blog-editor.tsx"
+import { Rich } from "@spy4x/preact-ui/i18n"
+import { useAdminText } from "./i18n.ts"
+import { Isolated } from "@spy4x/preact-ui/bdi"
+import { Button } from "@spy4x/preact-ui/button"
+import { Notice } from "@spy4x/preact-ui/notice"
+import { blogProblemKey, BlogProblemText } from "./admin-blog-problems.tsx"
+
+/** What the dialogs take besides the screen's props: the Problems panel's "Go to problems". */
+type DialogsProps = AdminBlogEditorScreenProps & { onGoToProblems: () => void }
+
+/** A path inside a sentence: code, isolated, never machine-translated. */
+function path(text: string): JSX.Element {
+  return <bdi class="font-mono" translate={false}>{text}</bdi>
+}
+
+/**
+ * The blog editor's dialogs (#396): publish or schedule, unschedule, unpublish, change the URL and
+ * delete. Each one confirms; the ones that cannot be undone are drawn as danger.
+ *
+ * @module
+ */
+
+/** The open dialog, if any. */
+export function Dialogs(props: DialogsProps): JSX.Element | null {
+  const { dialog, post, value } = props
+  const t = useAdminText()
+  if (dialog === null) return null
+  const title = (post?.title ?? value.title.trim()) || t.t(`AdminBlogDialogs.untitled`)
+  const shared = {
+    busy: props.dialogPending,
+    onCancel: props.onCloseDialog,
+    cancelLabel: t.t(`AdminBlogDialogs.cancel`),
+  }
+  switch (dialog) {
+    case `publish`:
+    case `publish-now`:
+    case `reschedule`:
+      return <PublishDialog {...props} title={title} />
+    case `unschedule`:
+      return (
+        <ConfirmDialog
+          {...shared}
+          title={
+            <Isolated
+              message={(title) => t.t(`AdminBlogDialogs.unscheduleTitle`, { title })}
+              value={title}
+            />
+          }
+          confirmLabel={t.t(`AdminBlogDialogs.unschedule`)}
+          onConfirm={props.onUnschedule}
+        >
+          <DialogBody error={props.dialogError}>
+            {t.t(`AdminBlogDialogs.unscheduleText`)}
+          </DialogBody>
+        </ConfirmDialog>
+      )
+    case `unpublish`:
+      return (
+        <ConfirmDialog
+          {...shared}
+          tone="danger"
+          title={
+            <Isolated
+              message={(title) => t.t(`AdminBlogDialogs.unpublishTitle`, { title })}
+              value={title}
+            />
+          }
+          confirmLabel={t.t(`AdminBlogDialogs.unpublish`)}
+          onConfirm={props.onUnpublish}
+        >
+          <DialogBody error={props.dialogError}>
+            {t.t(`AdminBlogDialogs.unpublishText`)}
+          </DialogBody>
+        </ConfirmDialog>
+      )
+    case `delete`:
+      return (
+        <ConfirmDialog
+          {...shared}
+          tone="danger"
+          title={
+            <Isolated
+              message={(title) => t.t(`AdminBlogDialogs.deleteTitle`, { title })}
+              value={title}
+            />
+          }
+          confirmLabel={t.t(`AdminBlogDialogs.deletePost`)}
+          onConfirm={props.onDelete}
+        >
+          <DialogBody error={props.dialogError}>
+            {t.t(`AdminBlogDialogs.deleteText`)}
+          </DialogBody>
+        </ConfirmDialog>
+      )
+    case `change-url`:
+      return <ChangeUrlDialog {...props} />
+  }
+}
+
+/** A dialog's sentence, and the API's refusal under it. */
+function DialogBody(
+  { error, children }: { error: string | null; children: ComponentChildren },
+): JSX.Element {
+  return (
+    <Stack gap="md">
+      <p>{children}</p>
+      {error && <ErrorState message={error} />}
+    </Stack>
+  )
+}
+
+/** The new address of a published post, with the warning that old links break. */
+function ChangeUrlDialog(props: AdminBlogEditorScreenProps): JSX.Element {
+  const t = useAdminText()
+  const old = props.post?.slug ?? ``
+  const [slug, setSlug] = useState(old)
+  const trimmed = slug.trim()
+  const problem = trimmed === ``
+    ? t.t(`AdminBlogDialogs.addSlug`)
+    : BLOG_SLUG_PATTERN.test(trimmed)
+    ? null
+    : t.t(`AdminBlogDialogs.slugRule`)
+  const [tried, setTried] = useState(false)
+  return (
+    <ConfirmDialog
+      busy={props.dialogPending}
+      onCancel={props.onCloseDialog}
+      cancelLabel={t.t(`AdminBlogDialogs.cancel`)}
+      tone="danger"
+      title={t.t(`AdminBlogDialogs.changeUrlTitle`)}
+      confirmLabel={t.t(`AdminBlogDialogs.changeUrl`)}
+      onConfirm={() => {
+        setTried(true)
+        if (problem === null && trimmed !== old) props.onChangeUrl(trimmed)
+      }}
+    >
+      <Stack gap="md">
+        <p>
+          <Rich
+            parts={t.parts(`AdminBlogDialogs.linksBreak`, {
+              path: blogPostPath({
+                language: props.post?.language ?? props.value.language,
+                slug: old,
+              }),
+            })}
+            tags={{ path }}
+          />
+        </p>
+        <Field
+          id="blog-new-slug"
+          label={t.t(`AdminBlogDialogs.newSlug`)}
+          hint={t.t(`AdminBlogDialogs.slugHint`)}
+          error={tried ? problem : null}
+          required
+        >
+          <Input
+            class="font-mono text-sm"
+            data-e2e="admin-blog-new-slug"
+            maxLength={BLOG_SLUG_MAX_LENGTH}
+            autocomplete="off"
+            spellcheck={false}
+            value={slug}
+            onInput={(e) => setSlug(e.currentTarget.value)}
+          />
+        </Field>
+        {props.dialogError && <ErrorState message={props.dialogError} />}
+      </Stack>
+    </ConfirmDialog>
+  )
+}
+
+/** An hour from `now`, on the minute: where the schedule field starts. */
+function inAnHour(now: Date): string {
+  const at = new Date(now.getTime() + 3_600_000)
+  at.setUTCSeconds(0, 0)
+  return at.toISOString()
+}
+
+/**
+ * Publish a draft now or at a time, publish a scheduled post now, or move its time. Emailing the
+ * post is an unchecked box that names how many people get it, offered only while the newsletter is
+ * on and the post was never emailed; the button then says so too. A scheduled post's list is
+ * dropped while the newsletter is off, and a line says so, since the API refuses a list then.
+ *
+ * With tags in the body that readers will not see (#620), a warning lists them and its "Go to
+ * problems" takes first focus; the confirm button then says "anyway". It never blocks: a broken
+ * tag hides one figure, and blocking would trap a post whose component a later deploy removed.
+ */
+function PublishDialog(props: DialogsProps & { title: string }): JSX.Element {
+  const { dialog, post, value, newsletter, now } = props
+  const format = useFormat()
+  const t = useAdminText()
+  const [when, setWhen] = useState<`now` | `schedule`>(dialog === `reschedule` ? `schedule` : `now`)
+  const [at, setAt] = useState<string | null>(post?.publishAt ?? inAnHour(now))
+  const lists = newsletter?.enabled ? newsletter.lists : []
+  const sent = post?.newsletterSentAt != null
+  // Known to be off, not still loading: the post's list is dropped, since the API refuses it.
+  const off = newsletter?.enabled === false
+  const dropped = off && !sent ? post?.newsletterList ?? null : null
+  // The list the post already carries stays chosen, so publishing now or moving the time sends
+  // it again, also before the lists have loaded.
+  const [emailing, setEmailing] = useState(post?.newsletterList != null)
+  const [list, setList] = useState(post?.newsletterList ?? lists[0]?.list ?? null)
+  const [tried, setTried] = useState(false)
+  const chosen = lists.find((entry) => entry.list === (list ?? lists[0]?.list))
+  const canEmail = !sent && !off && (chosen !== undefined || post?.newsletterList != null)
+  const scheduling = when === `schedule`
+  const late = at === null || new Date(at).getTime() <= now.getTime()
+  const atError = scheduling && tried && late ? t.t(`AdminBlogDialogs.futureTime`) : null
+  const target = list ?? chosen?.list ?? null
+  // The issue goes only to the subscribers of the post's language (#527).
+  const readers = chosen?.byLanguage[value.language] ?? 0
+  const sending = canEmail && emailing && target !== null
+  const warned = props.problems.length > 0
+  const confirmLabel = scheduling
+    ? t.t(warned ? `AdminBlogDialogs.scheduleAnyway` : `AdminBlogDialogs.schedule`)
+    : sending && chosen
+    ? t.t(
+      warned ? `AdminBlogDialogs.publishAndEmailAnyway` : `AdminBlogDialogs.publishAndEmail`,
+      { count: readers },
+    )
+    : t.t(warned ? `AdminBlogDialogs.publishAnyway` : `AdminBlogDialogs.publish`)
+  const slug = post?.slug ?? value.slug.trim()
+  return (
+    <ConfirmDialog
+      busy={props.dialogPending}
+      onCancel={props.onCloseDialog}
+      cancelLabel={t.t(`AdminBlogDialogs.cancel`)}
+      title={t.t(scheduling ? `AdminBlogDialogs.scheduleTitle` : `AdminBlogDialogs.publishTitle`, {
+        title: props.title,
+      })}
+      confirmLabel={confirmLabel}
+      onConfirm={() => {
+        setTried(true)
+        if (scheduling && late) return
+        props.onPublish({ at: scheduling ? at : null, list: sending ? target : null })
+      }}
+    >
+      <Stack gap="md">
+        {warned && (
+          <Notice
+            tone="warning"
+            live={false}
+            title={t.t(`AdminBlogDialogs.figuresHidden`, { count: props.problems.length })}
+            data-e2e="admin-blog-publish-problems"
+          >
+            <p>{t.t(`AdminBlogDialogs.figuresHiddenBody`)}</p>
+            {/* One column of line labels, so every message starts at the same place. */}
+            <ul class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+              {props.problems.map((problem) => (
+                <li key={blogProblemKey(problem)} class="col-span-2 grid grid-cols-subgrid">
+                  <span class="shrink-0 font-medium tabular-nums">
+                    {t.t(`AdminBlogEditor.problemLine`, { line: problem.line })}
+                  </span>
+                  <span class="min-w-0">
+                    <BlogProblemText problem={problem} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              class="mt-3 max-sm:min-h-11"
+              // The first thing to look at: what will not show. `showModal()` focuses it.
+              autofocus
+              data-e2e="admin-blog-go-to-problems"
+              onClick={props.onGoToProblems}
+            >
+              {t.t(`AdminBlogDialogs.goToProblems`)}
+            </Button>
+          </Notice>
+        )}
+        {dialog === `publish` && (
+          <RadioGroup
+            legend={t.t(`AdminBlogDialogs.when`)}
+            name="blog-publish-when"
+            data-e2e="admin-blog-when"
+            options={[
+              { value: `now`, label: t.t(`AdminBlogDialogs.now`) },
+              { value: `schedule`, label: t.t(`AdminBlogDialogs.whenSchedule`) },
+            ]}
+            value={when}
+            onChange={(next) => setWhen(next === `schedule` ? `schedule` : `now`)}
+          />
+        )}
+        {scheduling
+          ? (
+            <DateTimeField
+              id="blog-publish-at"
+              label={t.t(`AdminBlogDialogs.dateTime`)}
+              value={at}
+              onChange={setAt}
+              timeZone={format.timeZone}
+              min={now.toISOString()}
+              hint={t.t(`AdminBlogDialogs.liveOnItsOwn`)}
+              error={atError}
+              required
+            />
+          )
+          : (
+            <p>
+              <Rich
+                parts={t.parts(`AdminBlogDialogs.goesLiveAt`, {
+                  path: blogPostPath({ language: value.language, slug }),
+                })}
+                tags={{ path }}
+              />
+            </p>
+          )}
+        {canEmail && chosen && (
+          <Stack gap="sm">
+            {lists.length > 1 && (
+              <Field id="blog-publish-list" label={t.t(`AdminBlogDialogs.mailingList`)}>
+                <Select
+                  options={lists.map((entry) => ({ value: entry.list, label: entry.list }))}
+                  value={chosen.list}
+                  onChange={(e) =>
+                    setList(e.currentTarget.value)}
+                />
+              </Field>
+            )}
+            <Checkbox
+              checked={emailing}
+              data-e2e="admin-blog-email"
+              onChange={(e) => setEmailing(e.currentTarget.checked)}
+            >
+              {lists.length > 1
+                ? (
+                  <Rich
+                    parts={t.parts(`AdminBlogDialogs.alsoEmailList`, {
+                      count: readers,
+                      list: chosen.list,
+                    })}
+                    tags={{ list: path }}
+                  />
+                )
+                : t.t(`AdminBlogDialogs.alsoEmail`, { count: readers })}
+            </Checkbox>
+            {emailing && (
+              <p class="text-sm text-muted" data-e2e="admin-blog-email-hint">
+                {t.t(`AdminBlogDialogs.sentOnce`)} {t.t(`AdminBlogDialogs.postLanguageOnly`)}
+              </p>
+            )}
+          </Stack>
+        )}
+        {dropped !== null && (
+          <p class="text-sm" data-e2e="admin-blog-email-off">
+            <Rich
+              parts={t.parts(`AdminBlogDialogs.newsletterOff`, { list: dropped })}
+              tags={{ list: path }}
+            />
+          </p>
+        )}
+        {props.dialogError && <ErrorState message={props.dialogError} />}
+      </Stack>
+    </ConfirmDialog>
+  )
+}

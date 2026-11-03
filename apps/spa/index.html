@@ -1,0 +1,50 @@
+<html lang="en" class="h-full" data-theme="ink">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Seed's own site: see docs/start-a-product.md -->
+    <title>Seed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- The browser's own frame takes the canvas of the palette the device asks for. -->
+    <meta name="theme-color" content="#f3f4f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080b10" media="(prefers-color-scheme: dark)" />
+    <style>
+    /* The blank frame before the app's CSS follows the chosen theme: the build's theme script
+       sets `dark` on <html> before the first paint. */
+    :root {
+      color-scheme: light;
+    }
+    :root.dark {
+      color-scheme: dark;
+    }
+    </style>
+    <link
+      rel="preload"
+      href="/fonts/geist-sans.var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/apple-touch-icon.png"
+    />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="apple-mobile-web-app-title" content="Seed" />
+  </head>
+  <body class="theme-base min-h-full">
+    <div id="app"></div>
+    <!-- /try (#224) and every other page are drawn by JavaScript: say so instead of a blank page. -->
+    <noscript><p class="p-4 text-sm">This app needs JavaScript. Turn it on to try it, sign in or sign up.</p></noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

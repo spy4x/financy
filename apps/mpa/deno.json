@@ -1,0 +1,62 @@
+{
+  "tasks": {
+    "build": "deno run -A --node-modules-dir=auto npm:vite@7.3.6 build",
+    "check": "deno fmt --check . && deno lint . && deno check",
+    "dev": "deno run -A --node-modules-dir=auto npm:vite@7.3.6",
+    // Needs the MPA and the API at MPA_BASE_URL (default http://app.localhost), /api going to the API.
+    "e2e": "deno run -A --node-modules-dir npm:playwright@1.57.0 test --config=../../e2e/mpa/playwright.config.ts",
+    // Needs the dev stack, cwebp, magick and tar: screenshots/README.md.
+    "screenshots": "deno run -A screenshots/capture.ts",
+    // Needs the dev stack, ffmpeg (with libsvtav1 and libx264) and cwebp: screenshots/README.md.
+    "loops": "deno run -A screenshots/loops.ts",
+    "start": "deno serve -A _fresh/server.js"
+  },
+  "imports": {
+    "@/": "./",
+    "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@1.1.2",
+    "@spy4x/platform/universal/contact": "jsr:@spy4x/platform@1.106.0/universal/contact",
+    "@spy4x/platform/universal/is-record": "jsr:@spy4x/platform@1.106.0/universal/is-record",
+    "@spy4x/platform/universal/seo": "jsr:@spy4x/platform@1.106.0/universal/seo",
+    "@spy4x/server/http/bounded-body": "jsr:@spy4x/server@1.106.0/http/bounded-body",
+    "@spy4x/server/http/same-origin": "jsr:@spy4x/server@1.106.0/http/same-origin",
+    "@spy4x/server/http/security-headers": "jsr:@spy4x/server@1.106.0/http/security-headers",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@4.1.12",
+    "@types/babel__core": "npm:@types/babel__core@7.20.5",
+    "fresh": "jsr:@fresh/core@2.3.3",
+    "preact": "npm:preact@10.29.8",
+    "tailwindcss": "npm:tailwindcss@4.1.12",
+    "vite": "npm:vite@7.3.6"
+  },
+  "compilerOptions": {
+    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
+    "jsx": "precompile",
+    "jsxImportSource": "preact",
+    "jsxPrecompileSkipElements": [
+      "a",
+      "img",
+      "source",
+      "body",
+      "html",
+      "head",
+      "title",
+      "meta",
+      "script",
+      "link",
+      "style",
+      "base",
+      "noscript",
+      "template"
+    ],
+    "types": ["vite/client"]
+  },
+  // `ui-text/no-literal` (#216) flags English text written in markup: the website's words live in
+  // the `site` catalog (`i18n/site`, #276). A page that is English at every address, such as a
+  // legal page, opts out with `// deno-lint-ignore-file ui-text/no-literal` and the reason.
+  "lint": {
+    "plugins": ["jsr:@spy4x/preact-theme@13.7.0/lint"],
+    "rules": {
+      "tags": ["fresh", "recommended"]
+    }
+  },
+  "exclude": ["**/_fresh/*"]
+}

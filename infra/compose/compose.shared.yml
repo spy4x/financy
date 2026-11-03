@@ -1,28 +1,29 @@
 name: ${PROJECT}
 
-networks:
-  proxy:
-    external: true
-
 services:
 
   # region Storages
   db:
     container_name: ${PROJECT}-db
-    image: postgres:16-alpine
+    # The same 18 minor as CI and the local browser run: tests/compose-postgres.test.ts. Built with
+    # the old zone names browsers still report (infra/postgres/Dockerfile).
+    build:
+      context: ../postgres
+      args:
+        - POSTGRES_IMAGE=docker.io/library/postgres:18.6
     restart: unless-stopped
     command: [ 
         'postgres', 
         '-c', 
         'shared_preload_libraries=pg_stat_statements',
         '-c',
-        'shared_buffers=2GB', # Set memory for shared buffers
+        'shared_buffers=${DB_SHARED_BUFFERS:-512MB}', # A quarter of the container's memory limit. The five DB_* defaults here fit DB_MEM_LIMIT=2048m; a larger limit sets them beside it (infra/envs/.env.example)
         '-c',
-        'work_mem=64MB', # Memory for sorting/hash joins per operation
+        'work_mem=${DB_WORK_MEM:-16MB}', # Memory for sorting/hash joins per operation; 30 connections can each use it
         '-c',
-        'maintenance_work_mem=512MB', # Memory for maintenance operations
+        'maintenance_work_mem=${DB_MAINTENANCE_WORK_MEM:-128MB}', # Memory for maintenance operations
         '-c',
-        'effective_cache_size=6GB', # Anticipated OS disk cache
+        'effective_cache_size=${DB_EFFECTIVE_CACHE_SIZE:-1536MB}', # Shared buffers plus the page cache the limit leaves: three quarters of it
         '-c',
         'max_connections=30', # Limit max client connections
         '-c',
@@ -40,7 +41,7 @@ services:
         '-c',
         'autovacuum_vacuum_cost_limit=1000', # Cost limit for vacuuming. 1000-2000 to allow autovacuum processes to perform more work in each cycle on larger tables.
         '-c',
-        'autovacuum_work_mem=512MB', # Memory for autovacuum processes, Explicitly set it to 256MB or 512MB, especially for large tables that are vacuumed frequently.
+        'autovacuum_work_mem=${DB_AUTOVACUUM_WORK_MEM:-128MB}', # Memory for each autovacuum worker (three by default)
         '-c',
         'random_page_cost=1.1', # Set the cost of a non-sequentially fetched disk page to 1.1, which is a good starting point for SSDs.
         '-c',
@@ -56,35 +57,114 @@ services:
           cpus: '${DB_CPU_LIMIT}'
           memory: '${DB_MEM_LIMIT}'
     volumes:
-      - ../../.volumes/postgres:/var/lib/postgresql/data:Z
+      # Postgres 18 keeps its data in a folder named after its version (18/docker) under this
+      # mount. The directory is new on purpose: a server's Postgres 16 data stays in
+      # .volumes/postgres, untouched, and `deno task db:upgrade-18` moves it over
+      # (docs/postgres-18-upgrade.md). Until then `deno task compose up` refuses to start.
+      - ../../.volumes/postgres18:/var/lib/postgresql:Z
     environment:
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
       - PGUSER=${DB_USER}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
     ports:
-      - ${DB_PORT}:5432
+      # Left side of the mapping, host address included. Default: this machine only. Never publish
+      # Postgres on 0.0.0.0; set DB_HOST_PORT=127.0.0.1:<port> to pick the host port.
+      - ${DB_HOST_PORT:-127.0.0.1:${DB_PORT}}:5432
     healthcheck:
-      test: [ 'CMD', 'pg_isready', '-d', '${DB_NAME}', '-U', '${DB_USER}' ]
+      # Over TCP: initdb's temporary server listens on the socket only, answers ready, then shuts
+      # down, and `migrate` (never restarted) would fail on that first boot.
+      test: [ 'CMD', 'pg_isready', '-h', '127.0.0.1', '-d', '${DB_NAME}', '-U', '${DB_USER}' ]
     security_opt:
       - no-new-privileges:true
 
+  # Pools the API's and the worker's connections in transaction mode: however many of them run,
+  # Postgres sees at most PGBOUNCER_POOL_SIZE connections from them (docs/stack.md, "Database
+  # connections"). What needs one session for longer than a transaction skips it: `migrate` holds
+  # an advisory lock across statements, and the API's LISTEN connection waits for notifications, so
+  # both go to `db` directly. No published port, and on the project's own network only.
+  pgbouncer:
+    container_name: ${PROJECT}-pgbouncer
+    # Pinned by digest as well as version: every query of the API and the worker passes through it.
+    image: docker.io/edoburu/pgbouncer:v1.25.2-p0@sha256:7d7a27d9e90985cab5cf42256f5c13a3120baa4b055b69df37beb272b89b2340
+    restart: unless-stopped
+    # The image's own `postgres` user, written down so that an image that changes it cannot run
+    # PgBouncer as root.
+    user: "70:70"
+    # The image's entrypoint writes pgbouncer.ini and the password file from these, inside the
+    # container. The password is the database's own (DB_PASS): PgBouncer checks the apps' SCRAM
+    # login with it and logs in to Postgres with it.
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASS}
+      - AUTH_TYPE=scram-sha-256
+      - POOL_MODE=transaction
+      # Connections to Postgres. With Postgres' max_connections=30 this leaves room for the
+      # LISTEN connection, migrate, postgres-exporter, the backup and a psql session.
+      - DEFAULT_POOL_SIZE=${PGBOUNCER_POOL_SIZE:-20}
+      - MAX_DB_CONNECTIONS=${PGBOUNCER_POOL_SIZE:-20}
+      # Connections from the apps: 10 per API process, 10 per worker, 1 per one-off script.
+      - MAX_CLIENT_CONN=${PGBOUNCER_MAX_CLIENT_CONN:-200}
+      # postgres.js prepares every query by name. PgBouncer 1.21+ tracks those names per client
+      # and prepares them again on whichever server connection a transaction lands on.
+      - MAX_PREPARED_STATEMENTS=200
+    deploy:
+      resources:
+        limits:
+          # Defaults, so an env file written before this service existed still deploys.
+          cpus: '${PGBOUNCER_CPU_LIMIT:-0.5}'
+          memory: '${PGBOUNCER_MEM_LIMIT:-64M}'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      # PgBouncer answers once it listens; Postgres behind it is `db`'s own healthcheck.
+      test: [ 'CMD', 'pg_isready', '-h', '127.0.0.1', '-p', '5432', '-d', '${DB_NAME}', '-U', '${DB_USER}' ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
   kv:
     container_name: ${PROJECT}-kv
-    image: valkey/valkey:8.1-alpine
+    image: valkey/valkey:8.1
     restart: unless-stopped
     volumes:
       - ../../.volumes/kv:/data:Z
     ports:
-      - ${KV_PORT}:6379
+      # As for Postgres: this machine only by default, and Valkey needs KV_PASSWORD besides.
+      - ${KV_HOST_PORT:-127.0.0.1:${KV_PORT}}:6379
+    # The password reaches Valkey through the environment and is expanded by the shell inside the
+    # container ($$ stops Compose expanding it), so it is not in the command line that
+    # `docker inspect` prints under Config.Cmd. The command goes through the image's own
+    # `docker-entrypoint.sh`: it drops root to the `valkey` user only when its first argument is
+    # `valkey-server`, which a bare `sh -c` would skip (Valkey would run as root). `docker inspect`
+    # still shows Config.Env, like every other secret in this file; `valkey-cli` reads the same
+    # value from REDISCLI_AUTH.
+    environment:
+      - KV_PASSWORD=${KV_PASSWORD:?KV_PASSWORD is required, Valkey will not start without it}
+      - REDISCLI_AUTH=${KV_PASSWORD}
     command:
-      [
-        'valkey-server',
-        '--maxmemory',
-        '${KV_MEM_INNER_LIMIT}',
-        '--maxmemory-policy',
-        'allkeys-lru',
-      ]
+      - sh
+      - -c
+      - >-
+        exec docker-entrypoint.sh valkey-server
+        --requirepass "$$KV_PASSWORD"
+        --maxmemory ${KV_MEM_INNER_LIMIT}
+        --maxmemory-policy allkeys-lru
+        --save ""
     deploy:
       resources:
         limits:
@@ -101,154 +181,211 @@ services:
         max-size: '10m'
         max-file: '3'
 
-  minio:
-    container_name: ${PROJECT}-minio
-    image: minio/minio
+  # The file store (docs/files.md): Garage, which speaks the S3 API. Only with
+  # COMPOSE_PROFILES=files; without the profile the API uses the S3 store S3_ENDPOINT names.
+  # `--single-node --default-bucket` lays out the one node and creates the key and the bucket from
+  # the environment on every start; a start with both already there changes nothing. The image is
+  # the `garage` binary alone, with no shell. The bucket is private: every request needs a
+  # signature, and only the API holds the key.
+  garage:
+    container_name: ${PROJECT}-garage
+    profiles: [files]
+    image: docker.io/dxflrs/garage:v2.4.1@sha256:9c96caa2612d3411acc5b0e6701fb238dbfba33e533a6d7d3d811a4b12d0d020
     restart: unless-stopped
+    command: [ '/garage', 'server', '--single-node', '--default-bucket' ]
+    volumes:
+      - ../../infra/configs/garage.toml:/etc/garage.toml:ro,z
+      # Shared label (`z`): the backup service reads it too.
+      - ../../.volumes/garage:/var/lib/garage:z
+    # `${…:-}`, not `${…:?}`: Compose interpolates profiled services too, so `:?` would stop a
+    # project without the profile. Garage itself refuses to start without them.
+    environment:
+      - GARAGE_RPC_SECRET=${GARAGE_RPC_SECRET:-}
+      - GARAGE_DEFAULT_ACCESS_KEY=${S3_ACCESS_KEY_ID:-}
+      - GARAGE_DEFAULT_SECRET_KEY=${S3_SECRET_ACCESS_KEY:-}
+      - GARAGE_DEFAULT_BUCKET=${S3_BUCKET:-${PROJECT}-files}
+    deploy:
+      resources:
+        limits:
+          cpus: '${GARAGE_CPU_LIMIT:-0.5}'
+          memory: '${GARAGE_MEM_LIMIT:-256M}'
+    healthcheck:
+      test: [ 'CMD', '/garage', 'bucket', 'info', '${S3_BUCKET:-${PROJECT}-files}' ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    # Browsers upload and download with signed URLs on the app's own host (S3_PUBLIC_ENDPOINT),
+    # path-style: https://DOMAIN/<bucket>/<key>. Same origin as the SPA, so the bucket needs no
+    # CORS. Only paths under the bucket reach Garage, and every answer carries a sandbox policy
+    # and nosniff, so a file never runs as a page of this origin. The priority beats the SPA's
+    # catch-all router.
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.files-${PROJECT}.rule=Host(`${DOMAIN}`) && PathPrefix(`/${S3_BUCKET:-${PROJECT}-files}/`)'
+      - 'traefik.http.routers.files-${PROJECT}.priority=1000'
+      - 'traefik.http.routers.files-${PROJECT}.entrypoints=web'
+      - 'traefik.http.routers.files-${PROJECT}.service=files-${PROJECT}'
+      - 'traefik.http.routers.files-${PROJECT}.middlewares=files-headers-${PROJECT}'
+      - "traefik.http.middlewares.files-headers-${PROJECT}.headers.customresponseheaders.Content-Security-Policy=sandbox; default-src 'none'"
+      - 'traefik.http.middlewares.files-headers-${PROJECT}.headers.customresponseheaders.X-Content-Type-Options=nosniff'
+      - 'traefik.http.services.files-${PROJECT}.loadbalancer.server.port=3900'
+      - 'traefik.docker.network=proxy'
     networks:
-      - proxy
       - default
+      - proxy
+  # endregion Storages
+
+  # region Monitoring
+  # Two modes, chosen in the env file (docs/stack.md, "Monitoring"):
+  # - Bundled: COMPOSE_PROFILES=monitoring starts VictoriaMetrics, VictoriaLogs, Grafana, vmalert
+  #   and Alertmanager here, and vmagent and Vector send to them.
+  # - External: leave that profile off and set VM_REMOTE_WRITE_URL and VLOGS_URL (and their
+  #   credentials); vmagent and Vector send to that server instead.
+  # vmagent, Vector and the Postgres exporter run in both modes. The API and the worker are told
+  # nothing about either.
+
+  # Scrapes the targets in infra/configs/vmagent.yml and pushes them on.
+  vmagent:
+    container_name: ${PROJECT}-vmagent
+    image: victoriametrics/vmagent:v1.146.0
+    restart: unless-stopped
+    volumes:
+      - ../../infra/configs/vmagent.yml:/etc/vmagent/scrape.yml:ro,Z
+      # What could not be sent yet waits here, up to 1GiB, and survives a
+      # restart.
+      - ../../.volumes/vmagent:/vmagent-data:Z
+    environment:
+      # Read by vmagent itself, so the password is not in the command line.
+      - VM_REMOTE_WRITE_PASSWORD=${VM_REMOTE_WRITE_PASSWORD:-}
+    command:
+      - '-promscrape.config=/etc/vmagent/scrape.yml'
+      - '-remoteWrite.tmpDataPath=/vmagent-data'
+      - '-remoteWrite.maxDiskUsagePerURL=1GiB'
+      - '-remoteWrite.url=${VM_REMOTE_WRITE_URL:-http://victoriametrics:8428/api/v1/write}'
+      - '-remoteWrite.basicAuth.username=${VM_REMOTE_WRITE_USERNAME:-}'
+      - '-remoteWrite.basicAuth.password=%{VM_REMOTE_WRITE_PASSWORD}'
+      # Every series says which project it is from, so a shared server can tell projects apart.
+      - '-remoteWrite.label=project=${PROJECT}'
+    deploy:
+      resources:
+        limits:
+          cpus: '${VMAGENT_CPU_LIMIT:-0.2}'
+          memory: '${VMAGENT_MEM_LIMIT:-128M}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # The only service here that mounts the Docker socket. That socket is the whole Docker API, and
+  # `:ro` on the mount stops no call, so this proxy stands between it and Vector and passes on
+  # only the read calls Vector's `docker_logs` source makes: every other method and path is
+  # refused (docs/stack.md, "The Docker socket"). It listens on a network that only Vector joins,
+  # answers Vector's address only, has no route to anywhere else and publishes no port.
+  socket-proxy:
+    container_name: ${PROJECT}-socket-proxy
+    image: wollomatic/socket-proxy:1.13.1
+    restart: unless-stopped
+    # The socket belongs to root on the host, and its group's number differs from host to host.
+    # Root opens it as its owner, with every capability dropped.
+    user: '0:0'
+    command:
+      - '-listenip=0.0.0.0'
+      # Only Vector's address, looked up by its service name on each call. The network alone is
+      # no barrier: the host, and so any process on the server, can reach an address on it.
+      - '-allowfrom=vector'
+      # The whole path must match (`$$` is a dollar sign for Compose). A container's `json` is
+      # `docker inspect`; `archive`, `export`, `exec` and every other path are left out.
+      - '-allowGET=^(/v1\.[0-9]+)?/(_ping|version|events|containers/json|containers/[A-Za-z0-9_.-]+/(json|logs))$$'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    security_opt:
+      # The Docker socket is not labelled for containers on an SELinux host.
+      - label=disable
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '32M'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    networks:
+      - docker-socket
+
+  # Ships the logs of this Compose project's containers, and no other container's, to
+  # VictoriaLogs. It also counts the API's answers by status class as a metric for vmagent.
+  #
+  # It reads the logs from the Docker API through `socket-proxy` above, which lets it list
+  # containers, inspect them, read their logs and follow events, and nothing else. It still gets
+  # no Linux capability, no way to gain one, a read-only file system and no published port.
+  vector:
+    container_name: ${PROJECT}-vector
+    image: timberio/vector:0.59.0-alpine
+    restart: unless-stopped
+    volumes:
+      - ../../infra/configs/vector.yml:/etc/vector/vector.yaml:ro,Z
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      # Vector's data directory. The Docker source keeps no position in it.
+      - /var/lib/vector
+    # Vector pastes environment values into its config as text. A password may hold any
+    # character, so it goes in as base64, together with the user name, and never as itself.
     entrypoint:
       - sh
       - -euc
       - |
-        mkdir -p /data/loki-data && \
-        mkdir -p /data/loki-ruler && \
-        minio server --console-address ":9001" /data
+        VLOGS_AUTH=$$(printf '%s:%s' "$$VLOGS_USERNAME" "$$VLOGS_PASSWORD" | base64 | tr -d '\n')
+        export VLOGS_AUTH
+        exec "$$@"
+      - sh
+    command: [/usr/local/bin/vector]
     environment:
-      - MINIO_ROOT_USER=${MINIO_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_PASS}
-      - MINIO_PROMETHEUS_AUTH_TYPE=public
-    volumes:
-      - ../../.volumes/minio:/data:Z
-    healthcheck:
-      test: [ 'CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live' ]
-      interval: 15s
-      timeout: 20s
-      retries: 5
+      # Lets infra/configs/vector.yml read the project's two names, VLOGS_URL and the VLOGS_AUTH
+      # made above. Vector calls it dangerous because a config from someone else could read any
+      # variable; this config is ours, and the five values below are all the container is given.
+      - VECTOR_DANGEROUSLY_ALLOW_ENV_VAR_INTERPOLATION=true
+      - PROJECT=${PROJECT}
+      # The project name as Compose writes it on its containers' labels: lower case.
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+      - VLOGS_URL=${VLOGS_URL:-http://victorialogs:9428}
+      - VLOGS_USERNAME=${VLOGS_USERNAME:-}
+      - VLOGS_PASSWORD=${VLOGS_PASSWORD:-}
     deploy:
       resources:
         limits:
-          cpus: ${MINIO_CPU_LIMIT}
-          memory: '${MINIO_MEM_LIMIT}'
+          cpus: '${VECTOR_CPU_LIMIT:-0.2}'
+          memory: '${VECTOR_MEM_LIMIT:-128M}'
     logging:
       driver: json-file
       options:
         max-size: '10m'
         max-file: '3'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.${PROJECT}-minio.rule=Host(`minio.${DOMAIN}`)'
-      - 'traefik.http.routers.${PROJECT}-minio.entrypoints=web'
-      - 'traefik.http.routers.${PROJECT}-minio.service=${PROJECT}-minio'
-      - 'traefik.http.services.${PROJECT}-minio.loadbalancer.server.port=9001'
-
-  minio-configure:
-    container_name: ${PROJECT}-minio-configure
-    image: minio/mc
     depends_on:
-      - minio
-    volumes:
-      - ../../infra:/infra:z
-    entrypoint: >
-      /bin/sh -c "
-      until (/usr/bin/mc alias set myminio http://minio:9000 ${MINIO_USER} ${MINIO_PASS}); do
-        echo 'Waiting for MinIO...'; sleep 3;
-      done;
-      /usr/bin/mc ilm import myminio/loki-data < /infra/configs/loki-data-minio-lifecycle.json;
-      "
-  # endregion Storages
-
-  # region Monitoring
-  loki:
-    container_name: ${PROJECT}-loki
-    image: grafana/loki
-    restart: unless-stopped
-    volumes:
-      - ../../infra/configs/loki.yml:/etc/loki/config.yaml:ro,Z
-    environment:
-      - S3_ACCESS_KEY_ID=${MINIO_USER}
-      - S3_SECRET_ACCESS_KEY=${MINIO_PASS}
-    depends_on:
-      - minio
-    command:
-      - '-config.file=/etc/loki/config.yaml'
-      - '-config.expand-env=true'
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1',
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: ${LOKI_CPU_LIMIT}
-          memory: '${LOKI_MEM_LIMIT}'
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
-
-  promtail:
-    container_name: ${PROJECT}-promtail
-    restart: unless-stopped
-    image: grafana/promtail:2.9.2
-    volumes:
-      - /var/log:/var/log
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ../../infra/configs/promtail.yml:/etc/promtail/config.yaml:ro
-    security_opt:
-      - label=disable
-    command: -config.file=/etc/promtail/config.yaml
-    depends_on:
-      - loki
-    deploy:
-      resources:
-        limits:
-          cpus: ${PROMTAIL_CPU_LIMIT}
-          memory: '${PROMTAIL_MEM_LIMIT}'
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
-
-  prometheus:
-    container_name: ${PROJECT}-prometheus
-    image: prom/prometheus
-    user: root
-    restart: unless-stopped
-    volumes:
-      - ../../infra/configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro,Z
-      - ../../.volumes/prometheus:/prometheus:Z
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
-      - '--web.external-url=https://prometheus.${DOMAIN}'
-      - '--web.route-prefix=/'
-    deploy:
-      resources:
-        limits:
-          cpus: ${PROMETHEUS_CPU_LIMIT}
-          memory: '${PROMETHEUS_MEM_LIMIT}'
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '3'
+      - socket-proxy
+    networks:
+      - default
+      - docker-socket
 
   postgres-prometheus-exporter:
     container_name: ${PROJECT}-postgres-prometheus-exporter
-    image: wrouesnel/postgres_exporter
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.20.1
     environment:
       DATA_SOURCE_NAME: 'postgresql://${DB_USER}:${DB_PASS}@db:5432/${DB_NAME}?sslmode=disable'
     deploy:
@@ -259,19 +396,145 @@ services:
     depends_on:
       - db
 
+  # The bundled metrics database. Prometheus-compatible: it takes remote write and answers PromQL.
+  victoriametrics:
+    container_name: ${PROJECT}-victoriametrics
+    profiles: [monitoring]
+    image: victoriametrics/victoria-metrics:v1.146.0
+    restart: unless-stopped
+    volumes:
+      - ../../.volumes/victoriametrics:/storage:Z
+    command:
+      - '-storageDataPath=/storage'
+      - '-retentionPeriod=14d'
+      - '-httpListenAddr=:8428'
+    deploy:
+      resources:
+        limits:
+          cpus: '${VICTORIAMETRICS_CPU_LIMIT:-0.5}'
+          memory: '${VICTORIAMETRICS_MEM_LIMIT:-256M}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # The bundled log database. Answers LogsQL.
+  victorialogs:
+    container_name: ${PROJECT}-victorialogs
+    profiles: [monitoring]
+    image: victoriametrics/victoria-logs:v1.51.0
+    restart: unless-stopped
+    volumes:
+      - ../../.volumes/victorialogs:/storage:Z
+    command:
+      - '-storageDataPath=/storage'
+      - '-retentionPeriod=14d'
+      - '-httpListenAddr=:9428'
+    deploy:
+      resources:
+        limits:
+          cpus: '${VICTORIALOGS_CPU_LIMIT:-0.5}'
+          memory: '${VICTORIALOGS_MEM_LIMIT:-256M}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # Evaluates infra/configs/alerts.yml against the bundled VictoriaMetrics.
+  vmalert:
+    container_name: ${PROJECT}-vmalert
+    profiles: [monitoring]
+    image: victoriametrics/vmalert:v1.146.0
+    restart: unless-stopped
+    volumes:
+      - ../../infra/configs/alerts.yml:/etc/vmalert/alerts.yml:ro,Z
+    command:
+      - '-rule=/etc/vmalert/alerts.yml'
+      - '-datasource.url=http://victoriametrics:8428'
+      # Alert state is kept in VictoriaMetrics, so a restart does not reset a pending alert.
+      - '-remoteWrite.url=http://victoriametrics:8428'
+      - '-remoteRead.url=http://victoriametrics:8428'
+      - '-notifier.url=http://alertmanager:9093'
+      - '-external.label=project=${PROJECT}'
+    deploy:
+      resources:
+        limits:
+          cpus: '${VMALERT_CPU_LIMIT:-0.2}'
+          memory: '${VMALERT_MEM_LIMIT:-128M}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # Sends vmalert's alerts to ntfy. vmalert speaks only Alertmanager's API, and ntfy formats
+  # Alertmanager's webhook itself (`?template=alertmanager`). With ALERT_NTFY_URL empty the alerts
+  # are kept here and sent nowhere, so a project without ntfy still starts.
+  alertmanager:
+    container_name: ${PROJECT}-alertmanager
+    profiles: [monitoring]
+    image: prom/alertmanager:v0.34.1
+    restart: unless-stopped
+    environment:
+      - ALERT_NTFY_URL=${ALERT_NTFY_URL:-}
+      - ALERT_NTFY_TOPIC=${ALERT_NTFY_TOPIC:-alerts}
+      - ALERT_NTFY_TOKEN=${ALERT_NTFY_TOKEN:-}
+    # Alertmanager reads no environment variables, so the config is written from them at start.
+    # The files are private to the container's user: one of them holds the token.
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        umask 077
+        cd /alertmanager
+        {
+          echo 'route:'
+          echo '  receiver: ntfy'
+          echo '  group_by: [alertname]'
+          echo '  repeat_interval: 4h'
+          echo 'receivers:'
+          echo '  - name: ntfy'
+          if [ -n "$$ALERT_NTFY_URL" ]; then
+            printf '%s' "$${ALERT_NTFY_URL%/}/$$ALERT_NTFY_TOPIC?template=alertmanager" > ntfy-url
+            echo '    webhook_configs:'
+            echo '      - url_file: /alertmanager/ntfy-url'
+            echo '        send_resolved: true'
+            if [ -n "$$ALERT_NTFY_TOKEN" ]; then
+              printf '%s' "$$ALERT_NTFY_TOKEN" > ntfy-token
+              echo '        http_config:'
+              echo '          authorization:'
+              echo '            credentials_file: /alertmanager/ntfy-token'
+            fi
+          fi
+        } > config.yml
+        exec /bin/alertmanager --config.file=/alertmanager/config.yml --storage.path=/alertmanager --cluster.listen-address=
+    deploy:
+      resources:
+        limits:
+          cpus: '${ALERTMANAGER_CPU_LIMIT:-0.1}'
+          memory: '${ALERTMANAGER_MEM_LIMIT:-64M}'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
   grafana:
     container_name: ${PROJECT}-grafana
-    image: grafana/grafana:latest
+    profiles: [monitoring]
+    image: grafana/grafana:13.2.3
     restart: unless-stopped
     user: '0'
-    networks:
-      - proxy
-      - default
     volumes:
       - ../../.volumes/grafana:/var/lib/grafana:Z
+      # The VictoriaMetrics and VictoriaLogs data sources.
+      - ../../infra/configs/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro,Z
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS}
-      - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN}
+      # Grafana has no built-in VictoriaLogs data source; it downloads this plugin at first start.
+      - GF_PLUGINS_PREINSTALL_SYNC=victoriametrics-logs-datasource@0.32.0
     deploy:
       resources:
         limits:
@@ -291,16 +554,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.${PROJECT}-grafana.rule=Host(`grafana.${DOMAIN}`)'
-      - 'traefik.http.routers.${PROJECT}-grafana.entrypoints=web'
-      - 'traefik.http.routers.${PROJECT}-grafana.service=${PROJECT}-grafana'
-      - 'traefik.http.services.${PROJECT}-grafana.loadbalancer.server.port=3000'
+    ports:
+      # The dashboard, on this machine only and never behind the proxy: from elsewhere, open it
+      # through an SSH tunnel (docs/deploy.md, "Admin consoles").
+      - ${GRAFANA_HOST_PORT:-127.0.0.1:3000}:3000
 
+  # nodeexporter and cadvisor watch the whole host (its CPU, disk and network, and every
+  # container's resources). On a shared server that duplicates the host's own monitoring, so they
+  # start only with the `host-monitoring` profile: add it to COMPOSE_PROFILES in the env file.
+  # vmagent still lists their scrape jobs and shows them as down while they are off.
   nodeexporter:
     container_name: ${PROJECT}-nodeexporter
-    image: prom/node-exporter
+    profiles: [host-monitoring]
+    image: prom/node-exporter:v1.12.1
     restart: unless-stopped
     volumes:
       - /proc:/host/proc:ro
@@ -325,7 +591,8 @@ services:
 
   cadvisor:
     container_name: ${PROJECT}-cadvisor
-    image: gcr.io/cadvisor/cadvisor
+    profiles: [host-monitoring]
+    image: gcr.io/cadvisor/cadvisor:v0.55.1
     restart: unless-stopped
     privileged: true
     volumes:
@@ -345,11 +612,69 @@ services:
         max-file: '3'
   # endregion Monitoring
 
+  # Only with COMPOSE_PROFILES=backup (docs/backups.md): a restic snapshot of the database and of
+  # the web push keys when it starts and every 24 hours after. Built on the db service's own image,
+  # so pg_dump is the server's version. Unhealthy when the last complete backup is more than two
+  # days old; the BackupMissing alert (infra/configs/alerts.yml) says so too.
+  backup:
+    container_name: ${PROJECT}-backup
+    profiles: [backup]
+    build:
+      context: ../backup
+      args:
+        - POSTGRES_IMAGE=docker.io/library/postgres:18.6
+    restart: unless-stopped
+    # The owner of infra/configs/vapid.json, which `deno task deploy` makes readable by its owner
+    # only; the api service reads it as the same user.
+    user: "1000:1000"
+    volumes:
+      # Long form, as in the api service: a missing file fails the start instead of Docker creating
+      # an empty directory there. Shared label (`z`), so both containers can read it.
+      - type: bind
+        source: ../../infra/configs/vapid.json
+        target: /run/vapid.json
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: z
+      # The bundled file store's blocks and metadata snapshots (docs/backups.md), read only. Empty
+      # without the `files` profile, and then nothing of it is saved.
+      - ../../.volumes/garage:/run/files:ro,z
+    environment:
+      # The host of every snapshot this project saves (infra/backup/backup.sh).
+      - PROJECT=${PROJECT}
+      - VAPID_FILE=/run/vapid.json
+      - FILES_DIR=/run/files
+      # The image's home belongs to its postgres user, not to the user above.
+      - RESTIC_CACHE_DIR=/tmp/restic-cache
+      - PGHOST=db
+      - PGUSER=${DB_USER}
+      - PGPASSWORD=${DB_PASS}
+      - PGDATABASE=${DB_NAME}
+      - RESTIC_REPOSITORY=${BACKUP_RESTIC_REPOSITORY:-}
+      - RESTIC_PASSWORD=${BACKUP_RESTIC_PASSWORD:-}
+      - AWS_ACCESS_KEY_ID=${S3_BUCKET_BACKUPS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${S3_BUCKET_BACKUPS_SECRET_ACCESS_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [ 'CMD-SHELL', 'find /tmp/backup-ok -mmin -2880 | grep -q .' ]
+      interval: 5m
+      start_period: 1h
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
   # region Apps
-  # Base image with Deno and dependencies pre-installed for caching
+  # Base image with Deno and dependencies pre-installed for caching. Named after the project, as
+  # every container is: two projects on one host hold different dependencies, and one shared tag
+  # would let either build start from the other's. Each build below takes it as BASE_IMAGE.
   deno-base:
     container_name: ${PROJECT}-deno-base
-    image: financy/deno-base:${DENO_VERSION}
+    image: ${PROJECT}/deno-base:${DENO_VERSION}
     build:
       context: ../..
       dockerfile: Dockerfile.base
@@ -357,6 +682,52 @@ services:
         - DENO_VERSION=${DENO_VERSION}
     profiles:
       - donotstart
+
+  # Applies pending migrations, then exits. The API and the worker start only after it exits with 0,
+  # so a deploy never serves traffic on the old schema, and a failed migration stops `compose up`
+  # (and so `deno task deploy`) instead of starting an API whose queries fail. The runner in
+  # @spy4x/server/db locks and checksums, so it runs on every `up`: with nothing pending it changes
+  # nothing. Same build as the API; migration files come from the bind-mounted libs.
+  migrate:
+    container_name: ${PROJECT}-migrate
+    restart: "no"
+    build:
+      context: ../..
+      dockerfile: apps/api/dockerfile
+      args:
+        - DENO_VERSION=${DENO_VERSION}
+        - BASE_IMAGE=${PROJECT}/deno-base:${DENO_VERSION}
+    command: [ 'deno', 'task', 'db:migrate' ]
+    deploy:
+      resources:
+        limits:
+          # Defaults, so an env file written before this service existed still deploys.
+          cpus: '${MIGRATE_CPU_LIMIT:-0.5}'
+          memory: '${MIGRATE_MEM_LIMIT:-256M}'
+    volumes:
+      - ../../apps:/app/apps:z
+      - ../../libs:/app/libs:z
+      - ../../deno.jsonc:/app/deno.jsonc:z
+    user: "1000:1000"
+    environment:
+      - HOME=/home/deno
+      - DENO_DIR=/tmp/deno-cache
+      - DENO_LOG=${DENO_LOG}
+      # Postgres itself, not PgBouncer: the runner's advisory lock is held by one session for the
+      # whole run, which transaction pooling would not keep.
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   api:
     container_name: ${PROJECT}-api
@@ -366,39 +737,120 @@ services:
       dockerfile: apps/api/dockerfile
       args:
         - DENO_VERSION=${DENO_VERSION}
-    networks:
-      - proxy
-      - default
+        - BASE_IMAGE=${PROJECT}/deno-base:${DENO_VERSION}
     volumes:
       - ../../apps:/app/apps:z
       - ../../libs:/app/libs:z
       - ../../deno.jsonc:/app/deno.jsonc:z
-      - ../../infra/configs/vapid.json:/app/vapid.json:Z
+      # Long form so a missing file fails the start with an error instead of Docker creating an
+      # empty directory there. `deno task deploy` generates the file on the server. Shared label
+      # (`z`): the backup service reads it too, and a private one would lock either out.
+      - type: bind
+        source: ../../infra/configs/vapid.json
+        target: /app/vapid.json
+        bind:
+          create_host_path: false
+          selinux: z
     user: "1000:1000"
     environment:
+      - HOME=/home/deno
+      - ENV=${ENV}
+      - ERROR_REPORT_DSN=${ERROR_REPORT_DSN:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      # Guest accounts, "Try it now" (docs/guests.md): on unless `false`.
+      - GUEST_MODE=${GUEST_MODE:-}
+      # The SPA (docs/deploy.md, "Without the SPA"): `false` closes sign-up and every other
+      # account route on every host but the admin host. On unless `false`.
+      - SPA=${SPA:-}
+      # The hourly upload budget of note attachments (docs/files.md): empty for the defaults.
+      - ATTACHMENT_UPLOAD_FILES_PER_HOUR=${ATTACHMENT_UPLOAD_FILES_PER_HOUR:-}
+      - ATTACHMENT_UPLOAD_BYTES_PER_HOUR=${ATTACHMENT_UPLOAD_BYTES_PER_HOUR:-}
+      # The operation budget per minute (docs/architecture.md): empty for the defaults.
+      - OPERATION_COMMANDS_PER_MINUTE=${OPERATION_COMMANDS_PER_MINUTE:-}
+      - OPERATION_QUERIES_PER_MINUTE=${OPERATION_QUERIES_PER_MINUTE:-}
+      - GUEST_OPERATION_COMMANDS_PER_MINUTE=${GUEST_OPERATION_COMMANDS_PER_MINUTE:-}
+      - GUEST_OPERATION_QUERIES_PER_MINUTE=${GUEST_OPERATION_QUERIES_PER_MINUTE:-}
+      # The Telegram bot (docs/telegram.md): off while the token is unset. Only the API takes the
+      # webhook, so only it receives the webhook secret.
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME:-}
+      - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
+      - TELEGRAM_POLLING=${TELEGRAM_POLLING:-}
+      - TELEGRAM_API_URL=${TELEGRAM_API_URL:-}
       - DENO_DIR=/tmp/deno-cache
+      # The port apps/healthcheck.ts probes.
+      - HEALTHCHECK_PORT=${API_PORT}
       - DENO_LOG=${DENO_LOG}
-      - DB_HOST=db
+      # The API is on the shared `proxy` network too, where a plain service name such as `db` is
+      # answered by any project's container of that name. The container's own name is unique.
+      # Queries go through PgBouncer; LISTEN goes to Postgres directly (DB_DIRECT_*).
+      - DB_HOST=${PROJECT}-pgbouncer
       - DB_PORT=5432
+      - DB_DIRECT_HOST=${PROJECT}-db
+      - DB_DIRECT_PORT=5432
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_NAME=${DB_NAME}
       - AUTH_COOKIE_SECRET=${AUTH_COOKIE_SECRET}
       - AUTH_PEPPER=${AUTH_PEPPER}
-      - AUTH_TOTP=${AUTH_TOTP}
       - DEV_EMAIL=${DEV_EMAIL}
       - DOMAIN=${DOMAIN}
       - TIMEZONE=${TIMEZONE}
-      - KV_HOSTNAME=kv
+      - KV_HOSTNAME=${PROJECT}-kv
       - KV_PORT=6379
+      - KV_PASSWORD=${KV_PASSWORD:?KV_PASSWORD is required}
       - RATE_LIMITER_WINDOW_MS=${RATE_LIMITER_WINDOW_MS}
       - RATE_LIMITER_STRICT_LIMIT=${RATE_LIMITER_STRICT_LIMIT}
       - RATE_LIMITER_LIMIT=${RATE_LIMITER_LIMIT}
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
-      - TELEGRAM_WEBHOOK_URL=${TELEGRAM_WEBHOOK_URL:-}
-      - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
-      - EXCHANGE_RATE_API_KEY=${EXCHANGE_RATE_API_KEY:-}
-      - FIXER_IO_API_KEY=${FIXER_IO_API_KEY:-}
+      - RATE_LIMITER_OTP_WINDOW_MS=${RATE_LIMITER_OTP_WINDOW_MS}
+      - RATE_LIMITER_OTP_LIMIT=${RATE_LIMITER_OTP_LIMIT}
+      # Mail. Production sends nothing until all five are set; see infra/envs/.env.example.
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      # Billing. Unset → off in production; see docs/billing.md.
+      - BILLING_PROVIDER=${BILLING_PROVIDER:-}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - STRIPE_PRICE_PRO=${STRIPE_PRICE_PRO:-}
+      - BILLING_GRACE_DAYS=${BILLING_GRACE_DAYS:-}
+      - BILLING_TRIAL_REQUIRES_CARD=${BILLING_TRIAL_REQUIRES_CARD:-}
+      # Catalog. Unset → off; see docs/catalog.md.
+      - CATALOG=${CATALOG:-}
+      - CATALOG_CURRENCY=${CATALOG_CURRENCY:-}
+      - CATALOG_LANGUAGES=${CATALOG_LANGUAGES:-}
+      # The catalog's tracking links: the item address, and Umami to count clicks (a secret token).
+      # Unset Umami → links go straight to the item; see docs/catalog.md.
+      - CATALOG_ITEM_PATH=${CATALOG_ITEM_PATH:-}
+      - UMAMI_API_URL=${UMAMI_API_URL:-}
+      - UMAMI_API_TOKEN=${UMAMI_API_TOKEN:-}
+      # The website's id in Umami: with the two above, the admin app's Stats page (docs/analytics.md).
+      - MPA_UMAMI_WEBSITE_ID=${MPA_UMAMI_WEBSITE_ID:-}
+      # Mail subscriptions: the API checks the links the worker signs. Unset → off in production.
+      - SUBSCRIBERS_SECRET=${SUBSCRIBERS_SECRET:-}
+      - SUBSCRIBERS_PREVIOUS_SECRETS=${SUBSCRIBERS_PREVIOUS_SECRETS:-}
+      # The website's host, when it is deployed: the mailed confirm and unsubscribe links open there.
+      - MPA_DOMAIN=${MPA_DOMAIN:-}
+      # The admin app's host, when it is deployed: the operator area (/api/admin) answers there only.
+      - ADMIN_DOMAIN=${ADMIN_DOMAIN:-}
+      # Who may name the client in X-Real-IP: Traefik (compose.proxy.yml names it `traefik`) and
+      # this project's website, which passes the browser's address on. Any other container on the
+      # shared `proxy` network that sends such a header is refused
+      # (apps/api/middlewares/proxy-peer.ts).
+      - PROXY_HOSTS=traefik,${PROJECT}-mpa
+      # The file store (docs/files.md). Empty ones stop the API with an error naming them. The
+      # endpoint defaults to the bundled Garage; the public one is what browsers sign against.
+      - S3_ENDPOINT=${S3_ENDPOINT:-http://${PROJECT}-garage:3900}
+      - S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT:-https://${DOMAIN}}
+      - S3_REGION=${S3_REGION:-garage}
+      - S3_BUCKET=${S3_BUCKET:-${PROJECT}-files}
+      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-}
     deploy:
       resources:
         limits:
@@ -407,9 +859,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
+      # Answers once GET /api/health returns 200 (apps/healthcheck.ts). That route reports the
+      # database: with it down the API answers 503, and the container turns unhealthy.
       test:
-        [ 'CMD', 'wget', '--spider', 'http://127.0.0.1:${API_PORT}/api/health' ]
+        [ 'CMD', 'deno', 'run', '--allow-net=127.0.0.1', '--allow-env=HEALTHCHECK_PORT,PORT', 'apps/healthcheck.ts', '/api/health' ]
       interval: 10s
       timeout: 5s
       retries: 30
@@ -420,36 +878,147 @@ services:
         max-file: '3'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.${PROJECT}-api.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/ws`))'
-      - 'traefik.http.routers.${PROJECT}-api.entrypoints=web'
-      - 'traefik.http.routers.${PROJECT}-api.service=${PROJECT}-api'
-      - 'traefik.http.services.${PROJECT}-api.loadbalancer.server.port=${API_PORT}'
-
-  web:
-    container_name: ${PROJECT}-web
-    restart: unless-stopped
+      - 'traefik.http.routers.api-${PROJECT}.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/ws`))'
+      - 'traefik.http.routers.api-${PROJECT}.entrypoints=web'
+      - 'traefik.http.routers.api-${PROJECT}.service=api-${PROJECT}'
+      - 'traefik.http.services.api-${PROJECT}.loadbalancer.server.port=${API_PORT}'
+      - 'traefik.docker.network=proxy'
+      # `requestInfoFromContext(c, { trustedProxy: true })` (apps/api) reads CF-Connecting-IP
+      # first. Traefik does not set that header itself and passes through whatever the client
+      # sent — unlike X-Forwarded-For/X-Real-IP, which Traefik overwrites — so a client could
+      # otherwise pick the IP written to auth_audits. This middleware strips it before the
+      # request reaches the app; an empty `customrequestheaders` value removes the header.
+      - 'traefik.http.middlewares.strip-cf-ip-${PROJECT}.headers.customrequestheaders.CF-Connecting-IP='
+      - 'traefik.http.routers.api-${PROJECT}.middlewares=strip-cf-ip-${PROJECT}'
     networks:
-      - proxy
       - default
+      - proxy
+
+  # Drains outbox_events, announces committed group changes to the API (pg_notify, which the API
+  # turns into a live hint for other tabs) and sweeps expired idempotency keys. Same build as the
+  # API, so both run one image; only the command differs. No port: nothing connects to it.
+  # Connections: the worker's pool (max 10) goes to PgBouncer, which shares its pool to Postgres
+  # with the API's (docs/stack.md, "Database connections").
+  worker:
+    container_name: ${PROJECT}-worker
+    restart: unless-stopped
     build:
       context: ../..
-      dockerfile: apps/web/dockerfile.prod
+      dockerfile: apps/api/dockerfile
       args:
         - DENO_VERSION=${DENO_VERSION}
-    environment:
-      - DENO_DIR=/tmp/deno-cache
-      - DENO_LOG=${DENO_LOG}
-      - VITE_ENV=prod
+        - BASE_IMAGE=${PROJECT}/deno-base:${DENO_VERSION}
+    command: [ 'deno', 'run', '--allow-sys', '--allow-env', '--allow-net', '--allow-read=/tmp/images,libs/server/blog/seed-posts', '--allow-write=/tmp/images', '--allow-run=vips,vipsheader', 'apps/worker/+main.ts' ]
     volumes:
       - ../../apps:/app/apps:z
       - ../../libs:/app/libs:z
       - ../../deno.jsonc:/app/deno.jsonc:z
     user: "1000:1000"
+    environment:
+      - HOME=/home/deno
+      - ENV=${ENV}
+      - DOMAIN=${DOMAIN}
+      - DENO_DIR=/tmp/deno-cache
+      - DENO_LOG=${DENO_LOG}
+      # Through PgBouncer: the worker sends NOTIFY, which works in a transaction, and LISTENs to
+      # nothing.
+      - DB_HOST=pgbouncer
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      # Mail. Production sends nothing until all five are set; see infra/envs/.env.example.
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      # Billing: the worker changes a per-member subscription's quantity. The same setup as the
+      # API's, without the webhook secret: only the API verifies webhooks. See docs/billing.md.
+      - BILLING_PROVIDER=${BILLING_PROVIDER:-}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_PRICE_PRO=${STRIPE_PRICE_PRO:-}
+      - BILLING_GRACE_DAYS=${BILLING_GRACE_DAYS:-}
+      - BILLING_TRIAL_REQUIRES_CARD=${BILLING_TRIAL_REQUIRES_CARD:-}
+      # Mail subscriptions: the API checks the links the worker signs. Unset → off in production.
+      - SUBSCRIBERS_SECRET=${SUBSCRIBERS_SECRET:-}
+      - SUBSCRIBERS_PREVIOUS_SECRETS=${SUBSCRIBERS_PREVIOUS_SECRETS:-}
+      # The website's host, when it is deployed: the mailed confirm and unsubscribe links open there.
+      - MPA_DOMAIN=${MPA_DOMAIN:-}
+      # The public demo (docs/demo.md): `true` wipes and seeds the database every night and gives
+      # every new account sample groups. Unset → off.
+      - DEMO_MODE=${DEMO_MODE:-}
+      # The demo's private administrator (docs/demo.md): the reset seeds admin@example.com with
+      # this password, hashed with the API's pepper so the API accepts it. Unset → none.
+      - DEMO_ADMIN_PASSWORD=${DEMO_ADMIN_PASSWORD:-}
+      - AUTH_PEPPER=${AUTH_PEPPER:-}
+      # The file store (docs/files.md): the worker keeps a person's data export there
+      # (docs/data-export.md) and deletes removed attachments and abandoned uploads. The same store
+      # and key as the API's.
+      - S3_ENDPOINT=${S3_ENDPOINT:-http://${PROJECT}-garage:3900}
+      - S3_REGION=${S3_REGION:-garage}
+      - S3_BUCKET=${S3_BUCKET:-${PROJECT}-files}
+      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-}
+      # The Telegram bot (docs/telegram.md): the worker sends notifications to linked chats. It
+      # takes no webhook, so it gets no webhook secret.
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME:-}
+      - TELEGRAM_POLLING=${TELEGRAM_POLLING:-}
+      - TELEGRAM_API_URL=${TELEGRAM_API_URL:-}
     deploy:
       resources:
         limits:
-          cpus: ${WEB_CPU_LIMIT}
-          memory: "${WEB_MEM_LIMIT}"
+          # Defaults, so an env file written before the worker existed still deploys.
+          cpus: '${WORKER_CPU_LIMIT:-0.5}'
+          memory: '${WORKER_MEM_LIMIT:-256M}'
+    depends_on:
+      db:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  spa:
+    container_name: ${PROJECT}-spa
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: apps/spa/dockerfile.prod
+      args:
+        - DENO_VERSION=${DENO_VERSION}
+        - BASE_IMAGE=${PROJECT}/deno-base:${DENO_VERSION}
+    environment:
+      - DENO_DIR=/tmp/deno-cache
+      - DENO_LOG=${DENO_LOG}
+      - VITE_ENV=prod
+      # Read at container start into /config.json (apps/spa/public-env.allow lists them all).
+      - SPA_ENV=${ENV}
+      - SPA_ERROR_REPORT_DSN=${SPA_ERROR_REPORT_DSN:-}
+      - SPA_REALTIME=${SPA_REALTIME:-}
+      - SPA_OFFLINE=${SPA_OFFLINE:-}
+      # The public demo (docs/demo.md) shows its line on the sign-in and sign-up pages.
+      - SPA_DEMO=${DEMO_MODE:-}
+      - SPA_GUEST=${GUEST_MODE:-}
+      # The website's host, for the legal pages the line under "Try it now" links to (#224).
+      - SPA_SITE=${MPA_DOMAIN:-}
+    volumes:
+      - ../../apps:/app/apps:z
+      - ../../libs:/app/libs:z
+      - ../../i18n:/app/i18n:z
+      - ../../deno.jsonc:/app/deno.jsonc:z
+    user: "1000:1000"
+    deploy:
+      resources:
+        limits:
+          cpus: ${SPA_CPU_LIMIT}
+          memory: "${SPA_MEM_LIMIT}"
     logging:
       driver: json-file
       options:
@@ -460,15 +1029,143 @@ services:
         condition: service_started
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT}-web.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`) && !PathPrefix(`/ws`)"
-      - "traefik.http.routers.${PROJECT}-web.entrypoints=web"
-      - "traefik.http.routers.${PROJECT}-web.service=${PROJECT}-web"
-      - "traefik.http.services.${PROJECT}-web.loadbalancer.server.port=8080"
-      - "traefik.http.middlewares.${PROJECT}-web-host.headers.customrequestheaders.Host=localhost:5173"
-      - "traefik.http.routers.${PROJECT}-web.middlewares=${PROJECT}-web-host"
+      - "traefik.http.routers.spa-${PROJECT}.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`) && !PathPrefix(`/ws`)"
+      - "traefik.http.routers.spa-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.spa-${PROJECT}.service=spa-${PROJECT}"
+      - "traefik.http.services.spa-${PROJECT}.loadbalancer.server.port=8080"
+      - "traefik.docker.network=proxy"
+    networks:
+      - default
+      - proxy
     healthcheck:
+      # nginx's image has no Deno, so this one check stays on the image's own wget.
       test: ["CMD", "wget", "--spider", "http://127.0.0.1:8080"]
       interval: 10s
       timeout: 5s
       retries: 5
-  # endregion API & Web
+
+  # The MPA (apps/mpa), the public website: `COMPOSE_PROFILES=mpa` in the env file starts it, and
+  # `deno task deploy` then deploys it. Without the profile it does not exist, and nothing else
+  # changes. It serves `MPA_DOMAIN` next to the SPA at `DOMAIN`, and refuses to start without it.
+  # `${MPA_DOMAIN:-}`, not `${MPA_DOMAIN:?}`: Compose interpolates every service, profiled or not,
+  # so `:?` would break the default deploy. Built into the image: no bind mounts.
+  mpa:
+    container_name: ${PROJECT}-mpa
+    profiles: [mpa]
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: apps/mpa/dockerfile.prod
+      args:
+        - DENO_VERSION=${DENO_VERSION}
+        - BASE_IMAGE=${PROJECT}/deno-base:${DENO_VERSION}
+    environment:
+      - ENV=${ENV}
+      - DOMAIN=${DOMAIN}
+      - MPA_DOMAIN=${MPA_DOMAIN:-}
+      # Optional, together: the website's Umami (docs/analytics.md). Empty loads no tracker.
+      - MPA_UMAMI_ORIGIN=${MPA_UMAMI_ORIGIN:-}
+      - MPA_UMAMI_WEBSITE_ID=${MPA_UMAMI_WEBSITE_ID:-}
+      # Not `http://api`: on the shared `proxy` network that name is any project's API.
+      - API_URL=http://${PROJECT}-api:${API_PORT}
+      - DENO_LOG=${DENO_LOG}
+      # The port apps/healthcheck.ts probes: the one the image's CMD serves.
+      - HEALTHCHECK_PORT=8080
+    user: "1000:1000"
+    deploy:
+      resources:
+        limits:
+          # Defaults, so an env file written before this service existed still deploys.
+          cpus: '${MPA_CPU_LIMIT:-1}'
+          memory: '${MPA_MEM_LIMIT:-512M}'
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      api:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mpa-${PROJECT}.rule=Host(`${MPA_DOMAIN:-}`)"
+      - "traefik.http.routers.mpa-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.mpa-${PROJECT}.service=mpa-${PROJECT}"
+      - "traefik.http.services.mpa-${PROJECT}.loadbalancer.server.port=8080"
+      - "traefik.docker.network=proxy"
+    # The `proxy` network only: the website needs nothing but Traefik and the API. On one network,
+    # its name resolves to the one address it calls the API from, so the API can trust its
+    # `X-Real-IP` (the API's PROXY_HOSTS). On two, the API could look up one address and be called
+    # from the other.
+    networks:
+      - proxy
+    healthcheck:
+      # Answers once GET /health returns 200: the website serves (apps/healthcheck.ts,
+      # apps/mpa/routes/health.ts).
+      test:
+        [ 'CMD', 'deno', 'run', '--allow-net=127.0.0.1', '--allow-env=HEALTHCHECK_PORT,PORT', 'apps/healthcheck.ts', '/health' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # The admin app (apps/admin), the operator area: `COMPOSE_PROFILES=admin` in the env file starts
+  # it. It serves `ADMIN_DOMAIN`, a host of its own, so its session cookie is that host's alone.
+  # Its `/api` goes to this project's API through a second router; the API answers the operator
+  # area there and nowhere else. `${ADMIN_DOMAIN:-}` for the reason the MPA's comment gives. Built
+  # into the image: no bind mounts.
+  admin:
+    container_name: ${PROJECT}-admin
+    profiles: [admin]
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: apps/admin/dockerfile.prod
+      args:
+        - DENO_VERSION=${DENO_VERSION}
+        - BASE_IMAGE=${PROJECT}/deno-base:${DENO_VERSION}
+    deploy:
+      resources:
+        limits:
+          cpus: '${ADMIN_CPU_LIMIT:-0.5}'
+          memory: '${ADMIN_MEM_LIMIT:-128M}'
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      api:
+        condition: service_started
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin-${PROJECT}.rule=Host(`${ADMIN_DOMAIN:-}`) && !PathPrefix(`/api`)"
+      - "traefik.http.routers.admin-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.admin-${PROJECT}.service=admin-${PROJECT}"
+      - "traefik.http.services.admin-${PROJECT}.loadbalancer.server.port=8080"
+      # The admin host's `/api` reaches the API container, with the API router's header strip.
+      - "traefik.http.routers.admin-api-${PROJECT}.rule=Host(`${ADMIN_DOMAIN:-}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.admin-api-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.admin-api-${PROJECT}.service=api-${PROJECT}"
+      - "traefik.http.routers.admin-api-${PROJECT}.middlewares=strip-cf-ip-${PROJECT}"
+      - "traefik.docker.network=proxy"
+    networks:
+      - default
+      - proxy
+    healthcheck:
+      # nginx's image has no Deno, so this check stays on the image's own wget, as the SPA's does.
+      test: ["CMD", "wget", "--spider", "http://127.0.0.1:8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # endregion API & SPA
+
+# region Networking
+# The project's own network (`default`) is not declared: the engine then gives each project a free
+# subnet. A fixed one stopped a second project on the same host ("Pool overlaps").
+networks:
+  proxy:
+    external: true
+  # Vector's way to `socket-proxy`, and nothing else's. `internal`: no route out of it.
+  docker-socket:
+    internal: true

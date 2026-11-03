@@ -1,5 +1,4 @@
 services:
-      
   db:
     healthcheck:
       interval: 5s
@@ -8,27 +7,86 @@ services:
 
   api:
     user: "0:0"  # Run as root in dev mode for Podman compatibility
-    ports:
-      - "8000:8000"
     environment:
       - ENV=dev
+      # Development serves plain HTTP, so browsers sign against http:// (docs/files.md).
+      - S3_PUBLIC_ENDPOINT=${S3_PUBLIC_ENDPOINT:-http://${DOMAIN}}
     security_opt:
       - label=disable
     healthcheck:
       interval: 3s
+    networks:
+      - default
+      - proxy
 
-  web:
+  migrate:
+    user: "0:0"  # Run as root in dev mode for Podman compatibility, like the api
+    security_opt:
+      - label=disable
+
+  worker:
+    user: "0:0"  # Run as root in dev mode for Podman compatibility, like the api
+    # Restarts on a code change, as `deno task api:dev` does for the API.
+    command: [ 'deno', 'run', '--watch', '--allow-sys', '--allow-env', '--allow-net', '--allow-read=/tmp/images,libs/server/blog/seed-posts', '--allow-write=/tmp/images', '--allow-run=vips,vipsheader', 'apps/worker/+main.ts' ]
+    security_opt:
+      - label=disable
+
+  spa:
     user: "0:0"  # Run as root in dev mode for Podman compatibility
-    ports:
-      - "5173:5173"
     environment:
       - VITE_ENV=dev
+      # The port apps/healthcheck.ts probes: Vite's.
+      - HEALTHCHECK_PORT=5173
     build:
-      dockerfile: apps/web/dockerfile.dev
+      dockerfile: apps/spa/dockerfile.dev
       args:
         - DENO_VERSION=${DENO_VERSION}
     security_opt:
       - label=disable
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spa-${PROJECT}.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`) && !PathPrefix(`/ws`)"
+      - "traefik.http.routers.spa-${PROJECT}.entrypoints=web"
+      - "traefik.http.routers.spa-${PROJECT}.service=spa-${PROJECT}"
+      - "traefik.http.services.spa-${PROJECT}.loadbalancer.server.port=5173"
+      - "traefik.docker.network=proxy"
+    networks:
+      - default
+      - proxy
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://127.0.0.1:5173"]
+      # The dev image runs Deno, not nginx, so it takes the check the API uses.
+      test:
+        [ 'CMD', 'deno', 'run', '--allow-net=127.0.0.1', '--allow-env=HEALTHCHECK_PORT,PORT', 'apps/healthcheck.ts' ]
       interval: 3s
+
+  # Only with COMPOSE_PROFILES=admin: the admin app's Vite dev server on ADMIN_DOMAIN, from the
+  # mounted source as the SPA's is.
+  admin:
+    user: "0:0"  # Run as root in dev mode for Podman compatibility
+    environment:
+      - VITE_ENV=dev
+      - DENO_DIR=/tmp/deno-cache
+      # The port apps/healthcheck.ts probes: Vite's.
+      - HEALTHCHECK_PORT=5174
+    build:
+      dockerfile: apps/admin/dockerfile.dev
+      args:
+        - DENO_VERSION=${DENO_VERSION}
+    volumes:
+      - ../../apps:/app/apps:z
+      - ../../libs:/app/libs:z
+      - ../../i18n:/app/i18n:z
+      - ../../deno.jsonc:/app/deno.jsonc:z
+    security_opt:
+      - label=disable
+    labels:
+      - "traefik.http.services.admin-${PROJECT}.loadbalancer.server.port=5174"
+    healthcheck:
+      # The dev image runs Deno, not nginx, so it takes the check the API uses.
+      test:
+        [ 'CMD', 'deno', 'run', '--allow-net=127.0.0.1', '--allow-env=HEALTHCHECK_PORT,PORT', 'apps/healthcheck.ts' ]
+      interval: 3s
+
+networks:
+  proxy:
+    external: true

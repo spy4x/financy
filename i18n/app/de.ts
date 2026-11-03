@@ -1,0 +1,2094 @@
+import type { Catalog } from "@spy4x/platform/universal/i18n"
+
+export default {
+  "AppShell.attachFiles": "Dateien an diese Notiz anhängen",
+  "AttachmentMessages.load": "Die Dateien konnten nicht geladen werden",
+  "AttachmentMessages.type":
+    "{name} kann nicht angehängt werden. Erlaubt sind nur Bilder (JPEG, PNG, WebP, GIF) und PDF-Dateien.",
+  "AttachmentMessages.size": "{name} ist {size} groß. Eine Datei darf höchstens {max} groß sein.",
+  "AttachmentMessages.noteFull": {
+    "one": "Eine Notiz kann höchstens {count} Datei haben. {name} wurde nicht angehängt.",
+    "other": "Eine Notiz kann höchstens {count} Dateien haben. {name} wurde nicht angehängt.",
+  },
+  "AttachmentMessages.pending":
+    "{name} wurde nicht angehängt: Warte, bis die laufenden Uploads fertig sind, und versuche es dann noch einmal.",
+  "AttachmentMessages.budget":
+    "{name} wurde nicht angehängt: Du hast dein stündliches Upload-Limit erreicht. Versuche es später noch einmal.",
+  "AttachmentMessages.uploadFailed": "Hochladen fehlgeschlagen.",
+  "AttachmentMessages.overflow": {
+    "one":
+      "Eine Notiz kann höchstens {max} Dateien haben. {count} Datei wurde nicht angehängt: {names}.",
+    "other":
+      "Eine Notiz kann höchstens {max} Dateien haben. {count} Dateien wurden nicht angehängt: {names}.",
+  },
+  "AttachmentMessages.uploaded": "{name} hochgeladen",
+  "AttachmentMessages.notReallyPdf":
+    "{name} ist in Wahrheit keine PDF-Datei und wurde deshalb nicht angehängt.",
+  "AttachmentMessages.notReallyJpeg":
+    "{name} ist in Wahrheit kein JPEG-Bild und wurde deshalb nicht angehängt.",
+  "AttachmentMessages.notReallyPng":
+    "{name} ist in Wahrheit kein PNG-Bild und wurde deshalb nicht angehängt.",
+  "AttachmentMessages.notReallyWebp":
+    "{name} ist in Wahrheit kein WebP-Bild und wurde deshalb nicht angehängt.",
+  "AttachmentMessages.notReallyGif":
+    "{name} ist in Wahrheit kein GIF-Bild und wurde deshalb nicht angehängt.",
+  "AttachmentMessages.remove":
+    "{name} konnte nicht entfernt werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "AttachmentMessages.linkExpired": "Dieser Link ist abgelaufen. Versuche es noch einmal.",
+  "Frame.overview": "Übersicht",
+  "Frame.notes": "Notizen",
+  "Frame.activity": "Aktivität",
+  "Frame.groups": "Gruppen",
+  "Frame.search": "Suche",
+  "Frame.tags": "Tags",
+  "Frame.shortcuts": "Tastenkürzel",
+  "Frame.signOut": "Abmelden",
+  "Frame.user": "Nutzer",
+  "GroupActivity.forbidden": "Nur Admins und der Inhaber sehen die Aktivität.",
+  "GroupActivity.forbiddenHint": "Frag einen Admin, wenn du wissen musst, was sich geändert hat.",
+  "GroupActivity.loading": "Aktivität wird geladen …",
+  "GroupActivity.empty": "Hier ist noch nichts passiert.",
+  "GroupActivity.emptyHint": "Änderungen an der Gruppe und ihren Notizen erscheinen hier.",
+  "GroupActivity.loadingMore": "Wird geladen …",
+  "GroupActivity.loadMore": "Mehr laden",
+  "GroupActivity.openNote": "Notiz öffnen",
+  "GroupActivity.openNoteNamed": "Notiz „{title}“ öffnen",
+  "GroupActivity.supportTeam": "Support-Team",
+  "GroupActivity.deletedUser": "Gelöschter Nutzer",
+  "GroupActivity.someone": "Jemand",
+  "GroupActivity.roleUnknown": "Mitglied",
+  "GroupActivity.created": "<who>{who}</who> hat die Gruppe erstellt",
+  "GroupActivity.renamed": "<who>{who}</who> hat die Gruppe umbenannt",
+  "GroupActivity.renamedFromTo":
+    "<who>{who}</who> hat die Gruppe von „<value>{from}</value>“ in „<value>{to}</value>“ umbenannt",
+  "GroupActivity.detailsUpdated":
+    "<who>{who}</who> hat Beschreibung, Farbe oder Emoji der Gruppe geändert",
+  "GroupActivity.deleted": "<who>{who}</who> hat die Gruppe gelöscht",
+  "GroupActivity.restored": "<who>{who}</who> hat die Gruppe wiederhergestellt",
+  "GroupActivity.roleChanged":
+    "<who>{who}</who> hat die Rolle von <target>{target}</target> geändert",
+  "GroupActivity.roleChangedSomeone": "<who>{who}</who> hat die Rolle eines Mitglieds geändert",
+  "GroupActivity.roleChangedFromTo":
+    "<who>{who}</who> hat die Rolle von <target>{target}</target> von {fromRole} auf {toRole} geändert",
+  "GroupActivity.roleChangedFromToSomeone":
+    "<who>{who}</who> hat die Rolle eines Mitglieds von {fromRole} auf {toRole} geändert",
+  "GroupActivity.memberRemoved":
+    "<who>{who}</who> hat <target>{target}</target> aus der Gruppe entfernt",
+  "GroupActivity.memberRemovedSomeone": "<who>{who}</who> hat ein Mitglied aus der Gruppe entfernt",
+  "GroupActivity.memberLeft": "<who>{who}</who> hat die Gruppe verlassen",
+  "GroupActivity.ownershipTransferred":
+    "<who>{who}</who> hat <target>{target}</target> zum Inhaber der Gruppe gemacht",
+  "GroupActivity.ownershipTransferredSomeone":
+    "<who>{who}</who> hat ein Mitglied zum Inhaber der Gruppe gemacht",
+  "GroupActivity.invited": "<who>{who}</who> hat jemanden eingeladen",
+  "GroupActivity.invitedAs": "<who>{who}</who> hat jemanden als {role} eingeladen",
+  "GroupActivity.invitationAccepted": "<who>{who}</who> ist der Gruppe beigetreten",
+  "GroupActivity.invitationRevoked": "<who>{who}</who> hat eine Einladung zurückgezogen",
+  "GroupActivity.invitationDeclined": "<who>{who}</who> hat eine Einladung abgelehnt",
+  "GroupActivity.dataMovedOut": {
+    "one":
+      "<who>{who}</who> hat alle Daten der Gruppe ({count} Eintrag) nach <value>{group}</value> verschoben",
+    "other":
+      "<who>{who}</who> hat alle Daten der Gruppe ({count} Einträge) nach <value>{group}</value> verschoben",
+  },
+  "GroupActivity.dataMovedOutElsewhere": {
+    "one":
+      "<who>{who}</who> hat alle Daten der Gruppe ({count} Eintrag) in eine andere Gruppe verschoben",
+    "other":
+      "<who>{who}</who> hat alle Daten der Gruppe ({count} Einträge) in eine andere Gruppe verschoben",
+  },
+  "GroupActivity.dataMovedOutUncounted":
+    "<who>{who}</who> hat alle Daten der Gruppe (mehrere Einträge) nach <value>{group}</value> verschoben",
+  "GroupActivity.dataMovedOutUncountedElsewhere":
+    "<who>{who}</who> hat alle Daten der Gruppe (mehrere Einträge) in eine andere Gruppe verschoben",
+  "GroupActivity.dataMovedIn": {
+    "one":
+      "<who>{who}</who> hat alle Daten einer anderen Gruppe ({count} Eintrag) hierher verschoben",
+    "other":
+      "<who>{who}</who> hat alle Daten einer anderen Gruppe ({count} Einträge) hierher verschoben",
+  },
+  "GroupActivity.dataMovedInUncounted":
+    "<who>{who}</who> hat alle Daten einer anderen Gruppe (mehrere Einträge) hierher verschoben",
+  "GroupActivity.exported": "<who>{who}</who> hat die Gruppe in eine Datei exportiert",
+  "GroupActivity.imported": {
+    "one": "<who>{who}</who> hat die Gruppe aus einer Exportdatei erstellt ({count} Eintrag)",
+    "other": "<who>{who}</who> hat die Gruppe aus einer Exportdatei erstellt ({count} Einträge)",
+  },
+  "GroupActivity.importedUncounted":
+    "<who>{who}</who> hat die Gruppe aus einer Exportdatei erstellt (mehrere Einträge)",
+  "GroupActivity.noteCreated":
+    "<who>{who}</who> hat die Notiz „<value>{title}</value>“ hinzugefügt",
+  "GroupActivity.noteCreatedUntitled": "<who>{who}</who> hat eine Notiz hinzugefügt",
+  "GroupActivity.noteDeleted": "<who>{who}</who> hat die Notiz „<value>{title}</value>“ gelöscht",
+  "GroupActivity.noteDeletedUntitled": "<who>{who}</who> hat eine Notiz gelöscht",
+  "GroupActivity.noteRestored":
+    "<who>{who}</who> hat die Notiz „<value>{title}</value>“ wiederhergestellt",
+  "GroupActivity.noteRestoredUntitled": "<who>{who}</who> hat eine Notiz wiederhergestellt",
+  "GroupActivity.notesMovedOut": {
+    "one": "<who>{who}</who> hat {count} Notiz nach <value>{group}</value> verschoben",
+    "other": "<who>{who}</who> hat {count} Notizen nach <value>{group}</value> verschoben",
+  },
+  "GroupActivity.notesMovedOutElsewhere": {
+    "one": "<who>{who}</who> hat {count} Notiz in eine andere Gruppe verschoben",
+    "other": "<who>{who}</who> hat {count} Notizen in eine andere Gruppe verschoben",
+  },
+  "GroupActivity.notesMovedOutUncounted":
+    "<who>{who}</who> hat einige Notizen nach <value>{group}</value> verschoben",
+  "GroupActivity.notesMovedOutUncountedElsewhere":
+    "<who>{who}</who> hat einige Notizen in eine andere Gruppe verschoben",
+  "GroupActivity.notesMovedIn": {
+    "one": "<who>{who}</who> hat {count} Notiz aus einer anderen Gruppe hierher verschoben",
+    "other": "<who>{who}</who> hat {count} Notizen aus einer anderen Gruppe hierher verschoben",
+  },
+  "GroupActivity.notesMovedInUncounted":
+    "<who>{who}</who> hat einige Notizen aus einer anderen Gruppe hierher verschoben",
+  "GroupActivity.fileAdded":
+    "<who>{who}</who> hat die Datei „<value>{name}</value>“ an „<value>{title}</value>“ angehängt",
+  "GroupActivity.fileAddedNoNote":
+    "<who>{who}</who> hat die Datei „<value>{name}</value>“ angehängt",
+  "GroupActivity.fileAddedUnnamed":
+    "<who>{who}</who> hat eine Datei an „<value>{title}</value>“ angehängt",
+  "GroupActivity.fileAddedUnnamedNoNote": "<who>{who}</who> hat eine Datei angehängt",
+  "GroupActivity.fileRemoved":
+    "<who>{who}</who> hat die Datei „<value>{name}</value>“ aus „<value>{title}</value>“ entfernt",
+  "GroupActivity.fileRemovedNoNote":
+    "<who>{who}</who> hat die Datei „<value>{name}</value>“ entfernt",
+  "GroupActivity.fileRemovedUnnamed":
+    "<who>{who}</who> hat eine Datei aus „<value>{title}</value>“ entfernt",
+  "GroupActivity.fileRemovedUnnamedNoNote": "<who>{who}</who> hat eine Datei entfernt",
+  "GroupActivity.tagCreated": "<who>{who}</who> hat den Tag „<value>{name}</value>“ hinzugefügt",
+  "GroupActivity.tagCreatedUnnamed": "<who>{who}</who> hat einen Tag hinzugefügt",
+  "GroupActivity.tagRenamed":
+    "<who>{who}</who> hat den Tag „<value>{from}</value>“ in „<value>{name}</value>“ umbenannt",
+  "GroupActivity.tagChanged": "<who>{who}</who> hat den Tag „<value>{name}</value>“ geändert",
+  "GroupActivity.tagChangedUnnamed": "<who>{who}</who> hat einen Tag geändert",
+  "GroupActivity.tagRecoloured":
+    "<who>{who}</who> hat die Farbe des Tags „<value>{name}</value>“ geändert",
+  "GroupActivity.tagDeleted": "<who>{who}</who> hat den Tag „<value>{name}</value>“ gelöscht",
+  "GroupActivity.tagDeletedUnnamed": "<who>{who}</who> hat einen Tag gelöscht",
+  "GroupActivity.tagDeletedCarried": {
+    "one":
+      "<who>{who}</who> hat den Tag „<value>{name}</value>“ gelöscht, der an {count} Notiz hing",
+    "other":
+      "<who>{who}</who> hat den Tag „<value>{name}</value>“ gelöscht, der an {count} Notizen hing",
+  },
+  "GroupActivity.tagDeletedUnnamedCarried": {
+    "one": "<who>{who}</who> hat einen Tag gelöscht, der an {count} Notiz hing",
+    "other": "<who>{who}</who> hat einen Tag gelöscht, der an {count} Notizen hing",
+  },
+  "GroupActivity.unknown": "<who>{who}</who> hat etwas in der Gruppe geändert",
+  "GroupActivity.loadFailed": "Die Aktivität konnte nicht geladen werden",
+  "GroupActivity.loadMoreFailed": "Weitere Aktivität konnte nicht geladen werden",
+  "GroupEditor.back": "Zurück zu den Gruppen",
+  "GroupEditor.newTitle": "Neue Gruppe",
+  "GroupEditor.title": "Gruppe",
+  "GroupEditor.loading": "Gruppe wird geladen …",
+  "GroupEditor.missing": "Diese Gruppe gibt es nicht.",
+  "GroupEditor.missingHint": "Vielleicht wurde sie gelöscht, oder du bist kein Mitglied.",
+  "GroupEditor.cancelSubscriptionFirst": "Kündige zuerst ihr Abo",
+  "GroupEditor.onlyGroup": "Das ist deine einzige Gruppe",
+  "GroupEditor.switch": "Zu dieser Gruppe wechseln",
+  "GroupEditor.transfer": "Inhaberschaft übertragen",
+  "GroupEditor.export": "Gruppe exportieren …",
+  "GroupEditor.exporting": "Wird vorbereitet …",
+  "GroupEditor.offline": "Du bist offline",
+  "GroupEditor.moveAll": "Alle Daten verschieben …",
+  "GroupEditor.leave": "Gruppe verlassen",
+  "GroupEditor.delete": "Gruppe löschen",
+  "GroupEditor.memberCount": {
+    "one": "{count} Mitglied",
+    "other": "{count} Mitglieder",
+  },
+  "GroupEditor.memberCountLink": {
+    "one": "{count} Mitglied – Reiter „Abrechnung“ öffnen",
+    "other": "{count} Mitglieder – Reiter „Abrechnung“ öffnen",
+  },
+  "GroupEditor.tabGeneral": "Allgemein",
+  "GroupEditor.tabMembers": "Mitglieder",
+  "GroupEditor.tabBilling": "Abrechnung",
+  "GroupEditor.tabActivity": "Aktivität",
+  "GroupEditor.tabsLabel": "Über {name}",
+  "GroupEditor.currentGroup": "deine aktuelle Gruppe",
+  "GroupEditor.invite": "Einladen",
+  "GroupEditor.exportRetry": "Erneut versuchen",
+  "GroupEditor.exportFailed":
+    "Die Datei konnte nicht erstellt werden. In deiner Gruppe hat sich nichts geändert.",
+  "GroupEditor.transferTitle": "„{name}“ übertragen",
+  "GroupEditor.moveAllTitle": "Alle Daten aus „{name}“ verschieben",
+  "GroupEditor.close": "Schließen",
+  "GroupEditor.cancel": "Abbrechen",
+  "GroupEditor.leaveTitle": "„{name}“ verlassen?",
+  "GroupEditor.leaveConfirmation":
+    "Du verlierst sofort den Zugriff, auf allen Geräten. Was du geschrieben hast, bleibt in der Gruppe. Um zurückzukommen, muss dich jemand neu einladen.",
+  "GroupEditor.deleteTitle": "„{name}“ löschen?",
+  "GroupEditor.deleteConfirmation": {
+    "one":
+      "Die Gruppe verschwindet sofort für alle Mitglieder, mit allem, was darin ist. Wer sie gerade offen hat, wechselt in eine andere seiner Gruppen, und wer dann keine Gruppe mehr hat, bekommt eine neue, leere Gruppe namens „Personal“. Auf der Seite „Gruppen“ kannst du sie noch {count} Tag lang wiederherstellen. Danach ist sie mit allem Inhalt endgültig gelöscht.",
+    "other":
+      "Die Gruppe verschwindet sofort für alle Mitglieder, mit allem, was darin ist. Wer sie gerade offen hat, wechselt in eine andere seiner Gruppen, und wer dann keine Gruppe mehr hat, bekommt eine neue, leere Gruppe namens „Personal“. Auf der Seite „Gruppen“ kannst du sie noch {count} Tage lang wiederherstellen. Danach ist sie mit allem Inhalt endgültig gelöscht.",
+  },
+  "GroupEditor.optional": "Optional",
+  "GroupEditor.offlineCreate":
+    "Du kannst das schon ausfüllen, aber zum Erstellen der Gruppe brauchst du eine Verbindung.",
+  "GroupEditor.offlineSave":
+    "Du siehst die auf diesem Gerät gespeicherte Kopie. Zum Speichern von Änderungen brauchst du eine Verbindung.",
+  "GroupEditor.name": "Name",
+  "GroupEditor.description": "Beschreibung",
+  "GroupEditor.descriptionCount": {
+    "one": "{used} von {count} Zeichen",
+    "other": "{used} von {count} Zeichen",
+  },
+  "GroupEditor.descriptionPlaceholder": "Wofür ist diese Gruppe da?",
+  "GroupEditor.emoji": "Emoji",
+  "GroupEditor.emojiHint": "Steht vor dem Namen der Gruppe.",
+  "GroupEditor.colour": "Farbe",
+  "GroupEditor.colourHint": "Hintergrund des Gruppensymbols.",
+  "GroupEditor.discard": "Verwerfen",
+  "GroupEditor.creating": "Wird erstellt …",
+  "GroupEditor.saving": "Wird gespeichert …",
+  "GroupEditor.create": "Gruppe erstellen",
+  "GroupEditor.save": "Gruppe speichern",
+  "GroupEditor.trialUsed":
+    "Neue Gruppen starten im kostenlosen Tarif. Deine kostenlose Testphase hast du schon genutzt, ein bezahlter Tarif kostet hier also ab dem ersten Tag.",
+  "GroupEditor.trial": {
+    "one":
+      "Neue Gruppen starten im kostenlosen Tarif. Deine {count}-tägige kostenlose Testphase gilt für die erste Gruppe, die du auf einen bezahlten Tarif umstellst.",
+    "other":
+      "Neue Gruppen starten im kostenlosen Tarif. Deine {count}-tägige kostenlose Testphase gilt für die erste Gruppe, die du auf einen bezahlten Tarif umstellst.",
+  },
+  "GroupEditor.readOnly": "Nur Admins und der Inhaber können die Angaben dieser Gruppe ändern.",
+  "GroupEditor.nameRequired": "Gib einen Namen ein.",
+  "GroupEditor.nameInvalid": "Höchstens 100 Zeichen, ohne Zeilenumbrüche und unsichtbare Zeichen.",
+  "GroupEditor.descriptionTooLong": {
+    "one": "Höchstens {count} Zeichen.",
+    "other": "Höchstens {count} Zeichen.",
+  },
+  "GroupEditor.emojiInvalid": "Nimm ein einzelnes Emoji, etwa 🏕️, oder lass das Feld leer.",
+  "GroupEditor.createFailed": "Die Gruppe konnte nicht erstellt werden. Versuche es noch einmal.",
+  "GroupEditor.createOffline":
+    "Zum Erstellen einer Gruppe brauchst du eine Verbindung. Versuche es noch einmal, wenn du wieder online bist.",
+  "GroupEditor.saveOffline":
+    "Zum Speichern einer Gruppe brauchst du eine Verbindung. Versuche es noch einmal, wenn du wieder online bist.",
+  "GroupEditor.created": "Gruppe erstellt",
+  "GroupEditor.createdBody": "„{name}“ ist jetzt deine aktuelle Gruppe.",
+  "GroupEditor.saved": "Gruppe gespeichert",
+  "GroupEditor.savedBody": "„{name}“ gespeichert.",
+  "GroupEditor.savedBodyUnnamed": "Die Gruppe ist gespeichert.",
+  "GroupEditor.discardTitle": "Änderungen verwerfen?",
+  "GroupEditor.discardNew": "Du hast diese Gruppe noch nicht erstellt.",
+  "GroupEditor.discardExisting": "Deine Änderungen an „{name}“ sind noch nicht gespeichert.",
+  "GroupEditor.discardLeave": "Änderungen verwerfen",
+  "GroupEditor.discardStay": "Weiter bearbeiten",
+  "GroupEditor.discardExistingUnnamed":
+    "Deine Änderungen an dieser Gruppe sind noch nicht gespeichert.",
+  "GroupImport.notes": {
+    "one": "{count} Notiz",
+    "other": "{count} Notizen",
+  },
+  "GroupImport.tags": {
+    "one": "{count} Tag",
+    "other": "{count} Tags",
+  },
+  "GroupImport.settings": "Einstellungen",
+  "GroupImport.newerVersion":
+    "Diese Datei stammt aus einer neueren Version der App. Aktualisiere die App oder exportiere noch einmal aus einer passenden Version.",
+  "GroupImport.notExport": "Das ist keine Exportdatei einer Gruppe.",
+  "GroupImport.tooLarge": "Die Datei ist größer als {size} MB.",
+  "GroupImport.checking": "Datei wird geprüft …",
+  "GroupImport.contains": "Enthält: {contents}.",
+  "GroupImport.refused": "Diese Datei lässt sich nicht importieren. Es wurde nichts gespeichert.",
+  "GroupImport.unchecked": "Die Datei konnte nicht geprüft werden.",
+  "GroupImport.title": "Gruppe importieren",
+  "GroupImport.back": "Zurück zu den Gruppen",
+  "GroupImport.intro":
+    "Erstelle eine neue Gruppe aus einer Exportdatei. Deine bestehenden Gruppen bleiben, wie sie sind.",
+  "GroupImport.offlineTitle": "Du bist offline",
+  "GroupImport.offline":
+    "Zum Prüfen und Importieren einer Datei brauchst du eine Verbindung. Deine Datei bleibt ausgewählt.",
+  "GroupImport.file": "Exportdatei",
+  "GroupImport.fileHint": "Eine aus einer Gruppe exportierte .json-Datei, bis {size} MB.",
+  "GroupImport.browse": "Datei auswählen",
+  "GroupImport.chooseAnother": "Andere Datei auswählen",
+  "GroupImport.retry": "Erneut versuchen",
+  "GroupImport.uncheckedHint":
+    "Prüfe deine Verbindung und versuche es noch einmal. Es wurde nichts gespeichert.",
+  "GroupImport.more": {
+    "one": "und {count} weiteres",
+    "other": "und {count} weitere",
+  },
+  "GroupImport.planTitle": "Diese Datei ist zu groß für den Tarif einer neuen Gruppe",
+  "GroupImport.plan": {
+    "one":
+      "Eine neue Gruppe startet im kostenlosen Tarif, der höchstens {count} Notiz erlaubt. Diese Datei enthält {notes}.",
+    "other":
+      "Eine neue Gruppe startet im kostenlosen Tarif, der höchstens {count} Notizen erlaubt. Diese Datei enthält {notes}.",
+  },
+  "GroupImport.failed":
+    "Der Import wurde abgebrochen, es wurde nichts gespeichert. Versuche es noch einmal.",
+  "GroupImport.name": "Name",
+  "GroupImport.importing": "Wird importiert …",
+  "GroupImport.submit": "Gruppe importieren",
+  "GroupImport.imported": "Gruppe importiert",
+  "GroupImport.importedBody": "{contents} in „{name}“ importiert.",
+  "GroupImport.nameInvalid": "Gib der Gruppe einen Namen mit 1 bis 100 Zeichen.",
+  "GroupInvitations.viewersOnly":
+    "Im Tarif dieser Gruppe können Einladungen nur Betrachter hinzufügen. Wechsle auf einen bezahlten Tarif, um auch Bearbeiter und Admins einzuladen.",
+  "GroupInvitations.copyNow": "Kopiere diesen Link jetzt. Du siehst ihn nicht noch einmal.",
+  "GroupInvitations.copyNowMailed":
+    "Kopiere diesen Link jetzt. Du siehst ihn nicht noch einmal. Wir haben ihn auch per E-Mail verschickt.",
+  "GroupInvitations.copyNowMailFailed":
+    "Kopiere diesen Link jetzt. Du siehst ihn nicht noch einmal. Die E-Mail konnten wir nicht senden, teile den Link also selbst.",
+  "GroupInvitations.copyLink": "Einladungslink kopieren",
+  "GroupInvitations.linkCopied": "Link kopiert",
+  "GroupInvitations.done": "Fertig",
+  "GroupInvitations.formHint":
+    "Wer den Link hat, kann mit dessen Rolle beitreten, bis er abläuft oder aufgebraucht ist. Offene Einladungen zählen nicht zum Mitgliederlimit des Tarifs, angenommene schon.",
+  "GroupInvitations.role": "Rolle",
+  "GroupInvitations.email": "E-Mail-Adresse (optional)",
+  "GroupInvitations.emailHint":
+    "Nur das Konto, das diese E-Mail-Adresse bestätigt hat, kann die Einladung annehmen, und sie gilt für genau eine Person.",
+  "GroupInvitations.sendEmail": "Link an diese E-Mail-Adresse senden",
+  "GroupInvitations.days": "Gültig für (Tage)",
+  "GroupInvitations.uses": "Wie viele Personen beitreten können",
+  "GroupInvitations.cancel": "Abbrechen",
+  "GroupInvitations.creating": "Wird erstellt …",
+  "GroupInvitations.create": "Einladung erstellen",
+  "GroupInvitations.pending": "Offene Einladungen",
+  "GroupInvitations.anyone": "Alle mit dem Link",
+  "GroupInvitations.usage": {
+    "one": "{uses} von {count} genutzt · läuft am <value>{date}</value> ab",
+    "other": "{uses} von {count} genutzt · läuft am <value>{date}</value> ab",
+  },
+  "GroupInvitations.usageBy": {
+    "one":
+      "{uses} von {count} genutzt · läuft am <value>{date}</value> ab · von <name>{name}</name>",
+    "other":
+      "{uses} von {count} genutzt · läuft am <value>{date}</value> ab · von <name>{name}</name>",
+  },
+  "GroupInvitations.actions": "Aktionen für die Einladung: {who}",
+  "GroupInvitations.revoke": "Zurückziehen",
+  "GroupInvitations.revokeTitle": "Diese Einladung zurückziehen?",
+  "GroupInvitations.revokeConfirmation":
+    "Der Link für <value>{email}</value> funktioniert ab sofort nicht mehr. Wer damit schon beigetreten ist, bleibt in der Gruppe.",
+  "GroupInvitations.revokeConfirmationLink":
+    "Dieser Link funktioniert ab sofort nicht mehr. Wer damit schon beigetreten ist, bleibt in der Gruppe.",
+  "GroupInvitations.opening": "Einladung wird geöffnet …",
+  "GroupInvitations.unusable": "Diese Einladung kann nicht genutzt werden",
+  "GroupInvitations.toGroups": "Zu deinen Gruppen",
+  "GroupInvitations.invitedYou": "<name>{name}</name> hat dich eingeladen",
+  "GroupInvitations.invitedYouSomeone": "<name>Jemand</name> hat dich eingeladen",
+  "GroupInvitations.asRole": "als <role>{role}</role> · läuft am <value>{date}</value> ab",
+  "GroupInvitations.joining": "Du trittst bei …",
+  "GroupInvitations.accept": "Einladung annehmen",
+  "GroupInvitations.acceptShort": "Annehmen",
+  "GroupInvitations.decline": "Ablehnen",
+  "GroupInvitations.forYou": "Einladungen für dich",
+  "GroupInvitations.invitedYouAs": "<name>{name}</name> hat dich als {role} eingeladen",
+  "GroupInvitations.invitedYouAsSomeone": "<name>Jemand</name> hat dich als {role} eingeladen",
+  "GroupInvitations.declineNamed": "Einladung in {name} ablehnen",
+  "GroupInvitations.acceptNamed": "Einladung in {name} annehmen",
+  "GroupInvitations.verifyEmail": "E-Mail-Adresse bestätigen",
+  "GroupInvitations.notForYou":
+    "Diese Einladung ging an eine andere E-Mail-Adresse. Wenn es deine ist, bestätige sie zuerst in deinem <link>Profil</link>, oder melde dich mit dem Konto an, das sie verwendet.",
+  "GroupInvitations.somethingWrong": "Etwas ist schiefgelaufen. Versuche es noch einmal.",
+  "GroupInvitations.unreachable": "Der Server ist nicht erreichbar. Versuche es noch einmal.",
+  "GroupMembers.unnamed": "Mitglied ohne Namen",
+  "GroupMembers.title": "Mitglieder",
+  "GroupMembers.titleCount": "Mitglieder ({total})",
+  "GroupMembers.loading": "Mitglieder werden geladen …",
+  "GroupMembers.cutOff": {
+    "one": "Du siehst die ersten {shown} von {count} Mitglied.",
+    "other": "Du siehst die ersten {shown} von {count} Mitgliedern.",
+  },
+  "GroupMembers.you": "du",
+  "GroupMembers.lastSeen": "Zuletzt aktiv <value>{when}</value>",
+  "GroupMembers.saving": "Wird gespeichert …",
+  "GroupMembers.actions": "Aktionen für {name}",
+  "GroupMembers.makeViewer": "Zum Betrachter machen",
+  "GroupMembers.makeEditor": "Zum Bearbeiter machen",
+  "GroupMembers.makeAdmin": "Zum Admin machen",
+  "GroupMembers.makeOwner": "Zum Inhaber machen",
+  "GroupMembers.remove": "Aus der Gruppe entfernen",
+  "GroupMembers.removeTitle": "{name} entfernen?",
+  "GroupMembers.removeConfirm": "Mitglied entfernen",
+  "GroupMembers.cancel": "Abbrechen",
+  "GroupMembers.removeConfirmation":
+    "Die Person verliert sofort den Zugriff, auf allen Geräten. Was sie geschrieben hat, bleibt in der Gruppe. Ist das ihre einzige Gruppe, bekommt sie eine neue, leere Gruppe namens „Personal“. Hat sie noch einen Einladungslink, kann sie damit über ein anderes Konto wieder beitreten – ziehe also auch diese Links zurück.",
+  "GroupMembers.loadFailed": "Die Mitglieder konnten nicht geladen werden",
+  "GroupMembers.roleFailed": "Die Rolle konnte nicht geändert werden",
+  "GroupMembers.removeFailed": "Das Mitglied konnte nicht entfernt werden",
+  "GroupMembers.leaveFailed": "Du konntest die Gruppe nicht verlassen",
+  "GroupMoveAll.explanation":
+    "Alle Notizen und Tags aus „<value>{name}</value>“ wandern in die Gruppe, die du auswählst, und die Mitglieder dieser Gruppe sehen sie nicht mehr. Die Mitglieder der anderen Gruppe sehen sie sofort. Jede Notiz behält ihren Bearbeitungsverlauf. Geht etwas schief, wird nichts verschoben.",
+  "GroupMoveAll.to": "Alles verschieben nach",
+  "GroupMoveAll.cancel": "Abbrechen",
+  "GroupMoveAll.moving": "Wird verschoben …",
+  "GroupMoveAll.submit": "Alles verschieben",
+  "GroupMoveAll.notes": {
+    "one": "{count} Notiz",
+    "other": "{count} Notizen",
+  },
+  "GroupMoveAll.tags": {
+    "one": "{count} Tag",
+    "other": "{count} Tags",
+  },
+  "GroupMoveAll.done":
+    "{notes} von „<value>{from}</value>“ nach „<value>{to}</value>“ verschoben. Gelöschte Notizen bleiben in dieser Gruppe und verschwinden mit ihr, wenn du sie löschst.",
+  "GroupMoveAll.doneWithTags":
+    "{notes} und {tags} von „<value>{from}</value>“ nach „<value>{to}</value>“ verschoben. Gelöschte Notizen bleiben in dieser Gruppe und verschwinden mit ihr, wenn du sie löschst.",
+  "GroupMoveAll.keep": "Gruppe behalten",
+  "GroupMoveAll.delete": "„{name}“ löschen …",
+  "GroupMoveAll.failed": "Die Daten konnten nicht verschoben werden",
+  "GroupMoveAll.otherGroup": "die andere Gruppe",
+  "GroupPicker.label": "Gruppe: {name}",
+  "GroupPicker.choose": "Gruppe auswählen",
+  "GroupPicker.tip": "{name} · {role}",
+  "GroupPicker.menu": "Gruppe wechseln",
+  "GroupPicker.all": "Alle Gruppen",
+  "GroupPicker.new": "Neue Gruppe",
+  "GroupPicker.sheetHeading": "Gruppe",
+  "GroupTransfer.explanation":
+    "Die Person wird Inhaber, und du wirst Admin. Nur der Inhaber kann die Gruppe löschen, ihren Tarif verwalten oder sie weiter übertragen. Bevor du dein Konto löschen kannst, musst du jede Gruppe übertragen, die du mit anderen teilst.",
+  "GroupTransfer.newOwner": "Neuer Inhaber",
+  "GroupTransfer.typeName": "Gib „{name}“ zur Bestätigung ein",
+  "GroupTransfer.password": "Dein Passwort",
+  "GroupTransfer.cancel": "Abbrechen",
+  "GroupTransfer.transferring": "Wird übertragen …",
+  "GroupTransfer.transfer": "Inhaberschaft übertragen",
+  "GroupTransfer.failed": "Die Gruppe konnte nicht übertragen werden",
+  "GroupTransfer.unreachable": "Der Server ist nicht erreichbar. Versuche es noch einmal.",
+  "GroupTransfer.tooManyAttempts":
+    "Zu viele Versuche. Warte ein paar Minuten und versuche es dann noch einmal.",
+  "GroupTransfer.somethingWrong": "Etwas ist schiefgelaufen. Versuche es noch einmal.",
+  "Groups.title": "Gruppen",
+  "Groups.new": "Neue Gruppe",
+  "Groups.import": "Gruppe importieren …",
+  "Groups.loading": "Gruppen werden geladen …",
+  "Groups.retry": "Erneut versuchen",
+  "Groups.empty": "Noch keine Gruppen",
+  "Groups.emptyHint":
+    "Alles, was du in eine Gruppe legst, teilst du mit den Leuten, die du einlädst.",
+  "Groups.listLabel": "Deine Gruppen",
+  "Groups.deleted": "Gelöschte Gruppen ({count})",
+  "Groups.deletedHint": {
+    "one":
+      "Eine gelöschte Gruppe kannst du samt Inhalt noch {count} Tag lang wiederherstellen. Danach ist sie endgültig gelöscht.",
+    "other":
+      "Eine gelöschte Gruppe kannst du samt Inhalt noch {count} Tage lang wiederherstellen. Danach ist sie endgültig gelöscht.",
+  },
+  "Groups.restorableUntil": "Wiederherstellbar bis <value>{date}</value>",
+  "Groups.restore": "Wiederherstellen",
+  "Groups.restoreNamed": "{name} wiederherstellen",
+  "Groups.restoring": "Wird wiederhergestellt …",
+  "Groups.onlyYou": "Nur du",
+  "Groups.members": {
+    "one": "{count} Mitglied",
+    "other": "{count} Mitglieder",
+  },
+  "Groups.current": "Aktuell",
+  "Groups.currentNamed": "{name}, aktuelle Gruppe",
+  "Groups.roleViewer": "Betrachter",
+  "Groups.roleEditor": "Bearbeiter",
+  "Groups.roleAdmin": "Admin",
+  "Groups.roleOwner": "Inhaber",
+  "Groups.loadFailed": "Die Gruppen konnten nicht geladen werden",
+  "Groups.deleteFailed": "Die Gruppe konnte nicht gelöscht werden",
+  "Groups.restoreFailed": "Die Gruppe konnte nicht wiederhergestellt werden",
+  "InvitationNew.back": "Zurück zu den Mitgliedern",
+  "InvitationNew.offline":
+    "Zum Erstellen einer Einladung brauchst du eine Verbindung. Versuche es noch einmal, wenn du wieder online bist.",
+  "InvitationNew.offlineTitle": "Du bist offline",
+  "InvitationNew.copyTitle": "Kopiere deinen Einladungslink",
+  "InvitationNew.title": "Neue Einladung",
+  "InvitationNew.notAllowed": "Nur Admins und der Inhaber können Leute einladen.",
+  "InvitationNew.backToGroup": "Zurück zur Gruppe",
+  "InvitationNew.loading": "Gruppe wird geladen …",
+  "InvitationNew.missing": "Diese Gruppe gibt es nicht.",
+  "InvitationNew.missingHint": "Vielleicht wurde sie gelöscht, oder du bist kein Mitglied.",
+  "InvitationNew.backToGroups": "Zurück zu den Gruppen",
+  "InvitationNew.leaveTitle": "Gehen, ohne zu kopieren?",
+  "InvitationNew.leaveMessage": "Diesen Link kannst du danach nicht mehr sehen.",
+  "InvitationNew.leave": "Gehen",
+  "InvitationNew.stay": "Bleiben",
+  "InvitationNew.discardTitle": "Änderungen verwerfen?",
+  "InvitationNew.discardMessage": "Du hast diese Einladung noch nicht erstellt.",
+  "InvitationNew.discardLeave": "Änderungen verwerfen",
+  "InvitationNew.discardStay": "Weiter bearbeiten",
+  "GroupBillingPanel.planFree": "Free",
+  "GroupBillingPanel.planPro": "Pro",
+  "GroupBillingPanel.paymentFailed": {
+    "one":
+      "Eine Zahlung ist fehlgeschlagen. Damit du {plan} behältst, aktualisiere deine Karte über „Karte ändern“ innerhalb von {count} Tag, bis zum {date}.",
+    "other":
+      "Eine Zahlung ist fehlgeschlagen. Damit du {plan} behältst, aktualisiere deine Karte über „Karte ändern“ innerhalb von {count} Tagen, bis zum {date}.",
+  },
+  "GroupBillingPanel.paymentFailedFree":
+    "Eine Zahlung ist fehlgeschlagen, deshalb ist die Gruppe jetzt im kostenlosen Tarif. Aktualisiere deine Karte über „Karte ändern“, um {plan} zurückzubekommen.",
+  "GroupBillingPanel.offline": "Der Server ist nicht erreichbar. Versuche es noch einmal.",
+  "GroupBillingPanel.unreadable": "Der Tarif konnte nicht geladen werden.",
+  "GroupBillingPanel.unsafePage":
+    "Der Zahlungsanbieter hat eine Adresse zurückgeschickt, die diese App nicht öffnet.",
+  "GroupBillingPanel.checkoutUnreachable":
+    "Die Bezahlseite von Stripe konnte nicht geöffnet werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "GroupBillingPanel.portalUnreachable":
+    "Die Abrechnungsseite von Stripe konnte nicht geöffnet werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "GroupBillingPanel.title": "Abrechnung",
+  "GroupBillingPanel.description":
+    "Was <group>{group}</group> jeden Monat zahlt. Die Abrechnung läuft über Stripe.",
+  "GroupBillingPanel.loading": "Tarif wird geladen",
+  "GroupBillingPanel.statusTrial": "Testphase",
+  "GroupBillingPanel.statusRenews": "Verlängert sich am {date}",
+  "GroupBillingPanel.statusEnds": "Endet am {date}",
+  "GroupBillingPanel.statusPaymentFailed": "Zahlung fehlgeschlagen",
+  "GroupBillingPanel.off": "Alle Gruppen sind im kostenlosen Tarif.",
+  "GroupBillingPanel.ownerOnly":
+    "Nur <name>{name}</name>, der Inhaber der Gruppe, kann ihren Tarif ändern oder Rechnungen sehen.",
+  "GroupBillingPanel.ownerOnlyUnknown":
+    "Nur der Inhaber der Gruppe kann ihren Tarif ändern oder Rechnungen sehen.",
+  "GroupBillingPanel.price": "{plan} kostet {price} pro Mitglied und Monat.",
+  "GroupBillingPanel.priceForGroup": {
+    "one": "Mit {count} Mitglied würde <group>{group}</group> {total} im Monat zahlen.",
+    "other": "Mit {count} Mitgliedern würde <group>{group}</group> {total} im Monat zahlen.",
+  },
+  "GroupBillingPanel.opening": "Stripe wird geöffnet …",
+  "GroupBillingPanel.opensStripe": "(öffnet Stripe)",
+  "GroupBillingPanel.startTrial": {
+    "one": "{count} Tag kostenlos testen",
+    "other": "{count} Tage kostenlos testen",
+  },
+  "GroupBillingPanel.upgrade": "Auf {plan} upgraden",
+  "GroupBillingPanel.trialUsed":
+    "Du hast deine kostenlose Testphase schon für eine andere Gruppe genutzt.",
+  "GroupBillingPanel.finePrint":
+    "Monatliche Abrechnung pro Mitglied. Jederzeit kündbar, {plan} bleibt bis zum Ende des Zeitraums.",
+  "GroupBillingPanel.trialEnds": {
+    "one": "Die Testphase endet in {count} Tag, am {date}.",
+    "other": "Die Testphase endet in {count} Tagen, am {date}.",
+  },
+  "GroupBillingPanel.trialThen":
+    "Danach zahlt <group>{group}</group> {total} im Monat, wenn du nicht kündigst.",
+  "GroupBillingPanel.seats": {
+    "one": "{total} im Monat, für {count} Mitglied zu je {price}, den Inhaber eingerechnet.",
+    "other": "{total} im Monat, für {count} Mitglieder zu je {price}, den Inhaber eingerechnet.",
+  },
+  "GroupBillingPanel.ending":
+    "{plan} endet am {date}. Danach wechselt die Gruppe in den kostenlosen Tarif.",
+  "GroupBillingPanel.endingNoDate":
+    "{plan} endet mit diesem Zeitraum. Danach wechselt die Gruppe in den kostenlosen Tarif.",
+  "GroupBillingPanel.renew": "{plan} verlängern",
+  "GroupBillingPanel.planHeading": "Tarif <plan>{plan}</plan>",
+  "GroupBillingPanel.confirming":
+    "Stripe bestätigt gerade deinen Tarif. Diese Seite aktualisiert sich von selbst.",
+  "GroupBillingPanel.paymentMethod": "Zahlungsmethode",
+  "GroupBillingPanel.paymentMethodText": "Die Karte, die Stripe jeden Monat belastet.",
+  "GroupBillingPanel.changeCard": "Karte ändern",
+  "GroupBillingPanel.invoices": "Rechnungen",
+  "GroupBillingPanel.invoicesText": "Alle Rechnungen und Belege zum Ansehen oder Herunterladen.",
+  "GroupBillingPanel.viewInvoices": "Rechnungen ansehen",
+  "GroupBillingPanel.cancelTitle": "{plan} kündigen",
+  "GroupBillingPanel.cancelFree": "Wenn du vor dem {date} kündigst, zahlst du nichts.",
+  "GroupBillingPanel.cancelKeep": "{plan} bleibt dir bis zum Ende des Zeitraums.",
+  "GroupBillingPanel.cancelPlan": "Tarif kündigen",
+  "GroupBillingView.trialStarted": {
+    "one": "Deine {count}-tägige Testphase für {plan} hat begonnen",
+    "other": "Deine {count}-tägige Testphase für {plan} hat begonnen",
+  },
+  "GroupBillingView.trialUntil": "„{group}“ hat {plan} bis zum {date}.",
+  "GroupBillingView.paid": "Du hast jetzt {plan}",
+  "GroupBillingView.paidText": "Stripe hat die Zahlung für „{group}“ bestätigt.",
+  "NotificationsScreen.loadFailed": "Die Benachrichtigungen konnten nicht geladen werden.",
+  "NotificationsScreen.loadMoreFailed": "Weitere Benachrichtigungen konnten nicht geladen werden.",
+  "NotificationsScreen.readFailed":
+    "Die Benachrichtigung konnte nicht als gelesen markiert werden.",
+  "NotificationsScreen.readAllFailed":
+    "Die Benachrichtigungen konnten nicht als gelesen markiert werden.",
+  "NotificationsScreen.invitedViewer":
+    "Du wurdest als Betrachter in „<group>{group}</group>“ eingeladen.",
+  "NotificationsScreen.invitedEditor":
+    "Du wurdest als Bearbeiter in „<group>{group}</group>“ eingeladen.",
+  "NotificationsScreen.invitedAdmin":
+    "Du wurdest als Admin in „<group>{group}</group>“ eingeladen.",
+  "NotificationsScreen.invitedOwner":
+    "Du wurdest als Inhaber in „<group>{group}</group>“ eingeladen.",
+  "NotificationsScreen.invitedMember":
+    "Du wurdest als Mitglied in „<group>{group}</group>“ eingeladen.",
+  "NotificationsScreen.roleViewer": "Du bist jetzt Betrachter in „<group>{group}</group>“.",
+  "NotificationsScreen.roleEditor": "Du bist jetzt Bearbeiter in „<group>{group}</group>“.",
+  "NotificationsScreen.roleAdmin": "Du bist jetzt Admin in „<group>{group}</group>“.",
+  "NotificationsScreen.roleOwner": "Du bist jetzt Inhaber von „<group>{group}</group>“.",
+  "NotificationsScreen.roleMember": "Du bist jetzt Mitglied in „<group>{group}</group>“.",
+  "NotificationsScreen.invited": "Du wurdest in „<group>{group}</group>“ eingeladen.",
+  "NotificationsScreen.roleChanged": "Deine Rolle in „<group>{group}</group>“ hat sich geändert.",
+  "NotificationsScreen.removed": "Du wurdest aus „<group>{group}</group>“ entfernt.",
+  "NotificationsScreen.owned": "„<group>{group}</group>“ gehört jetzt dir.",
+  "NotificationsScreen.someGroup": "eine Gruppe",
+  "NotificationsScreen.reminderFirstNote":
+    "Behalte die Notiz, die du gerade geschrieben hast. Noch liegt sie nur in diesem Browser. Füge eine Anmeldemethode hinzu, um sie auf jedem Gerät zu öffnen.",
+  "NotificationsScreen.reminderThirdVisit":
+    "Dieses Konto auch auf deinen anderen Geräten nutzen? Gerade kann es nur dieser Browser öffnen. Füge eine Anmeldemethode hinzu, dann geht es überall.",
+  "NotificationsScreen.reminderInvite":
+    "Füge eine Anmeldemethode hinzu, um Leute einzuladen – sie sehen, wer sie eingeladen hat. Lade sie dann über die Einstellungen der Gruppe ein.",
+  "NotificationsScreen.reminderKeep": "Füge eine Anmeldemethode hinzu, um dein Konto zu behalten.",
+  "NotificationsScreen.exportReady": "Deine Daten sind bereit. Lade sie in deinem Profil herunter.",
+  "NotificationsScreen.exportReadyUntil":
+    "Deine Daten sind bereit. Lade sie bis zum {date} in deinem Profil herunter.",
+  "NotificationsScreen.unknown": "Du hast eine neue Benachrichtigung.",
+  "NotificationsScreen.title": "Benachrichtigungen",
+  "NotificationsScreen.unread": {
+    "one": "{count} ungelesen",
+    "other": "{count} ungelesen",
+  },
+  "NotificationsScreen.readAll": "Alle als gelesen markieren",
+  "NotificationsScreen.loading": "Wird geladen …",
+  "NotificationsScreen.empty": "Alles erledigt.",
+  "NotificationsScreen.emptyText": "Einladungen und Änderungen an deinen Gruppen erscheinen hier.",
+  "NotificationsScreen.loadMore": "Mehr laden",
+  "NotificationsScreen.unreadMark": "Ungelesen:",
+  "OnboardingCard.failed": "Das konnte nicht gespeichert werden. Versuche es noch einmal.",
+  "OnboardingCard.emailTitle": "Bestätige deine E-Mail-Adresse",
+  "OnboardingCard.emailText":
+    "Gib den Code ein, den wir dir geschickt haben – dann kannst du dein Passwort zurücksetzen, falls du es einmal vergisst.",
+  "OnboardingCard.emailAction": "E-Mail-Adresse bestätigen",
+  "OnboardingCard.noteTitle": "Schreib deine erste Notiz",
+  "OnboardingCard.noteText": "Die Willkommensnotiz ist von uns. Schreib jetzt eine eigene.",
+  "OnboardingCard.noteAction": "Notiz schreiben",
+  "OnboardingCard.inviteTitle": "Lade jemanden in deine Gruppe ein",
+  "OnboardingCard.inviteText":
+    "Die Person sieht dieselben Notizen live, mit der Rolle, die du ihr gibst.",
+  "OnboardingCard.inviteAction": "Jemanden einladen",
+  "OnboardingCard.notificationsTitle": "Benachrichtigungen einschalten",
+  "OnboardingCard.notificationsText": "Erfahre von Änderungen, auch wenn die App geschlossen ist.",
+  "OnboardingCard.notificationsAction": "Benachrichtigungen einschalten",
+  "OnboardingCard.twoFactorTitle": "Zwei-Faktor-Schutz einrichten",
+  "OnboardingCard.twoFactorText":
+    "Eine Authenticator-App schützt dein Konto, selbst wenn dein Passwort in falsche Hände gerät.",
+  "OnboardingCard.twoFactorAction": "Zwei-Faktor-Schutz einrichten",
+  "OnboardingCard.tourNotesTitle": "Notizen",
+  "OnboardingCard.tourNotesText":
+    "Was du und deine Gruppe schreibt. Öffne eine Notiz, um sie zu bearbeiten – alle sehen deine Änderungen sofort.",
+  "OnboardingCard.tourGroupsTitle": "Gruppen",
+  "OnboardingCard.tourGroupsText":
+    "Notizen gehören zu Gruppen. Hier erstellst du Gruppen, lädst Leute ein und legst ihre Rollen fest.",
+  "OnboardingCard.tourNotificationsTitle": "Benachrichtigungen",
+  "OnboardingCard.tourNotificationsText":
+    "Was passiert ist, während du weg warst – zum Beispiel eine Einladung.",
+  "OnboardingCard.tourProfileTitle": "Profil",
+  "OnboardingCard.tourProfileText":
+    "Dein Konto: dein Name, Passwort, Zwei-Faktor-Schutz und Geräte, das Design und „Abmelden“.",
+  "OnboardingCard.goTo": "{place} öffnen",
+  "OnboardingCard.goToHighlighted": "Hervorgehobenes Element öffnen",
+  "OnboardingCard.title": "Los geht’s",
+  "OnboardingCard.tourOffer": "Neu hier? Mach eine kurze Tour.",
+  "OnboardingCard.tourStart": "Tour starten",
+  "OnboardingCard.tourSkip": "Tour überspringen",
+  "OnboardingCard.keep": "Konto behalten",
+  "OnboardingCard.keepText":
+    "Füge eine Anmeldemethode hinzu, dann kannst du dieses Konto auf jedem Gerät öffnen.",
+  "OverviewScreen.last7Days": "Letzte 7 Tage",
+  "OverviewScreen.last30Days": "Letzte 30 Tage",
+  "OverviewScreen.last90Days": "Letzte 90 Tage",
+  "OverviewScreen.last12Months": "Letzte 12 Monate",
+  "OverviewScreen.thisMonth": "Dieser Monat",
+  "OverviewScreen.lastMonth": "Letzter Monat",
+  "OverviewScreen.custom": "Eigener Zeitraum …",
+  "OverviewScreen.period": {
+    "one": "{range}, verglichen mit dem Tag davor",
+    "other": "{range}, verglichen mit den {count} Tagen davor",
+  },
+  "OverviewScreen.title": "Übersicht",
+  "OverviewScreen.customise": "Übersicht anpassen",
+  "OverviewScreen.reset": "Layout zurücksetzen",
+  "OverviewScreen.copyLink": "Link zu dieser Ansicht kopieren",
+  "OverviewScreen.loading": "Gruppe wird geladen …",
+  "OverviewScreen.missing": "Diese Gruppe gibt es nicht.",
+  "OverviewScreen.backToGroups": "Zurück zu den Gruppen",
+  "OverviewScreen.emptyGroup": "Noch keine Notizen in {group}",
+  "OverviewScreen.emptyGroupText":
+    "Die Übersicht füllt sich, sobald Leute in der Gruppe Notizen anlegen.",
+  "OverviewScreen.newNote": "Neue Notiz",
+  "OverviewScreen.allHidden": "Alle Widgets sind ausgeblendet",
+  "OverviewScreen.allHiddenText": "Wähle aus, welche du sehen willst.",
+  "OverviewScreen.gridLabel": "Übersicht von {group}",
+  "OverviewScreen.customiseText":
+    "Wähle, welche Widgets du siehst und in welcher Reihenfolge. Dein Layout gilt auch auf deinen anderen Geräten.",
+  "OverviewScreen.widgets": "Widgets",
+  "OverviewScreen.customRange": "Eigener Zeitraum",
+  "OverviewScreen.rangeTooLong": "Wähle einen Zeitraum von höchstens einem Jahr.",
+  "OverviewScreen.asOf": "Stand: {time}",
+  "OverviewScreen.hide": "Widget ausblenden",
+  "OverviewView.opening": "Übersicht wird geöffnet …",
+  "OverviewView.saveFailed":
+    "Dein Layout konnte nicht gespeichert werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "OverviewView.undo": "Rückgängig",
+  "OverviewView.widget": "Widget",
+  "OverviewView.hidden": "{widget} ausgeblendet.",
+  "OverviewView.restored": "Standardlayout wiederhergestellt.",
+  "OverviewView.linkCopied": "Link kopiert",
+  "PlanRefusalNotice.notesTitle": "{group} hat das Notizlimit erreicht",
+  "PlanRefusalNotice.notesTitleUnnamed": "Diese Gruppe hat das Notizlimit erreicht",
+  "PlanRefusalNotice.membersTitle": "{group} hat das Mitgliederlimit erreicht",
+  "PlanRefusalNotice.membersTitleUnnamed": "Diese Gruppe hat das Mitgliederlimit erreicht",
+  "PlanRefusalNotice.filesTitle": "{group} hat das Dateilimit erreicht",
+  "PlanRefusalNotice.filesTitleUnnamed": "Diese Gruppe hat das Dateilimit erreicht",
+  "PlanRefusalNotice.storageTitle": "Der Speicher von {group} ist voll",
+  "PlanRefusalNotice.storageTitleUnnamed": "Der Speicher dieser Gruppe ist voll",
+  "PlanRefusalNotice.notesText": {
+    "one":
+      "Ihr Tarif erlaubt höchstens {count} Notiz. Bestehende Notizen kannst du weiterhin lesen und bearbeiten.",
+    "other":
+      "Ihr Tarif erlaubt höchstens {count} Notizen. Bestehende Notizen kannst du weiterhin lesen und bearbeiten.",
+  },
+  "PlanRefusalNotice.membersText": {
+    "one": "Ihr Tarif erlaubt höchstens {count} Mitglied.",
+    "other": "Ihr Tarif erlaubt höchstens {count} Mitglieder.",
+  },
+  "PlanRefusalNotice.filesText": {
+    "one":
+      "Ihr Tarif erlaubt höchstens {count} Datei in allen Notizen zusammen. Entferne eine Datei aus einer beliebigen Notiz, um Platz zu schaffen.",
+    "other":
+      "Ihr Tarif erlaubt höchstens {count} Dateien in allen Notizen zusammen. Entferne eine Datei aus einer beliebigen Notiz, um Platz zu schaffen.",
+  },
+  "PlanRefusalNotice.storageText": "Ihr Tarif hat keinen Platz für weitere Dateien.",
+  "PlanRefusalNotice.rolesTitle": "Mitglieder hochstufen geht nur mit einem bezahlten Tarif",
+  "PlanRefusalNotice.rolesText":
+    "Im Tarif dieser Gruppe kannst du die Rolle eines Mitglieds herabstufen oder es entfernen, aber nicht hochstufen.",
+  "PlanRefusalNotice.openBilling": "Reiter „Abrechnung“ öffnen",
+  "PlanRefusalNotice.askOwner": "Bitte den Inhaber der Gruppe, den Tarif zu upgraden.",
+  "GuestProfile.accountType": "Kontotyp",
+  "GuestProfile.guestAccount": "Gastkonto. Nur dieser Browser kann es öffnen.",
+  "GuestProfile.methods": "Anmeldemethoden",
+  "GuestProfile.noMethods": "Noch keine Anmeldemethoden",
+  "GuestProfile.noMethodsText":
+    "Füge eine hinzu, damit du dich auf einem anderen Gerät anmelden kannst.",
+  "GuestProfile.danger": "Gefahrenbereich",
+  "GuestProfile.deleteSummary": "Löscht dieses Gastkonto mit allem, was darin ist – sofort.",
+  "GuestProfile.deleteTitle": "Dieses Gastkonto löschen?",
+  "GuestProfile.deleteText":
+    "Damit werden seine Notizen und Gruppen sofort gelöscht, und niemand kann sie zurückholen: Ein Gastkonto hat keine Anmeldemethode, über die es sich wiederherstellen ließe. Exportiere vorher eine Gruppe, wenn du eine Kopie willst.",
+  "GuestProfile.typeWord": "Gib „{word}“ zur Bestätigung ein",
+  "GuestProfile.deleteForGood": "Endgültig löschen",
+  "GuestProfile.inviteTitle": "Zum Einladen brauchst du eine Anmeldemethode",
+  "GuestProfile.inviteText":
+    "Eingeladene sehen, wer sie eingeladen hat, und ein Gastkonto verschwindet, wenn die Daten dieses Browsers gelöscht werden. Füge zuerst eine Anmeldemethode hinzu.",
+  "GuestProfile.pushTitle":
+    "Für Benachrichtigungen auf diesem Gerät brauchst du eine Anmeldemethode",
+  "GuestProfile.pushText": "Füge eine hinzu und schalte sie dann hier ein.",
+  "GuestProfile.apiTokenTitle": "Für API-Tokens brauchst du eine Anmeldemethode",
+  "GuestProfile.apiTokenText":
+    "Ein Token öffnet dieses Konto von außerhalb des Browsers. Füge zuerst eine Anmeldemethode hinzu.",
+  "GuestProfile.uploadTitle": "Zum Importieren brauchst du eine Anmeldemethode",
+  "GuestProfile.uploadText": "Füge deinem Konto zuerst eine hinzu und importiere dann die Datei.",
+  "GuestProfile.billingTitle": "Für bezahlte Tarife brauchst du eine Anmeldemethode",
+  "GuestProfile.billingText":
+    "Tarife werden einem Konto berechnet, bei dem du dich jederzeit wieder anmelden kannst. Füge zuerst eine Anmeldemethode hinzu.",
+  "GuestProfile.telegramTitle": "Für Telegram brauchst du eine Anmeldemethode",
+  "GuestProfile.telegramText":
+    "Ein verknüpfter Chat handelt von außerhalb des Browsers in deinem Namen. Füge zuerst eine Anmeldemethode hinzu.",
+  "GuestProfile.otherTitle": "Dafür brauchst du eine Anmeldemethode",
+  "GuestProfile.otherText": "Füge deinem Konto zuerst eine hinzu und versuche es dann noch einmal.",
+  "GuestProfile.notNow": "Nicht jetzt",
+  "GuestScreens.keep": "Konto behalten",
+  "GuestScreens.createAccount": "Konto erstellen",
+  "GuestScreens.createInstead": "Lieber ein Konto erstellen",
+  "GuestScreens.tryTitle": "App ausprobieren",
+  "GuestScreens.opening": "App wird geöffnet …",
+  "GuestScreens.rateLimited": "Zu viele neue Konten aus deinem Netzwerk",
+  "GuestScreens.failed": "Die App konnte nicht geöffnet werden",
+  "GuestScreens.failedText": "Prüfe deine Verbindung und versuche es noch einmal.",
+  "GuestScreens.tryAgain": "Erneut versuchen",
+  "GuestScreens.signedIn": "Du bist schon angemeldet",
+  "GuestScreens.signedInText":
+    "Dein Konto ist in diesem Browser geöffnet. Melde dich zuerst ab, um die App als Gast auszuprobieren.",
+  "GuestScreens.openApp": "App öffnen",
+  "GuestScreens.off": "Erstelle ein Konto, um loszulegen",
+  "GuestScreens.offText": "Ohne Konto ausprobieren geht hier nicht.",
+  "GuestScreens.terms":
+    "Wenn du fortfährst, stimmst du den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu.",
+  "GuestScreens.tryNow": "Jetzt ausprobieren",
+  "GuestScreens.tryLine":
+    "Kein Konto nötig. Füge später eine Anmeldemethode hinzu, um deine Arbeit zu behalten.",
+  "GuestScreens.noAccount": "Noch kein Konto?",
+  "GuestScreens.tryWithout": "Ohne Konto ausprobieren",
+  "GuestScreens.tryFromSignIn": "Du bekommst ein neues, leeres Konto in diesem Browser.",
+  "GuestScreens.tryFromSignInDemo":
+    "Du bekommst ein neues Konto mit Beispieldaten zum Ausprobieren.",
+  "GuestScreens.demoWipe":
+    "Du nutzt ein Gastkonto in einer öffentlichen Demo. Hier wird jede Nacht um {time} alles zurückgesetzt, auch mit Anmeldemethode. Füge trotzdem eine hinzu, um zu sehen, wie das Behalten eines Kontos funktioniert.",
+  "GuestScreens.banner":
+    "Dieses Konto gibt es nur in diesem Browser. Werden die Browserdaten gelöscht, ist es weg. Füge eine Anmeldemethode hinzu, um es zu behalten.",
+  "GuestScreens.hide": "Diese Meldung ausblenden",
+  "GuestScreens.keptPasskey":
+    "Du kannst dich jetzt auf jedem Gerät mit einem Passkey anmelden. In deinem Konto hat sich nichts geändert.",
+  "GuestScreens.keptEmail":
+    "Du kannst dich jetzt auf jedem Gerät mit deiner E-Mail-Adresse anmelden. In deinem Konto hat sich nichts geändert.",
+  "GuestScreens.keptProvider":
+    "Du kannst dich jetzt auf jedem Gerät mit {provider} anmelden. In deinem Konto hat sich nichts geändert.",
+  "GuestScreens.added": "Anmeldemethode hinzugefügt",
+  "GuestScreens.done": "Fertig",
+  "GuestScreens.isKept": "Dein Konto ist gesichert",
+  "GuestScreens.isKeptText":
+    "Es hat eine Anmeldemethode, du kannst es also auf jedem Gerät öffnen.",
+  "GuestScreens.keepText":
+    "Füge eine Anmeldemethode hinzu, dann kannst du dieses Konto auf jedem Gerät öffnen. Deine Notizen und Gruppen bleiben, wie sie sind.",
+  "GuestScreens.ways": "Anmeldemethoden",
+  "GuestScreens.openingProvider": "{provider} wird geöffnet …",
+  "GuestScreens.addPasskey": "Passkey hinzufügen",
+  "GuestScreens.orEmail": "oder mit E-Mail-Adresse und Passwort",
+  "GuestScreens.email": "E-Mail-Adresse",
+  "GuestScreens.passwordHint": {
+    "one": "Mindestens {count} Zeichen.",
+    "other": "Mindestens {count} Zeichen.",
+  },
+  "GuestScreens.saving": "Wird gespeichert …",
+  "GuestScreens.takenProvider": "{provider} ist schon mit einem anderen Konto verknüpft.",
+  "GuestScreens.takenAddress": "Für diese E-Mail-Adresse gibt es schon ein Konto.",
+  "GuestScreens.takenEmail": "Für <email>{email}</email> gibt es schon ein Konto.",
+  "GuestScreens.takenRest":
+    "Dein Gastkonto bleibt unverändert. Entscheide, was mit dem passiert, was du als Gast angelegt hast.",
+  "GuestScreens.moveOne":
+    "Melde dich bei diesem Konto an und verschiebe <name>{name}</name> dorthin. Danach wird das Gastkonto gelöscht.",
+  "GuestScreens.moveMany": {
+    "one":
+      "Melde dich bei diesem Konto an und verschiebe {count} Gruppe aus diesem Gastkonto dorthin. Danach wird das Gastkonto gelöscht.",
+    "other":
+      "Melde dich bei diesem Konto an und verschiebe {count} Gruppen aus diesem Gastkonto dorthin. Danach wird das Gastkonto gelöscht.",
+  },
+  "GuestScreens.checking": "Wird geprüft …",
+  "GuestScreens.loading": "Wird geladen …",
+  "GuestScreens.nothing": "Hier gibt es nichts auszuwählen",
+  "GuestScreens.nothingText":
+    "Diese Auswahl ist abgelaufen oder wurde schon getroffen. Dein Gastkonto bleibt unverändert.",
+  "GuestScreens.move": "Wechseln und Gruppen mitnehmen",
+  "GuestScreens.delete": "Wechseln und Gastdaten löschen",
+  "GuestScreens.deleteHint":
+    "Melde dich bei diesem Konto an und lösche dieses Gastkonto mit allem, was darin ist.",
+  "GuestScreens.keepGuest": "Gastkonto behalten",
+  "GuestScreens.keepGuestHint":
+    "Es ändert sich nichts. Du kannst eine andere Anmeldemethode hinzufügen.",
+  "GuestScreens.linked": "Schon mit einem anderen Konto verknüpft",
+  "GuestScreens.legend": "Was mit diesem Gastkonto passiert",
+  "GuestScreens.choose": "Entscheide, was mit dem passiert, was du als Gast angelegt hast.",
+  "GuestScreens.passwordOf": "Das Passwort für {email}.",
+  "GuestScreens.passwordOfThat": "Das Passwort für dieses Konto.",
+  "GuestScreens.otp": "Code aus der Authenticator-App dieses Kontos",
+  "GuestScreens.sixDigits": "Sechs Ziffern.",
+  "GuestScreens.deleteAndSwitch": "Löschen und wechseln",
+  "GuestScreens.notes": {
+    "one": "{count} Notiz",
+    "other": "{count} Notizen",
+  },
+  "GuestScreens.groups": {
+    "one": "{count} Gruppe",
+    "other": "{count} Gruppen",
+  },
+  "GuestScreens.confirmEmail":
+    "Damit werden seine {notes} und {groups} gelöscht, und du wirst bei <email>{email}</email> angemeldet. Das lässt sich nicht rückgängig machen.",
+  "GuestScreens.confirmAccount":
+    "Damit werden seine {notes} und {groups} gelöscht, und du wirst bei diesem Konto angemeldet. Das lässt sich nicht rückgängig machen.",
+  "GuestScreens.signOutTitle": "Vom Gastkonto abmelden?",
+  "GuestScreens.signOutAnyway": "Trotzdem abmelden",
+  "GuestScreens.signOutText":
+    "Dieses Konto hat keine Anmeldemethode, du kannst dich also nicht wieder anmelden. Alles darin geht verloren.",
+  "GuestScreens.offline": "Du bist offline. Stell eine Verbindung her und versuche es noch einmal.",
+  "GuestScreens.providerFailed":
+    "{provider} wurde nicht abgeschlossen. Dein Konto bleibt unverändert. Versuche es noch einmal oder wähle eine andere Methode.",
+  "GuestScreens.noPasskey":
+    "Es wurde kein Passkey hinzugefügt. Dein Konto ist weiterhin ein Gastkonto.",
+  "GuestScreens.didNotWork": "Das hat nicht geklappt. Versuche es noch einmal.",
+  "OAuthNotice.failed": "Diese Anmeldung hat nicht geklappt. Versuche es noch einmal.",
+  "OAuthNotice.linked": "Verknüpft. Du kannst dich jetzt damit anmelden.",
+  "OAuthNotice.linkExists": "Schon verknüpft. Du kannst dich wie bisher damit anmelden.",
+  "OAuthNotice.linkTaken":
+    "Nicht verknüpft: Dieses Konto ist hier schon mit einem anderen Konto verknüpft.",
+  "OAuthNotice.busy": "Zu viele Versuche. Warte eine Minute und versuche es dann noch einmal.",
+  "OAuthNotice.kept":
+    "Anmeldemethode hinzugefügt. Du kannst dich damit jetzt auf jedem Gerät anmelden.",
+  "OAuthNotice.guestTaken": "Diese Anmeldemethode gehört zu einem anderen Konto.",
+  "PasswordResetScreen.forgotFailed": "Der Link konnte nicht gesendet werden",
+  "PasswordResetScreen.resetFailed": "Das Passwort konnte nicht geändert werden",
+  "PasswordResetScreen.sent":
+    "Falls es ein Konto mit dieser E-Mail-Adresse gibt, haben wir einen Link zum Zurücksetzen des Passworts dorthin geschickt.",
+  "PasswordResetScreen.forgotDescription": {
+    "one":
+      "Gib die E-Mail-Adresse ein, mit der du dich registriert hast. Wir schicken dir einen Link, über den du ein neues Passwort festlegst. Er funktioniert einmal und {count} Minute lang.",
+    "other":
+      "Gib die E-Mail-Adresse ein, mit der du dich registriert hast. Wir schicken dir einen Link, über den du ein neues Passwort festlegst. Er funktioniert einmal und {count} Minuten lang.",
+  },
+  "PasswordResetScreen.remembered": "Doch wieder eingefallen? <link>Zurück zur Anmeldung</link>",
+  "PasswordResetScreen.send": "Link senden",
+  "PasswordResetScreen.doneTitle": "Passwort geändert",
+  "PasswordResetScreen.done":
+    "Du wurdest überall abgemeldet. Melde dich mit deinem neuen Passwort an.",
+  "PasswordResetScreen.signIn": "Anmelden",
+  "PasswordResetScreen.askNew": "Neuen Link anfordern",
+  "PasswordResetScreen.chooseTitle": "Neues Passwort festlegen",
+  "PasswordResetScreen.choose":
+    "Für <email>{email}</email>. Beim Speichern wirst du auf allen Geräten abgemeldet.",
+  "PasswordResetScreen.expired": "Link abgelaufen? <link>Neuen anfordern</link>",
+  "PasswordResetScreen.newPassword": "Neues Passwort",
+  "PasswordResetScreen.newPasswordHint": "{min} bis {max} Zeichen.",
+  "PasswordResetScreen.saving": "Wird gespeichert …",
+  "PasswordResetScreen.save": "Neues Passwort speichern",
+  "MoveNote.title": "In Gruppe verschieben",
+  "MoveNote.cancel": "Abbrechen",
+  "MoveNote.question":
+    "Wähle, wohin „<title>{title}</title>“ verschoben werden soll. Alle in dieser Gruppe sehen die Notiz dann.",
+  "NewNote.title": "Neue Notiz",
+  "NewNote.close": "Schließen",
+  "NewNote.titleLabel": "Titel",
+  "NewNote.groupLabel": "Gruppe",
+  "NewNote.chooseGroup": "Gruppe auswählen",
+  "NewNote.chooseGroupError": "Wähle eine Gruppe für diese Notiz.",
+  "NewNote.inGroup": "In {group}",
+  "NewNote.noGroup":
+    "Du brauchst eine Gruppe, in die du schreiben darfst. Erstelle eine, um loszulegen.",
+  "NewNote.newGroup": "Neue Gruppe",
+  "NewNote.add": "Notiz hinzufügen",
+  "NewNote.adding": "Wird hinzugefügt …",
+  "NewNote.open": "Notiz öffnen",
+  "NewNote.keys": "<add>Enter</add> fügt hinzu · <open>Ctrl Enter</open> fügt hinzu und öffnet",
+  "NewNote.added": "„<title>{title}</title>“ zu <group>{group}</group> hinzugefügt.",
+  "NewNote.onDevice":
+    "Auf diesem Gerät gespeichert. Wird synchronisiert, sobald du wieder online bist.",
+  "NoGroup.loading": "Gruppe wird geladen …",
+  "NoGroup.title": "Diese Gruppe gibt es nicht.",
+  "NoGroup.back": "Zurück zu den Gruppen",
+  "NoteAttachments.title": "Dateien",
+  "NoteAttachments.count": "{count} von {max}",
+  "NoteAttachments.attach": "Dateien anhängen",
+  "NoteAttachments.empty": "Zieh Bilder oder PDFs hierher oder wähle Dateien aus.",
+  "NoteAttachments.types": "JPEG, PNG, WebP, GIF oder PDF, jeweils bis {size}.",
+  "NoteAttachments.waitingCreate": "Wird hochgeladen, sobald du die Notiz erstellst",
+  "NoteAttachments.almostFull": "Fast voll.",
+  "NoteAttachments.quota": {
+    "one": "<group>{group}</group> nutzt {files} von {count} Datei und {bytes} von {maxBytes}.",
+    "other": "<group>{group}</group> nutzt {files} von {count} Dateien und {bytes} von {maxBytes}.",
+  },
+  "NoteAttachments.quotaNoByteCap": {
+    "one": "<group>{group}</group> nutzt {files} von {count} Datei und {bytes}.",
+    "other": "<group>{group}</group> nutzt {files} von {count} Dateien und {bytes}.",
+  },
+  "NoteAttachments.quotaNoFileCap": {
+    "one": "<group>{group}</group> nutzt {count} Datei und {bytes} von {maxBytes}.",
+    "other": "<group>{group}</group> nutzt {count} Dateien und {bytes} von {maxBytes}.",
+  },
+  "NoteAttachments.quotaNoCaps": {
+    "one": "<group>{group}</group> nutzt {count} Datei und {bytes}.",
+    "other": "<group>{group}</group> nutzt {count} Dateien und {bytes}.",
+  },
+  "NoteAttachments.removeTitle": "Diese Datei entfernen?",
+  "NoteAttachments.removeMessage": "„{name}“ wird für alle in {group} aus dieser Notiz entfernt.",
+  "NoteAttachments.removeConfirm": "Datei entfernen",
+  "NoteAttachments.cancel": "Abbrechen",
+  "NoteEditor.title": "Notiz",
+  "NoteEditor.back": "Zurück zu den Notizen",
+  "NoteEditor.elsewhereTitle": "Notiz in einer anderen Gruppe",
+  "NoteEditor.elsewhere":
+    "Diese Notiz liegt in <group>{group}</group>, einer deiner anderen Gruppen. Du bist gerade in <current>{current}</current>.",
+  "NoteEditor.switching": "Wird gewechselt …",
+  "NoteEditor.switchTo": "Zu <group>{group}</group> wechseln",
+  "NoteEditor.notFoundTitle": "Diese Notiz gibt es nicht.",
+  "NoteEditor.notFound":
+    "Diese Notiz ist nicht in <group>{group}</group>. Vielleicht wurde sie gelöscht, oder sie liegt in einer anderen deiner Gruppen: Wechsle zu dieser Gruppe und öffne sie dort.",
+  "NoteEditor.loading": "Notiz wird geladen …",
+  "NoteEditor.createdBy": "Erstellt von <name>{name}</name>, <date>{date}</date>",
+  "NoteEditor.created": "Erstellt, <date>{date}</date>",
+  "NoteEditor.updatedBy": "Geändert von <name>{name}</name>, <date>{date}</date>",
+  "NoteEditor.updated": "Geändert, <date>{date}</date>",
+  "NoteEditor.new": "Neue Notiz",
+  "NoteEditor.readOnly": "Du kannst diese Notiz ansehen, aber nur Bearbeiter können sie ändern.",
+  "NoteEditor.readOnlyNew": "Nur Bearbeiter können dieser Gruppe Notizen hinzufügen.",
+  "NoteEditor.titleLabel": "Titel",
+  "NoteEditor.conflict":
+    "<link>Lade die neueste Version</link>, um zu sehen, was sich geändert hat. Dein Text hier bleibt bis dahin erhalten.",
+  "NoteEditor.cancel": "Abbrechen",
+  "NoteEditor.saving": "Wird gespeichert …",
+  "NoteEditor.creating": "Wird erstellt …",
+  "NoteEditor.save": "Notiz speichern",
+  "NoteEditor.create": "Notiz hinzufügen",
+  "NoteEditor.deleteTitle": "Diese Notiz löschen?",
+  "NoteEditor.deleteMessage": "„{title}“ wird für alle in {group} gelöscht.",
+  "NoteEditor.deleteConfirm": "Notiz löschen",
+  "NoteEditor.text": "Text",
+  "NoteEditor.tags": "Tags",
+  "NoteEditorView.createdTitle": "Notiz hinzugefügt",
+  "NoteEditorView.created": "„{title}“ wurde erstellt.",
+  "NoteEditorView.savedTitle": "Notiz gespeichert",
+  "NoteEditorView.saved": "„{title}“ wurde gespeichert.",
+  "NoteEditorView.unsaved": "Du hast ungespeicherte Änderungen. Wenn du jetzt gehst, sind sie weg.",
+  "NoteMessages.titleRequired": "Gib einen Titel ein.",
+  "NoteMessages.conflict": "Jemand hat diese Notiz geändert, seit du sie geöffnet hast.",
+  "NoteMessages.deleteConflict":
+    "Jemand hat diese Notiz geändert, deshalb wurde sie nicht gelöscht.",
+  "NoteMessages.gone": "Diese Notiz wurde gelöscht.",
+  "NoteMessages.load": "Die Notizen konnten nicht geladen werden",
+  "NoteMessages.create": "Die Notiz konnte nicht erstellt werden. Versuche es noch einmal.",
+  "NoteMessages.save": "Die Notiz konnte nicht gespeichert werden",
+  "NoteMessages.delete": "Die Notiz konnte nicht gelöscht werden",
+  "NoteMessages.move": "Die Notizen konnten nicht verschoben werden",
+  "NoteMessages.moveOffline":
+    "Zum Verschieben von Notizen brauchst du eine Verbindung. Versuche es noch einmal, wenn du wieder online bist.",
+  "NoteMessages.moveNone": "Wähle die Notizen aus, die du verschieben willst.",
+  "NoteMessages.moveUnsaved":
+    "Speichere oder verwirf deine Änderungen, bevor du die Notiz verschiebst.",
+  "NoteMessages.restore": "Die Notiz konnte nicht wiederhergestellt werden",
+  "NoteMessages.restoreOffline":
+    "Zum Wiederherstellen einer Notiz brauchst du eine Verbindung. Versuche es noch einmal, wenn du wieder online bist.",
+  "NoteMessages.restoreGone": "Diese Notiz ist nicht mehr bei den gelöschten Notizen.",
+  "NoteMessages.moveGone":
+    "Eine ausgewählte Notiz ist nicht mehr da, deshalb wurde nichts verschoben.",
+  "NotePeople.you": "Du",
+  "NotePeople.former": "Ehemaliges Mitglied",
+  "NotePeople.unnamed": "Mitglied ohne Namen",
+  "NoteSync.gone":
+    "Diese Notiz wurde gelöscht oder in eine andere Gruppe verschoben, während du offline warst.",
+  "NoteSync.version": "Jemand hat diese Notiz geändert, während du offline warst.",
+  "NotFound.title": "Seite nicht gefunden",
+  "NotFound.description":
+    "Unter dieser Adresse gibt es keine Seite. Vielleicht ist sie falsch geschrieben, oder die Seite ist umgezogen.",
+  "NotFound.signedOut":
+    "Unter dieser Adresse gibt es keine Seite. Melde dich an, um zu deinen Notizen zu kommen.",
+  "NotFound.toNotes": "Zu deinen Notizen",
+  "NotFound.signIn": "Anmelden",
+  "Notes.title": "Notizen",
+  "Notes.new": "Neue Notiz",
+  "Notes.count": {
+    "one": "{count} Notiz",
+    "other": "{count} Notizen",
+  },
+  "Notes.deleted": "Gelöscht <date>{date}</date>",
+  "Notes.restoreNote": "{title} wiederherstellen",
+  "Notes.restoring": "Wird wiederhergestellt …",
+  "Notes.restore": "Wiederherstellen",
+  "Notes.noMatch": "Keine Notizen zu „{query}“",
+  "Notes.noMatchHint": "Prüfe die Schreibweise oder suche nach weniger Wörtern.",
+  "Notes.clearSearch": "Suche löschen",
+  "Notes.noFilterMatch": "Keine Notizen passen zu diesen Filtern",
+  "Notes.noFilterMatchHint": "Versuche es mit weniger Tags oder einer anderen Person.",
+  "Notes.clearFilters": "Filter zurücksetzen",
+  "Notes.showLive": "Notizen anzeigen",
+  "Notes.showDeleted": "Gelöschte Notizen anzeigen",
+  "Notes.select": "Notizen auswählen",
+  "Notes.manageTags": "Tags verwalten",
+  "Notes.readOnly": "Du kannst diese Notizen ansehen, aber nur Bearbeiter können sie ändern.",
+  "Notes.deletedBanner": {
+    "one": "Gelöschte Notizen bleiben {count} Tag hier und werden dann endgültig entfernt.",
+    "other": "Gelöschte Notizen bleiben {count} Tage hier und werden dann endgültig entfernt.",
+  },
+  "Notes.backToNotes": "Zurück zu den Notizen",
+  "Notes.deletedLoading": "Gelöschte Notizen werden geladen …",
+  "Notes.deletedEmpty": "Keine gelöschten Notizen",
+  "Notes.loading": "Notizen werden geladen …",
+  "Notes.empty": "Noch keine Notizen",
+  "Notes.emptyHint": "Notizen, die du hier schreibst, sehen alle in {group}.",
+  "Notes.tickToMove": "Wähle die Notizen zum Verschieben aus",
+  "Notes.selected": {
+    "one": "{count} ausgewählt",
+    "other": "{count} ausgewählt",
+  },
+  "Notes.cancelSelect": "Abbrechen",
+  "Notes.moveTo": "In Gruppe verschieben",
+  "Notes.moving": "Wird verschoben …",
+  "Notes.move": "Verschieben",
+  "Notes.updated": "Geändert <date>{date}</date>",
+  "Notes.created": "Erstellt <date>{date}</date>",
+  "Notes.tick": "{title} auswählen",
+  "Notes.actions": "Aktionen für {title}",
+  "Notes.open": "Öffnen",
+  "Notes.moveToGroup": "In Gruppe verschieben …",
+  "Notes.copyLink": "Link kopieren",
+  "Notes.delete": "Löschen",
+  "NotesFilter.tags": "Tags",
+  "NotesFilter.tag": "Tag",
+  "NotesFilter.showWith": "Notizen anzeigen mit",
+  "NotesFilter.anyTag": "Mindestens einem dieser Tags",
+  "NotesFilter.allTags": "Allen diesen Tags",
+  "NotesFilter.author": "Autor",
+  "NotesFilter.anyone": "Alle",
+  "NotesFilter.you": "Du",
+  "NotesFilter.search": "Notizen durchsuchen",
+  "NotesFilter.mine": "Von mir erstellt",
+  "NotesFilter.sortUpdated": "Zuletzt geändert",
+  "NotesFilter.sortCreated": "Erstellungsdatum",
+  "NotesFilter.sortTitle": "Titel",
+  "NotesFilter.newestFirst": "Neueste zuerst",
+  "NotesFilter.oldestFirst": "Älteste zuerst",
+  "NotesFilter.aToZ": "A–Z",
+  "NotesFilter.zToA": "Z–A",
+  "NotesView.linkCopied": "Link kopiert",
+  "NotesView.linkCopiedGroup": "Nur Leute in {group} können ihn öffnen.",
+  "NotesView.linkCopiedThisGroup": "Nur Leute in dieser Gruppe können ihn öffnen.",
+  "NotesView.copyFailed": "Der Link konnte nicht kopiert werden",
+  "NotesView.copyFailedHint":
+    "Dein Browser hat es blockiert. Öffne die Notiz und kopiere den Link aus der Adressleiste.",
+  "NotesView.restoredTitle": "Notiz wiederhergestellt",
+  "NotesView.restored": "„{title}“ ist wieder in der Liste.",
+  "NotesView.restoredUntitled": "Die Notiz ist wieder in der Liste.",
+  "NoteToasts.movedTitle": {
+    "one": "Notiz verschoben",
+    "other": "Notizen verschoben",
+  },
+  "NoteToasts.moved": {
+    "one": "Die Notiz wurde nach {group} verschoben.",
+    "other": "{count} Notizen wurden nach {group} verschoben.",
+  },
+  "NoteToasts.movedElsewhere": {
+    "one": "Die Notiz wurde in die andere Gruppe verschoben.",
+    "other": "{count} Notizen wurden in die andere Gruppe verschoben.",
+  },
+  "NoteWidgets.previousPeriod": {
+    "one": "Vortag",
+    "other": "vorherige {count} Tage",
+  },
+  "NoteWidgets.totalTitle": "Notizen",
+  "NoteWidgets.totalLoading": "Anzahl der Notizen wird geladen",
+  "NoteWidgets.totalError":
+    "Die Anzahl der Notizen konnte nicht geladen werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "NoteWidgets.totalNow": "Jetzt in der Gruppe",
+  "NoteWidgets.totalOn": "Am {date}",
+  "NoteWidgets.addedTitle": "Neue Notizen",
+  "NoteWidgets.addedLoading": "Neue Notizen werden geladen",
+  "NoteWidgets.addedError":
+    "Die neuen Notizen konnten nicht geladen werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "NoteWidgets.addedNone": "In diesem Zeitraum kam nichts dazu",
+  "NoteWidgets.addedSome": "In diesem Zeitraum hinzugekommen",
+  "NoteWidgets.seriesTitle": "Notizen im Zeitverlauf",
+  "NoteWidgets.seriesLoading": "Diagramm wird geladen",
+  "NoteWidgets.seriesError":
+    "Das Diagramm konnte nicht geladen werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "NoteWidgets.seriesEmpty": "Keine Notizen in diesem Zeitraum",
+  "NoteWidgets.seriesFlat": "{value} im gesamten Zeitraum",
+  "NoteWidgets.seriesFrom": "Von {first} auf {last}",
+  "NoteWidgets.seriesCurrent": "Dieser Zeitraum",
+  "NoteWidgets.seriesPrevious": {
+    "one": "Der Tag davor",
+    "other": "Die {count} Tage davor",
+  },
+  "NoteWidgets.seriesLabel": "Notizen im Zeitverlauf. {summary}.",
+  "NoteWidgets.seriesDay": "Tag",
+  "OfflineStatus.copied": "Kopiert.",
+  "OfflineStatus.copy": "Meinen Text kopieren",
+  "OfflineStatus.copyFailed":
+    "Kopieren hat nicht geklappt. Markiere den Text oben und kopiere ihn selbst.",
+  "OfflineStatus.deletedNote": "Gelöschte Notiz",
+  "OfflineStatus.deletedTag": "Gelöschter Tag",
+  "OfflineStatus.dismiss": "Schließen",
+  "OfflineStatus.held": {
+    "one":
+      "Eine Notiz wartet darauf, dass du unten über einen Tag entscheidest. Es geht nichts verloren.",
+    "other":
+      "{count} Notizen warten darauf, dass du unten über einen Tag entscheidest. Es geht nichts verloren.",
+  },
+  "OfflineStatus.mine": "Deine Version",
+  "OfflineStatus.noteGone": "Die Notiz ist nicht mehr in dieser Gruppe.",
+  "OfflineStatus.sync": "Synchronisieren",
+  "OfflineStatus.tag": "Tag {name}",
+  "OfflineStatus.tagGone": "Der Tag ist nicht mehr in dieser Gruppe.",
+  "OfflineStatus.tagNoName": "Tag ohne Namen",
+  "OfflineStatus.tagTakenOff": {
+    "one":
+      "Ein Tag, den du offline erstellt hast, konnte nicht gespeichert werden. Wir haben ihn deshalb von {count} Notiz entfernt. Die Notiz ist ohne ihn gespeichert.",
+    "other":
+      "Ein Tag, den du offline erstellt hast, konnte nicht gespeichert werden. Wir haben ihn deshalb von {count} Notizen entfernt. Die Notizen sind ohne ihn gespeichert.",
+  },
+  "OfflineStatus.theirs": "Version auf dem Server",
+  "OfflineStatus.theirsUnknown": "Die Version auf dem Server ist nicht verfügbar.",
+  "OfflineStatus.untitledNote": "Notiz ohne Titel",
+  "OfflineStatus.useServers": "Server-Version nehmen",
+  "OfflineStatus.youDeletedNote": "Du hast diese Notiz gelöscht.",
+  "OfflineStatus.youDeletedTag": "Du hast diesen Tag gelöscht.",
+  "Preferences.example": "So sehen Datum und Uhrzeit aus: <value>{date}</value>.",
+  "Preferences.conflict":
+    "Ein anderes Gerät hat das gerade geändert. Du siehst jetzt die Werte, die dort gespeichert wurden.",
+  "Preferences.language": "Sprache",
+  "Preferences.changeLanguage": "Sprache ändern",
+  "Preferences.formats": "Formate",
+  "Preferences.formatsHint":
+    "Wie Datum, Uhrzeit und Zahlen aussehen. Die Sprache ändert sich dadurch nicht.",
+  "Preferences.formatsPlaceholder": "Nach Sprache oder Land suchen",
+  "Preferences.formatsEmpty": "Keine Formate zu „{query}“.",
+  "Preferences.automatic": "Automatisch: {value}",
+  "Preferences.automaticSearch": "automatisch gerät",
+  "Preferences.timeZone": "Zeitzone",
+  "Preferences.timeZoneHint":
+    "Die gewählte Zeitzone gilt auf allen deinen Geräten. „Automatisch“ nimmt die des jeweiligen Geräts.",
+  "Preferences.timeZonePlaceholder": "Nach Stadt suchen",
+  "Preferences.timeZoneEmpty":
+    "Keine Zeitzonen zu „{query}“. Versuche es mit einer Stadt oder einem Versatz wie GMT+2.",
+  "Preferences.clock": "Uhrzeit",
+  "Preferences.clockFromFormat": "Wie im Format ({clock})",
+  "Preferences.clock12": "12 Stunden",
+  "Preferences.clock24": "24 Stunden",
+  "Preferences.deviceZone": "Dieses Gerät nutzt die Zeit von {city} ({offset}).",
+  "Preferences.useZone": "Zeit von {city} verwenden",
+  "Preferences.keepZone": "Zeit von {city} beibehalten",
+  "Preferences.theme": "Design",
+  "Preferences.themeSystem": "System",
+  "Preferences.themeLight": "Hell",
+  "Preferences.themeDark": "Dunkel",
+  "Preferences.themeSystemLight": "System (auf diesem Gerät hell)",
+  "Preferences.themeSystemDark": "System (auf diesem Gerät dunkel)",
+  "Preferences.failedNetwork":
+    "Deine Änderung konnte nicht gespeichert werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "Preferences.failedOffline":
+    "Du bist offline, deshalb wurde nichts gespeichert. Versuche es noch einmal, wenn du wieder online bist.",
+  "Preferences.failedInvalid": "Wähle jeden Wert aus seiner Liste.",
+  "Preferences.updatedElsewhere": "Einstellungen wurden auf einem anderen Gerät geändert.",
+  "SeatPriceConfirm.hint":
+    "Jedes neue Mitglied kostet {price} mehr im Monat – mit einem weiteren Mitglied steigt der Preis der Gruppe also von {now} auf {next}. Die Differenz für den Rest dieses Zeitraums steht auf der nächsten Rechnung.",
+  "SeatPriceConfirm.accept": "Ich akzeptiere den höheren Preis für jede Person, die beitritt",
+  "ProfileAccount.name": "Name",
+  "ProfileAccount.notSet": "Nicht festgelegt",
+  "ProfileAccount.editName": "Bearbeiten<hidden>: Name</hidden>",
+  "ProfileAccount.email": "E-Mail-Adresse",
+  "ProfileAccount.enterCode": "Code eingeben",
+  "ProfileAccount.addEmail": "Hinzufügen<hidden>: E-Mail-Adresse</hidden>",
+  "ProfileAccount.changeEmail": "Ändern<hidden>: E-Mail-Adresse</hidden>",
+  "ProfileAccount.editTitle": "Name bearbeiten",
+  "ProfileAccount.firstName": "Vorname",
+  "ProfileAccount.lastName": "Nachname",
+  "ProfileAccount.save": "Speichern",
+  "ProfileAccount.noneUsername": "Keine. Du meldest dich mit deinem Benutzernamen an.",
+  "ProfileAccount.none": "Keine.",
+  "ProfileAccount.noneProvider":
+    "Keine. {provider} hat keine bestätigte E-Mail-Adresse übermittelt.",
+  "ProfileExport.asking": "Wird angefordert …",
+  "ProfileExport.never":
+    "Eine ZIP-Datei mit deinem Profil, deinen Gruppen und Notizen als JSON- und CSV-Dateien. Das dauert ein paar Minuten, und wir schicken dir eine E-Mail, sobald sie fertig ist.",
+  "ProfileExport.download": "Meine Daten herunterladen",
+  "ProfileExport.preparing":
+    "Deine Datei wird vorbereitet. Sobald sie fertig ist, bekommst du eine E-Mail und eine Benachrichtigung.",
+  "ProfileExport.ready":
+    "<hidden>Deine Datei ist fertig. </hidden>Fertig: {size}, bis <day></day>.",
+  "ProfileExport.changed": "Seitdem etwas geändert? <button>Neue Datei vorbereiten.</button>",
+  "ProfileExport.downloadZip": "ZIP herunterladen",
+  "ProfileExport.expired": "Deine letzte Datei ist am <day></day> abgelaufen.",
+  "ProfileExport.prepareNew": "Neue Datei vorbereiten",
+  "ProfileExport.failed": "Deine Datei konnte nicht vorbereitet werden. Versuche es noch einmal.",
+  "ProfileExport.label": "Deine Daten",
+  "ProfileExport.network":
+    "Deine Datei konnte nicht angefordert werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileExport.tooSoonToday":
+    "Du kannst eine Datei pro Tag anfordern. Versuche es heute nach {time} noch einmal.",
+  "ProfileExport.tooSoonTomorrow":
+    "Du kannst eine Datei pro Tag anfordern. Versuche es morgen nach {time} noch einmal.",
+  "ProfileNotifications.emptyTitle": "Noch keine Geräte",
+  "ProfileNotifications.emptyText":
+    "Füge diesen Browser hinzu, um hier Benachrichtigungen zu bekommen.",
+  "ProfileNotifications.device": "Gerät {id}",
+  "ProfileNotifications.added": "Hinzugefügt am {date}",
+  "ProfileNotifications.remove": "Entfernen<hidden>: Gerät {id}</hidden>",
+  "ProfileNotifications.working": "Einen Moment …",
+  "ProfileNotifications.add": "Dieses Gerät hinzufügen",
+  "ProfilePicture.network":
+    "Dein Bild konnte nicht hochgeladen werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfilePicture.offline": "Du bist offline. Lade dein Bild hoch, wenn du wieder online bist.",
+  "ProfilePicture.removeFailed":
+    "Dein Bild konnte nicht entfernt werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfilePicture.type":
+    "{name} ist kein JPEG-, PNG-, WebP- oder HEIC-Bild. Wähle ein Bild in einem dieser Formate.",
+  "ProfilePicture.size": "{name} ist {size} groß. Wähle ein Bild mit höchstens {max}.",
+  "ProfilePicture.content":
+    "{name} ist in Wahrheit kein Bild, deshalb haben wir es nicht verwendet. Wähle eine andere Datei.",
+  "ProfilePicture.pending":
+    "Warte, bis die laufenden Uploads fertig sind, und versuche es dann noch einmal.",
+  "ProfilePicture.budget":
+    "Du hast dein stündliches Upload-Limit erreicht. Versuche es später noch einmal.",
+  "ProfilePicture.saved": "Profilbild gespeichert.",
+  "ProfilePicture.removed": "Profilbild entfernt.",
+  "ProfilePicture.preparing": "Dein Bild wird vorbereitet …",
+  "ProfilePicture.refused": "Dieses Bild können wir nicht verwenden. Wähle ein anderes.",
+  "ProfilePicture.label": "Profilbild",
+  "ProfilePicture.rule": "JPEG, PNG, WebP oder HEIC, bis {max}.",
+  "ProfilePicture.changeHidden": "Ändern<hidden>: Profilbild</hidden>",
+  "ProfilePicture.uploadHidden": "Hochladen<hidden>: Profilbild</hidden>",
+  "ProfilePicture.uploading": "Wird hochgeladen …",
+  "ProfilePicture.removeHidden": "Entfernen<hidden>: Profilbild</hidden>",
+  "ProfilePicture.removeTitle": "Profilbild entfernen?",
+  "ProfilePicture.removeText": "Stattdessen erscheinen deine Initialen, hier und in jeder Gruppe.",
+  "ProfilePicture.removeButton": "Bild entfernen",
+  "ProfileScreen.profileFailed":
+    "Dein Name konnte nicht gespeichert werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileScreen.passwordFailed":
+    "Dein Passwort konnte nicht geändert werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileScreen.passwordSetFailed":
+    "Dein Passwort konnte nicht festgelegt werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileScreen.totpFinishFailed":
+    "Der Zwei-Faktor-Schutz konnte nicht eingeschaltet werden. Prüfe den Code in deiner App und versuche es noch einmal.",
+  "ProfileScreen.totpDisableFailed":
+    "Der Zwei-Faktor-Schutz konnte nicht ausgeschaltet werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileScreen.pushFailed":
+    "Dieses Gerät konnte nicht hinzugefügt werden. Erlaube Benachrichtigungen für diese Website in deinem Browser und versuche es dann noch einmal.",
+  "ProfileScreen.pushRemoveFailed":
+    "Dieses Gerät konnte nicht entfernt werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileScreen.account": "Konto",
+  "ProfileScreen.accountText":
+    "Dein Bild, dein Name, deine E-Mail-Adresse und eine Kopie deiner Daten.",
+  "ProfileScreen.security": "Anmeldung und Sicherheit",
+  "ProfileScreen.securityText": "Wie du dich anmeldest und wo dein Konto angemeldet ist.",
+  "ProfileScreen.region": "Sprache und Region",
+  "ProfileScreen.regionText": "Deine Sprache und wie Datum, Uhrzeit und Zahlen aussehen.",
+  "ProfileScreen.appearance": "Darstellung",
+  "ProfileScreen.appearanceText": "Wie die App auf diesem Gerät aussieht.",
+  "ProfileScreen.notifications": "Benachrichtigungen",
+  "ProfileScreen.notificationsText":
+    "Wo wir dich benachrichtigen, wenn sich in deinen Gruppen etwas ändert.",
+  "ProfileScreen.apiTokens": "API-Tokens",
+  "ProfileScreen.apiTokensText":
+    "Lass ein Skript oder einen anderen Dienst ohne dein Passwort auf eine deiner Gruppen zugreifen.",
+  "ProfileScreen.dangerZone": "Konto löschen",
+  "ProfileScreen.dangerZoneText": "Lösche dein Konto und alles, was nur du sehen kannst.",
+  "ProfileScreen.codeTitle": "Gib deinen Einmalcode ein",
+  "ProfileScreen.codeText":
+    "Gib den Code aus deiner Authenticator-App ein, um dein Profil zu öffnen.",
+  "ProfileScreen.signInTitle": "Melde dich an, um dein Profil zu sehen",
+  "ProfileScreen.signInText":
+    "Melde dich an, um deinen Namen, dein Passwort und deine Geräte zu sehen.",
+  "ProfileScreen.createAccount": "Konto erstellen",
+  "ProfileScreen.twoFactorOn": "Zwei-Faktor an",
+  "ProfileScreen.twoFactorOff": "Zwei-Faktor aus",
+  "ProfileScreen.title": "Profil",
+  "ProfileScreen.noName": "Kein Name",
+  "ProfileScreen.push": "Push-Benachrichtigungen",
+  "ProfileScreen.pushText":
+    "Bekomm Benachrichtigungen in deinen Browsern und auf deinen Handys, auch wenn die App geschlossen ist.",
+  "ProfileScreen.passkeys": {
+    "one": "einem Passkey",
+    "other": "Passkeys",
+  },
+  "ProfileSecurity.setPasswordHidden": "Festlegen<hidden>: Passwort</hidden>",
+  "ProfileSecurity.changePasswordHidden": "Ändern<hidden>: Passwort</hidden>",
+  "ProfileSecurity.noPassword": "Keins. Du meldest dich mit {names} an.",
+  "ProfileSecurity.passwordAsked": "Wird abgefragt, wenn du dich auf einem neuen Gerät anmeldest.",
+  "ProfileSecurity.twoFactor": "Zwei-Faktor-Schutz",
+  "ProfileSecurity.twoFactorText":
+    "Bei der Anmeldung wird zusätzlich ein Code aus einer Authenticator-App abgefragt – ein geleaktes Passwort allein reicht dann nicht.",
+  "ProfileSecurity.app": "Authenticator-App",
+  "ProfileSecurity.on": "An",
+  "ProfileSecurity.onText":
+    "Bei der Anmeldung wird ein Code abgefragt, außer du nutzt einen Passkey.",
+  "ProfileSecurity.off": "Aus",
+  "ProfileSecurity.turnOffHidden": "Ausschalten<hidden>: Zwei-Faktor-Schutz</hidden>",
+  "ProfileSecurity.turnOnHidden": "Einschalten<hidden>: Zwei-Faktor-Schutz</hidden>",
+  "ProfileSecurity.setTitle": "Passwort festlegen",
+  "ProfileSecurity.changeTitle": "Passwort ändern",
+  "ProfileSecurity.setText":
+    "Lege ein Passwort fest, um dich auch mit deiner E-Mail-Adresse anzumelden.",
+  "ProfileSecurity.setNeedsEmail":
+    "Zur Anmeldung mit Passwort brauchst du eine E-Mail-Adresse, und dieses Konto hat noch keine. Füge zuerst eine hinzu und komm dann hierher zurück, um ein Passwort festzulegen.",
+  "ProfileSecurity.setNeedsCode":
+    "Zur Anmeldung mit Passwort brauchst du deine E-Mail-Adresse. Bestätige zuerst <email>{email}</email> mit dem Code, den wir dir dorthin geschickt haben, und komm dann hierher zurück, um ein Passwort festzulegen.",
+  "ProfileSecurity.addEmail": "E-Mail-Adresse hinzufügen",
+  "ProfileSecurity.codeFromAuthenticator": "Code aus deiner Authenticator-App",
+  "ProfileSecurity.updating": "Wird aktualisiert …",
+  "ProfileSecurity.setButton": "Passwort festlegen",
+  "ProfileSecurity.turnOnTitle": "Zwei-Faktor-Schutz einschalten",
+  "ProfileSecurity.turnOnText":
+    "Danach fragt die Anmeldung zusätzlich nach einem Code aus deiner Authenticator-App, und deine anderen Geräte werden abgemeldet.",
+  "ProfileSecurity.turnOnPassword":
+    "Danach fragt die Anmeldung zusätzlich nach einem Code aus deiner Authenticator-App, und deine anderen Geräte werden abgemeldet. Gib dein Passwort ein, um zu bestätigen, dass du es bist.",
+  "ProfileSecurity.preparing": "Wird vorbereitet …",
+  "ProfileSecurity.scan":
+    "Scanne den Code mit deiner Authenticator-App und gib dann die sechs Ziffern ein, die sie anzeigt.",
+  "ProfileSecurity.qr": "QR-Code für deine Authenticator-App",
+  "ProfileSecurity.key": "Scannen klappt nicht? Gib diesen Schlüssel ein: <key>{key}</key>",
+  "ProfileSecurity.codeFromApp": "Code aus deiner App",
+  "ProfileSecurity.turningOn": "Wird eingeschaltet …",
+  "ProfileSecurity.turnOn": "Einschalten",
+  "ProfileSecurity.turnOffTitle": "Zwei-Faktor-Schutz ausschalten?",
+  "ProfileSecurity.turnOffCode":
+    "Die Anmeldung fragt dann nicht mehr nach einem Code. Gib einen Code aus deiner Authenticator-App ein, um zu bestätigen, dass du es bist. Du kannst den Zwei-Faktor-Schutz jederzeit wieder einschalten.",
+  "ProfileSecurity.turnOffPassword":
+    "Die Anmeldung fragt dann nur noch nach deinem Passwort. Gib dein Passwort ein, um zu bestätigen, dass du es bist. Du kannst den Zwei-Faktor-Schutz jederzeit wieder einschalten.",
+  "ProfileSecurity.turningOff": "Wird ausgeschaltet …",
+  "ProfileSecurity.turnOff": "Ausschalten",
+  "ProfileTelegram.title": "Telegram",
+  "ProfileTelegram.statusFailed":
+    "Deine Telegram-Verknüpfung konnte nicht geladen werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileTelegram.codeFailed":
+    "Es konnte kein Verknüpfungscode erstellt werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileTelegram.unlinkFailed":
+    "Telegram konnte nicht getrennt werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "ProfileTelegram.theBot": "dem Bot",
+  "ProfileTelegram.description":
+    "Bekomm deine Benachrichtigungen in einem Chat mit {bot} und nutze dort seine Befehle.",
+  "ProfileTelegram.chat": "Chat",
+  "ProfileTelegram.linked": "Verknüpft <day></day>",
+  "ProfileTelegram.notLinked": "Nicht verknüpft",
+  "ProfileTelegram.unlinkHidden": "Trennen<hidden>: Telegram</hidden>",
+  "ProfileTelegram.link": "Telegram verknüpfen",
+  "ProfileTelegram.unlinkTitle": "Telegram trennen?",
+  "ProfileTelegram.unlinkText":
+    "Benachrichtigungen kommen dann nicht mehr bei Telegram an, und Befehle im Chat mit {bot} wirken nicht mehr für dein Konto. Um wieder zu verknüpfen, brauchst du einen neuen Code.",
+  "ProfileTelegram.open":
+    "Öffne den Chat mit <strong>{bot}</strong>, tippe auf „Starten“ und dann auf „{button}“. Dieses Fenster schließt sich, sobald dein Konto verknüpft ist.",
+  "ProfileTelegram.openButton": "Telegram öffnen",
+  "ProfileTelegram.elsewhere": "Telegram auf einem anderen Gerät? Schick {bot} diese Nachricht:",
+  "ProfileTelegram.message": "Zu sendende Nachricht",
+  "ProfileTelegram.copy": "Nachricht kopieren",
+  "ProfileTelegram.copied": "Nachricht kopiert",
+  "ProfileTelegram.waiting": {
+    "one": "Warte auf Telegram … Der Code funktioniert einmal und {count} Minute lang.",
+    "other": "Warte auf Telegram … Der Code funktioniert einmal und {count} Minuten lang.",
+  },
+  "ProfileView.codeMissing": "Gib den Code aus deiner Authenticator-App ein",
+  "ProfileView.telegramLinked": "Telegram verknüpft",
+  "ProfileView.telegramLinkedBody": "Deine Benachrichtigungen kommen jetzt bei Telegram an.",
+  "ProfileView.switched": "Bei deinem Konto angemeldet",
+  "ProfileView.switchedMoved": {
+    "one": "{count} Gruppe aus deinem Gastkonto übernommen.",
+    "other": "{count} Gruppen aus deinem Gastkonto übernommen.",
+  },
+  "ProfileView.switchedDeleted": "Dein Gastkonto wurde gelöscht.",
+  "ProfileView.methodLinked": "Anmeldemethode verknüpft",
+  "ProfileView.methodAlreadyLinked": "Anmeldemethode schon verknüpft",
+  "ProfileView.methodNotLinked": "Anmeldemethode nicht verknüpft",
+  "ProfileView.unlinked": "{method} getrennt",
+  "ProfileView.methodUnlinked": "Anmeldemethode getrennt",
+  "ProfileView.unlinkedBody": "Die Geräte, die sich damit angemeldet hatten, wurden abgemeldet.",
+  "ProfileView.signedOut": "Abgemeldet",
+  "ProfileView.deviceSignedOut": "Das Gerät wurde abgemeldet.",
+  "ProfileView.othersSignedOut": "Alle anderen Geräte wurden abgemeldet.",
+  "ProfileView.profileSaved": "Profil gespeichert",
+  "ProfileView.profileSavedBody": "Dein Profil wurde aktualisiert.",
+  "ProfileView.passwordChanged": "Passwort geändert",
+  "ProfileView.tokensRevoked": {
+    "one": "Dein API-Token wurde widerrufen.",
+    "other": "Deine {count} API-Tokens wurden widerrufen.",
+  },
+  "ProfileView.usePassword": "Melde dich beim nächsten Mal mit dem neuen Passwort an.",
+  "ProfileView.passwordSet": "Passwort festgelegt",
+  "ProfileView.passwordSetBody":
+    "Du kannst dich jetzt auch mit deiner E-Mail-Adresse und diesem Passwort anmelden.",
+  "ProfileView.accountDeleted": "Konto gelöscht",
+  "ProfileView.accountDeletedBody":
+    "Es wird am {day} endgültig gelöscht. Melde dich vorher an, wenn du es behalten willst.",
+  "ProfileView.guestDeleted": "Gastkonto gelöscht",
+  "ProfileView.guestDeletedBody": "Alles darin ist weg.",
+  "ProfileView.emailVerified": "E-Mail-Adresse bestätigt",
+  "ProfileView.emailVerifiedBody": "Deine E-Mail-Adresse ist bestätigt.",
+  "ProfileView.tokenRevoked": "Token widerrufen",
+  "ProfileView.tokenRevokedBody": "Dieses Token funktioniert nicht mehr.",
+  "ProviderProof.passkey": "einem Passkey",
+  "ProviderProof.link": "einem Anmeldelink",
+  "ProviderProof.fresh":
+    "Du hast dich gerade erst mit {methods} angemeldet, deshalb brauchst du kein Passwort.",
+  "ProviderProof.needed": {
+    "one":
+      "Dieses Konto hat kein Passwort, mit dem du das bestätigen könntest. Melde dich noch einmal mit {methods} an und komm innerhalb von {count} Minute hierher zurück.",
+    "other":
+      "Dieses Konto hat kein Passwort, mit dem du das bestätigen könntest. Melde dich noch einmal mit {methods} an und komm innerhalb von {count} Minuten hierher zurück.",
+  },
+  "ProviderProof.passkeyAgain": "Noch einmal mit Passkey anmelden",
+  "ProviderProof.providerAgain": "Noch einmal mit {provider} anmelden",
+  "SignInLinkScreen.sendFailed":
+    "Der Link konnte nicht gesendet werden. Versuche es gleich noch einmal.",
+  "SignInLinkScreen.unreachable":
+    "Der Server ist nicht erreichbar. Prüfe deine Verbindung und tippe noch einmal auf „Weiter“.",
+  "SignInLinkScreen.openFailed":
+    "Die Anmeldung hat nicht geklappt. Tippe auf „Weiter“, um es noch einmal zu versuchen, oder fordere einen neuen Link an.",
+  "SignInLinkScreen.title": "Mit Link anmelden",
+  "SignInLinkScreen.description":
+    "Wir schicken dir per E-Mail einen Link, der dich anmeldet. Noch kein Konto mit dieser E-Mail-Adresse? Dann erstellt der Link eines.",
+  "SignInLinkScreen.ratherPassword": "Lieber mit Passwort? <link>Zurück zur Anmeldung</link>",
+  "SignInLinkScreen.submit": "Link per E-Mail senden",
+  "SignInLinkScreen.sent": {
+    "one":
+      "Wir haben einen Anmeldelink an <email>{email}</email> geschickt. Er funktioniert einmal und {count} Minute lang.",
+    "other":
+      "Wir haben einen Anmeldelink an <email>{email}</email> geschickt. Er funktioniert einmal und {count} Minuten lang.",
+  },
+  "SignInLinkScreen.openHere": "Öffne ihn auf diesem Gerät, um dich hier anzumelden.",
+  "SignInLinkScreen.newLink": "Neuen Link senden",
+  "SignInLinkScreen.waiting": {
+    "one":
+      "Nicht angekommen? Schau in deinen Spam-Ordner. In {count} Sekunde kannst du einen neuen Link senden.",
+    "other":
+      "Nicht angekommen? Schau in deinen Spam-Ordner. In {count} Sekunden kannst du einen neuen Link senden.",
+  },
+  "SignInLinkScreen.resent":
+    "Ein neuer Link ist unterwegs. Frühere Links funktionieren weiter, bis einer davon genutzt wird.",
+  "SignInLinkScreen.refusedTitle": "Dieser Link funktioniert nicht mehr",
+  "SignInLinkScreen.refused": {
+    "one":
+      "Anmeldelinks funktionieren einmal und {count} Minute lang. Fordere einen neuen an und nimm die neueste E-Mail.",
+    "other":
+      "Anmeldelinks funktionieren einmal und {count} Minuten lang. Fordere einen neuen an und nimm die neueste E-Mail.",
+  },
+  "SignInLinkScreen.elsewhereTitle": "Dieser Link wurde in einem anderen Browser angefordert",
+  "SignInLinkScreen.elsewhere":
+    "Du wurdest nicht angemeldet, und dein Gastkonto ist unverändert. Fordere in diesem Browser einen neuen Link an, um dich hier anzumelden.",
+  "SignInLinkScreen.incompleteTitle": "Dieser Link ist unvollständig",
+  "SignInLinkScreen.incomplete":
+    "Öffne den Link aus der E-Mail noch einmal oder fordere einen neuen an.",
+  "SignInLinkScreen.backToApp": "Zurück zur App",
+  "SignInLinkScreen.finishTitle": "Anmeldung abschließen",
+  "SignInLinkScreen.finish":
+    "Tippe auf „Weiter“, um dich auf diesem Gerät anzumelden. Ist die E-Mail-Adresse neu, wird dabei dein Konto erstellt.",
+  "SignInLinkScreen.signedInAs":
+    "Du bist als <email>{email}</email> angemeldet. Wenn du fortfährst, wirst du stattdessen beim Konto des Links angemeldet.",
+  "SignInLinkScreen.guest":
+    "Du nutzt die App als Gast. Wenn du diesen Link in diesem Browser angefordert hast, wird dein Gastkonto beim Fortfahren unter der E-Mail-Adresse des Links gespeichert. Gibt es für diese Adresse schon ein Konto, fragen wir dich vorher.",
+  "SignInLinkScreen.signingIn": "Wird angemeldet …",
+  "SignInLinkScreen.stay": "Angemeldet bleiben",
+  "SignInMethods.failed": "Deine Anmeldemethoden konnten nicht geändert werden",
+  "SignInMethods.loadFailed":
+    "Deine Anmeldemethoden konnten nicht geladen werden. Prüfe deine Verbindung und versuche es noch einmal.",
+  "SignInMethods.renameFailed":
+    "Der Name konnte nicht gespeichert werden. Versuche es noch einmal.",
+  "SignInMethods.password": "Passwort",
+  "SignInMethods.passkey": "Passkey",
+  "SignInMethods.title": "Anmeldemethoden",
+  "SignInMethods.reloading": "Anmeldemethoden werden geladen …",
+  "SignInMethods.loading": "Deine Anmeldemethoden werden geladen …",
+  "SignInMethods.removeNamed": "Entfernen<name>: {name}</name>",
+  "SignInMethods.unlinkNamed": "Trennen<name>: {name}</name>",
+  "SignInMethods.addPasskey": "Passkey hinzufügen",
+  "SignInMethods.link": "{provider} verknüpfen",
+  "SignInMethods.linkTitle": "Verknüpfen",
+  "SignInMethods.offline": "Zum Hinzufügen eines Passkeys brauchst du eine Verbindung.",
+  "SignInMethods.cancelled": "Es wurde kein Passkey hinzugefügt.",
+  "SignInMethods.added":
+    "Passkey als „<name>{name}</name>“ hinzugefügt. Du kannst ihn umbenennen, wenn du magst.",
+  "SignInMethods.passkeyAsks":
+    "Ein Passkey ist ein weiterer Weg, dich anzumelden, deshalb fragen wir zuerst nach deinem Passwort.",
+  "SignInMethods.linkAsks":
+    "Ein verknüpftes Konto ist ein weiterer Weg, dich anzumelden, deshalb fragen wir zuerst nach deinem Passwort.",
+  "SignInMethods.opening": "Wird geöffnet …",
+  "SignInMethods.continueTo": "Weiter zu {provider}",
+  "SignInMethods.removeTitle": "„{name}“ entfernen?",
+  "SignInMethods.unlinkTitle": "{name} trennen?",
+  "SignInMethods.remove":
+    "Du kannst dich mit diesem Passkey nicht mehr anmelden, und alle Geräte, die sich damit angemeldet haben, werden abgemeldet. Lösche ihn auch aus deinem Passwortmanager.",
+  "SignInMethods.removeCurrent":
+    "Du kannst dich mit diesem Passkey nicht mehr anmelden, und alle Geräte, die sich damit angemeldet haben, werden abgemeldet – auch dieses. Lösche ihn auch aus deinem Passwortmanager.",
+  "SignInMethods.unlinkCurrent":
+    "Du hast dich auf diesem Gerät mit {name} angemeldet, deshalb wird auch dieses Gerät abgemeldet, zusammen mit allen anderen Geräten, die es genutzt haben.",
+  "SignInMethods.unlink":
+    "Alle Geräte, die sich mit {name} angemeldet haben, werden abgemeldet. Dieses Gerät bleibt angemeldet.",
+  "SignInMethods.removing": "Wird entfernt …",
+  "SignInMethods.unlinking": "Wird getrennt …",
+  "SignInMethods.removePasskey": "Passkey entfernen",
+  "SignInMethods.unlinkButton": "Trennen",
+  "SignInMethods.rename": "{name} umbenennen",
+  "SignInMethods.passkeyName": "Name des Passkeys",
+  "SignInMethods.addedUsed": "Hinzugefügt <added></added> · Zuletzt genutzt <used></used>",
+  "SignInMethods.addedUnused": "Hinzugefügt <added></added> · Noch nicht genutzt",
+  "SignInMethods.usedHere": "Auf diesem Gerät genutzt",
+  "SignInMethods.onlyPasskey":
+    "Das ist deine einzige Anmeldemethode, deshalb kannst du sie nicht entfernen.",
+  "SignInMethods.onlyLinked":
+    "Das ist deine einzige Anmeldemethode, deshalb kannst du sie nicht trennen.",
+  "SignInMethods.passkeyNotSaved":
+    "Der Passkey konnte nicht gespeichert werden. Versuche es noch einmal.",
+  "SignInMethods.passkeyOnDevice": "Dieses Gerät hat schon einen Passkey für dein Konto.",
+  "SignUpCodeScreen.checkFailed": "Der Code konnte nicht geprüft werden",
+  "SignUpCodeScreen.offline":
+    "Du bist offline. Stell eine Verbindung her und versuche es noch einmal.",
+  "SignUpCodeScreen.title": "Schau in dein Postfach",
+  "SignUpCodeScreen.loading": "Wird geladen …",
+  "SignUpCodeScreen.sent": {
+    "one": "Wir haben einen Code an <email>{email}</email> geschickt. Er gilt {count} Minute lang.",
+    "other":
+      "Wir haben einen Code an <email>{email}</email> geschickt. Er gilt {count} Minuten lang.",
+  },
+  "SignUpCodeScreen.wrongAddress": "Falsche E-Mail-Adresse? <button>Andere verwenden</button>",
+  "SignUpCodeScreen.code": "Code",
+  "SignUpCodeScreen.checking": "Wird geprüft …",
+  "SignUpCodeScreen.resend": "Neuen Code senden",
+  "SignUpCodeScreen.resent": "Ein neuer Code ist unterwegs.",
+  "SignUpCodeScreen.resendFailed": "Es konnte kein neuer Code gesendet werden",
+  "SignUpCodeScreen.existsTitle": "Du hast schon ein Konto",
+  "SignUpCodeScreen.exists":
+    "Für <email>{email}</email> gibt es hier schon ein Konto. Es wurde nichts Neues erstellt.",
+  "SignUpCodeScreen.existsWith":
+    "Für <email>{email}</email> gibt es hier schon ein Konto, das sich mit {providers} anmeldet. Es wurde nichts Neues erstellt.",
+  "SignUpCodeScreen.signInInstead": "Stattdessen anmelden",
+  "SignUpCodeScreen.expiredTitle": "Diese Registrierung ist abgelaufen",
+  "SignUpCodeScreen.expired": {
+    "one":
+      "Es hat länger als {count} Minute gedauert, oder der Code wurde zu oft falsch eingegeben. Es wurde nichts erstellt.",
+    "other":
+      "Es hat länger als {count} Minuten gedauert, oder der Code wurde zu oft falsch eingegeben. Es wurde nichts erstellt.",
+  },
+  "SignUpCodeScreen.startAgain": "Neu beginnen",
+  "SignedInDevices.failed": "Das Gerät konnte nicht abgemeldet werden",
+  "SignedInDevices.savedTitle": "Gespeicherte Kopie deiner Geräte",
+  "SignedInDevices.savedBody":
+    "Der Server ist nicht erreichbar. Du siehst die auf diesem Gerät gespeicherte Liste vom {time}. Geräte, die sich seitdem an- oder abgemeldet haben, fehlen.",
+  "SignedInDevices.title": "Angemeldete Geräte",
+  "SignedInDevices.description":
+    "Wo dein Konto angemeldet ist. Melde jedes Gerät ab, das du nicht kennst.",
+  "SignedInDevices.loading": "Deine Geräte werden geladen …",
+  "SignedInDevices.signOutDevice": "Abmelden<device>: {device}</device>",
+  "SignedInDevices.signingOut": "Wird abgemeldet …",
+  "SignedInDevices.signOutOthers": "Alle anderen Geräte abmelden",
+  "SignedInDevices.othersTitle": "Alle anderen Geräte abmelden?",
+  "SignedInDevices.othersMessage": {
+    "one":
+      "{count} anderes Gerät braucht dann dein Passwort, um sich wieder anzumelden. Dieses Gerät bleibt angemeldet.",
+    "other":
+      "{count} andere Geräte brauchen dann dein Passwort, um sich wieder anzumelden. Dieses Gerät bleibt angemeldet.",
+  },
+  "SignedInDevices.signOut": "Abmelden",
+  "SignedInDevices.oneTitle": "{device} abmelden?",
+  "SignedInDevices.oneMessage": "Das Gerät braucht dann dein Passwort, um sich wieder anzumelden.",
+  "SignedInDevices.thisDevice": "Dieses Gerät",
+  "SignedInDevices.lastActive": "Zuletzt aktiv <when></when>",
+  "SignedInDevices.ip": "<label>IP-Adresse</label> <ip>{ip}</ip>",
+  "Search.search": "Suche",
+  "Search.placeholder": "Notizen und Gruppen durchsuchen",
+  "Search.close": "Suche schließen",
+  "Search.loading": "Wird gesucht …",
+  "Search.error":
+    "Die Suche hat nicht geklappt. Ändere deine Suche, um es noch einmal zu versuchen.",
+  "Search.tooShort": {
+    "one": "Gib mindestens {count} Zeichen ein, um Notizen zu durchsuchen.",
+    "other": "Gib mindestens {count} Zeichen ein, um Notizen zu durchsuchen.",
+  },
+  "Search.empty": "Keine Notizen oder Gruppen zu „{query}“.",
+  "Search.emptyOnDevice":
+    "Auf diesem Gerät passt nichts zu „{query}“. Suche noch einmal, wenn du wieder online bist.",
+  "Search.notes": "Notizen",
+  "Search.notesOnDevice": "Notizen auf diesem Gerät",
+  "Search.groups": "Gruppen",
+  "Search.actions": "Aktionen",
+  "Search.untitled": "Notiz ohne Titel",
+  "Search.current": "Aktuell",
+  "Search.inGroup": "In {group}",
+  "Search.keep": "Konto behalten",
+  "Search.keepDetail":
+    "Registrieren, anmelden oder dieses Gastkonto mit einer Anmeldemethode sichern",
+  "Search.newNote": "Neue Notiz",
+  "Search.newTag": "Neuer Tag",
+  "Search.newGroup": "Neue Gruppe",
+  "Search.openOverview": "Übersicht öffnen",
+  "Search.openNotifications": "Benachrichtigungen öffnen",
+  "Search.openProfile": "Profil öffnen",
+  "Search.profileDetail": "Name, E-Mail-Adresse, Passwort, Zwei-Faktor-Schutz",
+  "Search.downloadData": "Meine Daten herunterladen",
+  "Search.downloadDetail": "Eine ZIP-Datei mit deinem Profil, deinen Gruppen und Notizen",
+  "Search.changePicture": "Profilbild ändern",
+  "Shortcuts.general": "Allgemein",
+  "Shortcuts.goTo": "Gehe zu",
+  "Shortcuts.newNote": "Unter „Neue Notiz“",
+  "Shortcuts.page": "Diese Seite",
+  "Shortcuts.show": "Tastenkürzel anzeigen",
+  "Shortcuts.close": "Dialog oder Menü schließen",
+  "Shortcuts.switchLabel": "Kürzel mit einer Taste",
+  "Shortcuts.inFields": "Kürzel funktionieren nicht, während du in ein Feld tippst.",
+  "Shortcuts.off": "Kürzel mit einer Taste sind auf diesem Gerät ausgeschaltet.",
+  "Shortcuts.search": "Notizen und Gruppen durchsuchen",
+  "Shortcuts.newNoteRow": "Neue Notiz",
+  "Shortcuts.undo": "Löschen einer Notiz rückgängig machen, solange die Meldung zu sehen ist",
+  "Shortcuts.notifications": "Benachrichtigungen",
+  "Shortcuts.profile": "Profil",
+  "Shortcuts.dateRange": "Zeitraum ändern",
+  "Shortcuts.customise": "Übersicht anpassen",
+  "Shortcuts.addNote": "Notiz hinzufügen",
+  "Shortcuts.addAndOpen": "Hinzufügen und öffnen",
+  "TagEditor.title": "Tag",
+  "TagEditor.back": "Zurück zu den Tags",
+  "TagEditor.notFound": "Diesen Tag gibt es nicht.",
+  "TagEditor.notFoundHint": "Vielleicht wurde er gelöscht.",
+  "TagEditor.loading": "Tag wird geladen …",
+  "TagEditor.new": "Neuer Tag",
+  "TagEditor.offlineTitle": "Du bist offline",
+  "TagEditor.offline":
+    "Deine Änderungen werden auf diesem Gerät gespeichert und synchronisiert, sobald du wieder online bist.",
+  "TagEditor.readOnly": "Nur Bearbeiter können Tags in dieser Gruppe ändern.",
+  "TagEditor.name": "Name",
+  "TagEditor.nameHint": "Alle in <group>{group}</group> sehen diesen Tag.",
+  "TagEditor.namePlaceholder": "Name des Tags",
+  "TagEditor.saving": "Wird gespeichert …",
+  "TagEditor.creating": "Wird erstellt …",
+  "TagEditor.save": "Tag speichern",
+  "TagEditor.create": "Tag erstellen",
+  "TagEditorView.createdTitle": "Tag erstellt",
+  "TagEditorView.created": "„{name}“ erstellt.",
+  "TagEditorView.savedTitle": "Tag gespeichert",
+  "TagEditorView.saved": "„{name}“ gespeichert.",
+  "TagEditorView.discardTitle": "Änderungen verwerfen?",
+  "TagEditorView.discard": "Deine Änderungen an „{name}“ sind noch nicht gespeichert.",
+  "TagEditorView.discardNew": "Du hast diesen Tag noch nicht erstellt.",
+  "TagEditorView.discardLeave": "Änderungen verwerfen",
+  "TagEditorView.discardStay": "Weiter bearbeiten",
+  "TagMessages.nameRequired": "Gib einen Namen ein.",
+  "TagMessages.nameTaken": "In dieser Gruppe gibt es schon einen Tag mit diesem Namen.",
+  "TagMessages.conflict":
+    "Jemand hat diesen Tag geändert, seit du ihn geöffnet hast. Du siehst jetzt die neueste Version.",
+  "TagMessages.gone": "Dieser Tag wurde gelöscht.",
+  "TagMessages.load": "Die Tags konnten nicht geladen werden",
+  "TagMessages.create": "Der Tag konnte nicht erstellt werden. Versuche es noch einmal.",
+  "TagMessages.save": "Der Tag konnte nicht gespeichert werden. Versuche es noch einmal.",
+  "TagMessages.delete": "Der Tag konnte nicht gelöscht werden",
+  "TagParts.list": "Tags",
+  "TagParts.more": "und {names}",
+  "TagParts.noNotes": "Keine Notizen",
+  "TagParts.noteCount": {
+    "one": "{count} Notiz",
+    "other": "{count} Notizen",
+  },
+  "TagParts.deleteNone": "Keine Notiz hat diesen Tag.",
+  "TagParts.deleteUnknown":
+    "Er wird von allen Notizen entfernt, die ihn haben. Die Notizen bleiben.",
+  "TagParts.deleteCount": {
+    "one": "Er wird von {count} Notiz entfernt. Die Notiz bleibt.",
+    "other": "Er wird von {count} Notizen entfernt. Die Notizen bleiben.",
+  },
+  "TagSync.gone": "Dieser Tag wurde gelöscht, während du offline warst.",
+  "TagSync.rejected": "Der Server hat diesen Tag nicht angenommen.",
+  "TagSync.version": "Jemand hat diesen Tag geändert, während du offline warst.",
+  "Tags.title": "Tags",
+  "Tags.new": "Neuer Tag",
+  "Tags.readOnly": "Du kannst diese Tags ansehen, aber nur Bearbeiter können sie ändern.",
+  "Tags.loading": "Tags werden geladen …",
+  "Tags.empty": "Noch keine Tags",
+  "Tags.emptyHint": "Versieh Notizen mit Tags, damit du sie später leicht wiederfindest.",
+  "Tags.edit": "{name} bearbeiten",
+  "Tags.showNotes": {
+    "one": "Die Notiz mit dem Tag {name} anzeigen",
+    "other": "Die {count} Notizen mit dem Tag {name} anzeigen",
+  },
+  "Tags.actions": "Aktionen für {name}",
+  "Tags.editTag": "Tag bearbeiten",
+  "Tags.deleteTag": "Tag löschen",
+  "Tags.deleteTitle": "Tag „{name}“ löschen?",
+  "Tags.cancel": "Abbrechen",
+  "TagToasts.deletedTitle": "Tag gelöscht",
+  "TagToasts.deleted": "„{name}“ wurde gelöscht.",
+  "TagToasts.deletedFromNotes": {
+    "one": "„{name}“ wurde gelöscht und von {count} Notiz entfernt.",
+    "other": "„{name}“ wurde gelöscht und von {count} Notizen entfernt.",
+  },
+  "TelegramNotification.open": "Öffnen",
+  "TelegramBot.linkButton": "Verknüpfen",
+  "TelegramBot.confirmNameAddress":
+    "Dieses Telegram mit dem Konto von {name} bei {app} ({address}) verknüpfen? Tippe nur auf „{button}“, wenn es dein eigenes Konto ist. Wenn du das nicht angefordert hast, ignoriere diese Nachricht.",
+  "TelegramBot.confirmName":
+    "Dieses Telegram mit dem Konto von {name} bei {app} verknüpfen? Tippe nur auf „{button}“, wenn es dein eigenes Konto ist. Wenn du das nicht angefordert hast, ignoriere diese Nachricht.",
+  "TelegramBot.confirmAddress":
+    "Dieses Telegram mit einem Konto bei {app} ({address}) verknüpfen? Tippe nur auf „{button}“, wenn es dein eigenes Konto ist. Wenn du das nicht angefordert hast, ignoriere diese Nachricht.",
+  "TelegramBot.confirmAnonymous":
+    "Dieses Telegram mit einem Konto bei {app} ohne Namen und E-Mail-Adresse verknüpfen? Tippe nur auf „{button}“, wenn es dein eigenes Konto ist. Wenn du das nicht angefordert hast, ignoriere diese Nachricht.",
+  "TelegramBot.linked":
+    "Fertig: Dieser Chat ist mit deinem Konto verknüpft. Deine Benachrichtigungen kommen jetzt hier an. Schick /help, um zu sehen, was ich kann.",
+  "TelegramBot.already": "Dieses Telegram-Konto ist schon mit deinem Konto verknüpft.",
+  "TelegramBot.taken":
+    "Dieses Telegram-Konto ist mit einem anderen Konto verknüpft. Schick zuerst /unlink und dann noch einmal den Code.",
+  "TelegramBot.invalid": {
+    "one":
+      "Dieser Code funktioniert nicht. Vielleicht ist er vertippt, schon benutzt oder älter als {count} Minute. Erstelle in der App einen neuen.",
+    "other":
+      "Dieser Code funktioniert nicht. Vielleicht ist er vertippt, schon benutzt oder älter als {count} Minuten. Erstelle in der App einen neuen.",
+  },
+  "TelegramBot.stale": {
+    "one":
+      "Dieser Button funktioniert nicht mehr. Er wurde schon benutzt, durch einen neueren ersetzt oder ist älter als {count} Minute. Um diesen Chat zu verknüpfen, erstelle in der App einen neuen Code.",
+    "other":
+      "Dieser Button funktioniert nicht mehr. Er wurde schon benutzt, durch einen neueren ersetzt oder ist älter als {count} Minuten. Um diesen Chat zu verknüpfen, erstelle in der App einen neuen Code.",
+  },
+  "TelegramBot.privateOnly": "Schick mir das in einem privaten Chat.",
+  "TelegramBot.codeSpent":
+    "Dieser Code wurde dort gesendet, wo andere ihn lesen können, deshalb funktioniert er nicht mehr. Erstelle in der App einen neuen und schick ihn mir in einem privaten Chat.",
+  "TelegramBot.unlinked":
+    "Getrennt. Dieser Chat bekommt keine Benachrichtigungen mehr von deinem Konto.",
+  "TelegramBot.notLinked": "Dieses Telegram-Konto ist mit keinem Konto verknüpft.",
+  "TelegramBot.howToLink":
+    "Um dein Konto zu verknüpfen, öffne {url}, wähle „{action}“ und schick mir den Code, der dort angezeigt wird.",
+  "TelegramBot.hello": "Hallo! Dein Konto ist verknüpft. Schick /help, um zu sehen, was ich kann.",
+  "TelegramBot.helloName":
+    "Hallo {name}! Dein Konto ist verknüpft. Schick /help, um zu sehen, was ich kann.",
+  "UndoToast.title": "Notiz gelöscht",
+  "UndoToast.deleted": "„{title}“ wurde gelöscht.",
+  "UndoToast.deletedUntitled": "Die Notiz wurde gelöscht.",
+  "UndoToast.keyHint": "Drück {key}, um es rückgängig zu machen.",
+  "UndoToast.undo": "Rückgängig",
+  "ApiDocsLink.newTab": ", öffnet in einem neuen Tab",
+  "ApiTokenNewScreen.title": "Neues API-Token",
+  "ApiTokenNewScreen.copyTitle": "Kopiere dein Token",
+  "ApiTokenNewScreen.back": "Zurück zu den API-Tokens",
+  "ApiTokenNewScreen.intro":
+    "Mit einem Token kann ein Skript über die API auf eine Gruppe zugreifen.",
+  "ApiTokenNewScreen.docs": "API-Dokumentation lesen",
+  "ApiTokenNewScreen.loadingGroups": "Deine Gruppen werden geladen …",
+  "ApiTokenNewScreen.noGroup": "Du bist in keiner Gruppe, für die du ein Token erstellen kannst.",
+  "ApiTokenNewScreen.backToProfile": "Zurück zum Profil",
+  "ApiTokenNewScreen.offlineTitle": "Du bist offline",
+  "ApiTokenNewScreen.offline":
+    "Zum Erstellen eines Tokens brauchst du eine Verbindung. Versuche es noch einmal, wenn du wieder online bist.",
+  "ApiTokenNewScreen.name": "Name",
+  "ApiTokenNewScreen.nameHint": "Damit du deine Tokens auseinanderhältst, etwa „Backup-Skript“.",
+  "ApiTokenNewScreen.nameMissing": "Gib einen Namen ein.",
+  "ApiTokenNewScreen.group": "Gruppe",
+  "ApiTokenNewScreen.access": "Zugriff",
+  "ApiTokenNewScreen.expiresAfter": "Gültig für",
+  "ApiTokenNewScreen.days": {
+    "one": "{count} Tag",
+    "other": "{count} Tage",
+  },
+  "ApiTokenNewScreen.never": "Unbegrenzt",
+  "ApiTokenNewScreen.password": "Dein Passwort",
+  "ApiTokenNewScreen.passwordHint":
+    "Ein Token funktioniert ohne dein Passwort, deshalb fragen wir danach, bevor wir eins erstellen.",
+  "ApiTokenNewScreen.passwordMissing": "Gib dein Passwort ein, um ein Token zu erstellen.",
+  "ApiTokenNewScreen.createFailed":
+    "Das Token konnte nicht erstellt werden. Versuche es noch einmal.",
+  "ApiTokenNewScreen.cancel": "Abbrechen",
+  "ApiTokenNewScreen.creating": "Wird erstellt …",
+  "ApiTokenNewScreen.create": "Token erstellen",
+  "ApiTokenNewScreen.copyNow":
+    "Kopiere dieses Token jetzt und bewahre es sicher auf. Du kannst es danach nicht mehr sehen.",
+  "ApiTokenNewScreen.copy": "Token kopieren",
+  "ApiTokenNewScreen.copied": "Token kopiert",
+  "ApiTokenNewScreen.sendAs": "Sende es als <code>{header}</code>.",
+  "ApiTokenNewScreen.yourToken": "dein-token",
+  "ApiTokenNewScreen.quickStart": "Zum Schnellstart",
+  "ApiTokenNewScreen.done": "Fertig",
+  "ApiTokenNewView.leaveTitle": "Gehen, ohne zu kopieren?",
+  "ApiTokenNewView.leaveMessage": "Dieses Token kannst du danach nicht mehr sehen.",
+  "ApiTokenNewView.leave": "Gehen",
+  "ApiTokenNewView.stay": "Bleiben",
+  "ApiTokenNewView.discardTitle": "Änderungen verwerfen?",
+  "ApiTokenNewView.discardMessage": "Du hast dieses Token noch nicht erstellt.",
+  "ApiTokenNewView.discard": "Änderungen verwerfen",
+  "ApiTokenNewView.keepEditing": "Weiter bearbeiten",
+  "ApiTokens.failed": "Bei deinen API-Tokens ist etwas schiefgelaufen.",
+  "ApiTokens.savedCopyTitle": "Gespeicherte Kopie deiner API-Tokens",
+  "ApiTokens.savedCopyBody":
+    "Der Server ist nicht erreichbar. Du siehst die auf diesem Gerät gespeicherte Liste vom {time}. Tokens, die seitdem erstellt oder widerrufen wurden, fehlen.",
+  "ApiTokens.new": "Neues Token",
+  "ApiTokens.howToUse": "So nutzt du ein Token",
+  "ApiTokens.loading": "Deine Tokens werden geladen …",
+  "ApiTokens.emptyTitle": "Keine API-Tokens",
+  "ApiTokens.emptyText":
+    "Ein Token handelt in einer Gruppe in deinem Namen – nur lesend oder lesend und schreibend.",
+  "ApiTokens.revokeNamed": "Widerrufen<name>: {name}</name>",
+  "ApiTokens.passwordRevokes":
+    "Wenn du dein Passwort änderst oder zurücksetzt, werden alle Tokens widerrufen.",
+  "ApiTokens.revokeTitle": "„<name>{name}</name>“ widerrufen?",
+  "ApiTokens.revokeMessage":
+    "Alles, was dieses Token nutzt, funktioniert ab sofort nicht mehr. Das lässt sich nicht rückgängig machen.",
+  "ApiTokens.revoke": "Widerrufen",
+  "ApiTokens.cancel": "Abbrechen",
+  "ApiTokens.readWrite": "Lesen und schreiben",
+  "ApiTokens.readOnly": "Nur lesen",
+  "ApiTokens.expires": "Läuft ab <date>{date}</date>",
+  "ApiTokens.neverExpires": "Läuft nie ab",
+  "ApiTokens.lastUsed": "Zuletzt genutzt <when>{when}</when>",
+  "ApiTokens.neverUsed": "Noch nie genutzt",
+  "AccountDelete.members":
+    "Andere nutzen sie noch. Übertrage sie oder entferne die anderen Mitglieder.",
+  "AccountDelete.subscription": "Sie hat noch einen bezahlten Tarif. Kündige zuerst den Tarif.",
+  "AccountDelete.planEnding":
+    "Ihr Tarif ist gekündigt, läuft aber noch bis zum {day}. Warte, bis er endet.",
+  "AccountDelete.planEndingPeriod":
+    "Ihr Tarif ist gekündigt, läuft aber noch bis zum Ende des Zeitraums. Warte, bis er endet.",
+  "AccountDelete.title": "Mein Konto löschen",
+  "AccountDelete.summary": {
+    "one":
+      "Dein Konto und die Gruppen, die nur du nutzt, werden {count} Tag nach deiner Anfrage endgültig gelöscht. Melde dich vorher an, wenn du sie behalten willst.",
+    "other":
+      "Dein Konto und die Gruppen, die nur du nutzt, werden {count} Tage nach deiner Anfrage endgültig gelöscht. Melde dich vorher an, wenn du sie behalten willst.",
+  },
+  "AccountDelete.copyFirst": "Willst du vorher eine Kopie? <link>Lade deine Daten herunter</link>.",
+  "AccountDelete.deleteHidden": "Löschen<hidden>: mein Konto</hidden>",
+  "AccountDelete.checking": "Deine Gruppen werden geprüft …",
+  "AccountDelete.explain": {
+    "one":
+      "Du wirst sofort auf allen Geräten abgemeldet. Dein Konto und die Gruppen, die nur du nutzt, werden in {count} Tag endgültig gelöscht. Melde dich vorher an, um dein Konto wiederherzustellen. Notizen, die du in Gruppen anderer geschrieben hast, bleiben dort und werden „Gelöschter Nutzer“ zugeordnet.",
+    "other":
+      "Du wirst sofort auf allen Geräten abgemeldet. Dein Konto und die Gruppen, die nur du nutzt, werden in {count} Tagen endgültig gelöscht. Melde dich vorher an, um dein Konto wiederherzustellen. Notizen, die du in Gruppen anderer geschrieben hast, bleiben dort und werden „Gelöschter Nutzer“ zugeordnet.",
+  },
+  "AccountDelete.deleting": "Wird gelöscht …",
+  "AccountDelete.blocked":
+    "Dir gehören Gruppen, die andere noch nutzen oder für die noch bezahlt wird. Kläre zuerst jede davon und komm dann zurück.",
+  "AuthScreen.demoNote":
+    "Das ist eine öffentliche Demo, die jede Nacht zurückgesetzt wird. Neue Konten bekommen Beispieldaten zum Ausprobieren.",
+  "AuthScreen.demoGuestNote":
+    "Das ist eine öffentliche Demo, die jede Nacht zurückgesetzt wird. Jedes neue Konto, ob Gast oder nicht, bekommt Beispieldaten zum Ausprobieren.",
+  "AuthScreen.tryFirst":
+    "Probier die App erst aus oder registriere dich mit deiner E-Mail-Adresse.",
+  "AuthScreen.invitedTitle": "Du bist in eine Gruppe eingeladen",
+  "AuthScreen.invitedSignIn": "Melde dich an, um die Einladung zu sehen und beizutreten.",
+  "AuthScreen.invitedSignUp":
+    "Erstelle ein Konto, um die Einladung zu sehen und beizutreten. Du hast schon eins? Dann melde dich an.",
+  "AuthScreen.loginOrUsername": "E-Mail-Adresse oder Benutzername",
+  "AuthScreen.email": "E-Mail-Adresse",
+  "AuthScreen.signInTitle": "Willkommen zurück",
+  "AuthScreen.signInDescription":
+    "Melde dich mit deiner E-Mail-Adresse oder deinem Benutzernamen an.",
+  "AuthScreen.signInFailed": "Die Anmeldung hat nicht geklappt. Versuche es noch einmal.",
+  "AuthScreen.signUpTitle": "Erstelle dein Konto",
+  "AuthScreen.signUpDescription":
+    "Nur E-Mail-Adresse und Passwort. Wir schicken dir einen Code, um deine E-Mail-Adresse zu bestätigen.",
+  "AuthScreen.signUpFailed": "Dein Konto konnte nicht erstellt werden. Versuche es noch einmal.",
+  "AuthScreen.codeTitle": "Gib deinen Code ein",
+  "AuthScreen.codeDescription":
+    "Öffne deine Authenticator-App und gib den sechsstelligen Code ein, den sie anzeigt.",
+  "AuthScreen.codeFailed": "Dieser Code hat nicht funktioniert. Versuche es noch einmal.",
+  "AuthScreen.forgotten":
+    "Erledigt. Dieser Browser merkt sich nicht mehr, wie du dich angemeldet hast.",
+  "AuthScreen.lastPassword":
+    "Letztes Mal hast du dich mit deinem Passwort angemeldet<email> ({email})</email>.",
+  "AuthScreen.lastPasskey":
+    "Letztes Mal hast du dich mit einem Passkey angemeldet<email> ({email})</email>.",
+  "AuthScreen.lastLink":
+    "Letztes Mal hast du dich mit einem Link per E-Mail angemeldet<email> ({email})</email>.",
+  "AuthScreen.lastProvider":
+    "Letztes Mal hast du dich mit {provider} angemeldet<email> ({email})</email>.",
+  "AuthScreen.forget": "Nicht du? Anderes Konto verwenden",
+  "AuthScreen.openProfile": "Dein Profil öffnen",
+  "AuthScreen.noCodeTitle": "Kein Code nötig",
+  "AuthScreen.noCodeText": "Für diese Anmeldung brauchst du keinen Code.",
+  "AuthScreen.signedInTitle": "Du bist angemeldet",
+  "AuthScreen.signedInText": "Hier gibt es nichts zu tun.",
+  "AuthScreen.newHere": "Neu hier? <link>Konto erstellen</link>",
+  "AuthScreen.haveAccount": "Du hast schon ein Konto? <link>Anmelden</link>",
+  "AuthScreen.lostDevice": "Gerät verloren? <link>Zurück zur Anmeldung</link>",
+  "AuthScreen.sending": "Wird gesendet …",
+  "AuthScreen.emailSignInLink": "Anmeldelink per E-Mail senden",
+  "AuthScreen.emailSignUpLink": "Registrierungslink per E-Mail senden",
+  "AuthScreen.orCreate": "oder ein Konto erstellen",
+  "AuthScreen.createAccount": "Konto erstellen",
+  "AuthScreen.continue": "Weiter",
+  "AuthScreen.codeHint": "Sechs Ziffern aus deiner Authenticator-App.",
+  "AuthScreen.forgotPassword": "Passwort vergessen?",
+  "AuthScreen.otherWays": "Andere Anmeldemethoden",
+  "AuthScreen.waitingDevice": "Warte auf dein Gerät …",
+  "AuthScreen.passkey": "Mit Passkey anmelden",
+  "AuthScreen.continueWith": "Weiter mit {provider}",
+  "ConfirmSignUpScreen.failed": "Dein Konto konnte nicht erstellt werden",
+  "ConfirmSignUpScreen.title": "Ein neues Konto erstellen?",
+  "ConfirmSignUpScreen.goneTitle": "Nichts zu bestätigen",
+  "ConfirmSignUpScreen.gone":
+    "Diese Anfrage ist nach zehn Minuten abgelaufen, oder du hast sie schon beantwortet. Es wurde kein Konto erstellt.",
+  "ConfirmSignUpScreen.backToSignIn": "Zurück zur Anmeldung",
+  "ConfirmSignUpScreen.unknown": "Dieses {provider}-Konto ist hier mit keinem Konto verknüpft.",
+  "ConfirmSignUpScreen.unknownColon":
+    "Dieses {provider}-Konto ist hier mit keinem Konto verknüpft:",
+  "ConfirmSignUpScreen.goBack":
+    "Du hast schon ein Konto? Geh zurück, melde dich wie gewohnt an und verknüpfe dann {provider} in deinem Profil. Es wurde noch nichts erstellt.",
+  "ConfirmSignUpScreen.unconfirmed":
+    "<strong>Ein Konto hier nutzt diese E-Mail-Adresse bereits, hat sie aber nie bestätigt.</strong> Wenn du ein neues Konto erstellst, wird das alte gesperrt: Sein Passwort funktioniert nicht mehr, und seine Geräte werden abgemeldet. Um es zu behalten, geh zurück, melde dich mit seinem Passwort an und bestätige die E-Mail-Adresse mit dem Code, den wir dir schicken.",
+  "ConfirmSignUpScreen.back": "Ich habe schon ein Konto. Zurück zur Anmeldung",
+  "ConfirmSignUpScreen.creating": "Dein Konto wird erstellt …",
+  "ConfirmSignUpScreen.create": "Neues Konto erstellen",
+  "EmailScreen.verifyFailed": "Der Code konnte nicht geprüft werden",
+  "EmailScreen.sendFailed": "Es konnte kein neuer Code gesendet werden",
+  "EmailScreen.changeFailed": "Deine E-Mail-Adresse konnte nicht geändert werden",
+  "EmailScreen.loadFailed": "Deine E-Mail-Adresse konnte nicht geladen werden.",
+  "EmailScreen.enterCode": "Code eingeben",
+  "EmailScreen.banner": "Bestätige <email>{email}</email> mit dem Code, den wir dorthin schicken.",
+  "EmailScreen.tryAgain": "Erneut versuchen",
+  "EmailScreen.changeTitle": "E-Mail-Adresse ändern",
+  "EmailScreen.addTitle": "E-Mail-Adresse hinzufügen",
+  "EmailScreen.close": "Schließen",
+  "EmailScreen.cancel": "Abbrechen",
+  "EmailScreen.codeSent": {
+    "one":
+      "Gib den Code aus der E-Mail an <email>{email}</email> ein. Er funktioniert einmal und {count} Minute lang.",
+    "other":
+      "Gib den Code aus der E-Mail an <email>{email}</email> ein. Er funktioniert einmal und {count} Minuten lang.",
+  },
+  "EmailScreen.codeResent": "Ein neuer Code ist an <email>{email}</email> unterwegs.",
+  "EmailScreen.codeSentKeep": {
+    "one":
+      "Gib den Code aus der E-Mail an <email>{email}</email> ein. Er funktioniert einmal und {count} Minute lang. Bis dahin meldest du dich weiter mit <current>{current}</current> an.",
+    "other":
+      "Gib den Code aus der E-Mail an <email>{email}</email> ein. Er funktioniert einmal und {count} Minuten lang. Bis dahin meldest du dich weiter mit <current>{current}</current> an.",
+  },
+  "EmailScreen.confirm": "E-Mail-Adresse bestätigen",
+  "EmailScreen.noMail": "Nichts angekommen? <button>Neuen Code senden</button>",
+  "EmailScreen.changeProvider":
+    "Wir schicken einen Code an deine neue E-Mail-Adresse. Sobald du ihn eingibst, wird die Adresse geändert. Du meldest dich weiter mit {providers} an.",
+  "EmailScreen.changeKeep":
+    "Wir schicken einen Code an deine neue E-Mail-Adresse. Bis du ihn eingibst, meldest du dich weiter mit <current>{current}</current> an.",
+  "EmailScreen.changeNew":
+    "Wir schicken einen Code an deine neue E-Mail-Adresse. Sobald du ihn eingibst, meldest du dich mit dieser Adresse an.",
+  "EmailScreen.newAddress": "Neue E-Mail-Adresse",
+  "EmailScreen.currentPassword": "Aktuelles Passwort",
+  "EmailScreen.sendCode": "Code senden",
+  "EmailScreen.verified": "Bestätigt",
+  "EmailScreen.notVerified": "Nicht bestätigt",
+  "Benchmark.title": "Benchmark",
+  "Benchmark.subtitle": "Wie sich eine große Gruppe auf diesem Gerät verhält.",
+  "Benchmark.opening": "Benchmark wird geöffnet…",
+  "Benchmark.groupLabel": "Zu messende Gruppe",
+  "Benchmark.groupPlaceholder": "Gruppe auswählen",
+  "Benchmark.groupHint": "Der Lauf lädt jede Notiz der Gruppe auf dieses Gerät.",
+  "Benchmark.run": "Benchmark starten",
+  "Benchmark.runAgain": "Erneut starten",
+  "Benchmark.stop": "Stoppen",
+  "Benchmark.copy": "Ergebnisse kopieren",
+  "Benchmark.share": "Teilen",
+  "Benchmark.jsonLabel": "Ergebnisse in einer Zeile",
+  "Benchmark.keepInFront": "Lass diesen Tab geöffnet und im Vordergrund, bis der Lauf endet.",
+  "Benchmark.measurements": "Messungen",
+  "Benchmark.stepDownload": "Gruppe herunterladen",
+  "Benchmark.stepSave": "Auf diesem Gerät speichern",
+  "Benchmark.stepStartOffline": "Offline aus der gespeicherten Kopie starten",
+  "Benchmark.stepFirstNotes": "Erste Notizen anzeigen",
+  "Benchmark.stepScroll": "Liste scrollen",
+  "Benchmark.stepSearch": "Auf diesem Gerät suchen",
+  "Benchmark.stepFilter": "Liste filtern",
+  "Benchmark.stepMemory": "Speicher der Seite",
+  "Benchmark.stepStorage": "Belegter Speicherplatz auf diesem Gerät",
+  "Benchmark.stepClear": "Kopie auf diesem Gerät löschen",
+  "Benchmark.budgetDownload": "Budget: unter 10 s über 4G",
+  "Benchmark.budgetSecond": "Budget: unter 1 s",
+  "Benchmark.budgetScroll": "Budget: unter 5 % verlorene Frames",
+  "Benchmark.budgetFast": "Budget: unter 100 ms",
+  "Benchmark.noBudget": "Kein Budget",
+  "Benchmark.within": "Im Budget",
+  "Benchmark.over": "Über Budget",
+  "Benchmark.notMeasured": "Nicht gemessen",
+  "Benchmark.unavailableDetail": "Dieser Browser gibt das nicht an.",
+  "Benchmark.seconds": "{value} s",
+  "Benchmark.milliseconds": "{value} ms",
+  "Benchmark.framesDropped": "{percent} % der Frames verloren",
+  "Benchmark.storageOf": "{size} von {quota}",
+  "Benchmark.cleared": "Gelöscht",
+  "Benchmark.kept": "Für die geöffnete Gruppe behalten",
+  "Benchmark.deviceHeading": "Dieses Gerät",
+  "Benchmark.browser": "Browser",
+  "Benchmark.cores": "Prozessorkerne",
+  "Benchmark.memory": "Arbeitsspeicher",
+  "Benchmark.connection": "Verbindung",
+  "Benchmark.notReported": "Nicht angegeben",
+  "Benchmark.stepOf": "Schritt {n} von {total}: {measure}",
+  "Benchmark.notesProgress": "{done} von {total} Notizen",
+  "Benchmark.stoppedAt": "Bei „{measure}“ gestoppt. Die bisherigen Ergebnisse stehen unten.",
+  "Benchmark.chooseGroup": "Wähle eine Gruppe zum Messen.",
+  "Benchmark.offline":
+    "Für den Benchmark brauchst du eine Verbindung. Der erste Schritt lädt die Gruppe herunter.",
+  "Benchmark.failed": "„{measure}“ fehlgeschlagen",
+  "Benchmark.failOffline": "Das Gerät ist offline gegangen. Verbinde dich neu und starte erneut.",
+  "Benchmark.failStorage":
+    "Auf diesem Gerät ist kein Speicherplatz mehr frei. Die Gruppe ist vielleicht zu groß dafür.",
+  "Benchmark.failServer": "Der Server ist nicht erreichbar. Versuch es noch einmal.",
+  "Benchmark.failBrowser":
+    "Der Browser hat diesen Schritt gestoppt. Die Details stehen in der Ergebniszeile.",
+  "Benchmark.failHidden":
+    "Dieser Tab war nicht im Vordergrund, daher wurden die Frames nicht gezählt. Starte erneut mit dem Tab im Vordergrund.",
+  "Benchmark.othersKept": "Die anderen Ergebnisse bleiben erhalten.",
+  "Benchmark.noLargeTitle": "Noch keine große Gruppe",
+  "Benchmark.noLargeBody": "Erstelle eine mit dem Generator und lade diese Seite neu:",
+  "Benchmark.copyCommand": "Befehl kopieren",
+  "Benchmark.noLargeFoot":
+    "Die Größen und wie du die Gruppe wieder entfernst, stehen in docs/capacity.md.",
+  "Benchmark.lastStoppedTitle": "Der letzte Lauf stoppte bei „{measure}“",
+  "Benchmark.lastStoppedBody":
+    "Der Tab wurde geschlossen, bevor der Lauf endete. Meist war der Speicher oder Speicherplatz voll. Gruppe: {group}, gestartet {time}.",
+  "Benchmark.copyThatRun": "Ergebnisse dieses Laufs kopieren",
+  "Benchmark.dismiss": "Ausblenden",
+  "Benchmark.doneSummary": "Fertig in {duration}. {count} von {total} Messungen im Budget.",
+  "Benchmark.partialSummary": "{count} von {total} Messungen erledigt.",
+  "Benchmark.resultsCopied": "Ergebnisse kopiert",
+  "Benchmark.commandCopied": "Befehl kopiert",
+  "Benchmark.copyFailed": "Kopieren nicht möglich. Markiere die Zeile unten und kopiere sie.",
+  "Search.openBenchmark": "Benchmark öffnen",
+  "Search.benchmarkDetail": "Messen, wie sich eine große Gruppe auf diesem Gerät verhält",
+  "Shortcuts.runBenchmark": "Benchmark starten",
+  "Shortcuts.copyResults": "Ergebnisse kopieren",
+} satisfies Catalog

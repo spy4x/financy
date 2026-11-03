@@ -1,213 +1,38 @@
 import { Event } from "@spy4x/platform/cqrs"
-import {
-  Account,
-  Category,
-  Group,
-  GroupMembership,
-  Transaction,
-  User,
-  UserSettings,
-} from "@shared/types"
-
-/**
- * Event emitted when a user signs up (after user creation and session setup)
- */
-export class UserSignedUpEvent implements Event<{ user: User; username: string }> {
-  constructor(public data: { user: User; username: string }) {}
+import { RequestInfo } from "@spy4x/platform/request-info"
+import { User, UserPushTokenPublic } from "@domain/identity"
+export class UserSignedOutEvent implements Event<{ userId: number; request: RequestInfo }> {
+  constructor(public data: { userId: number; request: RequestInfo }) {}
 }
 
-/**
- * Event emitted when a group is created (after group + membership creation)
- */
-export class GroupCreatedEvent
-  implements Event<{ group: Group; membership: GroupMembership; acknowledgmentId?: string }> {
+export class UserProfileUpdatedEvent implements Event<{ user: User; request: RequestInfo }> {
+  constructor(public data: { user: User; request: RequestInfo }) {}
+}
+
+/** A person chose another group for `/notes`. Their other open tabs read the selection again. */
+export class GroupSelectedEvent implements Event<{ userId: number; groupId: string }> {
+  constructor(public data: { userId: number; groupId: string }) {}
+}
+
+/** A person saved their display preferences. Their other open tabs read them again. */
+export class PreferencesUpdatedEvent implements Event<{ userId: number }> {
+  constructor(public data: { userId: number }) {}
+}
+
+/** A group has a new owner, who is told by web push. */
+export class GroupOwnershipTransferredEvent
+  implements Event<{ groupId: string; groupName: string; newOwnerId: number }> {
+  constructor(public data: { groupId: string; groupName: string; newOwnerId: number }) {}
+}
+
+/** A person closed the checklist or ended the tour. Their other open tabs read it again. */
+export class OnboardingMarkedEvent implements Event<{ userId: number }> {
+  constructor(public data: { userId: number }) {}
+}
+
+export class PushDevicesUpdatedEvent
+  implements Event<{ userId: number; devices: UserPushTokenPublic[]; request: RequestInfo }> {
   constructor(
-    public data: { group: Group; membership: GroupMembership; acknowledgmentId?: string },
+    public data: { userId: number; devices: UserPushTokenPublic[]; request: RequestInfo },
   ) {}
-}
-
-/**
- * Event emitted when an account is created
- */
-export class AccountCreatedEvent implements Event<{ account: Account; acknowledgmentId?: string }> {
-  constructor(public data: { account: Account; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when a transaction is created
- */
-export class TransactionCreatedEvent implements
-  Event<{
-    transaction: Transaction
-    acknowledgmentId?: string
-  }> {
-  constructor(
-    public data: {
-      transaction: Transaction
-      acknowledgmentId?: string
-    },
-  ) {}
-}
-
-/**
- * Event emitted when a transaction is updated
- */
-export class TransactionUpdatedEvent implements
-  Event<{
-    transaction: Transaction
-    originalTransaction: Transaction
-    acknowledgmentId?: string
-  }> {
-  constructor(
-    public data: {
-      transaction: Transaction
-      originalTransaction: Transaction
-      acknowledgmentId?: string
-    },
-  ) {}
-}
-
-/**
- * Event emitted when a transaction is deleted
- */
-export class TransactionDeletedEvent implements
-  Event<{
-    transaction: Transaction
-    acknowledgmentId?: string
-  }> {
-  constructor(
-    public data: {
-      transaction: Transaction
-      acknowledgmentId?: string
-    },
-  ) {}
-}
-
-/**
- * Event emitted when a transaction is undeleted (restored)
- */
-export class TransactionUndeletedEvent implements
-  Event<{
-    transaction: Transaction
-    acknowledgmentId?: string
-  }> {
-  constructor(
-    public data: {
-      transaction: Transaction
-      acknowledgmentId?: string
-    },
-  ) {}
-}
-
-/**
- * Event emitted when a category is created
- */
-export class CategoryCreatedEvent
-  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when a category is updated
- */
-export class CategoryUpdatedEvent
-  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when a category is deleted
- */
-export class CategoryDeletedEvent
-  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when a category is undeleted (restored)
- */
-export class CategoryUndeletedEvent
-  implements Event<{ category: Category; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { category: Category; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when a group is updated
- */
-export class GroupUpdatedEvent
-  implements Event<{ group: Group; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { group: Group; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when a group is deleted
- */
-export class GroupDeletedEvent
-  implements Event<{ group: Group; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { group: Group; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when a group is undeleted (restored)
- */
-export class GroupUndeletedEvent
-  implements Event<{ group: Group; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { group: Group; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when an account is updated
- */
-export class AccountUpdatedEvent
-  implements Event<{ account: Account; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { account: Account; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when an account is deleted
- */
-export class AccountDeletedEvent
-  implements Event<{ account: Account; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { account: Account; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when an account is undeleted (restored)
- */
-export class AccountUndeletedEvent
-  implements Event<{ account: Account; userId: number; acknowledgmentId?: string }> {
-  constructor(public data: { account: Account; userId: number; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when money is transferred between accounts
- */
-export class AccountTransferEvent implements
-  Event<{
-    fromTransaction: Transaction
-    toTransaction: Transaction
-    acknowledgmentId?: string
-  }> {
-  constructor(
-    public data: {
-      fromTransaction: Transaction
-      toTransaction: Transaction
-      acknowledgmentId?: string
-    },
-  ) {}
-}
-
-/**
- * Event emitted when a user is updated
- */
-export class UserUpdatedEvent implements Event<{ user: User; acknowledgmentId?: string }> {
-  constructor(public data: { user: User; acknowledgmentId?: string }) {}
-}
-
-/**
- * Event emitted when user settings are updated
- */
-export class UserSettingsUpdatedEvent
-  implements Event<{ settings: UserSettings; acknowledgmentId?: string }> {
-  constructor(public data: { settings: UserSettings; acknowledgmentId?: string }) {}
 }

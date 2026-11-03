@@ -1,0 +1,26 @@
+{
+  "tasks": {
+    "build": "deno run -A --node-modules-dir=auto npm:vite@7.3.6 build .",
+    "check": "deno check src/main.tsx src/sw.ts vite.config.ts",
+    "dev": "deno run -A --node-modules-dir=auto npm:vite@7.3.6 ."
+  },
+  "imports": {
+    // A browser DOM for the error boundary's test: the version libs/ui already uses.
+    "happy-dom": "npm:happy-dom@20.14.5",
+    // An IndexedDB for the unit tests of the device copies (Deno has none): the version ts-libs
+    // tests `createDataCache` with.
+    "fake-indexeddb": "npm:fake-indexeddb@6.2.5",
+    // 2.x resolves imports inside the Vite process. 1.x started one `deno info` process per
+    // import, about 80 at once: under a cap on processes and threads some could not start, the
+    // build failed with "Rollup failed to resolve import" and the rest never exited (#328).
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@2.0.4",
+    "@preact/preset-vite": "npm:@preact/preset-vite@2.10.2",
+    // Server-renders a view in its test: the version libs/ui already uses.
+    "preact-render-to-string": "npm:preact-render-to-string@6.7.0",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@4.1.12",
+    "tailwindcss": "npm:tailwindcss@4.1.12",
+    "tailwindcss/": "npm:/tailwindcss@4.1.12/",
+    "tailwindcss/plugin": "npm:/tailwindcss@4.1.12/plugin.js",
+    "vite": "npm:vite@7.3.6"
+  }
+}
