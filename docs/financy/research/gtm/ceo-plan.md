@@ -200,8 +200,8 @@ The five areas once called "cannot win":
 
 ## Notes and defaults taken
 
-- "Kept while subscribed" (the founding price) is used here; `product.md` in this folder says "for
-  life". They must say the same thing on the pricing page.
+- "Kept while subscribed" (the founding price) is used here, as in `product.md` in this folder.
+  The pricing page must say the same.
 - A two-sided free month is not a trial: the friend pays first, as decided.
 - The churn and renewal rates are assumptions, to be replaced by Financy's own data at month 3.
 

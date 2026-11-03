@@ -106,10 +106,10 @@ description the option carried, or the owner's words.
 | hi@financy.dev on the owner's existing mail server, which the lead found possible and light | "If it's technically possible to have hi@financy.dev there and it makes sense - I would love to reuse existing server [...]" |
 | The first deploy runs on the home server that also runs Seed's live demo, and reuses its Traefik and shared monitoring; what runs on the cloud server, and a move to Financy's own EU server before the public launch, are open for the owner to decide | "yes, we can use my [...] home server for now (same as for Seed) and something from cloud's server." |
 | Family free as a gift, friends a free year as founding testers, a founding price of $3 or $30 for the first 100 kept while subscribed, no lifetime deals or fake scarcity (2026-11-04) | "I like and agree with what you wrote in Family, friends and launch offers - let's keep those decisions as strategy." |
-| Referral built with the launch, not after it (2026-11-04) | "`It should be built after launch, once about 30 households are past the 30-day guarantee.` Just set correct priority and milestone. No need to limit." |
+| Referral not held back until 30 households; the lead sets its priority and milestone (2026-11-04) | "`It should be built after launch, once about 30 households are past the 30-day guarantee.` Just set correct priority and milestone. No need to limit." |
 | Stripe Tax for EU and UK VAT (2026-11-04) | "`Stripe Tax at about $0.02 per $4 charge.` sounds fair, i pick this." |
 | Individuals, households and small businesses, with a plain note that it is not double-entry (2026-11-04) | "We don't have to only focus marketing on households. Individuals are welcomed too! And small businesses (just note that it's not double entry)." |
-| Each group picks its budgeting method (2026-11-04) | "I want to support multiple different systems, so user could pick per group." |
+| Each group picks its budgeting method (2026-11-04) | "I want to support multiple different systems, so user could pick per group. Makes sense?" |
 
 ## The lead's picks
 
