@@ -1,7 +1,0 @@
-ARG DENO_VERSION=2.4.0
-FROM financy/deno-base:${DENO_VERSION}
-
-# Copy application code
-COPY . .
-
-CMD deno task web:dev

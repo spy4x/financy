@@ -1,0 +1,150 @@
+# The public demo
+
+The template's own server runs a public demo of the product. Anyone opens it with one click as a
+guest ([guest accounts](guests.md)), or signs up with their own address, by password or with
+Google or GitHub, and starts in a workspace full of sample data: a
+group they own, and two groups of made-up people where they are an editor and a viewer. The
+database is wiped and seeded again every night at midnight Pacific time, so whatever visitors do
+lasts a day at most. There is no shared account and no demo-only rule in the API: each visitor
+works in groups nobody else can see.
+
+It is off unless `DEMO_MODE=true`. A product started from the template never turns it on: its
+server holds real people's data.
+
+## Turning it on
+
+Set `DEMO_MODE=true` in the server's env file (`infra/envs/.env.prod`, which `deno task deploy`
+copies). The worker and the SPA read it (`infra/compose/compose.shared.yml`); the API does not.
+
+## What it does
+
+| Part | Where | What |
+| --- | --- | --- |
+| Population | `apps/worker/demo/fake-content.ts` (names, themes, notes), `fake-data.ts` (`fakeDemoData`), `seed.ts` (`seedDemo`), `history.ts` | 140 fake people with Western names, all on `example.com`, and their history counted back from the moment of the seed: sign-ups mostly in the last two months, on a curve that grows towards now, and about a third earlier, up to eight months back, sign-ins on weekday rhythm from their own browsers (IP addresses from the ranges reserved for documentation), open sessions, a few on Google or GitHub, with a second factor, unverified or blocked. 14 groups of different sizes whose members, tags, notes and invitations arrive over weeks, written by several members, and 16 small groups that recent sign-ups started together. About half the people keep a few notes in their own first group, and some renamed it. Ten of them pay: active, past due, cancelled, ending and in trial, with a payment a month, under provider ids marked `_fake`; no provider is called. 90 newsletter subscribers on `example.com` joining over four months, five who left (in the sent issues' audiences only), and three sent issues; the newsletter never mails them. Picked by the day, so each day looks a little different. The people sign up through the API's own sign-up with one random password nobody knows. Claire Hartley, whom the admin video follows, is always there, with two namesakes so its search for "hartley" finds three people, with two sessions: Firefox on Windows and Safari on iPhone, and edits in one small shared group. |
+| Sample groups | `fake-data.ts` (`fakeWorkspace`), `seed.ts` (`seedWorkspace`), started by the starter-data job (`libs/server/jobs/starter-data.ts`) | Every new account gets three themed groups, with the population's people as members, tags, notes, invitations and a few attached images and PDFs (`sample-files.ts`, put in the file store by the worker), and opens the one it owns. |
+| Get-started checklist | `apps/spa/src/views/OnboardingView.tsx` | The Notes page's "Get started" checklist starts with "Invite someone to your group" already done, because every sample group already has members. |
+| Sign-in and sign-up pages | `libs/ui/auth-screen.tsx` (`DEMO_NOTE`, `DEMO_GUEST_NOTE`), `apps/spa/src/state/demo.ts` | One line above the form: the demo is public, wiped every night, and every new account, guest or not, starts with sample data. A guest's banner gives the wipe's time in the visitor's own time zone. The SPA reads `demo` from its `/config.json` (`SPA_DEMO` in `apps/spa/public-env.allow`, which compose sets from `DEMO_MODE`). |
+| Wipe | `apps/worker/demo/wipe.ts` | Empties every table except `KEPT_TABLES` (the migration history, the backup status, the blog's posts, the contact links, the newsletter's subscribers, unsubscribes and send log, and the queue of file deletions) in one transaction. It first queues every attached file's object and every profile picture, which the worker's nightly clean-up then deletes from the file store. Ids are not restarted, so nothing cached under an old id describes a new row. |
+| Nightly reset | `apps/worker/demo/reset.ts`, `run.ts`, started in `apps/worker/+main.ts` | Checks every minute. When the date in `America/Los_Angeles` changes, it wipes, seeds the population and schedules the nightly cleanup again. After a deploy it seeds at once only when the day's population is missing, an operator account other than the private administrator exists, or `DEMO_ADMIN_PASSWORD` is set and that administrator is missing. A visitor cannot make it fail by taking a seeded address between the wipe and the seed: every way to claim an address (a password sign-up, a sign-in link, an address change, Google or GitHub) waits for a code or a link mailed there, or for the provider to vouch for it, and `example.com` takes no mail. A failed reset is tried again a minute later; a worker that restarts in between keeps the half-seeded demo until the next midnight. |
+
+**Why a job, not sign-up itself.** Every sign-up (password, Google, GitHub, a guest) already queues the
+starter-data job in its own transaction, and the worker runs it within a second. While the demo is
+on, that job writes the sample groups before the welcome note. A slow or failing write never
+delays or fails a sign-up, and a failed job is retried. An account that is in any group besides
+its first one has its sample groups already and gets nothing more, so a retry or a second sign-in
+adds nothing. The population's fake people get none.
+
+**The admin panel is not part of the demo.** Its host still runs, but the demo gives visitors no
+operator account, so nobody outside can sign in to it. A public operator account would show every
+visitor's address, IP address and devices to anyone, and each admin action would need its own demo
+rule. The admin panel is shown in a video on the website instead. The owner decided this on
+2026-10-20: "My decision is admin panel, not for a demo, but we need a good video about it."
+
+The owner keeps a private administrator there: set `DEMO_ADMIN_PASSWORD` (8 to 50 characters) in
+the server's env file, which is encrypted, and deploy. Every reset then creates `admin@example.com`
+with that password first, hashed with the API's `AUTH_PEPPER` (the worker receives both), and it
+signs in to the admin app. A changed password takes effect at the next reset. The worker refuses
+to start when the password breaks the rule or the pepper is missing. This administrator is the one
+operator the reset tolerates: any other makes the worker wipe and seed again within a minute, and
+so does the administrator missing while the setting is on. The reset seeds no operator history
+or backup for it, so the admin panel shows the demo as it is. Unset, the demo has no operator.
+
+Its Stats page says "Stats are off" and names `UMAMI_API_URL` and `UMAMI_API_TOKEN`: the demo's
+server sets only the website's tracker (`MPA_UMAMI_ORIGIN`, `MPA_UMAMI_WEBSITE_ID`), and the demo
+has no fake Umami to read ([analytics.md](analytics.md#stats-in-the-admin-app)). Stats adds no
+table, so the wipe and the seed are unchanged.
+
+In development, `deno task db:seed` adds `admin@example.com`, an administrator, so the admin app
+can be tried locally, with what an operator did over the weeks (blocks, a reset mail, a refund,
+time given, exports) and a finished backup, so the System page shows a healthy server. The
+development billing provider answers a customer's last payment from the seeded subscription
+(`libs/server/billing/fake-payments.ts`): nothing for a trial, every seat's price at the start of
+the period, and refunded once the operator's refund is on record. The public demo gets
+neither: it has no operator history, and its server's own backup service records the backups.
+
+## When the database changes
+
+A change to the database structure (a new, renamed or dropped table or column, a new aggregate)
+updates the demo in the same PR:
+
+- **The wipe** empties every table it finds, so a new table needs no change (the guest tables
+  `guest_events`, `guest_switches` and `guest_reminders` are wiped like the rest; the seed writes
+  no guests, because every visitor who presses "Try it now" makes one). A table that must
+  survive the night goes into `KEPT_TABLES`, with the reason, and references no table the wipe
+  empties: `TRUNCATE ... CASCADE` would empty it too.
+- **The blog survives the wipe.** `blog_posts` is in `KEPT_TABLES`, because the posts on the
+  product's website (seedsaas.com for the template) are real, not demo data. A post keeps its
+  author's name in `author_name`, and the page it links to in `author_url`, with no foreign key
+  to `users`, so the wipe never takes them along. The wipe empties the job table and the audit log, so the worker queues a scheduled
+  post's `blog.publish` job again after it (`queueDueBlogJobs`), and the operators' audit rows
+  about posts last a day. A post's `language` and `translation_of` stay with it; a subscriber
+  keeps their `language` too, and the seeded subscribers have none, so they count as the main
+  language's. A post's `reading_minutes` is a column Postgres computes from its body, so the
+  wipe, the seed and Seed's post files never write it and every post has it. Seed's own posts come
+  from files ([below](#seeds-own-blog-posts)).
+- **The contact links survive the wipe** for the same reason: `contact_links` holds the
+  website's real contact channels, and the demo seeds none. `deno task db:seed` in development
+  adds three sample links (`libs/server/contact-links/sample-links.ts`).
+- **The newsletter survives the wipe.** `subscribers`, `subscriber_unsubscribes` and
+  `subscriber_sends` are in `KEPT_TABLES`, because the website's sign-up is real: a person who
+  subscribes on seedsaas.com must still be there the next morning, an address that left must not
+  be added again by replaying its old confirm link, and the admin panel keeps the record of real
+  sends, such as a blog post's. The seed replaces only its own rows (`writeNewsletter` in `apps/worker/demo/history.ts`): it
+  deletes every subscriber on a domain reserved for examples (RFC 2606), which no real person can
+  confirm, and the sends of its fake issues, then writes the day's 90 again, so a second wipe and
+  seed leaves 90, not 180. It writes no unsubscribes, which hold only keyed marks a later seed
+  could not tell from a real person's. The newsletter's send skips every address on those domains
+  (`isExampleAddress` from `@spy4x/email/address`), so a blog post's mail never goes to a fake
+  subscriber. The pending confirm requests (`subscription_requests`) are wiped with the job table
+  that would mail them.
+- **The catalog is demo data**: the wipe empties its tables (its photos' files are queued with
+  every other image's), and the seed writes the sample catalog again
+  (`libs/server/catalog/sample-catalog.ts`): three categories and six items with colours, sizes and
+  a size chart, one of them sold out and one a draft, without photos, and four sources. No
+  tracking link is seeded: the first "Copy link" makes one. The template's own site
+  keeps the catalog off; a product that turns it on and runs the demo gets the sample items.
+- **The seed** writes what a visitor should see. A new feature gets fake rows in
+  `apps/worker/demo/fake-data.ts` and `seed.ts`, written through the feature's own repository, so
+  the population and every new account's sample groups show it. A renamed or dropped column breaks
+  the seed's raw SQL, which writes the past the app's own code cannot (`apps/worker/demo/history.ts`
+  and `seed.ts`: `users`, `auth_*`, `group_members`, `audit_events`, `subscriptions`,
+  `billing_*`, `subscriber*`, `user_totp`, `backup_status`); fix it there. The seed dates rows after
+  writing them, so it then renumbers the `audit_events` and `auth_audits` rows written since it
+  started to follow their times (`orderIdsByTime`), because feeds sort by id.
+- **Data exports** need no change: the wipe empties `data_exports`, the seed writes none (a ready
+  row would have no file behind it), and the nightly clean-up deletes the files the wipe left in
+  the file store. A new table that holds a person's data adds a section to the export instead
+  ([data-export.md](data-export.md)).
+- **Profile pictures** (#228) need no change either: the seed gives nobody a picture, so every
+  avatar shows initials, and the wipe queues every picture a visitor uploaded for the clean-up,
+  with the original and every processed width in `images` and `image_variants` (#464).
+- **The tests**: `tests/integration/demo-seed.integration.test.ts` checks that the wipe leaves
+  every table but the kept ones empty, that the seed's counts match the fake data, what a new
+  account's sample groups hold, what the admin's dashboard, billing and newsletter read from
+  the seed, and that a real subscriber survives two nightly resets beside the same 90 fake ones.
+  Run it.
+
+## Seed's own blog posts
+
+seedsaas.com's posts are Markdown files in `libs/server/blog/seed-posts/`, one per post and
+language, named `<slug>.md`, with YAML front matter; the folder's `README.md` shows every field.
+They are reviewed in pull requests like code, and a product built on Seed deletes them
+([start-a-product.md](start-a-product.md)).
+
+- **Loaded only in demo mode.** The worker loads them at every start when `DEMO_MODE=true`
+  (`loadDemoBlogPosts` in `libs/server/blog/seed-posts.ts`), so a deploy brings their latest
+  version; with demo mode off it reads no file. `deno task db:seed` loads them too, in
+  development and in the demo. A broken file is logged and loads nothing; `deno task check`
+  refuses one first (`seed-posts.test.ts`).
+- **Matched by slug.** A missing post is created, one that differs from its file is changed to
+  match it as a new version, and one that matches is left alone, so loading twice writes nothing.
+  A post no file names stays. The file wins: an operator's edit to one of these posts in the
+  admin app is undone at the next start, and after "Change URL" on one the next start creates
+  the file's post again under its own slug.
+- **Dated by `publishAt`.** A date in the past publishes the post with that date; one in the
+  future schedules it, and the `blog.publish` job publishes it then.
+- **Mailed only when asked.** `newsletter: true` stores the `news` list, and the `blog.publish`
+  job emails the post once when it is live. `newsletter: false`, the default, stores no list and
+  sets `newsletter_sent_at`, so the post is never mailed, also when a list is added later.
+- **Translations** name their original's slug in `translationOf`, and are linked through
+  `translation_of`.

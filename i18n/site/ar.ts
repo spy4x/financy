@@ -1,0 +1,1082 @@
+import type { Catalog } from "@spy4x/platform/universal/i18n"
+
+export default {
+  "TryEntry.label": "جرّب العرض الحي",
+  "TryEntry.line": "لا حاجة إلى إنشاء حساب. تحصل على حساب ضيف فيه بيانات تجريبية، ويُمسح كل ليلة.",
+  "SiteNav.features": "الميزات",
+  "SiteNav.blog": "المدونة",
+  "SiteNav.compare": "المقارنة",
+  "SiteNav.pricing": "الأسعار",
+  "SiteNav.hire": "تعاقد معي",
+  "SiteNav.hireHint": "(يفتح antonshubin.com)",
+  "SiteNav.github": "GitHub",
+  "SiteFrame.skip": "انتقل إلى المحتوى",
+  "SiteFrame.tryDemo": "جرّب العرض",
+  "SiteFooter.pitch": "أساس منتجك SaaS، مفتوح المصدر بترخيص MIT.",
+  "SiteFooter.builtBy": "يبنيه <author>{name}</author> علنًا. ترخيص MIT.",
+  "SiteFooter.contact": "تواصل",
+  "SiteFooter.product": "المنتج",
+  "SiteFooter.admin": "لوحة الإدارة",
+  "SiteFooter.signIn": "تسجيل الدخول",
+  "SiteFooter.openSource": "مفتوح المصدر",
+  "SiteFooter.source": "الشيفرة على GitHub",
+  "SiteFooter.issue": "أبلغ عن مشكلة",
+  "SiteFooter.quickStart": "البدء السريع",
+  "SiteFooter.apiDocs": "توثيق API",
+  "SiteFooter.docs": "التوثيق",
+  "SiteFooter.changelog": "سجل التغييرات",
+  "SiteFooter.status": "ما يعمل اليوم",
+  "SiteFooter.company": "الشركة",
+  "SiteFooter.hire": "تعاقد معي لبناء MVP",
+  "SiteFooter.about": "عن أنطون",
+  "SiteFooter.privacy": "الخصوصية",
+  "SiteFooter.terms": "الشروط",
+  "FooterNewsletter.title": "النشرة البريدية",
+  "FooterNewsletter.lead":
+    "رسالة قصيرة كلما تغيّر {site}. تؤكد اشتراكك مرة واحدة عبر البريد، وتلغيه بنقرة واحدة.",
+  "NewsletterForm.email": "البريد الإلكتروني",
+  "NewsletterForm.placeholder": "you@example.com",
+  "NewsletterForm.submit": "اشترك",
+  "LegalPage.englishOnly": "هذه الصفحة متاحة بالإنجليزية فقط.",
+  "LegalPage.updated": "آخر تحديث: {date}",
+  "LegalPage.noticeTitle": "نقطة انطلاق، لا استشارة قانونية",
+  "LegalPage.notice":
+    "تخص هذه الصفحة العرض الحي لـ{site}. إذا بنيت منتجًا على {site}، فعدّلها لتناسب ما يخزّنه منتجك وما يفعله، واطلب من محامٍ مراجعتها.",
+  "OnThisPage.title": "في هذه الصفحة",
+  "Blog.name": "مدونة {site}",
+  "ErrorPage.notFoundTitle": "الصفحة غير موجودة",
+  "ErrorPage.notFoundDescription": "لا توجد صفحة على هذا العنوان.",
+  "ErrorPage.errorTitle": "حدث خطأ ما",
+  "ErrorPage.errorDescription": "لم نتمكن من تحميل هذه الصفحة. حاول مرة أخرى بعد دقيقة.",
+  "ErrorPage.notFoundLead":
+    "ربما الرابط قديم، أو نُقلت الصفحة إلى مكان آخر. هذه هي الوجهات التي يقصدها معظم الزوار:",
+  "ErrorPage.home": "العودة إلى الصفحة الرئيسية",
+  "ErrorPage.features": "استعرض الميزات",
+  "ErrorPage.hire": "تعاقد معي لبناء MVP الخاص بك",
+  "ErrorPage.report": "إذا أوصلك إلى هنا رابطٌ في هذا الموقع، <issues>فأخبرني على GitHub</issues>.",
+  "ErrorPage.retry": "إعادة المحاولة",
+  "SubscribeFailure.subscribe": "تعذّر إرسال الرابط",
+  "SubscribeFailure.confirm": "تعذّر تأكيد اشتراكك. حاول مرة أخرى بعد دقيقة.",
+  "SubscribeFailure.unsubscribe": "تعذّر إلغاء اشتراكك. حاول مرة أخرى بعد دقيقة.",
+  "SubscribeForm.sentTitle": "تفقّد بريدك الوارد",
+  "SubscribeForm.sentText": "أرسلنا إليك رابطًا لتأكيد اشتراكك، وهو صالح لثلاثة أيام.",
+  "SubscribeForm.title": "تلقَّ الأخبار عبر البريد",
+  "SubscribeForm.intro":
+    "أدخل بريدك الإلكتروني وسنرسل إليك رابطًا لتأكيده. وفي كل رسالة رابط لإلغاء الاشتراك.",
+  "SubscribeForm.email": "البريد الإلكتروني",
+  "SubscribeForm.sending": "جارٍ الإرسال…",
+  "SubscribeForm.submit": "اشترك",
+  "SubscriptionConfirm.askAgain": "اطلب رابطًا جديدًا",
+  "SubscriptionConfirm.doneTitle": "تم اشتراكك",
+  "SubscriptionConfirm.doneText":
+    "شكرًا لك! رسالة الترحيب في طريقها إليك، وفيها رابط لإلغاء الاشتراك.",
+  "SubscriptionConfirm.expiredTitle": "انتهت صلاحية هذا الرابط",
+  "SubscriptionConfirm.expiredText": "روابط التأكيد صالحة لثلاثة أيام. اطلب رابطًا جديدًا.",
+  "SubscriptionConfirm.invalidTitle": "هذا الرابط لا يعمل",
+  "SubscriptionConfirm.invalidText": "افتح الرابط من الرسالة مرة أخرى، أو اطلب رابطًا جديدًا.",
+  "SubscriptionConfirm.title": "أكّد اشتراكك",
+  "SubscriptionConfirm.question": "هل نرسل الأخبار إلى {email}؟",
+  "SubscriptionConfirm.questionNoEmail": "هل نرسل الأخبار إلى بريدك الإلكتروني؟",
+  "SubscriptionConfirm.confirming": "جارٍ التأكيد…",
+  "SubscriptionConfirm.submit": "تأكيد",
+  "Unsubscribe.doneTitle": "أُلغي اشتراكك",
+  "Unsubscribe.doneText": "لن نرسل أي أخبار أخرى إلى هذا البريد الإلكتروني.",
+  "Unsubscribe.again": "اشترك من جديد",
+  "Unsubscribe.invalidText":
+    "ربما أُلغي اشتراك هذا البريد الإلكتروني من قبل. افتح الرابط من أحدث رسالة.",
+  "Unsubscribe.title": "إلغاء الاشتراك",
+  "Unsubscribe.question": "هل نتوقف عن إرسال الأخبار إلى {email}؟",
+  "Unsubscribe.questionNoEmail": "هل نتوقف عن إرسال الأخبار إلى بريدك الإلكتروني؟",
+  "Unsubscribe.unsubscribing": "جارٍ إلغاء الاشتراك…",
+  "Unsubscribe.submit": "إلغاء الاشتراك",
+  "NewsletterPage.title": "النشرة البريدية",
+  "NewsletterPage.description": "أكّد اشتراكك في النشرة البريدية لـ{site} أو ألغِه.",
+  "NewsletterPage.subscribeTitle": "النشرة البريدية لـ{site}: أخبار قصيرة عبر البريد",
+  "NewsletterPage.subscribeDescription":
+    "رسالة قصيرة كلما تغيّر {site}: ما أُطلق، وما تعطّل، وما تعلّمته أثناء بنائه. تأكيد مزدوج للاشتراك، وإلغاؤه بنقرة واحدة.",
+  "NewsletterPage.about": "عن النشرة البريدية",
+  "NewsletterPage.heading": "تلقَّ رسالة قصيرة كلما جدّ جديد في {site}",
+  "NewsletterPage.lead": "ما أُطلق، وما تعطّل، وما تعلّمته أثناء البناء، بقلمي. ولا شيء غير ذلك.",
+  "NewsletterPage.promiseConfirm": "تؤكد اشتراكك أولًا عبر رابط، فلا يستطيع أحد غيرك أن يشركك.",
+  "NewsletterPage.promiseUnsubscribe": "في كل رسالة رابط يلغي اشتراكك بنقرة واحدة.",
+  "NewsletterPage.promisePrivate": "نستخدم بريدك الإلكتروني لهذه النشرة فقط، ولا شيء غيرها.",
+  "NewsletterOff.title": "النشرة البريدية لـ{site}",
+  "NewsletterOff.noticeTitle": "النشرة البريدية متوقفة",
+  "NewsletterOff.notice":
+    "لا يقبل هذا الموقع اشتراكات جديدة حاليًا، ولا يرسل النشرة البريدية. ستعمل روابط التأكيد وإلغاء الاشتراك من جديد عند استئنافها.",
+  "NewsletterOff.lead":
+    "لتعرف متى يتغيّر {site}، تابع إصداراته على GitHub. أو اطّلع على ما يقدّمه اليوم.",
+  "NewsletterOff.releases": "الإصدارات على GitHub",
+  "CtaBand.title": "شاهده يعمل خلال دقيقة",
+  "CtaBand.lead":
+    "العرض هو التطبيق نفسه الذي تحصل عليه من اليوم الأول. افتحه من دون إنشاء حساب: يبدأ حساب الضيف لديك ببيانات تجريبية.",
+  "Founders.title": "لست مطوّرًا؟ سأبني منتجك على Seed.",
+  "Founders.text":
+    "أنا أنطون، وأنا من يبني Seed. يتعاقد معي المؤسسون لتحويل فكرة إلى منتج حي يستطيع الناس التسجيل فيه والدفع مقابله. ولأن التسجيل والمجموعات والمدفوعات جاهزة مسبقًا، تذهب ميزانيتك إلى ما يميّز منتجك.",
+  "Founders.cta": "اعرف كيف يتم العمل وكم يكلّف",
+  "Architecture.webApp": "تطبيق الويب",
+  "Architecture.website": "الموقع",
+  "Architecture.api": "API",
+  "Architecture.postgres": "Postgres",
+  "Architecture.worker": "العامل",
+  "Architecture.mail": "البريد والإشعارات",
+  "Architecture.webAppNote": "Preact، في المتصفح",
+  "Architecture.websiteNote": "Fresh، مثل هذه الصفحة",
+  "Architecture.apiNote": "Hono على Deno",
+  "Architecture.postgresNote": "كل تغيير",
+  "Architecture.workerNote": "المهام البطيئة",
+  "Architecture.mailNote": "والتنظيف",
+  "Architecture.webAppNoteShort": "Preact",
+  "Architecture.websiteNoteShort": "Fresh",
+  "Architecture.events": "الأحداث، في المعاملة نفسها",
+  "Architecture.caption": "كل شيء على خادم واحد، خلف Traefik، مع Valkey وGrafana",
+  "Architecture.captionTop": "كل شيء على خادم واحد، خلف Traefik،",
+  "Architecture.captionBottom": "مع Valkey وGrafana",
+  "Architecture.label":
+    "كيف تترابط أجزاء Seed: تطبيق الويب والموقع يتصلان بالـAPI، والـAPI يكتب كل تغيير وأحداثه في Postgres، والعامل يرسل البريد والإشعارات انطلاقًا من تلك الأحداث. وكل ذلك يعمل على خادم واحد.",
+  "Home.title": "Seed: قالب SaaS المجاني المبني على معايير الويب",
+  "Home.description":
+    "قالب SaaS المجاني بترخيص MIT، مبني على معايير الويب: تسجيل دخول مع التحقق بخطوتين، ومجموعات بأدوار، وفوترة Stripe لكل عضو، وتحديث فوري. يعمل على Deno.",
+  "HomeProof.tests": "ملفات اختبار في التطبيقات والمكتبات، وتعمل كلها في CI",
+  "HomeProof.licence": "الترخيص: بلا حساب وبلا دفع",
+  "HomeStatus.signIn":
+    "إنشاء حساب، وتسجيل الدخول، وتأكيد البريد الإلكتروني، وإعادة تعيين كلمة المرور، وتسجيل الدخول عبر Google وGitHub، ومفاتيح المرور، وروابط الدخول عبر البريد، والتحقق بخطوتين عبر تطبيق مصادقة",
+  "HomeStatus.guests":
+    "حسابات الضيوف: جرّب التطبيق بنقرة واحدة، واحتفظ بالحساب بإضافة طريقة لتسجيل الدخول",
+  "HomeStatus.groups": "مجموعات بأعضاء وأدوار ودعوات ونقل للملكية",
+  "HomeStatus.export": "تصدير مجموعة إلى ملف، واستيراده كمجموعة جديدة",
+  "HomeStatus.attachments": "إرفاق الصور وملفات PDF بالملاحظات، ضمن المساحة التي تتيحها كل خطة",
+  "HomeStatus.billing": "فوترة لكل عضو مع فترات تجريبية، عبر Stripe",
+  "HomeStatus.account":
+    "صورة الملف الشخصي، وقائمة الأجهزة المسجّل دخولها، وتنزيل نسخة من بياناتك، وحذف الحساب مع مهلة 7 أيام للتراجع",
+  "HomeStatus.tokens": "رموز API مميزة شخصية",
+  "HomeStatus.realtime": "التحديث الفوري، والتطبيق دون اتصال، وإشعارات الويب",
+  "HomeStatus.telegram": "بوت Telegram: إشعارات في محادثة، وأوامرك الخاصة في ملف واحد",
+  "HomeStatus.admin": "لوحة الإدارة",
+  "HomeStatus.website": "عامل صندوق الصادر، والنشرة البريدية، وهذا الموقع",
+  "HomeStatus.languages": "التطبيق ولوحة الإدارة وهذا الموقع بتسع لغات: {languages}",
+  "HomeStatus.notBuiltAndroid": "تطبيق Android على متجر Play",
+  "HomeStatus.notBuiltDesktop": "تطبيق لسطح المكتب على Windows وmacOS وLinux",
+  "HomeFaq.tryQuestion": "هل يمكنني تجربته من دون حساب؟",
+  "HomeFaq.tryAnswer":
+    "نعم. يفتح زر «جرّب العرض الحي» التطبيق في حساب ضيف فيه بيانات تجريبية، دون بريد إلكتروني أو كلمة مرور. يمكنك إضافة طريقة لتسجيل الدخول، لكن العرض يُمسح كل ليلة على أي حال. أما Seed نفسه فلا يحتاج إلى أي حساب: انسخه من GitHub.",
+  "HomeFaq.freeQuestion": "هل Seed مجاني فعلًا؟",
+  "HomeFaq.freeAnswer":
+    "نعم. ترخيصه MIT: استخدمه في أي عدد من المنتجات، تجارية أو غير تجارية، وانشر نسختك المعدّلة، دون الحاجة إلى حساب. لا تدفع إلا ثمن الخادم الذي تستأجره والخدمات التي تفعّلها، مثل Stripe أو مزوّد البريد الإلكتروني.",
+  "HomeFaq.stackQuestion": "لماذا Deno وPreact بدلًا من Next.js؟",
+  "HomeFaq.stackAnswer":
+    "لأنهما مبنيّان على معايير الويب (<code>fetch</code> و<code>Request</code> وWeb Crypto ووحدات ES)، ويبدآن بسرعة، ويحتاجان إلى القليل من التبعيات، فيقلّ ما يحتاج إلى تحديث وما قد يتعطّل. وإذا كنت تعمل في منظومة Next.js، فقالب مبني على Next.js سيناسبك أكثر، و<compare>المقارنة</compare> تذكر قوالب جيدة منها.",
+  "HomeFaq.clientQuestion": "هل يمكنني استخدامه في مشاريع العملاء؟",
+  "HomeFaq.clientAnswer":
+    "نعم. ترخيص MIT يسمح بذلك، وهكذا أستخدمه أنا أيضًا. ولا يحتاج عميلك إلى ترخيص خاص به.",
+  "HomeFaq.productionQuestion": "هل هو جاهز للإنتاج؟",
+  "HomeFaq.productionAnswer":
+    "الأجزاء المدرجة تحت «يعمل اليوم» لها اختبارات في CI: كل طلب دمج يشغّل اختبارات تسجيل الدخول والملف الشخصي والملاحظات والمجموعات، وتعمل المجموعة الكاملة بعد كل دمج. Seed صالح للاستخدام اليوم وما زال ينمو، فاقرأ قائمة الحالة قبل أن تعتمد على أي جزء.",
+  "HomeHero.badge": "يعمل على Deno 2",
+  "HomeHero.title": "أساس منتج SaaS الخاص بك، مبنيّ وجاهز.",
+  "HomeHero.lead":
+    "Seed هو قالب SaaS المجاني المبني على معايير الويب، فيه تسجيل الدخول مع التحقق بخطوتين، ومجموعات بأدوار، وفوترة Stripe لكل عضو، وتحديث فوري، وتطبيق يعمل دون اتصال، ولوحة إدارة. ترخيصه MIT، ويعمل اليوم على Deno، وتنشره باستخدام Docker Compose على خادم Linux واحد تستأجره.",
+  "HomeHero.github": "عرض على GitHub",
+  "HomeHero.status": "Seed صالح للاستخدام اليوم، ويُبنى علنًا: <status>اطّلع على ما يعمل</status>.",
+  "HomeHero.quickStart": "البدء السريع",
+  "HomeHero.demoTitle": "Seed في دقيقة، من git clone إلى لوحة الإدارة",
+  "HomeHero.demoCaption":
+    "عرض مدته دقيقة واحدة مع ترجمة وموسيقى: استنسخ، شغّل، اكتب ملاحظة، افتح لوحة الإدارة.",
+  "HomeHero.aiPrompt":
+    "أنشئ منتجي الجديد «Acme» انطلاقًا من https://github.com/spy4x/seed وشغّله محليًا",
+  "HomeFeatures.billingAlt":
+    "خطة مجموعة تجريبية في تطبيق العرض، بأسعار العرض التوضيحية: خطة Pro مع تاريخ تجديدها، 36.00 € شهريًا، لأربعة أعضاء بسعر 9.00 € لكل عضو، بمن فيهم المالك.",
+  "HomeFeatures.eyebrow": "ما تحصل عليه",
+  "HomeFeatures.title": "كل ما تحتاجه قبل ميزتك الأولى",
+  "HomeFeatures.lead":
+    "كل جزء أدناه يعمل اليوم ومُختبَر في CI. تسجيل الدخول عبر Google وGitHub وفوترة Stripe تحتاج إلى مفاتيحك الخاصة، لذا فهي معطّلة في العرض.",
+  "HomeFeatures.signInTitle": "تسجيل الدخول، جاهز",
+  "HomeFeatures.signInLink": "كيف يعمل تسجيل الدخول",
+  "HomeFeatures.signInAlt":
+    "صفحة الأمان في الملف الشخصي: كلمة المرور، وزر «إضافة مفتاح مرور»، والتحقق بخطوتين مفعّلًا، وبداية قائمة الأجهزة المسجّلة الدخول.",
+  "HomeFeatures.signInText":
+    "البريد الإلكتروني وكلمة المرور مع رموز التحقق، وإعادة تعيين كلمة المرور، وتسجيل الدخول عبر Google وGitHub، ومفاتيح المرور، وروابط الدخول عبر البريد، وحسابات الضيوف، والتحقق بخطوتين عبر تطبيق مصادقة. وجلسات يمكنك رؤيتها وإنهاؤها.",
+  "HomeFeatures.billingTitle": "فوترة لكل عضو",
+  "HomeFeatures.billingLink": "كيف تعمل الفوترة",
+  "HomeFeatures.billingText":
+    "اشتراكات Stripe لكل مجموعة: خطة مجانية بحدود، وخطة مدفوعة بسعر لكل عضو، وفترات تجريبية، ومهلة سماح عند رفض البطاقة. ويؤكد المالك السعر قبل كل دعوة.",
+  "HomeFeatures.realtimeTitle": "تحديث فوري وعمل دون اتصال",
+  "HomeFeatures.realtimeLink": "كيف يعمل التحديث الفوري والعمل دون اتصال",
+  "HomeFeatures.realtimeText":
+    "تصل التغييرات إلى كل علامة تبويب مفتوحة عبر WebSocket. يُثبَّت التطبيق على الجهاز، ويفتح دون شبكة، ويحفظ التعديلات في قائمة انتظار، ويعرض التعارض بدلًا من الكتابة فوق عمل غيرك.",
+  "HomeFeatures.groupsTitle": "مجموعات من اليوم الأول",
+  "HomeFeatures.groupsLink": "كيف تعمل المجموعات",
+  "HomeFeatures.groupsAlt":
+    "أعضاء مجموعة مع دور كل منهم، وزر لدعوة الآخرين، وقائمة أحد الأعضاء مفتوحة: «تعيين قارئًا»، «تعيين مسؤولًا»، «إزالة من المجموعة».",
+  "HomeFeatures.groupsText":
+    "يحصل كل حساب على مجموعة عند إنشائه. ادعُ الآخرين، وامنحهم أدوارًا من قارئ إلى مالك، وانقل الملكية، واستعد أي مجموعة محذوفة خلال 30 يومًا. ولكل مجموعة نظرة عامة على أرقامها الرئيسية.",
+  "HomeFeatures.adminTitle": "لوحة إدارة",
+  "HomeFeatures.adminLink": "جولة في لوحة الإدارة",
+  "HomeFeatures.adminText":
+    "يبحث المشغّلون عن أي شخص، ويديرون المجموعات، ويستردّون المدفوعات، ويتابعون سلامة النظام. تعمل اللوحة على نطاق خاص بها، والإجراءات الحساسة تطلب التأكيد أولًا، وكل إجراء يُسجَّل.",
+  "HomeFeatures.websiteTitle": "موقع عام",
+  "HomeFeatures.websiteLink": "ما يتضمنه الموقع",
+  "HomeFeatures.websiteText":
+    "هذا الموقع نفسه: يُعرض من الخادم، ويعمل حتى مع تعطيل JavaScript، بتسع لغات، مع أسعار مأخوذة من كتالوج خططك، وصفحات قانونية، ونشرة بريدية بتأكيد مزدوج.",
+  "HomeFeatures.all": "كل الميزات، مع لقطات الشاشة وحالة كل منها",
+  "HomeServer.eyebrow": "يعمل على خادم واحد تستأجره",
+  "HomeServer.title": "خادم واحد، وأمر <code>docker compose</code> واحد، ولا فواتير مفاجئة.",
+  "HomeServer.text":
+    "يعمل Seed على أي خادم Linux تستأجره. يشغّل Compose الـAPI والعامل وتطبيق الويب وPostgres وValkey وTraefik مع شهادات تلقائية. تذهب المقاييس والسجلات إلى VictoriaMetrics وVictoriaLogs مع Grafana فوقهما، وتحفظ حاوية النسخ الاحتياطي نسخة مشفّرة من قاعدة البيانات كل يوم. ويمكن لعدة منتجات أن تتشارك خادمًا واحدًا. لا شيء يحاسبك على كل طلب، لذا لن تكلّفك ذروة الزيارات شيئًا إضافيًا.",
+  "HomeServer.skip":
+    "تجاوز Seed إن كنت تريد الدوال بلا خادم (serverless) أو Vercel: فهو مصمّم لخادم تتحكم فيه.",
+  "HomeQuickStart.title": "تشغيل محلي بأربعة أوامر",
+  "HomeQuickStart.needs": "تحتاج إلى Deno 2 وDocker، أما GitHub CLI فاختياري.",
+  "HomeQuickStart.text":
+    "ينسخ <init>init</init> ملف البيئة، ويولّد كل الأسرار ومفاتيح إشعارات الويب، ويشغّل <dev>dev</dev> خادم Traefik وكل ما سواه. ثم افتح <url>http://app.localhost</url>. يشرح ملف <readme>README</readme> كل الإعدادات وطريقة النشر.",
+  "HomeQuickStart.agent": "أو اطلب من وكيل الذكاء الاصطناعي: <prompt></prompt>.",
+  "HomeQuickStart.terminal": "الطرفية",
+  "HomeStatus.eyebrow": "الحالة بصراحة",
+  "HomeStatus.title": "أين وصل المشروع اليوم",
+  "HomeStatus.lead": "Seed صالح للاستخدام اليوم، ويُبنى علنًا. هذا بالضبط ما يعمل وما لا يعمل بعد.",
+  "HomeStatus.works": "يعمل اليوم",
+  "HomeStatus.notBuilt": "لم يُبنَ بعد",
+  "HomeStatus.follow": "تابع التقدم على GitHub",
+  "HomeWho.eyebrow": "من يبني Seed",
+  "HomeWho.title": "يبنيه مهندس واحد، لمشاريع عملاء حقيقية",
+  "HomeWho.text":
+    "أنا أنطون شوبين، مهندس full-stack أول وقائد تقني، أعمل مستقلًا منذ 2013. Seed هو الأساس الذي ظللت أعيد بناءه لعملائي، وقد جمعته في مستودع واحد. أستخدمه في مشاريع MVP مدفوعة، لذا يُصلَح فور أن يتعطل. وإذا كان ينقصه شيء يحتاجه منتجك، فافتح مشكلة على GitHub أو راسلني.",
+  "HomeWho.offer": "عرضي لبناء MVP على antonshubin.com",
+  "HomeWho.about": "عني",
+  "HomeWho.upwork": "ملفي على Upwork",
+  "HomeWho.issues": "المشكلات على GitHub",
+  "HomeNewsletter.title": "تلقَّ رسالة قصيرة كلما جدّ جديد في {site}",
+  "HomeNewsletter.lead":
+    "ما أُطلق، وما تعطّل، وما تعلّمته أثناء البناء. لا رسائل غير ذلك، ويمكنك إلغاء الاشتراك بنقرة واحدة.",
+  "HomeNewsletter.hint": "ستؤكد اشتراكك عبر البريد أولًا.",
+  "HomeFaq.eyebrow": "أسئلة",
+  "HomeFaq.title": "قبل أن تبدأ",
+  "Pricing.title": "أسعار Seed: قالب SaaS جاهز، مجاني بترخيص MIT",
+  "Pricing.description":
+    "Seed مجاني بترخيص MIT، ولا توجد منه نسخة مدفوعة. تشغيله يكلّفك خادم Linux واحدًا بسعر مزوّد الاستضافة، إضافة إلى أي خدمات تفعّلها.",
+  "Pricing.crumb": "الأسعار",
+  "PricingFaq.paidQuestion": "هل توجد نسخة مدفوعة من Seed؟",
+  "PricingFaq.paidAnswer":
+    "لا. لا توجد باقة Pro، ولا مفتاح ترخيص، ولا ميزة محجوبة. وإذا أردت مساعدة، فتعاقد معي: وقتي هو الشيء الوحيد الذي أبيعه.",
+  "PricingFaq.serverQuestion": "كم يكلّف الخادم؟",
+  "PricingFaq.serverAnswer":
+    "ما يطلبه مزوّد الاستضافة مقابل جهاز Linux واحد عليه Docker. ليس لـSeed أي رسوم خاصة به لكل مستخدم أو لكل طلب.",
+  "PricingFaq.oweQuestion": "هل أدين بشيء إذا حقق منتجي أرباحًا؟",
+  "PricingFaq.oweAnswer": "لا. لا يشترط ترخيص MIT إلا أن تُبقي إشعار حقوق النشر والترخيص مع الشيفرة.",
+  "PricingFaq.mvpQuestion": "من أين جاء مبلغ {price}؟",
+  "PricingFaq.mvpAnswer":
+    "إنه سعر البداية لمنتج MVP نموذجي: التسجيل، والمدفوعات، وواجهة API، ولوحة إدارة، والنشر. يعتمد عرض السعر على ميزات منتجك، ويُثبَّت قبل بدء العمل.",
+  "PricingFaq.mvpLink": "كيف يتم بناء MVP",
+  "PricingHero.eyebrow": "الأسعار",
+  "PricingHero.title": "Seed مجاني. وهذه تكلفة تشغيله.",
+  "PricingHero.lead":
+    "Seed قالب SaaS جاهز ومجاني بترخيص MIT، بلا نسخة مدفوعة وبلا حساب. لا تدفع إلا ثمن خادم واحد تستأجره، والخدمات الاختيارية مثل Stripe.",
+  "PricingFaq.title": "عن السعر",
+  "PricingWays.eyebrow": "ما تدفعه",
+  "PricingWays.title": "ثلاث طرق لاستخدام Seed، وتكلفة كل منها",
+  "PricingWays.lead":
+    "ليس لـSeed نسخة مدفوعة ولا مفتاح ترخيص. أكسب رزقي من بناء منتجات العملاء عليه، لذا تبقى الشيفرة مجانية.",
+  "PricingWays.useTitle": "استخدم Seed بنفسك",
+  "PricingWays.useUnit": "ترخيص MIT، بلا حساب",
+  "PricingWays.useText":
+    "الشيفرة كاملة بترخيص MIT، مع كل الميزات وكل التحديثات. لأي عدد من المنتجات، تجارية أو غير تجارية، بما فيها مشاريع العملاء.",
+  "PricingWays.runTitle": "شغّله في بيئة الإنتاج",
+  "PricingWays.runPrice": "خادم واحد",
+  "PricingWays.runUnit": "بسعر مزوّد الاستضافة",
+  "PricingWays.runAction": "اقرأ دليل النشر",
+  "PricingWays.runText":
+    "يعمل Seed على خادم Linux واحد تستأجره، ويمكن لعدة منتجات أن تتشاركه. أما Stripe ومزوّد البريد وتسجيل الدخول عبر Google أو GitHub فاختيارية، وكل منها يحاسبك مباشرة.",
+  "PricingWays.hireTitle": "دعني أبني MVP الخاص بك عليه",
+  "PricingWays.hirePrice": "ابتداءً من {price}",
+  "PricingWays.hireUnit": "من {weeks} حتى إطلاق المنتج",
+  "PricingWays.hireAction": "اعرف كيف يتم العمل",
+  "PricingWays.hireText":
+    "منتجك من الفكرة حتى الإطلاق، على خوادم مسجّلة باسمك. وعرض سعر لنطاق عملك قبل بدء أي عمل.",
+  "PricingWays.other":
+    "أسعار المساعدة الأخرى معلنة أيضًا: جلسة استراتيجية مدتها 60 دقيقة بسعر {session}، والعمل المستمر بسعر {hourly} للساعة أو ابتداءً من {retainer} شهريًا. السعر الذي يبدأ بـ«ابتداءً من» يتحول إلى عرض سعر ثابت بعد مكالمة مجانية وقبل بدء أي عمل، وأي تغيير في النطاق يحصل على عرض سعر خاص به أولًا.",
+  "Hire.weeks": {
+    "zero": "{count} أسبوع",
+    "one": "أسبوع واحد",
+    "two": "أسبوعين",
+    "few": "{count} أسابيع",
+    "many": "{count} أسبوعًا",
+    "other": "{count} أسبوع",
+  },
+  "DemoPlans.eyebrow": "الفوترة تعمل",
+  "DemoPlans.title": "خطط العرض: مثال على الفوترة التي تحصل عليها",
+  "DemoPlans.noticeTitle": "هذه ليست أسعار Seed",
+  "DemoPlans.notice":
+    "هذه خطط تطبيق العرض، مقروءة من كتالوج خططه، لتجرّب الدفع والفترات التجريبية والفوترة لكل عضو. يبدأ العرض بحساب ضيف، وتطلب صفحة الدفع إضافة طريقة لتسجيل الدخول أولًا. يحدد منتجك خططه الخاصة في ملف واحد، <code>libs/domain/billing</code>.",
+  "DemoPlans.choose": "جرّبها في العرض",
+  "DemoPlans.chooseName": "جرّبها في العرض: {name}",
+  "DemoPlans.recommended": "موصى بها",
+  "DemoPlans.member": "عضو",
+  "DemoPlans.trial": {
+    "zero": "أول {count} يوم مجانًا",
+    "one": "اليوم الأول مجانًا",
+    "two": "أول يومين مجانًا",
+    "few": "أول {count} أيام مجانًا",
+    "many": "أول {count} يومًا مجانًا",
+    "other": "أول {count} يوم مجانًا",
+  },
+  "DemoPlans.start": "في العرض تبدأ بالخطة المجانية، وتغيّر الخطة من صفحة الفوترة في مجموعتك.",
+  "DemoPlan.freeDescription": "للتجربة والاستكشاف.",
+  "DemoPlan.freeNotes": "حتى 10 ملاحظات",
+  "DemoPlan.freeMembers": "حتى 3 أعضاء",
+  "DemoPlan.freeFiles": "100 ملف، بسعة إجمالية 200 ميغابايت",
+  "DemoPlan.proDescription": "لمجموعة تعتمد عليه في عملها.",
+  "DemoPlan.proBilled": "يُحتسب السعر لكل عضو، بمن فيهم المالك",
+  "DemoPlan.proNotes": "ملاحظات بلا حدود",
+  "DemoPlan.proFiles": "ملفات بلا حدود، بسعة إجمالية 10 غيغابايت",
+  "DemoPlan.proMembers": "حتى 50 عضوًا",
+  "DemoPlan.proRoles": "ترقية الأعضاء إلى محرر أو مسؤول",
+  "FeatureTierSettled.eyebrow": "محسوم من أجلك",
+  "FeatureTierSettled.title": "قالب SaaS جاهز، فيه المجموعات والفوترة موصولة مسبقًا",
+  "FeatureTierSettled.lead":
+    "الحسابات والمجموعات والمال: الأجزاء التي يحتاجها كل منتج قبل ميزته الأولى، وهي أسهلها وقوعًا في الخطأ.",
+  "FeatureTierSettled.status":
+    "مُختبَرة في CI. تسجيل الدخول عبر Google وGitHub وStripe تحتاج إلى مفاتيحك الخاصة، لذا فهي معطّلة في العرض.",
+  "FeatureSignIn.nav": "الحسابات وتسجيل الدخول",
+  "FeatureSignIn.title": "تسجيل الدخول، جاهز",
+  "FeatureSignIn.lead":
+    "ينشئ الناس حساباتهم ببريد إلكتروني وكلمة مرور، ويؤكدون البريد برمز. ويمكنهم إعادة تعيين كلمة مرور منسية، أو المتابعة عبر Google أو GitHub، أو تسجيل الدخول بمفتاح مرور، أو تلقّي رابط دخول عبر البريد ينشئ لهم حسابًا أيضًا. أو يجرّبون التطبيق أولًا بحساب ضيف ويضيفون طريقة لتسجيل الدخول لاحقًا. ويضيف تطبيق المصادقة التحقق بخطوتين. يرى كل شخص جميع الأجهزة المسجّل دخوله عليها، ويمكنه تسجيل الخروج من الأجهزة الأخرى. وتغيير طريقة تسجيل الدخول يتطلب إثبات الهوية ويرسل رسالة بريد.",
+  "FeatureSignIn.fact1":
+    "كلمات المرور مُجزّأة بخوارزمية PBKDF2-SHA-256 عبر Web Crypto، بـ600,000 دورة افتراضيًا",
+  "FeatureSignIn.fact2": "ملفات تعريف ارتباط موقّعة للجلسات، وسجل تدقيق لكل حدث تسجيل دخول",
+  "FeatureSignIn.fact3": "رموز API مميزة شخصية، لا تُخزَّن إلا كقيم مُجزّأة بمفتاح",
+  "FeatureSignIn.fact4":
+    "مفاتيح المرور: لا يُخزَّن إلا المفتاح العام، وكل تحدٍّ لتسجيل الدخول يعمل مرة واحدة",
+  "FeatureSignIn.fact5":
+    "روابط الدخول السحرية: رابط واحد يسجّل الدخول أو ينشئ حسابًا، ويعمل مرة واحدة لمدة 15 دقيقة، ولا يُخزَّن إلا كقيمة مُجزّأة",
+  "FeatureSignIn.fact6":
+    "حسابات الضيوف (تسجيل دخول مجهول): يبدأ الزائر بنقرة واحدة دون أي طريقة لتسجيل الدخول، ثم يضيف إلى الحساب نفسه بريدًا وكلمة مرور، أو Google، أو GitHub، أو مفتاح مرور",
+  "FeatureSignIn.fact7":
+    "تُحصى كلمات المرور الخاطئة لكل اسم دخول عبر كل عناوين الشبكة، ثم يُقفل الحساب لفترة قصيرة",
+  "FeatureSignIn.code": "اقرأ شيفرة تسجيل الدخول",
+  "FeatureTeams.nav": "المجموعات والأدوار",
+  "FeatureTeams.title": "مجموعات بأدوار، من الدقيقة الأولى",
+  "FeatureTeams.lead":
+    "يحصل كل حساب على مجموعة شخصية عند إنشائه. ينشئ الناس مجموعات مشتركة، ويدعون غيرهم، ويمنحونهم أدوارًا من قارئ إلى مالك، وينقلون الملكية بخطوة واحدة. ويمكن استعادة المجموعة المحذوفة خلال 30 يومًا، ولكل مجموعة سجل نشاط.",
+  "FeatureTeams.fact1":
+    "المجموعة هي الحد الوحيد بين المستأجرين: البيانات الشخصية والمشتركة تمر بالفحص نفسه",
+  "FeatureTeams.fact2": "التطبيق وشيفرته وهذا الموقع تسمّيها كلها «مجموعة»",
+  "FeatureTeams.fact3": "لا نموذج صلاحيات ثانيًا يجب إبقاؤه متزامنًا مع الأول",
+  "FeatureTeams.fact4": "الدعوات وتغيير الأدوار ونقل الملكية، ولكل منها اختباراته",
+  "FeatureTeams.code": "اقرأ شيفرة المجموعات",
+  "FeatureOverview.nav": "نظرة عامة على المجموعة",
+  "FeatureOverview.title": "نظرة عامة لكل مجموعة",
+  "FeatureOverview.lead":
+    "أرقام رئيسية ورسم بياني لأي فترة زمنية. يستطيع كل شخص إخفاء الأدوات وإعادة ترتيبها، ويتبعه ترتيبه إلى أجهزته الأخرى.",
+  "FeatureOverview.fact1": "كل رقم يُقارن بالفترة السابقة، دون حكم بالأحمر أو الأخضر",
+  "FeatureOverview.fact2": "أعداد فقط: لا نص لأي ملاحظة ولا ترتيب للأشخاص",
+  "FeatureOverview.fact3": "كل أداة تُحمَّل وتفشل وتعيد المحاولة باستقلال عن غيرها",
+  "FeatureOverview.fact4": "كل كيان جديد يضيف أدواته الخاصة، وتعرضها لوحة الإدارة أيضًا",
+  "FeatureOverview.code": "اقرأ شيفرة أدوات النظرة العامة",
+  "FeatureBilling.nav": "فوترة لكل عضو",
+  "FeatureBilling.title": "فوترة لكل عضو، عبر Stripe",
+  "FeatureBilling.lead":
+    "يرى الناس جدول أسعار، وخطة مجانية بحدود، وفترة تجريبية مدتها 14 يومًا للخطة المدفوعة. ويرى المالك تكلفة العضو الإضافي قبل دعوته، وتنبيهًا واضحًا مع تاريخ محدد عند رفض البطاقة.",
+  "FeatureBilling.fact1": "Stripe Checkout وبوابة العملاء، والـwebhook هو المصدر الوحيد لحالة الخطة",
+  "FeatureBilling.fact2": "كميات تتبع عدد الأعضاء",
+  "FeatureBilling.fact3": "مهلة سماح بعد فشل الدفع، مدتها 7 أيام افتراضيًا",
+  "FeatureBilling.fact4": "حدود الخطة تُفحص على الخادم، لا في التطبيق وحده",
+  "FeatureBilling.notYet1": "مزوّدو دفع غير Stripe",
+  "FeatureBilling.code": "اقرأ docs/billing.md",
+  "FeaturePrivacy.nav": "الخصوصية",
+  "FeaturePrivacy.title": "حسابات يمكن مغادرتها",
+  "FeaturePrivacy.lead":
+    "ينزّل الناس نسخة من بياناتهم ويحذفون حساباتهم من الملف الشخصي، مع 7 أيام لتغيير رأيهم. وتُحذف الإشعارات المقروءة بعد 90 يومًا.",
+  "FeaturePrivacy.fact1": "تنزيل بياناتي: ملف ZIP من ملفات JSON وCSV، يُجهَّز في الخلفية ويُحفظ 7 أيام",
+  "FeaturePrivacy.fact2": "ينتظر الحذف 7 أيام، وتسجيل الدخول مجددًا يلغيه",
+  "FeaturePrivacy.fact3": "تنظيف ليلي للإشعارات المقروءة والدعوات المنتهية وأحداث التدقيق القديمة",
+  "FeaturePrivacy.code": "اقرأ شيفرة حذف الحساب",
+  "FeatureExport.nav": "التصدير والاستيراد",
+  "FeatureExport.title": "بياناتك ترحل معك",
+  "FeatureExport.lead":
+    "صدّر أي مجموعة إلى ملف JSON مفتوح، واستوردها لاحقًا كمجموعة جديدة. لا تُستبدل المجموعة الأصلية أبدًا.",
+  "FeatureExport.fact1": "المالك يصدّر، وكل من يستطيع إنشاء مجموعة يستطيع الاستيراد",
+  "FeatureExport.fact2": "يُفحص الملف كاملًا قبل كتابة أي شيء، ثم يُستورد في خطوة واحدة",
+  "FeatureExport.fact3": "تحصل كل ملاحظة وكل وسم على معرّف جديد، فلا يتصادم الاستيراد مع الموجود",
+  "FeatureExport.fact4": "كل كيان يسجّل الجزء الخاص به من الملف",
+  "FeatureExport.code": "اقرأ شيفرة التصدير",
+  "FeatureLanguages.nav": "اللغات",
+  "FeatureLanguages.title": "بتسع لغات منذ البداية",
+  "FeatureLanguages.lead":
+    "التطبيق ولوحة الإدارة وهذا الموقع متاحة بهذه اللغات: {languages}. يختار كل شخص لغته في التطبيق، وتُحفظ مع حسابه. ولكل صفحة في هذا الموقع عنوان خاص بكل لغة.",
+  "FeatureLanguages.fact1":
+    "كتالوج TypeScript واحد لكل لغة، يفحصه اختبار يسمّي كل رسالة ناقصة أو قديمة",
+  "FeatureLanguages.fact2":
+    "صيغ الجمع والأرقام والتواريخ عبر Intl المدمج في المنصة، دون أي مكتبة ترجمة",
+  "FeatureLanguages.fact3": "روابط hreflang في كل صفحة من الموقع، وخريطة موقع تسرد كل لغة",
+  "FeatureLanguages.fact4": "الصفحات العربية تُقرأ من اليمين إلى اليسار",
+  "FeatureLanguages.fact5": "تصل الرسائل البريدية بلغة قارئها",
+  "FeatureLanguages.code": "اقرأ دليل الترجمة",
+  "FeatureTierReady.eyebrow": "جاهز حين تحتاجه",
+  "FeatureTierReady.title": "التحديث الفوري، والعمل دون اتصال، والمهام في الخلفية",
+  "FeatureTierReady.lead":
+    "الأجزاء التي تتجاهلها معظم القوالب لصعوبتها: التحديثات الحية، وتطبيق يعمل دون شبكة، ومهام يجب ألا تضيع.",
+  "FeatureTierReady.status":
+    "الكتابة دون اتصال تشمل الملاحظات والوسوم، وكل قائمة أخرى تفتح دون اتصال بآخر ما عرضته.",
+  "FeatureRealtime.nav": "التحديث الفوري",
+  "FeatureRealtime.title": "التغييرات تظهر دون إعادة تحميل",
+  "FeatureRealtime.lead":
+    "يظهر تغيير أي عضو في كل علامة تبويب مفتوحة للمجموعة، والحاسوب الذي يستيقظ من السكون يلحق بما فاته.",
+  "FeatureRealtime.fact1": "WebSocket قياسي، مع رقم تسلسلي لكل تغيير",
+  "FeatureRealtime.fact2": "علامة التبويب التي تستيقظ من السكون تعيد الاتصال وتجلب ما فاتها",
+  "FeatureRealtime.fact3":
+    "يمكن إيقاف التحديث الفوري: عندها يستعلم التطبيق دوريًا ويعمل بالطريقة نفسها",
+  "FeatureRealtime.code": "اقرأ تصميم التحديث الفوري",
+  "FeatureOffline.nav": "التطبيق دون اتصال",
+  "FeatureOffline.title": "تطبيق يفتح دون شبكة",
+  "FeatureOffline.lead":
+    "يُثبَّت التطبيق كأي تطبيق أصلي، ويفتح دون شبكة، ويرسل التغييرات المنتظرة حين تعود الشبكة. والتغيير القديم يظهر كتعارض عليك حسمه، ولا يُكتب فوق غيره بصمت أبدًا.",
+  "FeatureOffline.fact1": "نسخة IndexedDB من كل قائمة، وقائمة انتظار للكتابة بمفاتيح منع التكرار",
+  "FeatureOffline.fact2": "«احتفظ بنسختي» أو «استخدم نسخة الخادم» لكل تعارض",
+  "FeatureOffline.fact3": "أوقفه بإعداد واحد، أو أزله: احذف مجلدًا واحدًا واتبع قائمة خطوات مكتوبة",
+  "FeatureOffline.code": "اقرأ docs/offline.md",
+  "FeatureShortcuts.nav": "اختصارات لوحة المفاتيح",
+  "FeatureShortcuts.title": "اختصارات لوحة المفاتيح في التطبيق ولوحة الإدارة",
+  "FeatureShortcuts.lead":
+    "اضغط ? لترى كل الاختصارات. يضيف N ملاحظة من أي صفحة دون مغادرتها، وG ثم حرف يفتح قسمًا. ولا تتدخل الاختصارات أثناء الكتابة في حقل.",
+  "FeatureShortcuts.fact1": "Ctrl K (أو ⌘K على Mac) أو / يفتح البحث",
+  "FeatureShortcuts.fact2":
+    "قائمة واحدة لكل تطبيق تربط المفاتيح وتملأ نافذة ?، فلا تعرض أبدًا مفتاحًا لا يفعل شيئًا",
+  "FeatureShortcuts.fact3":
+    "يمكن إيقاف الاختصارات أحادية المفتاح على جهاز ما، ويبقى Ctrl K وEsc يعملان",
+  "FeatureShortcuts.fact4": "في لوحة الإدارة، G ثم حرف يفتح كل وحدة",
+  "FeatureShortcuts.code": "اقرأ شيفرة الاختصارات",
+  "FeaturePush.nav": "الإشعارات",
+  "FeaturePush.title": "إشعارات في التطبيق، وعلى الهاتف وسطح المكتب وTelegram",
+  "FeaturePush.lead":
+    "يتلقى الناس إشعارًا حين يُدعون، أو يُمنحون دورًا جديدًا، أو تُنقل إليهم ملكية مجموعة: في التطبيق، وبإشعارات الويب على الهاتف أو سطح المكتب، وفي Telegram بعد ربطه.",
+  "FeaturePush.fact1": "إشعارات الويب بمفاتيحك الخاصة، يولّدها أمر واحد: deno task vapid-key:create",
+  "FeaturePush.fact2": "عدد غير المقروء في التطبيق، وزر «تعليم الكل كمقروء»",
+  "FeaturePush.fact3": "اشتراك كل جهاز في الإشعارات مدرج في الملف الشخصي",
+  "FeaturePush.fact4":
+    "بوت Telegram، معطّل حتى تضبط رمزه: يُربط برمز لمرة واحدة، وتُضاف أوامر منتجك في ملف واحد",
+  "FeaturePush.code": "اقرأ شيفرة خدمة إشعارات الويب",
+  "FeatureWorker.nav": "المهام في الخلفية",
+  "FeatureWorker.title": "مهام تصمد أمام الأعطال",
+  "FeatureWorker.lead":
+    "يُرسَل البريد والإشعارات حتى لو أُعيد تشغيل الخادم في منتصف العمل، لأن المهمة تُحفظ قبل تنفيذها. وتعمل مهامك الخاصة الآن، أو لاحقًا، أو وفق جدول.",
+  "FeatureWorker.fact1": "كل أمر يكتب حدثه في معاملة قاعدة البيانات نفسها التي فيها التغيير",
+  "FeatureWorker.fact2": "عامل يفرّغ صندوق الصادر ويرسل البريد والإشعارات والتحديثات الحية",
+  "FeatureWorker.fact3": "المهمة تعريف واحد: اسم، ومعالج، وجدول إن كانت تتكرر",
+  "FeatureWorker.fact4":
+    "المحاولة الفاشلة تُعاد بفترات انتظار متزايدة، ويرى المشغّلون كل تشغيل في لوحة الإدارة",
+  "FeatureWorker.code": "اقرأ docs/jobs.md",
+  "FeatureYourFeature.nav": "ميزاتك الخاصة",
+  "FeatureYourFeature.title": "أضف ميزة بنسخ ميزة موجودة",
+  "FeatureYourFeature.lead":
+    "الملاحظات ميزة كاملة في كل طبقة: قاعدة البيانات، والـAPI، والشاشة، والعمل دون اتصال، والاختبارات. والميزة الجديدة تنسخها ملفًا ملفًا، وفق قائمة تسمّي كل ملف بالترتيب.",
+  "FeatureYourFeature.fact1": "بنية واحدة لكل ميزة، فيسهل العثور على الشيفرة دائمًا",
+  "FeatureYourFeature.fact2": "لكل طبقة اختباراتها، تنسخها معها",
+  "FeatureYourFeature.fact3": "كل معرّف UUID مرتّب زمنيًا (الإصدار 7)",
+  "FeatureYourFeature.code": "اقرأ docs/aggregates.md",
+  "FeatureTierRuntime.eyebrow": "بيئة التشغيل",
+  "FeatureTierRuntime.nav": "خطة بيئة التشغيل",
+  "FeatureTierRuntime.title": "يعمل على Deno اليوم",
+  "FeatureTierRuntime.lead":
+    "يعمل Seed اليوم على Deno، والعمل جارٍ ليعمل دون تعديل على Deno وNode وBun، ولا يوجد موعد بعد. شيفرته مبنية على معايير الويب (fetch وRequest وWeb Crypto وWebSocket ووحدات ES)، لذا لا يعتمد معظمها على بيئة التشغيل. في أكتوبر 2026 <announced>أعلن</announced> فريق Deno عن عام آخر من الدعم مع إصدارات شهرية لإصلاح الأخطاء والثغرات الأمنية، ينهي بعده تطويره الخاص؛ ويبقى Deno مفتوح المصدر.",
+  "FeatureTierRuntime.wip": "قيد العمل",
+  "FeatureTierRuntime.wipRuntimes": "<name>Node</name> و<name>Bun</name>",
+  "FeatureTierRuntime.follow": "تابع الخطة على GitHub (المشكلة <issue>#623</issue>)",
+  "FeatureTierOperations.eyebrow": "التشغيل",
+  "FeatureTierOperations.title": "شغّله، وراقبه، وادعم مستخدميه",
+  "FeatureTierOperations.lead":
+    "خادم واحد تستأجره، وأدوات ترى بها ما يفعله، ولوحة يساعد منها المشغّلون مستخدمي منتجك.",
+  "FeatureTierOperations.status": "كل وحدة أدناه متاحة اليوم، وما لم يُبنَ بعد مذكور تحتها.",
+  "FeatureAdmin.nav": "لوحة الإدارة",
+  "FeatureAdmin.title": "لوحة إدارة للمشغّلين",
+  "FeatureAdmin.lead":
+    "يبحث المشغّلون عن أي شخص بالاسم أو البريد، ويرون طرق تسجيل دخوله وجلساته ومجموعاته وسجله. ومن المكان نفسه يديرون المجموعات، ويستردّون المدفوعات، ويعتنون بمشتركي النشرة البريدية، ويرون كل مهمة في الخلفية، ويعيدون تشغيل المهمة الفاشلة، ويتابعون سلامة النظام.",
+  "FeatureAdmin.watch": "شاهدها في {seconds} ثانية",
+  "FeatureAdmin.fact1": "تطبيق منفصل على نطاق خاص به، بملف تعريف ارتباط مستقل للجلسة",
+  "FeatureAdmin.fact2": {
+    "zero": "{count} وحدة، من لوحة المعلومات إلى رموز API المميزة",
+    "one": "وحدة واحدة، من لوحة المعلومات إلى رموز API المميزة",
+    "two": "وحدتان، من لوحة المعلومات إلى رموز API المميزة",
+    "few": "{count} وحدات، من لوحة المعلومات إلى رموز API المميزة",
+    "many": "{count} وحدة، من لوحة المعلومات إلى رموز API المميزة",
+    "other": "{count} وحدة، من لوحة المعلومات إلى رموز API المميزة",
+  },
+  "FeatureAdmin.fact3": "الإجراءات الحساسة تطلب التأكيد أولًا، وكل إجراء يُكتب في سجل التدقيق",
+  "FeatureAdmin.notYet1": "الدخول بحساب شخص ما لرؤية ما يراه",
+  "FeatureAdmin.code": "اقرأ شيفرة لوحة الإدارة",
+  "FeatureDeploy.nav": "النشر والمراقبة",
+  "FeatureDeploy.title": "خادم واحد، وأمر واحد",
+  "FeatureDeploy.lead":
+    "يعمل Seed على أي خادم Linux تستأجره، باستخدام Docker Compose في التطوير والإنتاج على حد سواء. ويمكن لعدة منتجات أن تتشارك خادمًا واحدًا.",
+  "FeatureDeploy.fact1": "Traefik في الواجهة، مع شهادات تلقائية",
+  "FeatureDeploy.fact2": "Postgres وValkey بجانب التطبيقات",
+  "FeatureDeploy.fact3":
+    "Garage، مخزن ملفات متوافق مع S3، للصور وملفات PDF في الملاحظات ولصور الملفات الشخصية. يتم الرفع عبر روابط موقّعة، ويُفحص كل ملف حسب محتواه. وتتحول الصور، بما فيها HEIC، إلى نسخ AVIF وWebP صغيرة بعد إزالة الموقع وبقية البيانات الوصفية",
+  "FeatureDeploy.fact4": "VictoriaMetrics وVictoriaLogs وGrafana، مع التنبيهات",
+  "FeatureDeploy.fact5":
+    "نسخة احتياطية يومية مشفّرة لقاعدة البيانات عبر restic عند تفعيلها، مع خطوات استعادة مكتوبة",
+  "FeatureDeploy.fact6": "صور الإصدار تُنشر من CI حين تدفع وسم إصدار",
+  "FeatureDeploy.code": "اقرأ ملفات Compose",
+  "FeatureWebsite.nav": "الموقع العام",
+  "FeatureWebsite.title": "موقع عام جاهز للتعديل",
+  "FeatureWebsite.lead":
+    "هذا الموقع نفسه: سريع، يُعرض من الخادم، ويمكن استخدامه مع تعطيل JavaScript، وفيه الأسعار والصفحات القانونية والمدونة والنشرة البريدية.",
+  "FeatureWebsite.fact1": "Fresh على الخادم، وكل إجراء رابط أو نموذج حقيقي",
+  "FeatureWebsite.fact2": "الأسعار مقروءة من كتالوج خطط التطبيق",
+  "FeatureWebsite.fact3": "نشرة بريدية بتأكيد مزدوج، وإلغاء اشتراك بنقرة واحدة، ورسائل بلغة القارئ",
+  "FeatureWebsite.fact4":
+    "مدونة تُكتب من لوحة الإدارة، بمقالات بكل لغة وترجماتها، ومواضيع، ورسوم تفاعلية يجرّبها القارئ، وموجز RSS، وبيانات منظَّمة للمقالات",
+  "FeatureWebsite.fact5":
+    "روابط التواصل تُضبط من لوحة الإدارة، وتظهر في التذييل وفي البيانات المنظَّمة",
+  "FeatureWebsite.fact6":
+    "كتالوج اختياري لمتجر، يُحرَّر من لوحة الإدارة: منتجات بصور وألوان ومقاسات وجدول مقاسات ومقاسات نفدت، بكل لغة تبيع بها، مع رابط تتبع قصير لكل منتج ولكل مكان تشاركه فيه",
+  "FeatureWebsite.fact7": "sitemap.xml وrobots.txt وروابط أساسية (canonical) وصور Open Graph",
+  "FeatureWebsite.fact8":
+    "إحصاءات اختيارية دون ملفات تعريف ارتباط على خادم Umami الخاص بك، مع حدث لكل دعوة إلى إجراء، وصفحة «الإحصاءات» في لوحة الإدارة: الزيارات ونقرات الطلب حسب المصدر وحسب المنتج",
+  "FeatureWebsite.code": "اقرأ شيفرة الموقع",
+  "FeatureQuality.nav": "الاختبارات",
+  "FeatureQuality.title": "مُختبَر حيث يهم",
+  "FeatureQuality.lead": {
+    "zero":
+      "لا مجموعات اختبارات في المتصفح للتطبيق، إضافة إلى اختبارات الوحدات والشاشات، وكلها تعمل في CI. كل تغيير يمر بطلب دمج ومراجعة قبل دمجه.",
+    "one":
+      "مجموعة اختبارات واحدة في المتصفح للتطبيق، إضافة إلى اختبارات الوحدات والشاشات، وكلها تعمل في CI. كل تغيير يمر بطلب دمج ومراجعة قبل دمجه.",
+    "two":
+      "مجموعتا اختبارات في المتصفح للتطبيق، إضافة إلى اختبارات الوحدات والشاشات، وكلها تعمل في CI. كل تغيير يمر بطلب دمج ومراجعة قبل دمجه.",
+    "few":
+      "{count} مجموعات اختبارات في المتصفح للتطبيق، إضافة إلى اختبارات الوحدات والشاشات، وكلها تعمل في CI. كل تغيير يمر بطلب دمج ومراجعة قبل دمجه.",
+    "many":
+      "{count} مجموعة اختبارات في المتصفح للتطبيق، إضافة إلى اختبارات الوحدات والشاشات، وكلها تعمل في CI. كل تغيير يمر بطلب دمج ومراجعة قبل دمجه.",
+    "other":
+      "{count} مجموعة اختبارات في المتصفح للتطبيق، إضافة إلى اختبارات الوحدات والشاشات، وكلها تعمل في CI. كل تغيير يمر بطلب دمج ومراجعة قبل دمجه.",
+  },
+  "FeatureQuality.leadUncounted":
+    "مجموعات اختبارات في المتصفح للتطبيق، إضافة إلى اختبارات الوحدات والشاشات، وكلها تعمل في CI. كل تغيير يمر بطلب دمج ومراجعة قبل دمجه.",
+  "FeatureQuality.fact1":
+    "اختبارات في المتصفح باستخدام Playwright، على الـAPI وقاعدة البيانات الحقيقيتين",
+  "FeatureQuality.fact2": "اختبارات الوحدات والشاشات بجانب الشيفرة التي تختبرها",
+  "FeatureQuality.fact3": "اختبارات تكامل على Postgres",
+  "FeatureQuality.code": "اقرأ اختبارات المتصفح",
+  "FeaturesFaq.serverlessQuestion": "هل يعمل Seed على Vercel أو على الدوال بلا خادم؟",
+  "FeaturesFaq.serverlessAnswer":
+    "لا. يعمل Seed كحاويات دائمة التشغيل عبر Docker Compose على خادم Linux واحد تستأجره، لأن الـAPI يُبقي اتصالات WebSocket مفتوحة، والعامل يفرّغ قائمة انتظار.",
+  "FeaturesFaq.runtimeQuestion": "هل يعمل Seed على Node.js أو Bun؟",
+  "FeaturesFaq.runtimeAnswer":
+    "ليس بعد. يعمل Seed اليوم على Deno، والعمل جارٍ ليعمل على Deno وNode وBun. يمكنك متابعة التقدّم في المشكلة #623 على GitHub الخاص بـ Seed.",
+  "FeaturesFaq.databaseQuestion": "هل يمكن أن يستخدم Seed قاعدة بيانات غير Postgres؟",
+  "FeaturesFaq.databaseAnswer":
+    "لا. Seed مبني على Postgres: ترحيلاته واستعلاماته واختبارات التكامل فيه تفترض وجوده.",
+  "FeaturesFaq.nativeQuestion": "هل يمكن إصدار Seed كتطبيق للهاتف أو لسطح المكتب؟",
+  "FeaturesFaq.nativeAnswer":
+    "ليس كتطبيق في المتاجر بعد. اليوم يُثبَّت تطبيق الويب من المتصفح على الهواتف وأجهزة سطح المكتب ويفتح دون شبكة، وتطبيقات Android وسطح المكتب مخطط لها.",
+  "FeatureWebsite.fact9":
+    "كل صفحة بتسع لغات، ولكل منها عنوان خاص مع روابط hreflang، أما الصفحات القانونية فتبقى بالإنجليزية",
+  "FeatureTeams.alt": "سجل نشاط مجموعة: من أضاف أي ملاحظة أو وسم ومتى، مع رابط لفتح كل ملاحظة.",
+  "FeatureBilling.alt":
+    "تبويب «الفوترة» لمجموعة تجريبية، بأسعار العرض التوضيحية: خطة Pro مع تاريخ تجديدها، 36.00 € شهريًا، لأربعة أعضاء بسعر 9.00 € لكل عضو، بمن فيهم المالك، مع أزرار لتغيير البطاقة وعرض الفواتير وإلغاء الخطة.",
+  "FeaturePush.alt":
+    "صفحة الإشعارات: ثلاثة إشعارات غير مقروءة عن مالك جديد لمجموعة، وتغيير دور، ودعوة، وكل صف يفتح ما يخصه.",
+  "FeatureBilling.catalog": "الخطط في ملف كتالوج واحد، و<pricing>صفحة الأسعار</pricing> تقرأ منه",
+  "Features.title": "ميزات Seed: المصادقة، والمجموعات، والفوترة، والعمل دون اتصال، ولوحة الإدارة",
+  "Features.description":
+    "ما يقدمه Seed: التحقق بخطوتين وتسجيل الدخول عبر الحسابات الاجتماعية، ومجموعات بأدوار، وفوترة Stripe لكل عضو، وتحديث فوري، وتطبيق يعمل دون اتصال، ولوحة إدارة، ومراقبة، ونسخ احتياطي.",
+  "FeaturesHero.title": "كل ما يقدمه Seed، وما لا يقدمه بعد",
+  "FeaturesHero.lead":
+    "Seed قالب SaaS جاهز ومجاني بترخيص MIT، فيه تسجيل الدخول بالبريد الإلكتروني وGoogle وGitHub، ومفاتيح المرور، وروابط الدخول السحرية، وحسابات الضيوف، والتحقق بخطوتين، ومجموعات بأدوار، وفوترة Stripe لكل عضو، وتحديثات فورية، وتطبيق يعمل دون اتصال، ولوحة إدارة، ومراقبة، ونسخ احتياطي يومي مشفّر عند تفعيله. كل قسم أدناه يربط إلى شيفرته.",
+  "FeaturesHero.note":
+    "Seed صالح للاستخدام اليوم، ويُبنى علنًا. كل ما ينقصه موسوم بـ«لم يُبنَ بعد» بجانب الميزة التي يخصها، مع رابط إلى المشكلة على GitHub إن كانت مفتوحة.",
+  "Features.compare": "كيف يُقارن Seed بغيره",
+  "FeaturesFaq.title": "هل يستطيع Seed ذلك؟",
+  "FeatureSection.issue": "المشكلة #{number}",
+  "FeatureSection.forDevelopers": "للمطورين",
+  "FeatureVisuals.deployCaption": "مختصر: حُذفت مخرجات rsync وCompose بين الخطوات.",
+  "FeatureVisuals.services": "الخدمات على الخادم",
+  "Loops.realtimeName": "المزامنة الفورية",
+  "Loops.realtimeTitle":
+    "ملاحظة محفوظة في النافذة اليسرى تظهر في النافذة اليمنى خلال ثانية، دون إعادة تحميل.",
+  "Loops.realtimeCaption": "نافذتان وحساب واحد. احفظ في إحداهما فتتحدّث الأخرى من تلقاء نفسها.",
+  "Loops.offlineName": "التعديل دون اتصال",
+  "Loops.offlineTitle":
+    "ينقطع اتصال التطبيق، وتُعدَّل ملاحظة، وعند عودة الاتصال يسأل مُختار التعارض أي نسخة تبقى.",
+  "Loops.offlineCaption":
+    "تنتظر التعديلات دون اتصال في صندوق الصادر. وإن غيّر أحدٌ الملاحظة نفسها، تختار أنت النسخة التي تبقى.",
+  "Loops.shortcutsName": "اختصارات لوحة المفاتيح",
+  "Loops.shortcutsTitle":
+    "يفتح Ctrl+K لوحة الأوامر. بحث فيه خطأ إملائي، وبحث بالسيريلية، وبحث بتخطيط لوحة مفاتيح خاطئ، كلها تجد الإجراء نفسه الذي يُنفَّذ بعدها.",
+  "Loops.shortcutsCaption":
+    "اضغط Ctrl+K (‏⌘K على Mac). يتسامح البحث مع الأخطاء الإملائية والسيريلية وتخطيط لوحة المفاتيح الخاطئ.",
+  "Outbox.change": "التغيير",
+  "Outbox.changeNote": "ملاحظة، عضو",
+  "Outbox.event": "حدثه",
+  "Outbox.eventNote": "صف في صندوق الصادر",
+  "Outbox.workerNote": "يفرّغ صندوق الصادر",
+  "Outbox.mail": "البريد",
+  "Outbox.mailNote": "رموز، تنبيهات",
+  "Outbox.push": "الإشعارات",
+  "Outbox.pushNote": "الهاتف، سطح المكتب",
+  "Outbox.live": "مباشر",
+  "Outbox.liveNote": "علامات تبويب أخرى",
+  "Outbox.label":
+    "صندوق الصادر: يُكتب التغيير وحدثه في معاملة واحدة في قاعدة البيانات، ثم يقرأ العامل الحدث ويرسل البريد والإشعارات والتحديثات الحية إلى علامات التبويب الأخرى.",
+  "Outbox.transaction": "معاملة واحدة: يُحفظ الاثنان، أو لا يُحفظ أي منهما",
+  "AdminTour.title": "لوحة إدارة لمنتجك SaaS: المستخدمون، والفوترة، وسجل التدقيق",
+  "AdminTour.description":
+    "لوحة إدارة Seed: ابحث عن أي شخص، وأنهِ جلساته، واسترد دفعة، وأعد تشغيل مهمة فاشلة. الإجراءات الحساسة تطلب التأكيد أولًا، وكلها مسجّلة. مجانية، بترخيص MIT.",
+  "AdminTour.heroTitle": "لوحة إدارة لمن يديرون منتجك",
+  "AdminTour.heroLead":
+    "يأتي Seed بلوحة للمشغّلين على نطاق خاص بها. يبحث المشغّلون عن أي شخص، ويرون طرق تسجيل دخوله وجلساته ومجموعاته، ويساعدونه: إنهاء جلسة، أو إرسال رابط لإعادة تعيين كلمة المرور، أو استرداد دفعة. الإجراءات الحساسة تطلب التأكيد أولًا، وكل إجراء يُسجَّل في سجل التدقيق.",
+  "AdminTour.code": "اقرأ شيفرة لوحة الإدارة",
+  "AdminTour.dashboard": "لوحة المعلومات",
+  "AdminTour.dashboardText": "الأشخاص والتسجيلات ومن هو نشط والمجموعات والملاحظات خلال 30 يومًا.",
+  "AdminTour.stats": "الإحصاءات",
+  "AdminTour.statsText": "زيارات الموقع ونقرات الطلب من Umami الخاص بك. مجاميع فقط.",
+  "AdminTour.users": "المستخدمون",
+  "AdminTour.usersText": "ابحث عن شخص واحظره أو أنهِ جلسة أو أرسل رابط إعادة التعيين.",
+  "AdminTour.groups": "المجموعات",
+  "AdminTour.groupsText": "الأعضاء والدعوات والملفات. احذف ملفًا أو غيّر المالك.",
+  "AdminTour.billing": "الفوترة",
+  "AdminTour.billingText": "من يدفع وكم تربح. استرد المبلغ أو امنح وقتًا مجانيًا أو ألغِ.",
+  "AdminTour.newsletter": "النشرة البريدية",
+  "AdminTour.newsletterText": "من اشترك وما الذي أُرسل. صدّر القائمة بصيغة CSV.",
+  "AdminTour.blog": "المدونة",
+  "AdminTour.blogText": "منشورات الموقع بكل لغة، من المسودة إلى النشر.",
+  "AdminTour.contactLinks": "روابط التواصل",
+  "AdminTour.contactLinksText": "أين يتواصل معك الناس، في تذييل الموقع ومن دون نشر جديد.",
+  "AdminTour.catalog": "الكتالوج",
+  "AdminTour.catalogText": "متجر اختياري: منتجات وأسعار ومقاسات وصور وروابط للمشاركة.",
+  "AdminTour.audit": "سجل التدقيق",
+  "AdminTour.auditText": "كل تسجيل دخول وتغيير وإجراء من مشغّل. صدّره بصيغة CSV.",
+  "AdminTour.jobs": "المهام",
+  "AdminTour.jobsText": "كل مهمة في الخلفية. أعد تشغيل مهمة فاشلة أو ألغها.",
+  "AdminTour.system": "النظام",
+  "AdminTour.systemText":
+    "سلامة قاعدة البيانات، والذاكرة المؤقتة، وقائمة انتظار المهام، والنسخ الاحتياطي.",
+  "AdminTour.tokens": "رموز API المميزة",
+  "AdminTour.tokensText": "كل رمز API مميز، ولمن هو، ومتى استُخدم آخر مرة.",
+  "AdminTour.operator": "مشغّل",
+  "AdminTour.operatorText":
+    "الدعم اليومي: البحث عن الأشخاص، وإنهاء الجلسات، وإرسال روابط إعادة تعيين كلمة المرور، وإدارة المجموعات.",
+  "AdminTour.supervisor": "مشرف",
+  "AdminTour.supervisorText":
+    "وفوق ذلك يسترد المدفوعات، ويلغي الاشتراك فورًا، وينقل المجموعة إلى عضو آخر.",
+  "AdminTour.administrator": "مدير",
+  "AdminTour.administratorText": "وفوق ذلك يمنح الأدوار، حتى الدور الأدنى من دوره مباشرة.",
+  "AdminTour.guarantee2fa": "تسجيل الدخول إلى لوحة الإدارة يطلب رمز التحقق بخطوتين من كل مشغّل فعّله.",
+  "AdminTour.guaranteeHidden":
+    "كل من هو دون دور المشغّل يرى «الصفحة غير موجودة»، كأن لوحة الإدارة غير موجودة أصلًا.",
+  "AdminTour.guaranteeLogged": "الإجراءات الحساسة تطلب التأكيد أولًا، وكل إجراء يُكتب في سجل التدقيق.",
+  "AdminTour.guaranteePrivate":
+    "لوحة الإدارة تقرأ الأعداد وبيانات الحساب، ولا تقرأ أبدًا محتوى ملاحظات أي شخص.",
+  "AdminTour.notYetImpersonate": "الدخول بحساب شخص ما لرؤية ما يراه",
+  "AdminTour.crumb": "لوحة الإدارة",
+  "AdminTour.meta": "{seconds} ثانية · {sound} · بيانات تجريبية",
+  "AdminTour.transcriptJump": "اقرأ ما يعرضه الفيديو",
+  "AdminTour.modulesEyebrow": "الوحدات",
+  "AdminTour.modulesTitle": {
+    "zero": "{count} وحدة، لكل مهمة وحدة",
+    "one": "وحدة واحدة لكل مهمة",
+    "two": "وحدتان، لكل مهمة وحدة",
+    "few": "{count} وحدات، لكل مهمة وحدة",
+    "many": "{count} وحدة، لكل مهمة وحدة",
+    "other": "{count} وحدة، لكل مهمة وحدة",
+  },
+  "AdminTour.modulesLead":
+    "كل وحدة عنصر واحد في شريط أيقونات لوحة الإدارة. أضف وحدتك بنسخ واحدة منها: الخطوات في <doc>docs/admin-modules.md</doc>.",
+  "AdminTour.rolesEyebrow": "الأدوار",
+  "AdminTour.rolesTitle": "لا أحد يتصرف في دور مساوٍ لدوره أو أعلى منه",
+  "AdminTour.rolesLead":
+    "يعمل المشغّلون على مستويات. الدور الأعلى يستطيع كل ما يستطيعه الأدنى، ولا يمكن لأحد أن يتخذ إجراءً بحق شخص دوره مساوٍ لدوره أو أعلى منه.",
+  "AdminTour.transcriptTitle": "ما يعرضه الفيديو",
+  "AdminTour.transcriptEnglish":
+    "الفيديو وترجمته المصاحبة بالإنجليزية، لذا فالقائمة أدناه بالإنجليزية أيضًا.",
+  "AdminTour.sampleData": "الأشخاص والمجموعات في الفيديو بيانات تجريبية مختلقة.",
+  "AdminTour.download": "نزّل الفيديو (MP4، {size})",
+  "AdminTour.ctaTitle": "اقرأ الشيفرة، ثم اجعلها لك",
+  "AdminTour.ctaLead":
+    "تطبيق لوحة الإدارة موجود في مستودع المنتج نفسه، ويعمل على نطاق خاص به، وهو مجاني بترخيص MIT. وليس جزءًا من العرض العام، لأن المشغّلين فيه سيرون تسجيلات حقيقية.",
+  "AdminVideo.soundLine": "موسيقى، بلا كلام",
+  "AdminVideo.soundLabel": "مع موسيقى ومن دون كلام",
+  "AdminVideo.soundTranscript": "تُعزف موسيقى في خلفية الفيديو، ولا يوجد كلام.",
+  "AdminVideo.label": "لوحة إدارة Seed، فيديو مدته {seconds} ثانية {sound}",
+  "AdminVideo.stillAlt":
+    "شاهد فيديو لوحة الإدارة: صفحة المستخدمين، تعرض أشخاصًا مختلقين مع دور كل منهم وحالته وآخر ظهور له.",
+  "Compare.title": "Seed مقابل ShipFast وSupastarter وMakerkit وOpen SaaS",
+  "Compare.description":
+    "مقارنة صريحة ومؤرخة بين قوالب SaaS الجاهزة: السعر، والترخيص، والاستضافة، والتحقق بخطوتين، والمجموعات، والفوترة لكل عضو، ولوحة الإدارة، والعمل دون اتصال. مع روابط المصادر.",
+  "CompareRow.free": "مجاني الاستخدام",
+  "CompareRow.makerkitLite": "Makerkit: حزمة Lite فقط",
+  "CompareRow.openSource": "مفتوح المصدر (MIT)",
+  "CompareRow.password": "تسجيل الدخول بكلمة مرور",
+  "CompareRow.magicLinks": "روابط الدخول السحرية",
+  "CompareRow.social": "تسجيل الدخول عبر الحسابات الاجتماعية",
+  "CompareRow.socialNote": "Seed: Google وGitHub",
+  "CompareRow.totp": "التحقق بخطوتين عبر تطبيق",
+  "CompareRow.passkeys": "مفاتيح المرور",
+  "CompareRow.groups": "مجموعات بأدوار",
+  "CompareRow.groupsNote": "Next.js SaaS Starter: المالك والعضو فقط",
+  "CompareRow.perMember": "فوترة لكل عضو",
+  "CompareRow.nonStripe": "مدفوعات عبر غير Stripe",
+  "CompareRow.admin": "لوحة إدارة",
+  "CompareRow.adminNote": "Next.js SaaS Starter: لوحة معلومات لكل مجموعة",
+  "CompareRow.i18n": "الترجمات (i18n)",
+  "CompareRow.i18nNote": "Seed: {languages}",
+  "CompareRow.jobs": "مهام في الخلفية",
+  "CompareRow.uploads": "رفع الملفات",
+  "CompareRow.uploadsNote":
+    "Seed: صور وملفات PDF في الملاحظات، وصور الملفات الشخصية. Makerkit: حزمة Supabase فقط",
+  "CompareRow.blog": "مدونة",
+  "CompareRow.audit": "سجل التدقيق",
+  "CompareRow.realtime": "تحديثات فورية",
+  "CompareRow.offline": "تطبيق يعمل دون اتصال",
+  "CompareRow.offlineNote": "يحفظ التعديلات دون اتصال في قائمة انتظار",
+  "CompareRow.ops": "المراقبة والنسخ الاحتياطي",
+  "CompareRow.opsNote": "Supastarter وMakerkit: Sentry، دون ذكر للنسخ الاحتياطي",
+  "CompareAlt.shipfastPrice": "199 $ أو 249 $ مرة واحدة، و299 $ مع CodeFast",
+  "CompareAlt.shipfastLicence": "مدفوع، ولا يُسمح بإعادة توزيع القالب",
+  "CompareAlt.shipfastStack": "Next.js، وMongoDB أو Supabase",
+  "CompareAlt.shipfastHosting": "Vercel مذكور كخيار مجاني",
+  "CompareAlt.shipfastPick":
+    "تريد صفحة هبوط على Next.js مع المدفوعات ومدونة جاهزة هذا الأسبوع، وتبيع لمستخدمين أفراد لا لمجموعات.",
+  "CompareAlt.supastarterPrice": "349 $ أو 799 $ أو 1,499 $ مرة واحدة",
+  "CompareAlt.supastarterLicence": "مدفوع، ولا إعادة توزيع دون إذن صاحبه",
+  "CompareAlt.supastarterStack": "Next.js أو Nuxt أو TanStack Start، وPrisma أو Drizzle",
+  "CompareAlt.supastarterHosting": "Vercel والدوال بلا خادم، أو Docker",
+  "CompareAlt.supastarterPick": "تحتاج الآن إلى مزوّد دفع غير Stripe، وتريد دعمًا مدفوعًا.",
+  "CompareAlt.makerkitPrice":
+    "299 $ أو 599 $ مرة واحدة حاليًا (السعر المعلن 349 $ و649 $)، وحزمة Lite مجانية",
+  "CompareAlt.makerkitLicence":
+    "حزم مدفوعة، وكل عميل لدى المستقل يحتاج إلى ترخيص. أما Lite فبترخيص MIT",
+  "CompareAlt.makerkitStack":
+    "Next.js أو React Router أو TanStack Start، وSupabase أو Drizzle أو Prisma",
+  "CompareAlt.makerkitHosting": "غير مذكورة في الصفحات التي قرأتها",
+  "CompareAlt.makerkitPick":
+    "تريد قالبًا متعدد المستأجرين على Supabase أو Next.js مع الترجمات ونظام إدارة محتوى، ولا مانع لديك من ترخيص مدفوع.",
+  "CompareAlt.free": "مجاني",
+  "CompareAlt.nextStack": "Next.js وPostgres وDrizzle",
+  "CompareAlt.nextHosting": "Vercel، في دليل الإنتاج الخاص به",
+  "CompareAlt.nextPick":
+    "تريد أساسًا صغيرًا وسهل القراءة على Next.js مع Stripe والمجموعات، وتنوي بناء الباقي بنفسك.",
+  "CompareAlt.openSaasStack": "Wasp: React وNode.js وPrisma",
+  "CompareAlt.openSaasHosting": "Fly.io أو Railway بأمر واحد، أو يدويًا على أي استضافة",
+  "CompareAlt.openSaasPick":
+    "معجبًا بإطار Wasp، وتريد رفع الملفات وموقع توثيق وعدة مزوّدي دفع لمنتجات المستخدم الواحد.",
+  "CompareAlt.diy": "ابنه بنفسك",
+  "CompareAlt.diyPrice": "شيفرة مجانية، وأسابيع من وقتك",
+  "CompareAlt.diyLicence": "ملكك",
+  "CompareAlt.diyChoice": "حسب اختيارك",
+  "CompareAlt.diyPick":
+    "تبني منتجًا يحتاج إلى نموذج غير معتاد لتسجيل الدخول أو تعدد المستأجرين أو الفوترة لا يناسبه أي قالب، أو ترى أن بناء الأساس هو الهدف بحد ذاته.",
+  "CompareAlt.salesPage": "صفحة المبيعات",
+  "CompareAlt.licencePage": "الترخيص",
+  "CompareAlt.docs": "التوثيق",
+  "CompareAlt.pricing": "الأسعار",
+  "CompareAlt.deployGuide": "دليل النشر",
+  "CompareAlt.pickWhen": "اختره إذا كنت",
+  "CompareAlt.price": "السعر",
+  "CompareAlt.licence": "الترخيص",
+  "CompareAlt.stack": "التقنيات",
+  "CompareAlt.hosting": "الاستضافة",
+  "CompareAlt.pagesRead": "الصفحات التي قرأتها في {date}:",
+  "CompareFaq.neutralQuestion": "هل هذه المقارنة مدفوعة أو برعاية أحد؟",
+  "CompareFaq.neutralAnswer":
+    "لا. أنا من يبني Seed، لذا لست محايدًا، ولم يدفع أي منتج في الجدول مقابل صفّه أو يراجعه. ولهذا يربط كل صف إلى الصفحة التي أُخذ منها.",
+  "CompareFaq.wrongQuestion": "أحد الصفوف خاطئ أو قديم. ماذا أفعل؟",
+  "CompareFaq.wrongAnswer":
+    "<issue>افتح مشكلة على GitHub</issue> مع الصفحة التي تُظهر ذلك، وسأصحح الصف وتاريخ التحقق.",
+  "CompareFaq.paidQuestion": "هل جرّبت القوالب المدفوعة بنفسك؟",
+  "CompareFaq.paidAnswer":
+    "لا. لم أشترِها، لذا تذكر صفوفها ما تنشره صفحاتها، لا ما شغّلته أنا. والميزة الموجودة فيها لكنها غير مذكورة تظهر بـ«لا».",
+  "Compare.crumb": "المقارنة",
+  "Compare.heroTitle": "كيف يُقارن Seed بقوالب SaaS الأخرى",
+  "Compare.heroLead":
+    "Seed قالب SaaS جاهز ومجاني بترخيص MIT، للمنتجات التي تستخدمها مجموعات من الناس، ويعمل على خادم واحد تستأجره. وهنا تجده جنبًا إلى جنب مع خمسة قوالب SaaS جاهزة أخرى.",
+  "Compare.checked": "تاريخ التحقق",
+  "Compare.heroNote":
+    "أنا من يبني Seed، لذا لست محايدًا. كل معلومة عن منتج آخر مرتبطة بمصدرها، والجدول يُظهر أين يتأخر Seed. صف قديم؟ <issue>افتح مشكلة</issue>.",
+  "Compare.github": "عرض على GitHub",
+  "Compare.tableEyebrow": "جنبًا إلى جنب",
+  "Compare.tableTitle": "ما يتضمنه كل قالب",
+  "Compare.tableLead":
+    "الصفوف هي القدرات كما تصفها صفحات كل منتج. عمود Seed مميَّز، ونواقصه مذكورة كغيره تمامًا.",
+  "Compare.caption": "قدرات Seed وخمسة قوالب SaaS جاهزة أخرى، تم التحقق منها في {date}",
+  "Compare.checkedOn": "تم التحقق في {date}.",
+  "Compare.yesMeaning": "صفحات المنتج نفسه تقول إنها مضمّنة",
+  "Compare.partialMeaning": "مضمّنة مع القيد المذكور تحت الصف",
+  "Compare.noMeaning": "صفحاته لا تذكرها، وقد تكون موجودة دون توثيق أو تأتي لاحقًا",
+  "Compare.method":
+    "قرأت صفحة المبيعات وصفحة الأسعار والترخيص والتوثيق العام أو ملف README لكل منتج. عمود Seed يتبع ملف README والشيفرة. لم أشترِ القوالب المدفوعة، لذا تذكر صفوفها ما تنشره، لا ما شغّلته أنا. وكل صفحة قرأتها مرتبطة تحت «حين يناسبك قالب آخر أكثر».",
+  "Compare.fit":
+    "Seed لا يناسبك إذا أردت النشر على Vercel أو على الدوال بلا خادم، أو إذا كنت تعمل بـNext.js وReact وتريد البقاء عليهما، أو إذا احتجت إلى مزوّد دفع غير Stripe هذا الشهر. وهو أيضًا مشروع حديث بمطوّر واحد ودون منتدى مجتمعي بعد، بينما لكل من Next.js SaaS Starter وOpen SaaS أكثر من 16,000 نجمة على GitHub. ويناسبك Seed إذا كنت تبني منتجًا لمجموعات من الناس، وتريد أن يكون تسجيل الدخول والأدوار والفوترة لكل عضو والتشغيل محسومة قبل ميزتك الأولى، وتريد التحكم في الخادم وامتلاك الشيفرة بالكامل.",
+  "Compare.gap":
+    "نقص Seed، أي مزوّدو الدفع غير Stripe، لم يُبنَ بعد، فلا تختر Seed لهذا السبب اليوم. <status>قائمة الحالة</status> تبيّن ما يعمل.",
+  "Compare.shipfastPrices": "أسعار ShipFast هي التي عرضتها <sales>صفحة مبيعاته</sales> في {date}.",
+  "Compare.more":
+    "لتفاصيل ميزات Seed، راجع <features>صفحة الميزات</features>، ولتكلفة تشغيله، راجع <pricing>الأسعار</pricing>.",
+  "Compare.fitEyebrow": "الملاءمة",
+  "Compare.fitTitle": "حين يناسبك قالب آخر أكثر",
+  "Compare.fitLead":
+    "إذا كان أحد هذه القوالب يناسبك أكثر، فاستخدمه. كل بطاقة تذكر السعر والترخيص والتقنيات والاستضافة، وتربط إلى الصفحات التي أُخذت منها.",
+  "Compare.faqEyebrow": "أسئلة",
+  "Compare.faqTitle": "عن هذه المقارنة",
+  "Compare.ctaTitle": "شاهد ما يفعله Seed خلال دقيقة",
+  "Compare.ctaLead": "العرض هو التطبيق نفسه الذي تحصل عليه من اليوم الأول. قارن الجدول به بنفسك.",
+  "Blog.title": "المدونة",
+  "Blog.intro": "ما نبنيه، وما نتعلمه في الطريق.",
+  "Blog.rssLabel": "اشترك في موجز RSS للمدونة",
+  "Blog.rss": "موجز RSS",
+  "Blog.topicEmpty": "لا مقالات في هذا الموضوع بعد",
+  "Blog.allPosts": "كل المقالات",
+  "Blog.allTopics": "كل المواضيع",
+  "Blog.topics": "المواضيع",
+  "Blog.empty": "لا مقالات بعد",
+  "Blog.emptyLead": "المقال الأول في الطريق.",
+  "Blog.emptyNewsletter": "المقال الأول في الطريق. تلقَّه عبر البريد:",
+  "Blog.notFoundTitle": "هذا المقال غير موجود هنا",
+  "Blog.notFoundLead": "ربما نُقل أو أُلغي نشره.",
+  "Blog.ctaTitle": "شاهد {site} يعمل خلال دقيقة",
+  "Blog.published": "نُشر في <time>{date}</time>",
+  "Blog.updated": "· حُدّث في <time>{date}</time>",
+  "Blog.alsoIn": "متوفرة أيضًا باللغات: <links></links>",
+  "Blog.minutes": {
+    "zero": "· قراءة في أقل من دقيقة",
+    "one": "· قراءة في دقيقة واحدة",
+    "two": "· قراءة في دقيقتين",
+    "few": "· قراءة في {count} دقائق",
+    "many": "· قراءة في {count} دقيقة",
+    "other": "· قراءة في {count} دقيقة",
+  },
+  "Blog.newsTitle": "تلقَّ المقال التالي عبر البريد",
+  "Blog.newsLead":
+    "رسالة قصيرة حين يُنشر مقال جديد أو يُطلق شيء جديد. تؤكد اشتراكك مرة واحدة عبر البريد، وتلغيه بنقرة واحدة.",
+  "Blog.readNext": "اقرأ أيضًا",
+  "Blog.morePosts": "مقالات أخرى",
+  "Blog.breadcrumb": "مسار التنقل",
+  "PostFigure.noScript": "معروض بأرقام المقال. فعّل JavaScript لتجرّب أرقامك.",
+  "PostFigure.rssLink": "جرّبه على الموقع: {link}",
+  "PostFigure.OfflineSyncDemo.title": "اكتب ملاحظة دون اتصال بالشبكة",
+  "PostFigure.OfflineSyncDemo.lead": "اكتب ملاحظة دون اتصال، ثم أعد تشغيل الشبكة.",
+  "PostFigure.OfflineSyncDemo.network": "الشبكة",
+  "PostFigure.OfflineSyncDemo.online": "متصل",
+  "PostFigure.OfflineSyncDemo.offline": "غير متصل",
+  "PostFigure.OfflineSyncDemo.write": "اكتب ملاحظة",
+  "PostFigure.OfflineSyncDemo.device": "هذا الجهاز",
+  "PostFigure.OfflineSyncDemo.server": "الخادم",
+  "PostFigure.OfflineSyncDemo.saved": "محفوظة",
+  "PostFigure.OfflineSyncDemo.waiting": "بانتظار المزامنة",
+  "PostFigure.OfflineSyncDemo.note": "ملاحظة {number}",
+  "PostFigure.OfflineSyncDemo.queue": "تغييرات بانتظار المزامنة: {count}",
+  "PostFigure.OfflineSyncDemo.synced": "كل شيء على الخادم.",
+  "PostFigure.OfflineSyncDemo.full": "هذا يكفي من الملاحظات للعرض.",
+  "PostFigure.OfflineSyncDemo.caption":
+    "نموذج لطابور التغييرات في Seed. الطابور الحقيقي محفوظ في IndexedDB ويرسل كل كتابة مع مفتاح عدم التكرار الخاص بها.",
+  "PostFigure.OfflineSyncDemo.fallback":
+    "دون اتصال، تُحفظ الملاحظة الجديدة على الجهاز وتحمل علامة «بانتظار المزامنة». وعندما تعود الشبكة، يصل الطابور إلى الخادم بالترتيب الذي كُتب به.",
+  "PostFigure.CostCalculator.title": "كم تكلّف خطة Pro في العرض التجريبي فريقك",
+  "PostFigure.CostCalculator.lead": "تُحتسب خطة Pro لكل عضو. حدّد حجم فريقك.",
+  "PostFigure.CostCalculator.members": "أعضاء الفريق",
+  "PostFigure.CostCalculator.total": "فريقك، شهريًا",
+  "PostFigure.CostCalculator.perMember": "لكل عضو، شهريًا",
+  "PostFigure.CostCalculator.caption": "أسعار خطط العرض التجريبي، قبل الضريبة.",
+  "PostFigure.CostCalculator.fallback":
+    "أعضاء الفريق: {members}. في خطة Pro من العرض التجريبي يدفعون {total} شهريًا، أي {price} لكل عضو.",
+  "PostFigure.HostingCost.title": "Seed على خادم واحد مقابل حزمة مُدارة",
+  "PostFigure.HostingCost.lead":
+    "اختر خادمًا من Hetzner وعدد المطوّرين الذين يحتاجون إلى مقعد في Vercel.",
+  "PostFigure.HostingCost.server": "خادم Hetzner",
+  "PostFigure.HostingCost.serverOption": "{name}: {cores} vCPU، {memory} GB",
+  "PostFigure.HostingCost.developers": "مطوّرون لهم مقعد في Vercel",
+  "PostFigure.HostingCost.seed": "Seed على Hetzner، شهريًا",
+  "PostFigure.HostingCost.managed": "Vercel Pro وSupabase Pro، شهريًا",
+  "PostFigure.HostingCost.inEuro": "نحو {amount}",
+  "PostFigure.HostingCost.seedSaves": "توفّر لك Seed",
+  "PostFigure.HostingCost.managedSaves": "توفّر لك الحزمة المُدارة",
+  "PostFigure.HostingCost.perMonth": "{amount} شهريًا",
+  "PostFigure.HostingCost.perYear": "{amount} سنويًا",
+  "PostFigure.HostingCost.seedVerdict": "توفّر Seed مبلغ {month} شهريًا، أي {year} سنويًا.",
+  "PostFigure.HostingCost.managedVerdict":
+    "توفّر الحزمة المُدارة مبلغ {month} شهريًا، أي {year} سنويًا.",
+  "PostFigure.HostingCost.caption":
+    "أسعار القوائم قبل الضريبة، تحقّقنا منها في 3 نوفمبر 2026. Seed: الخادم وعنوان IPv4 الخاص به وObject Storage للنسخ الاحتياطية. المُدارة: الخطط الأساسية قبل رسوم الاستخدام. الدولار باليورو بسعر البنك المركزي الأوروبي في 2 نوفمبر 2026.",
+  "PostFigure.HostingCost.fallback":
+    "على خادم {server} من Hetzner تكلّف Seed مبلغ {seed} شهريًا مع عنوان IPv4 وتخزين النسخ الاحتياطية. وتكلّف Vercel Pro وSupabase Pro مبلغ {managed} شهريًا، أي نحو {managedEuro}. المطوّرون الذين لهم مقعد في Vercel: {developers}.",
+  "FeaturePage.what": "ما تحصل عليه",
+  "FeaturePage.how": "كيف يعمل",
+  "FeaturePage.limits": "الحدود",
+  "FeaturePage.questions": "أسئلة",
+  "FeaturePage.updated": "آخر تحديث: <time>{date}</time>",
+  "FeaturePage.sectionLink": "رابط إلى هذا القسم",
+  "FeaturePage.guide": "اقرأ الدليل",
+  "FeaturePage.code": "اقرأ الشيفرة: <path>{path}</path>",
+  "FeaturePage.otherFeatures": "ميزات أخرى",
+  "FeaturePage.readMore": "اقرأ المزيد عن {name}",
+  "FeaturePage.all": "كل الميزات",
+  "FeaturePage.runtimeQuestion": "هل يعمل Seed على Node أو Bun؟",
+  "FeaturePage.runtimeAnswer":
+    "ليس بعد. يعمل Seed اليوم على Deno، والعمل جارٍ ليعمل على Deno وNode وBun (#623). اطّلع على خطة بيئة التشغيل في صفحة الميزات.",
+  "FeaturePageMissing.title": "صفحة هذه الميزة غير موجودة",
+  "FeaturePageMissing.description": "ربما نُقلت. كل ميزة يقدمها Seed موجودة في صفحة الميزات.",
+  "FeaturePageMissing.action": "عرض كل الميزات",
+  "FeaturePageSignIn.name": "تسجيل الدخول",
+  "FeaturePageSignIn.title": "تسجيل الدخول لمنتج SaaS دون خدمة مصادقة خارجية",
+  "FeaturePageSignIn.description":
+    "مفاتيح المرور، وروابط الدخول عبر البريد، وGoogle وGitHub، والتحقق بخطوتين، يفحصها الـAPI الخاص بك دون خدمة مصادقة أو رسوم لكل مستخدم. مجاني بترخيص MIT.",
+  "FeaturePageSignIn.h1": "مفاتيح المرور وتسجيل الدخول لمنتج SaaS، دون خدمة مصادقة",
+  "FeaturePageSignIn.answer":
+    "يسجّل Seed دخول الناس بمفاتيح المرور، وروابط الدخول عبر البريد، وGoogle وGitHub، ويفحص الـAPI الخاص به كل ذلك على خادمك، دون أي خدمة مصادقة خارجية. تعمل كلمات المرور ومفاتيح المرور وروابط الدخول فور النشر، دون رسوم لكل مستخدم؛ ويحتاج كل من Google وGitHub إلى مفتاحين في ملف env.",
+  "FeaturePageSignIn.summary":
+    "مفاتيح المرور، وروابط الدخول عبر البريد، وGoogle وGitHub، والتحقق بخطوتين، دون خدمة مصادقة.",
+  "FeaturePageSignIn.how1":
+    "يفحص الـAPI بنفسه كل تسجيل دخول، ويردّ بملف تعريف ارتباط موقّع للجلسة. ويستخدم مفتاح المرور تقنية WebAuthn المدمجة في المتصفح: لا يحتفظ الخادم إلا بمفتاحه العام، وكل تحدٍّ لتسجيل الدخول يعمل مرة واحدة. ورابط الدخول يسجّل الدخول أو ينشئ حسابًا، ويعمل مرة واحدة لمدة 15 دقيقة، ولا يُخزَّن إلا كقيمة مُجزّأة.",
+  "FeaturePageSignIn.how2":
+    "يضيف تطبيق المصادقة التحقق بخطوتين. ويعرض الملف الشخصي كل طرق الدخول إلى الحساب وكل جهاز مسجّل دخوله، وتغيير أي طريقة دخول يتطلب إثبات الهوية ويرسل رسالة بريد. ويمكن للزائر أيضًا أن يبدأ بحساب ضيف ويضيف طريقة لتسجيل الدخول لاحقًا.",
+  "FeaturePageSignIn.authServiceQuestion": "هل أحتاج إلى خدمة مصادقة؟",
+  "FeaturePageSignIn.authServiceAnswer":
+    "لا. يفحص الـAPI الخاص بـSeed كلمات المرور ومفاتيح المرور وروابط الدخول وردود Google وGitHub على خادمك، فلا تدفع شيئًا لكل مستخدم.",
+  "FeaturePageSignIn.passkeysQuestion": "هل يدعم Seed مفاتيح المرور (passkeys)؟",
+  "FeaturePageSignIn.passkeysAnswer":
+    "نعم. يضيف الناس مفتاح مرور من ملفهم الشخصي ويسجّلون الدخول به؛ لا يخزّن الخادم إلا مفتاحه العام، وكل تحدٍّ لتسجيل الدخول يعمل مرة واحدة.",
+  "FeaturePageSignIn.twoFactorQuestion": "هل يدعم Seed المصادقة الثنائية (التحقق بخطوتين)؟",
+  "FeaturePageSignIn.twoFactorAnswer":
+    "نعم. يضيف تطبيق المصادقة رمزًا لمرة واحدة عند تسجيل الدخول، حتى بعد تسجيل الدخول عبر Google أو GitHub.",
+  "FeaturePageSignIn.providersOffQuestion":
+    "هل يمكنني الاستغناء عن تسجيل الدخول عبر Google أو GitHub؟",
+  "FeaturePageSignIn.providersOffAnswer":
+    "نعم. كل منهما متوقف حتى يُضبط متغيّراه كلاهما في ملف env، فإن تركتهما بقي متوقفًا.",
+  "FeaturePageGroups.name": "المجموعات والأدوار",
+  "FeaturePageGroups.title": "مجموعات وأدوار لمنتج SaaS، دون بناء الأساس بنفسك",
+  "FeaturePageGroups.description":
+    "مجموعات بأدوار من قارئ إلى مالك، ودعوات، ونقل للملكية، وسجل نشاط، مع فحص واحد بين المستأجرين يشمل كل البيانات. مجاني بترخيص MIT.",
+  "FeaturePageGroups.h1": "مجموعات وأدوار لمنتج SaaS، دون بناء تعدد المستأجرين بنفسك",
+  "FeaturePageGroups.answer":
+    "يمنح Seed كل حساب مجموعة شخصية عند إنشائه، وينشئ الناس مجموعات مشتركة، ويدعون غيرهم، ويمنحونهم أدوارًا من قارئ إلى مالك. المجموعة هي الحد الوحيد بين المستأجرين، فأي ميزة تضيفها تمر بالفحص نفسه بمجرد أن تنسخ ميزة الملاحظات.",
+  "FeaturePageGroups.summary": "مجموعات بأدوار من قارئ إلى مالك، ودعوات، وسجل نشاط.",
+  "FeaturePageGroups.how1":
+    "كل صف من البيانات المشتركة ينتمي إلى مجموعة، ويفحص الـAPI دور الشخص في تلك المجموعة قبل أن يقرأ أو يكتب. القارئ يقرأ، والمحرر يغيّر بيانات المجموعة أيضًا، والمسؤول والمالك يديران الأعضاء أيضًا ويقرآن سجل النشاط.",
+  "FeaturePageGroups.how2":
+    "ينقل المالك الملكية بخطوة واحدة، ويمكن استعادة المجموعة المحذوفة خلال 30 يومًا. ولا يستطيع الدعوة إلا حساب أكّد بريده الإلكتروني.",
+  "FeaturePageGroups.personalGroupQuestion": "هل يحصل كل حساب على مجموعة؟",
+  "FeaturePageGroups.personalGroupAnswer":
+    "نعم. يحصل كل حساب على مجموعة شخصية عند إنشائه؛ والمجموعة الشخصية والمشتركة تمران بالفحص نفسه.",
+  "FeaturePageGroups.viewerQuestion": "هل يستطيع القارئ تغيير بيانات المجموعة؟",
+  "FeaturePageGroups.viewerAnswer":
+    "لا. يقرأ القارئ بيانات المجموعة؛ أما المحرر أو المسؤول أو المالك فيستطيع تغييرها.",
+  "FeaturePageGroups.restoreQuestion": "هل يمكن استعادة مجموعة محذوفة؟",
+  "FeaturePageGroups.restoreAnswer":
+    "نعم. يستطيع مالكها استعادتها خلال 30 يومًا؛ وبعد ذلك يحذفها العامل نهائيًا.",
+  "FeaturePageGroups.secondModelQuestion": "هل أحتاج إلى نظام صلاحيات ثانٍ لميزاتي الخاصة؟",
+  "FeaturePageGroups.secondModelAnswer":
+    "لا. الميزة الجديدة تنسخ ميزة الملاحظات وفحص المجموعة فيها، فيبقى لديك نموذج صلاحيات واحد تعتني به.",
+  "FeaturePageBilling.name": "الفوترة",
+  "FeaturePageBilling.title": "فوترة Stripe لمنتج SaaS، دون عناء الـwebhooks",
+  "FeaturePageBilling.description":
+    "فوترة Stripe لكل عضو مع خطة مجانية، وفترة تجريبية 14 يومًا، ومهلة سماح، وحدود تُفحص على الخادم، تُبقيها الـwebhooks متزامنة. مجاني بترخيص MIT.",
+  "FeaturePageBilling.h1": "فوترة Stripe لكل عضو في منتج SaaS، دون أن تكتبها بنفسك",
+  "FeaturePageBilling.answer":
+    "يحاسب Seed كل مجموعة حسب عدد أعضائها عبر Stripe Checkout وبوابة العملاء، مع خطة مجانية، وفترة تجريبية 14 يومًا، ومهلة سماح بعد فشل الدفع. تضيف ثلاثة مفاتيح Stripe إلى ملف env، وتختار Stripe مزوّدًا للفوترة.",
+  "FeaturePageBilling.summary": "فوترة Stripe لكل عضو مع خطة مجانية، وفترة تجريبية، ومهلة سماح.",
+  "FeaturePageBilling.how1":
+    "يتولى Stripe المال والاشتراك. ولا يحتفظ التطبيق إلا بما تبلّغ عنه webhooks من Stripe، ولا يقرر الخطة بنفسه أبدًا؛ وتتبع الكمية عدد الأعضاء، وتُفحص حدود الخطة على الخادم.",
+  "FeaturePageBilling.how2":
+    "يرى كل عضو الخطة في تبويب «الفوترة» للمجموعة، ولا تظهر أزرار الدفع وبوابة العملاء إلا للمالك. وعند فشل الدفع تبقى الخطة 7 أيام افتراضيًا، ثم تعود المجموعة إلى الخطة المجانية.",
+  "FeaturePageBilling.withoutStripeQuestion": "هل تعمل الفوترة دون Stripe؟",
+  "FeaturePageBilling.withoutStripeAnswer":
+    "لا. Stripe هو المزوّد الوحيد اليوم؛ ودونه تبقى الفوترة متوقفة، وتكون كل مجموعة على الخطة المجانية بلا حدود.",
+  "FeaturePageBilling.trialQuestion": "هل توجد فترة تجريبية مجانية؟",
+  "FeaturePageBilling.trialAnswer": "نعم. تبدأ الخطة المدفوعة بفترة تجريبية مدتها 14 يومًا.",
+  "FeaturePageBilling.failedPaymentQuestion": "هل تحتفظ المجموعة بخطتها إذا رُفضت البطاقة؟",
+  "FeaturePageBilling.failedPaymentAnswer":
+    "نعم. تحتفظ بالخطة خلال مهلة سماح، مدتها 7 أيام افتراضيًا، ويرى المالك تنبيهًا بالتاريخ؛ ثم تعود المجموعة إلى الخطة المجانية.",
+  "FeaturePageBilling.cutQuestion": "هل يأخذ Seed نسبة من المدفوعات؟",
+  "FeaturePageBilling.cutAnswer": "لا. Seed بترخيص MIT؛ ولا تدفع إلا رسوم Stripe نفسها.",
+  "FeaturePageRealtime.name": "المزامنة الفورية",
+  "FeaturePageRealtime.title": "مزامنة فورية لمنتج SaaS، دون خدمة مستضافة",
+  "FeaturePageRealtime.description":
+    "التغيير المحفوظ في علامة تبويب يظهر خلال ثانية في كل علامة تبويب أخرى مفتوحة للمجموعة، عبر WebSocket من الـAPI الخاص بك. مجاني بترخيص MIT.",
+  "FeaturePageRealtime.h1": "تحديثات فورية لمنتج SaaS، دون خدمة تحديث فوري مستضافة",
+  "FeaturePageRealtime.answer":
+    "يرسل Seed كل تغيير محفوظ إلى كل علامة تبويب مفتوحة للمجموعة عبر WebSocket من الـAPI الخاص به، فالملاحظة المحفوظة في نافذة تظهر في النوافذ الأخرى خلال ثانية، دون إعادة تحميل. يعمل ذلك على خادمك دون خدمة تحديث فوري تدفع لها؛ وأي ميزة تضيفها تحصل عليه بنسخ مثال الملاحظات.",
+  "FeaturePageRealtime.summary":
+    "التغيير المحفوظ في علامة تبويب يظهر في كل علامة تبويب مفتوحة أخرى، دون إعادة تحميل.",
+  "FeaturePageRealtime.how1":
+    "تُحفظ كل عملية كتابة مع الرقم التسلسلي التالي للمجموعة، ويدفعها الـAPI إلى كل اتصال مفتوح لأعضائها. ولا تطبّق علامة التبويب التغيير إلا إذا تلا رقمُه آخرَ رقم لديها؛ وعند وجود فجوة تطلب من الخادم كل ما بعد مؤشرها، فالرسالة الضائعة تكلّف طلبًا إضافيًا واحدًا ولا تنتج قائمة خاطئة أبدًا.",
+  "FeaturePageRealtime.how2":
+    "الحاسوب المحمول الذي يستيقظ من السكون يعيد الاتصال ويجلب ما فاته. وإذا أُوقف الـWebSocket، يقرأ التطبيق ويكتب عبر HTTP ويتحقق من التغييرات كل 30 ثانية.",
+  "FeaturePageRealtime.realtimeQuestion": "هل يدعم Seed التحديث الفوري؟",
+  "FeaturePageRealtime.realtimeAnswer":
+    "نعم. يظهر التغيير المحفوظ في كل علامة تبويب مفتوحة للمجموعة خلال ثانية، دون إعادة تحميل.",
+  "FeaturePageRealtime.realtimeServiceQuestion":
+    "هل أحتاج إلى Pusher أو Ably أو خدمة تحديث فوري أخرى؟",
+  "FeaturePageRealtime.realtimeServiceAnswer":
+    "لا. يقدّم الـAPI الخاص بـSeed اتصال WebSocket من خادمك.",
+  "FeaturePageRealtime.realtimeSleepQuestion":
+    "هل تلحق علامة التبويب بما فاتها بعد سكون الحاسوب المحمول؟",
+  "FeaturePageRealtime.realtimeSleepAnswer": "نعم. تعيد الاتصال وتجلب كل تغيير بعد آخر تغيير لديها.",
+  "FeaturePageRealtime.realtimeOffQuestion": "هل يمكنني إيقاف التحديث الفوري؟",
+  "FeaturePageRealtime.realtimeOffAnswer":
+    "نعم. اضبط SPA_REALTIME=false: عندها يتحقق التطبيق من التغييرات كل 30 ثانية ويعمل بالطريقة نفسها.",
+  "FeaturePageOffline.name": "التطبيق دون اتصال",
+  "FeaturePageOffline.title": "منتج SaaS يعمل دون اتصال، دون بناء المزامنة بنفسك",
+  "FeaturePageOffline.description":
+    "تطبيق قابل للتثبيت يفتح دون شبكة، ويحفظ كل قائمة على الجهاز، ويضع التعديلات في قائمة انتظار حتى يعود الاتصال. مجاني بترخيص MIT.",
+  "FeaturePageOffline.h1": "تطبيق يعمل دون اتصال أولًا لمنتج SaaS، دون بناء محرك مزامنة",
+  "FeaturePageOffline.answer":
+    "يُثبَّت تطبيق Seed كأي تطبيق أصلي، ويفتح دون شبكة، ويعرض كل قائمة رآها آخر مرة، ويتيح للناس إضافة الملاحظات والوسوم وتعديلها وحذفها دون اتصال. وميزتك الخاصة تختار أحد ثلاثة مستويات: عبر الإنترنت فقط، أو قابلة للقراءة دون اتصال، أو قابلة للكتابة دون اتصال، وتتبع الوصفة المكتوبة لذلك المستوى.",
+  "FeaturePageOffline.summary": "تطبيق قابل للتثبيت يفتح دون شبكة، ويزامن حين تعود.",
+  "FeaturePageOffline.how1":
+    "يحتفظ الجهاز بنسخة IndexedDB من كل قائمة، وتنتظر عمليات الكتابة في قائمة انتظار بمفاتيح منع التكرار، فالتغيير المرسَل مرتين يُطبَّق مرة واحدة. والتغيير الذي لا يقبله الخادم يظهر كتعارض مع «الاحتفاظ بنسختي» أو «استخدام نسخة الخادم»؛ ولا يُكتب شيء فوق غيره من تلقاء نفسه.",
+  "FeaturePageOffline.how2":
+    "يحتفظ عامل الخدمة (service worker) بصفحة التطبيق وسكربتاته وأنماطه، فيفتح دون شبكة. أما تسجيل الدخول والعناصر المحذوفة وإعداد التحقق بخطوتين فتحتاج إلى الشبكة.",
+  "FeaturePageOffline.offlineQuestion": "هل يعمل Seed دون اتصال بالإنترنت؟",
+  "FeaturePageOffline.offlineAnswer": "نعم. يفتح التطبيق دون شبكة ويعرض كل قائمة رآها آخر مرة.",
+  "FeaturePageOffline.offlineEditsQuestion": "هل يمكن للناس التعديل دون اتصال؟",
+  "FeaturePageOffline.offlineEditsAnswer":
+    "نعم. تعمل الملاحظات والوسوم دون اتصال؛ أما التغييرات الأخرى فتحتاج إلى الشبكة، والشاشة تخبرك بذلك.",
+  "FeaturePageOffline.conflictQuestion": "هل يكتشف Seed تعديل شخصين للملاحظة نفسها؟",
+  "FeaturePageOffline.conflictAnswer":
+    "نعم. يظهر التغيير اللاحق كتعارض، ويختار صاحبه «الاحتفاظ بنسختي» أو «استخدام نسخة الخادم».",
+  "FeaturePageOffline.removeOfflineQuestion": "هل يمكنني إزالة دعم العمل دون اتصال؟",
+  "FeaturePageOffline.removeOfflineAnswer":
+    "نعم. أوقفه بإعداد واحد، أو احذف مجلدًا واحدًا واتبع قائمة الخطوات المكتوبة؛ ويفشل اختبار إذا فاتتك خطوة.",
+  "FeaturePageShortcuts.name": "اختصارات لوحة المفاتيح",
+  "FeaturePageShortcuts.title": "اختصارات لوحة المفاتيح لمنتج SaaS، دون مكتبة",
+  "FeaturePageShortcuts.description":
+    "بحث بـCtrl+K يتسامح مع الأخطاء الإملائية والسيريلية وتخطيط لوحة المفاتيح الخاطئ، ومفتاح لكل قسم في التطبيق. مجاني بترخيص MIT.",
+  "FeaturePageShortcuts.h1": "لوحة أوامر واختصارات لوحة مفاتيح مدمجة في منتج SaaS",
+  "FeaturePageShortcuts.answer":
+    "في تطبيق Seed ولوحة الإدارة يفتح Ctrl+K (‏⌘K على Mac) بحثًا يجد الصفحات والإجراءات حتى مع خطأ إملائي، أو بالسيريلية، أو بتخطيط لوحة مفاتيح خاطئ. اضغط ? لترى كل الاختصارات؛ والميزة التي تضيفها تسجّل مفاتيحها في القائمة نفسها فتظهر في تلك النافذة.",
+  "FeaturePageShortcuts.summary":
+    "بحث بـCtrl+K يتسامح مع الأخطاء الإملائية والتخطيط الخاطئ، ومفتاح لكل قسم.",
+  "FeaturePageShortcuts.how1":
+    "قائمة واحدة لكل تطبيق تربط المفاتيح وتملأ نافذة ?، فلا تعرض النافذة أبدًا مفتاحًا لا يفعل شيئًا. يفتح G ثم حرف قسمًا، ويضيف N ملاحظة من أي صفحة، ولا تتدخل الاختصارات أحادية المفتاح أثناء الكتابة في حقل.",
+  "FeaturePageShortcuts.how2":
+    "يطابق البحث كل كلمة بأي ترتيب، وبالبادئة، ومع خطأ إملائي واحد في الكلمة الأطول، ويفهم الاستعلام المكتوب بتخطيط لوحة المفاتيح الآخر أو بالأبجدية الأخرى، فكتابة «зкщашду» تجد «Open profile».",
+  "FeaturePageShortcuts.shortcutsQuestion": "هل في Seed اختصارات لوحة مفاتيح؟",
+  "FeaturePageShortcuts.shortcutsAnswer":
+    "نعم. اضغط ? في التطبيق أو لوحة الإدارة لترى كل الاختصارات.",
+  "FeaturePageShortcuts.paletteQuestion": "هل توجد لوحة أوامر؟",
+  "FeaturePageShortcuts.paletteAnswer":
+    "نعم. يفتح Ctrl+K (‏⌘K على Mac) أو / بحثًا في الصفحات والإجراءات.",
+  "FeaturePageShortcuts.shortcutsTypingQuestion": "هل تعمل الاختصارات أثناء الكتابة؟",
+  "FeaturePageShortcuts.shortcutsTypingAnswer":
+    "لا. لا تتدخل الاختصارات أحادية المفتاح أثناء الكتابة في حقل، ويمكن إيقافها على كل جهاز؛ ويبقى Ctrl+K وEsc يعملان.",
+  "FeaturePageDeploy.name": "النشر",
+  "FeaturePageDeploy.title": "انشر منتج SaaS دون فاتورة منصة سحابية",
+  "FeaturePageDeploy.description":
+    "Docker Compose على خادم Linux واحد تستأجره: Traefik وPostgres وValkey وملفات S3 ومراقبة ونسخ احتياطي، تُنشر بأمر واحد. مجاني بترخيص MIT.",
+  "FeaturePageDeploy.h1": "استضف منتج SaaS بنفسك على خادم واحد، دون فاتورة منصة سحابية",
+  "FeaturePageDeploy.answer":
+    "يعمل Seed على خادم Linux تستأجره، باستخدام Docker Compose في التطوير والإنتاج على حد سواء، وأمر واحد ينشره. تجهّز الخادم مرة واحدة بالخطوات المكتوبة، ثم يصبح كل نشر لاحق ذلك الأمر وحده.",
+  "FeaturePageDeploy.summary": "خادم Linux واحد، وDocker Compose، وأمر واحد للنشر.",
+  "FeaturePageDeploy.how1":
+    "ينسخ النشر المشروع إلى الخادم عبر SSH ويشغّله بـCompose؛ وفي كل نشر تطبّق خدمة تعمل مرة واحدة ترحيلات قاعدة البيانات. ويقف Traefik في الواجهة ويطلب من Let's Encrypt شهادة لكل نطاق.",
+  "FeaturePageDeploy.how2":
+    "تعمل Postgres وValkey ومخزن ملفات S3 والمقاييس والسجلات ولوحات المتابعة مع التنبيهات بجانب التطبيقات، ويمكن لعدة منتجات أن تتشارك خادمًا واحدًا خلف الخادم الوكيل نفسه.",
+  "FeaturePageDeploy.kubernetesQuestion": "هل أحتاج إلى Kubernetes؟",
+  "FeaturePageDeploy.kubernetesAnswer":
+    "لا. Docker Compose على خادم واحد يشغّل المنتج كله، في التطوير وفي الإنتاج.",
+  "FeaturePageDeploy.severalQuestion": "هل يمكن لعدة منتجات أن تتشارك خادمًا واحدًا؟",
+  "FeaturePageDeploy.severalAnswer":
+    "نعم. تتشارك خادمًا وكيلًا واحدًا، ولكل منها مجلده وقاعدة بياناته وبياناته؛ ولا تُشارك خادمًا إلا بين منتجات تثق بها بالقدر نفسه.",
+  "FeaturePageDeploy.backupQuestion": "هل يوجد نسخ احتياطي؟",
+  "FeaturePageDeploy.backupAnswer":
+    "نعم. نسخة احتياطية يومية مشفّرة لقاعدة البيانات عبر restic عند تفعيلها، مع خطوات استعادة مكتوبة.",
+} satisfies Catalog

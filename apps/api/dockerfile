@@ -1,7 +1,18 @@
-ARG DENO_VERSION=2.4.0
-FROM financy/deno-base:${DENO_VERSION}
+ARG DENO_VERSION=2.9.7
+# The release pipeline starts from the published base image instead (BASE_IMAGE).
+ARG BASE_IMAGE=localhost/app/deno-base:${DENO_VERSION}
+FROM ${BASE_IMAGE}
 
-# Copy application code
-COPY . .
+# Copy application code with proper ownership
+USER root
+COPY --chown=1000:1000 . .
+USER 1000:1000
 
-CMD ["sh", "-c", "deno task db:migrate && deno task api:dev"]
+# The release pipeline names the tag and the commit it builds from; the operator area's System page
+# shows them (#429). A local build leaves both empty.
+ARG APP_VERSION=
+ARG APP_COMMIT=
+ENV APP_VERSION=${APP_VERSION} APP_COMMIT=${APP_COMMIT}
+
+# Migrations run in compose's one-shot `migrate` service, which the API waits for.
+CMD ["sh", "-c", "if [ \"$ENV\" = \"prod\" ]; then deno task api:prod; else deno task api:dev; fi"]

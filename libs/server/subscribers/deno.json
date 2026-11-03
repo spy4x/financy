@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "check": "deno check subscribers.ts",
+    "test": "deno test subscribers.test.ts"
+  }
+}

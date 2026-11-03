@@ -1,0 +1,16 @@
+# The only container variables the SPA's `/config.json` may carry, one per line: the variable's
+# name, then the key it gets in the file. Everything here is sent to every visitor's browser, so
+# list a public value only, never a secret. `tests/spa-runtime-config.test.ts` rejects names that
+# look like secrets. See docs/stack.md, "Runtime configuration".
+SPA_ENV env
+SPA_ERROR_REPORT_DSN errorReportDsn
+# Module switches (apps/spa/src/modules.ts, ADR 003). Unset means on; `false` turns one off.
+SPA_REALTIME realtime
+SPA_OFFLINE offline
+# The public demo (docs/demo.md): `true` shows the demo line on the sign-in and sign-up pages.
+SPA_DEMO demo
+# Guest accounts (docs/guests.md): `false` hides "Try it now"; unset or anything else shows it.
+SPA_GUEST guest
+# The public website's host (MPA_DOMAIN), such as `www.example.com`: the legal pages the line under
+# "Try it now" links to. Unset: the line names them without links.
+SPA_SITE site

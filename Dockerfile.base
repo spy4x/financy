@@ -1,22 +1,60 @@
-# Base Dockerfile for Financy
+# Base Dockerfile for app
 # This image contains the common setup for all Deno-based services
-# Build: docker build -t financy/deno-base:${DENO_VERSION} -f Dockerfile.base --build-arg DENO_VERSION=X.X.X
+# Build: `deno task compose build` builds it first, as <PROJECT>/deno-base:<DENO_VERSION>, and the
+# other images start from it (BASE_IMAGE).
 
-ARG DENO_VERSION=2.6.3
-FROM denoland/deno:alpine-${DENO_VERSION}
+ARG DENO_VERSION=2.9.7
+FROM docker.io/denoland/deno:alpine-${DENO_VERSION}
 
 WORKDIR /app
 
-# Copy only dependency manifest for better layer caching
-COPY deno.jsonc ./
+# Install common system dependencies. The worker processes uploaded images with the `vips` command
+# line (docs/files.md, #464): `vips-tools` (libvips 8.15 or newer), `vips-heif` to read HEIC, and
+# `libheif-aom` to write AVIF.
+RUN apk add --no-cache git curl bash libstdc++ libgcc vips-tools vips-heif libheif-aom
 
-# Install dependencies (this layer will be cached if deno.jsonc doesn't change)
-RUN deno install
+# Copy dependency manifests for better layer caching. Every workspace member of deno.jsonc needs a
+# line here, or older Deno versions fail `deno install` (tests/dockerfile-base.test.ts checks it).
+COPY deno.jsonc deno.lock ./
+COPY apps/admin/deno.json ./apps/admin/deno.json
+COPY apps/api/deno.json ./apps/api/deno.json
+COPY apps/mpa/deno.json ./apps/mpa/deno.json
+COPY apps/spa/deno.json ./apps/spa/deno.json
+COPY apps/worker/deno.json ./apps/worker/deno.json
+COPY libs/domain/api-tokens/deno.json ./libs/domain/api-tokens/deno.json
+COPY libs/domain/billing/deno.json ./libs/domain/billing/deno.json
+COPY libs/domain/blog/deno.json ./libs/domain/blog/deno.json
+COPY libs/domain/contact-links/deno.json ./libs/domain/contact-links/deno.json
+COPY libs/domain/catalog/deno.json ./libs/domain/catalog/deno.json
+COPY libs/domain/groups/deno.json ./libs/domain/groups/deno.json
+COPY libs/domain/identity/deno.json ./libs/domain/identity/deno.json
+COPY libs/domain/notes/deno.json ./libs/domain/notes/deno.json
+COPY libs/domain/tags/deno.json ./libs/domain/tags/deno.json
+COPY libs/domain/notifications/deno.json ./libs/domain/notifications/deno.json
+COPY libs/domain/subscribers/deno.json ./libs/domain/subscribers/deno.json
+COPY libs/domain/errors/deno.json ./libs/domain/errors/deno.json
+COPY libs/server/api-tokens/deno.json ./libs/server/api-tokens/deno.json
+COPY libs/server/auth/deno.json ./libs/server/auth/deno.json
+COPY libs/server/billing/deno.json ./libs/server/billing/deno.json
+COPY libs/server/blog/deno.json ./libs/server/blog/deno.json
+COPY libs/server/contact-links/deno.json ./libs/server/contact-links/deno.json
+COPY libs/server/catalog/deno.json ./libs/server/catalog/deno.json
+COPY libs/server/files/deno.json ./libs/server/files/deno.json
+COPY libs/server/groups/deno.json ./libs/server/groups/deno.json
+COPY libs/server/jobs/deno.json ./libs/server/jobs/deno.json
+COPY libs/server/mail/deno.json ./libs/server/mail/deno.json
+COPY libs/server/notes/deno.json ./libs/server/notes/deno.json
+COPY libs/server/tags/deno.json ./libs/server/tags/deno.json
+COPY libs/server/notifications/deno.json ./libs/server/notifications/deno.json
+COPY libs/server/subscribers/deno.json ./libs/server/subscribers/deno.json
+COPY libs/server/telegram/deno.json ./libs/server/telegram/deno.json
+COPY libs/platform/deno.json ./libs/platform/deno.json
+COPY libs/ui/deno.json ./libs/ui/deno.json
 
-# Ensure Deno cache is writable for non-root user
-ENV DENO_DIR=/deno-dir
-RUN mkdir -p /deno-dir && chown -R 1000:1000 /deno-dir
+# Install dependencies. --frozen fails the build when deno.lock does not match deno.jsonc, so the
+# image holds the versions CI tested (this layer is cached until a manifest above changes).
+RUN deno install --frozen
 
-# Set ownership for non-root user
-RUN chown -R 1000:1000 /app
+# Set ownership for non-root user and ensure deno cache is writable
+RUN chown -R 1000:1000 /app /deno-dir
 USER 1000:1000

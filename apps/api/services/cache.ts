@@ -1,206 +1,39 @@
-import {
-  Account,
-  Category,
-  Currency,
-  ExchangeRate,
-  Group,
-  GroupMembership,
-  Tag,
-  Transaction,
-  User,
-  UserKey,
-  UserSession,
-  UserSettings,
-  ValidationSchema,
-} from "@shared/types"
-import {
-  ONE_DAY_IN_SECONDS,
-  ONE_HOUR_IN_SECONDS,
-  ONE_MONTH_IN_SECONDS,
-  ONE_WEEK_IN_SECONDS,
-  SECONDS_IN_MINUTE,
-} from "@shared/constants/+index.ts"
-
+import { RedisKvStore } from "@spy4x/server/kv"
+import type { Type } from "arktype"
+import { User } from "@domain/identity"
 import { config } from "../services/config.ts"
 
-import { connectKv } from "./kv.ts"
 import { buildMethods as buildMethodsBase } from "@spy4x/platform/cache"
+import { ONE_MONTH_IN_SECONDS } from "@spy4x/platform/universal/time-constants"
 import { createCacheService } from "./cache-service.ts"
 
-export interface TelegramBotSession {
-  chatId: number
-  state?: string
-  data?: Record<string, unknown>
-  lastActivity: Date
-}
-
-const kv = await connectKv(config.kv.hostname, config.kv.port)
+// `RedisKvStore` requires a non-empty key prefix (the template's own kv store did not scope its
+// keys at all). "api" is this app's own namespace: every key this cache writes now reads
+// `api:<prefix>_<id>` instead of the old unprefixed `<prefix>_<id>` — this is a genuine change,
+// not merely a rename. A rollback past that change: docs/handoff.md, trap 11.
+/** The API's one Valkey connection, shared by the cache and the auth rate limits. */
+export const kv = await RedisKvStore.connect(config.kv.hostname, config.kv.port, "api", {
+  password: config.kv.password,
+})
+console.log(`✅ Connected to KV`) // kept from the old client's connect log
 const cacheService = createCacheService(kv)
 
-function buildMethods<T>(prefix: string, schema?: ValidationSchema) {
+function buildMethods<T>(prefix: string, schema?: Type) {
   return buildMethodsBase<T>(cacheService, prefix, ONE_MONTH_IN_SECONDS, schema)
 }
 
-export enum CacheTTL {
-  threeMin = 3 * SECONDS_IN_MINUTE,
-  fiveMin = 5 * SECONDS_IN_MINUTE,
-  oneHour = ONE_HOUR_IN_SECONDS,
-  day = ONE_DAY_IN_SECONDS,
-  week = ONE_WEEK_IN_SECONDS,
-  month = ONE_MONTH_IN_SECONDS,
+/** True when Valkey answers a command; false on any failure (the store bounds each command). */
+export async function isCacheConnected(): Promise<boolean> {
+  try {
+    await kv.clientId()
+    return true
+  } catch {
+    return false
+  }
 }
 
 export class PublicAPICache {
   user = buildMethods<User>(`user`)
-  userKey = buildMethods<UserKey>(`userKey`)
-  userSession = buildMethods<UserSession>(`userSession`)
-  userSettings = buildMethods<UserSettings>(`userSettings`)
-  group = buildMethods<Group>(`group`)
-  groupMembership = buildMethods<GroupMembership>(`groupMembership`)
-  account = buildMethods<Account>(`account`)
-  category = buildMethods<Category>(`category`)
-  currency = buildMethods<Currency>(`currency`)
-  exchangeRate = buildMethods<ExchangeRate>(`exchangeRate`)
-  tag = buildMethods<Tag>(`tag`)
-
-  transaction = buildMethods<Transaction>(`transaction`)
-
-  isSessionTokenExpired = {
-    key: (sessionToken: string): string => `isSessionTokenExpired_${sessionToken}`,
-    ttl: CacheTTL.day,
-
-    get: async (sessionToken: string): Promise<null | boolean> => {
-      return cacheService.get<boolean>(this.isSessionTokenExpired.key(sessionToken))
-    },
-    set: async (sessionToken: string, isExpired = true): Promise<void> => {
-      return cacheService.set(
-        this.isSessionTokenExpired.key(sessionToken),
-        isExpired,
-        this.isSessionTokenExpired.ttl,
-      )
-    },
-    delete: async (sessionToken: string): Promise<void> => {
-      return cacheService.delete(this.isSessionTokenExpired.key(sessionToken))
-    },
-    wrap: async (sessionToken: string, fn: () => Promise<boolean>): Promise<boolean> => {
-      return cacheService.wrap<boolean>(
-        this.isSessionTokenExpired.key(sessionToken),
-        fn,
-        this.isSessionTokenExpired.ttl,
-      )
-    },
-  }
-
-  /**
-   * Telegram Bot Session Storage
-   * Production-ready session management using Redis/Valkey
-   */
-  telegramSession = {
-    prefix: "tg_session",
-    ttl: CacheTTL.day, // 24 hours
-
-    key: (chatId: number): string => `${this.telegramSession.prefix}:${chatId}`,
-
-    /**
-     * Get session for a chat
-     */
-    get: async (chatId: number): Promise<TelegramBotSession | null> => {
-      try {
-        const sessionData = await cacheService.get<TelegramBotSession>(
-          this.telegramSession.key(chatId),
-        )
-
-        if (!sessionData) {
-          return null
-        }
-
-        // Check if session is still valid (not expired due to inactivity)
-        const now = new Date()
-        const lastActivity = new Date(sessionData.lastActivity)
-        const diffHours = (now.getTime() - lastActivity.getTime()) / (1000 * 60 * 60)
-
-        if (diffHours > 24) {
-          await this.telegramSession.delete(chatId)
-          return null
-        }
-
-        return sessionData
-      } catch (error) {
-        console.error("Failed to get Telegram session:", error)
-        return null
-      }
-    },
-
-    /**
-     * Create or update session for a chat
-     */
-    set: async (
-      chatId: number,
-      state?: string,
-      data?: Record<string, unknown>,
-    ): Promise<void> => {
-      try {
-        const session: TelegramBotSession = {
-          chatId,
-          state,
-          data,
-          lastActivity: new Date(),
-        }
-
-        await cacheService.set(this.telegramSession.key(chatId), session, this.telegramSession.ttl)
-      } catch (error) {
-        console.error("Failed to set Telegram session:", error)
-      }
-    },
-
-    /**
-     * Update session state and data
-     */
-    update: async (
-      chatId: number,
-      updates: Partial<Pick<TelegramBotSession, "state" | "data">>,
-    ): Promise<void> => {
-      try {
-        const existingSession = await this.telegramSession.get(chatId)
-        if (!existingSession) {
-          console.warn(`Cannot update non-existent session for chat ${chatId}`)
-          return
-        }
-
-        const updatedSession: TelegramBotSession = {
-          ...existingSession,
-          ...updates,
-          lastActivity: new Date(),
-        }
-
-        await cacheService.set(
-          this.telegramSession.key(chatId),
-          updatedSession,
-          this.telegramSession.ttl,
-        )
-      } catch (error) {
-        console.error("Failed to update Telegram session:", error)
-      }
-    },
-
-    /**
-     * Clear session state (keep user info but clear workflow state)
-     */
-    clearState: async (chatId: number): Promise<void> => {
-      await this.telegramSession.update(chatId, { state: undefined, data: undefined })
-    },
-
-    /**
-     * Completely remove session
-     */
-    delete: async (chatId: number): Promise<void> => {
-      try {
-        await cacheService.delete(this.telegramSession.key(chatId))
-      } catch (error) {
-        console.error("Failed to clear Telegram session:", error)
-      }
-    },
-  }
 }
 
 export const publicAPICache = new PublicAPICache()

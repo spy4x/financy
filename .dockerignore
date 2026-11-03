@@ -4,8 +4,43 @@
 # 2. Add files and directories that should be included
 !apps/**
 !libs/**
+# The catalogs of every language the apps ship (i18n/TRANSLATING.md).
+!i18n/**
 !infra/**
 !deno.jsonc
+# The MPA renders the API reference and the published guides from these files
+# (apps/mpa/api-docs.ts, PUBLISHED_DOCS in apps/mpa/docs-site.ts); the other docs stay out.
+!docs/token-api.md
+!docs/apps.md
+!docs/products.md
+!docs/start-a-product.md
+!docs/deploy.md
+!docs/guests.md
+!docs/sign-in-providers.md
+!docs/backups.md
+!docs/files.md
+!docs/data-export.md
+!docs/capacity.md
+!docs/billing.md
+!docs/catalog.md
+!docs/telegram.md
+!docs/offline.md
+!docs/security-headers.md
+!docs/development.md
+!docs/aggregates.md
+!docs/ids.md
+!docs/api-errors.md
+!docs/admin-modules.md
+# The website counts the browser test suites (apps/mpa/repo-facts.ts): the files at the top of
+# e2e/, which holds only suites there, and none of its folders. Never write this as
+# `!e2e/*.e2e.ts`: an exception with any wildcard but a trailing `/**` makes BuildKit read every
+# folder of the context, and the server's `.volumes/` holds folders it may not open.
+!e2e/**
+e2e/*/**
+# The home page plays the README's demo video from its one copy (apps/mpa/routes/video/[file].ts);
+# the raw take, the music and the recipe stay out. Exact paths, no wildcard (see above).
+!media/demo/demo.webm
+!media/demo/demo.mp4
 !deno.lock
 
 # 3. Bonus step: ignore any unnecessary files that may be inside those allowed directories in Step #2
@@ -19,10 +54,9 @@
 **/dockerfile.*
 **/_fresh
 
-# 4. Never bundle env files or secret keys (secrets)
-**/.env
-**/.env.*
-!.env.example
-!.env.age
-!.env.prod.age
-**/.age/
+# 4. Never let a secret into an image. On the server these folders hold the env file and the Web
+#    Push key, and a developer may keep a .env beside an app; Compose hands the containers what they
+#    need at run time (environment, a bind mount).
+infra/envs
+infra/configs
+**/.env*

@@ -1,0 +1,54 @@
+name: proxy
+
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:3.7.13
+    restart: unless-stopped
+    command:
+      - '--log.level=${PROXY_LOG_LEVEL:-info}'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.web.address=:80'
+      - '--ping=true'
+      - '--ping.entryPoint=web'
+      # Certificate resolver the production routers name; see "Production certificates" in docs/deploy.md.
+      - '--certificatesresolvers.${TRAEFIK_CERT_RESOLVER:-myresolver}.acme.email=${TRAEFIK_ACME_EMAIL:-}'
+      - '--certificatesresolvers.${TRAEFIK_CERT_RESOLVER:-myresolver}.acme.storage=/letsencrypt/acme.json'
+      - '--certificatesresolvers.${TRAEFIK_CERT_RESOLVER:-myresolver}.acme.httpchallenge.entrypoint=web'
+    # On this machine only by default, since development serves the API's /api/test/* routes. A
+    # production server sets both to the bare port, which Docker publishes on every IPv4 and IPv6
+    # address (docs/deploy.md, "The firewall").
+    ports:
+      - '${PROXY_HTTPS_HOST_PORT:-127.0.0.1:443}:443'
+      - '${PROXY_HTTP_HOST_PORT:-127.0.0.1:80}:80'
+    volumes:
+      - '../../.volumes/traefik/letsencrypt:/letsencrypt'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro,Z'
+    security_opt:
+      - label=disable
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    deploy:
+      resources:
+        limits:
+          cpus: ${PROXY_CPU_LIMIT}
+          memory: ${PROXY_MEM_LIMIT}
+    labels:
+      - 'traefik.enable=true'
+      # No router for Traefik's own dashboard or API, and no `--api.insecure`: they list every
+      # router and backend address of every project behind this proxy (spy4x/template#353).
+      - 'traefik.http.routers.pingweb.rule=PathPrefix(`/ping`)'
+      - 'traefik.http.routers.pingweb.service=ping@internal'
+      - 'traefik.http.routers.pingweb.entrypoints=web'
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true

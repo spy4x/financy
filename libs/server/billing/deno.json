@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "check": "deno check postgres-billing-repository.ts billing-notices.ts handover.ts setup.ts"
+  }
+}

@@ -1,13 +1,12 @@
-import type { AuthData } from "./services/auth/types.ts"
 import type { RequestIdVariables } from "hono/request-id"
+import type { AppAuthState } from "./services/sign-in.ts"
 
 export interface APIContext {
   Variables: RequestIdVariables & {
     /**
-     * Information about the user's authentication.
-     * ⚠️ Warning: it can be `null`. This is for convenience.
-     * If you want to ensure that the user is authenticated, use the `authRequiredMiddleware` middleware.
+     * The signed-in user and session, set by `parseAuth`; `null` when the request has no valid
+     * session. Behind `isAuthenticated1FA` or `isAuthenticated2FA` it is never `null`.
      */
-    auth: AuthData
+    auth: AppAuthState | null
   }
 }

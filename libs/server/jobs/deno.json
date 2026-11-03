@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "check": "deno check .",
+    "test": "deno test"
+  }
+}
