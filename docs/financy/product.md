@@ -14,9 +14,14 @@ same numbers live, on the cloud or on your own server.
 - **The partner**: adds a coffee in five seconds and checks what is left this month. If the
   partner stops logging, the household stops paying, so every screen is judged by them.
 - **The self-hoster**: runs it at home for free, and brings the paying people.
+- **Individuals and small businesses** are welcome too: one person pays the same plan, and a
+  freelancer or a small team tracks shared spending in several currencies. Pages for businesses
+  say plainly that Financy is not double-entry accounting.
 
-Financy does not compete on automatic bank feeds, envelope budgeting, investment tracking,
-splitting bills with friends or double-entry bookkeeping.
+The first version does not do automatic bank feeds, envelope budgeting, investment tracking,
+splitting bills with friends or double-entry bookkeeping. Each group will pick its budgeting
+method, envelopes next to monthly limits (https://github.com/spy4x/financy/issues/117), and a
+basic investments view is filed for later (https://github.com/spy4x/financy/issues/118).
 
 ## The first version
 
@@ -46,13 +51,25 @@ natural-language entry, the token API and the MCP server, and the store apps.
 ## Price
 
 - **Self-hosted**: free, AGPL-3.0.
-- **Cloud**: $4 a month or $40 a year (US dollars) per household, up to 6 members. Inviting a
-  partner never costs more.
+- **Cloud**: $4 a month or $40 a year (US dollars) per group (a household, a person or a small
+  team), up to 6 members. Inviting a partner never costs more.
 - **No trial.** A person tries Financy in the public demo, with sample data and no account, then
   pays from sign-up, with a 30-day money-back guarantee. With no users yet, the first thing to
   learn is whether people pay; a trial delays that answer and costs code (a trial clock, expiry
   emails, abuse rules) that the demo and the guarantee make unnecessary. A household that stops
   paying keeps read access and its export.
+- **Launch offers.** Family get the paid plan free, as a gift: an admin grant with a reason
+  and an optional end date, logged (https://github.com/spy4x/seed/issues/721). Friends get a
+  year free as founding testers, in exchange for feedback, then the founding price. The first
+  100 paying groups get the founding price, $3 a month or $30 a year, kept while they stay
+  subscribed and shown with a real count and no timer. No lifetime deals, fake deadlines or
+  fake scarcity.
+- **Referral.** A free month for both groups. The friend's month comes after their first
+  payment; the referrer's once that payment has cleared the 30-day refund window. Credit, never
+  cash, with no yearly cap. Built once in Seed (https://github.com/spy4x/seed/issues/741).
+- **VAT.** Stripe Tax collects EU and UK VAT at checkout (https://github.com/spy4x/seed/issues/742);
+  NeatSoft registers for the EU's non-Union OSS scheme and UK VAT
+  (https://github.com/spy4x/financy/issues/116).
 
 ## Where it runs
 
@@ -65,8 +82,8 @@ starts with an empty database: nothing moves from the old one.
 
 ## The owner's decisions
 
-All on 2026-11-03, in chat. The quotes are the options the owner chose, with the description the
-option carried, or the owner's words.
+On 2026-11-03 and 2026-11-04, in chat. The quotes are the options the owner chose, with the
+description the option carried, or the owner's words.
 
 | Decision | Owner's words |
 | --- | --- |
@@ -88,10 +105,16 @@ option carried, or the owner's words.
 | AI providers: any OpenAI-compatible one, at least the three most used; DeepSeek allowed | "Can. We need to support OpenAI API-compatible providers, at least top 3 most popular. I'm ok with deepSeek [...]" |
 | hi@financy.dev on the owner's existing mail server, which the lead found possible and light | "If it's technically possible to have hi@financy.dev there and it makes sense - I would love to reuse existing server [...]" |
 | The first deploy runs on the home server that also runs Seed's live demo, and reuses its Traefik and shared monitoring; what runs on the cloud server, and a move to Financy's own EU server before the public launch, are open for the owner to decide | "yes, we can use my [...] home server for now (same as for Seed) and something from cloud's server." |
+| Family free as a gift, friends a free year as founding testers, a founding price of $3 or $30 for the first 100 kept while subscribed, no lifetime deals or fake scarcity (2026-11-04) | "I like and agree with what you wrote in Family, friends and launch offers - let's keep those decisions as strategy." |
+| Referral not held back until 30 households; the lead sets its priority and milestone (2026-11-04) | "`It should be built after launch, once about 30 households are past the 30-day guarantee.` Just set correct priority and milestone. No need to limit." |
+| Stripe Tax for EU and UK VAT (2026-11-04) | "`Stripe Tax at about $0.02 per $4 charge.` sounds fair, i pick this." |
+| Individuals, households and small businesses, with a plain note that it is not double-entry (2026-11-04) | "We don't have to only focus marketing on households. Individuals are welcomed too! And small businesses (just note that it's not double entry)." |
+| Each group picks its budgeting method (2026-11-04) | "I want to support multiple different systems, so user could pick per group. Makes sense?" |
 
 ## The lead's picks
 
-Not the owner's decisions: defaults the lead took on 2026-11-03, which the owner can change.
+Not the owner's decisions: defaults the lead took on 2026-11-03 and 2026-11-04, which the owner
+can change.
 
 - Hosting in the EU (Hetzner, like the owner's other projects), with NeatSoft PTE LTD as the data
   controller, since it contracts and invoices for the owner. The first deploy shares Seed's server
@@ -104,3 +127,8 @@ Not the owner's decisions: defaults the lead took on 2026-11-03, which the owner
 - The statement formats of the first version: CSV, PDF, and the four standard formats banks
   export (OFX, QIF, CAMT.053 and MT940).
 - No trial, as the decisions table says: the owner asked the lead to choose.
+- Referral without limits (2026-11-04): no yearly cap, any group may share a link, and founding
+  testers and family earn credit like everyone else. The owner asked why each limit was there
+  ("Why limit?"); none protects anything, because every reward needs a real friend's payment
+  that cleared the 30-day refund window. Paying with the same card as the referrer earns no
+  reward, which stops a person referring their own second account.
