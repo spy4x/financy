@@ -206,10 +206,8 @@ describe("the public website", () => {
     expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
   })
 
-  it("answers /compare, /admin and /mvp with a 404, and links none of them from any page", async () => {
-    for (const path of ["/compare", "/admin", "/mvp", "/de/compare", "/de/admin", "/de/mvp"]) {
-      expect((await page(path)).status, path).toBe(404)
-    }
+  // Their 404 comes from the built server's routing, which e2e/mpa/features.mpa.ts walks.
+  it("links /compare, /admin and /mvp from no page, in any language", async () => {
     for (const path of everyLanguage(SITE_PAGES)) {
       const { html } = await page(path)
       expect(html, path).not.toMatch(/href="[^"]*\/(?:compare|admin|mvp)"/)
