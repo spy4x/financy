@@ -36,8 +36,8 @@ test.describe("installable app", () => {
     await gotoApp(page, "/sign-in", page.locator("[data-e2e=auth-form-login]"))
     const { url, manifest } = await linkedManifest(page)
 
-    expect(manifest.name).toBe("Seed")
-    expect(manifest.short_name).toBe("Seed")
+    expect(manifest.name).toBe("Financy")
+    expect(manifest.short_name).toBe("Financy")
     expect(manifest.display).toBe("standalone")
     expect(manifest.start_url).toBe("/")
     expect(manifest.theme_color).toMatch(/^#[0-9a-f]{6}$/i)

@@ -30,9 +30,8 @@ export const ADMIN_PATHS = {
   oneTimeCode: "/one-time-code",
 } as const
 
-// Seed's own site: see docs/start-a-product.md
 /** The product's name, the last part of every admin page's title. */
-export const ADMIN_PRODUCT = "Seed"
+export const ADMIN_PRODUCT = "Financy"
 
 /**
  * The word that marks the operator area, in English: the titles' middle part where no translator
@@ -134,9 +133,9 @@ export function AdminShell(
 }
 
 /**
- * The browser tab's title for an admin page: `Users · Admin · Seed`, named after the entry whose
+ * The browser tab's title for an admin page: `Users · Admin · Financy`, named after the entry whose
  * page it is or is under, so the tab itself says it is the operator area. A page under no entry
- * reads `Admin · Seed`. `tag` is "Admin" in the operator's language.
+ * reads `Admin · Financy`. `tag` is "Admin" in the operator's language.
  */
 export function adminPageTitle(
   navItems: readonly Pick<AdminNavItem, "href" | "name">[],

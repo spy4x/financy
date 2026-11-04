@@ -105,7 +105,7 @@ function Operator(
     allModules,
     moduleIds,
   ])
-  // The tab says "Users · Admin · Seed", so an operator never mistakes it for the product's.
+  // The tab says "Users · Admin · Financy", so an operator never mistakes it for the product's.
   const t = useT()
   const tag = t.t(`AdminFrame.tag`)
   // The modules name their rail entries by catalog key; the rail, the tab title and the shortcuts

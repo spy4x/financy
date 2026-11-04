@@ -209,7 +209,7 @@ function readable(): string[] {
  * and formats.
  */
 const DATA = [
-  `Seed`,
+  `Financy`,
   `Ctrl`,
   `Ada Lovelace`,
   `AL`,

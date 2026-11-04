@@ -292,7 +292,7 @@ describe("AppFrame", () => {
     )
 
     expect(document.querySelector("header")).toBe(null)
-    expect(document.body.textContent).not.toContain("Seed")
+    expect(document.body.textContent).not.toContain("Financy")
     expect(find("[data-e2e=rail-shell-top] [data-e2e=group-picker]")).not.toBe(null)
     expect(find('[data-e2e=rail-shell-bottom] a[href="/notifications"]')).not.toBe(null)
     expect(find(ACCOUNT)).not.toBe(null)
@@ -784,11 +784,11 @@ describe("PublicFrame", () => {
     expect(chosen).toEqual(["ru"])
   })
 
-  it("shows the product's sprout mark above the signed-out pages, named by its text", async () => {
+  it("shows the product's wallet mark above the signed-out pages, named by its text", async () => {
     await mount(<PublicFrame canSignOut={false} onSignOut={() => {}}>page</PublicFrame>)
 
     const mark = find('a[href="/"] [data-e2e=brand-mark]')
-    expect(mark.textContent).toBe("Seed")
+    expect(mark.textContent).toBe("Financy")
     expect(mark.querySelector("[aria-hidden=true] svg")).not.toBeNull()
   })
 })
