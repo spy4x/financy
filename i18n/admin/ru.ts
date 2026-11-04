@@ -131,6 +131,7 @@ export default {
   "AdminAuditEvent.groupCreated": "Создана группа",
   "AdminAuditEvent.groupRenamed": "Группа переименована",
   "AdminAuditEvent.groupDetailsUpdated": "Изменено описание группы",
+  "AdminAuditEvent.groupTimeZoneChanged": "Изменён часовой пояс группы",
   "AdminAuditEvent.groupDeleted": "Группа удалена",
   "AdminAuditEvent.groupRestored": "Группа восстановлена",
   "AdminAuditEvent.memberRoleChanged": "Изменена роль участника",
@@ -195,7 +196,7 @@ export default {
   "AdminAuditEvent.confirmationResent": "Письмо для подтверждения подписки отправлено повторно",
   "AdminAuditEvent.subscribersExported": "Список подписчиков скачан",
   "AdminAuditEvent.roleChanged": "Изменена роль",
-  "AdminAuditEvent.resetSent": "Оператор отправил ссылку для сброса пароля",
+  "AdminAuditEvent.resetSent": "Оператор отправил письмо для сброса пароля",
   "AdminAuditEvent.usersExported": "Список пользователей скачан",
   "AdminAuditEvent.passkeyRenamed": "Ключ доступа переименован",
   "AdminAuditEvent.guestStarted": "Вход как гость",
@@ -251,6 +252,7 @@ export default {
   "AdminBilling.onFreeSince": "На бесплатном тарифе с {date}",
   "AdminBilling.wouldBe": "после пробного — {amount}",
   "AdminBilling.seatPrice": "{seats} × {price}",
+  "AdminBilling.billedYearly": "{amount} за год",
   "AdminBilling.title": "Оплата",
   "AdminBilling.subtitle": "Кто платит, сколько и сколько вы зарабатываете.",
   "AdminBilling.off": "Оплата выключена",
@@ -282,7 +284,7 @@ export default {
   "AdminBilling.keyNumbers": "Ключевые показатели",
   "AdminBilling.mrr": "Ежемесячная выручка (MRR)",
   "AdminBilling.mrrHint":
-    "Активные подписки и подписки с просроченным платежом, по прейскуранту. Пробные периоды считаются как 0.",
+    "Активные подписки и подписки с просроченным платежом, по прейскуранту. Годовая считается как её цена, делённая на 12. Пробные периоды считаются как 0.",
   "AdminBilling.payingGroups": "Платящие группы",
   "AdminBilling.pastDueCount": "Просрочено: {count}",
   "AdminBilling.inTrial": "На пробном периоде",
@@ -337,6 +339,9 @@ export default {
   "AdminBillingCustomer.status": "Статус",
   "AdminBillingCustomer.plan": "Тариф",
   "AdminBillingCustomer.perMonth": "В месяц",
+  "AdminBillingCustomer.period": "Период оплаты",
+  "AdminBillingCustomer.monthly": "Помесячно",
+  "AdminBillingCustomer.yearly": "Ежегодно",
   "AdminBillingCustomer.lastPayment": "Последний платёж",
   "AdminBillingCustomer.customerSince": "Клиент с",
   "AdminBillingCustomer.notRecorded": "Нет данных",
@@ -394,6 +399,8 @@ export default {
   "AdminBillingCustomer.howLong": "На какой срок",
   "AdminBillingCustomer.timeText":
     "У группы <group>{group}</group> останется тариф {plan} без списаний до {date}. Потом снова начнёт списываться обычная плата — {charge} в месяц.",
+  "AdminBillingCustomer.timeTextYear":
+    "У группы <group>{group}</group> останется тариф {plan} без списаний до {date}. Потом снова начнёт списываться обычная плата — {charge} в год.",
   "AdminBillingCustomer.length7d": "7 дней",
   "AdminBillingCustomer.length14d": "14 дней",
   "AdminBillingCustomer.length30d": "30 дней",
@@ -476,7 +483,8 @@ export default {
   "AdminBlogDialogs.slugRule": "Только строчные латинские буквы, цифры и дефисы.",
   "AdminBlogDialogs.changeUrlTitle": "Изменить адрес поста?",
   "AdminBlogDialogs.changeUrl": "Изменить адрес",
-  "AdminBlogDialogs.linksBreak": "Ссылки на <path>{path}</path> перестанут работать.",
+  "AdminBlogDialogs.linksRedirect":
+    "Ссылки на <path>{path}</path> продолжат работать: они будут вести на новый адрес.",
   "AdminBlogDialogs.newSlug": "Новый адрес",
   "AdminBlogDialogs.slugHint": "Строчные латинские буквы, цифры и дефисы.",
   "AdminBlogDialogs.futureTime": "Выберите время в будущем.",
@@ -586,6 +594,7 @@ export default {
   "AdminBlogEditor.viewOnSite": "Открыть на сайте",
   "AdminBlogEditor.changeUrl": "Изменить адрес…",
   "AdminBlogEditor.unpublish": "Снять с публикации…",
+  "AdminBlogEditor.history": "История…",
   "AdminBlogEditor.deletePost": "Удалить пост…",
   "AdminBlogEditor.editPost": "Редактирование поста",
   "AdminBlogEditor.newPost": "Новый пост",
@@ -638,7 +647,7 @@ export default {
   "AdminBlogEditor.settings": "Настройки поста",
   "AdminBlogEditor.slug": "Адрес",
   "AdminBlogEditor.slugLocked":
-    "После публикации адрес не меняется. Изменить его можно через «Изменить адрес…», но старые ссылки перестанут работать.",
+    "После публикации адрес не меняется. Изменить его можно через «Изменить адрес…», а старые ссылки будут вести на новый.",
   "AdminBlogEditor.slugHint":
     "Адрес поста: <path>{path}</path>. Строчные латинские буквы, цифры и дефисы.",
   "AdminBlogEditor.slugHintEmpty":
@@ -650,6 +659,9 @@ export default {
     "Показывается в поисковой выдаче вместо заголовка. Примерно 60 символов.",
   "AdminBlogEditor.keyPoints": "Главное",
   "AdminBlogEditor.keyPointsHint": "До 5 коротких строк в начале поста.",
+  "AdminBlogEditor.intro": "Вступление",
+  "AdminBlogEditor.introHint":
+    "Два-три предложения, с которых начинаются письмо рассылки и кросс-посты. На странице поста не показывается.",
   "AdminBlogEditor.keyPoint": "Пункт {n}",
   "AdminBlogEditor.removeKeyPoint": "Убрать пункт {n}",
   "AdminBlogEditor.addPoint": "Добавить пункт",
@@ -659,11 +671,19 @@ export default {
   "AdminBlogEditor.authorUrl": "Ссылка на автора",
   "AdminBlogEditor.authorUrlHint":
     "Имя автора в посте будет вести сюда — например, на страницу «Обо мне». Так читатели и поисковики поймут, кто написал пост. Если ссылка не нужна, оставьте поле пустым.",
+  "AdminBlogEditor.relatedFeature": "Связанная возможность",
+  "AdminBlogEditor.relatedFeatureHint":
+    "Страница возможности на сайте, о которой этот пост, например realtime для /features/realtime. Пост ссылается на неё под строкой с автором. Оставьте пустым, если такой нет.",
   "AdminBlogEditor.coverUrl": "Ссылка на обложку",
-  "AdminBlogEditor.coverUrlHint":
-    "Полная ссылка https:// на широкую картинку 1200×630 с хостинга, который разрешает встраивать её на другие сайты. Если обложка не нужна, оставьте поле пустым.",
+  "AdminBlogEditor.coverUrlHint": "Картинка 16:9, адрес https://.",
   "AdminBlogEditor.coverAlt": "Описание обложки",
   "AdminBlogEditor.coverAltHint": "Что на картинке — для тех, кто её не видит.",
+  "AdminBlogEditor.groupAddress": "Адрес и язык",
+  "AdminBlogEditor.groupSummary": "Краткое содержание",
+  "AdminBlogEditor.groupCover": "Обложка",
+  "AdminBlogEditor.groupLinks": "Ссылки",
+  "AdminBlogEditor.coverOf": "Использует обложку поста: {title}",
+  "AdminBlogEditor.coverBroken": "Картинка не загрузилась.",
   "AdminBlogEditor.coverPrivacy":
     "Если картинка лежит на чужом сайте, этот сайт увидит IP-адреса ваших читателей.",
   "AdminBlogEditor.publishing": "Публикация",
@@ -1285,6 +1305,7 @@ export default {
   "AdminGroup.openInvitations": "Действующие приглашения",
   "AdminGroup.owner": "Владелец",
   "AdminGroup.created": "Создана",
+  "AdminGroup.timeZone": "Часовой пояс",
   "AdminGroup.imported": "Загружена из файла",
   "AdminGroup.importedBy": "<when></when>, <person>{name}</person>",
   "AdminGroup.lastActivity": "Последняя активность",
@@ -1835,7 +1856,7 @@ export default {
   "AdminUser.doneRoleOperator": "{name}: теперь роль «Оператор».",
   "AdminUser.doneRoleSupervisor": "{name}: теперь роль «Старший оператор».",
   "AdminUser.doneRoleAdmin": "{name}: теперь роль «Администратор».",
-  "AdminUser.donePasswordReset": "{name}: ссылка для сброса пароля отправлена.",
+  "AdminUser.donePasswordReset": "{name}: письмо для сброса пароля отправлено.",
   "AdminUser.doneDeleteGuest": "Гостевой аккаунт {name} удалён.",
   "AdminUser.doneUnlinkTelegram": "{name}: Telegram отвязан.",
   "AdminUser.doneRemovePicture": "{name}: фото профиля убрано.",
@@ -1845,7 +1866,7 @@ export default {
   "AdminUser.unblock": "Разблокировать",
   "AdminUser.block": "Заблокировать",
   "AdminUser.endAllSessions": "Завершить все сеансы",
-  "AdminUser.sendReset": "Отправить ссылку для сброса пароля",
+  "AdminUser.sendReset": "Отправить письмо для сброса пароля",
   "AdminUser.noResetAddress": "Нужен вход по паролю с e-mail",
   "AdminUser.unlinkTelegram": "Отвязать Telegram",
   "AdminUser.removePicture": "Убрать фото профиля",
@@ -1902,7 +1923,7 @@ export default {
   "AdminUser.methodPassword": "Пароль",
   "AdminUser.methodEmailCode": "Код из письма",
   "AdminUser.methodPasskey": "Ключ доступа",
-  "AdminUser.methodEmailLink": "Ссылка из письма",
+  "AdminUser.methodEmailLink": "Код из письма",
   "AdminUser.blockTitle": "Заблокировать {name}",
   "AdminUser.blockText":
     "Все сеансы сразу завершатся, и любой вход будет отклонён: по паролю, через Google, GitHub и по API-токенам. Данные останутся на месте. Блокировку можно снять позже.",
@@ -1922,10 +1943,10 @@ export default {
   "AdminUser.changeRoleText":
     "Новая роль начнёт действовать со следующего запроса. Вы можете выдать любую роль ниже своей. Чтобы назначить администратора, используйте скрипт user:role.",
   "AdminUser.changing": "Меняем…",
-  "AdminUser.resetTitle": "Отправить ссылку для сброса пароля: {name}",
+  "AdminUser.resetTitle": "Отправить письмо для сброса пароля: {name}",
   "AdminUser.resetText":
-    "Придёт то же письмо, что и после «Забыли пароль?»: со ссылкой, по которой можно задать новый пароль. Пока новый пароль не задан, старый продолжает работать.",
-  "AdminUser.sendLink": "Отправить ссылку",
+    "Придёт письмо о том, как сбросить пароль через «Забыли пароль?»: там пользователь получит код на почту. Пока новый пароль не задан, старый продолжает работать.",
+  "AdminUser.sendLink": "Отправить письмо",
   "AdminUser.sending": "Отправляем…",
   "AdminUser.deleteGuestTitle": "Удалить гостевой аккаунт {name}",
   "AdminUser.deleteGuestText":
@@ -1946,7 +1967,7 @@ export default {
   "AdminUser.cancel": "Отмена",
   "AdminUsers.title": "Пользователи",
   "AdminUsers.subtitle":
-    "Все, у кого есть аккаунт. Откройте пользователя, чтобы заблокировать его, завершить сеанс или отправить ссылку для сброса пароля.",
+    "Все, у кого есть аккаунт. Откройте пользователя, чтобы заблокировать его, завершить сеанс или отправить письмо для сброса пароля.",
   "AdminUsers.export": "Скачать CSV",
   "AdminUsers.search": "Имя или e-mail",
   "AdminUsers.searching": "Ищем…",
@@ -1990,4 +2011,13 @@ export default {
   "AdminBlogEditor.translationOfHint":
     "Пост, который переводит этот. Когда оба выйдут, сайт свяжет их как языковые версии.",
   "AdminBlogEditor.translationNone": "Нет — это оригинал",
+  "AdminBlogHistory.title": "История",
+  "AdminBlogHistory.versions": "Прошлые версии",
+  "AdminBlogHistory.shown": "Выбранная версия",
+  "AdminBlogHistory.body": "Текст",
+  "AdminBlogHistory.savedBy": "Сохранил(а) {name}, {date}",
+  "AdminBlogHistory.someone": "Неизвестно",
+  "AdminBlogHistory.restore": "Восстановить эту версию",
+  "AdminBlogHistory.empty": "Прошлых версий пока нет. Каждое сохранение оставляет одну.",
+  "AdminBlogHistory.restored": "Прошлая версия восстановлена. Сохраните, чтобы её оставить.",
 } satisfies Catalog

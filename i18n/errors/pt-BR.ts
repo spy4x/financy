@@ -156,6 +156,8 @@ export default {
   "Reason.ORDER_STALE": "A lista mudou depois que a página carregou. Recarregue e tente de novo.",
   "Reason.PASSWORD_INVALID": "Senha errada. Tente de novo.",
   "Reason.PASSWORD_LOCKED": "Muitas senhas erradas. Espere um pouco e tente de novo.",
+  "Reason.PERIOD_NOT_OFFERED":
+    "Este plano não é vendido nesse período de cobrança. Escolha o outro.",
   "Reason.PHOTO_CONTENT": "O conteúdo deste arquivo não corresponde ao tipo de imagem dele.",
   "Reason.PHOTO_NOT_FOUND": "Esta foto não existe mais.",
   "Reason.PHOTO_TOO_LARGE": "Esta foto é grande demais.",
@@ -164,6 +166,7 @@ export default {
   "Reason.PLAN_FEATURE_MISSING": "O plano do grupo não inclui isto.",
   "Reason.PLAN_LIMIT_REACHED": "O grupo chegou ao limite do plano.",
   "Reason.POST_NOT_FOUND": "Este post não existe mais.",
+  "Reason.REVISION_NOT_FOUND": "Esta versão anterior não existe mais.",
   "Reason.PROVIDER_ERROR": "O provedor de pagamento não respondeu. Tente de novo.",
   "Reason.REQUEST_ORIGIN_INVALID":
     "Não conseguimos confirmar de onde veio esta solicitação. Recarregue a página e tente de novo.",
@@ -171,7 +174,6 @@ export default {
   "Reason.SAME_GROUP": "Isto já está nesse grupo.",
   "Reason.SEARCH_RATE_LIMITED": "Muitas buscas. Espere um minuto e tente de novo.",
   "Reason.SEAT_PRICE_NOT_ACCEPTED": "Confirme que cada novo membro aumenta a conta do grupo.",
-  "Reason.SIGN_IN_LINK_ASKED_ELSEWHERE": "Este link foi pedido em outro navegador. Abra-o lá.",
   "Reason.SLUG_LOCKED":
     "O endereço fica travado depois que o post é publicado. Use Alterar URL para mudá-lo.",
   "Reason.SLUG_TAKEN": "Este endereço já está em uso. Escolha outro.",

@@ -25,7 +25,7 @@ copies). The worker and the SPA read it (`infra/compose/compose.shared.yml`); th
 | Get-started checklist | `apps/spa/src/views/OnboardingView.tsx` | The Notes page's "Get started" checklist starts with "Invite someone to your group" already done, because every sample group already has members. |
 | Sign-in and sign-up pages | `libs/ui/auth-screen.tsx` (`DEMO_NOTE`, `DEMO_GUEST_NOTE`), `apps/spa/src/state/demo.ts` | One line above the form: the demo is public, wiped every night, and every new account, guest or not, starts with sample data. A guest's banner gives the wipe's time in the visitor's own time zone. The SPA reads `demo` from its `/config.json` (`SPA_DEMO` in `apps/spa/public-env.allow`, which compose sets from `DEMO_MODE`). |
 | Wipe | `apps/worker/demo/wipe.ts` | Empties every table except `KEPT_TABLES` (the migration history, the backup status, the blog's posts, the contact links, the newsletter's subscribers, unsubscribes and send log, and the queue of file deletions) in one transaction. It first queues every attached file's object and every profile picture, which the worker's nightly clean-up then deletes from the file store. Ids are not restarted, so nothing cached under an old id describes a new row. |
-| Nightly reset | `apps/worker/demo/reset.ts`, `run.ts`, started in `apps/worker/+main.ts` | Checks every minute. When the date in `America/Los_Angeles` changes, it wipes, seeds the population and schedules the nightly cleanup again. After a deploy it seeds at once only when the day's population is missing, an operator account other than the private administrator exists, or `DEMO_ADMIN_PASSWORD` is set and that administrator is missing. A visitor cannot make it fail by taking a seeded address between the wipe and the seed: every way to claim an address (a password sign-up, a sign-in link, an address change, Google or GitHub) waits for a code or a link mailed there, or for the provider to vouch for it, and `example.com` takes no mail. A failed reset is tried again a minute later; a worker that restarts in between keeps the half-seeded demo until the next midnight. |
+| Nightly reset | `apps/worker/demo/reset.ts`, `run.ts`, started in `apps/worker/+main.ts` | Checks every minute. When the date in `America/Los_Angeles` changes, it wipes, seeds the population and schedules the nightly cleanup again. After a deploy it seeds at once only when the day's population is missing, an operator account other than the private administrator exists, or `DEMO_ADMIN_PASSWORD` is set and that administrator is missing. A visitor cannot make it fail by taking a seeded address between the wipe and the seed: every way to claim an address (a password sign-up, a sign-in code, an address change, Google or GitHub) waits for a code mailed there, or for the provider to vouch for it, and `example.com` takes no mail. A failed reset is tried again a minute later; a worker that restarts in between keeps the half-seeded demo until the next midnight. |
 
 **Why a job, not sign-up itself.** Every sign-up (password, Google, GitHub, a guest) already queues the
 starter-data job in its own transaction, and the worker runs it within a second. While the demo is
@@ -73,14 +73,21 @@ updates the demo in the same PR:
   survive the night goes into `KEPT_TABLES`, with the reason, and references no table the wipe
   empties: `TRUNCATE ... CASCADE` would empty it too.
 - **The blog survives the wipe.** `blog_posts` is in `KEPT_TABLES`, because the posts on the
-  product's website (seedsaas.com for the template) are real, not demo data. A post keeps its
-  author's name in `author_name`, and the page it links to in `author_url`, with no foreign key
-  to `users`, so the wipe never takes them along. The wipe empties the job table and the audit log, so the worker queues a scheduled
-  post's `blog.publish` job again after it (`queueDueBlogJobs`), and the operators' audit rows
-  about posts last a day. A post's `language` and `translation_of` stay with it; a subscriber
+  product's website (seedsaas.com for the template) are real, not demo data. So is
+  `blog_slug_redirects`, a moved post's old addresses (#418), which references only `blog_posts`
+  and needs no seed rows: "Change URL" on a live post writes them. So is `blog_post_revisions`, a
+  post's earlier versions (#418), which references only `blog_posts` and names who saved each one
+  without a foreign key to `users`; the seed writes none, as every save in the admin writes one. A post keeps its author's name
+  in `author_name`, and the page it links to in `author_url`, with no foreign key to `users`, so
+  the wipe never takes them along. The wipe empties the job table and the audit log, so the worker
+  queues a scheduled post's `blog.publish` job again after it (`queueDueBlogJobs`), and the
+  operators' audit rows about posts last a day. A post's `language` and `translation_of` stay with it; a subscriber
   keeps their `language` too, and the seeded subscribers have none, so they count as the main
   language's. A post's `reading_minutes` is a column Postgres computes from its body, so the
-  wipe, the seed and Seed's post files never write it and every post has it. Seed's own posts come
+  wipe, the seed and Seed's post files never write it and every post has it. A post's `intro`,
+  `related_feature` and `cover_file`, and its Dev.to record (`crossposted_at`, `devto_url`), stay
+  with it too (#733); a revision keeps its `intro` and `related_feature`. The seed writes none of
+  them: Seed's post files set them. Seed's own posts come
   from files ([below](#seeds-own-blog-posts)).
 - **The contact links survive the wipe** for the same reason: `contact_links` holds the
   website's real contact channels, and the demo seeds none. `deno task db:seed` in development
@@ -148,3 +155,6 @@ They are reviewed in pull requests like code, and a product built on Seed delete
   sets `newsletter_sent_at`, so the post is never mailed, also when a list is added later.
 - **Translations** name their original's slug in `translationOf`, and are linked through
   `translation_of`.
+- **Cross-posted only when asked.** `devto: true` copies an original to Dev.to once it is live,
+  when the server has `DEVTO_API_KEY` ([blog.md](blog.md#the-devto-cross-post)); without it, or with
+  `devto: false`, the post is settled as never cross-posted.

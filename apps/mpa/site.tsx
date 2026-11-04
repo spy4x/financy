@@ -206,10 +206,10 @@ export interface SitePageHead {
   /** Which Open Graph image the page shares with. Defaults to the home page's. */
   og?: OgImageKey
   /**
-   * An image of the page's own, such as a blog post's cover, shared instead of {@link og}. Its size
-   * is not known, so none is stated.
+   * An image of the page's own, such as a blog post's card or cover, shared instead of {@link og}.
+   * Its size is stated only when given.
    */
-  image?: { url: string; alt: string }
+  image?: { url: string; alt: string; width?: number; height?: number }
   /** The Open Graph type: `article` for a blog post. Defaults to `website`. */
   ogType?: `website` | `article`
   /** Structured data about the page, such as a FAQ or the software, for its JSON-LD graph. */
@@ -279,6 +279,7 @@ export interface SiteFrameProps {
 /** The header's links, in display order, by catalog key. The Blog link joins them once a post is live. */
 export const NAV_LINKS = [
   { label: `SiteNav.features`, href: `/features` },
+  { label: `SiteNav.docs`, href: DOCS_PATH },
   { label: `SiteNav.blog`, href: BLOG_PATH },
   { label: `SiteNav.compare`, href: `/compare` }, // Seed's own site: see docs/start-a-product.md
   { label: `SiteNav.pricing`, href: `/pricing` },
@@ -327,8 +328,8 @@ export function SiteFrame(
           ogType={head.ogType}
           ogImage={head.image?.url ?? `${origin}/og/${og}.png`}
           imageAlt={head.image?.alt ?? ogImageAlt(og)}
-          imageWidth={head.image ? undefined : OG_IMAGE_SIZE.width}
-          imageHeight={head.image ? undefined : OG_IMAGE_SIZE.height}
+          imageWidth={head.image ? head.image.width : OG_IMAGE_SIZE.width}
+          imageHeight={head.image ? head.image.height : OG_IMAGE_SIZE.height}
           siteName={SITE_NAME}
           locale={ogLocale(language)}
           noindex={head.noindex}

@@ -161,6 +161,8 @@ export default {
   "Reason.PASSWORD_INVALID": "La contraseña no es correcta. Vuelve a intentarlo.",
   "Reason.PASSWORD_LOCKED":
     "Demasiadas contraseñas incorrectas. Espera un rato y vuelve a intentarlo.",
+  "Reason.PERIOD_NOT_OFFERED":
+    "Este plan no se vende con ese periodo de facturación. Elige el otro.",
   "Reason.PHOTO_CONTENT": "El contenido de este archivo no coincide con su tipo de imagen.",
   "Reason.PHOTO_NOT_FOUND": "Esta foto ya no existe.",
   "Reason.PHOTO_TOO_LARGE": "Esta foto es demasiado grande.",
@@ -169,6 +171,7 @@ export default {
   "Reason.PLAN_FEATURE_MISSING": "El plan del grupo no incluye esto.",
   "Reason.PLAN_LIMIT_REACHED": "El grupo llegó al límite de su plan.",
   "Reason.POST_NOT_FOUND": "Esta entrada ya no existe.",
+  "Reason.REVISION_NOT_FOUND": "Esta versión anterior ya no existe.",
   "Reason.PROVIDER_ERROR": "El proveedor de pagos no respondió. Vuelve a intentarlo.",
   "Reason.REQUEST_ORIGIN_INVALID":
     "No pudimos comprobar de dónde venía esta solicitud. Recarga la página y vuelve a intentarlo.",
@@ -176,7 +179,6 @@ export default {
   "Reason.SAME_GROUP": "Esto ya está en ese grupo.",
   "Reason.SEARCH_RATE_LIMITED": "Demasiadas búsquedas. Espera un minuto y vuelve a intentarlo.",
   "Reason.SEAT_PRICE_NOT_ACCEPTED": "Confirma que cada miembro nuevo aumenta la factura del grupo.",
-  "Reason.SIGN_IN_LINK_ASKED_ELSEWHERE": "Este enlace se pidió desde otro navegador. Ábrelo allí.",
   "Reason.SLUG_LOCKED":
     "La dirección ya no se puede editar una vez publicada la entrada. Usa «Cambiar URL» para cambiarla.",
   "Reason.SLUG_TAKEN": "Esta dirección ya está en uso. Elige otra.",

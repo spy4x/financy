@@ -148,6 +148,8 @@ export default {
   "Reason.PASSWORD_INVALID": "パスワードが違います。もう一度お試しください。",
   "Reason.PASSWORD_LOCKED":
     "パスワードを何度も間違えました。しばらく待ってから、もう一度お試しください。",
+  "Reason.PERIOD_NOT_OFFERED":
+    "このプランはその請求期間では購入できません。もう一方を選んでください。",
   "Reason.PHOTO_CONTENT": "ファイルの中身が画像の種類と一致しません。",
   "Reason.PHOTO_NOT_FOUND": "この写真はもう存在しません。",
   "Reason.PHOTO_TOO_LARGE": "写真が大きすぎます。",
@@ -156,6 +158,7 @@ export default {
   "Reason.PLAN_FEATURE_MISSING": "グループのプランにはこの機能が含まれていません。",
   "Reason.PLAN_LIMIT_REACHED": "グループのプランの上限に達しました。",
   "Reason.POST_NOT_FOUND": "この記事はもう存在しません。",
+  "Reason.REVISION_NOT_FOUND": "この以前の版はもう存在しません。",
   "Reason.PROVIDER_ERROR": "決済サービスから応答がありませんでした。もう一度お試しください。",
   "Reason.REQUEST_ORIGIN_INVALID":
     "このリクエストの送信元を確認できませんでした。ページを再読み込みして、もう一度お試しください。",
@@ -164,8 +167,6 @@ export default {
   "Reason.SEARCH_RATE_LIMITED": "検索回数が多すぎます。1分ほど待ってから、もう一度お試しください。",
   "Reason.SEAT_PRICE_NOT_ACCEPTED":
     "メンバーを追加するたびにグループの請求額が増えることを確認してください。",
-  "Reason.SIGN_IN_LINK_ASKED_ELSEWHERE":
-    "このリンクは別のブラウザでリクエストされました。そのブラウザで開いてください。",
   "Reason.SLUG_LOCKED":
     "記事を公開するとアドレスは固定されます。変更するには「URLを変更」を使ってください。",
   "Reason.SLUG_TAKEN": "このアドレスはすでに使われています。別のものを選んでください。",

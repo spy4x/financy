@@ -141,6 +141,7 @@ export default {
   "AdminAuditEvent.groupCreated": "أُنشئت مجموعة",
   "AdminAuditEvent.groupRenamed": "تغيّر اسم المجموعة",
   "AdminAuditEvent.groupDetailsUpdated": "تغيّرت تفاصيل المجموعة",
+  "AdminAuditEvent.groupTimeZoneChanged": "تغيّرت المنطقة الزمنية للمجموعة",
   "AdminAuditEvent.groupDeleted": "حُذفت المجموعة",
   "AdminAuditEvent.groupRestored": "استُعيدت المجموعة",
   "AdminAuditEvent.memberRoleChanged": "تغيّر دور عضو",
@@ -205,7 +206,7 @@ export default {
   "AdminAuditEvent.confirmationResent": "أُعيد إرسال تأكيد الاشتراك في النشرة البريدية",
   "AdminAuditEvent.subscribersExported": "صُدّرت قائمة مشتركي النشرة البريدية",
   "AdminAuditEvent.roleChanged": "تغيّر الدور",
-  "AdminAuditEvent.resetSent": "أرسل مشغّل رابط إعادة تعيين كلمة المرور",
+  "AdminAuditEvent.resetSent": "أرسل مشغّل رسالة إعادة تعيين كلمة المرور",
   "AdminAuditEvent.usersExported": "صُدّرت قائمة المستخدمين",
   "AdminAuditEvent.passkeyRenamed": "تغيّر اسم مفتاح المرور",
   "AdminAuditEvent.guestStarted": "بدأ كضيف",
@@ -259,6 +260,7 @@ export default {
   "AdminBilling.onFreeSince": "على الخطة المجانية منذ {date}",
   "AdminBilling.wouldBe": "سيصبح {amount}",
   "AdminBilling.seatPrice": "{seats} × {price}",
+  "AdminBilling.billedYearly": "‏{amount} تُدفع سنويًا",
   "AdminBilling.title": "الفوترة",
   "AdminBilling.subtitle": "من يدفع، وكم يدفع، وكم تكسب.",
   "AdminBilling.off": "الفوترة متوقفة",
@@ -291,7 +293,7 @@ export default {
   "AdminBilling.keyNumbers": "أهم الأرقام",
   "AdminBilling.mrr": "الإيرادات الشهرية المتكررة",
   "AdminBilling.mrrHint":
-    "الاشتراكات النشطة والمتأخرة السداد بسعر القائمة. الفترات التجريبية تُحسب صفرًا.",
+    "الاشتراكات النشطة والمتأخرة السداد بسعر القائمة. يُحسب الاشتراك السنوي بسعره مقسومًا على 12. الفترات التجريبية تُحسب صفرًا.",
   "AdminBilling.payingGroups": "المجموعات التي تدفع",
   "AdminBilling.pastDueCount": "{count} متأخرة السداد",
   "AdminBilling.inTrial": "في فترة تجريبية",
@@ -343,6 +345,9 @@ export default {
   "AdminBillingCustomer.status": "الحالة",
   "AdminBillingCustomer.plan": "الخطة",
   "AdminBillingCustomer.perMonth": "شهريًا",
+  "AdminBillingCustomer.period": "فترة الفوترة",
+  "AdminBillingCustomer.monthly": "شهري",
+  "AdminBillingCustomer.yearly": "سنوي",
   "AdminBillingCustomer.lastPayment": "آخر دفعة",
   "AdminBillingCustomer.customerSince": "عميل منذ",
   "AdminBillingCustomer.notRecorded": "غير مسجَّل",
@@ -400,6 +405,8 @@ export default {
   "AdminBillingCustomer.howLong": "المدة",
   "AdminBillingCustomer.timeText":
     "تحتفظ <group>{group}</group> بخطة {plan} دون رسوم حتى {date}. بعد ذلك يعود الدفع المعتاد: {charge} شهريًا.",
+  "AdminBillingCustomer.timeTextYear":
+    "تحتفظ <group>{group}</group> بخطة {plan} دون رسوم حتى {date}. بعد ذلك يعود الدفع المعتاد: {charge} سنويًا.",
   "AdminBillingCustomer.length7d": "7 أيام",
   "AdminBillingCustomer.length14d": "14 يومًا",
   "AdminBillingCustomer.length30d": "30 يومًا",
@@ -483,7 +490,8 @@ export default {
   "AdminBlogDialogs.slugRule": "استخدم أحرفًا لاتينية صغيرة وأرقامًا وشرطات فقط.",
   "AdminBlogDialogs.changeUrlTitle": "تغيير رابط هذه التدوينة؟",
   "AdminBlogDialogs.changeUrl": "تغيير الرابط",
-  "AdminBlogDialogs.linksBreak": "ستتوقف الروابط إلى <path>{path}</path> عن العمل.",
+  "AdminBlogDialogs.linksRedirect":
+    "ستبقى الروابط إلى <path>{path}</path> تعمل، وستنقل القارئ إلى الرابط الجديد.",
   "AdminBlogDialogs.newSlug": "المسار الجديد",
   "AdminBlogDialogs.slugHint": "أحرف لاتينية صغيرة وأرقام وشرطات.",
   "AdminBlogDialogs.futureTime": "اختر وقتًا في المستقبل.",
@@ -604,6 +612,7 @@ export default {
   "AdminBlogEditor.viewOnSite": "عرضها على الموقع",
   "AdminBlogEditor.changeUrl": "تغيير الرابط…",
   "AdminBlogEditor.unpublish": "إلغاء النشر…",
+  "AdminBlogEditor.history": "السجل…",
   "AdminBlogEditor.deletePost": "حذف التدوينة…",
   "AdminBlogEditor.editPost": "تعديل التدوينة",
   "AdminBlogEditor.newPost": "تدوينة جديدة",
@@ -659,7 +668,7 @@ export default {
   "AdminBlogEditor.settings": "إعدادات التدوينة",
   "AdminBlogEditor.slug": "المسار",
   "AdminBlogEditor.slugLocked":
-    "مقفل بعد النشر. لتغييره استخدم «تغيير الرابط…»، وستتوقف الروابط القديمة عن العمل.",
+    "مقفل بعد النشر. لتغييره استخدم «تغيير الرابط…»، وستنقل الروابط القديمة القارئ إلى الرابط الجديد.",
   "AdminBlogEditor.slugHint":
     "رابط التدوينة: <path>{path}</path>. أحرف لاتينية صغيرة وأرقام وشرطات.",
   "AdminBlogEditor.slugHintEmpty": "يُملأ تلقائيًا من العنوان. أحرف لاتينية صغيرة وأرقام وشرطات.",
@@ -669,6 +678,9 @@ export default {
   "AdminBlogEditor.seoTitleHint": "يظهر في نتائج البحث بدلًا من العنوان. نحو 60 حرفًا.",
   "AdminBlogEditor.keyPoints": "النقاط الرئيسية",
   "AdminBlogEditor.keyPointsHint": "حتى 5 أسطر قصيرة تظهر في أعلى التدوينة.",
+  "AdminBlogEditor.intro": "المقدمة",
+  "AdminBlogEditor.introHint":
+    "جملتان أو ثلاث تبدأ بها رسالة النشرة البريدية والمنشورات المتقاطعة. لا تظهر في صفحة التدوينة.",
   "AdminBlogEditor.keyPoint": "النقطة {n}",
   "AdminBlogEditor.removeKeyPoint": "إزالة النقطة {n}",
   "AdminBlogEditor.addPoint": "إضافة نقطة",
@@ -677,11 +689,19 @@ export default {
   "AdminBlogEditor.authorUrl": "رابط الكاتب",
   "AdminBlogEditor.authorUrlHint":
     "سيصبح اسم الكاتب في التدوينة رابطًا إلى هذه الصفحة، مثل صفحة «من أنا»، ليعرف القرّاء ومحركات البحث من كتبها. اتركه فارغًا إن لم ترد رابطًا.",
+  "AdminBlogEditor.relatedFeature": "الميزة المرتبطة",
+  "AdminBlogEditor.relatedFeatureHint":
+    "صفحة الميزة في الموقع التي تتناولها التدوينة، مثل realtime لصفحة ‎/features/realtime. تضع التدوينة رابطًا إليها تحت سطر الكاتب. اتركه فارغًا إن لم توجد.",
   "AdminBlogEditor.coverUrl": "رابط صورة الغلاف",
-  "AdminBlogEditor.coverUrlHint":
-    "رابط كامل يبدأ بـ https:// لصورة عريضة بمقاس 1200×630، على خادم يسمح بعرضها في مواقع أخرى. اتركه فارغًا إن لم ترد غلافًا.",
+  "AdminBlogEditor.coverUrlHint": "صورة بنسبة 16:9، بعنوان https://.",
   "AdminBlogEditor.coverAlt": "وصف الغلاف",
   "AdminBlogEditor.coverAltHint": "ما تُظهره الصورة، لمن لا يستطيع رؤيتها.",
+  "AdminBlogEditor.groupAddress": "العنوان واللغة",
+  "AdminBlogEditor.groupSummary": "الملخص",
+  "AdminBlogEditor.groupCover": "الغلاف",
+  "AdminBlogEditor.groupLinks": "الروابط",
+  "AdminBlogEditor.coverOf": "يستخدم غلاف: {title}",
+  "AdminBlogEditor.coverBroken": "لم يتم تحميل هذه الصورة.",
   "AdminBlogEditor.coverPrivacy":
     "الصورة المستضافة على موقع آخر تتيح لذلك الموقع رؤية عناوين IP لقرّائك.",
   "AdminBlogEditor.publishing": "النشر",
@@ -1338,6 +1358,7 @@ export default {
   "AdminGroup.openInvitations": "الدعوات المفتوحة",
   "AdminGroup.owner": "المالك",
   "AdminGroup.created": "أُنشئت",
+  "AdminGroup.timeZone": "المنطقة الزمنية",
   "AdminGroup.imported": "استُوردت",
   "AdminGroup.importedBy": "<when></when> بواسطة <person>{name}</person>",
   "AdminGroup.lastActivity": "آخر نشاط",
@@ -1915,7 +1936,7 @@ export default {
   "AdminUser.doneRoleOperator": "أصبح {name} مشغّلًا.",
   "AdminUser.doneRoleSupervisor": "أصبح {name} مشرفًا.",
   "AdminUser.doneRoleAdmin": "أصبح {name} مديرًا.",
-  "AdminUser.donePasswordReset": "رابط إعادة تعيين كلمة المرور في طريقه إلى {name}.",
+  "AdminUser.donePasswordReset": "رسالة إعادة تعيين كلمة المرور في طريقها إلى {name}.",
   "AdminUser.doneDeleteGuest": "حُذف حساب الضيف {name}.",
   "AdminUser.doneUnlinkTelegram": "أُلغي ربط حساب Telegram الخاص بـ{name}.",
   "AdminUser.doneRemovePicture": "أُزيلت صورة الملف الشخصي لـ{name}.",
@@ -1925,7 +1946,7 @@ export default {
   "AdminUser.unblock": "إلغاء الحظر",
   "AdminUser.block": "حظر",
   "AdminUser.endAllSessions": "إنهاء كل الجلسات",
-  "AdminUser.sendReset": "إرسال رابط إعادة تعيين كلمة المرور",
+  "AdminUser.sendReset": "إرسال رسالة إعادة تعيين كلمة المرور",
   "AdminUser.noResetAddress": "يتطلب تسجيل دخول بكلمة مرور وبريد إلكتروني",
   "AdminUser.unlinkTelegram": "إلغاء ربط Telegram",
   "AdminUser.removePicture": "إزالة صورة الملف الشخصي",
@@ -1981,7 +2002,7 @@ export default {
   "AdminUser.methodPassword": "كلمة المرور",
   "AdminUser.methodEmailCode": "رمز عبر البريد الإلكتروني",
   "AdminUser.methodPasskey": "مفتاح المرور",
-  "AdminUser.methodEmailLink": "رابط عبر البريد الإلكتروني",
+  "AdminUser.methodEmailLink": "رمز عبر البريد الإلكتروني",
   "AdminUser.blockTitle": "حظر {name}",
   "AdminUser.blockText":
     "سيُسجَّل خروجه من كل مكان فورًا، وستُرفض كل طرق الدخول: كلمة المرور وGoogle وGitHub ورموز API المميزة. تبقى بياناته كما هي، ويمكنك إلغاء حظره لاحقًا.",
@@ -2001,10 +2022,10 @@ export default {
   "AdminUser.changeRoleText":
     "يسري الدور الجديد مع طلبه التالي. يمكنك منح أي دور أدنى من دورك؛ ولجعل أحدهم مديرًا استخدم السكربت user:role.",
   "AdminUser.changing": "جارٍ التغيير…",
-  "AdminUser.resetTitle": "إرسال رابط إعادة تعيين كلمة المرور إلى {name}",
+  "AdminUser.resetTitle": "إرسال رسالة إعادة تعيين كلمة المرور إلى {name}",
   "AdminUser.resetText":
-    "ستصله الرسالة نفسها التي تصل عند «نسيت كلمة المرور»: رابط لاختيار كلمة مرور جديدة. وتبقى كلمة مروره الحالية صالحة حتى يغيّرها.",
-  "AdminUser.sendLink": "إرسال الرابط",
+    "ستصله رسالة تشرح كيف يعيد تعيين كلمة المرور من «نسيت كلمة المرور»، حيث يصله رمز بالبريد. وتبقى كلمة مروره الحالية صالحة حتى يغيّرها.",
+  "AdminUser.sendLink": "إرسال الرسالة",
   "AdminUser.sending": "جارٍ الإرسال…",
   "AdminUser.deleteGuestTitle": "حذف حساب الضيف {name}",
   "AdminUser.deleteGuestText":
@@ -2025,7 +2046,7 @@ export default {
   "AdminUser.cancel": "إلغاء",
   "AdminUsers.title": "المستخدمون",
   "AdminUsers.subtitle":
-    "كل من لديه حساب. افتح صفحة شخص لحظره، أو إنهاء جلسة، أو إرسال رابط إعادة تعيين كلمة المرور.",
+    "كل من لديه حساب. افتح صفحة شخص لحظره، أو إنهاء جلسة، أو إرسال رسالة إعادة تعيين كلمة المرور.",
   "AdminUsers.export": "تصدير CSV",
   "AdminUsers.search": "الاسم أو البريد الإلكتروني",
   "AdminUsers.searching": "جارٍ البحث…",
@@ -2070,4 +2091,13 @@ export default {
   "AdminBlogEditor.translationOfHint":
     "التدوينة التي تترجمها هذه. يربط الموقع بينهما كنسختين لغويتين بعد نشر كلتيهما.",
   "AdminBlogEditor.translationNone": "لا شيء: تدوينة أصلية",
+  "AdminBlogHistory.title": "السجل",
+  "AdminBlogHistory.versions": "الإصدارات السابقة",
+  "AdminBlogHistory.shown": "الإصدار المعروض",
+  "AdminBlogHistory.body": "النص",
+  "AdminBlogHistory.savedBy": "حفظه {name} في {date}",
+  "AdminBlogHistory.someone": "غير معروف",
+  "AdminBlogHistory.restore": "استعادة هذا الإصدار",
+  "AdminBlogHistory.empty": "لا إصدارات سابقة بعد. كل حفظ يحتفظ بإصدار.",
+  "AdminBlogHistory.restored": "تمت استعادة الإصدار السابق. احفظ للإبقاء عليه.",
 } satisfies Catalog

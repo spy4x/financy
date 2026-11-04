@@ -67,6 +67,9 @@ export default {
     "<who>{who}</who> a renommé le groupe « <value>{from}</value> » en « <value>{to}</value> »",
   "GroupActivity.detailsUpdated":
     "<who>{who}</who> a modifié la description, la couleur ou l’emoji du groupe",
+  "GroupActivity.timeZoneChanged":
+    "<who>{who}</who> a changé le fuseau horaire de <value>{from}</value> à <value>{to}</value>",
+  "GroupActivity.timeZoneChangedPlain": "<who>{who}</who> a changé le fuseau horaire",
   "GroupActivity.deleted": "<who>{who}</who> a supprimé le groupe",
   "GroupActivity.restored": "<who>{who}</who> a restauré le groupe",
   "GroupActivity.roleChanged": "<who>{who}</who> a modifié le rôle de <target>{target}</target>",
@@ -277,6 +280,12 @@ export default {
   },
   "GroupEditor.readOnly":
     "Seuls les administrateurs et le propriétaire peuvent modifier les informations de ce groupe.",
+  "GroupEditor.timeZoneHint":
+    "Les jours et les mois commencent à minuit dans ce fuseau, pour tout le groupe.",
+  "GroupEditor.timeZoneInvalid":
+    "Nous ne connaissons pas ce fuseau horaire. Choisissez-en un autre dans la liste.",
+  "GroupEditor.timeZoneChangedElsewhere":
+    "Quelqu’un d’autre l’a changé en {zone} pendant que vous modifiiez. Enregistrez pour garder le vôtre, ou Abandonnez.",
   "GroupEditor.nameRequired": "Saisissez un nom.",
   "GroupEditor.nameInvalid":
     "100 caractères maximum, sans retour à la ligne ni caractère invisible.",
@@ -571,7 +580,7 @@ export default {
     "Impossible d’ouvrir la page de facturation Stripe. Vérifiez votre connexion et réessayez.",
   "GroupBillingPanel.title": "Facturation",
   "GroupBillingPanel.description":
-    "Ce que <group>{group}</group> paie chaque mois. Stripe gère la facturation.",
+    "Ce que <group>{group}</group> paie. Stripe gère la facturation.",
   "GroupBillingPanel.loading": "Chargement du forfait",
   "GroupBillingPanel.statusTrial": "Essai",
   "GroupBillingPanel.statusRenews": "Renouvellement le {date}",
@@ -620,7 +629,7 @@ export default {
   "GroupBillingPanel.confirming":
     "Stripe confirme votre forfait. Cette page se mettra à jour d’elle-même.",
   "GroupBillingPanel.paymentMethod": "Moyen de paiement",
-  "GroupBillingPanel.paymentMethodText": "La carte que Stripe débite chaque mois.",
+  "GroupBillingPanel.paymentMethodText": "La carte que Stripe débite pour ce forfait.",
   "GroupBillingPanel.changeCard": "Changer de carte",
   "GroupBillingPanel.invoices": "Factures",
   "GroupBillingPanel.invoicesText": "Toutes vos factures et reçus, à consulter ou télécharger.",
@@ -630,6 +639,32 @@ export default {
     "Aucun montant ne vous sera facturé si vous résiliez avant le {date}.",
   "GroupBillingPanel.cancelKeep": "Vous gardez {plan} jusqu’à la fin de la période.",
   "GroupBillingPanel.cancelPlan": "Résilier le forfait",
+  "GroupBillingPanel.periodTitle": "Période de facturation",
+  "GroupBillingPanel.monthly": "Mensuel",
+  "GroupBillingPanel.yearly": "Annuel",
+  "GroupBillingPanel.priceYear": "{plan} coûte {price} par membre et par an.",
+  "GroupBillingPanel.priceForGroupYear": {
+    "one": "Avec {count} membre, <group>{group}</group> paierait {total} par an.",
+    "many": "Avec {count} membres, <group>{group}</group> paierait {total} par an.",
+    "other": "Avec {count} membres, <group>{group}</group> paierait {total} par an.",
+  },
+  "GroupBillingPanel.saving": "{amount} de moins qu’en payant chaque mois.",
+  "GroupBillingPanel.finePrintYear":
+    "Facturé chaque année, par membre. Résiliez à tout moment et gardez {plan} jusqu’à la fin de la période.",
+  "GroupBillingPanel.trialThenYear":
+    "Ensuite, <group>{group}</group> paiera {total} par an, sauf si vous résiliez.",
+  "GroupBillingPanel.seatsYear": {
+    "one": "{total} par an, pour {count} membre à {price} chacun, propriétaire compris.",
+    "many": "{total} par an, pour {count} membres à {price} chacun, propriétaire compris.",
+    "other": "{total} par an, pour {count} membres à {price} chacun, propriétaire compris.",
+  },
+  "GroupBillingPanel.periodMonthly":
+    "Vous payez chaque mois. À l’année, c’est {price} par an, soit {saving} de moins.",
+  "GroupBillingPanel.periodYearly": "Vous payez chaque année. Au mois, c’est {price} par mois.",
+  "GroupBillingPanel.periodHint":
+    "Stripe vous indique ce que vous payez aujourd’hui avant que vous confirmiez.",
+  "GroupBillingPanel.switchYearly": "Passer à l’annuel",
+  "GroupBillingPanel.switchMonthly": "Passer au mensuel",
   "GroupBillingView.trialStarted": {
     "one": "Votre essai {plan} de {count} jour a commencé",
     "many": "Votre essai {plan} de {count} jours a commencé",
@@ -762,6 +797,7 @@ export default {
   "OverviewScreen.customRange": "Période personnalisée",
   "OverviewScreen.rangeTooLong": "Choisissez une période d’un an maximum.",
   "OverviewScreen.asOf": "Mis à jour à {time}",
+  "OverviewScreen.zoneNote": "heure de {city}",
   "OverviewScreen.hide": "Masquer le widget",
   "OverviewView.opening": "Ouverture de la vue d’ensemble…",
   "OverviewView.saveFailed":
@@ -960,29 +996,29 @@ export default {
   "OAuthNotice.kept":
     "Méthode de connexion ajoutée. Vous pouvez maintenant l’utiliser sur n’importe quel appareil.",
   "OAuthNotice.guestTaken": "Cette méthode de connexion appartient à un autre compte.",
-  "PasswordResetScreen.forgotFailed": "Impossible d’envoyer le lien",
+  "PasswordResetScreen.forgotFailed": "Impossible d’envoyer le code",
   "PasswordResetScreen.resetFailed": "Impossible de changer le mot de passe",
   "PasswordResetScreen.sent":
-    "Si un compte utilise cette adresse e-mail, nous lui avons envoyé un lien pour réinitialiser le mot de passe.",
+    "Si un compte utilise <email>{email}</email>, nous avons envoyé un code à cette adresse.",
   "PasswordResetScreen.forgotDescription": {
     "one":
-      "Saisissez l’adresse e-mail utilisée lors de l’inscription. Nous vous enverrons un lien pour choisir un nouveau mot de passe. Il fonctionne une seule fois, pendant {count} minute.",
+      "Saisissez l’adresse e-mail utilisée lors de votre inscription. Nous vous enverrons un code pour choisir un nouveau mot de passe. Il reste valable {count} minute.",
     "many":
-      "Saisissez l’adresse e-mail utilisée lors de l’inscription. Nous vous enverrons un lien pour choisir un nouveau mot de passe. Il fonctionne une seule fois, pendant {count} minutes.",
+      "Saisissez l’adresse e-mail utilisée lors de votre inscription. Nous vous enverrons un code pour choisir un nouveau mot de passe. Il reste valable {count} minutes.",
     "other":
-      "Saisissez l’adresse e-mail utilisée lors de l’inscription. Nous vous enverrons un lien pour choisir un nouveau mot de passe. Il fonctionne une seule fois, pendant {count} minutes.",
+      "Saisissez l’adresse e-mail utilisée lors de votre inscription. Nous vous enverrons un code pour choisir un nouveau mot de passe. Il reste valable {count} minutes.",
   },
   "PasswordResetScreen.remembered": "Vous vous en souvenez ? <link>Retour à la connexion</link>",
-  "PasswordResetScreen.send": "Envoyer le lien",
+  "PasswordResetScreen.send": "Envoyer un code",
   "PasswordResetScreen.doneTitle": "Mot de passe modifié",
   "PasswordResetScreen.done":
     "Vous avez été déconnecté partout. Connectez-vous avec votre nouveau mot de passe.",
   "PasswordResetScreen.signIn": "Se connecter",
-  "PasswordResetScreen.askNew": "Demander un nouveau lien",
   "PasswordResetScreen.chooseTitle": "Choisissez un nouveau mot de passe",
   "PasswordResetScreen.choose":
     "Pour <email>{email}</email>. L’enregistrer vous déconnecte sur tous vos appareils.",
-  "PasswordResetScreen.expired": "Lien expiré ? <link>Demandez-en un nouveau</link>",
+  "PasswordResetScreen.expired": "Délai dépassé ? <link>Demandez un nouveau code</link>",
+  "PasswordResetScreen.tookTooLong": "Le délai est dépassé. Demandez un nouveau code.",
   "PasswordResetScreen.newPassword": "Nouveau mot de passe",
   "PasswordResetScreen.newPasswordHint": "De {min} à {max} caractères.",
   "PasswordResetScreen.saving": "Enregistrement…",
@@ -1318,6 +1354,8 @@ export default {
   "Preferences.updatedElsewhere": "Préférences mises à jour depuis un autre appareil.",
   "SeatPriceConfirm.hint":
     "Chaque nouveau membre ajoute {price} par mois : un membre de plus fait passer le groupe de {now} à {next}. La différence pour le reste de la période sera facturée sur la prochaine facture.",
+  "SeatPriceConfirm.hintYear":
+    "Chaque nouveau membre ajoute {price} par an : un membre de plus fait passer le groupe de {now} à {next}. La différence pour le reste de la période sera facturée sur la prochaine facture.",
   "SeatPriceConfirm.accept":
     "J’accepte le prix plus élevé pour chaque personne qui rejoint le groupe",
   "ProfileAccount.name": "Nom",
@@ -1557,7 +1595,7 @@ export default {
   "ProfileView.tokenRevoked": "Jeton révoqué",
   "ProfileView.tokenRevokedBody": "Ce jeton ne fonctionne plus.",
   "ProviderProof.passkey": "une clé d’accès",
-  "ProviderProof.link": "un lien de connexion",
+  "ProviderProof.link": "un code par e-mail",
   "ProviderProof.fresh":
     "Vous vous êtes connecté avec {methods} il y a un instant : vous n’avez donc pas besoin de mot de passe.",
   "ProviderProof.needed": {
@@ -1570,62 +1608,30 @@ export default {
   },
   "ProviderProof.passkeyAgain": "Se reconnecter avec une clé d’accès",
   "ProviderProof.providerAgain": "Se reconnecter avec {provider}",
-  "SignInLinkScreen.sendFailed": "Impossible d’envoyer le lien. Réessayez dans un instant.",
-  "SignInLinkScreen.unreachable":
-    "Impossible de joindre le serveur. Vérifiez votre connexion et appuyez de nouveau sur Continuer.",
-  "SignInLinkScreen.openFailed":
-    "Impossible de vous connecter. Appuyez sur Continuer pour réessayer, ou demandez un nouveau lien.",
-  "SignInLinkScreen.title": "Se connecter avec un lien",
-  "SignInLinkScreen.description":
-    "Nous vous enverrons par e-mail un lien qui vous connecte. Pas encore de compte avec cette adresse ? Le lien en crée un.",
-  "SignInLinkScreen.ratherPassword":
+  "SignInCodeScreen.sendFailed": "Impossible d’envoyer le code. Réessayez dans un instant.",
+  "SignInCodeScreen.title": "Se connecter avec un code par e-mail",
+  "SignInCodeScreen.description":
+    "Nous vous envoyons par e-mail un code à saisir ici. Pas encore de compte avec cette adresse ? Le code en crée un.",
+  "SignInCodeScreen.ratherPassword":
     "Vous préférez un mot de passe ? <link>Retour à la connexion</link>",
-  "SignInLinkScreen.submit": "Recevoir un lien par e-mail",
-  "SignInLinkScreen.sent": {
+  "SignInCodeScreen.submit": "Recevoir un code",
+  "SignInCodeScreen.confirmTitle": "Confirmez votre identité",
+  "SignInCodeScreen.confirmDescription":
+    "Nous allons envoyer un code à <email>{email}</email>. Saisissez-le à l’étape suivante pour confirmer votre identité.",
+  "CodeStep.sent": "Nous avons envoyé un code à <email>{email}</email>.",
+  "CodeStep.invalid": "Le code compte 8 caractères. Vérifiez qu’il n’en manque pas un.",
+  "SignInCodeScreen.guest":
+    "Vous utilisez l’app en tant qu’invité. Si vous vous connectez, ce que vous avez créé ici sera enregistré sous cette adresse. Si elle a déjà un compte, nous vous demanderons d’abord votre accord.",
+  "CodeStep.deadTitle": "Ce code ne fonctionne plus",
+  "CodeStep.dead": {
     "one":
-      "Nous avons envoyé un lien de connexion à <email>{email}</email>. Il fonctionne une seule fois, pendant {count} minute.",
+      "Un code ne sert qu’une fois, reste valable {count} minute et n’accepte que quelques erreurs de saisie. Demandez-en un nouveau et utilisez l’e-mail le plus récent.",
     "many":
-      "Nous avons envoyé un lien de connexion à <email>{email}</email>. Il fonctionne une seule fois, pendant {count} minutes.",
+      "Un code ne sert qu’une fois, reste valable {count} minutes et n’accepte que quelques erreurs de saisie. Demandez-en un nouveau et utilisez l’e-mail le plus récent.",
     "other":
-      "Nous avons envoyé un lien de connexion à <email>{email}</email>. Il fonctionne une seule fois, pendant {count} minutes.",
+      "Un code ne sert qu’une fois, reste valable {count} minutes et n’accepte que quelques erreurs de saisie. Demandez-en un nouveau et utilisez l’e-mail le plus récent.",
   },
-  "SignInLinkScreen.openHere": "Ouvrez-le sur cet appareil pour vous connecter ici.",
-  "SignInLinkScreen.newLink": "Envoyer un nouveau lien",
-  "SignInLinkScreen.waiting": {
-    "one":
-      "Rien reçu ? Vérifiez vos courriers indésirables. Vous pourrez envoyer un nouveau lien dans {count} seconde.",
-    "many":
-      "Rien reçu ? Vérifiez vos courriers indésirables. Vous pourrez envoyer un nouveau lien dans {count} secondes.",
-    "other":
-      "Rien reçu ? Vérifiez vos courriers indésirables. Vous pourrez envoyer un nouveau lien dans {count} secondes.",
-  },
-  "SignInLinkScreen.resent":
-    "Un nouveau lien est en route. Les liens précédents fonctionnent toujours tant qu’aucun n’a été utilisé.",
-  "SignInLinkScreen.refusedTitle": "Ce lien ne fonctionne plus",
-  "SignInLinkScreen.refused": {
-    "one":
-      "Les liens de connexion fonctionnent une seule fois, pendant {count} minute. Demandez-en un nouveau et utilisez l’e-mail le plus récent.",
-    "many":
-      "Les liens de connexion fonctionnent une seule fois, pendant {count} minutes. Demandez-en un nouveau et utilisez l’e-mail le plus récent.",
-    "other":
-      "Les liens de connexion fonctionnent une seule fois, pendant {count} minutes. Demandez-en un nouveau et utilisez l’e-mail le plus récent.",
-  },
-  "SignInLinkScreen.elsewhereTitle": "Ce lien a été demandé dans un autre navigateur",
-  "SignInLinkScreen.elsewhere":
-    "Il ne vous a pas connecté, et votre compte invité n’a pas changé. Demandez un nouveau lien dans ce navigateur pour vous connecter ici.",
-  "SignInLinkScreen.incompleteTitle": "Ce lien est incomplet",
-  "SignInLinkScreen.incomplete":
-    "Ouvrez à nouveau le lien depuis l’e-mail, ou demandez-en un nouveau.",
-  "SignInLinkScreen.backToApp": "Retour à l’application",
-  "SignInLinkScreen.finishTitle": "Terminer la connexion",
-  "SignInLinkScreen.finish":
-    "Continuez pour vous connecter sur cet appareil. Si l’adresse e-mail est nouvelle, votre compte sera créé.",
-  "SignInLinkScreen.signedInAs":
-    "Vous êtes connecté en tant que <email>{email}</email>. En continuant, vous serez connecté au compte du lien à la place.",
-  "SignInLinkScreen.guest":
-    "Vous utilisez l’application en tant qu’invité. Si vous avez demandé ce lien dans ce navigateur, en continuant, vous enregistrez ce compte invité sous l’adresse e-mail du lien. Si un compte existe déjà avec cette adresse, nous vous demanderons d’abord votre avis.",
-  "SignInLinkScreen.signingIn": "Connexion…",
-  "SignInLinkScreen.stay": "Rester connecté",
+  "CodeStep.differentEmail": "Utiliser une autre adresse",
   "SignInMethods.failed": "Impossible de modifier vos méthodes de connexion",
   "SignInMethods.loadFailed":
     "Impossible de charger vos méthodes de connexion. Vérifiez votre connexion et réessayez.",
@@ -1679,16 +1685,9 @@ export default {
   "SignUpCodeScreen.offline": "Vous êtes hors ligne. Connectez-vous à Internet et réessayez.",
   "SignUpCodeScreen.title": "Consultez votre boîte de réception",
   "SignUpCodeScreen.loading": "Chargement…",
-  "SignUpCodeScreen.sent": {
-    "one": "Nous avons envoyé un code à <email>{email}</email>. Il est valable {count} minute.",
-    "many": "Nous avons envoyé un code à <email>{email}</email>. Il est valable {count} minutes.",
-    "other": "Nous avons envoyé un code à <email>{email}</email>. Il est valable {count} minutes.",
-  },
-  "SignUpCodeScreen.wrongAddress": "Mauvaise adresse ? <button>En utiliser une autre</button>",
   "SignUpCodeScreen.code": "Code",
   "SignUpCodeScreen.checking": "Vérification…",
   "SignUpCodeScreen.resend": "Envoyer un nouveau code",
-  "SignUpCodeScreen.resent": "Un nouveau code est en route.",
   "SignUpCodeScreen.resendFailed": "Impossible d’envoyer un nouveau code",
   "SignUpCodeScreen.existsTitle": "Vous avez déjà un compte",
   "SignUpCodeScreen.exists":
@@ -2043,7 +2042,9 @@ export default {
   "AuthScreen.lastPasskey":
     "La dernière fois, vous vous êtes connecté avec une clé d’accès<email> ({email})</email>.",
   "AuthScreen.lastLink":
-    "La dernière fois, vous vous êtes connecté avec un lien par e-mail<email> ({email})</email>.",
+    "La dernière fois, vous vous êtes connecté avec un code par e-mail<email> ({email})</email>.",
+  "AuthScreen.emailSignInCode": "Recevoir un code de connexion par e-mail",
+  "AuthScreen.emailSignUpCode": "Recevoir un code d’inscription par e-mail",
   "AuthScreen.lastProvider":
     "La dernière fois, vous vous êtes connecté avec {provider}<email> ({email})</email>.",
   "AuthScreen.forget": "Ce n’est pas vous ? Utilisez un autre compte",
@@ -2056,8 +2057,6 @@ export default {
   "AuthScreen.haveAccount": "Vous avez déjà un compte ? <link>Se connecter</link>",
   "AuthScreen.lostDevice": "Appareil perdu ? <link>Retour à la connexion</link>",
   "AuthScreen.sending": "Envoi…",
-  "AuthScreen.emailSignInLink": "Recevoir un lien de connexion par e-mail",
-  "AuthScreen.emailSignUpLink": "Recevoir un lien d’inscription par e-mail",
   "AuthScreen.orCreate": "ou créez un compte",
   "AuthScreen.createAccount": "Créer un compte",
   "AuthScreen.continue": "Continuer",
@@ -2190,7 +2189,7 @@ export default {
   "Benchmark.noLargeBody": "Créez-en un avec le générateur, puis rechargez cette page :",
   "Benchmark.copyCommand": "Copier la commande",
   "Benchmark.noLargeFoot":
-    "Les tailles et la façon de supprimer le groupe ensuite figurent dans docs/capacity.md.",
+    "Les tailles et la façon de supprimer le groupe ensuite figurent dans docs/large-group.md.",
   "Benchmark.lastStoppedTitle": "Le dernier test s’est arrêté à l’étape « {measure} »",
   "Benchmark.lastStoppedBody":
     "L’onglet s’est fermé avant la fin du test, ce qui signifie généralement qu’il a manqué de mémoire ou d’espace de stockage. Groupe : {group}, démarré {time}.",
