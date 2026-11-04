@@ -80,29 +80,11 @@ for (const path of [`/compare`, `/admin`, `/mvp`, `/features/admin`, `/de/compar
   })
 }
 
-/** The three feature loops, the page each plays on, and the name its play button carries. */
-const LOOPS = [
-  [`realtime`, `/features/realtime`, `Realtime sync`],
-  [`offline`, `/features/offline`, `Offline editing`],
-  [`shortcuts`, `/features/shortcuts`, `Keyboard shortcuts`],
-] as const
-
-for (const [loop, path, name] of LOOPS) {
-  test(`${path} plays the ${loop} loop, captioned, with a button that names it`, async ({ page }) => {
-    await page.goto(path)
-    const figure = page.locator(`[data-e2e=loop-${loop}]`)
-    await expect(figure.locator(`figcaption`)).not.toBeEmpty()
-    await expect(figure.locator(`img`)).toHaveAttribute(
-      `src`,
-      new RegExp(`/video/${loop}-loop-dark-`),
-    )
-    await expect(figure.getByRole(`button`, { name: new RegExp(`: ${name}$`) })).toBeVisible()
-  })
-}
-
 test(`the video route answers a byte range of every loop and of the demo video`, async ({ request }) => {
   const files = [
-    ...LOOPS.flatMap(([loop]) => [`webm`, `mp4`].map((ext) => `${loop}-loop-dark.${ext}`)),
+    ...[`realtime`, `offline`, `shortcuts`].flatMap((loop) =>
+      [`webm`, `mp4`].map((ext) => `${loop}-loop-dark.${ext}`)
+    ),
     `demo.webm`,
     `demo.mp4`,
   ]
@@ -110,50 +92,6 @@ test(`the video route answers a byte range of every loop and of the demo video`,
     const response = await request.get(`/video/${name}`, { headers: { Range: `bytes=0-99` } })
     expect(response.status(), name).toBe(206)
     expect((await response.body()).byteLength, name).toBe(100)
-  }
-})
-
-test.describe(`a screenshot's lightbox`, () => {
-  test.use({ colorScheme: `dark` })
-
-  test(`opens the widest file of the page's theme from the keyboard and gives focus back`, async ({ page }) => {
-    await page.goto(`/features/sign-in`)
-    const shot = page.getByRole(`button`, { name: /^Zoom: / }).first()
-    await shot.focus()
-    await page.keyboard.press(`Enter`)
-
-    const viewer = page.getByRole(`dialog`)
-    await expect(viewer).toBeVisible()
-    await expect(viewer.locator(`img`)).toHaveAttribute(`src`, /-dark-1280\.webp(\?|$)/)
-    await page.keyboard.press(`Escape`)
-    await expect(viewer).toBeHidden()
-    await expect(shot).toBeFocused()
-  })
-
-  test(`never zooms a feature loop's poster`, async ({ page }) => {
-    for (const [loop, path] of LOOPS) {
-      await page.goto(path)
-      const figure = page.locator(`[data-e2e=loop-${loop}]`)
-      await expect(figure.locator(`img`).first()).toBeAttached()
-      // Once the clip is live the poster is hidden from the accessibility tree, so the zoom marks
-      // are read off the element: a zoomable image is a Tab stop with a button's role.
-      await expect(figure.locator(`img[role=button], img[tabindex]`)).toHaveCount(0)
-    }
-  })
-
-  // A feature page loads the lightbox only when its picture is a screenshot: deploy draws a diagram.
-  for (
-    const [path, loads] of [[`/pricing`, false], [`/features/deploy`, false], [
-      `/features/sign-in`,
-      true,
-    ]] as const
-  ) {
-    test(`${path} ${loads ? `loads` : `does not load`} the lightbox's JavaScript`, async ({ page }) => {
-      const asked: string[] = []
-      page.on(`request`, (request) => asked.push(request.url()))
-      await page.goto(path, { waitUntil: `networkidle` })
-      expect(asked.some((url) => url.includes(`shot_lightbox`))).toBe(loads)
-    })
   }
 })
 

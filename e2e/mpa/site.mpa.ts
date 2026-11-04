@@ -10,7 +10,8 @@ test("a visitor without JavaScript reads what Financy is on the home page and su
     "Financy is a free, open-source (AGPL-3.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
   )
 
-  await page.getByRole("main").getByRole("link", { name: "Get notified" }).click()
+  // The hero's "Get notified", the first of the two in the content.
+  await page.getByRole("main").getByRole("link", { name: "Get notified" }).first().click()
   await expect(page).toHaveURL("/#newsletter")
   // A fresh address each run: the per-address limit allows three confirm mails an hour.
   const email = `mpa-site-${uuidV7().slice(-8)}@example.com`
