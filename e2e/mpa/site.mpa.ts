@@ -7,7 +7,7 @@ test.use({ javaScriptEnabled: false })
 test("a visitor without JavaScript reads what Financy is on the home page and subscribes there", async ({ page }) => {
   await page.goto("/")
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Financy is a free, open-source (AGPL-3.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
+    "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
   )
 
   // The hero's "Get notified", the first of the two in the content.

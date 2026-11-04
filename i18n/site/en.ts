@@ -8,7 +8,7 @@ export default {
   "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "Skip to content",
   "SiteFooter.pitch": "A finance tracker for a person or a family, in any mix of currencies.",
-  "SiteFooter.builtBy": "Built in public by <author>{name}</author>. AGPL-3.0 licence.",
+  "SiteFooter.builtBy": "Built in public by <author>{name}</author>. AGPL‑3.0 licence.",
   "SiteFooter.contact": "Contact",
   "SiteFooter.product": "Product",
   "SiteFooter.openSource": "Open source",
@@ -121,7 +121,7 @@ export default {
     "How Seed fits together: the web app and the website call the API, the API writes every change and its events to Postgres, and the worker sends mail and push from those events. Everything runs on one server.",
   "Home.title": "Financy: self-hosted multi-currency finance tracker",
   "Home.description":
-    "A free, open-source finance tracker for a person or a family, in any mix of currencies. Self-host it under AGPL-3.0; a paid cloud follows. Being rebuilt.",
+    "A free, open-source finance tracker for a person or a family, in any mix of currencies. Self-host it under AGPL‑3.0; a paid cloud follows. Being rebuilt.",
   "HomeProof.tests": "test files in the apps and libraries, all run in CI",
   "HomeProof.licence": "licence: free to self-host",
   "HomeStatus.signIn": "Sign-in with email, passkeys and two-factor authentication",
@@ -131,9 +131,9 @@ export default {
   "HomeStatus.languages": "The app and this website in nine languages",
   "HomeFaq.freeQuestion": "Is Financy free?",
   "HomeFaq.freeAnswer":
-    "Self-hosting is free under AGPL-3.0; you pay only for your server. The cloud will be a paid plan.",
+    "Self-hosting is free under AGPL‑3.0; you pay only for your server. The cloud will be a paid plan.",
   "HomeHero.title":
-    "Financy is a free, open-source (AGPL-3.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
+    "Financy is a free, open-source (AGPL‑3.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
   "HomeHero.github": "Follow the build on GitHub",
   "HomeHero.status":
     "Being rebuilt in public, not ready to use yet. Updated {date}. <status>Where it stands</status>",
@@ -151,7 +151,7 @@ export default {
   "HomeFaq.title": "Before you start",
   "Pricing.title": "Financy pricing: free to self-host, cloud later",
   "Pricing.description":
-    "Financy is free to self-host under AGPL-3.0. Running it costs one Linux server at your host's price. The paid cloud is not open yet.",
+    "Financy is free to self-host under AGPL‑3.0. Running it costs one Linux server at your host's price. The paid cloud is not open yet.",
   "Pricing.crumb": "Pricing",
   "Pricing.saving":
     "{plan} costs {monthly} a month or {yearly} a year: {saving} less than paying monthly.",
@@ -163,19 +163,19 @@ export default {
     "Whatever your host charges for one Linux machine with Docker. Financy has no per-user fees of its own.",
   "PricingFaq.oweQuestion": "Can I change the code?",
   "PricingFaq.oweAnswer":
-    "Yes. AGPL-3.0 lets you change it and run it. If you offer your changed version to others over a network, you share its source under the same licence.",
+    "Yes. AGPL‑3.0 lets you change it and run it. If you offer your changed version to others over a network, you share its source under the same licence.",
   "PricingHero.eyebrow": "Pricing",
   "PricingHero.title": "Financy is free to self-host. Here is what it costs to run.",
   "PricingHero.lead":
-    "Financy is a free, open-source (AGPL-3.0) finance tracker. Self-hosted, you pay only for the server it runs on. The paid cloud is not open yet.",
+    "Financy is a free, open-source (AGPL‑3.0) finance tracker. Self-hosted, you pay only for the server it runs on. The paid cloud is not open yet.",
   "PricingFaq.title": "About the price",
   "PricingWays.eyebrow": "What you pay",
   "PricingWays.title": "What self-hosting Financy costs",
-  "PricingWays.lead": "The code is free under AGPL-3.0, with no licence key and nothing held back.",
+  "PricingWays.lead": "The code is free under AGPL‑3.0, with no licence key and nothing held back.",
   "PricingWays.useTitle": "Self-host Financy",
-  "PricingWays.useUnit": "AGPL-3.0 licence, no account",
+  "PricingWays.useUnit": "AGPL‑3.0 licence, no account",
   "PricingWays.useText":
-    "The full source under AGPL-3.0, every feature, every update, for you and your household.",
+    "The full source under AGPL‑3.0, every feature, every update, for you and your household.",
   "PricingWays.runTitle": "Run it in production",
   "PricingWays.runPrice": "One server",
   "PricingWays.runUnit": "at your host's price",
@@ -266,7 +266,7 @@ export default {
   "FeatureDeploy.nav": "Self-hosting",
   "FeatureDeploy.title": "Runs on your own server",
   "FeatureDeploy.lead":
-    "Financy runs on any Linux server you rent or own, with Docker Compose. Self-hosting is free under the AGPL-3.0 licence, and your household's data stays on your server.",
+    "Financy runs on any Linux server you rent or own, with Docker Compose. Self-hosting is free under the AGPL‑3.0 licence, and your household's data stays on your server.",
   "FeatureDeploy.fact1": "Traefik in front, with automatic certificates",
   "FeatureDeploy.fact2": "Postgres and Valkey beside the apps",
   "FeatureDeploy.fact3": "Metrics, logs and alerts with VictoriaMetrics, VictoriaLogs and Grafana",
@@ -560,7 +560,7 @@ export default {
   "HomeWays.title": "Self-host it, or wait for the cloud",
   "HomeWays.selfHostTitle": "Self-host",
   "HomeWays.selfHostText":
-    "Free under the AGPL-3.0 licence. It runs on your server with Docker Compose, and your data stays there.",
+    "Free under the AGPL‑3.0 licence. It runs on your server with Docker Compose, and your data stays there.",
   "HomeWays.selfHostLink": "Read the code on GitHub",
   "HomeWays.cloudTitle": "The cloud",
   "HomeWays.cloudText": "Not open yet. The same code, run for you, as a paid plan.",
@@ -574,6 +574,6 @@ export default {
   "HomeFaq.bankAnswer": "No. Bank statement import is planned for the first version.",
   "HomeFaq.stopsQuestion": "What happens if Financy stops?",
   "HomeFaq.stopsAnswer":
-    "The code is AGPL-3.0 on GitHub, so anyone can keep running it, and you can export your data at any time.",
+    "The code is AGPL‑3.0 on GitHub, so anyone can keep running it, and you can export your data at any time.",
   "SiteFooter.aboutHint": "(opens antonshubin.com)",
 } satisfies Catalog

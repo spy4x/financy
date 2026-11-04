@@ -62,7 +62,7 @@ const PROOF = [
   ...(TEST_FILE_COUNT === undefined
     ? []
     : [{ value: `${TEST_FILE_COUNT}`, label: `HomeProof.tests` }]),
-  { value: `AGPL-3.0`, label: `HomeProof.licence` },
+  { value: `AGPL‑3.0`, label: `HomeProof.licence` },
   { value: `${SITE_LANGUAGES.length}`, label: `HomeProof.languages` },
 ] as const
 

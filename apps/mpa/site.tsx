@@ -110,6 +110,15 @@ export const SITE_AUTHOR = { name: PERSON_JSON_LD.name, href: AUTHOR_URL } as co
 /** What the product is, in the home page's first sentence, for the product's structured data. */
 const SOFTWARE_DESCRIPTION = siteEnglishText().t(`HomeHero.title`)
 
+/**
+ * `text` for search engines and AI assistants: the catalogs write the licence as `AGPL‑3.0`, with a
+ * non-breaking hyphen (U+2011) so a line never breaks inside it, and machines get the plain
+ * `AGPL-3.0` that people type.
+ */
+export function machineText(text: string): string {
+  return text.replaceAll(`\u2011`, `-`)
+}
+
 /** The id of the product's one entity, which every page's structured data points at. */
 export function softwareId(origin: string): string {
   return `${origin}/#software`
@@ -295,8 +304,8 @@ export function SiteFrame(
     <>
       <Head>
         <SEOHead
-          title={pageTitle(head.title)}
-          description={head.description}
+          title={machineText(pageTitle(head.title))}
+          description={machineText(head.description)}
           canonical={`${origin}${localePath(head.oneLanguage ? DEFAULT_LANGUAGE : language, path)}`}
           ogType={head.ogType}
           ogImage={head.image?.url ?? `${origin}/og/${og}.png`}
@@ -306,7 +315,7 @@ export function SiteFrame(
           siteName={SITE_NAME}
           locale={ogLocale(language)}
           noindex={head.noindex}
-          jsonLd={head.jsonLd}
+          jsonLd={head.jsonLd && JSON.parse(machineText(JSON.stringify(head.jsonLd)))}
           alternates={languageAlternates(origin, path, head)
             .map(({ hreflang, href }) => ({ lang: hreflang, url: href }))}
         />

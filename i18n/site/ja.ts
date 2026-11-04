@@ -8,7 +8,7 @@ export default {
   "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "本文へスキップ",
   "SiteFooter.pitch": "一人でも家族でも、複数の通貨をまとめて管理できる家計簿。",
-  "SiteFooter.builtBy": "<author>{name}</author> が公開で開発しています。AGPL-3.0 ライセンス。",
+  "SiteFooter.builtBy": "<author>{name}</author> が公開で開発しています。AGPL‑3.0 ライセンス。",
   "SiteFooter.contact": "お問い合わせ",
   "SiteFooter.product": "プロダクト",
   "SiteFooter.openSource": "オープンソース",
@@ -130,7 +130,7 @@ export default {
     "Seedの構成：WebアプリとWebサイトがAPIを呼び出し、APIはすべての変更とそのイベントをPostgresに書き込み、ワーカーがそのイベントからメールとプッシュ通知を送ります。すべてが1台のサーバーで動きます。",
   "Home.title": "Financy：複数通貨に対応した家計簿（セルフホスト・無料）",
   "Home.description":
-    "一人でも家族でも、複数の通貨をまとめて管理できるオープンソースの家計簿（AGPL-3.0）。自分のサーバーで無料で動かせます。有料クラウドは今後提供予定。現在作り直し中です。",
+    "一人でも家族でも、複数の通貨をまとめて管理できるオープンソースの家計簿（AGPL‑3.0）。自分のサーバーで無料で動かせます。有料クラウドは今後提供予定。現在作り直し中です。",
   "HomeProof.tests": "アプリとライブラリのテストファイル数。すべてCIで実行",
   "HomeProof.licence": "ライセンス：セルフホストは無料",
   "HomeStatus.signIn": "メールアドレス、パスキー、2段階認証でのログイン",
@@ -140,9 +140,9 @@ export default {
   "HomeStatus.languages": "アプリとこのサイトは9言語に対応",
   "HomeFaq.freeQuestion": "Financy は無料ですか？",
   "HomeFaq.freeAnswer":
-    "セルフホストは AGPL-3.0 で無料です。払うのはサーバー代だけです。クラウドは有料プランになります。",
+    "セルフホストは AGPL‑3.0 で無料です。払うのはサーバー代だけです。クラウドは有料プランになります。",
   "HomeHero.title":
-    "Financy は、一人でも家族でも、複数の通貨をまとめて管理できる無料のオープンソース家計簿（AGPL-3.0）です。自分のサーバーで動かすことも、有料クラウドを使うこともできます。",
+    "Financy は、一人でも家族でも、複数の通貨をまとめて管理できる無料のオープンソース家計簿（AGPL‑3.0）です。自分のサーバーで動かすことも、有料クラウドを使うこともできます。",
   "HomeHero.github": "GitHub で開発を追う",
   "HomeHero.status": "公開で作り直し中で、まだ使えません。{date} 更新。<status>現在の状況</status>",
   "HomeQuickStart.terminal": "ターミナル",
@@ -159,7 +159,7 @@ export default {
   "HomeFaq.title": "始める前に",
   "Pricing.title": "Financy の料金：セルフホストは無料、クラウドは今後",
   "Pricing.description":
-    "Financy は AGPL-3.0 で無料でセルフホストできます。動かす費用は、ホスティング会社の料金での Linux サーバー1台分です。有料クラウドはまだ公開していません。",
+    "Financy は AGPL‑3.0 で無料でセルフホストできます。動かす費用は、ホスティング会社の料金での Linux サーバー1台分です。有料クラウドはまだ公開していません。",
   "Pricing.crumb": "料金",
   "Pricing.saving":
     "{plan} は月額 {monthly}、または年額 {yearly} です。月払いより {saving} お得です。",
@@ -171,20 +171,20 @@ export default {
     "Docker が動く Linux マシン1台に、ホスティング会社が請求する額です。Financy 自体にユーザーごとの料金はありません。",
   "PricingFaq.oweQuestion": "コードを変更できますか？",
   "PricingFaq.oweAnswer":
-    "はい。AGPL-3.0 では変更して動かせます。変更版をネットワーク越しにほかの人へ提供する場合は、そのソースコードを同じライセンスで公開する必要があります。",
+    "はい。AGPL‑3.0 では変更して動かせます。変更版をネットワーク越しにほかの人へ提供する場合は、そのソースコードを同じライセンスで公開する必要があります。",
   "PricingHero.eyebrow": "料金",
   "PricingHero.title": "Financy のセルフホストは無料です。運用にかかる費用はこちら。",
   "PricingHero.lead":
-    "Financy は無料のオープンソース家計簿（AGPL-3.0）です。セルフホストなら、払うのは動かすサーバー代だけです。有料クラウドはまだ公開していません。",
+    "Financy は無料のオープンソース家計簿（AGPL‑3.0）です。セルフホストなら、払うのは動かすサーバー代だけです。有料クラウドはまだ公開していません。",
   "PricingFaq.title": "料金について",
   "PricingWays.eyebrow": "かかる費用",
   "PricingWays.title": "Financy をセルフホストする費用",
   "PricingWays.lead":
-    "コードは AGPL-3.0 で無料です。ライセンスキーも、有料に回した機能もありません。",
+    "コードは AGPL‑3.0 で無料です。ライセンスキーも、有料に回した機能もありません。",
   "PricingWays.useTitle": "Financy をセルフホスト",
-  "PricingWays.useUnit": "AGPL-3.0 ライセンス、アカウント不要",
+  "PricingWays.useUnit": "AGPL‑3.0 ライセンス、アカウント不要",
   "PricingWays.useText":
-    "AGPL-3.0 のソースコード一式。すべての機能とすべての更新を、あなたとご家族に。",
+    "AGPL‑3.0 のソースコード一式。すべての機能とすべての更新を、あなたとご家族に。",
   "PricingWays.runTitle": "本番環境で運用する",
   "PricingWays.runPrice": "サーバー1台",
   "PricingWays.runUnit": "ホスティング会社の料金",
@@ -270,7 +270,7 @@ export default {
   "FeatureDeploy.nav": "セルフホスト",
   "FeatureDeploy.title": "あなたのサーバーで動く",
   "FeatureDeploy.lead":
-    "Financy は、借りたサーバーでも自前のサーバーでも、Linux なら Docker Compose で動きます。セルフホストは AGPL-3.0 ライセンスで無料で、世帯のデータはあなたのサーバーに残ります。",
+    "Financy は、借りたサーバーでも自前のサーバーでも、Linux なら Docker Compose で動きます。セルフホストは AGPL‑3.0 ライセンスで無料で、世帯のデータはあなたのサーバーに残ります。",
   "FeatureDeploy.fact1": "前段に証明書を自動取得するTraefik",
   "FeatureDeploy.fact2": "アプリと並んで動くPostgresとValkey",
   "FeatureDeploy.fact3": "VictoriaMetrics、VictoriaLogs、Grafana によるメトリクス、ログ、アラート",
@@ -565,7 +565,7 @@ export default {
   "HomeWays.title": "自分でホストするか、クラウドを待つか",
   "HomeWays.selfHostTitle": "セルフホスト",
   "HomeWays.selfHostText":
-    "AGPL-3.0 ライセンスで無料。Docker Compose であなたのサーバー上で動き、データはそこに残ります。",
+    "AGPL‑3.0 ライセンスで無料。Docker Compose であなたのサーバー上で動き、データはそこに残ります。",
   "HomeWays.selfHostLink": "GitHub でコードを読む",
   "HomeWays.cloudTitle": "クラウド",
   "HomeWays.cloudText":
@@ -580,6 +580,6 @@ export default {
   "HomeFaq.bankAnswer": "いいえ。銀行明細の取り込みは最初のバージョンで予定しています。",
   "HomeFaq.stopsQuestion": "Financy の開発が止まったら？",
   "HomeFaq.stopsAnswer":
-    "コードは AGPL-3.0 で GitHub にあるので誰でも動かし続けられますし、データはいつでも書き出せます。",
+    "コードは AGPL‑3.0 で GitHub にあるので誰でも動かし続けられますし、データはいつでも書き出せます。",
   "SiteFooter.aboutHint": "（antonshubin.comが開きます）",
 } satisfies Catalog

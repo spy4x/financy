@@ -23,7 +23,7 @@ import { handler as sitemap } from "./routes/sitemap.xml.ts"
 import { handler as llms } from "./routes/llms.txt.ts"
 import { handler as unsubscribe } from "./routes/[[lang]]/unsubscribe.ts"
 import { languageMiddleware, pageMiddleware } from "./middleware.ts"
-import { ogImageAlt, type OgImageKey, REPOSITORY_URL } from "./site.tsx"
+import { machineText, ogImageAlt, type OgImageKey, REPOSITORY_URL } from "./site.tsx"
 import { NotYetList } from "./components/features-section.tsx"
 import { SiteLanguage } from "./use-site.tsx"
 import { SITE_PAGES, type SitePage } from "./pages.ts"
@@ -171,14 +171,14 @@ describe("the public website", () => {
 
     expect(status).toBe(200)
     expect(headingOne(html)).toBe(
-      "Financy is a free, open-source (AGPL-3.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
+      "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
     )
     expect(hrefOf(linkNamed(main, "Get notified"))).toBe("#newsletter")
     expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
     expect(html).toContain(`<title>Financy: self-hosted multi-currency finance tracker</title>`)
     expect(html).toContain(`<link rel="canonical" href="${site}/"`)
     expect(metaContent(html, "og:url")).toBe(`${site}/`)
-    expect(metaContent(html, "description")).toBe(HOME_HEAD.description)
+    expect(metaContent(html, "description")).toBe(machineText(HOME_HEAD.description))
     expect(html.match(/<title>/g)).toHaveLength(1)
   })
 
@@ -191,7 +191,7 @@ describe("the public website", () => {
       expect(status, path).toBe(200)
       expect(heading, path).toBe(siteTranslator(language).t(`HomeHero.title`))
       expect(heading, path).toContain("Financy")
-      expect(heading, path).toContain("AGPL-3.0")
+      expect(heading, path).toContain("AGPL\u20113.0")
     }
   })
 
@@ -342,7 +342,7 @@ describe("the public website", () => {
     const lead = html.slice(html.indexOf("</h1>")).match(/<p\b[^>]*>([\s\S]*?)<\/p>/)![1]
       .replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim()
 
-    expect(lead).toMatch(/^Financy is a free, open-source \(AGPL-3\.0\) finance tracker\./)
+    expect(lead).toMatch(/^Financy is a free, open-source \(AGPL\u20113\.0\) finance tracker\./)
   })
 
   it("calls 2FA, groups and per-member billing by one name, the app's, on every page", async () => {
@@ -855,7 +855,7 @@ describe("the public website", () => {
     for (const { path, title, description } of SITE_PAGES) {
       const { html } = await page(path)
 
-      expect(metaContent(html, "description"), path).toBe(description)
+      expect(metaContent(html, "description"), path).toBe(machineText(description))
       const shown = html.match(/<title>([^<]*)<\/title>/)![1].replaceAll("&#39;", "'")
       expect(shown.startsWith(title), `${path}: ${shown}`).toBe(true)
     }
@@ -870,9 +870,23 @@ describe("the public website", () => {
       /^# Financy\n\n> Financy is a free, open-source \(AGPL-3\.0\) finance tracker for a person or a family/,
     )
     for (const { path, title, description } of SITE_PAGES) {
-      expect(text, path).toContain(`- [${title}](${site}${path}): ${description}\n`)
+      expect(text, path).toContain(`- [${title}](${site}${path}): ${machineText(description)}\n`)
     }
     expect(text).toContain(`(${REPOSITORY_URL})`)
+  })
+
+  it("keeps AGPL-3.0 on one line in every language, and gives machines its plain hyphen", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const path = localePath(language, "/")
+      const { html } = await page(path)
+      const [head, body] = html.split("<body")
+
+      expect(headingOne(html), path).toContain("AGPL\u20113.0")
+      expect(body, path).not.toContain("AGPL-3.0")
+      expect(head, path).not.toContain("\u2011")
+    }
+    const llms = await (await handler(new Request(`${site}/llms.txt`), info)).text()
+    expect(llms).not.toContain("\u2011")
   })
 
   it("names the source code's licence in llms.txt as AGPL-3.0, Financy's own", async () => {

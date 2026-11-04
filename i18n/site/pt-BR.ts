@@ -9,7 +9,7 @@ export default {
   "SiteFrame.skip": "Pular para o conteúdo",
   "SiteFooter.pitch":
     "Controle financeiro para você ou sua família, em qualquer combinação de moedas.",
-  "SiteFooter.builtBy": "Feito em público por <author>{name}</author>. Licença AGPL-3.0.",
+  "SiteFooter.builtBy": "Feito em público por <author>{name}</author>. Licença AGPL‑3.0.",
   "SiteFooter.contact": "Contato",
   "SiteFooter.product": "Produto",
   "SiteFooter.openSource": "Código aberto",
@@ -128,7 +128,7 @@ export default {
     "Como as peças do Seed se encaixam: o app web e o site chamam a API, a API grava cada alteração e seus eventos no Postgres, e o worker envia e-mails e notificações push a partir desses eventos. Tudo roda num só servidor.",
   "Home.title": "Financy: controle financeiro em várias moedas no seu servidor",
   "Home.description":
-    "Controle financeiro grátis e de código aberto para você ou sua família, em várias moedas. Hospede no seu servidor sob AGPL-3.0; a nuvem paga vem depois. Em reconstrução.",
+    "Controle financeiro grátis e de código aberto para você ou sua família, em várias moedas. Hospede no seu servidor sob AGPL‑3.0; a nuvem paga vem depois. Em reconstrução.",
   "HomeProof.tests": "arquivos de teste nos apps e nas bibliotecas, todos rodando no CI",
   "HomeProof.licence": "licença: grátis para hospedar",
   "HomeStatus.signIn": "Entrar com e-mail, chaves de acesso e verificação em duas etapas",
@@ -138,9 +138,9 @@ export default {
   "HomeStatus.languages": "O app e este site em nove idiomas",
   "HomeFaq.freeQuestion": "O Financy é grátis?",
   "HomeFaq.freeAnswer":
-    "Hospedar você mesmo é grátis sob AGPL-3.0; você paga só pelo seu servidor. A nuvem será um plano pago.",
+    "Hospedar você mesmo é grátis sob AGPL‑3.0; você paga só pelo seu servidor. A nuvem será um plano pago.",
   "HomeHero.title":
-    "Financy é um controle financeiro grátis e de código aberto (AGPL-3.0) para você ou sua família, em qualquer combinação de moedas: hospede no seu servidor ou use a nuvem paga.",
+    "Financy é um controle financeiro grátis e de código aberto (AGPL‑3.0) para você ou sua família, em qualquer combinação de moedas: hospede no seu servidor ou use a nuvem paga.",
   "HomeHero.github": "Acompanhe a construção no GitHub",
   "HomeHero.status":
     "Em reconstrução, à vista de todos; ainda não dá para usar. Atualizado em {date}. <status>Veja em que pé está</status>",
@@ -158,7 +158,7 @@ export default {
   "HomeFaq.title": "Antes de começar",
   "Pricing.title": "Preços do Financy: grátis para hospedar, nuvem depois",
   "Pricing.description":
-    "O Financy é grátis para hospedar você mesmo, sob AGPL-3.0. Para rodar, basta um servidor Linux pelo preço do seu provedor. A nuvem paga ainda não abriu.",
+    "O Financy é grátis para hospedar você mesmo, sob AGPL‑3.0. Para rodar, basta um servidor Linux pelo preço do seu provedor. A nuvem paga ainda não abriu.",
   "Pricing.crumb": "Preços",
   "Pricing.saving":
     "{plan} custa {monthly} por mês ou {yearly} por ano: {saving} a menos do que pagando todo mês.",
@@ -170,20 +170,20 @@ export default {
     "O que seu provedor cobra por uma máquina Linux com Docker. O Financy não tem taxa por usuário.",
   "PricingFaq.oweQuestion": "Posso mudar o código?",
   "PricingFaq.oweAnswer":
-    "Sim. A AGPL-3.0 deixa você mudar e rodar o código. Se oferecer sua versão modificada a outras pessoas por uma rede, você precisa compartilhar o código dela sob a mesma licença.",
+    "Sim. A AGPL‑3.0 deixa você mudar e rodar o código. Se oferecer sua versão modificada a outras pessoas por uma rede, você precisa compartilhar o código dela sob a mesma licença.",
   "PricingHero.eyebrow": "Preços",
   "PricingHero.title": "Hospedar o Financy é grátis. Veja quanto custa mantê-lo rodando.",
   "PricingHero.lead":
-    "O Financy é um controle financeiro grátis e de código aberto (AGPL-3.0). Hospedando você mesmo, você paga só pelo servidor onde ele roda. A nuvem paga ainda não abriu.",
+    "O Financy é um controle financeiro grátis e de código aberto (AGPL‑3.0). Hospedando você mesmo, você paga só pelo servidor onde ele roda. A nuvem paga ainda não abriu.",
   "PricingFaq.title": "Sobre o preço",
   "PricingWays.eyebrow": "O que você paga",
   "PricingWays.title": "Quanto custa hospedar o Financy",
   "PricingWays.lead":
-    "O código é grátis sob AGPL-3.0, sem chave de licença e sem nenhum recurso reservado.",
+    "O código é grátis sob AGPL‑3.0, sem chave de licença e sem nenhum recurso reservado.",
   "PricingWays.useTitle": "Hospede o Financy você mesmo",
-  "PricingWays.useUnit": "licença AGPL-3.0, sem conta",
+  "PricingWays.useUnit": "licença AGPL‑3.0, sem conta",
   "PricingWays.useText":
-    "Todo o código-fonte sob AGPL-3.0, com todos os recursos e atualizações, para você e sua família.",
+    "Todo o código-fonte sob AGPL‑3.0, com todos os recursos e atualizações, para você e sua família.",
   "PricingWays.runTitle": "Coloque em produção",
   "PricingWays.runPrice": "Um servidor",
   "PricingWays.runUnit": "pelo preço do seu provedor",
@@ -277,7 +277,7 @@ export default {
   "FeatureDeploy.nav": "Hospedagem própria",
   "FeatureDeploy.title": "Roda no seu próprio servidor",
   "FeatureDeploy.lead":
-    "O Financy roda em qualquer servidor Linux, alugado ou seu, com Docker Compose. Hospedar você mesmo é grátis sob a licença AGPL-3.0, e os dados da sua família ficam no seu servidor.",
+    "O Financy roda em qualquer servidor Linux, alugado ou seu, com Docker Compose. Hospedar você mesmo é grátis sob a licença AGPL‑3.0, e os dados da sua família ficam no seu servidor.",
   "FeatureDeploy.fact1": "Traefik na frente, com certificados automáticos",
   "FeatureDeploy.fact2": "Postgres e Valkey ao lado dos apps",
   "FeatureDeploy.fact3": "Métricas, logs e alertas com VictoriaMetrics, VictoriaLogs e Grafana",
@@ -581,7 +581,7 @@ export default {
   "HomeWays.title": "Hospede você mesmo, ou espere a nuvem",
   "HomeWays.selfHostTitle": "Hospedar você mesmo",
   "HomeWays.selfHostText":
-    "Grátis sob a licença AGPL-3.0. Roda no seu servidor com Docker Compose, e seus dados ficam lá.",
+    "Grátis sob a licença AGPL‑3.0. Roda no seu servidor com Docker Compose, e seus dados ficam lá.",
   "HomeWays.selfHostLink": "Leia o código no GitHub",
   "HomeWays.cloudTitle": "A nuvem",
   "HomeWays.cloudText":
@@ -597,6 +597,6 @@ export default {
     "Não. A importação de extratos bancários está planejada para a primeira versão.",
   "HomeFaq.stopsQuestion": "E se o Financy for abandonado?",
   "HomeFaq.stopsAnswer":
-    "O código está no GitHub sob AGPL-3.0, então qualquer pessoa pode continuar rodando, e você pode exportar seus dados quando quiser.",
+    "O código está no GitHub sob AGPL‑3.0, então qualquer pessoa pode continuar rodando, e você pode exportar seus dados quando quiser.",
   "SiteFooter.aboutHint": "(abre antonshubin.com)",
 } satisfies Catalog

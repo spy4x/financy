@@ -1,6 +1,7 @@
 import { FORM_ACTIONS } from "@ui/progressive.tsx"
 import { llmsTxt } from "@spy4x/platform/universal/seo"
 import { REPOSITORY_URL, SITE_NAME } from "../brand.ts"
+import { machineText } from "../site.tsx"
 import { blogPages } from "../blog.ts"
 import { API_DOCS_PATH } from "../api-docs.ts"
 import { DOCS_PATH } from "../docs-site.ts"
@@ -62,6 +63,8 @@ export const handler = define.handlers({
         },
       ],
     })
-    return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8" } })
+    return new Response(machineText(body), {
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    })
   },
 })

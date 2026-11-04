@@ -8,7 +8,7 @@ export default {
   "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "跳到正文",
   "SiteFooter.pitch": "为个人或家庭记账，支持任意多种货币。",
-  "SiteFooter.builtBy": "由 <author>{name}</author> 公开构建。AGPL-3.0 许可证。",
+  "SiteFooter.builtBy": "由 <author>{name}</author> 公开构建。AGPL‑3.0 许可证。",
   "SiteFooter.contact": "联系",
   "SiteFooter.product": "产品",
   "SiteFooter.openSource": "开源",
@@ -116,7 +116,7 @@ export default {
     "Seed 的整体结构：Web 应用和网站调用 API，API 把每一次更改及其事件写入 Postgres，Worker 根据这些事件发送邮件和推送。所有服务都运行在一台服务器上。",
   "Home.title": "Financy：支持多币种的家庭记账软件，可自托管",
   "Home.description":
-    "免费开源（AGPL-3.0）的记账软件，适合个人或家庭，支持任意多种货币。可部署在自己的服务器上；付费云服务稍后推出。目前正在重写。",
+    "免费开源（AGPL‑3.0）的记账软件，适合个人或家庭，支持任意多种货币。可部署在自己的服务器上；付费云服务稍后推出。目前正在重写。",
   "HomeProof.tests": "测试文件，覆盖各个应用和库，全部在 CI 中运行",
   "HomeProof.licence": "许可证：自托管免费",
   "HomeStatus.signIn": "邮箱登录、通行密钥和双重验证",
@@ -125,9 +125,9 @@ export default {
   "HomeStatus.realtime": "所有设备实时更新，应用离线也能打开",
   "HomeStatus.languages": "应用和本网站支持九种语言",
   "HomeFaq.freeQuestion": "Financy 免费吗？",
-  "HomeFaq.freeAnswer": "自托管依据 AGPL-3.0 免费，你只需支付服务器费用。云服务将是付费方案。",
+  "HomeFaq.freeAnswer": "自托管依据 AGPL‑3.0 免费，你只需支付服务器费用。云服务将是付费方案。",
   "HomeHero.title":
-    "Financy 是一款免费开源（AGPL-3.0）的记账软件，适合个人或家庭，支持任意多种货币：可以自托管，也可以使用付费云服务。",
+    "Financy 是一款免费开源（AGPL‑3.0）的记账软件，适合个人或家庭，支持任意多种货币：可以自托管，也可以使用付费云服务。",
   "HomeHero.github": "在 GitHub 上关注开发进展",
   "HomeHero.status": "正在公开重写，暂时还不能用。更新于 {date}。<status>看看进展</status>",
   "HomeQuickStart.terminal": "终端",
@@ -144,7 +144,7 @@ export default {
   "HomeFaq.title": "开始之前",
   "Pricing.title": "Financy 价格：自托管免费，云服务稍后推出",
   "Pricing.description":
-    "Financy 依据 AGPL-3.0 可免费自托管。运行它只需一台 Linux 服务器，价格由你的服务商决定。付费云服务尚未开放。",
+    "Financy 依据 AGPL‑3.0 可免费自托管。运行它只需一台 Linux 服务器，价格由你的服务商决定。付费云服务尚未开放。",
   "Pricing.crumb": "价格",
   "Pricing.saving": "{plan} 每月 {monthly}，或每年 {yearly}：比按月付款少 {saving}。",
   "PricingFaq.paidQuestion": "会有付费版本吗？",
@@ -155,18 +155,18 @@ export default {
     "你的服务商对一台装有 Docker 的 Linux 机器收多少就是多少。Financy 本身不按用户收费。",
   "PricingFaq.oweQuestion": "我可以修改代码吗？",
   "PricingFaq.oweAnswer":
-    "可以。AGPL-3.0 允许你修改并运行它。如果你通过网络向他人提供修改后的版本，就要以同样的许可证公开其源代码。",
+    "可以。AGPL‑3.0 允许你修改并运行它。如果你通过网络向他人提供修改后的版本，就要以同样的许可证公开其源代码。",
   "PricingHero.eyebrow": "价格",
   "PricingHero.title": "自托管 Financy 免费。下面是运行它的花费。",
   "PricingHero.lead":
-    "Financy 是一款免费开源（AGPL-3.0）的记账软件。自托管时，你只需支付运行它的服务器费用。付费云服务尚未开放。",
+    "Financy 是一款免费开源（AGPL‑3.0）的记账软件。自托管时，你只需支付运行它的服务器费用。付费云服务尚未开放。",
   "PricingFaq.title": "关于价格",
   "PricingWays.eyebrow": "你要付的费用",
   "PricingWays.title": "自托管 Financy 的成本",
-  "PricingWays.lead": "代码依据 AGPL-3.0 免费，无需许可证密钥，也没有任何功能留作付费。",
+  "PricingWays.lead": "代码依据 AGPL‑3.0 免费，无需许可证密钥，也没有任何功能留作付费。",
   "PricingWays.useTitle": "自托管 Financy",
-  "PricingWays.useUnit": "AGPL-3.0 许可证，无需账号",
-  "PricingWays.useText": "依据 AGPL-3.0 的完整源代码，包含所有功能和每次更新，供你和家人使用。",
+  "PricingWays.useUnit": "AGPL‑3.0 许可证，无需账号",
+  "PricingWays.useText": "依据 AGPL‑3.0 的完整源代码，包含所有功能和每次更新，供你和家人使用。",
   "PricingWays.runTitle": "在生产环境中运行",
   "PricingWays.runPrice": "一台服务器",
   "PricingWays.runUnit": "按你的服务商价格",
@@ -247,7 +247,7 @@ export default {
   "FeatureDeploy.nav": "自托管",
   "FeatureDeploy.title": "运行在你自己的服务器上",
   "FeatureDeploy.lead":
-    "Financy 可以通过 Docker Compose 运行在你租用或自有的任何 Linux 服务器上。自托管依据 AGPL-3.0 许可证免费，家庭数据留在你的服务器上。",
+    "Financy 可以通过 Docker Compose 运行在你租用或自有的任何 Linux 服务器上。自托管依据 AGPL‑3.0 许可证免费，家庭数据留在你的服务器上。",
   "FeatureDeploy.fact1": "Traefik 作为入口，自动签发证书",
   "FeatureDeploy.fact2": "Postgres 和 Valkey 与应用一起运行",
   "FeatureDeploy.fact3": "用 VictoriaMetrics、VictoriaLogs 和 Grafana 提供指标、日志和告警",
@@ -523,7 +523,7 @@ export default {
   "HomeWays.title": "自己托管，或等待云服务",
   "HomeWays.selfHostTitle": "自托管",
   "HomeWays.selfHostText":
-    "依据 AGPL-3.0 许可证免费。用 Docker Compose 在你的服务器上运行，数据留在那里。",
+    "依据 AGPL‑3.0 许可证免费。用 Docker Compose 在你的服务器上运行，数据留在那里。",
   "HomeWays.selfHostLink": "在 GitHub 上阅读代码",
   "HomeWays.cloudTitle": "云服务",
   "HomeWays.cloudText": "尚未开放。同样的代码，免去自己维护服务器，按付费方案使用。",
@@ -536,6 +536,6 @@ export default {
   "HomeFaq.bankAnswer": "不会。银行流水导入计划在第一个版本中提供。",
   "HomeFaq.stopsQuestion": "如果 Financy 停止开发怎么办？",
   "HomeFaq.stopsAnswer":
-    "代码以 AGPL-3.0 开源在 GitHub 上，任何人都能继续运行它，你也可以随时导出数据。",
+    "代码以 AGPL‑3.0 开源在 GitHub 上，任何人都能继续运行它，你也可以随时导出数据。",
   "SiteFooter.aboutHint": "（打开 antonshubin.com）",
 } satisfies Catalog
