@@ -1,23 +1,19 @@
-// Seed's own site: see docs/start-a-product.md
 import type { JSX } from "preact"
-import { IconArrowRight, IconGitHub } from "@spy4x/preact-icons"
+import { IconGitHub } from "@spy4x/preact-icons"
 import { Button } from "@spy4x/preact-ui/button"
 import { FaqList } from "@spy4x/preact-ui/faq-list"
 import { OnThisPage } from "@spy4x/preact-ui/on-this-page"
 import { PageHero } from "@spy4x/preact-ui/page-hero"
-import { StatusMark } from "@spy4x/preact-ui/status-mark"
 import { faqPageJsonLd } from "@spy4x/platform/universal/seo"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { siteEnglishText } from "@ui/site-text.ts"
 import { Band } from "../../components/band.tsx"
-import { CtaBand } from "../../components/cta-band.tsx"
 import {
   FeatureSection,
   type FeatureSectionProps,
   FeatureTier,
 } from "../../components/features-section.tsx"
 import { SectionIntro } from "../../components/section-intro.tsx"
-import { ShotViewer } from "../../components/shot-viewer.tsx"
 import { featurePath, pageOfFeature, tiers } from "../../features-data.tsx"
 import {
   PERSON_JSON_LD,
@@ -28,9 +24,6 @@ import {
   SiteFrame,
   type SitePageHead,
   softwareJsonLd,
-  spaLinks,
-  TRY_ENTRY,
-  TRY_REL,
 } from "../../site.tsx"
 import { type Site, useSite } from "../../use-site.tsx"
 import { define } from "../../utils.ts"
@@ -39,7 +32,7 @@ import { define } from "../../utils.ts"
  * The day this page's feature list or wording last changed: the hero's "Updated" line and the
  * sitemap's `lastmod`. Change it with them.
  */
-export const FEATURES_UPDATED = `2026-11-02`
+export const FEATURES_UPDATED = `2026-11-04`
 
 /** The page's title and description in the language of `t`. */
 export function featuresHead(t: Translator<string>): { title: string; description: string } {
@@ -58,11 +51,6 @@ const FAQ = [
     id: `faq-serverless`,
     question: `FeaturesFaq.serverlessQuestion`,
     answer: `FeaturesFaq.serverlessAnswer`,
-  },
-  {
-    id: `faq-runtime`,
-    question: `FeaturesFaq.runtimeQuestion`,
-    answer: `FeaturesFaq.runtimeAnswer`,
   },
   {
     id: `faq-database`,
@@ -93,18 +81,15 @@ function featuresJsonLd(site: Site, origin: string): unknown[] {
   ]
 }
 
-/**
- * The page a section's text links to, in the page's language, when the feature has one: a feature
- * page or, for the admin panel, `/admin`.
- */
-function pageLink({ href, language }: Site, id: string): FeatureSectionProps["more"] {
-  if (id === `admin`) return { href: href(`/admin`) }
+/** The feature page a section's text links to, in the page's language, when the feature has one. */
+function pageLink({ language }: Site, id: string): FeatureSectionProps["more"] {
   const page = pageOfFeature(id)
   return page && { href: featurePath(page.slug, language) }
 }
 
-function Hero({ demoHref }: { demoHref: string }): JSX.Element {
-  const { t } = useSite()
+/** The hero: what works today, a note that the money itself is not built yet, and the code. */
+function Hero(): JSX.Element {
+  const { t, rich, href } = useSite()
   return (
     <PageHero
       class="site-glow"
@@ -113,22 +98,13 @@ function Hero({ demoHref }: { demoHref: string }): JSX.Element {
       lead={t.t(`FeaturesHero.lead`)}
       author={SITE_AUTHOR}
       updated={FEATURES_UPDATED}
-      note={t.t(`FeaturesHero.note`)}
+      note={rich(`FeaturesHero.note`, {
+        status: (text) => <a href={`${href(`/`)}#status`} class="text-primary underline">{text}</a>,
+      })}
     >
       <div class="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
         <Button
-          href={demoHref}
-          rel={TRY_REL}
-          size="lg"
-          data-e2e="features-try-demo"
-          data-umami-event="try-demo"
-          data-umami-event-from="hero"
-        >
-          {t.t(TRY_ENTRY.label)}
-        </Button>
-        <Button
           href={REPOSITORY_URL}
-          variant="outline"
           size="lg"
           data-umami-event="github"
           data-umami-event-from="hero"
@@ -140,58 +116,13 @@ function Hero({ demoHref }: { demoHref: string }): JSX.Element {
   )
 }
 
-/** Deno's own announcement of its last year of development, which the runtime plan cites. */
-const DENO_ANNOUNCEMENT_URL = `https://deno.com/blog/cloudflare`
-
-/** The runtime Seed works on today, a name no language translates. */
-const RUNTIME_TODAY = `Deno 2`
-
-/** The issue that moves Seed to run unchanged on Deno, Node and Bun. */
-const RUNTIME_ISSUE_URL = `${REPOSITORY_URL}/issues/623`
-
 /**
- * Where Seed runs today and where it is going: Deno now, Node and Bun in progress (#623). When
- * #623 lands, the badge on the home page and this section's heading and status change with it.
- */
-function RuntimePlan(): JSX.Element {
-  const { t, rich } = useSite()
-  return (
-    <FeatureTier
-      id="runtime"
-      eyebrow={t.t(`FeatureTierRuntime.eyebrow`)}
-      title={t.t(`FeatureTierRuntime.title`)}
-      lead={rich(`FeatureTierRuntime.lead`, {
-        announced: (text) => (
-          <a href={DENO_ANNOUNCEMENT_URL} class="text-primary underline">{text}</a>
-        ),
-      })}
-      status={<bdi>{RUNTIME_TODAY}</bdi>}
-      statusMore={
-        <>
-          {/* The mark and what it marks wrap as one, so "In progress" never ends a line alone. */}
-          <span class="inline-flex flex-wrap items-center gap-x-2">
-            <StatusMark status="wip" label={t.t(`FeatureTierRuntime.wip`)} class="font-medium" />
-            <span class="text-muted">
-              {rich(`FeatureTierRuntime.wipRuntimes`, { name: (text) => <bdi>{text}</bdi> })}
-            </span>
-          </span>
-          <a href={RUNTIME_ISSUE_URL} class="text-primary underline" data-e2e="runtime-issue">
-            {rich(`FeatureTierRuntime.follow`, { issue: (text) => <bdi>{text}</bdi> })}
-          </a>
-        </>
-      }
-    />
-  )
-}
-
-/**
- * `/features`: every capability, grouped by what it is for, each with what people notice, what a
- * developer gets, what is not built yet and a link to the code. One ask: try the demo.
+ * `/features`: what works in Financy today, each with what people notice, what a developer gets
+ * and a link to the code, then the questions.
  */
 export default define.page(function Features({ state }) {
   const site = useSite()
-  const { t, href } = site
-  const spa = spaLinks(state.spaOrigin)
+  const { t } = site
   const head: SitePageHead = {
     ...featuresHead(t),
     og: `features`,
@@ -202,12 +133,11 @@ export default define.page(function Features({ state }) {
     ...sections.flatMap((tier) =>
       tier.features.map((feature) => ({ label: feature.nav, href: `#${feature.id}` }))
     ),
-    { label: t.t(`FeatureTierRuntime.nav`), href: `#runtime` },
     { label: t.t(`HomeFaq.eyebrow`), href: `#faq` },
   ]
   return (
     <SiteFrame state={state} path="/features" head={head}>
-      <Hero demoHref={spa.try} />
+      <Hero />
       <div class="mx-auto grid w-full max-w-6xl gap-12 px-4 py-12 sm:px-6 lg:grid-cols-12 lg:px-8 lg:py-16">
         <div class="lg:col-span-3 xl:col-span-2">
           <OnThisPage links={sectionLinks(nav)} />
@@ -215,7 +145,7 @@ export default define.page(function Features({ state }) {
         <div class="flex min-w-0 flex-col gap-16 lg:col-span-9 xl:col-span-10">
           {sections.map(({ features, ...tier }) => (
             <FeatureTier key={tier.id} {...tier}>
-              {features.map(({ nav: _nav, shots: _shots, ...feature }, index) => (
+              {features.map(({ nav: _nav, ...feature }, index) => (
                 <FeatureSection
                   key={feature.id}
                   {...feature}
@@ -225,15 +155,6 @@ export default define.page(function Features({ state }) {
               ))}
             </FeatureTier>
           ))}
-          <RuntimePlan />
-          {/* Seed's own site: see docs/start-a-product.md */}
-          <a
-            href={href(`/compare`)}
-            class="inline-flex items-center gap-1 self-start py-2 text-lg font-medium text-primary hover:underline"
-            data-e2e="features-compare"
-          >
-            {t.t(`Features.compare`)} <IconArrowRight class="size-5" aria-hidden="true" />
-          </a>
         </div>
       </div>
       <Band tone="alt" id="faq" labelledBy="faq-title" width="3xl">
@@ -252,8 +173,6 @@ export default define.page(function Features({ state }) {
           />
         </div>
       </Band>
-      <CtaBand demoHref={spa.try} />
-      <ShotViewer />
     </SiteFrame>
   )
 })

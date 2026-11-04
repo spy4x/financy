@@ -1,35 +1,23 @@
 import type { Catalog } from "@spy4x/platform/universal/i18n"
 
 export default {
-  "TryEntry.label": "Prueba la demo en vivo",
-  "TryEntry.line":
-    "Sin registro. Entras con una cuenta de invitado y datos de ejemplo, y todo se borra cada noche.",
   "SiteNav.features": "Funciones",
   "SiteNav.docs": "Docs",
   "SiteNav.blog": "Blog",
-  "SiteNav.compare": "Comparar",
-  "SiteNav.pricing": "Precios",
-  "SiteNav.hire": "Contrátame",
-  "SiteNav.hireHint": "(abre antonshubin.com)",
   "SiteNav.github": "GitHub",
   "SiteFrame.skip": "Ir al contenido",
-  "SiteFrame.tryDemo": "Probar la demo",
-  "SiteFooter.pitch": "La base de tu SaaS, de código abierto con licencia MIT.",
-  "SiteFooter.builtBy": "Hecho en público por <author>{name}</author>. Licencia MIT.",
+  "SiteFooter.pitch": "Control de finanzas para ti o tu familia, en cualquier mezcla de monedas.",
+  "SiteFooter.builtBy": "Hecho en público por <author>{name}</author>. Licencia AGPL-3.0.",
   "SiteFooter.contact": "Contacto",
   "SiteFooter.product": "Producto",
-  "SiteFooter.admin": "Panel de administración",
-  "SiteFooter.signIn": "Iniciar sesión",
   "SiteFooter.openSource": "Código abierto",
-  "SiteFooter.source": "Código en GitHub",
+  "SiteFooter.source": "Código fuente",
   "SiteFooter.issue": "Reportar un problema",
-  "SiteFooter.quickStart": "Inicio rápido",
   "SiteFooter.apiDocs": "Documentación de la API",
   "SiteFooter.docs": "Documentación",
   "SiteFooter.changelog": "Registro de cambios",
   "SiteFooter.status": "Qué funciona hoy",
   "SiteFooter.company": "Empresa",
-  "SiteFooter.hire": "Contrátame para tu MVP",
   "SiteFooter.about": "Sobre Anton",
   "SiteFooter.privacy": "Privacidad",
   "SiteFooter.terms": "Términos",
@@ -54,7 +42,6 @@ export default {
     "Puede que el enlace sea antiguo o que la página se haya movido. Esto es lo que busca la mayoría:",
   "ErrorPage.home": "Volver al inicio",
   "ErrorPage.features": "Ver las funciones",
-  "ErrorPage.hire": "Contrátame para crear tu MVP",
   "ErrorPage.report":
     "Si llegaste aquí desde un enlace de este sitio, <issues>avísame en GitHub</issues>.",
   "ErrorPage.retry": "Reintentar",
@@ -65,12 +52,12 @@ export default {
   "SubscribeForm.sentTitle": "Revisa tu bandeja de entrada",
   "SubscribeForm.sentText":
     "Te enviamos un enlace para confirmar tu suscripción. Funciona durante tres días.",
-  "SubscribeForm.title": "Recibe las novedades por correo",
+  "SubscribeForm.title": "Recibe el aviso por correo",
   "SubscribeForm.intro":
     "Escribe tu correo electrónico. Te enviaremos un enlace para confirmarlo, y cada correo trae un enlace para darte de baja.",
   "SubscribeForm.email": "Correo electrónico",
   "SubscribeForm.sending": "Enviando…",
-  "SubscribeForm.submit": "Suscribirme",
+  "SubscribeForm.submit": "Avísame",
   "SubscriptionConfirm.askAgain": "Pedir un enlace nuevo",
   "SubscriptionConfirm.doneTitle": "Suscripción confirmada",
   "SubscriptionConfirm.doneText":
@@ -97,13 +84,13 @@ export default {
   "Unsubscribe.submit": "Darme de baja",
   "NewsletterPage.title": "Boletín",
   "NewsletterPage.description": "Confirma o cancela tu suscripción al boletín de {site}.",
-  "NewsletterPage.subscribeTitle": "Boletín de {site}: noticias breves por correo",
+  "NewsletterPage.subscribeTitle": "Boletín de {site}: entérate de cuándo esté listo",
   "NewsletterPage.subscribeDescription":
-    "Un correo breve cuando {site} cambia: qué salió, qué se rompió y qué aprendí construyéndolo. Doble confirmación y baja con un clic.",
+    "Un correo el día en que {site} se pueda usar, y noticias breves mientras se construye: qué salió, qué se rompió, qué aprendí. Confirmas una vez; te das de baja con un clic.",
   "NewsletterPage.about": "Sobre el boletín",
-  "NewsletterPage.heading": "Recibe un correo breve cuando {site} tenga novedades",
+  "NewsletterPage.heading": "Entérate de cuándo {site} esté listo",
   "NewsletterPage.lead":
-    "Qué salió, qué se rompió y qué aprendí construyéndolo, escrito por mí. Ningún otro correo.",
+    "Escribiré el día en que puedas empezar a usarlo y, de vez en cuando, con lo que salió y lo que se rompió. Ningún otro correo.",
   "NewsletterPage.promiseConfirm":
     "Primero confirmas con un enlace, así nadie más puede suscribirte.",
   "NewsletterPage.promiseUnsubscribe": "Cada correo trae un enlace para darte de baja con un clic.",
@@ -116,13 +103,6 @@ export default {
   "NewsletterOff.lead":
     "Para enterarte de los cambios en {site}, sigue sus versiones en GitHub. O mira lo que ya hace hoy.",
   "NewsletterOff.releases": "Versiones en GitHub",
-  "CtaBand.title": "Míralo funcionar en un minuto",
-  "CtaBand.lead":
-    "La demo es la aplicación que tienes desde el primer día. Ábrela sin registrarte: tu cuenta de invitado empieza con datos de ejemplo.",
-  "Founders.title": "¿No programas? Yo creo tu producto con Seed.",
-  "Founders.text":
-    "Soy Anton, quien construye Seed. Los fundadores me contratan para convertir una idea en un producto en marcha en el que la gente puede registrarse y pagar. Como el registro, los grupos y los pagos ya existen, tu presupuesto va a lo que hace distinto a tu producto.",
-  "Founders.cta": "Mira cómo funciona y cuánto cuesta",
   "Architecture.webApp": "Aplicación web",
   "Architecture.website": "Sitio web",
   "Architecture.api": "API",
@@ -143,179 +123,70 @@ export default {
   "Architecture.captionBottom": "con Valkey y Grafana",
   "Architecture.label":
     "Cómo encaja Seed: la aplicación web y el sitio web llaman a la API, la API guarda cada cambio y sus eventos en Postgres, y el worker envía correos y notificaciones push a partir de esos eventos. Todo funciona en un solo servidor.",
-  "Home.title": "Seed: el starter SaaS gratuito basado en estándares web",
+  "Home.title": "Financy: presupuesto familiar en varias monedas, autoalojado",
   "Home.description":
-    "El starter SaaS gratuito con licencia MIT, basado en estándares web: inicio de sesión con 2FA, grupos con roles, facturación con Stripe. Funciona con Deno.",
+    "Control de gastos gratis y open source (AGPL-3.0), solo o en familia, en varias monedas. Alójalo tú; nube de pago más adelante. En reconstrucción.",
   "HomeProof.tests": "archivos de pruebas en las apps y las bibliotecas, todos se ejecutan en CI",
-  "HomeProof.licence": "licencia: sin cuenta y sin muro de pago",
-  "HomeStatus.signIn":
-    "Registro, inicio de sesión, verificación del correo electrónico, restablecimiento de contraseña, inicio de sesión con Google y GitHub, llaves de acceso, códigos de inicio de sesión por correo y 2FA con una app de autenticación",
-  "HomeStatus.guests":
-    "Cuentas de invitado: prueba la aplicación con un clic y conserva la cuenta añadiendo un método de inicio de sesión",
-  "HomeStatus.groups": "Grupos con miembros, roles, invitaciones y traspaso de la propiedad",
-  "HomeStatus.export": "Exportar un grupo a un archivo e importarlo como grupo nuevo",
-  "HomeStatus.attachments": "Imágenes y PDF adjuntos a las notas, dentro del espacio de cada plan",
-  "HomeStatus.billing": "Facturación por miembro con periodos de prueba, a través de Stripe",
-  "HomeStatus.account":
-    "Foto de perfil, lista de dispositivos con sesión iniciada, descarga de tus propios datos y eliminación de la cuenta, que puedes deshacer durante 7 días",
-  "HomeStatus.tokens": "Tokens personales de API",
-  "HomeStatus.realtime": "Tiempo real, la aplicación sin conexión y notificaciones web push",
-  "HomeStatus.telegram":
-    "Un bot de Telegram: notificaciones en un chat y tus propios comandos en un solo archivo",
-  "HomeStatus.admin": "El área de administración",
-  "HomeStatus.website": "El worker de la bandeja de salida, el boletín y este sitio web",
-  "HomeStatus.languages":
-    "La aplicación, el área de administración y este sitio web en nueve idiomas: {languages}",
-  "HomeStatus.notBuiltAndroid": "Una app de Android en Play Store",
-  "HomeStatus.notBuiltDesktop": "Una app de escritorio para Windows, macOS y Linux",
-  "HomeFaq.tryQuestion": "¿Puedo probarlo sin una cuenta?",
-  "HomeFaq.tryAnswer":
-    "Sí. «Prueba la demo en vivo» abre la aplicación con una cuenta de invitado y datos de ejemplo, sin correo ni contraseña. Puedes añadir un método de inicio de sesión, pero la demo se borra igualmente cada noche. Seed en sí no necesita ninguna cuenta: clónalo desde GitHub.",
-  "HomeFaq.freeQuestion": "¿Seed es gratis de verdad?",
+  "HomeProof.licence": "licencia: gratis si lo alojas tú",
+  "HomeStatus.signIn": "Inicio de sesión con correo, llaves de acceso y verificación en dos pasos",
+  "HomeStatus.groups": "Hogares con roles de lector a propietario, e invitaciones",
+  "HomeStatus.export": "Exportar un hogar a un archivo e importarlo de nuevo",
+  "HomeStatus.realtime": "Cambios al instante en cada dispositivo, y una app que abre sin conexión",
+  "HomeStatus.languages": "La app y este sitio en nueve idiomas",
+  "HomeFaq.freeQuestion": "¿Financy es gratis?",
   "HomeFaq.freeAnswer":
-    "Sí. Tiene licencia MIT: úsalo en tantos productos como quieras, comerciales o no, publica tu fork, sin necesidad de cuenta. Solo pagas el servidor que alquilas y los servicios que actives, como Stripe o un proveedor de correo.",
-  "HomeFaq.stackQuestion": "¿Por qué Deno y Preact en lugar de Next.js?",
-  "HomeFaq.stackAnswer":
-    "Se basan en estándares web (<code>fetch</code>, <code>Request</code>, Web Crypto, módulos ES), arrancan rápido y tienen pocas dependencias, así que hay menos que actualizar y menos que se rompa. Si trabajas en el ecosistema de Next.js, te irá mejor un starter de Next.js; <compare>la comparativa</compare> recomienda algunos buenos.",
-  "HomeFaq.clientQuestion": "¿Puedo usarlo en proyectos para clientes?",
-  "HomeFaq.clientAnswer":
-    "Sí. La licencia MIT lo permite, y así es como lo uso yo. Tu cliente no necesita una licencia propia.",
-  "HomeFaq.productionQuestion": "¿Está listo para producción?",
-  "HomeFaq.productionAnswer":
-    "Las partes de «Funciona hoy» tienen pruebas en CI: cada pull request ejecuta las pruebas de inicio de sesión, perfil, notas y grupos, y la suite completa se ejecuta tras cada fusión. Seed ya se puede usar y sigue creciendo; lee la lista de estado antes de confiar en una parte.",
-  "HomeHero.badge": "Funciona con Deno 2",
-  "HomeHero.title": "La base de tu SaaS, ya construida.",
-  "HomeHero.lead":
-    "Seed es el starter SaaS gratuito basado en estándares web: inicio de sesión con verificación en dos pasos (2FA), grupos con roles, facturación por miembro con Stripe, tiempo real, una aplicación que funciona sin conexión y un área de administración. Tiene licencia MIT, hoy funciona con Deno y se despliega con Docker Compose en un único servidor Linux que alquilas.",
-  "HomeHero.github": "Ver en GitHub",
+    "Alojarlo tú es gratis bajo AGPL-3.0; solo pagas tu servidor. La nube será un plan de pago.",
+  "HomeHero.title":
+    "Financy es un control de finanzas gratuito y de código abierto (AGPL-3.0) para ti o tu familia, en cualquier mezcla de monedas: alójalo tú o usa la nube de pago.",
+  "HomeHero.github": "Sigue el desarrollo en GitHub",
   "HomeHero.status":
-    "Seed ya se puede usar y se construye en público: <status>mira qué funciona</status>.",
-  "HomeHero.quickStart": "Inicio rápido",
-  "HomeHero.demoTitle": "Seed en un minuto, de git clone al panel de administración",
-  "HomeHero.demoCaption":
-    "Demo de 1 minuto con subtítulos y música: clonar, arrancar, escribir una nota, abrir el panel de administración.",
-  "HomeHero.aiPrompt":
-    "Crea mi nuevo producto «Acme» a partir de https://github.com/spy4x/seed y ejecútalo en local",
-  "HomeFeatures.billingAlt":
-    "El plan de un grupo de ejemplo en la app de demo, con los precios de ejemplo de la demo: plan Pro con su fecha de renovación, 36,00 € al mes, para 4 miembros a 9,00 € cada uno, propietario incluido.",
-  "HomeFeatures.eyebrow": "Qué incluye",
-  "HomeFeatures.title": "Todo lo que va antes de tu primera función",
-  "HomeFeatures.lead":
-    "Cada parte de abajo funciona hoy y tiene pruebas en CI. El inicio de sesión con Google y GitHub y la facturación con Stripe necesitan tus propias claves, por eso están desactivados en la demo.",
-  "HomeFeatures.signInTitle": "Inicio de sesión, resuelto",
-  "HomeFeatures.signInLink": "Cómo funciona el inicio de sesión",
-  "HomeFeatures.signInAlt":
-    "La página de seguridad de un perfil: la contraseña, un botón Añadir una llave de acceso, la verificación en dos pasos activada y el principio de la lista de dispositivos con sesión iniciada.",
-  "HomeFeatures.signInText":
-    "Correo y contraseña con códigos de verificación, restablecimiento de contraseña, inicio de sesión con Google y GitHub, llaves de acceso, códigos de inicio de sesión por correo, cuentas de invitado y 2FA con una app de autenticación. Sesiones que puedes ver y cerrar.",
-  "HomeFeatures.billingTitle": "Facturación por miembro",
-  "HomeFeatures.billingLink": "Cómo funciona la facturación",
-  "HomeFeatures.billingText":
-    "Suscripciones de Stripe por grupo: un plan gratuito con límites, un plan de pago por miembro, periodos de prueba y un periodo de gracia cuando falla una tarjeta. El propietario confirma el precio antes de cada invitación.",
-  "HomeFeatures.realtimeTitle": "Tiempo real y sin conexión",
-  "HomeFeatures.realtimeLink": "Cómo funcionan el tiempo real y el modo sin conexión",
-  "HomeFeatures.realtimeText":
-    "Los cambios llegan a cada pestaña abierta por WebSocket. La aplicación se instala, abre sin red, pone en cola lo que escribes y muestra un conflicto en lugar de sobrescribir el trabajo de otra persona.",
-  "HomeFeatures.groupsTitle": "Grupos desde el primer día",
-  "HomeFeatures.groupsLink": "Cómo funcionan los grupos",
-  "HomeFeatures.groupsAlt":
-    "Los miembros de un grupo, cada uno con su rol, un botón para invitar a gente y el menú de un miembro abierto: «Cambiar a lector», «Cambiar a administrador», «Quitar del grupo».",
-  "HomeFeatures.groupsText":
-    "Cada cuenta recibe un grupo al registrarse. Invita a personas, asígnales un rol de lector a propietario, cede la propiedad y restaura un grupo eliminado durante 30 días. Cada grupo tiene un resumen con sus cifras clave.",
-  "HomeFeatures.adminTitle": "Un área de administración",
-  "HomeFeatures.adminLink": "Recorre el panel de administración",
-  "HomeFeatures.adminText":
-    "Los operadores buscan a una persona, gestionan grupos, reembolsan un pago y revisan el estado del sistema. Funciona en su propio host; las acciones arriesgadas piden confirmación y cada acción queda registrada.",
-  "HomeFeatures.websiteTitle": "Un sitio web público",
-  "HomeFeatures.websiteLink": "Qué incluye el sitio web",
-  "HomeFeatures.websiteText":
-    "Este sitio: renderizado en el servidor, funciona con JavaScript desactivado, en nueve idiomas, con precios tomados de tu catálogo de planes, páginas legales y un boletín con doble confirmación.",
-  "HomeFeatures.all": "Todas las funciones, con capturas y estado",
-  "HomeServer.eyebrow": "Funciona en un servidor que alquilas",
-  "HomeServer.title": "Un servidor, un <code>docker compose</code>, sin facturas sorpresa.",
-  "HomeServer.text":
-    "Seed funciona en cualquier servidor Linux que alquiles. Compose arranca la API, el worker, la aplicación web, Postgres, Valkey y Traefik con certificados automáticos. Las métricas y los logs van a VictoriaMetrics y VictoriaLogs con Grafana encima, y un contenedor de copias de seguridad guarda cada día una copia cifrada de la base de datos. Varios productos pueden compartir un servidor. Nada se cobra por petición, así que un pico de tráfico no te cuesta nada extra.",
-  "HomeServer.skip":
-    "No elijas Seed si quieres funciones serverless o Vercel: está hecho para un servidor que tú controlas.",
-  "HomeQuickStart.title": "En marcha en local con cuatro comandos",
-  "HomeQuickStart.needs": "Necesitas Deno 2 y Docker; GitHub CLI es opcional.",
-  "HomeQuickStart.text":
-    "<init>init</init> copia el archivo de entorno y genera todos los secretos y las claves de web push; <dev>dev</dev> arranca Traefik y todo lo demás. Luego abre <url>http://app.localhost</url>. El <readme>README</readme> explica cada ajuste y cómo desplegar.",
-  "HomeQuickStart.agent": "O pídeselo a tu agente de IA: <prompt></prompt>.",
+    "En reconstrucción pública, aún no se puede usar. Actualizado el {date}. <status>Cómo va</status>",
   "HomeQuickStart.terminal": "Terminal",
-  "HomeQuickStart.guide": "Lee la guía paso a paso",
-  "HomeStatus.eyebrow": "Estado sincero",
-  "HomeStatus.title": "Dónde está hoy",
-  "HomeStatus.lead":
-    "Seed ya se puede usar y se construye en público. Esto es exactamente lo que funciona y lo que aún no.",
+  "HomeStatus.title": "Cómo va la reconstrucción",
   "HomeStatus.works": "Funciona hoy",
   "HomeStatus.notBuilt": "Aún no está hecho",
-  "HomeStatus.follow": "Sigue el progreso en GitHub",
-  "HomeWho.eyebrow": "Quién construye Seed",
-  "HomeWho.title": "Hecho por un ingeniero, para proyectos reales de clientes",
-  "HomeWho.text":
-    "Soy Anton Shubin, ingeniero full-stack sénior y líder técnico, freelance desde 2013. Seed es la base que reconstruía una y otra vez para mis clientes, reunida en un solo repositorio. Lo uso en MVP de pago, así que se arregla cuando algo se rompe. Si a tu producto le falta algo, abre un issue o escríbeme.",
-  "HomeWho.offer": "Mi oferta de MVP en antonshubin.com",
-  "HomeWho.about": "Sobre mí",
-  "HomeWho.upwork": "Perfil de Upwork",
-  "HomeWho.issues": "Issues en GitHub",
-  "HomeNewsletter.title": "Recibe un correo breve cuando {site} tenga novedades",
+  "HomeWho.eyebrow": "Para quién es",
+  "HomeWho.title": "Dinero en más de una moneda",
+  "HomeNewsletter.title": "Entérate de cuándo {site} esté listo",
   "HomeNewsletter.lead":
-    "Qué salió, qué se rompió y qué aprendí construyéndolo. Ningún otro correo, y te das de baja con un clic.",
+    "Te escribiré el día en que puedas empezar a usarlo y, de vez en cuando, una nota breve con lo que salió. Nada más; te das de baja con un clic.",
   "HomeNewsletter.hint": "Primero lo confirmarás por correo.",
   "HomeFaq.eyebrow": "Preguntas",
   "HomeFaq.title": "Antes de empezar",
-  "Pricing.title": "Precios de Seed: un starter SaaS gratuito con licencia MIT",
+  "Pricing.title": "Precios de Financy: gratis si lo alojas tú, nube más adelante",
   "Pricing.description":
-    "Seed es gratis con licencia MIT, sin versión de pago. Ejecutarlo cuesta un servidor Linux al precio de tu proveedor, más los servicios que actives.",
+    "Financy es gratis si lo alojas tú, bajo AGPL-3.0. Ejecutarlo cuesta un servidor Linux al precio de tu proveedor. La nube de pago aún no está abierta.",
   "Pricing.crumb": "Precios",
   "Pricing.saving":
     "{plan} cuesta {monthly} al mes o {yearly} al año: {saving} menos que pagando cada mes.",
-  "PricingFaq.paidQuestion": "¿Hay una versión de pago de Seed?",
+  "PricingFaq.paidQuestion": "¿Habrá una versión de pago?",
   "PricingFaq.paidAnswer":
-    "No. No hay versión pro, ni clave de licencia, ni funciones reservadas. Si quieres ayuda, contrátame: mi tiempo es lo único que vendo.",
+    "Sí: una nube de pago para quien no quiera mantener un servidor. Usa el mismo código, y su precio estará en esta página antes de abrir.",
   "PricingFaq.serverQuestion": "¿Cuánto cuesta un servidor?",
   "PricingFaq.serverAnswer":
-    "Lo que cobre tu proveedor por una máquina Linux con Docker. Seed no tiene tarifas propias por usuario ni por petición.",
-  "PricingFaq.oweQuestion": "¿Debo pagar algo si mi producto gana dinero?",
+    "Lo que tu proveedor cobre por una máquina Linux con Docker. Financy no tiene tarifas por usuario propias.",
+  "PricingFaq.oweQuestion": "¿Puedo cambiar el código?",
   "PricingFaq.oweAnswer":
-    "No. La licencia MIT solo pide que mantengas su aviso de copyright y de licencia junto al código.",
-  "PricingFaq.mvpQuestion": "¿De dónde sale {price}?",
-  "PricingFaq.mvpAnswer":
-    "Es el precio de partida de un MVP típico: registro, pagos, una API, un área de administración y el despliegue. Tu presupuesto depende de tus funciones y se fija antes de empezar.",
-  "PricingFaq.mvpLink": "Cómo se construye un MVP",
+    "Sí. La AGPL-3.0 te deja cambiarlo y ejecutarlo. Si ofreces tu versión modificada a otros a través de una red, compartes su código bajo la misma licencia.",
   "PricingHero.eyebrow": "Precios",
-  "PricingHero.title": "Seed es gratis. Esto es lo que cuesta mantenerlo en marcha.",
+  "PricingHero.title": "Alojar Financy tú mismo es gratis. Esto cuesta ejecutarlo.",
   "PricingHero.lead":
-    "Seed es un starter SaaS gratuito con licencia MIT, sin versión de pago y sin cuenta. Solo pagas el servidor que alquilas y los servicios opcionales, como Stripe.",
+    "Financy es un control de finanzas gratuito y de código abierto (AGPL-3.0). Si lo alojas tú, solo pagas el servidor donde funciona. La nube de pago aún no está abierta.",
   "PricingFaq.title": "Sobre el precio",
   "PricingWays.eyebrow": "Qué pagas",
-  "PricingWays.title": "Tres formas de usar Seed y lo que cuesta cada una",
+  "PricingWays.title": "Lo que cuesta alojar Financy tú mismo",
   "PricingWays.lead":
-    "Seed no tiene versión de pago ni clave de licencia. Me gano la vida creando productos para clientes con él, así que el código sigue siendo gratis.",
-  "PricingWays.useTitle": "Usa Seed por tu cuenta",
-  "PricingWays.useUnit": "Licencia MIT, sin cuenta",
+    "El código es gratis bajo AGPL-3.0, sin clave de licencia y sin nada reservado.",
+  "PricingWays.useTitle": "Aloja Financy tú mismo",
+  "PricingWays.useUnit": "licencia AGPL-3.0, sin cuenta",
   "PricingWays.useText":
-    "Todo el código con licencia MIT, todas las funciones, todas las actualizaciones. Tantos productos como quieras, comerciales o no, incluidos proyectos para clientes.",
+    "Todo el código bajo AGPL-3.0, cada función, cada actualización, para ti y tu hogar.",
   "PricingWays.runTitle": "Llévalo a producción",
   "PricingWays.runPrice": "Un servidor",
   "PricingWays.runUnit": "al precio de tu proveedor",
   "PricingWays.runAction": "Leer la guía de despliegue",
   "PricingWays.runText":
-    "Seed funciona en un servidor Linux que alquilas, y varios productos pueden compartirlo. Stripe, un proveedor de correo y el inicio de sesión con Google o GitHub son opcionales, y cada uno te cobra directamente.",
-  "PricingWays.hireTitle": "Que yo construya tu MVP con él",
-  "PricingWays.hirePrice": "Desde {price}",
-  "PricingWays.hireUnit": "producto en marcha en un mínimo de {weeks}",
-  "PricingWays.hireAction": "Mira cómo funciona",
-  "PricingWays.hireText":
-    "Tu producto desde la idea hasta el despliegue, en servidores a tu nombre. Un presupuesto para tu alcance antes de empezar a trabajar.",
-  "PricingWays.other":
-    "El resto de la ayuda también tiene precios públicos: una sesión de estrategia de 60 minutos cuesta {session}, y el trabajo continuo, {hourly} la hora o desde {retainer} al mes. Un precio «desde» se convierte en un presupuesto cerrado tras una llamada gratuita, antes de empezar, y un cambio de alcance tiene antes su propio presupuesto.",
-  "Hire.weeks": {
-    "one": "{count} semana",
-    "many": "{count} semanas",
-    "other": "{count} semanas",
-  },
+    "Financy funciona en un servidor Linux que alquiles o tengas. Un proveedor de correo y el inicio de sesión con Google o GitHub son opcionales, y cada uno te cobra directamente.",
   "DemoPlans.eyebrow": "Facturación funcionando",
   "DemoPlans.title": "Los planes de la demo: un ejemplo de la facturación que recibes",
   "DemoPlans.noticeTitle": "Estos no son los precios de Seed",
@@ -342,280 +213,93 @@ export default {
   "DemoPlan.proFiles": "Archivos ilimitados, 10 GB en total",
   "DemoPlan.proMembers": "Hasta 50 miembros",
   "DemoPlan.proRoles": "Convierte a miembros en editores o administradores",
-  "FeatureTierSettled.eyebrow": "Resuelto para ti",
-  "FeatureTierSettled.title": "Un starter SaaS con grupos y facturación ya conectados",
+  "FeatureTierSettled.eyebrow": "Funciona hoy",
+  "FeatureTierSettled.title": "La base sobre la que irá el dinero de tu hogar",
   "FeatureTierSettled.lead":
-    "Cuentas, grupos y dinero: lo que todo producto necesita antes de su primera función, y lo más fácil de hacer mal.",
+    "Estas partes funcionan y se prueban en CI. El dinero en sí, las cuentas en cualquier moneda y sus movimientos, va después.",
   "FeatureTierSettled.status":
-    "Con pruebas en CI. El inicio de sesión con Google y GitHub y Stripe necesitan tus propias claves, por eso están desactivados en la demo.",
+    "El inicio de sesión con Google y GitHub necesita claves propias del servidor, así que una copia recién alojada empieza con el inicio de sesión por correo.",
   "FeatureSignIn.nav": "Cuentas e inicio de sesión",
   "FeatureSignIn.title": "Inicio de sesión, resuelto",
   "FeatureSignIn.lead":
-    "La gente se registra con correo y contraseña y confirma el correo con un código. Puede restablecer una contraseña olvidada, continuar con Google o GitHub, entrar con una llave de acceso o recibir por correo un código que inicia sesión y, si hace falta, crea la cuenta. También puede probar primero la aplicación con una cuenta de invitado y añadir más tarde un método de inicio de sesión. Una app de autenticación añade la verificación en dos pasos (2FA). Cada persona ve todos los dispositivos con su sesión iniciada y puede cerrar la sesión en los demás. Cambiar un método de inicio de sesión pide una comprobación y envía un correo.",
+    "Las personas se registran con correo y contraseña y confirman el correo con un código. Pueden restablecer una contraseña olvidada, continuar con Google o GitHub, iniciar sesión con una llave de acceso o con un código por correo. Una app de autenticación añade la verificación en dos pasos (2FA), y cada persona ve todos los dispositivos con sesión abierta y puede cerrar los demás.",
   "FeatureSignIn.fact1":
     "Contraseñas con hash PBKDF2-SHA-256 mediante Web Crypto, 600.000 iteraciones por defecto",
   "FeatureSignIn.fact2":
     "Cookies de sesión firmadas y un registro de auditoría de cada evento de inicio de sesión",
   "FeatureSignIn.fact3": "Tokens personales de API, guardados solo como hashes con clave",
-  "FeatureSignIn.fact4":
-    "Llaves de acceso: solo se guarda la clave pública y cada desafío de inicio de sesión sirve una vez",
-  "FeatureSignIn.fact5":
-    "Códigos de inicio de sesión por correo: un código de 8 caracteres sirve para iniciar sesión o registrarse, funciona una sola vez durante 10 minutos, solo en el navegador que lo pidió, y solo se guarda como hash",
-  "FeatureSignIn.fact6":
-    "Cuentas de invitado (inicio de sesión anónimo): el visitante empieza con un clic y sin método de inicio de sesión, y después añade correo y contraseña, Google, GitHub o una llave de acceso a la misma cuenta",
-  "FeatureSignIn.fact7":
-    "Las contraseñas incorrectas se cuentan por nombre de inicio de sesión desde cualquier dirección de red, y luego hay un bloqueo breve",
   "FeatureSignIn.code": "Ver el código de inicio de sesión",
-  "FeatureTeams.nav": "Grupos y roles",
-  "FeatureTeams.title": "Grupos con roles desde el primer minuto",
+  "FeatureTeams.nav": "Hogares y roles",
+  "FeatureTeams.title": "Un hogar, cada persona con su propio acceso",
   "FeatureTeams.lead":
-    "Cada cuenta recibe un grupo personal al registrarse. La gente crea grupos compartidos, invita a otros, les da un rol de lector a propietario y cede la propiedad en un solo paso. Un grupo eliminado se puede restaurar durante 30 días, y cada grupo guarda un registro de actividad.",
-  "FeatureTeams.fact1":
-    "El grupo es el único límite entre inquilinos: los datos personales y los compartidos pasan la misma comprobación",
-  "FeatureTeams.fact2": "La aplicación, su código y este sitio lo llaman igual: grupo",
+    "Un hogar (un grupo, en la app) son las personas que comparten dinero. Invita a tu pareja o a tu familia, da a cada uno un rol de lector a propietario y transfiere la propiedad cuando haga falta. Un hogar eliminado se puede restaurar durante 30 días, y el registro de actividad muestra quién cambió qué.",
+  "FeatureTeams.fact1": "El hogar es el único límite contra el que se comprueba cada dato",
+  "FeatureTeams.fact2": "Cada persona ve solo los hogares a los que pertenece",
   "FeatureTeams.fact3":
-    "Sin un segundo modelo de permisos que mantener sincronizado con el primero",
-  "FeatureTeams.fact4":
-    "Invitaciones, cambios de rol y traspaso de la propiedad, cada uno con sus propias pruebas",
+    "Invitaciones, cambios de rol y transferencia de propiedad, cada uno con sus pruebas",
   "FeatureTeams.code": "Ver el dominio de grupos",
-  "FeatureOverview.nav": "Resumen del grupo",
-  "FeatureOverview.title": "Un resumen para cada grupo",
-  "FeatureOverview.lead":
-    "Cifras clave y un gráfico para cualquier rango de fechas. Cada persona puede ocultar y reordenar los widgets, y su diseño la acompaña en sus otros dispositivos.",
-  "FeatureOverview.fact1":
-    "Cada cifra se compara con el periodo anterior, sin juicios en rojo o verde",
-  "FeatureOverview.fact2": "Solo recuentos: ni el texto de las notas ni rankings de personas",
-  "FeatureOverview.fact3": "Cada widget carga, falla y se reintenta por su cuenta",
-  "FeatureOverview.fact4":
-    "Un agregado nuevo añade sus propios widgets, y el área de administración también los muestra",
-  "FeatureOverview.code": "Ver los widgets del resumen",
-  "FeatureBilling.nav": "Facturación por miembro",
-  "FeatureBilling.title": "Facturación por miembro con Stripe",
-  "FeatureBilling.lead":
-    "La gente ve una tabla de precios, un plan gratuito con límites y una prueba de 14 días del plan de pago. El propietario ve cuánto cuesta un miembro más antes de invitarlo, y un aviso claro con fecha cuando falla una tarjeta.",
-  "FeatureBilling.fact1":
-    "Stripe Checkout y el portal del cliente; el webhook es la única fuente del plan",
-  "FeatureBilling.fact2": "Cantidades que siguen al número de miembros",
-  "FeatureBilling.fact3": "Un periodo de gracia tras un pago fallido, 7 días por defecto",
-  "FeatureBilling.fact4": "Límites del plan comprobados en el servidor, no solo en la aplicación",
-  "FeatureBilling.notYet1": "Proveedores de pago distintos de Stripe",
-  "FeatureBilling.code": "Leer docs/billing.md",
-  "FeaturePrivacy.nav": "Privacidad",
-  "FeaturePrivacy.title": "Cuentas que se pueden dejar",
-  "FeaturePrivacy.lead":
-    "Cada persona descarga una copia de sus datos y elimina su cuenta desde el perfil, con 7 días para cambiar de opinión. Las notificaciones leídas se eliminan a los 90 días.",
-  "FeaturePrivacy.fact1":
-    "Descargar mis datos: un ZIP con archivos JSON y CSV, preparado en segundo plano y disponible 7 días",
-  "FeaturePrivacy.fact2": "La eliminación espera 7 días; volver a iniciar sesión la cancela",
-  "FeaturePrivacy.fact3":
-    "Limpieza nocturna de notificaciones leídas, invitaciones caducadas y eventos de auditoría antiguos",
-  "FeaturePrivacy.code": "Ver el código de eliminación de cuentas",
-  "FeatureExport.nav": "Exportar e importar",
+  "FeatureExport.nav": "Exportación",
   "FeatureExport.title": "Tus datos se van contigo",
   "FeatureExport.lead":
-    "Exporta cualquier grupo a un archivo JSON abierto e impórtalo después como grupo nuevo. El grupo original nunca se sobrescribe.",
+    "El propietario puede exportar un hogar a un archivo JSON abierto en cualquier momento e importarlo después como un hogar nuevo. Importar nunca sobrescribe el original.",
   "FeatureExport.fact1":
-    "El propietario exporta; cualquiera que pueda crear un grupo puede importar",
+    "Se comprueba todo el archivo antes de escribir nada, y luego se importa en un solo paso",
   "FeatureExport.fact2":
-    "Se revisa el archivo entero antes de escribir nada, y luego se importa en un solo paso",
-  "FeatureExport.fact3":
-    "Cada nota y etiqueta recibe un id nuevo, así una importación nunca choca con lo que ya hay",
-  "FeatureExport.fact4": "Cada agregado registra su propia parte del archivo",
+    "Cada registro recibe un id nuevo, así que una importación nunca choca con lo que ya hay",
   "FeatureExport.code": "Ver el código de exportación",
   "FeatureLanguages.nav": "Idiomas",
-  "FeatureLanguages.title": "En nueve idiomas desde el principio",
+  "FeatureLanguages.title": "En nueve idiomas",
   "FeatureLanguages.lead":
-    "La aplicación, el área de administración y este sitio web hablan {languages}. Cada persona elige su idioma en la aplicación y se guarda con su cuenta. Cada página de este sitio tiene su propia dirección en cada idioma.",
+    "La app y este sitio hablan {languages}. Cada persona elige su idioma en la app, así que un hogar puede usar más de uno.",
   "FeatureLanguages.fact1":
-    "Un catálogo de TypeScript por idioma, revisado por una prueba que señala cada mensaje que falta o está desactualizado",
-  "FeatureLanguages.fact2":
-    "Plurales, números y fechas con el Intl de la propia plataforma, sin biblioteca de i18n",
-  "FeatureLanguages.fact3":
-    "Enlaces hreflang en cada página del sitio y un sitemap que incluye cada idioma",
-  "FeatureLanguages.fact4": "Las páginas en árabe se leen de derecha a izquierda",
-  "FeatureLanguages.fact5": "Los correos llegan en el idioma de quien los lee",
+    "Un catálogo por idioma, comprobado por una prueba que nombra cada mensaje que falta",
+  "FeatureLanguages.fact2": "Números y fechas con el Intl del propio navegador",
+  "FeatureLanguages.fact3": "Las páginas en árabe se leen de derecha a izquierda",
   "FeatureLanguages.code": "Leer la guía de traducción",
-  "FeatureTierReady.eyebrow": "Listo cuando lo necesites",
-  "FeatureTierReady.title": "Tiempo real, modo sin conexión y trabajo en segundo plano",
-  "FeatureTierReady.lead":
-    "Lo que la mayoría de los starters deja fuera porque es difícil: actualizaciones en vivo, una aplicación que funciona sin red y trabajo que no se puede perder.",
-  "FeatureTierReady.status":
-    "Sin conexión puedes editar notas y etiquetas; las demás listas se abren sin conexión con lo último que mostraron.",
-  "FeatureRealtime.nav": "Tiempo real",
-  "FeatureRealtime.title": "Los cambios aparecen sin recargar",
+  "FeatureRealtime.nav": "Sincronización",
+  "FeatureRealtime.title": "Los cambios aparecen en cada dispositivo sin recargar",
   "FeatureRealtime.lead":
-    "El cambio de un miembro aparece en cada pestaña abierta del grupo, y un equipo que sale de la suspensión se pone al día con lo que se perdió.",
+    "Cuando alguien del hogar cambia algo, los demás lo ven al instante en cada dispositivo abierto. Un portátil que despierta de la suspensión recupera lo que se perdió.",
   "FeatureRealtime.fact1": "Un WebSocket estándar, con un número de secuencia en cada cambio",
-  "FeatureRealtime.fact2":
-    "Una pestaña que sale de la suspensión se reconecta y descarga lo que se perdió",
-  "FeatureRealtime.fact3":
-    "El tiempo real se puede desactivar: la aplicación consulta entonces cada cierto tiempo y funciona igual",
+  "FeatureRealtime.fact2": "Un dispositivo que se reconecta recupera lo que se perdió",
   "FeatureRealtime.code": "Ver el diseño del tiempo real",
   "FeatureOffline.nav": "App sin conexión",
   "FeatureOffline.title": "Una aplicación que abre sin red",
   "FeatureOffline.lead":
-    "La aplicación se instala como una nativa, abre sin red y envía los cambios en cola cuando vuelve la conexión. Un cambio desfasado aparece como un conflicto que resolver, nunca como una sobrescritura silenciosa.",
+    "Instala Financy en tu móvil o tu ordenador, y abre sin conexión, mostrando lo último que vio.",
   "FeatureOffline.fact1":
-    "Una copia de cada lista en IndexedDB y una cola de escritura con claves de idempotencia",
+    "Una copia local de cada lista en IndexedDB y una cola de escritura con claves de idempotencia",
   "FeatureOffline.fact2": "«Quedarme con el mío» o «Usar el otro» en cada conflicto",
-  "FeatureOffline.fact3":
-    "Desactívalo con un ajuste o quítalo: borra una carpeta y sigue una lista de pasos escrita",
   "FeatureOffline.code": "Leer docs/offline.md",
-  "FeatureShortcuts.nav": "Atajos de teclado",
-  "FeatureShortcuts.title": "Atajos de teclado en la aplicación y el área de administración",
-  "FeatureShortcuts.lead":
-    "Pulsa ? para ver todos los atajos. N añade una nota desde cualquier página sin salir de ella, y G seguida de una letra abre una sección. Los atajos no estorban mientras escribes en un campo.",
-  "FeatureShortcuts.fact1": "Ctrl K (⌘K en Mac) o / abre la búsqueda",
-  "FeatureShortcuts.fact2":
-    "Una sola lista por aplicación asigna las teclas y llena el diálogo de ?, así nunca muestra una tecla que no hace nada",
-  "FeatureShortcuts.fact3":
-    "Los atajos de una sola tecla se pueden desactivar en un dispositivo; Ctrl K y Esc siguen funcionando",
-  "FeatureShortcuts.fact4": "En el área de administración, G seguida de una letra abre cada módulo",
-  "FeatureShortcuts.code": "Ver el código de los atajos",
-  "FeaturePush.nav": "Notificaciones",
-  "FeaturePush.title": "Notificaciones en la aplicación, el teléfono, el escritorio y Telegram",
-  "FeaturePush.lead":
-    "La gente recibe un aviso cuando la invitan, le cambian el rol o le ceden un grupo: en la aplicación, por web push en el teléfono o el escritorio, y en Telegram si lo vincula.",
-  "FeaturePush.fact1":
-    "Web push con tus propias claves, creadas con una tarea: deno task vapid-key:create",
-  "FeaturePush.fact2": "Un contador de no leídas en la aplicación y «Marcar todo como leído»",
-  "FeaturePush.fact3": "La suscripción push de cada dispositivo, listada en el perfil",
-  "FeaturePush.fact4":
-    "Un bot de Telegram, desactivado hasta que configures su token: se vincula con un código de un solo uso, y los comandos propios de tu producto se añaden en un archivo",
-  "FeaturePush.code": "Ver el servicio de web push",
-  "FeatureWorker.nav": "Trabajo en segundo plano",
-  "FeatureWorker.title": "Trabajo que sobrevive a una caída",
-  "FeatureWorker.lead":
-    "Los correos y las notificaciones salen aunque el servidor se reinicie a mitad, porque el trabajo se guarda antes de hacerse. Tus propias tareas se ejecutan ahora, más tarde o según un calendario.",
-  "FeatureWorker.fact1":
-    "Cada comando escribe su evento en la misma transacción de base de datos que el cambio",
-  "FeatureWorker.fact2":
-    "Un worker vacía esa bandeja de salida y envía correos, push y actualizaciones en vivo",
-  "FeatureWorker.fact3":
-    "Una tarea es una sola definición: un nombre, un manejador y, si se repite, su calendario",
-  "FeatureWorker.fact4":
-    "Un intento fallido se reintenta con esperas cada vez más largas; los operadores ven cada ejecución en el área de administración",
-  "FeatureWorker.code": "Leer docs/jobs.md",
-  "FeatureYourFeature.nav": "Tus propias funciones",
-  "FeatureYourFeature.title": "Añade una función copiando otra",
-  "FeatureYourFeature.lead":
-    "Notas es una función completa en todas las capas: base de datos, API, pantalla, modo sin conexión y pruebas. Una función nueva la copia archivo por archivo, siguiendo una lista que nombra cada archivo en orden.",
-  "FeatureYourFeature.fact1":
-    "Una misma forma para cada función, así el código sigue siendo fácil de encontrar",
-  "FeatureYourFeature.fact2": "Cada capa tiene sus propias pruebas para copiar con ella",
-  "FeatureYourFeature.fact3": "Cada id es un UUID ordenado por tiempo (versión 7)",
-  "FeatureYourFeature.code": "Leer docs/aggregates.md",
-  "FeatureTierRuntime.eyebrow": "Runtime",
-  "FeatureTierRuntime.nav": "Plan de runtime",
-  "FeatureTierRuntime.title": "Hoy funciona con Deno",
-  "FeatureTierRuntime.lead":
-    "Seed funciona hoy con Deno y está en camino de funcionar sin cambios con Deno, Node y Bun; todavía no hay fecha. Su código se basa en estándares web (fetch, Request, Web Crypto, WebSocket, módulos ES), así que la mayor parte no depende del runtime. En octubre de 2026, el equipo de Deno <announced>anunció</announced> un año más de soporte con versiones mensuales de corrección de errores y de seguridad, y después dejará de desarrollarlo; Deno sigue siendo de código abierto.",
-  "FeatureTierRuntime.wip": "En curso",
-  "FeatureTierRuntime.wipRuntimes": "<name>Node</name> y <name>Bun</name>",
-  "FeatureTierRuntime.follow": "Sigue el plan en GitHub (issue <issue>#623</issue>)",
-  "FeatureTierOperations.eyebrow": "Operaciones",
-  "FeatureTierOperations.title": "Ponlo en marcha, vigílalo y atiende a quienes lo usan",
-  "FeatureTierOperations.lead":
-    "Un servidor que alquilas, las herramientas para ver qué hace y un área donde tus operadores ayudan a quienes usan tu producto.",
-  "FeatureTierOperations.status":
-    "Cada módulo de abajo ya está disponible. Lo que aún no está hecho aparece debajo de cada uno.",
-  "FeatureAdmin.nav": "Área de administración",
-  "FeatureAdmin.title": "Un área de administración para tus operadores",
-  "FeatureAdmin.lead":
-    "Tus operadores encuentran a una persona por nombre o dirección y ven sus métodos de inicio de sesión, sesiones, grupos e historial. Desde el mismo lugar gestionan grupos, reembolsan un pago, cuidan de los suscriptores del boletín, ven cada tarea en segundo plano, vuelven a ejecutar una que falló y revisan el estado del sistema.",
-  "FeatureAdmin.watch": "Míralo en {seconds} segundos",
-  "FeatureAdmin.fact1": "Una aplicación aparte en su propio host, con su propia cookie de sesión",
-  "FeatureAdmin.fact2": {
-    "one": "{count} módulo, del panel principal a los tokens de API",
-    "many": "{count} módulos, del panel principal a los tokens de API",
-    "other": "{count} módulos, del panel principal a los tokens de API",
-  },
-  "FeatureAdmin.fact3":
-    "Las acciones arriesgadas piden confirmación y cada acción queda en el registro de auditoría",
-  "FeatureAdmin.notYet1": "Entrar como una persona para ver lo que ella ve",
-  "FeatureAdmin.code": "Ver la app de administración",
-  "FeatureDeploy.nav": "Despliegue y monitorización",
-  "FeatureDeploy.title": "Un servidor, un comando",
+  "FeatureDeploy.nav": "Alojamiento propio",
+  "FeatureDeploy.title": "Funciona en tu propio servidor",
   "FeatureDeploy.lead":
-    "Seed funciona en cualquier servidor Linux que alquiles, con Docker Compose tanto en desarrollo como en producción. Varios productos pueden compartir un servidor.",
+    "Financy funciona en cualquier servidor Linux que alquiles o tengas, con Docker Compose. Alojarlo tú es gratis bajo la licencia AGPL-3.0, y los datos de tu hogar se quedan en tu servidor.",
   "FeatureDeploy.fact1": "Traefik delante, con certificados automáticos",
   "FeatureDeploy.fact2": "Postgres y Valkey junto a las aplicaciones",
   "FeatureDeploy.fact3":
-    "Garage, un almacén de archivos S3, para las imágenes y los PDF de las notas y para las fotos de perfil. Las subidas pasan por enlaces firmados y se comprueban por su contenido. Las fotos, HEIC incluido, se convierten en versiones AVIF y WebP ligeras, sin ubicación ni otros metadatos",
-  "FeatureDeploy.fact4": "VictoriaMetrics, VictoriaLogs y Grafana, con alertas",
-  "FeatureDeploy.fact5":
-    "Una copia de seguridad diaria y cifrada de la base de datos con restic, opcional, y un procedimiento de restauración por escrito",
-  "FeatureDeploy.fact6":
-    "Imágenes de cada versión publicadas desde CI cuando subes una etiqueta de versión",
+    "Métricas, registros y alertas con VictoriaMetrics, VictoriaLogs y Grafana",
+  "FeatureDeploy.fact4":
+    "Una copia de seguridad diaria y cifrada de la base de datos, opcional, con los pasos de restauración por escrito",
   "FeatureDeploy.code": "Ver los archivos de Compose",
-  "FeatureWebsite.nav": "Sitio web público",
-  "FeatureWebsite.title": "Un sitio web público para adaptar",
-  "FeatureWebsite.lead":
-    "Este sitio: rápido, renderizado en el servidor y usable con JavaScript desactivado, con precios, páginas legales, un blog y un boletín.",
-  "FeatureWebsite.fact1": "Fresh en el servidor; cada acción es un enlace o un formulario real",
-  "FeatureWebsite.fact2": "Precios leídos del catálogo de planes de la aplicación",
-  "FeatureWebsite.fact3":
-    "Un boletín con doble confirmación, baja con un clic y correos en el idioma de quien los lee",
-  "FeatureWebsite.fact4":
-    "Un blog que se escribe en el panel de administración, con entradas en cada idioma y sus traducciones, temas, figuras interactivas que el lector puede probar, un feed RSS, datos estructurados de artículo, enlaces antiguos que redirigen cuando cambia la URL de una entrada, portadas en las listas, una copia opcional en Dev.to que señala la entrada como original y un aviso a IndexNow para que los buscadores sepan al instante de una entrada nueva o cambiada",
-  "FeatureWebsite.fact5":
-    "Enlaces de contacto configurados en el panel de administración, mostrados en el pie de página y en los datos estructurados",
-  "FeatureWebsite.fact6":
-    "Un catálogo opcional para una tienda, que se edita en el panel de administración: artículos con fotos, colores, tallas, una guía de tallas y tallas agotadas, en cada idioma en el que vendas, con un enlace de seguimiento corto por artículo y por sitio donde lo compartas",
-  "FeatureWebsite.fact7": "sitemap.xml, robots.txt, enlaces canónicos e imágenes Open Graph",
-  "FeatureWebsite.fact8":
-    "Analítica opcional sin cookies en tu propio Umami, con un evento en cada llamada a la acción, y una página de estadísticas en el panel de administración: visitas y clics de pedido por fuente y por artículo",
-  "FeatureWebsite.code": "Ver el código del sitio web",
-  "FeatureQuality.nav": "Pruebas",
-  "FeatureQuality.title": "Pruebas donde importan",
-  "FeatureQuality.lead": {
-    "one":
-      "{count} suite de pruebas de navegador para la aplicación, además de pruebas unitarias y de pantallas, todas ejecutadas en CI. Cada cambio pasa por una pull request y una revisión antes de fusionarse.",
-    "many":
-      "{count} suites de pruebas de navegador para la aplicación, además de pruebas unitarias y de pantallas, todas ejecutadas en CI. Cada cambio pasa por una pull request y una revisión antes de fusionarse.",
-    "other":
-      "{count} suites de pruebas de navegador para la aplicación, además de pruebas unitarias y de pantallas, todas ejecutadas en CI. Cada cambio pasa por una pull request y una revisión antes de fusionarse.",
-  },
-  "FeatureQuality.leadUncounted":
-    "Suites de pruebas de navegador para la aplicación, además de pruebas unitarias y de pantallas, todas ejecutadas en CI. Cada cambio pasa por una pull request y una revisión antes de fusionarse.",
-  "FeatureQuality.fact1":
-    "Pruebas de navegador con Playwright, contra la API y la base de datos reales",
-  "FeatureQuality.fact2": "Pruebas unitarias y de pantallas junto al código que prueban",
-  "FeatureQuality.fact3": "Pruebas de integración contra Postgres",
-  "FeatureQuality.code": "Ver las pruebas de navegador",
-  "FeaturesFaq.serverlessQuestion": "¿Seed puede funcionar en Vercel o en funciones serverless?",
+  "FeaturesFaq.serverlessQuestion": "¿Puedo ejecutar Financy en hosting compartido o serverless?",
   "FeaturesFaq.serverlessAnswer":
-    "No. Seed funciona como contenedores de larga duración con Docker Compose en un servidor Linux que alquilas, porque la API mantiene abiertas las conexiones WebSocket y un worker vacía una cola.",
-  "FeaturesFaq.runtimeQuestion": "¿Seed puede funcionar con Node.js o Bun?",
-  "FeaturesFaq.runtimeAnswer":
-    "Todavía no del todo. La API y el worker en segundo plano ya funcionan con Node y Bun además de Deno: un solo ajuste en el archivo env, APP_RUNTIME, elige el entorno de ejecución. El sitio web y las herramientas de desarrollo siguen necesitando Deno. Puedes seguir el resto en el issue #623 del GitHub de Seed.",
-  "FeaturesFaq.databaseQuestion": "¿Seed puede usar otra base de datos que no sea Postgres?",
+    "No. Financy funciona como contenedores permanentes con Docker Compose en un servidor Linux, porque la API mantiene abiertas conexiones WebSocket y un worker vacía una cola.",
+  "FeaturesFaq.databaseQuestion": "¿Qué base de datos usa Financy?",
   "FeaturesFaq.databaseAnswer":
-    "No. Seed está construido sobre Postgres: sus migraciones, consultas y pruebas de integración cuentan con él.",
-  "FeaturesFaq.nativeQuestion": "¿Seed puede publicarse como app móvil o de escritorio?",
+    "Postgres. Sus migraciones, consultas y pruebas de integración la dan por hecha.",
+  "FeaturesFaq.nativeQuestion": "¿Hay una app para el móvil?",
   "FeaturesFaq.nativeAnswer":
-    "Todavía no como app de tienda. Hoy la aplicación web se instala desde el navegador en teléfonos y equipos de escritorio y abre sin red; las apps de Android y de escritorio están previstas.",
-  "FeatureWebsite.fact9":
-    "Cada página en nueve idiomas, cada una en su propia dirección con enlaces hreflang; las páginas legales siguen en inglés",
-  "FeatureTeams.alt":
-    "El registro de actividad de un grupo: quién añadió qué nota o etiqueta y cuándo, con un enlace para abrir cada nota.",
-  "FeatureBilling.alt":
-    "La pestaña Facturación de un grupo de ejemplo, con los precios de ejemplo de la demo: plan Pro con su fecha de renovación, 36,00 € al mes, para 4 miembros a 9,00 € cada uno, propietario incluido, con botones para cambiar la tarjeta, ver las facturas y cancelar el plan.",
-  "FeaturePush.alt":
-    "La página de notificaciones: tres avisos sin leer sobre un nuevo propietario del grupo, un cambio de rol y una invitación; cada fila abre aquello de lo que trata.",
-  "FeatureBilling.catalog":
-    "Los planes viven en un único archivo de catálogo; <pricing>la página de precios</pricing> lo lee",
-  "Features.title":
-    "Funciones de Seed: autenticación, grupos, facturación, sin conexión, administración",
+    "Todavía no en una tienda. Hoy la app web se instala desde el navegador en móviles y ordenadores y abre sin conexión.",
+  "Features.title": "Funciones de Financy: hogares, sincronización, sin conexión, autoalojado",
   "Features.description":
-    "Lo que incluye Seed: 2FA e inicio de sesión social, grupos con roles, facturación por miembro con Stripe, tiempo real, una aplicación sin conexión, un área de administración, monitorización y copias de seguridad.",
-  "FeaturesHero.title": "Todo lo que incluye Seed, y lo que todavía no",
+    "Lo que Financy hace hoy: hogares con roles, cambios al instante en cada dispositivo, una app que funciona sin conexión, exportación, nueve idiomas y alojamiento propio. Después llegan las cuentas y los presupuestos.",
+  "FeaturesHero.title": "Lo que Financy hace hoy, y lo que viene después",
   "FeaturesHero.lead":
-    "Seed es un starter SaaS gratuito con licencia MIT, con inicio de sesión por correo, Google y GitHub, llaves de acceso, códigos de inicio de sesión por correo, cuentas de invitado, 2FA, grupos con roles, facturación por miembro con Stripe, actualizaciones en tiempo real, una aplicación sin conexión, un área de administración, monitorización y copias de seguridad diarias cifradas opcionales. Cada sección de abajo enlaza a su código.",
+    "Financy se está reconstruyendo. Lo que funciona hoy es la base sobre la que irá el dinero de un hogar: inicio de sesión, acceso compartido con roles, cambios al instante, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza a su código.",
   "FeaturesHero.note":
-    "Seed ya se puede usar y se construye en público. Lo que falta aparece marcado como «Aún no está hecho» junto a la función afectada, con un enlace a su issue si hay uno abierto.",
-  "Features.compare": "Cómo se compara Seed",
-  "FeaturesFaq.title": "¿Seed puede hacer eso?",
+    "Las cuentas, los movimientos y los presupuestos aún no están construidos. <status>Ver cómo va la reconstrucción</status>.",
+  "FeaturesFaq.title": "¿Financy puede hacer eso?",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "Para desarrolladores",
   "FeatureVisuals.deployCaption":
@@ -649,210 +333,6 @@ export default {
   "Outbox.label":
     "El outbox: un cambio y su evento se escriben en una sola transacción de base de datos; el worker lee el evento y envía correos, notificaciones push y actualizaciones en vivo a las demás pestañas.",
   "Outbox.transaction": "Una transacción: se guardan los dos o ninguno",
-  "AdminTour.title": "Panel de administración para tu SaaS: usuarios, facturación, auditoría",
-  "AdminTour.description":
-    "El panel de administración de Seed: encuentra a una persona, cierra sus sesiones, reembolsa un pago, vuelve a ejecutar una tarea fallida. Las acciones arriesgadas piden confirmación y todas quedan registradas. Gratis, MIT.",
-  "AdminTour.heroTitle": "Un panel de administración para quienes gestionan tu producto",
-  "AdminTour.heroLead":
-    "Seed incluye un área para operadores en su propio host. Tus operadores encuentran a una persona, ven sus métodos de inicio de sesión, sus sesiones y sus grupos, y la ayudan: cierran una sesión, envían un correo para restablecer la contraseña o reembolsan un pago. Las acciones arriesgadas piden confirmación y cada acción queda en el registro de auditoría.",
-  "AdminTour.code": "Ver el código de la app de administración",
-  "AdminTour.dashboard": "Panel",
-  "AdminTour.dashboardText": "Personas, registros, quién está activo, grupos y notas en 30 días.",
-  "AdminTour.stats": "Estadísticas",
-  "AdminTour.statsText": "Visitas al sitio y clics de pedido desde tu Umami. Solo totales.",
-  "AdminTour.users": "Usuarios",
-  "AdminTour.usersText":
-    "Busca a una persona, bloquéala, cierra una sesión o envíale un correo para restablecer la contraseña.",
-  "AdminTour.groups": "Grupos",
-  "AdminTour.groupsText": "Miembros, invitaciones y archivos. Borra un archivo o cambia el dueño.",
-  "AdminTour.billing": "Facturación",
-  "AdminTour.billingText": "Quién paga y cuánto ganas. Reembolsa, regala tiempo o cancela.",
-  "AdminTour.newsletter": "Boletín",
-  "AdminTour.newsletterText": "Quién está suscrito y qué se envió. Exporta la lista en CSV.",
-  "AdminTour.blog": "Blog",
-  "AdminTour.blogText": "Entradas del sitio en cada idioma, del borrador a la publicación.",
-  "AdminTour.contactLinks": "Enlaces de contacto",
-  "AdminTour.contactLinksText": "Dónde te contactan, en el pie del sitio, sin desplegar.",
-  "AdminTour.catalog": "Catálogo",
-  "AdminTour.catalogText":
-    "Una tienda opcional: artículos, precios, tallas, fotos y enlaces para compartir.",
-  "AdminTour.audit": "Registro de auditoría",
-  "AdminTour.auditText": "Cada inicio de sesión, cambio y acción de operador. Exportable a CSV.",
-  "AdminTour.jobs": "Tareas",
-  "AdminTour.jobsText": "Cada tarea en segundo plano. Vuelve a ejecutar una fallida o cancélala.",
-  "AdminTour.system": "Sistema",
-  "AdminTour.systemText": "El estado de la base de datos, la caché, la cola de tareas y la copia.",
-  "AdminTour.tokens": "Tokens de API",
-  "AdminTour.tokensText": "Cada token de API, de quién es y cuándo se usó por última vez.",
-  "AdminTour.operator": "Operador",
-  "AdminTour.operatorText":
-    "Soporte diario: buscar personas, cerrar sesiones, enviar correos para restablecer la contraseña, gestionar grupos.",
-  "AdminTour.supervisor": "Supervisor",
-  "AdminTour.supervisorText":
-    "Además, reembolsa pagos, cancela una suscripción al momento y cede un grupo a otro miembro.",
-  "AdminTour.administrator": "Administrador",
-  "AdminTour.administratorText": "Además, asigna roles, hasta uno por debajo del suyo.",
-  "AdminTour.guarantee2fa":
-    "Al iniciar sesión en el área de administración se pide un código 2FA a cada operador que tenga la 2FA activada.",
-  "AdminTour.guaranteeHidden":
-    "Quien esté por debajo de operador ve «Página no encontrada», como si el área de administración no existiera.",
-  "AdminTour.guaranteeLogged":
-    "Las acciones arriesgadas piden confirmación y cada acción queda en el registro de auditoría.",
-  "AdminTour.guaranteePrivate":
-    "El área de administración lee recuentos y datos de la cuenta, nunca el contenido de las notas de una persona.",
-  "AdminTour.notYetImpersonate": "Entrar como una persona para ver lo que ella ve",
-  "AdminTour.crumb": "Panel de administración",
-  "AdminTour.meta": "{seconds} segundos · {sound} · Datos de ejemplo",
-  "AdminTour.transcriptJump": "Leer lo que muestra el video",
-  "AdminTour.modulesEyebrow": "Módulos",
-  "AdminTour.modulesTitle": {
-    "one": "{count} módulo, uno por tarea",
-    "many": "{count} módulos, uno por tarea",
-    "other": "{count} módulos, uno por tarea",
-  },
-  "AdminTour.modulesLead":
-    "Cada módulo es una entrada en la barra de iconos del área de administración. Añade los tuyos copiando uno: los pasos están en <doc>docs/admin-modules.md</doc>.",
-  "AdminTour.rolesEyebrow": "Roles",
-  "AdminTour.rolesTitle": "Nadie actúa sobre un rol igual o superior",
-  "AdminTour.rolesLead":
-    "Los operadores trabajan por niveles. Un rol superior puede hacer todo lo que hace uno inferior, y nadie puede actuar sobre una persona con un rol igual o superior al suyo.",
-  "AdminTour.transcriptTitle": "Qué muestra el video",
-  "AdminTour.transcriptEnglish":
-    "El video y sus subtítulos están en inglés, así que la lista de abajo también.",
-  "AdminTour.sampleData": "Las personas y los grupos del video son datos de ejemplo inventados.",
-  "AdminTour.download": "Descargar el video (MP4, {size})",
-  "AdminTour.ctaTitle": "Lee el código y hazlo tuyo",
-  "AdminTour.ctaLead":
-    "La app de administración vive en el mismo repositorio que el producto, funciona en su propio host y es gratis con licencia MIT. No forma parte de la demo pública, porque ahí los operadores verían registros reales.",
-  "AdminVideo.soundLine": "Música, sin voz",
-  "AdminVideo.soundLabel": "con música y sin voz",
-  "AdminVideo.soundTranscript": "Suena música de fondo. No hay voz.",
-  "AdminVideo.label": "El panel de administración de Seed, un video de {seconds} segundos {sound}",
-  "AdminVideo.stillAlt":
-    "Mira el video del panel de administración: la página de usuarios, con personas inventadas, su rol, su estado y cuándo se las vio por última vez.",
-  "Compare.title": "Seed frente a ShipFast, Supastarter, Makerkit y Open SaaS",
-  "Compare.description":
-    "Una comparativa honesta y fechada de starters y boilerplates SaaS: precio, licencia, alojamiento, 2FA, grupos, facturación por miembro, administración, modo sin conexión. Con fuentes enlazadas.",
-  "CompareRow.free": "Uso gratuito",
-  "CompareRow.makerkitLite": "Makerkit: solo el kit Lite",
-  "CompareRow.openSource": "Código abierto (MIT)",
-  "CompareRow.password": "Inicio de sesión con contraseña",
-  "CompareRow.magicLinks": "Inicio de sesión por correo sin contraseña",
-  "CompareRow.social": "Inicio de sesión social",
-  "CompareRow.socialNote": "Seed: Google, GitHub",
-  "CompareRow.totp": "2FA con app",
-  "CompareRow.passkeys": "Llaves de acceso",
-  "CompareRow.groups": "Grupos con roles",
-  "CompareRow.groupsNote": "Next.js SaaS Starter: solo Owner y Member",
-  "CompareRow.perMember": "Facturación por miembro",
-  "CompareRow.nonStripe": "Pagos sin Stripe",
-  "CompareRow.admin": "Área de administración",
-  "CompareRow.adminNote": "Next.js SaaS Starter: un panel para cada grupo",
-  "CompareRow.i18n": "Traducciones (i18n)",
-  "CompareRow.i18nNote": "Seed: {languages}",
-  "CompareRow.jobs": "Tareas en segundo plano",
-  "CompareRow.uploads": "Subida de archivos",
-  "CompareRow.uploadsNote":
-    "Seed: imágenes y PDF en las notas, fotos de perfil. Makerkit: solo el kit de Supabase",
-  "CompareRow.blog": "Blog",
-  "CompareRow.audit": "Registro de auditoría",
-  "CompareRow.realtime": "Actualizaciones en tiempo real",
-  "CompareRow.offline": "Aplicación sin conexión",
-  "CompareRow.offlineNote": "Pone en cola lo que se escribe sin conexión",
-  "CompareRow.ops": "Monitorización y copias de seguridad",
-  "CompareRow.opsNote": "Supastarter, Makerkit: Sentry, sin copias de seguridad indicadas",
-  "CompareAlt.shipfastPrice": "199 $ o 249 $ en un solo pago; 299 $ con CodeFast",
-  "CompareAlt.shipfastLicence": "De pago; no se permite redistribuir el boilerplate",
-  "CompareAlt.shipfastStack": "Next.js; MongoDB o Supabase",
-  "CompareAlt.shipfastHosting": "Recomienda Vercel como opción gratuita",
-  "CompareAlt.shipfastPick":
-    "quieres una landing de Next.js con pagos y un blog en marcha este fin de semana, y vendes a usuarios individuales, no a grupos.",
-  "CompareAlt.supastarterPrice": "349 $, 799 $ o 1.499 $ en un solo pago",
-  "CompareAlt.supastarterLicence": "De pago; no se puede redistribuir sin permiso del autor",
-  "CompareAlt.supastarterStack": "Next.js, Nuxt o TanStack Start; Prisma o Drizzle",
-  "CompareAlt.supastarterHosting": "Vercel y serverless, o Docker",
-  "CompareAlt.supastarterPick":
-    "necesitas ya un proveedor de pagos distinto de Stripe y quieres soporte de pago.",
-  "CompareAlt.makerkitPrice":
-    "299 $ o 599 $ en un solo pago hoy (precio de lista: 349 $ y 649 $); kit Lite gratuito",
-  "CompareAlt.makerkitLicence":
-    "Kits de pago; cada cliente de un freelancer necesita una licencia. Lite es MIT",
-  "CompareAlt.makerkitStack": "Next.js, React Router o TanStack Start; Supabase, Drizzle o Prisma",
-  "CompareAlt.makerkitHosting": "No se indica en las páginas consultadas",
-  "CompareAlt.makerkitPick":
-    "quieres un kit multiinquilino sobre Supabase o Next.js con traducciones y un CMS, y no te importa pagar una licencia.",
-  "CompareAlt.free": "Gratis",
-  "CompareAlt.nextStack": "Next.js, Postgres, Drizzle",
-  "CompareAlt.nextHosting": "Vercel, en su guía de producción",
-  "CompareAlt.nextPick":
-    "quieres una base de Next.js pequeña y legible con Stripe y grupos, y piensas construir el resto por tu cuenta.",
-  "CompareAlt.openSaasStack": "Wasp: React, Node.js, Prisma",
-  "CompareAlt.openSaasHosting": "Fly.io o Railway con un comando, o a mano en cualquier proveedor",
-  "CompareAlt.openSaasPick":
-    "te gusta el framework Wasp y quieres subida de archivos, un sitio de documentación y varios proveedores de pago para productos de un solo usuario.",
-  "CompareAlt.diy": "Constrúyelo tú",
-  "CompareAlt.diyPrice": "Código gratis, semanas de tu tiempo",
-  "CompareAlt.diyLicence": "La tuya",
-  "CompareAlt.diyChoice": "Tú eliges",
-  "CompareAlt.diyPick":
-    "tu producto necesita un modelo de inicio de sesión, de inquilinos o de facturación poco común que ningún starter cubre, o construir la base es justo lo que buscas.",
-  "CompareAlt.salesPage": "Página de venta",
-  "CompareAlt.licencePage": "Licencia",
-  "CompareAlt.docs": "Documentación",
-  "CompareAlt.pricing": "Precios",
-  "CompareAlt.deployGuide": "Guía de despliegue",
-  "CompareAlt.pickWhen": "Elígelo si",
-  "CompareAlt.price": "Precio",
-  "CompareAlt.licence": "Licencia",
-  "CompareAlt.stack": "Stack",
-  "CompareAlt.hosting": "Alojamiento",
-  "CompareAlt.pagesRead": "Páginas consultadas el {date}:",
-  "CompareFaq.neutralQuestion": "¿Esta comparativa es pagada o patrocinada?",
-  "CompareFaq.neutralAnswer":
-    "No. Yo construyo Seed, así que no soy neutral, y ningún producto de la tabla pagó ni revisó su fila. Por eso cada fila enlaza a la página de donde salió.",
-  "CompareFaq.wrongQuestion": "Una fila está mal o desactualizada. ¿Qué hago?",
-  "CompareFaq.wrongAnswer":
-    "<issue>Abre un issue en GitHub</issue> con la página que lo muestra, y corregiré la fila y la fecha de revisión.",
-  "CompareFaq.paidQuestion": "¿Probaste los kits de pago?",
-  "CompareFaq.paidAnswer":
-    "No. No los compré, así que sus filas dicen lo que publican sus propias páginas, no lo que yo ejecuté. Una función que tienen pero no mencionan aparece como «No».",
-  "Compare.crumb": "Comparar",
-  "Compare.heroTitle": "Cómo se compara Seed con otros starters SaaS",
-  "Compare.heroLead":
-    "Seed es un starter SaaS gratuito con licencia MIT para productos que usan grupos de personas, y funciona en un servidor que alquilas. Aquí lo tienes junto a otros cinco starters y boilerplates SaaS.",
-  "Compare.checked": "Revisado",
-  "Compare.heroNote":
-    "Yo construyo Seed, así que no soy neutral. Cada afirmación sobre otro producto enlaza a su fuente, y la tabla muestra dónde Seed se queda corto. ¿Una fila desactualizada? <issue>Abre un issue</issue>.",
-  "Compare.github": "Ver en GitHub",
-  "Compare.tableEyebrow": "Lado a lado",
-  "Compare.tableTitle": "Qué incluye cada starter",
-  "Compare.tableLead":
-    "Las filas son capacidades, tal como las describen las páginas de cada producto. La columna de Seed va resaltada; sus carencias se muestran igual que las de los demás.",
-  "Compare.caption": "Capacidades de Seed y otros cinco starters SaaS, revisadas el {date}",
-  "Compare.checkedOn": "Revisado el {date}.",
-  "Compare.yesMeaning": "las páginas del producto dicen que está incluido",
-  "Compare.partialMeaning": "incluido con el límite indicado bajo la fila",
-  "Compare.noMeaning":
-    "sus páginas no lo mencionan; puede existir sin documentar o llegar más adelante",
-  "Compare.method":
-    "Leí la página de venta, la de precios, la licencia y la documentación pública o el README de cada producto. La columna de Seed sigue su README y su código. No compré los kits de pago, así que sus filas dicen lo que publican, no lo que yo ejecuté. Cada página consultada está enlazada en «Cuándo te conviene más otro starter».",
-  "Compare.fit":
-    "Seed no es para ti si quieres desplegar en Vercel o en funciones serverless, si trabajas con Next.js y React y quieres seguir ahí, o si necesitas este mes un proveedor de pagos distinto de Stripe. También es un proyecto joven, con un solo mantenedor y todavía sin foro de comunidad, mientras que Next.js SaaS Starter y Open SaaS tienen más de 16.000 estrellas en GitHub cada uno. Seed es para ti si construyes un producto para grupos de personas, quieres tener resueltos el inicio de sesión, los roles, la facturación por miembro y la operación antes de tu primera función, y quieres controlar el servidor y que el código sea tuyo por completo.",
-  "Compare.gap":
-    "La carencia de Seed, los proveedores de pago distintos de Stripe, aún no está hecha, así que hoy no elijas Seed por eso. La <status>lista de estado</status> dice qué funciona.",
-  "Compare.shipfastPrices":
-    "Los precios de ShipFast son los que mostraba su <sales>página de venta</sales> el {date}.",
-  "Compare.more":
-    "Para ver las funciones de Seed en detalle, consulta <features>la página de funciones</features>; para saber cuánto cuesta mantenerlo en marcha, mira <pricing>los precios</pricing>.",
-  "Compare.fitEyebrow": "Encaje",
-  "Compare.fitTitle": "Cuándo te conviene más otro starter",
-  "Compare.fitLead":
-    "Si alguno de estos te encaja mejor, úsalo. Cada tarjeta indica su precio, licencia, stack y alojamiento, y enlaza a las páginas de donde salen.",
-  "Compare.faqEyebrow": "Preguntas",
-  "Compare.faqTitle": "Sobre esta comparativa",
-  "Compare.ctaTitle": "Mira lo que hace Seed en un minuto",
-  "Compare.ctaLead":
-    "La demo es la aplicación que tienes desde el primer día. Compara la tabla con ella por tu cuenta.",
   "Blog.title": "Blog",
   "Blog.intro": "Lo que estamos construyendo y lo que aprendemos por el camino.",
   "Blog.rssLabel": "Suscríbete al feed RSS del blog",
@@ -866,7 +346,6 @@ export default {
   "Blog.emptyNewsletter": "La primera está en camino. Recíbela por correo:",
   "Blog.notFoundTitle": "Esta entrada no está aquí",
   "Blog.notFoundLead": "Puede que se haya movido o despublicado.",
-  "Blog.ctaTitle": "Mira {site} funcionando en un minuto",
   "Blog.published": "Publicado el <time>{date}</time>",
   "Blog.updated": "· Actualizado el <time>{date}</time>",
   "Blog.alsoIn": "También disponible en: <links></links>",
@@ -948,7 +427,7 @@ export default {
     "Todavía no del todo. La API y el worker en segundo plano ya funcionan con Deno, Node o Bun, según un solo ajuste (APP_RUNTIME). El sitio web y las herramientas de desarrollo siguen necesitando Deno, y esa parte está en marcha (#623). Consulta el plan de entornos de ejecución en la página de funciones.",
   "FeaturePageMissing.title": "Esta página de función no existe",
   "FeaturePageMissing.description":
-    "Puede que se haya movido. Todas las funciones que incluye Seed están en la página de funciones.",
+    "Puede que se haya movido. Todas las funciones están en la página de funciones.",
   "FeaturePageMissing.action": "Ver todas las funciones",
   "FeaturePageSignIn.name": "Inicio de sesión",
   "FeaturePageSignIn.title": "Autenticación para tu SaaS, sin servicio externo",
@@ -1003,30 +482,6 @@ export default {
     "¿Necesito un segundo sistema de permisos para mis propias funciones?",
   "FeaturePageGroups.secondModelAnswer":
     "No. Un agregado nuevo copia el agregado de notas y su comprobación de grupo, así que solo hay un modelo de permisos que mantener.",
-  "FeaturePageBilling.name": "Facturación",
-  "FeaturePageBilling.title": "Facturación con Stripe para tu SaaS, sin programar webhooks",
-  "FeaturePageBilling.description":
-    "Cobro por miembro con Stripe: plan gratuito, prueba de 14 días, periodo de gracia y límites en el servidor, sincronizados por webhooks. Gratis y MIT.",
-  "FeaturePageBilling.h1": "Facturación por miembro con Stripe para tu SaaS, sin programarla tú",
-  "FeaturePageBilling.answer":
-    "Seed cobra a cada grupo por miembro con Stripe Checkout y el portal de cliente, con un plan gratuito, una prueba de 14 días y un periodo de gracia tras un pago fallido. Añades tres claves de Stripe al archivo env y eliges Stripe como proveedor de facturación.",
-  "FeaturePageBilling.summary":
-    "Facturación por miembro con Stripe, con plan gratuito, prueba y periodo de gracia.",
-  "FeaturePageBilling.how1":
-    "Stripe gestiona el dinero y la suscripción. La aplicación guarda solo lo que informan los webhooks de Stripe y nunca decide un plan por su cuenta; la cantidad sigue al número de miembros, y los límites del plan se comprueban en el servidor.",
-  "FeaturePageBilling.how2":
-    "Cada miembro ve el plan en la pestaña Facturación del grupo, y solo el propietario tiene los botones de pago y del portal. Un pago fallido mantiene el plan 7 días por defecto; después, el grupo vuelve a Gratis.",
-  "FeaturePageBilling.withoutStripeQuestion": "¿La facturación funciona sin Stripe?",
-  "FeaturePageBilling.withoutStripeAnswer":
-    "No. Hoy Stripe es el único proveedor; sin él, la facturación queda desactivada y todos los grupos están en Gratis, sin límites.",
-  "FeaturePageBilling.trialQuestion": "¿Hay una prueba gratuita?",
-  "FeaturePageBilling.trialAnswer": "Sí. El plan de pago empieza con una prueba de 14 días.",
-  "FeaturePageBilling.failedPaymentQuestion": "¿Un grupo conserva su plan si falla la tarjeta?",
-  "FeaturePageBilling.failedPaymentAnswer":
-    "Sí. Conserva el plan durante un periodo de gracia, 7 días por defecto, y el propietario ve un aviso con la fecha; después, el grupo vuelve a Gratis.",
-  "FeaturePageBilling.cutQuestion": "¿Seed se queda una comisión de los pagos?",
-  "FeaturePageBilling.cutAnswer":
-    "No. Seed tiene licencia MIT; solo pagas las comisiones de Stripe.",
   "FeaturePageRealtime.name": "Sincronización en tiempo real",
   "FeaturePageRealtime.title": "Sincronización en tiempo real para tu SaaS, sin terceros",
   "FeaturePageRealtime.description":
@@ -1081,28 +536,6 @@ export default {
   "FeaturePageOffline.removeOfflineQuestion": "¿Puedo quitar el modo sin conexión?",
   "FeaturePageOffline.removeOfflineAnswer":
     "Sí. Desactívalo con un solo ajuste, o borra una carpeta y sigue la lista de pasos escrita; una prueba falla si te saltas un paso.",
-  "FeaturePageShortcuts.name": "Atajos de teclado",
-  "FeaturePageShortcuts.title": "Atajos de teclado para tu SaaS, sin ninguna librería",
-  "FeaturePageShortcuts.description":
-    "Búsqueda con Ctrl+K que perdona erratas, el cirílico y la distribución de teclado equivocada, y una tecla para cada sección de la app. Gratis y MIT.",
-  "FeaturePageShortcuts.h1": "Paleta de comandos y atajos de teclado para tu SaaS, ya incluidos",
-  "FeaturePageShortcuts.answer":
-    "La aplicación y el área de administración de Seed abren una búsqueda con Ctrl+K (⌘K en Mac) que encuentra páginas y acciones incluso con una errata, en cirílico o con la distribución de teclado equivocada. Pulsa ? para ver todos los atajos; una función que añadas pone sus propias teclas en la misma lista y aparecen en ese diálogo.",
-  "FeaturePageShortcuts.summary":
-    "Búsqueda con Ctrl+K que perdona erratas y la distribución equivocada, y una tecla para cada sección.",
-  "FeaturePageShortcuts.how1":
-    "Una sola lista por aplicación asigna las teclas y llena el diálogo de ?, así que el diálogo nunca muestra una tecla que no hace nada. G seguida de una letra abre una sección, N añade una nota desde cualquier página, y los atajos de una sola tecla no se activan mientras escribes en un campo.",
-  "FeaturePageShortcuts.how2":
-    "La búsqueda encuentra cada palabra en cualquier orden, por prefijo y con una errata en una palabra larga, y entiende una consulta escrita con la otra distribución de teclado o el otro alfabeto, así que «зкщашду» encuentra «Open profile».",
-  "FeaturePageShortcuts.shortcutsQuestion": "¿Seed tiene atajos de teclado?",
-  "FeaturePageShortcuts.shortcutsAnswer":
-    "Sí. Pulsa ? en la aplicación o en el área de administración para verlos todos.",
-  "FeaturePageShortcuts.paletteQuestion": "¿Hay una paleta de comandos?",
-  "FeaturePageShortcuts.paletteAnswer":
-    "Sí. Ctrl+K (⌘K en Mac) o / abre la búsqueda de páginas y acciones.",
-  "FeaturePageShortcuts.shortcutsTypingQuestion": "¿Los atajos se activan mientras escribo?",
-  "FeaturePageShortcuts.shortcutsTypingAnswer":
-    "No. Los atajos de una sola tecla no se activan en un campo, y cada dispositivo puede desactivarlos; Ctrl+K y Esc siguen funcionando.",
   "FeaturePageDeploy.name": "Despliegue",
   "FeaturePageDeploy.title": "Despliega tu SaaS sin la factura de una plataforma cloud",
   "FeaturePageDeploy.description":
@@ -1126,4 +559,45 @@ export default {
   "FeaturePageDeploy.backupQuestion": "¿Hay copias de seguridad?",
   "FeaturePageDeploy.backupAnswer":
     "Sí. Una copia de seguridad diaria y cifrada de la base de datos con restic, opcional, y un procedimiento de restauración por escrito.",
+  "ErrorPage.status": "Ver qué funciona hoy",
+  "HomeHero.notify": "Avísame",
+  "HomeProof.languages": "idiomas en la app y en este sitio",
+  "HomeStatus.selfHost": "Funcionar en tu propio servidor con Docker Compose",
+  "HomeStatus.building": "En construcción",
+  "HomeStatus.accounts": "Cuentas en cualquier moneda",
+  "HomeStatus.transactions": "Ingresos y gastos, con el importe original guardado",
+  "HomeStatus.transfers": "Transferencias entre cuentas, también entre monedas",
+  "HomeStatus.month": "El dinero de este mes de un vistazo",
+  "HomeStatus.later":
+    "Los presupuestos, la importación de extractos bancarios y la nube de pago llegan después: <plan>ver el plan completo</plan>.",
+  "HomeWho.keeperTitle": "Quien lleva las cuentas",
+  "HomeWho.keeperText":
+    "El sueldo en una moneda, el alquiler en otra, los ahorros en una tercera: un solo lugar que lo suma todo.",
+  "HomeWho.partnerTitle": "La pareja",
+  "HomeWho.partnerText":
+    "Comparte el dinero del hogar con su propio acceso y anota lo que gasta en segundos.",
+  "HomeWho.selfHostTitle": "Quien se lo aloja",
+  "HomeWho.selfHostText":
+    "Lo ejecuta en su propio servidor, lee el código y guarda los datos en casa.",
+  "HomeWays.title": "Alójalo tú o espera la nube",
+  "HomeWays.selfHostTitle": "Alojarlo tú",
+  "HomeWays.selfHostText":
+    "Gratis bajo la licencia AGPL-3.0. Funciona en tu servidor con Docker Compose, y tus datos se quedan allí.",
+  "HomeWays.selfHostLink": "Lee el código en GitHub",
+  "HomeWays.cloudTitle": "La nube",
+  "HomeWays.cloudText":
+    "Aún no está abierta. El mismo código, ejecutado para ti, como plan de pago.",
+  "HomeFaq.useQuestion": "¿Puedo usar Financy hoy?",
+  "HomeFaq.useAnswer":
+    "Todavía no. El inicio de sesión, los hogares y la sincronización funcionan; las cuentas y los movimientos se están construyendo ahora.",
+  "HomeFaq.currencyQuestion": "¿Qué monedas admitirá?",
+  "HomeFaq.currencyAnswer":
+    "Cualquier mezcla, cripto incluidas; cada movimiento guarda su importe original junto al convertido. Previsto, aún no construido.",
+  "HomeFaq.bankQuestion": "¿Financy se conecta a mi banco?",
+  "HomeFaq.bankAnswer":
+    "No. La importación de extractos bancarios está prevista para la primera versión.",
+  "HomeFaq.stopsQuestion": "¿Qué pasa si Financy deja de existir?",
+  "HomeFaq.stopsAnswer":
+    "El código está en GitHub bajo AGPL-3.0, así que cualquiera puede seguir ejecutándolo, y puedes exportar tus datos cuando quieras.",
+  "SiteFooter.aboutHint": "(abre antonshubin.com)",
 } satisfies Catalog

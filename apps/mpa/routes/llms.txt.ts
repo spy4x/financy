@@ -6,14 +6,19 @@ import { API_DOCS_PATH } from "../api-docs.ts"
 import { DOCS_PATH } from "../docs-site.ts"
 import { SITE_PAGES, type SitePage } from "../pages.ts"
 import { define } from "../utils.ts"
-import { HOME_HEAD } from "./index.tsx"
+import { siteEnglishText } from "@ui/site-text.ts"
 
 /**
- * The website for AI assistants (llmstxt.org): what Financy is, then every public page with its
+ * The website for AI assistants (llmstxt.org): what Financy is, in the home page's entity sentence
+ * and with its status (#85), then every public page with its
  * description, on this website's own origin. The newsletter page is left out while subscriptions
  * are off. The published guides follow in a Docs section. The blog's live posts follow in a section of their own, which is left out while no post
  * is live or the API cannot answer.
  */
+/** What Financy is and where it stands, in English: the summary under the title. */
+export const LLMS_SUMMARY = `${siteEnglishText().t(`HomeHero.title`)} ` +
+  `Status: being rebuilt, not ready to use yet.`
+
 export const handler = define.handlers({
   async GET(ctx) {
     const blog = await blogPages(ctx.state.api)
@@ -24,7 +29,7 @@ export const handler = define.handlers({
     })
     const body = llmsTxt({
       title: SITE_NAME,
-      summary: HOME_HEAD.description,
+      summary: LLMS_SUMMARY,
       sections: [
         {
           title: `Pages`,

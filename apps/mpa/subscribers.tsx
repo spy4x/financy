@@ -20,16 +20,7 @@ import { Notice } from "@spy4x/preact-ui/notice"
 import { type ApiAnswer, errorMessage } from "./api.ts"
 import { readFormBody } from "@spy4x/server/http/bounded-body"
 import { API_BODIES, FORM_LIMITS } from "./forms.ts"
-import {
-  REPOSITORY_URL,
-  SITE_ICON,
-  SITE_NAME,
-  SiteFrame,
-  type SitePageHead,
-  spaLinks,
-  TRY_ENTRY,
-  TRY_REL,
-} from "./site.tsx"
+import { REPOSITORY_URL, SITE_ICON, SITE_NAME, SiteFrame, type SitePageHead } from "./site.tsx"
 import { localePath, siteTranslator } from "./languages.ts"
 import { SiteLanguage } from "./use-site.tsx"
 import { define, type State } from "./utils.ts"
@@ -72,7 +63,7 @@ export function subscribeHead(t: Translator<string>): SitePageHead {
 export const SUBSCRIBE_HEAD: SitePageHead = subscribeHead(siteEnglishText())
 
 /** The day the subscribe page's content last changed: the sitemap's `lastmod`. Change it with it. */
-export const SUBSCRIBE_UPDATED = `2026-10-30`
+export const SUBSCRIBE_UPDATED = `2026-11-04`
 
 /** The translator and the addresses of the request's language. */
 function speech(ctx: FreshContext<State>) {
@@ -325,7 +316,6 @@ function renderOff(
   path: string,
   head: (t: Translator<string>) => SitePageHead,
 ): Response | Promise<Response> {
-  const spa = spaLinks(ctx.state.spaOrigin)
   const { t } = speech(ctx)
   return ctx.render(
     <SiteLanguage language={ctx.state.language}>
@@ -345,8 +335,11 @@ function renderOff(
               <Button href={`${REPOSITORY_URL}/releases`} data-e2e="newsletter-off-releases">
                 <IconGitHub class="size-5" /> {t.t(`NewsletterOff.releases`)}
               </Button>
-              <Button href={spa.try} rel={TRY_REL} variant="outline">
-                {t.t(TRY_ENTRY.label)}
+              <Button
+                href={`${localePath(ctx.state.language, `/`)}#status`}
+                variant="outline"
+              >
+                {t.t(`SiteFooter.status`)}
               </Button>
             </div>
           </div>

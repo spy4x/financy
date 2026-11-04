@@ -18,15 +18,14 @@ import { OnThisPage, type OnThisPageLink } from "@spy4x/preact-ui/on-this-page"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { breadcrumbListJsonLd } from "@spy4x/platform/universal/seo"
 import { createFormatters, type Formatters } from "@spy4x/time/format"
-import { FORM_ACTIONS, SCREEN_PATHS } from "@ui/progressive.tsx"
+import { FORM_ACTIONS } from "@ui/progressive.tsx"
 import { siteEnglishText } from "@ui/site-text.ts"
 import { BLOG_PATH, RSS_PATH } from "./blog.ts"
-import { AUTHOR_URL, REPOSITORY_URL, SITE_ICON, SITE_NAME, TRY_ENTRY } from "./brand.ts"
+import { AUTHOR_URL, REPOSITORY_URL, SITE_ICON, SITE_NAME } from "./brand.ts"
 import { API_DOCS_PATH } from "./api-docs.ts"
 import { CHANGELOG_PATH } from "./changelog.ts"
 import { DOCS_PATH } from "./docs-site.ts"
 import { contactFooterLinks } from "./contact-links.ts"
-import { HIRE_PAGE_URL } from "./hire.ts"
 import {
   DEFAULT_LANGUAGE,
   isSiteLanguage,
@@ -37,14 +36,12 @@ import {
 import { useSite } from "./use-site.tsx"
 import type { State } from "./utils.ts"
 
-export { AUTHOR_URL, REPOSITORY_URL, SITE_ICON, SITE_NAME, TRY_ENTRY }
+export { AUTHOR_URL, REPOSITORY_URL, SITE_ICON, SITE_NAME }
 
 /** The pages that have an Open Graph image of their own, at `/og/<key>.png`. */
 export type OgImageKey =
   | `home`
   | `features`
-  | `admin`
-  | `compare`
   | `pricing`
   | `subscribe`
 
@@ -54,25 +51,19 @@ export type OgImageKey =
  */
 export const OG_IMAGES: Record<OgImageKey, { headline: string; line: string }> = {
   home: {
-    headline: `The groundwork of your SaaS, already built.`,
-    line: `Seed · MIT · built on web standards · one server you rent`,
+    headline: `A finance tracker for every currency you use.`,
+    line: `Financy · free to self-host · AGPL-3.0 · being rebuilt`,
   },
   features: {
-    headline: `Auth, groups, billing, offline, admin.`,
-    line: `Everything Seed ships, and what it does not yet`,
+    headline: `What Financy does today, and what it does not yet.`,
+    line: `Households · live updates · offline · nine languages`,
   },
-  admin: {
-    headline: `An admin panel for your SaaS.`,
-    line: `Users · billing · audit log · roles`,
+  pricing: {
+    headline: `Self-host for free, or let us host it.`,
+    line: `Financy · AGPL-3.0 · both options on one page`,
   },
-  // Seed's own site: see docs/start-a-product.md
-  compare: {
-    headline: `Seed vs ShipFast, Supastarter, Makerkit, Open SaaS`,
-    line: `Honest, sourced, checked 16 Oct 2026`,
-  },
-  pricing: { headline: `Seed is free.`, line: `MIT licence · you pay for one server` },
   subscribe: {
-    headline: `What shipped in Seed, briefly.`,
+    headline: `What shipped in Financy, briefly.`,
     line: `A short email when it changes`,
   },
 }
@@ -80,27 +71,11 @@ export const OG_IMAGES: Record<OgImageKey, { headline: string; line: string }> =
 /** The alt text of a page's Open Graph image: the card's two lines, as a reader hears them. */
 export function ogImageAlt(key: OgImageKey): string {
   const { headline, line } = OG_IMAGES[key]
-  return `Seed card: ${headline} ${line}.`
+  return `${SITE_NAME} card: ${headline} ${line}.`
 }
 
 /** The size of every Open Graph image, in pixels. */
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const
-
-/**
- * The SPA's sign-in and sign-up pages, and `/try`, which starts a guest account (#224): the
- * website has no session, the product signs people in. A link to `try` carries `rel="nofollow"`
- * ({@link TRY_REL}), and the app's `robots.txt` keeps crawlers off it.
- */
-export function spaLinks(spaOrigin: string): { signIn: string; signUp: string; try: string } {
-  return {
-    signIn: `${spaOrigin}${SCREEN_PATHS.signIn}`,
-    signUp: `${spaOrigin}${SCREEN_PATHS.signUp}`,
-    try: `${spaOrigin}/try`,
-  }
-}
-
-/** The `rel` of every link to the app's `/try`: opening it makes an account, so no crawler should. */
-export const TRY_REL = `nofollow`
 
 // Seed's own site: see docs/start-a-product.md
 /**
@@ -132,20 +107,18 @@ export const PERSON_JSON_LD = {
 /** The author a dated page names in its hero, linked to their own site. */
 export const SITE_AUTHOR = { name: PERSON_JSON_LD.name, href: AUTHOR_URL } as const
 
-/** What Seed is, in the words of the home page's lead, for the product's structured data. */
-const SOFTWARE_DESCRIPTION = `Seed is the free SaaS starter built on web standards: sign-in and ` +
-  `two-factor authentication (2FA), groups with roles, per-member Stripe billing, realtime, an ` +
-  `offline app and an admin area.`
+/** What the product is, in the home page's first sentence, for the product's structured data. */
+const SOFTWARE_DESCRIPTION = siteEnglishText().t(`HomeHero.title`)
 
-/** The id of Seed's one product entity, which every page's structured data points at. */
+/** The id of the product's one entity, which every page's structured data points at. */
 export function softwareId(origin: string): string {
   return `${origin}/#software`
 }
 
 /**
- * Seed as one JSON-LD entity: free software and its source code under one id. Every page that
+ * Financy as one JSON-LD entity: free software and its source code under one id. Every page that
  * describes the product draws this node, so all copies agree; `extra` adds what only that page
- * shows, such as the feature list.
+ * shows, such as the feature list or the description in the page's language.
  */
 export function softwareJsonLd(origin: string, extra: Record<string, unknown> = {}): unknown {
   return {
@@ -154,15 +127,22 @@ export function softwareJsonLd(origin: string, extra: Record<string, unknown> = 
     name: SITE_NAME,
     url: `${origin}/`,
     description: SOFTWARE_DESCRIPTION,
-    applicationCategory: `DeveloperApplication`,
-    operatingSystem: `Linux (Docker)`,
-    license: `https://opensource.org/licenses/MIT`,
+    applicationCategory: `FinanceApplication`,
+    operatingSystem: `Web browser; Linux (Docker) to self-host`,
+    license: `https://www.gnu.org/licenses/agpl-3.0.html`,
     codeRepository: REPOSITORY_URL,
     programmingLanguage: `TypeScript`,
     runtimePlatform: `Deno`,
+    isAccessibleForFree: true,
     author: { "@id": PERSON_JSON_LD["@id"] },
-    // Only Seed itself is offered. The demo's plans are an example and are not sold.
-    offers: { "@type": `Offer`, price: 0, priceCurrency: `USD` },
+    // Only self-hosting is offered so far; the cloud's offer comes with its price (#87).
+    offers: {
+      "@type": `Offer`,
+      name: `Self-hosted`,
+      description: `Free to run on your own server under AGPL-3.0.`,
+      price: 0,
+      priceCurrency: `USD`,
+    },
     ...extra,
   }
 }
@@ -275,26 +255,20 @@ export interface SiteFrameProps {
   children: ComponentChildren
 }
 
-// Seed's own site: see docs/start-a-product.md (the hire link)
-/** The header's links, in display order, by catalog key. The Blog link joins them once a post is live. */
+/**
+ * The header's links, in display order, by catalog key. The Blog link joins them once a post is
+ * live. Pricing is left out until it describes Financy's own plan (#87).
+ */
 export const NAV_LINKS = [
   { label: `SiteNav.features`, href: `/features` },
   { label: `SiteNav.docs`, href: DOCS_PATH },
   { label: `SiteNav.blog`, href: BLOG_PATH },
-  { label: `SiteNav.compare`, href: `/compare` }, // Seed's own site: see docs/start-a-product.md
-  { label: `SiteNav.pricing`, href: `/pricing` },
-  {
-    label: `SiteNav.hire`,
-    href: HIRE_PAGE_URL,
-    external: true,
-    externalHint: `SiteNav.hireHint`,
-  },
   { label: `SiteNav.github`, href: REPOSITORY_URL, Icon: IconGitHub },
 ] as const
 
 /**
  * The frame of every page of the public website: its head tags, a link that skips to the content,
- * the header with the language menu and the way into the demo, the content as full-width bands,
+ * the header with the language menu and the one call to action, the content as full-width bands,
  * and the footer with the legal pages, the language links and, while the API takes subscriptions,
  * the newsletter form.
  * Every link and form works with JavaScript turned off, and every link to another page of the site
@@ -304,7 +278,6 @@ export function SiteFrame(
   { state, path, head, footerNewsletter = true, children }: SiteFrameProps,
 ): JSX.Element {
   const { t, language, href } = useSite()
-  const spa = spaLinks(state.spaOrigin)
   const og = head.og ?? `home`
   const blog = state.blog === true
   const origin = state.webAppOrigin
@@ -365,7 +338,6 @@ export function SiteFrame(
           ...link,
           label: t.t(link.label),
           href: link.href.startsWith(`/`) ? href(link.href) : link.href,
-          ...(`externalHint` in link ? { externalHint: t.t(link.externalHint) } : {}),
         }))}
         actions={
           <>
@@ -377,16 +349,7 @@ export function SiteFrame(
                 href={languageHref}
               />
             </div>
-            <Button
-              href={spa.try}
-              rel={TRY_REL}
-              size="sm"
-              data-e2e="site-try-demo"
-              data-umami-event="try-demo"
-              data-umami-event-from="header"
-            >
-              {t.t(`SiteFrame.tryDemo`)}
-            </Button>
+            <HeaderAction newsletter={state.newsletter === true} />
           </>
         }
       />
@@ -400,7 +363,7 @@ export function SiteFrame(
             <p class="text-sm text-muted">{t.t(`SiteFooter.pitch`)}</p>
           </div>
         }
-        groups={footerGroups(t, href, spa, blog, state.contactLinks ?? [])}
+        groups={footerGroups(t, href, blog, state.contactLinks ?? [])}
         aside={state.newsletter && footerNewsletter ? <FooterNewsletter /> : undefined}
         bottom={
           <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -428,6 +391,37 @@ export function SiteFrame(
       />
     </>
   )
+}
+
+/**
+ * The header's one call to action: "Get notified" leads to the home page's newsletter form while
+ * the API takes subscriptions, and the repository otherwise, so it never leads to a missing form.
+ */
+function HeaderAction({ newsletter }: { newsletter: boolean }): JSX.Element {
+  const { t, href } = useSite()
+  return newsletter
+    ? (
+      <Button
+        href={`${href(`/`)}#newsletter`}
+        size="sm"
+        data-e2e="site-notify"
+        data-umami-event="notify"
+        data-umami-event-from="header"
+      >
+        {t.t(`HomeHero.notify`)}
+      </Button>
+    )
+    : (
+      <Button
+        href={REPOSITORY_URL}
+        size="sm"
+        data-e2e="site-github"
+        data-umami-event="github"
+        data-umami-event-from="header"
+      >
+        {t.t(`HomeHero.github`)}
+      </Button>
+    )
 }
 
 /**
@@ -557,12 +551,13 @@ export function sectionLinks(
 
 /**
  * The footer's link columns: the product, the source, the person and rules behind it, and, once the
- * operator has added any, the contact links. The Blog link is there once a post is live.
+ * operator has added any, the contact links. The Blog link is there once a post is live. "Source
+ * code" is on every page, so a copy run as a network service offers its source (AGPL-3.0, section
+ * 13).
  */
 function footerGroups(
   t: Translator<string>,
   href: (path: string) => string,
-  spa: { signIn: string; try: string },
   blog: boolean,
   contactLinks: readonly PublicContactLink[],
 ): SiteFooterGroup[] {
@@ -574,14 +569,7 @@ function footerGroups(
       title: t.t(`SiteFooter.product`),
       links: [
         { label: t.t(`SiteNav.features`), href: href(`/features`) },
-        { label: t.t(`SiteFooter.admin`), href: href(`/admin`) },
         ...(blog ? [{ label: t.t(`SiteNav.blog`), href: href(BLOG_PATH) }] : []),
-        // Seed's own site: see docs/start-a-product.md
-        { label: t.t(`SiteNav.compare`), href: href(`/compare`) },
-        { label: t.t(`SiteNav.pricing`), href: href(`/pricing`) },
-        // The library's footer links take no `rel`; the app's robots.txt keeps crawlers off `/try`.
-        { label: t.t(`SiteFrame.tryDemo`), href: spa.try },
-        { label: t.t(`SiteFooter.signIn`), href: spa.signIn },
       ],
     },
     {
@@ -589,7 +577,6 @@ function footerGroups(
       links: [
         { label: t.t(`SiteFooter.source`), href: REPOSITORY_URL, external: true },
         { label: t.t(`SiteFooter.issue`), href: `${REPOSITORY_URL}/issues`, external: true },
-        { label: t.t(`SiteFooter.quickStart`), href: href(`/#quick-start`) },
         { label: t.t(`SiteFooter.docs`), href: href(DOCS_PATH) },
         { label: t.t(`SiteFooter.apiDocs`), href: href(API_DOCS_PATH) },
         { label: t.t(`SiteFooter.changelog`), href: href(CHANGELOG_PATH) },
@@ -601,16 +588,10 @@ function footerGroups(
       title: t.t(`SiteFooter.company`),
       links: [
         {
-          label: t.t(`SiteFooter.hire`),
-          href: HIRE_PAGE_URL,
-          external: true,
-          externalHint: t.t(`SiteNav.hireHint`),
-        },
-        {
           label: t.t(`SiteFooter.about`),
           href: AUTHOR_URL,
           external: true,
-          externalHint: t.t(`SiteNav.hireHint`),
+          externalHint: t.t(`SiteFooter.aboutHint`),
         },
         { label: t.t(`SiteFooter.privacy`), href: href(`/privacy`) },
         { label: t.t(`SiteFooter.terms`), href: href(`/terms`) },
