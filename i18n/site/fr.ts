@@ -237,7 +237,7 @@ export default {
   "FeatureSignIn.fact3": "Jetons d’API personnels, stockés uniquement sous forme de hachages à clé",
   "FeatureSignIn.code": "Lire le code source de la connexion",
   "FeatureTeams.nav": "Foyers et rôles",
-  "FeatureTeams.title": "Un foyer, chacun avec son propre compte",
+  "FeatureTeams.title": "Un foyer, chacun avec son propre identifiant",
   "FeatureTeams.lead":
     "Un foyer (un groupe, dans l’app), ce sont les personnes qui partagent leur argent. Invitez votre conjoint ou votre famille, donnez à chacun un rôle de lecteur à propriétaire, et transférez la propriété quand il le faut. Un foyer supprimé peut être restauré pendant 30 jours, et le journal d’activité montre qui a changé quoi.",
   "FeatureTeams.fact1": "Chaque donnée est vérifiée par rapport à une seule frontière : le foyer",
@@ -587,7 +587,7 @@ export default {
     "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul endroit qui fait le total.",
   "HomeWho.partnerTitle": "Le conjoint ou la conjointe",
   "HomeWho.partnerText":
-    "Partage l’argent du foyer avec son propre compte, et note ses dépenses en quelques secondes.",
+    "Partage l’argent du foyer avec son propre identifiant, et note ses dépenses en quelques secondes.",
   "HomeWho.selfHostTitle": "L’adepte de l’auto-hébergement",
   "HomeWho.selfHostText":
     "Fait tourner Financy sur son propre serveur, lit le code et garde ses données chez soi.",

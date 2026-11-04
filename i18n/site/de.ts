@@ -564,7 +564,7 @@ export default {
   "HomeStatus.building": "In Arbeit",
   "HomeStatus.accounts": "Konten in jeder Währung",
   "HomeStatus.transactions": "Einnahmen und Ausgaben, der ursprüngliche Betrag bleibt erhalten",
-  "HomeStatus.transfers": "Überweisungen zwischen Konten, auch über Währungen hinweg",
+  "HomeStatus.transfers": "Umbuchungen zwischen Konten, auch über Währungen hinweg",
   "HomeStatus.month": "Das Geld dieses Monats auf einen Blick",
   "HomeStatus.later":
     "Budgets, der Import von Kontoauszügen und die kostenpflichtige Cloud kommen später: <plan>den ganzen Plan ansehen</plan>.",

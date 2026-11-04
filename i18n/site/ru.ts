@@ -561,7 +561,7 @@ export default {
   "HomeStatus.month": "Деньги за месяц на одном экране",
   "HomeStatus.later":
     "Бюджеты, импорт банковских выписок и платное облако — позже: <plan>весь план</plan>.",
-  "HomeWho.keeperTitle": "Тот, кто ведёт бюджет",
+  "HomeWho.keeperTitle": "Тот, кто ведёт учёт",
   "HomeWho.keeperText":
     "Зарплата в одной валюте, аренда в другой, накопления в третьей: одно место, где всё сходится.",
   "HomeWho.partnerTitle": "Партнёр",
