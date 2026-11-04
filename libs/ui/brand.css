@@ -109,3 +109,12 @@
   --color-primary: oklch(0.48 0.19 262);
   --color-accent: oklch(0.48 0.19 262);
 }
+
+/* The light palette's focus ring of form fields and its link tone, `--color-primary-muted`, is a
+   fixed purple in the library's tokens. In the tokens' own layer, so ink's dark value, step 400 of
+   the same blue, still wins under `.dark`. */
+@layer theme.preact-tokens {
+  :root {
+    --color-primary-muted: var(--color-accent);
+  }
+}
