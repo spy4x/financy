@@ -1409,9 +1409,16 @@ describe("the public website", () => {
     expect(html).toContain(
       `open and download a household&#39;s uploaded files, and each time they open one, it is recorded`,
     )
+    expect(html).toContain(`The small image previews in the file list are not recorded`)
     expect(html).toContain(
       `except when the household asks for help with a problem, or when the law requires it`,
     )
+  })
+
+  it("says on the privacy page that a sign-in cookie holds a reference to the code, never the code (#86)", async () => {
+    const { html } = await page("/privacy")
+
+    expect(html).toContain(`a signed reference to the code we sent you (never the code itself)`)
   })
 
   it("states on the terms page the price in US dollars, the renewal, the 30-day money-back guarantee and that Financy gives no financial advice (#86)", async () => {

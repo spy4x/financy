@@ -168,9 +168,10 @@ export default define.page(function Privacy({ state }) {
         To run the service and answer support, the operators can see in the admin panel each
         account's details, its sign-in records with IP addresses, its devices, notifications and API
         tokens, and each household's members, plan and overview. They can also open and download a
-        household's uploaded files, and each time they open one, it is recorded. Nobody at NeatSoft
-        looks at a household's accounts or transactions, except when the household asks for help
-        with a problem, or when the law requires it.
+        household's uploaded files, and each time they open one, it is recorded. The small image
+        previews in the file list are not recorded. Nobody at NeatSoft looks at a household's
+        accounts or transactions, except when the household asks for help with a problem, or when
+        the law requires it.
       </p>
 
       <h2 id="processors">Companies that handle it</h2>
@@ -312,9 +313,10 @@ export default define.page(function Privacy({ state }) {
         </li>
       </ul>
       <p>
-        While you sign in or sign up, short-lived cookies hold the step you are on: the code sent to
-        you, or the Google or GitHub sign-in in progress with the name, address and picture that
-        account shared. Each expires when its step's time runs out.
+        While you sign in or sign up, short-lived cookies hold the step you are on: a signed
+        reference to the code we sent you (never the code itself), or the Google or GitHub sign-in
+        in progress with the name, address and picture that account shared. Each expires when its
+        step's time runs out.
       </p>
       <p>
         There are no advertising or tracking cookies. So that the app opens without a network, it
