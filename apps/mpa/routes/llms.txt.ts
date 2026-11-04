@@ -9,7 +9,7 @@ import { define } from "../utils.ts"
 import { HOME_HEAD } from "./index.tsx"
 
 /**
- * The website for AI assistants (llmstxt.org): what Seed is, then every public page with its
+ * The website for AI assistants (llmstxt.org): what Financy is, then every public page with its
  * description, on this website's own origin. The newsletter page is left out while subscriptions
  * are off. The published guides follow in a Docs section. The blog's live posts follow in a section of their own, which is left out while no post
  * is live or the API cannot answer.
@@ -48,12 +48,11 @@ export const handler = define.handlers({
           })),
         }]),
         {
-          // Seed's own site: see docs/start-a-product.md
           title: `Source code`,
           links: [{
             title: `${SITE_NAME} on GitHub`,
             url: REPOSITORY_URL,
-            description: `The code, the README and the docs, under the MIT licence.`,
+            description: `The code, the README and the docs, under the AGPL-3.0 licence.`,
           }],
         },
       ],

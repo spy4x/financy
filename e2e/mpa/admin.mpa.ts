@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test"
 import { AxeBuilder } from "@axe-core/playwright"
 
-const REPOSITORY = `https://github.com/spy4x/seed`
+const REPOSITORY = `https://github.com/spy4x/financy`
 /** What the page says about the video: its length, its sound, and one line per shot. */
 const SECONDS = 59
 const SHOTS = 12

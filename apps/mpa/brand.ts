@@ -10,7 +10,7 @@ export const SITE_ICON = IconSprout
 /**
  * Where the source lives: the "View on GitHub" links and the footer point here.
  */
-export const REPOSITORY_URL = `https://github.com/spy4x/seed`
+export const REPOSITORY_URL = `https://github.com/spy4x/financy`
 
 /**
  * The website's way into the app (#224): every "try" button opens the app's `/try`, which starts
@@ -28,5 +28,5 @@ export const AUTHOR_URL = `https://antonshubin.com`
 
 /** An address of the app as the pictures' browser frames show it, the same in every language. */
 export function appAddress(path: string): string {
-  return `app.seedsaas.com${path}`
+  return `app.financy.dev${path}`
 }

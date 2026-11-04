@@ -297,7 +297,7 @@ describe("the public website", () => {
     const teams = html.slice(html.indexOf(`id="teams"`))
 
     expect(teams.slice(0, teams.indexOf(`/shots/activity-`))).toContain(
-      `app.seedsaas.com/groups/…/activity`,
+      `app.financy.dev/groups/…/activity`,
     )
   })
 
@@ -1376,6 +1376,14 @@ describe("the public website", () => {
       expect(text, path).toContain(`- [${title}](${site}${path}): ${description}\n`)
     }
     expect(text).toContain(`(${REPOSITORY_URL})`)
+  })
+
+  it("names the source code's licence in llms.txt as AGPL-3.0, Financy's own", async () => {
+    const text = await (await handler(new Request(`${site}/llms.txt`), info)).text()
+
+    expect(text).toContain(
+      `(${REPOSITORY_URL}): The code, the README and the docs, under the AGPL-3.0`,
+    )
   })
 
   it("leaves the newsletter page out of llms.txt while subscriptions are off", async () => {
