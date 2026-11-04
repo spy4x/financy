@@ -465,6 +465,15 @@ describe("the public website", () => {
     }
   })
 
+  it("gives Financy the AGPL-3.0 licence in its structured data on every page that describes it", async () => {
+    for (const path of ["/", "/features", "/pricing"]) {
+      const software = jsonLdGraph((await page(path)).html)
+        .find((entity) => isType(entity, "SoftwareApplication"))
+
+      expect(software?.license, path).toBe("https://www.gnu.org/licenses/agpl-3.0.html")
+    }
+  })
+
   it("names the author's profiles and company, as antonshubin.com does", async () => {
     const graph = jsonLdGraph((await page("/")).html)
 
