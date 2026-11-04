@@ -137,8 +137,8 @@ const OG_CARDS: OgCard[] = [
   {
     file: "pricing",
     eyebrow: "Pricing",
-    title: "Self-host for free, or let us host it.",
-    sub: "Financy · AGPL-3.0 · both options on one page",
+    title: "Self-host for free, or wait for the cloud.",
+    sub: "Financy · AGPL-3.0 · the cloud is not open yet",
     shot: "",
   },
   {

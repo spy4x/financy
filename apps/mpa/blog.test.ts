@@ -560,7 +560,7 @@ describe("a blog post", () => {
   it("links its related feature's page under the byline by the page's name, and nothing for an unknown one (#733)", async () => {
     const linked = { ...FULL, relatedFeature: `realtime` }
     const { body } = await (await blogSite(answers(linked))).get("/blog/cron-jobs")
-    expect(linkNamed(body, `Seed feature: Realtime sync →`)).toMatch(
+    expect(linkNamed(body, `Related feature: Realtime sync →`)).toMatch(
       /^<a href="\/features\/realtime" class="[^"]*min-h-11/,
     )
 
@@ -569,7 +569,7 @@ describe("a blog post", () => {
       ...listing([GERMAN]),
       [`/api/blog/posts/hallo-welt`]: () => Response.json({ post: german, readNext: [] }),
     })).get("/de/blog/hallo-welt")
-    expect(de.body).toMatch(/<a href="\/de\/features\/realtime"[^>]*>Seed-Funktion: /)
+    expect(de.body).toMatch(/<a href="\/de\/features\/realtime"[^>]*>Passende Funktion: /)
 
     for (const relatedFeature of [null, `no-such-feature`]) {
       const { body } = await (await blogSite(answers({ ...FULL, relatedFeature }))).get(

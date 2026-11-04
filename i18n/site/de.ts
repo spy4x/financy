@@ -135,7 +135,8 @@ export default {
   "HomeProof.tests": "Testdateien in den Apps und Bibliotheken, alle laufen in der CI",
   "HomeProof.licence": "Lizenz: kostenlos selbst zu hosten",
   "HomeStatus.signIn": "Anmeldung per E-Mail, mit Passkeys und Zwei-Faktor-Schutz",
-  "HomeStatus.groups": "Haushalte mit Einladungen und Rollen von Betrachter bis Inhaber",
+  "HomeStatus.groups":
+    "Gemeinsame Haushalte: Leute einladen und jedem eine Rolle geben, von Betrachter bis Inhaber",
   "HomeStatus.export": "Einen Haushalt in eine Datei exportieren und wieder importieren",
   "HomeStatus.realtime": "Live-Updates auf jedem Gerät und eine App, die auch offline startet",
   "HomeStatus.languages": "Die App und diese Website in neun Sprachen",
@@ -143,7 +144,7 @@ export default {
   "HomeFaq.freeAnswer":
     "Selbst hosten ist unter AGPL‑3.0 kostenlos; du zahlst nur für deinen Server. Die Cloud wird ein bezahlter Tarif.",
   "HomeHero.title":
-    "Financy ist ein kostenloses Open-Source-Haushaltsbuch (AGPL‑3.0) für dich oder deine Familie, in beliebig vielen Währungen: selbst hosten oder die kostenpflichtige Cloud nutzen.",
+    "Financy ist ein kostenloses Open-Source-Haushaltsbuch (AGPL‑3.0) für dich oder deine Familie, in beliebig vielen Währungen: selbst hosten oder auf die kostenpflichtige Cloud warten.",
   "HomeHero.github": "Die Entwicklung auf GitHub verfolgen",
   "HomeHero.status":
     "Wird öffentlich neu gebaut und ist noch nicht nutzbar. Stand: {date}. <status>Zum aktuellen Stand</status>",
@@ -354,7 +355,7 @@ export default {
   "Blog.published": "Veröffentlicht am <time>{date}</time>",
   "Blog.updated": "· Aktualisiert am <time>{date}</time>",
   "Blog.alsoIn": "Auch verfügbar auf: <links></links>",
-  "Blog.relatedFeature": "Seed-Funktion: {name} →",
+  "Blog.relatedFeature": "Passende Funktion: {name} →",
   "Blog.minutes": { "one": "· {count} Min. Lesezeit", "other": "· {count} Min. Lesezeit" },
   "Blog.newsTitle": "Den nächsten Beitrag per E-Mail bekommen",
   "Blog.newsLead":

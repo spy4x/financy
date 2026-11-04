@@ -171,7 +171,7 @@ describe("the public website", () => {
 
     expect(status).toBe(200)
     expect(headingOne(html)).toBe(
-      "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
+      "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or wait for the paid cloud.",
     )
     expect(hrefOf(linkNamed(main, "Get notified"))).toBe("#newsletter")
     expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
@@ -410,7 +410,7 @@ describe("the public website", () => {
   it("lists passkeys on /features as built, not under Not built yet", async () => {
     const { html } = await page("/features")
 
-    expect(html).toContain(`continue with Google or GitHub, sign in with a passkey`)
+    expect(html).toContain(`continue with Google or GitHub, use a passkey`)
     expect(html).not.toContain(`issues/222`)
   })
 

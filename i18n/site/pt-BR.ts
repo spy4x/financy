@@ -132,7 +132,8 @@ export default {
   "HomeProof.tests": "arquivos de teste nos apps e nas bibliotecas, todos rodando no CI",
   "HomeProof.licence": "licença: grátis para hospedar",
   "HomeStatus.signIn": "Entrar com e-mail, chaves de acesso e verificação em duas etapas",
-  "HomeStatus.groups": "Famílias com convites e funções de leitor a dono",
+  "HomeStatus.groups":
+    "Famílias compartilhadas: convide pessoas e dê uma função a cada uma, de leitor a dono",
   "HomeStatus.export": "Exportar uma família para um arquivo e importar de novo",
   "HomeStatus.realtime": "Atualizações na hora em todos os dispositivos e um app que abre offline",
   "HomeStatus.languages": "O app e este site em nove idiomas",
@@ -140,7 +141,7 @@ export default {
   "HomeFaq.freeAnswer":
     "Hospedar você mesmo é grátis sob AGPL‑3.0; você paga só pelo seu servidor. A nuvem será um plano pago.",
   "HomeHero.title":
-    "Financy é um controle financeiro grátis e de código aberto (AGPL‑3.0) para você ou sua família, em qualquer combinação de moedas: hospede no seu servidor ou use a nuvem paga.",
+    "Financy é um controle financeiro grátis e de código aberto (AGPL‑3.0) para você ou sua família, em qualquer combinação de moedas: hospede no seu servidor ou espere pela nuvem paga.",
   "HomeHero.github": "Acompanhe a construção no GitHub",
   "HomeHero.status":
     "Em reconstrução, à vista de todos; ainda não dá para usar. Atualizado em {date}. <status>Veja em que pé está</status>",
@@ -352,7 +353,7 @@ export default {
   "Blog.published": "Publicado em <time>{date}</time>",
   "Blog.updated": "· Atualizado em <time>{date}</time>",
   "Blog.alsoIn": "Também disponível em: <links></links>",
-  "Blog.relatedFeature": "Recurso do Seed: {name} →",
+  "Blog.relatedFeature": "Recurso relacionado: {name} →",
   "Blog.minutes": {
     "one": "· {count} min de leitura",
     "many": "· {count} min de leitura",

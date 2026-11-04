@@ -66,7 +66,7 @@ test("a visitor walks the website and its forms without a refusal under the cont
   await page.goto("/")
   expect((await stylesheet).status()).toBe(200)
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
+    "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or wait for the paid cloud.",
   )
   expect(await page.evaluate(() => document.styleSheets.length)).toBeGreaterThan(0)
 

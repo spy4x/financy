@@ -125,7 +125,8 @@ export default {
   "HomeProof.tests": "test files in the apps and libraries, all run in CI",
   "HomeProof.licence": "licence: free to self-host",
   "HomeStatus.signIn": "Sign-in with email, passkeys and two-factor authentication",
-  "HomeStatus.groups": "Households with roles from viewer to owner, and invitations",
+  "HomeStatus.groups":
+    "Shared households: invite people and give each a role, from viewer to owner",
   "HomeStatus.export": "Export a household to a file, and import it again",
   "HomeStatus.realtime": "Live updates on every device, and an app that opens offline",
   "HomeStatus.languages": "The app and this website in nine languages",
@@ -133,7 +134,7 @@ export default {
   "HomeFaq.freeAnswer":
     "Self-hosting is free under AGPL‑3.0; you pay only for your server. The cloud will be a paid plan.",
   "HomeHero.title":
-    "Financy is a free, open-source (AGPL‑3.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or use the paid cloud.",
+    "Financy is a free, open-source (AGPL‑3.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or wait for the paid cloud.",
   "HomeHero.github": "Follow the build on GitHub",
   "HomeHero.status":
     "Being rebuilt in public, not ready to use yet. Updated {date}. <status>Where it stands</status>",
@@ -216,7 +217,7 @@ export default {
   "FeatureSignIn.nav": "Accounts and sign-in",
   "FeatureSignIn.title": "Sign-in, done",
   "FeatureSignIn.lead":
-    "People sign up with an email and password and confirm the email with a code. They can reset a forgotten password, continue with Google or GitHub, sign in with a passkey, or get a sign-in code by email. An authenticator app adds two-factor authentication (2FA), and people see every device they're signed in on and can sign the others out.",
+    "Sign up with an email and password, and confirm it with a code. Reset a forgotten password, continue with Google or GitHub, use a passkey, or get a sign-in code by email. An authenticator app adds two-factor authentication (2FA), and you can see every device you're signed in on and sign the others out.",
   "FeatureSignIn.fact1":
     "Passwords hashed with PBKDF2-SHA-256 through Web Crypto, 600,000 rounds by default",
   "FeatureSignIn.fact2": "Signed session cookies, and an audit trail of every sign-in event",
@@ -341,7 +342,7 @@ export default {
   "Blog.published": "Published <time>{date}</time>",
   "Blog.updated": "· Updated <time>{date}</time>",
   "Blog.alsoIn": "Also in: <links></links>",
-  "Blog.relatedFeature": "Seed feature: {name} →",
+  "Blog.relatedFeature": "Related feature: {name} →",
   "Blog.minutes": { "one": "· {count} min read", "other": "· {count} min read" },
   "Blog.newsTitle": "Get the next post by email",
   "Blog.newsLead":

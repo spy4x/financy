@@ -134,7 +134,8 @@ export default {
   "HomeProof.tests": "アプリとライブラリのテストファイル数。すべてCIで実行",
   "HomeProof.licence": "ライセンス：セルフホストは無料",
   "HomeStatus.signIn": "メールアドレス、パスキー、2段階認証でのログイン",
-  "HomeStatus.groups": "招待機能と、閲覧者からオーナーまでのロールがある世帯",
+  "HomeStatus.groups":
+    "世帯の共有：メンバーを招待して、閲覧者からオーナーまでのロールを一人ずつ設定",
   "HomeStatus.export": "世帯をファイルに書き出し、あとで取り込み直す",
   "HomeStatus.realtime": "すべての端末へのリアルタイム更新と、オフラインで開けるアプリ",
   "HomeStatus.languages": "アプリとこのサイトは9言語に対応",
@@ -142,7 +143,7 @@ export default {
   "HomeFaq.freeAnswer":
     "セルフホストは AGPL‑3.0 で無料です。払うのはサーバー代だけです。クラウドは有料プランになります。",
   "HomeHero.title":
-    "Financy は、一人でも家族でも、複数の通貨をまとめて管理できる無料のオープンソース家計簿（AGPL‑3.0）です。自分のサーバーで動かすことも、有料クラウドを使うこともできます。",
+    "Financy は、一人でも家族でも、複数の通貨をまとめて管理できる無料のオープンソース家計簿（AGPL‑3.0）です。自分のサーバーで動かすことも、有料クラウドの提供開始を待つこともできます。",
   "HomeHero.github": "GitHub で開発を追う",
   "HomeHero.status": "公開で作り直し中で、まだ使えません。{date} 更新。<status>現在の状況</status>",
   "HomeQuickStart.terminal": "ターミナル",
@@ -345,7 +346,7 @@ export default {
   "Blog.published": "公開日：<time>{date}</time>",
   "Blog.updated": "· 更新日：<time>{date}</time>",
   "Blog.alsoIn": "他の言語：<links></links>",
-  "Blog.relatedFeature": "Seed の機能：{name} →",
+  "Blog.relatedFeature": "関連する機能：{name} →",
   "Blog.minutes": { "other": "· {count}分で読めます" },
   "Blog.newsTitle": "次の記事をメールで受け取る",
   "Blog.newsLead":
