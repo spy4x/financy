@@ -5,6 +5,7 @@ export default {
   "SiteNav.docs": "التوثيق",
   "SiteNav.blog": "المدونة",
   "SiteNav.github": "GitHub",
+  "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "انتقل إلى المحتوى",
   "SiteFooter.pitch": "تطبيق لإدارة أموالك أو أموال أسرتك، بأي مزيج من العملات.",
   "SiteFooter.builtBy": "يُبنى علنًا بيد <author>{name}</author>. رخصة AGPL-3.0.",

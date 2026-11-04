@@ -5,6 +5,7 @@ export default {
   "SiteNav.docs": "Doku",
   "SiteNav.blog": "Blog",
   "SiteNav.github": "GitHub",
+  "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "Zum Inhalt springen",
   "SiteFooter.pitch":
     "Ein Haushaltsbuch für dich oder deine Familie, in beliebig vielen Währungen.",

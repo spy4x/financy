@@ -419,7 +419,7 @@ function HeaderAction({ newsletter }: { newsletter: boolean }): JSX.Element {
         data-umami-event="github"
         data-umami-event-from="header"
       >
-        {t.t(`HomeHero.github`)}
+        {t.t(`HeaderAction.github`)}
       </Button>
     )
 }

@@ -201,9 +201,18 @@ describe("the public website", () => {
 
     expect(linkNamed(html, "Get notified")).toBeUndefined()
     expect(main).not.toContain(`id="newsletter"`)
-    expect(hrefOf(linkNamed(element(html, "header")!, "Follow the build on GitHub")))
-      .toBe(REPOSITORY_URL)
     expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
+  })
+
+  it("labels the header button just GitHub, in every language, while the newsletter is off", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const { html } = await page(localePath(language, "/"), withoutNewsletter)
+      const button = element(html, "header")!
+        .match(/<a\b[^>]*data-e2e="site-github"[^>]*>([\s\S]*?)<\/a>/)
+
+      expect(hrefOf(button?.[0]), language).toBe(REPOSITORY_URL)
+      expect(linkText(button?.[1] ?? ""), language).toBe("GitHub")
+    }
   })
 
   // Their 404 comes from the built server's routing, which e2e/mpa/features.mpa.ts walks.

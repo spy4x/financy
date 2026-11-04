@@ -5,6 +5,7 @@ export default {
   "SiteNav.docs": "Документация",
   "SiteNav.blog": "Блог",
   "SiteNav.github": "GitHub",
+  "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "Перейти к содержимому",
   "SiteFooter.pitch": "Учёт финансов для себя или семьи, в любых валютах.",
   "SiteFooter.builtBy": "Создаётся открыто, автор <author>{name}</author>. Лицензия AGPL-3.0.",

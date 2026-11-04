@@ -5,6 +5,7 @@ export default {
   "SiteNav.docs": "文档",
   "SiteNav.blog": "博客",
   "SiteNav.github": "GitHub",
+  "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "跳到正文",
   "SiteFooter.pitch": "为个人或家庭记账，支持任意多种货币。",
   "SiteFooter.builtBy": "由 <author>{name}</author> 公开构建。AGPL-3.0 许可证。",

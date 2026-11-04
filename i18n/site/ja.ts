@@ -5,6 +5,7 @@ export default {
   "SiteNav.docs": "ドキュメント",
   "SiteNav.blog": "ブログ",
   "SiteNav.github": "GitHub",
+  "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "本文へスキップ",
   "SiteFooter.pitch": "一人でも家族でも、複数の通貨をまとめて管理できる家計簿。",
   "SiteFooter.builtBy": "<author>{name}</author> が公開で開発しています。AGPL-3.0 ライセンス。",

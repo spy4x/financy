@@ -5,6 +5,7 @@ export default {
   "SiteNav.docs": "Docs",
   "SiteNav.blog": "Blog",
   "SiteNav.github": "GitHub",
+  "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "Skip to content",
   "SiteFooter.pitch": "A finance tracker for a person or a family, in any mix of currencies.",
   "SiteFooter.builtBy": "Built in public by <author>{name}</author>. AGPL-3.0 licence.",

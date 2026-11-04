@@ -5,6 +5,7 @@ export default {
   "SiteNav.docs": "Docs",
   "SiteNav.blog": "Blog",
   "SiteNav.github": "GitHub",
+  "HeaderAction.github": "GitHub",
   "SiteFrame.skip": "Ir al contenido",
   "SiteFooter.pitch":
     "Control de finanzas para ti o tu familia, en cualquier combinación de monedas.",
