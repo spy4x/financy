@@ -128,6 +128,7 @@ export default {
   "AdminAuditEvent.groupCreated": "Groupe créé",
   "AdminAuditEvent.groupRenamed": "Groupe renommé",
   "AdminAuditEvent.groupDetailsUpdated": "Informations du groupe modifiées",
+  "AdminAuditEvent.groupTimeZoneChanged": "Fuseau horaire du groupe modifié",
   "AdminAuditEvent.groupDeleted": "Groupe supprimé",
   "AdminAuditEvent.groupRestored": "Groupe restauré",
   "AdminAuditEvent.memberRoleChanged": "Rôle d’un membre modifié",
@@ -192,7 +193,7 @@ export default {
   "AdminAuditEvent.confirmationResent": "Confirmation de la newsletter renvoyée",
   "AdminAuditEvent.subscribersExported": "Abonnés à la newsletter exportés",
   "AdminAuditEvent.roleChanged": "Rôle modifié",
-  "AdminAuditEvent.resetSent": "Lien de réinitialisation du mot de passe envoyé par un opérateur",
+  "AdminAuditEvent.resetSent": "E-mail de réinitialisation du mot de passe envoyé par un opérateur",
   "AdminAuditEvent.usersExported": "Liste des utilisateurs exportée",
   "AdminAuditEvent.passkeyRenamed": "Clé d’accès renommée",
   "AdminAuditEvent.guestStarted": "Démarrage en invité",
@@ -248,6 +249,7 @@ export default {
   "AdminBilling.onFreeSince": "Au forfait Gratuit depuis le {date}",
   "AdminBilling.wouldBe": "serait de {amount}",
   "AdminBilling.seatPrice": "{seats} × {price}",
+  "AdminBilling.billedYearly": "{amount} facturés à l’année",
   "AdminBilling.title": "Facturation",
   "AdminBilling.subtitle": "Qui paie, combien, et ce que vous gagnez.",
   "AdminBilling.off": "La facturation est désactivée",
@@ -279,7 +281,7 @@ export default {
   "AdminBilling.keyNumbers": "Chiffres clés",
   "AdminBilling.mrr": "Revenu mensuel récurrent",
   "AdminBilling.mrrHint":
-    "Abonnements actifs et impayés, au prix catalogue. Les essais comptent pour 0.",
+    "Abonnements actifs et impayés, au prix catalogue. Un abonnement annuel compte pour son prix divisé par 12. Les essais comptent pour 0.",
   "AdminBilling.payingGroups": "Groupes payants",
   "AdminBilling.pastDueCount": "Impayés : {count}",
   "AdminBilling.inTrial": "En essai",
@@ -334,6 +336,9 @@ export default {
   "AdminBillingCustomer.status": "Statut",
   "AdminBillingCustomer.plan": "Forfait",
   "AdminBillingCustomer.perMonth": "Par mois",
+  "AdminBillingCustomer.period": "Période de facturation",
+  "AdminBillingCustomer.monthly": "Mensuelle",
+  "AdminBillingCustomer.yearly": "Annuelle",
   "AdminBillingCustomer.lastPayment": "Dernier paiement",
   "AdminBillingCustomer.customerSince": "Client depuis",
   "AdminBillingCustomer.notRecorded": "Non enregistré",
@@ -391,6 +396,8 @@ export default {
   "AdminBillingCustomer.howLong": "Durée",
   "AdminBillingCustomer.timeText":
     "<group>{group}</group> garde le forfait {plan} sans prélèvement jusqu’au {date}. Ensuite, le prélèvement habituel de {charge} par mois reprend.",
+  "AdminBillingCustomer.timeTextYear":
+    "<group>{group}</group> garde le forfait {plan} sans prélèvement jusqu’au {date}. Ensuite, le prélèvement habituel de {charge} par an reprend.",
   "AdminBillingCustomer.length7d": "7 jours",
   "AdminBillingCustomer.length14d": "14 jours",
   "AdminBillingCustomer.length30d": "30 jours",
@@ -475,7 +482,8 @@ export default {
   "AdminBlogDialogs.slugRule": "Utilisez uniquement des minuscules, des chiffres et des tirets.",
   "AdminBlogDialogs.changeUrlTitle": "Changer l’URL de cet article ?",
   "AdminBlogDialogs.changeUrl": "Changer l’URL",
-  "AdminBlogDialogs.linksBreak": "Les liens vers <path>{path}</path> ne fonctionneront plus.",
+  "AdminBlogDialogs.linksRedirect":
+    "Les liens vers <path>{path}</path> continuent de fonctionner : ils redirigent vers la nouvelle URL.",
   "AdminBlogDialogs.newSlug": "Nouveau slug",
   "AdminBlogDialogs.slugHint": "Minuscules, chiffres et tirets.",
   "AdminBlogDialogs.futureTime": "Choisissez une date dans le futur.",
@@ -580,6 +588,7 @@ export default {
   "AdminBlogEditor.viewOnSite": "Voir sur le site",
   "AdminBlogEditor.changeUrl": "Changer l’URL…",
   "AdminBlogEditor.unpublish": "Dépublier…",
+  "AdminBlogEditor.history": "Historique…",
   "AdminBlogEditor.deletePost": "Supprimer l’article…",
   "AdminBlogEditor.editPost": "Modifier l’article",
   "AdminBlogEditor.newPost": "Nouvel article",
@@ -631,7 +640,7 @@ export default {
   "AdminBlogEditor.settings": "Paramètres de l’article",
   "AdminBlogEditor.slug": "Slug",
   "AdminBlogEditor.slugLocked":
-    "Verrouillé après publication. Utilisez « Changer l’URL… » pour le modifier ; les anciens liens ne fonctionneront plus.",
+    "Verrouillé après publication. Utilisez « Changer l’URL… » pour le modifier ; les anciens liens redirigent vers la nouvelle.",
   "AdminBlogEditor.slugHint":
     "L’URL de l’article : <path>{path}</path>. Minuscules, chiffres et tirets.",
   "AdminBlogEditor.slugHintEmpty": "Rempli à partir du titre. Minuscules, chiffres et tirets.",
@@ -643,6 +652,9 @@ export default {
     "Affiché dans les résultats de recherche à la place du titre. Environ 60 caractères.",
   "AdminBlogEditor.keyPoints": "Points clés",
   "AdminBlogEditor.keyPointsHint": "Jusqu’à 5 lignes courtes, affichées en haut de l’article.",
+  "AdminBlogEditor.intro": "Chapeau",
+  "AdminBlogEditor.introHint":
+    "Deux ou trois phrases qui ouvrent l’e-mail de la newsletter et les publications croisées. Non affiché sur la page de l’article.",
   "AdminBlogEditor.keyPoint": "Point clé {n}",
   "AdminBlogEditor.removeKeyPoint": "Retirer le point clé {n}",
   "AdminBlogEditor.addPoint": "Ajouter un point",
@@ -652,11 +664,19 @@ export default {
   "AdminBlogEditor.authorUrl": "Lien vers l’auteur",
   "AdminBlogEditor.authorUrlHint":
     "Le nom de l’auteur dans l’article renverra ici, par exemple vers sa page « À propos », pour que lecteurs et moteurs de recherche sachent qui l’a écrit. Laissez vide pour ne pas mettre de lien.",
+  "AdminBlogEditor.relatedFeature": "Fonctionnalité liée",
+  "AdminBlogEditor.relatedFeatureHint":
+    "La page de fonctionnalité du site dont parle l’article, par exemple realtime pour /features/realtime. L’article la lie sous la ligne de l’auteur. Laissez vide s’il n’y en a pas.",
   "AdminBlogEditor.coverUrl": "URL de l’image de couverture",
-  "AdminBlogEditor.coverUrlHint":
-    "Un lien https:// complet vers une image large, 1200×630, sur un hébergeur qui autorise son affichage sur d’autres sites. Laissez vide pour ne pas avoir de couverture.",
+  "AdminBlogEditor.coverUrlHint": "Une image 16:9, adresse https://.",
   "AdminBlogEditor.coverAlt": "Description de la couverture",
   "AdminBlogEditor.coverAltHint": "Ce que montre l’image, pour les personnes qui ne la voient pas.",
+  "AdminBlogEditor.groupAddress": "Adresse et langue",
+  "AdminBlogEditor.groupSummary": "Résumé",
+  "AdminBlogEditor.groupCover": "Couverture",
+  "AdminBlogEditor.groupLinks": "Liens",
+  "AdminBlogEditor.coverOf": "Utilise la couverture de : {title}",
+  "AdminBlogEditor.coverBroken": "Cette image ne s’est pas chargée.",
   "AdminBlogEditor.coverPrivacy":
     "Une image hébergée sur un autre site permet à ce site de voir l’adresse IP de vos lecteurs.",
   "AdminBlogEditor.publishing": "Publication",
@@ -1258,6 +1278,7 @@ export default {
   "AdminGroup.openInvitations": "Invitations en cours",
   "AdminGroup.owner": "Propriétaire",
   "AdminGroup.created": "Création",
+  "AdminGroup.timeZone": "Fuseau horaire",
   "AdminGroup.imported": "Importé",
   "AdminGroup.importedBy": "<when></when> par <person>{name}</person>",
   "AdminGroup.lastActivity": "Dernière activité",
@@ -1785,7 +1806,7 @@ export default {
   "AdminUser.doneRoleSupervisor": "{name} est maintenant superviseur.",
   "AdminUser.doneRoleAdmin": "{name} est maintenant administrateur.",
   "AdminUser.donePasswordReset":
-    "Un lien de réinitialisation du mot de passe est en route vers {name}.",
+    "Un e-mail de réinitialisation du mot de passe a été envoyé à {name}.",
   "AdminUser.doneDeleteGuest": "Compte invité {name} supprimé.",
   "AdminUser.doneUnlinkTelegram": "Le compte Telegram de {name} a été dissocié.",
   "AdminUser.doneRemovePicture": "La photo de profil de {name} a été retirée.",
@@ -1795,7 +1816,7 @@ export default {
   "AdminUser.unblock": "Débloquer",
   "AdminUser.block": "Bloquer",
   "AdminUser.endAllSessions": "Fermer toutes les sessions",
-  "AdminUser.sendReset": "Envoyer un lien de réinitialisation",
+  "AdminUser.sendReset": "Envoyer un e-mail de réinitialisation",
   "AdminUser.noResetAddress": "Nécessite une connexion par mot de passe avec une adresse e-mail",
   "AdminUser.unlinkTelegram": "Dissocier Telegram",
   "AdminUser.removePicture": "Retirer la photo de profil",
@@ -1852,7 +1873,7 @@ export default {
   "AdminUser.methodPassword": "Mot de passe",
   "AdminUser.methodEmailCode": "Code par e-mail",
   "AdminUser.methodPasskey": "Clé d’accès",
-  "AdminUser.methodEmailLink": "Lien par e-mail",
+  "AdminUser.methodEmailLink": "Code par e-mail",
   "AdminUser.blockTitle": "Bloquer {name}",
   "AdminUser.blockText":
     "Cette personne est immédiatement déconnectée partout, et tous ses accès sont refusés : mot de passe, Google, GitHub et jetons d’API. Ses données restent. Vous pourrez la débloquer plus tard.",
@@ -1873,10 +1894,10 @@ export default {
   "AdminUser.changeRoleText":
     "Le nouveau rôle s’applique dès sa prochaine requête. Vous pouvez attribuer tout rôle inférieur au vôtre ; pour nommer quelqu’un administrateur, utilisez le script user:role.",
   "AdminUser.changing": "Modification…",
-  "AdminUser.resetTitle": "Envoyer à {name} un lien de réinitialisation du mot de passe",
+  "AdminUser.resetTitle": "Envoyer à {name} un e-mail de réinitialisation du mot de passe",
   "AdminUser.resetText":
-    "Cette personne reçoit le même e-mail qu’avec « Mot de passe oublié » : un lien pour choisir un nouveau mot de passe. Son mot de passe actuel fonctionne jusque-là.",
-  "AdminUser.sendLink": "Envoyer le lien",
+    "Cette personne reçoit un e-mail qui lui explique comment réinitialiser son mot de passe via « Mot de passe oublié ? » : elle recevra alors un code par e-mail. Son mot de passe actuel reste valable d’ici là.",
+  "AdminUser.sendLink": "Envoyer l’e-mail",
   "AdminUser.sending": "Envoi…",
   "AdminUser.deleteGuestTitle": "Supprimer le compte invité {name}",
   "AdminUser.deleteGuestText":
@@ -1897,7 +1918,7 @@ export default {
   "AdminUser.cancel": "Annuler",
   "AdminUsers.title": "Utilisateurs",
   "AdminUsers.subtitle":
-    "Toutes les personnes qui ont un compte. Ouvrez une fiche pour bloquer la personne, fermer une session ou envoyer un lien de réinitialisation du mot de passe.",
+    "Toutes les personnes qui ont un compte. Ouvrez une fiche pour bloquer la personne, fermer une session ou envoyer un e-mail de réinitialisation du mot de passe.",
   "AdminUsers.export": "Exporter en CSV",
   "AdminUsers.search": "Nom ou adresse e-mail",
   "AdminUsers.searching": "Recherche…",
@@ -1941,4 +1962,14 @@ export default {
   "AdminBlogEditor.translationOfHint":
     "L’article dont celui-ci est la traduction. Le site relie les deux comme versions linguistiques dès qu’ils sont tous deux en ligne.",
   "AdminBlogEditor.translationNone": "Aucun : article original",
+  "AdminBlogHistory.title": "Historique",
+  "AdminBlogHistory.versions": "Versions précédentes",
+  "AdminBlogHistory.shown": "Version affichée",
+  "AdminBlogHistory.body": "Corps",
+  "AdminBlogHistory.savedBy": "Enregistrée le {date} par {name}",
+  "AdminBlogHistory.someone": "Inconnu",
+  "AdminBlogHistory.restore": "Restaurer cette version",
+  "AdminBlogHistory.empty":
+    "Aucune version précédente pour l’instant. Chaque enregistrement en garde une.",
+  "AdminBlogHistory.restored": "Version précédente restaurée. Enregistrez pour la garder.",
 } satisfies Catalog

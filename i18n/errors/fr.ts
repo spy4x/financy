@@ -164,6 +164,8 @@ export default {
     "La liste a changé depuis le chargement de la page. Rechargez-la et réessayez.",
   "Reason.PASSWORD_INVALID": "Mot de passe incorrect. Réessayez.",
   "Reason.PASSWORD_LOCKED": "Trop de mots de passe incorrects. Patientez un moment et réessayez.",
+  "Reason.PERIOD_NOT_OFFERED":
+    "Ce forfait n’est pas proposé pour cette période de facturation. Choisissez l’autre.",
   "Reason.PHOTO_CONTENT": "Le contenu de ce fichier ne correspond pas à son type d’image.",
   "Reason.PHOTO_NOT_FOUND": "Cette photo n’existe plus.",
   "Reason.PHOTO_TOO_LARGE": "Cette photo est trop volumineuse.",
@@ -172,6 +174,7 @@ export default {
   "Reason.PLAN_FEATURE_MISSING": "Le forfait du groupe n’inclut pas cette fonctionnalité.",
   "Reason.PLAN_LIMIT_REACHED": "Le groupe a atteint la limite de son forfait.",
   "Reason.POST_NOT_FOUND": "Cet article de blog n’existe plus.",
+  "Reason.REVISION_NOT_FOUND": "Cette version précédente n’existe plus.",
   "Reason.PROVIDER_ERROR": "Le prestataire de paiement n’a pas répondu. Réessayez.",
   "Reason.REQUEST_ORIGIN_INVALID":
     "Impossible de vérifier l’origine de cette requête. Rechargez la page et réessayez.",
@@ -180,8 +183,6 @@ export default {
   "Reason.SEARCH_RATE_LIMITED": "Trop de recherches. Patientez une minute et réessayez.",
   "Reason.SEAT_PRICE_NOT_ACCEPTED":
     "Confirmez que chaque nouveau membre s’ajoute à la facture du groupe.",
-  "Reason.SIGN_IN_LINK_ASKED_ELSEWHERE":
-    "Ce lien a été demandé dans un autre navigateur. Ouvrez-le dans ce navigateur-là.",
   "Reason.SLUG_LOCKED":
     "L’adresse est verrouillée une fois l’article publié. Utilisez « Changer l’URL » pour la changer.",
   "Reason.SLUG_TAKEN": "Cette adresse est déjà prise. Choisissez-en une autre.",

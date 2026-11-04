@@ -122,6 +122,7 @@ export default {
   "AdminAuditEvent.groupCreated": "Group created",
   "AdminAuditEvent.groupRenamed": "Group renamed",
   "AdminAuditEvent.groupDetailsUpdated": "Group details changed",
+  "AdminAuditEvent.groupTimeZoneChanged": "Group time zone changed",
   "AdminAuditEvent.groupDeleted": "Group deleted",
   "AdminAuditEvent.groupRestored": "Group restored",
   "AdminAuditEvent.memberRoleChanged": "Member's role changed",
@@ -186,7 +187,7 @@ export default {
   "AdminAuditEvent.confirmationResent": "Newsletter confirmation resent",
   "AdminAuditEvent.subscribersExported": "Newsletter subscribers exported",
   "AdminAuditEvent.roleChanged": "Role changed",
-  "AdminAuditEvent.resetSent": "Password-reset link sent by an operator",
+  "AdminAuditEvent.resetSent": "Password-reset email sent by an operator",
   "AdminAuditEvent.usersExported": "User list exported",
   "AdminAuditEvent.passkeyRenamed": "Passkey renamed",
   "AdminAuditEvent.guestStarted": "Started as a guest",
@@ -241,6 +242,7 @@ export default {
   "AdminBilling.onFreeSince": "On Free since {date}",
   "AdminBilling.wouldBe": "would be {amount}",
   "AdminBilling.seatPrice": "{seats} × {price}",
+  "AdminBilling.billedYearly": "{amount} billed yearly",
   "AdminBilling.title": "Billing",
   "AdminBilling.subtitle": "Who pays, what they pay, and what you earn.",
   "AdminBilling.off": "Billing is off",
@@ -268,7 +270,8 @@ export default {
   "AdminBilling.loadingFigures": "Loading the figures",
   "AdminBilling.keyNumbers": "Key numbers",
   "AdminBilling.mrr": "Monthly recurring revenue",
-  "AdminBilling.mrrHint": "Active and past-due subscriptions at list price. Trials count as 0.",
+  "AdminBilling.mrrHint":
+    "Active and past-due subscriptions at list price. A yearly one counts as its price divided by 12. Trials count as 0.",
   "AdminBilling.payingGroups": "Paying groups",
   "AdminBilling.pastDueCount": "{count} past due",
   "AdminBilling.inTrial": "In trial",
@@ -322,6 +325,9 @@ export default {
   "AdminBillingCustomer.status": "Status",
   "AdminBillingCustomer.plan": "Plan",
   "AdminBillingCustomer.perMonth": "Per month",
+  "AdminBillingCustomer.period": "Billing period",
+  "AdminBillingCustomer.monthly": "Monthly",
+  "AdminBillingCustomer.yearly": "Yearly",
   "AdminBillingCustomer.lastPayment": "Last payment",
   "AdminBillingCustomer.customerSince": "Customer since",
   "AdminBillingCustomer.notRecorded": "Not recorded",
@@ -377,6 +383,8 @@ export default {
   "AdminBillingCustomer.howLong": "For how long",
   "AdminBillingCustomer.timeText":
     "<group>{group}</group> keeps {plan} with no charge until {date}. After that, the usual {charge} a month starts again.",
+  "AdminBillingCustomer.timeTextYear":
+    "<group>{group}</group> keeps {plan} with no charge until {date}. After that, the usual {charge} a year starts again.",
   "AdminBillingCustomer.length7d": "7 days",
   "AdminBillingCustomer.length14d": "14 days",
   "AdminBillingCustomer.length30d": "30 days",
@@ -456,7 +464,8 @@ export default {
   "AdminBlogDialogs.slugRule": "Use lowercase letters, digits and hyphens only.",
   "AdminBlogDialogs.changeUrlTitle": "Change this post's URL?",
   "AdminBlogDialogs.changeUrl": "Change URL",
-  "AdminBlogDialogs.linksBreak": "Links to <path>{path}</path> stop working.",
+  "AdminBlogDialogs.linksRedirect":
+    "Links to <path>{path}</path> keep working: they redirect to the new URL.",
   "AdminBlogDialogs.newSlug": "New slug",
   "AdminBlogDialogs.slugHint": "Lowercase letters, digits and hyphens.",
   "AdminBlogDialogs.futureTime": "Pick a time in the future.",
@@ -549,6 +558,7 @@ export default {
   "AdminBlogEditor.viewOnSite": "View on website",
   "AdminBlogEditor.changeUrl": "Change URL…",
   "AdminBlogEditor.unpublish": "Unpublish…",
+  "AdminBlogEditor.history": "History…",
   "AdminBlogEditor.deletePost": "Delete post…",
   "AdminBlogEditor.editPost": "Edit post",
   "AdminBlogEditor.newPost": "New post",
@@ -594,7 +604,7 @@ export default {
   "AdminBlogEditor.settings": "Post settings",
   "AdminBlogEditor.slug": "Slug",
   "AdminBlogEditor.slugLocked":
-    "Locked once published. Use Change URL… to change it; old links will break.",
+    "Locked once published. Use Change URL… to change it; old links redirect to the new one.",
   "AdminBlogEditor.slugHint":
     "The post's URL: <path>{path}</path>. Lowercase letters, digits and hyphens.",
   "AdminBlogEditor.slugHintEmpty":
@@ -606,6 +616,9 @@ export default {
     "Shown in search results instead of the title. About 60 characters.",
   "AdminBlogEditor.keyPoints": "Key points",
   "AdminBlogEditor.keyPointsHint": "Up to 5 short lines, shown at the top of the post.",
+  "AdminBlogEditor.intro": "Intro",
+  "AdminBlogEditor.introHint":
+    "Two or three sentences that open the newsletter email and the cross-posts. Not shown on the post page.",
   "AdminBlogEditor.keyPoint": "Key point {n}",
   "AdminBlogEditor.removeKeyPoint": "Remove key point {n}",
   "AdminBlogEditor.addPoint": "Add point",
@@ -614,11 +627,19 @@ export default {
   "AdminBlogEditor.authorUrl": "Author link",
   "AdminBlogEditor.authorUrlHint":
     "The author's name on the post links here, such as their About page, so readers and search engines can tell who wrote it. Leave empty for no link.",
+  "AdminBlogEditor.relatedFeature": "Related feature",
+  "AdminBlogEditor.relatedFeatureHint":
+    "The website's feature page this post is about, such as realtime for /features/realtime. The post links it under the byline. Leave empty for none.",
   "AdminBlogEditor.coverUrl": "Cover image URL",
-  "AdminBlogEditor.coverUrlHint":
-    "A full https:// link to a wide image, 1200×630, on a host that lets other sites show it. Leave empty for no cover.",
+  "AdminBlogEditor.coverUrlHint": "A 16:9 picture, https:// address.",
   "AdminBlogEditor.coverAlt": "Cover description",
   "AdminBlogEditor.coverAltHint": "What the image shows, for people who can't see it.",
+  "AdminBlogEditor.groupAddress": "Address & language",
+  "AdminBlogEditor.groupSummary": "Summary",
+  "AdminBlogEditor.groupCover": "Cover",
+  "AdminBlogEditor.groupLinks": "Links",
+  "AdminBlogEditor.coverOf": "Uses the cover of: {title}",
+  "AdminBlogEditor.coverBroken": "This picture did not load.",
   "AdminBlogEditor.coverPrivacy":
     "An image hosted on another site lets that site see your readers' IP addresses.",
   "AdminBlogEditor.publishing": "Publishing",
@@ -1169,6 +1190,7 @@ export default {
   "AdminGroup.openInvitations": "Open invitations",
   "AdminGroup.owner": "Owner",
   "AdminGroup.created": "Created",
+  "AdminGroup.timeZone": "Time zone",
   "AdminGroup.imported": "Imported",
   "AdminGroup.importedBy": "<when></when> by <person>{name}</person>",
   "AdminGroup.lastActivity": "Last activity",
@@ -1658,7 +1680,7 @@ export default {
   "AdminUser.doneRoleOperator": "{name} is now an operator.",
   "AdminUser.doneRoleSupervisor": "{name} is now a supervisor.",
   "AdminUser.doneRoleAdmin": "{name} is now an administrator.",
-  "AdminUser.donePasswordReset": "A password-reset link is on its way to {name}.",
+  "AdminUser.donePasswordReset": "A password-reset email is on its way to {name}.",
   "AdminUser.doneDeleteGuest": "Guest account {name} deleted.",
   "AdminUser.doneUnlinkTelegram": "Unlinked {name}'s Telegram account.",
   "AdminUser.doneRemovePicture": "Removed {name}'s profile picture.",
@@ -1668,7 +1690,7 @@ export default {
   "AdminUser.unblock": "Unblock",
   "AdminUser.block": "Block",
   "AdminUser.endAllSessions": "End all sessions",
-  "AdminUser.sendReset": "Send password-reset link",
+  "AdminUser.sendReset": "Send password-reset email",
   "AdminUser.noResetAddress": "Needs a password sign-in with an email",
   "AdminUser.unlinkTelegram": "Unlink Telegram",
   "AdminUser.removePicture": "Remove profile picture",
@@ -1725,7 +1747,7 @@ export default {
   "AdminUser.methodPassword": "Password",
   "AdminUser.methodEmailCode": "Email code",
   "AdminUser.methodPasskey": "Passkey",
-  "AdminUser.methodEmailLink": "Email link",
+  "AdminUser.methodEmailLink": "Email code",
   "AdminUser.blockTitle": "Block {name}",
   "AdminUser.blockText":
     "They're signed out everywhere right away, and every way in is refused: password, Google, GitHub and API tokens. Their data stays. You can unblock them later.",
@@ -1745,10 +1767,10 @@ export default {
   "AdminUser.changeRoleText":
     "The new role takes effect on their next request. You can give any role below your own; to make someone an administrator, use the user:role script.",
   "AdminUser.changing": "Changing…",
-  "AdminUser.resetTitle": "Send {name} a password-reset link",
+  "AdminUser.resetTitle": "Send {name} a password-reset email",
   "AdminUser.resetText":
-    'They get the same email as from "Forgot password": a link to choose a new password. Their current password keeps working until they do.',
-  "AdminUser.sendLink": "Send link",
+    'They get an email that tells them how to reset their password with "Forgot password", which mails them a code. Their current password keeps working until they do.',
+  "AdminUser.sendLink": "Send email",
   "AdminUser.sending": "Sending…",
   "AdminUser.deleteGuestTitle": "Delete guest account {name}",
   "AdminUser.deleteGuestText":
@@ -1769,7 +1791,7 @@ export default {
   "AdminUser.cancel": "Cancel",
   "AdminUsers.title": "Users",
   "AdminUsers.subtitle":
-    "Everyone with an account. Open a person to block them, end a session or send a password-reset link.",
+    "Everyone with an account. Open a person to block them, end a session or send a password-reset email.",
   "AdminUsers.export": "Export CSV",
   "AdminUsers.search": "Name or email",
   "AdminUsers.searching": "Searching…",
@@ -1811,4 +1833,13 @@ export default {
   "AdminBlogEditor.translationOfHint":
     "The post this one translates. The website links the two as language versions once both are live.",
   "AdminBlogEditor.translationNone": "None: an original post",
+  "AdminBlogHistory.title": "History",
+  "AdminBlogHistory.versions": "Earlier versions",
+  "AdminBlogHistory.shown": "Version shown",
+  "AdminBlogHistory.body": "Body",
+  "AdminBlogHistory.savedBy": "Saved {date} by {name}",
+  "AdminBlogHistory.someone": "Unknown",
+  "AdminBlogHistory.restore": "Restore this version",
+  "AdminBlogHistory.empty": "No earlier versions yet. Each save keeps one.",
+  "AdminBlogHistory.restored": "Earlier version restored. Save to keep it.",
 } satisfies Catalog

@@ -127,6 +127,7 @@ export default {
   "AdminAuditEvent.groupCreated": "Grupo criado",
   "AdminAuditEvent.groupRenamed": "Grupo renomeado",
   "AdminAuditEvent.groupDetailsUpdated": "Detalhes do grupo alterados",
+  "AdminAuditEvent.groupTimeZoneChanged": "Fuso horário do grupo alterado",
   "AdminAuditEvent.groupDeleted": "Grupo excluído",
   "AdminAuditEvent.groupRestored": "Grupo restaurado",
   "AdminAuditEvent.memberRoleChanged": "Função de membro alterada",
@@ -191,7 +192,7 @@ export default {
   "AdminAuditEvent.confirmationResent": "Confirmação da newsletter reenviada",
   "AdminAuditEvent.subscribersExported": "Inscritos da newsletter exportados",
   "AdminAuditEvent.roleChanged": "Função alterada",
-  "AdminAuditEvent.resetSent": "Link para redefinir a senha enviado por um operador",
+  "AdminAuditEvent.resetSent": "E-mail para redefinir a senha enviado por um operador",
   "AdminAuditEvent.usersExported": "Lista de usuários exportada",
   "AdminAuditEvent.passkeyRenamed": "Chave de acesso renomeada",
   "AdminAuditEvent.guestStarted": "Começou como visitante",
@@ -247,6 +248,7 @@ export default {
   "AdminBilling.onFreeSince": "No plano Gratuito desde {date}",
   "AdminBilling.wouldBe": "seria {amount}",
   "AdminBilling.seatPrice": "{seats} × {price}",
+  "AdminBilling.billedYearly": "{amount} cobrados por ano",
   "AdminBilling.title": "Cobrança",
   "AdminBilling.subtitle": "Quem paga, quanto paga e quanto você recebe.",
   "AdminBilling.off": "A cobrança está desativada",
@@ -277,7 +279,7 @@ export default {
   "AdminBilling.keyNumbers": "Números principais",
   "AdminBilling.mrr": "Receita recorrente mensal",
   "AdminBilling.mrrHint":
-    "Assinaturas ativas e em atraso, pelo preço de tabela. Testes contam como 0.",
+    "Assinaturas ativas e em atraso, pelo preço de tabela. Uma anual conta como o preço dividido por 12. Testes contam como 0.",
   "AdminBilling.payingGroups": "Grupos pagantes",
   "AdminBilling.pastDueCount": "{count} em atraso",
   "AdminBilling.inTrial": "Em teste",
@@ -332,6 +334,9 @@ export default {
   "AdminBillingCustomer.status": "Situação",
   "AdminBillingCustomer.plan": "Plano",
   "AdminBillingCustomer.perMonth": "Por mês",
+  "AdminBillingCustomer.period": "Período de cobrança",
+  "AdminBillingCustomer.monthly": "Mensal",
+  "AdminBillingCustomer.yearly": "Anual",
   "AdminBillingCustomer.lastPayment": "Último pagamento",
   "AdminBillingCustomer.customerSince": "Cliente desde",
   "AdminBillingCustomer.notRecorded": "Não registrado",
@@ -388,6 +393,8 @@ export default {
   "AdminBillingCustomer.howLong": "Por quanto tempo",
   "AdminBillingCustomer.timeText":
     "<group>{group}</group> fica com o {plan} sem pagar nada até {date}. Depois disso, volta a cobrança normal de {charge} por mês.",
+  "AdminBillingCustomer.timeTextYear":
+    "<group>{group}</group> fica com o {plan} sem pagar nada até {date}. Depois disso, volta a cobrança normal de {charge} por ano.",
   "AdminBillingCustomer.length7d": "7 dias",
   "AdminBillingCustomer.length14d": "14 dias",
   "AdminBillingCustomer.length30d": "30 dias",
@@ -469,7 +476,8 @@ export default {
   "AdminBlogDialogs.slugRule": "Use só letras minúsculas, números e hifens.",
   "AdminBlogDialogs.changeUrlTitle": "Mudar a URL deste post?",
   "AdminBlogDialogs.changeUrl": "Mudar URL",
-  "AdminBlogDialogs.linksBreak": "Links para <path>{path}</path> vão parar de funcionar.",
+  "AdminBlogDialogs.linksRedirect":
+    "Links para <path>{path}</path> continuam funcionando: eles redirecionam para a nova URL.",
   "AdminBlogDialogs.newSlug": "Novo slug",
   "AdminBlogDialogs.slugHint": "Letras minúsculas, números e hifens.",
   "AdminBlogDialogs.futureTime": "Escolha um horário no futuro.",
@@ -571,6 +579,7 @@ export default {
   "AdminBlogEditor.viewOnSite": "Ver no site",
   "AdminBlogEditor.changeUrl": "Mudar URL…",
   "AdminBlogEditor.unpublish": "Despublicar…",
+  "AdminBlogEditor.history": "Histórico…",
   "AdminBlogEditor.deletePost": "Excluir post…",
   "AdminBlogEditor.editPost": "Editar post",
   "AdminBlogEditor.newPost": "Novo post",
@@ -623,7 +632,7 @@ export default {
   "AdminBlogEditor.settings": "Configurações do post",
   "AdminBlogEditor.slug": "Slug",
   "AdminBlogEditor.slugLocked":
-    "Fica travado depois de publicado. Para mudar, use Mudar URL…; links antigos vão quebrar.",
+    "Fica travado depois de publicado. Para mudar, use Mudar URL…; links antigos redirecionam para a nova.",
   "AdminBlogEditor.slugHint":
     "A URL do post: <path>{path}</path>. Letras minúsculas, números e hifens.",
   "AdminBlogEditor.slugHintEmpty":
@@ -636,6 +645,9 @@ export default {
     "Aparece nos resultados de busca no lugar do título. Cerca de 60 caracteres.",
   "AdminBlogEditor.keyPoints": "Pontos principais",
   "AdminBlogEditor.keyPointsHint": "Até 5 linhas curtas, mostradas no topo do post.",
+  "AdminBlogEditor.intro": "Abertura",
+  "AdminBlogEditor.introHint":
+    "Duas ou três frases que abrem o e-mail da newsletter e as publicações cruzadas. Não aparece na página do post.",
   "AdminBlogEditor.keyPoint": "Ponto principal {n}",
   "AdminBlogEditor.removeKeyPoint": "Remover o ponto principal {n}",
   "AdminBlogEditor.addPoint": "Adicionar ponto",
@@ -644,11 +656,19 @@ export default {
   "AdminBlogEditor.authorUrl": "Link do autor",
   "AdminBlogEditor.authorUrlHint":
     "O nome do autor no post vai levar para cá, como a página “Sobre mim”, para que leitores e buscadores saibam quem o escreveu. Deixe em branco se não quiser link.",
+  "AdminBlogEditor.relatedFeature": "Recurso relacionado",
+  "AdminBlogEditor.relatedFeatureHint":
+    "A página de recurso do site de que o post trata, como realtime para /features/realtime. O post leva a ela abaixo da linha do autor. Deixe em branco se não houver.",
   "AdminBlogEditor.coverUrl": "URL da imagem de capa",
-  "AdminBlogEditor.coverUrlHint":
-    "Link completo (https://) de uma imagem horizontal de 1200×630, hospedada em um serviço que permita exibi-la em outros sites. Deixe em branco se não quiser capa.",
+  "AdminBlogEditor.coverUrlHint": "Uma imagem 16:9, endereço https://.",
   "AdminBlogEditor.coverAlt": "Descrição da capa",
   "AdminBlogEditor.coverAltHint": "O que a imagem mostra, para quem não consegue vê-la.",
+  "AdminBlogEditor.groupAddress": "Endereço e idioma",
+  "AdminBlogEditor.groupSummary": "Resumo",
+  "AdminBlogEditor.groupCover": "Capa",
+  "AdminBlogEditor.groupLinks": "Links",
+  "AdminBlogEditor.coverOf": "Usa a capa de: {title}",
+  "AdminBlogEditor.coverBroken": "Esta imagem não carregou.",
   "AdminBlogEditor.coverPrivacy":
     "Uma imagem hospedada em outro site permite que esse site veja o endereço IP dos seus leitores.",
   "AdminBlogEditor.publishing": "Publicação",
@@ -1240,6 +1260,7 @@ export default {
   "AdminGroup.openInvitations": "Convites abertos",
   "AdminGroup.owner": "Dono",
   "AdminGroup.created": "Criado em",
+  "AdminGroup.timeZone": "Fuso horário",
   "AdminGroup.imported": "Importado",
   "AdminGroup.importedBy": "<when></when> por <person>{name}</person>",
   "AdminGroup.lastActivity": "Última atividade",
@@ -1760,7 +1781,7 @@ export default {
   "AdminUser.doneRoleOperator": "{name} agora tem a função de operador.",
   "AdminUser.doneRoleSupervisor": "{name} agora tem a função de supervisor.",
   "AdminUser.doneRoleAdmin": "{name} agora tem a função de administrador.",
-  "AdminUser.donePasswordReset": "Um link para redefinir a senha está a caminho de {name}.",
+  "AdminUser.donePasswordReset": "Enviamos a {name} um e-mail para redefinir a senha.",
   "AdminUser.doneDeleteGuest": "Conta de visitante {name} excluída.",
   "AdminUser.doneUnlinkTelegram": "A conta do Telegram de {name} foi desvinculada.",
   "AdminUser.doneRemovePicture": "A foto de perfil de {name} foi removida.",
@@ -1770,7 +1791,7 @@ export default {
   "AdminUser.unblock": "Desbloquear",
   "AdminUser.block": "Bloquear",
   "AdminUser.endAllSessions": "Encerrar todas as sessões",
-  "AdminUser.sendReset": "Enviar link para redefinir a senha",
+  "AdminUser.sendReset": "Enviar e-mail para redefinir a senha",
   "AdminUser.noResetAddress": "Precisa de login com senha e um e-mail",
   "AdminUser.unlinkTelegram": "Desvincular o Telegram",
   "AdminUser.removePicture": "Remover foto de perfil",
@@ -1827,7 +1848,7 @@ export default {
   "AdminUser.methodPassword": "Senha",
   "AdminUser.methodEmailCode": "Código por e-mail",
   "AdminUser.methodPasskey": "Chave de acesso",
-  "AdminUser.methodEmailLink": "Link por e-mail",
+  "AdminUser.methodEmailLink": "Código por e-mail",
   "AdminUser.blockTitle": "Bloquear {name}",
   "AdminUser.blockText":
     "A pessoa é desconectada de todos os dispositivos na hora, e toda forma de entrar passa a ser recusada: senha, Google, GitHub e tokens de API. Os dados dela continuam guardados. Você pode desbloquear depois.",
@@ -1848,10 +1869,10 @@ export default {
   "AdminUser.changeRoleText":
     "A nova função vale a partir da próxima ação da pessoa. Você pode dar qualquer função abaixo da sua; para tornar alguém administrador, use o script user:role.",
   "AdminUser.changing": "Mudando…",
-  "AdminUser.resetTitle": "Enviar a {name} um link para redefinir a senha",
+  "AdminUser.resetTitle": "Enviar a {name} um e-mail para redefinir a senha",
   "AdminUser.resetText":
-    "A pessoa recebe o mesmo e-mail de “Esqueceu a senha?”: um link para escolher uma senha nova. A senha atual continua funcionando até ela trocar.",
-  "AdminUser.sendLink": "Enviar link",
+    "A pessoa recebe um e-mail explicando como redefinir a senha em “Esqueceu a senha?”, que envia um código. A senha atual continua funcionando até ela trocar.",
+  "AdminUser.sendLink": "Enviar e-mail",
   "AdminUser.sending": "Enviando…",
   "AdminUser.deleteGuestTitle": "Excluir a conta de visitante {name}",
   "AdminUser.deleteGuestText":
@@ -1872,7 +1893,7 @@ export default {
   "AdminUser.cancel": "Cancelar",
   "AdminUsers.title": "Usuários",
   "AdminUsers.subtitle":
-    "Todo mundo que tem conta. Abra uma pessoa para bloqueá-la, encerrar uma sessão ou enviar um link para redefinir a senha.",
+    "Todo mundo que tem conta. Abra uma pessoa para bloqueá-la, encerrar uma sessão ou enviar um e-mail para redefinir a senha.",
   "AdminUsers.export": "Exportar CSV",
   "AdminUsers.search": "Nome ou e-mail",
   "AdminUsers.searching": "Buscando…",
@@ -1915,4 +1936,13 @@ export default {
   "AdminBlogEditor.translationOfHint":
     "O post que este traduz. Quando os dois estiverem no ar, o site liga um ao outro como versões em idiomas diferentes.",
   "AdminBlogEditor.translationNone": "Nenhum: é um post original",
+  "AdminBlogHistory.title": "Histórico",
+  "AdminBlogHistory.versions": "Versões anteriores",
+  "AdminBlogHistory.shown": "Versão exibida",
+  "AdminBlogHistory.body": "Corpo",
+  "AdminBlogHistory.savedBy": "Salva em {date} por {name}",
+  "AdminBlogHistory.someone": "Desconhecido",
+  "AdminBlogHistory.restore": "Restaurar esta versão",
+  "AdminBlogHistory.empty": "Ainda não há versões anteriores. Cada salvamento guarda uma.",
+  "AdminBlogHistory.restored": "Versão anterior restaurada. Salve para mantê-la.",
 } satisfies Catalog

@@ -61,6 +61,9 @@ export default {
   "GroupActivity.renamedFromTo":
     "<who>{who}</who> غيّر اسم المجموعة من «<value>{from}</value>» إلى «<value>{to}</value>»",
   "GroupActivity.detailsUpdated": "<who>{who}</who> غيّر وصف المجموعة أو لونها أو رمزها التعبيري",
+  "GroupActivity.timeZoneChanged":
+    "<who>{who}</who> غيّر المنطقة الزمنية من <value>{from}</value> إلى <value>{to}</value>",
+  "GroupActivity.timeZoneChangedPlain": "<who>{who}</who> غيّر المنطقة الزمنية",
   "GroupActivity.deleted": "<who>{who}</who> حذف المجموعة",
   "GroupActivity.restored": "<who>{who}</who> استعاد المجموعة",
   "GroupActivity.roleChanged": "<who>{who}</who> غيّر دور <target>{target}</target>",
@@ -297,6 +300,11 @@ export default {
       "تبدأ المجموعات الجديدة على الخطة المجانية. تذهب فترتك التجريبية المجانية ({count} يوم) إلى أول مجموعة تنقلها إلى خطة مدفوعة.",
   },
   "GroupEditor.readOnly": "لا يمكن تعديل تفاصيل هذه المجموعة إلا للمسؤولين والمالك.",
+  "GroupEditor.timeZoneHint":
+    "تبدأ الأيام والأشهر عند منتصف الليل في هذه المنطقة، لكل أعضاء المجموعة.",
+  "GroupEditor.timeZoneInvalid": "لا نعرف هذه المنطقة الزمنية. اختر منطقة أخرى من القائمة.",
+  "GroupEditor.timeZoneChangedElsewhere":
+    "غيّرها شخص آخر إلى {zone} أثناء تعديلك. احفظ لتستخدم اختيارك، أو اختر «تجاهل».",
   "GroupEditor.nameRequired": "أدخل اسمًا.",
   "GroupEditor.nameInvalid": "استخدم 100 حرف كحدّ أقصى، دون أسطر جديدة أو أحرف مخفية.",
   "GroupEditor.descriptionTooLong": {
@@ -618,7 +626,7 @@ export default {
   "GroupBillingPanel.portalUnreachable":
     "تعذّر فتح صفحة الفوترة في Stripe. تحقّق من اتصالك وحاول مجددًا.",
   "GroupBillingPanel.title": "الفوترة",
-  "GroupBillingPanel.description": "ما تدفعه <group>{group}</group> كل شهر. تتولى Stripe الفوترة.",
+  "GroupBillingPanel.description": "ما تدفعه <group>{group}</group>. تتولى Stripe الفوترة.",
   "GroupBillingPanel.loading": "جارٍ تحميل الخطة",
   "GroupBillingPanel.statusTrial": "فترة تجريبية",
   "GroupBillingPanel.statusRenews": "تتجدد في {date}",
@@ -677,7 +685,7 @@ export default {
   "GroupBillingPanel.planHeading": "خطة <plan>{plan}</plan>",
   "GroupBillingPanel.confirming": "تؤكد Stripe خطتك الآن. ستتحدّث هذه الصفحة تلقائيًا.",
   "GroupBillingPanel.paymentMethod": "طريقة الدفع",
-  "GroupBillingPanel.paymentMethodText": "البطاقة التي تخصم منها Stripe كل شهر.",
+  "GroupBillingPanel.paymentMethodText": "البطاقة التي تخصم منها Stripe قيمة هذه الخطة.",
   "GroupBillingPanel.changeCard": "تغيير البطاقة",
   "GroupBillingPanel.invoices": "الفواتير",
   "GroupBillingPanel.invoicesText": "كل الفواتير والإيصالات، للاطلاع عليها أو تنزيلها.",
@@ -686,6 +694,37 @@ export default {
   "GroupBillingPanel.cancelFree": "لن تُحاسَب إن ألغيت قبل {date}.",
   "GroupBillingPanel.cancelKeep": "تبقى خطة {plan} معك حتى نهاية الفترة.",
   "GroupBillingPanel.cancelPlan": "إلغاء الخطة",
+  "GroupBillingPanel.periodTitle": "فترة الفوترة",
+  "GroupBillingPanel.monthly": "شهريًا",
+  "GroupBillingPanel.yearly": "سنويًا",
+  "GroupBillingPanel.priceYear": "تكلفة خطة {plan} هي {price} لكل عضو سنويًا.",
+  "GroupBillingPanel.priceForGroupYear": {
+    "zero": "دون أعضاء، ستدفع <group>{group}</group> {total} سنويًا.",
+    "one": "مع عضو واحد، ستدفع <group>{group}</group> {total} سنويًا.",
+    "two": "مع عضوين، ستدفع <group>{group}</group> {total} سنويًا.",
+    "few": "مع {count} أعضاء، ستدفع <group>{group}</group> {total} سنويًا.",
+    "many": "مع {count} عضوًا، ستدفع <group>{group}</group> {total} سنويًا.",
+    "other": "مع {count} عضو، ستدفع <group>{group}</group> {total} سنويًا.",
+  },
+  "GroupBillingPanel.saving": "أقل بمقدار {amount} من الدفع الشهري.",
+  "GroupBillingPanel.finePrintYear":
+    "تُدفع سنويًا لكل عضو. ألغِ متى شئت، وتبقى خطة {plan} معك حتى نهاية الفترة.",
+  "GroupBillingPanel.trialThenYear":
+    "بعد ذلك، تدفع <group>{group}</group> {total} سنويًا ما لم تُلغِ الاشتراك.",
+  "GroupBillingPanel.seatsYear": {
+    "zero": "{total} سنويًا، دون أعضاء بسعر {price} لكل عضو.",
+    "one": "{total} سنويًا، لعضو واحد بسعر {price}، وهو المالك.",
+    "two": "{total} سنويًا، لعضوين بسعر {price} لكل منهما، والمالك ضمنهما.",
+    "few": "{total} سنويًا، لـ{count} أعضاء بسعر {price} لكل عضو، والمالك ضمنهم.",
+    "many": "{total} سنويًا، لـ{count} عضوًا بسعر {price} لكل عضو، والمالك ضمنهم.",
+    "other": "{total} سنويًا، لـ{count} عضو بسعر {price} لكل عضو، والمالك ضمنهم.",
+  },
+  "GroupBillingPanel.periodMonthly":
+    "تدفع شهريًا. الدفع السنوي يكلّف {price} سنويًا، أي أقل بمقدار {saving}.",
+  "GroupBillingPanel.periodYearly": "تدفع سنويًا. الدفع الشهري يكلّف {price} شهريًا.",
+  "GroupBillingPanel.periodHint": "تعرض لك Stripe ما ستدفعه اليوم قبل أن تؤكد.",
+  "GroupBillingPanel.switchYearly": "التحويل إلى الدفع السنوي",
+  "GroupBillingPanel.switchMonthly": "التحويل إلى الدفع الشهري",
   "GroupBillingView.trialStarted": {
     "zero": "بدأت فترتك التجريبية لخطة {plan}",
     "one": "بدأت فترتك التجريبية لخطة {plan} ليوم واحد",
@@ -811,6 +850,7 @@ export default {
   "OverviewScreen.customRange": "فترة مخصصة",
   "OverviewScreen.rangeTooLong": "اختر فترة لا تتجاوز سنة.",
   "OverviewScreen.asOf": "حتى {time}",
+  "OverviewScreen.zoneNote": "بتوقيت {city}",
   "OverviewScreen.hide": "إخفاء الأداة",
   "OverviewView.opening": "جارٍ فتح النظرة العامة…",
   "OverviewView.saveFailed": "تعذّر حفظ التخطيط. تحقّق من اتصالك وحاول مجددًا.",
@@ -1012,34 +1052,33 @@ export default {
   "OAuthNotice.busy": "محاولات كثيرة جدًا. انتظر دقيقة، ثم حاول مجددًا.",
   "OAuthNotice.kept": "أُضيفت طريقة تسجيل الدخول. يمكنك الآن استخدامها من أي جهاز.",
   "OAuthNotice.guestTaken": "طريقة تسجيل الدخول هذه تخص حسابًا آخر.",
-  "PasswordResetScreen.forgotFailed": "تعذّر إرسال الرابط",
+  "PasswordResetScreen.forgotFailed": "تعذّر إرسال الرمز",
   "PasswordResetScreen.resetFailed": "تعذّر تغيير كلمة المرور",
   "PasswordResetScreen.sent":
-    "إن كان هناك حساب بهذا البريد الإلكتروني، فقد أرسلنا إليه رابطًا لإعادة تعيين كلمة المرور.",
+    "إن كان هناك حساب يستخدم <email>{email}</email>، فقد أرسلنا إليه رمزًا.",
   "PasswordResetScreen.forgotDescription": {
-    "zero":
-      "أدخل البريد الإلكتروني الذي سجّلت به، وسنرسل إليك رابطًا لاختيار كلمة مرور جديدة. يعمل الرابط مرة واحدة فقط.",
+    "zero": "أدخل البريد الإلكتروني الذي أنشأت به حسابك، وسنرسل إليك رمزًا لتختار كلمة مرور جديدة.",
     "one":
-      "أدخل البريد الإلكتروني الذي سجّلت به، وسنرسل إليك رابطًا لاختيار كلمة مرور جديدة. يعمل الرابط مرة واحدة، لمدة دقيقة واحدة.",
+      "أدخل البريد الإلكتروني الذي أنشأت به حسابك، وسنرسل إليك رمزًا لتختار كلمة مرور جديدة. الرمز صالح لمدة دقيقة واحدة.",
     "two":
-      "أدخل البريد الإلكتروني الذي سجّلت به، وسنرسل إليك رابطًا لاختيار كلمة مرور جديدة. يعمل الرابط مرة واحدة، لمدة دقيقتين.",
+      "أدخل البريد الإلكتروني الذي أنشأت به حسابك، وسنرسل إليك رمزًا لتختار كلمة مرور جديدة. الرمز صالح لمدة دقيقتين.",
     "few":
-      "أدخل البريد الإلكتروني الذي سجّلت به، وسنرسل إليك رابطًا لاختيار كلمة مرور جديدة. يعمل الرابط مرة واحدة، لمدة {count} دقائق.",
+      "أدخل البريد الإلكتروني الذي أنشأت به حسابك، وسنرسل إليك رمزًا لتختار كلمة مرور جديدة. الرمز صالح لمدة {count} دقائق.",
     "many":
-      "أدخل البريد الإلكتروني الذي سجّلت به، وسنرسل إليك رابطًا لاختيار كلمة مرور جديدة. يعمل الرابط مرة واحدة، لمدة {count} دقيقة.",
+      "أدخل البريد الإلكتروني الذي أنشأت به حسابك، وسنرسل إليك رمزًا لتختار كلمة مرور جديدة. الرمز صالح لمدة {count} دقيقة.",
     "other":
-      "أدخل البريد الإلكتروني الذي سجّلت به، وسنرسل إليك رابطًا لاختيار كلمة مرور جديدة. يعمل الرابط مرة واحدة، لمدة {count} دقيقة.",
+      "أدخل البريد الإلكتروني الذي أنشأت به حسابك، وسنرسل إليك رمزًا لتختار كلمة مرور جديدة. الرمز صالح لمدة {count} دقيقة.",
   },
   "PasswordResetScreen.remembered": "تذكّرتها؟ <link>العودة إلى تسجيل الدخول</link>",
-  "PasswordResetScreen.send": "إرسال الرابط",
+  "PasswordResetScreen.send": "إرسال رمز",
   "PasswordResetScreen.doneTitle": "تم تغيير كلمة المرور",
   "PasswordResetScreen.done": "سُجّل خروجك من كل الأجهزة. سجّل الدخول بكلمة المرور الجديدة.",
   "PasswordResetScreen.signIn": "تسجيل الدخول",
-  "PasswordResetScreen.askNew": "طلب رابط جديد",
   "PasswordResetScreen.chooseTitle": "اختر كلمة مرور جديدة",
   "PasswordResetScreen.choose":
     "للحساب <email>{email}</email>. عند حفظها سيُسجَّل خروجك من كل الأجهزة.",
-  "PasswordResetScreen.expired": "انتهت صلاحية الرابط؟ <link>اطلب رابطًا جديدًا</link>",
+  "PasswordResetScreen.expired": "استغرق الأمر وقتًا طويلًا؟ <link>اطلب رمزًا جديدًا</link>",
+  "PasswordResetScreen.tookTooLong": "استغرق الأمر وقتًا طويلًا. اطلب رمزًا جديدًا.",
   "PasswordResetScreen.newPassword": "كلمة المرور الجديدة",
   "PasswordResetScreen.newPasswordHint": "من {min} إلى {max} حرفًا.",
   "PasswordResetScreen.saving": "جارٍ الحفظ…",
@@ -1384,6 +1423,8 @@ export default {
   "Preferences.updatedElsewhere": "حُدّثت الإعدادات من جهاز آخر.",
   "SeatPriceConfirm.hint":
     "كل عضو جديد يضيف {price} شهريًا، فعضو واحد إضافي يرفع تكلفة المجموعة من {now} إلى {next}. يُضاف الفرق عن بقية هذه الفترة إلى الفاتورة التالية.",
+  "SeatPriceConfirm.hintYear":
+    "كل عضو جديد يضيف {price} سنويًا، فعضو واحد إضافي يرفع تكلفة المجموعة من {now} إلى {next}. يُضاف الفرق عن بقية هذه الفترة إلى الفاتورة التالية.",
   "SeatPriceConfirm.accept": "أوافق على السعر الأعلى مع كل شخص ينضم",
   "ProfileAccount.name": "الاسم",
   "ProfileAccount.notSet": "غير محدد",
@@ -1602,7 +1643,7 @@ export default {
   "ProfileView.tokenRevoked": "أُلغي الرمز المميز",
   "ProfileView.tokenRevokedBody": "لم يعد ذلك الرمز المميز يعمل.",
   "ProviderProof.passkey": "مفتاح مرور",
-  "ProviderProof.link": "رابط تسجيل دخول",
+  "ProviderProof.link": "رمز مُرسَل بالبريد الإلكتروني",
   "ProviderProof.fresh": "سجّلت الدخول عبر {methods} قبل لحظات، لذا لا تحتاج إلى كلمة مرور.",
   "ProviderProof.needed": {
     "zero":
@@ -1620,68 +1661,35 @@ export default {
   },
   "ProviderProof.passkeyAgain": "تسجيل الدخول بمفتاح مرور مجددًا",
   "ProviderProof.providerAgain": "تسجيل الدخول عبر {provider} مجددًا",
-  "SignInLinkScreen.sendFailed": "تعذّر إرسال الرابط. حاول مجددًا بعد قليل.",
-  "SignInLinkScreen.unreachable": "تعذّر الوصول إلى الخادم. تحقّق من اتصالك واضغط «متابعة» مجددًا.",
-  "SignInLinkScreen.openFailed":
-    "تعذّر تسجيل دخولك. اضغط «متابعة» لتحاول مجددًا، أو اطلب رابطًا جديدًا.",
-  "SignInLinkScreen.title": "تسجيل الدخول برابط",
-  "SignInLinkScreen.description":
-    "سنرسل إلى بريدك رابطًا يسجّل دخولك. ليس لديك حساب بهذا البريد بعد؟ سيُنشئ الرابط حسابًا لك.",
-  "SignInLinkScreen.ratherPassword": "تفضّل كلمة المرور؟ <link>العودة إلى تسجيل الدخول</link>",
-  "SignInLinkScreen.submit": "أرسل لي رابطًا",
-  "SignInLinkScreen.sent": {
-    "zero": "أرسلنا رابط تسجيل دخول إلى <email>{email}</email>. يعمل مرة واحدة فقط.",
-    "one": "أرسلنا رابط تسجيل دخول إلى <email>{email}</email>. يعمل مرة واحدة، لمدة دقيقة واحدة.",
-    "two": "أرسلنا رابط تسجيل دخول إلى <email>{email}</email>. يعمل مرة واحدة، لمدة دقيقتين.",
-    "few": "أرسلنا رابط تسجيل دخول إلى <email>{email}</email>. يعمل مرة واحدة، لمدة {count} دقائق.",
-    "many":
-      "أرسلنا رابط تسجيل دخول إلى <email>{email}</email>. يعمل مرة واحدة، لمدة {count} دقيقة.",
-    "other":
-      "أرسلنا رابط تسجيل دخول إلى <email>{email}</email>. يعمل مرة واحدة، لمدة {count} دقيقة.",
-  },
-  "SignInLinkScreen.openHere": "افتحه على هذا الجهاز لتسجّل الدخول هنا.",
-  "SignInLinkScreen.newLink": "إرسال رابط جديد",
-  "SignInLinkScreen.waiting": {
-    "zero": "لم يصلك؟ تحقّق من مجلد الرسائل غير المرغوب فيها. يمكنك إرسال رابط جديد الآن.",
-    "one": "لم يصلك؟ تحقّق من مجلد الرسائل غير المرغوب فيها. يمكنك إرسال رابط جديد بعد ثانية واحدة.",
-    "two": "لم يصلك؟ تحقّق من مجلد الرسائل غير المرغوب فيها. يمكنك إرسال رابط جديد بعد ثانيتين.",
-    "few":
-      "لم يصلك؟ تحقّق من مجلد الرسائل غير المرغوب فيها. يمكنك إرسال رابط جديد بعد {count} ثوانٍ.",
-    "many":
-      "لم يصلك؟ تحقّق من مجلد الرسائل غير المرغوب فيها. يمكنك إرسال رابط جديد بعد {count} ثانية.",
-    "other":
-      "لم يصلك؟ تحقّق من مجلد الرسائل غير المرغوب فيها. يمكنك إرسال رابط جديد بعد {count} ثانية.",
-  },
-  "SignInLinkScreen.resent":
-    "رابط جديد في الطريق إليك. الروابط السابقة تبقى صالحة إلى أن يُستخدم أحدها.",
-  "SignInLinkScreen.refusedTitle": "لم يعد هذا الرابط صالحًا",
-  "SignInLinkScreen.refused": {
-    "zero": "روابط تسجيل الدخول تعمل مرة واحدة فقط. اطلب رابطًا جديدًا واستخدم أحدث رسالة.",
+  "SignInCodeScreen.sendFailed": "تعذّر إرسال الرمز. حاول مجددًا بعد قليل.",
+  "SignInCodeScreen.title": "تسجيل الدخول برمز عبر البريد",
+  "SignInCodeScreen.description":
+    "سنرسل إلى بريدك الإلكتروني رمزًا تكتبه هنا. ليس لديك حساب بهذا البريد بعد؟ سيُنشئ الرمز حسابًا لك.",
+  "SignInCodeScreen.ratherPassword": "تفضّل كلمة المرور؟ <link>العودة إلى تسجيل الدخول</link>",
+  "SignInCodeScreen.submit": "أرسل لي رمزًا بالبريد",
+  "SignInCodeScreen.confirmTitle": "أكّد هويتك",
+  "SignInCodeScreen.confirmDescription":
+    "سنرسل رمزًا إلى <email>{email}</email>. اكتبه في الخطوة التالية لتأكيد هويتك.",
+  "CodeStep.sent": "أرسلنا رمزًا إلى <email>{email}</email>.",
+  "CodeStep.invalid": "يتكوّن الرمز من 8 أحرف. تحقّق من أنه لا ينقصه حرف.",
+  "SignInCodeScreen.guest":
+    "أنت تستخدم التطبيق كضيف. عند تسجيل الدخول نحفظ ما أنشأته هنا في حساب بهذا البريد. وإن كان لهذا البريد حساب بالفعل، فسنسألك أولًا.",
+  "CodeStep.deadTitle": "هذا الرمز لم يعد صالحًا",
+  "CodeStep.dead": {
+    "zero":
+      "الرمز صالح لمرة واحدة ولمدة محدودة، ولا يُسمح إلا ببضع محاولات خاطئة. اطلب رمزًا جديدًا واستخدم أحدث رسالة.",
     "one":
-      "روابط تسجيل الدخول تعمل مرة واحدة، لمدة دقيقة واحدة. اطلب رابطًا جديدًا واستخدم أحدث رسالة.",
-    "two": "روابط تسجيل الدخول تعمل مرة واحدة، لمدة دقيقتين. اطلب رابطًا جديدًا واستخدم أحدث رسالة.",
+      "الرمز صالح لمرة واحدة ولمدة دقيقة واحدة، ولا يُسمح إلا ببضع محاولات خاطئة. اطلب رمزًا جديدًا واستخدم أحدث رسالة.",
+    "two":
+      "الرمز صالح لمرة واحدة ولمدة دقيقتين، ولا يُسمح إلا ببضع محاولات خاطئة. اطلب رمزًا جديدًا واستخدم أحدث رسالة.",
     "few":
-      "روابط تسجيل الدخول تعمل مرة واحدة، لمدة {count} دقائق. اطلب رابطًا جديدًا واستخدم أحدث رسالة.",
+      "الرمز صالح لمرة واحدة ولمدة {count} دقائق، ولا يُسمح إلا ببضع محاولات خاطئة. اطلب رمزًا جديدًا واستخدم أحدث رسالة.",
     "many":
-      "روابط تسجيل الدخول تعمل مرة واحدة، لمدة {count} دقيقة. اطلب رابطًا جديدًا واستخدم أحدث رسالة.",
+      "الرمز صالح لمرة واحدة ولمدة {count} دقيقة، ولا يُسمح إلا ببضع محاولات خاطئة. اطلب رمزًا جديدًا واستخدم أحدث رسالة.",
     "other":
-      "روابط تسجيل الدخول تعمل مرة واحدة، لمدة {count} دقيقة. اطلب رابطًا جديدًا واستخدم أحدث رسالة.",
+      "الرمز صالح لمرة واحدة ولمدة {count} دقيقة، ولا يُسمح إلا ببضع محاولات خاطئة. اطلب رمزًا جديدًا واستخدم أحدث رسالة.",
   },
-  "SignInLinkScreen.elsewhereTitle": "طُلب هذا الرابط من متصفح آخر",
-  "SignInLinkScreen.elsewhere":
-    "لم يسجّل الرابط دخولك، ولم يتغيّر حساب الضيف. اطلب رابطًا جديدًا من هذا المتصفح لتسجّل الدخول هنا.",
-  "SignInLinkScreen.incompleteTitle": "هذا الرابط ناقص",
-  "SignInLinkScreen.incomplete": "افتح الرابط من الرسالة مجددًا، أو اطلب رابطًا جديدًا.",
-  "SignInLinkScreen.backToApp": "العودة إلى التطبيق",
-  "SignInLinkScreen.finishTitle": "أكمل تسجيل الدخول",
-  "SignInLinkScreen.finish":
-    "تابع لتسجّل الدخول على هذا الجهاز. إن كان البريد الإلكتروني جديدًا، فسيُنشأ حسابك.",
-  "SignInLinkScreen.signedInAs":
-    "أنت مسجّل الدخول باسم <email>{email}</email>. إن تابعت، فستنتقل إلى حساب الرابط بدلًا منه.",
-  "SignInLinkScreen.guest":
-    "أنت تستخدم التطبيق كضيف. إن كنت طلبت هذا الرابط من هذا المتصفح، فالمتابعة تحفظ حساب الضيف هذا باسم بريد الرابط. وإن كان لذلك البريد حساب بالفعل، فسنسألك أولًا.",
-  "SignInLinkScreen.signingIn": "جارٍ تسجيل الدخول…",
-  "SignInLinkScreen.stay": "إبقائي مسجّل الدخول",
+  "CodeStep.differentEmail": "استخدم بريدًا آخر",
   "SignInMethods.failed": "تعذّر تغيير طرق تسجيل الدخول",
   "SignInMethods.loadFailed": "تعذّر تحميل طرق تسجيل الدخول. تحقّق من اتصالك وحاول مجددًا.",
   "SignInMethods.renameFailed": "تعذّر حفظ الاسم. حاول مجددًا.",
@@ -1728,19 +1736,9 @@ export default {
   "SignUpCodeScreen.offline": "أنت دون اتصال. اتصل بالإنترنت وحاول مجددًا.",
   "SignUpCodeScreen.title": "تفقّد بريدك الوارد",
   "SignUpCodeScreen.loading": "جارٍ التحميل…",
-  "SignUpCodeScreen.sent": {
-    "zero": "أرسلنا رمزًا إلى <email>{email}</email>.",
-    "one": "أرسلنا رمزًا إلى <email>{email}</email>. يبقى صالحًا لمدة دقيقة واحدة.",
-    "two": "أرسلنا رمزًا إلى <email>{email}</email>. يبقى صالحًا لمدة دقيقتين.",
-    "few": "أرسلنا رمزًا إلى <email>{email}</email>. يبقى صالحًا لمدة {count} دقائق.",
-    "many": "أرسلنا رمزًا إلى <email>{email}</email>. يبقى صالحًا لمدة {count} دقيقة.",
-    "other": "أرسلنا رمزًا إلى <email>{email}</email>. يبقى صالحًا لمدة {count} دقيقة.",
-  },
-  "SignUpCodeScreen.wrongAddress": "البريد خاطئ؟ <button>استخدم بريدًا آخر</button>",
   "SignUpCodeScreen.code": "الرمز",
   "SignUpCodeScreen.checking": "جارٍ التحقق…",
   "SignUpCodeScreen.resend": "إرسال رمز جديد",
-  "SignUpCodeScreen.resent": "رمز جديد في الطريق إليك.",
   "SignUpCodeScreen.resendFailed": "تعذّر إرسال رمز جديد",
   "SignUpCodeScreen.existsTitle": "لديك حساب بالفعل",
   "SignUpCodeScreen.exists": "لـ<email>{email}</email> حساب هنا بالفعل. لم يُنشأ حساب جديد.",
@@ -2111,7 +2109,9 @@ export default {
   "AuthScreen.forgotten": "تم. لن يتذكر هذا المتصفح طريقة تسجيل دخولك.",
   "AuthScreen.lastPassword": "في المرة السابقة سجّلت الدخول بكلمة المرور<email> ({email})</email>.",
   "AuthScreen.lastPasskey": "في المرة السابقة سجّلت الدخول بمفتاح مرور<email> ({email})</email>.",
-  "AuthScreen.lastLink": "في المرة السابقة سجّلت الدخول برابط عبر البريد<email> ({email})</email>.",
+  "AuthScreen.lastLink": "في المرة الماضية سجّلت الدخول برمز عبر البريد<email> ({email})</email>.",
+  "AuthScreen.emailSignInCode": "أرسل لي رمز تسجيل الدخول",
+  "AuthScreen.emailSignUpCode": "أرسل لي رمز إنشاء الحساب",
   "AuthScreen.lastProvider":
     "في المرة السابقة سجّلت الدخول عبر {provider}<email> ({email})</email>.",
   "AuthScreen.forget": "لست أنت؟ استخدم حسابًا آخر",
@@ -2124,8 +2124,6 @@ export default {
   "AuthScreen.haveAccount": "لديك حساب بالفعل؟ <link>سجّل الدخول</link>",
   "AuthScreen.lostDevice": "فقدت جهازك؟ <link>العودة إلى تسجيل الدخول</link>",
   "AuthScreen.sending": "جارٍ الإرسال…",
-  "AuthScreen.emailSignInLink": "أرسل لي رابط تسجيل الدخول",
-  "AuthScreen.emailSignUpLink": "أرسل لي رابط إنشاء الحساب",
   "AuthScreen.orCreate": "أو أنشئ حسابًا",
   "AuthScreen.createAccount": "إنشاء حساب",
   "AuthScreen.continue": "متابعة",
@@ -2262,7 +2260,7 @@ export default {
   "Benchmark.noLargeTitle": "لا توجد مجموعة كبيرة بعد",
   "Benchmark.noLargeBody": "أنشئ واحدة بالمولّد، ثم أعد تحميل هذه الصفحة:",
   "Benchmark.copyCommand": "نسخ الأمر",
-  "Benchmark.noLargeFoot": "الأحجام وطريقة إزالة المجموعة لاحقًا موجودة في docs/capacity.md.",
+  "Benchmark.noLargeFoot": "الأحجام وطريقة إزالة المجموعة لاحقًا موجودة في docs/large-group.md.",
   "Benchmark.lastStoppedTitle": "توقف التشغيل الأخير عند «{measure}»",
   "Benchmark.lastStoppedBody":
     "أُغلقت العلامة قبل انتهاء التشغيل، وهذا يعني عادةً نفاد الذاكرة أو المساحة. المجموعة: {group}، بدأ {time}.",

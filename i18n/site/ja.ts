@@ -5,6 +5,7 @@ export default {
   "TryEntry.line":
     "登録は不要です。サンプルデータ入りのゲストアカウントで使えて、データは毎晩リセットされます。",
   "SiteNav.features": "機能",
+  "SiteNav.docs": "ドキュメント",
   "SiteNav.blog": "ブログ",
   "SiteNav.compare": "比較",
   "SiteNav.pricing": "料金",
@@ -152,7 +153,7 @@ export default {
   "HomeProof.tests": "アプリとライブラリのテストファイル数。すべてCIで実行",
   "HomeProof.licence": "ライセンス：アカウント不要、ペイウォールなし",
   "HomeStatus.signIn":
-    "新規登録、ログイン、メールアドレス確認、パスワード再設定、GoogleとGitHubでのログイン、パスキー、マジックリンク、認証アプリによる2段階認証",
+    "新規登録、ログイン、メールアドレス確認、パスワード再設定、GoogleとGitHubでのログイン、パスキー、メールのログインコード、認証アプリによる2段階認証",
   "HomeStatus.guests":
     "ゲストアカウント：ワンクリックでアプリを試せて、ログイン方法を追加すればアカウントをそのまま使い続けられます",
   "HomeStatus.groups": "メンバー、ロール、招待、オーナー権限の譲渡に対応したグループ",
@@ -208,7 +209,7 @@ export default {
   "HomeFeatures.signInAlt":
     "プロフィールのセキュリティページ。パスワード、「パスキーを追加」ボタン、オンになった2段階認証、ログイン中のデバイス一覧の上部が見えます。",
   "HomeFeatures.signInText":
-    "確認コード付きのメールアドレスとパスワード、パスワード再設定、GoogleとGitHubでのログイン、パスキー、メールで届くログインリンク、ゲストアカウント、認証アプリによる2段階認証。セッションは一覧で確認でき、終了もできます。",
+    "確認コード付きのメールアドレスとパスワード、パスワード再設定、GoogleとGitHubでのログイン、パスキー、メールで届くログインコード、ゲストアカウント、認証アプリによる2段階認証。セッションは一覧で確認でき、終了もできます。",
   "HomeFeatures.billingTitle": "メンバー単位の課金",
   "HomeFeatures.billingLink": "課金のしくみ",
   "HomeFeatures.billingText":
@@ -244,6 +245,7 @@ export default {
     "<init>init</init>がenvファイルをコピーし、すべてのシークレットとWebプッシュ用の鍵を生成します。<dev>dev</dev>でTraefikをはじめすべてが起動します。あとは<url>http://app.localhost</url>を開くだけです。すべての設定項目とデプロイ方法は<readme>README</readme>にまとめています。",
   "HomeQuickStart.agent": "AIエージェントに頼むこともできます：<prompt></prompt>。",
   "HomeQuickStart.terminal": "ターミナル",
+  "HomeQuickStart.guide": "手順ガイドを読む",
   "HomeStatus.eyebrow": "正直な現状",
   "HomeStatus.title": "今どこまでできているか",
   "HomeStatus.lead":
@@ -269,6 +271,8 @@ export default {
   "Pricing.description":
     "SeedはMITライセンスで無料、有料プランはありません。運用にかかるのは、ホスティング会社の料金でLinuxサーバー1台分と、自分で有効にしたサービスの費用だけです。",
   "Pricing.crumb": "料金",
+  "Pricing.saving":
+    "{plan} は月額 {monthly}、または年額 {yearly} です。月払いより {saving} お得です。",
   "PricingFaq.paidQuestion": "Seedに有料版はありますか？",
   "PricingFaq.paidAnswer":
     "ありません。Pro版も、ライセンスキーも、出し惜しみしている機能もありません。サポートが必要なら私に依頼してください。私が売っているのは自分の時間だけです。",
@@ -344,13 +348,13 @@ export default {
   "FeatureSignIn.nav": "アカウントとログイン",
   "FeatureSignIn.title": "ログインは完成済み",
   "FeatureSignIn.lead":
-    "ユーザーはメールアドレスとパスワードで登録し、コードでメールアドレスを確認します。忘れたパスワードの再設定、GoogleやGitHubでのログイン、パスキーでのログイン、そして登録も兼ねるメールのログインリンクにも対応。まずゲストアカウントでアプリを試して、あとからログイン方法を追加することもできます。認証アプリを使えば2段階認証（2FA）も有効にできます。ログイン中のデバイスはすべて一覧で確認でき、ほかのデバイスをログアウトさせることもできます。ログイン方法を変更するときは本人確認を求め、メールで通知します。",
+    "ユーザーはメールアドレスとパスワードで登録し、コードでメールアドレスを確認します。忘れたパスワードの再設定、GoogleやGitHubでのログイン、パスキーでのログイン、そして登録も兼ねるメールのログインコードにも対応。まずゲストアカウントでアプリを試して、あとからログイン方法を追加することもできます。認証アプリを使えば2段階認証（2FA）も有効にできます。ログイン中のデバイスはすべて一覧で確認でき、ほかのデバイスをログアウトさせることもできます。ログイン方法を変更するときは本人確認を求め、メールで通知します。",
   "FeatureSignIn.fact1": "パスワードはWeb CryptoのPBKDF2-SHA-256でハッシュ化（デフォルトで60万回）",
   "FeatureSignIn.fact2": "署名付きのセッションCookieと、すべてのログインイベントの監査ログ",
   "FeatureSignIn.fact3": "個人用APIトークンは鍵付きハッシュとしてのみ保存",
   "FeatureSignIn.fact4": "パスキー：保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効",
   "FeatureSignIn.fact5":
-    "マジックリンク：1つのリンクでログインも登録もでき、1回限り・15分間有効で、ハッシュとしてのみ保存",
+    "メールのログインコード：8文字のコードでログインも登録もでき、1回限り・10分間、リクエストしたブラウザでのみ有効で、ハッシュとしてのみ保存",
   "FeatureSignIn.fact6":
     "ゲストアカウント（匿名ログイン）：訪問者はログイン方法なしでワンクリックで始め、あとから同じアカウントにメールアドレスとパスワード、Google、GitHub、パスキーを追加できます",
   "FeatureSignIn.fact7":
@@ -530,7 +534,7 @@ export default {
   "FeatureWebsite.fact3":
     "ダブルオプトイン、ワンクリック購読解除、受信者の言語で届くメールに対応したニュースレター",
   "FeatureWebsite.fact4":
-    "管理画面で書けるブログ。言語ごとの記事とその翻訳、トピック、読者が試せるインタラクティブな図、RSSフィード、記事の構造化データに対応",
+    "管理画面で書けるブログ。言語ごとの記事とその翻訳、トピック、読者が試せるインタラクティブな図、RSSフィード、記事の構造化データ、URLを変えても新しいURLへ転送される古いリンク、記事一覧のカバー画像、元記事を示すDev.toへの任意の転載、新しい記事や更新した記事をすぐ検索エンジンに知らせるIndexNow通知に対応",
   "FeatureWebsite.fact5": "連絡先リンクは管理画面で設定し、フッターと構造化データに表示",
   "FeatureWebsite.fact6":
     "ショップ用のオプションのカタログを管理画面で編集：写真、カラー、サイズ、サイズ表、売り切れのサイズを持つアイテムを、販売するすべての言語で。アイテムと共有先ごとに短いトラッキングリンクも作れます",
@@ -555,7 +559,7 @@ export default {
     "いいえ。Seedは、借りたLinuxサーバー1台の上でDocker Composeによる常駐コンテナとして動きます。APIがWebSocket接続を開いたままにし、ワーカーがキューを処理するためです。",
   "FeaturesFaq.runtimeQuestion": "SeedはNode.jsやBunで動きますか？",
   "FeaturesFaq.runtimeAnswer":
-    "まだ動きません。Seedは現在Denoで動いており、Deno・Node・Bunのどれでも動くようにする作業を進めています。進み具合はSeedのGitHubにあるissue #623で確認できます。",
+    "まだ一部だけです。APIとバックグラウンドのワーカーは、すでにDenoに加えてNodeとBunでも動きます。envファイルの設定ひとつ（APP_RUNTIME）でランタイムを選べます。WebサイトとSeedの開発ツールは今もDenoが必要です。残りの進み具合はSeedのGitHubにあるissue #623で確認できます。",
   "FeaturesFaq.databaseQuestion": "Postgres以外のデータベースを使えますか？",
   "FeaturesFaq.databaseAnswer":
     "いいえ。SeedはPostgresを前提に作られていて、マイグレーション、クエリ、結合テストもPostgresを想定しています。",
@@ -577,7 +581,7 @@ export default {
     "Seedに含まれるもの：2段階認証とソーシャルログイン、ロール付きグループ、メンバー単位のStripe課金、リアルタイム、オフラインアプリ、管理画面、監視、バックアップ。",
   "FeaturesHero.title": "Seedに含まれるもの、まだないもの",
   "FeaturesHero.lead":
-    "Seedは無料でMITライセンスのSaaSスターターです。メールアドレス、Google、GitHubでのログイン、パスキー、マジックリンク、ゲストアカウント、2段階認証、ロール付きグループ、メンバー単位のStripe課金、リアルタイム更新、オフラインアプリ、管理画面、監視、そして任意で毎日の暗号化バックアップを備えています。以下の各セクションから、そのコードにリンクしています。",
+    "Seedは無料でMITライセンスのSaaSスターターです。メールアドレス、Google、GitHubでのログイン、パスキー、メールのログインコード、ゲストアカウント、2段階認証、ロール付きグループ、メンバー単位のStripe課金、リアルタイム更新、オフラインアプリ、管理画面、監視、そして任意で毎日の暗号化バックアップを備えています。以下の各セクションから、そのコードにリンクしています。",
   "FeaturesHero.note":
     "Seedは今すぐ使えて、公開しながら開発中です。足りないものは、影響する機能の横に「まだないもの」と記し、issueがあればそのリンクも載せています。",
   "Features.compare": "Seedとほかのスターターの比較",
@@ -621,7 +625,7 @@ export default {
     "Seedの管理画面：ユーザーを検索し、セッションを終了し、返金し、失敗したジョブを再実行。リスクのある操作は事前に確認し、すべて記録。無料、MITライセンス。",
   "AdminTour.heroTitle": "プロダクトを運営する人のための管理画面",
   "AdminTour.heroLead":
-    "Seedには、専用のホストで動くオペレーター用の管理画面が付いています。オペレーターはユーザーを検索し、そのログイン方法、セッション、グループを確認して、セッションの終了、パスワード再設定リンクの送信、返金などで手助けできます。リスクのある操作は事前に確認を求め、すべての操作が監査ログに残ります。",
+    "Seedには、専用のホストで動くオペレーター用の管理画面が付いています。オペレーターはユーザーを検索し、そのログイン方法、セッション、グループを確認して、セッションの終了、パスワード再設定メールの送信、返金などで手助けできます。リスクのある操作は事前に確認を求め、すべての操作が監査ログに残ります。",
   "AdminTour.code": "管理画面アプリのコードを読む",
   "AdminTour.dashboard": "ダッシュボード",
   "AdminTour.dashboardText":
@@ -629,7 +633,8 @@ export default {
   "AdminTour.stats": "統計",
   "AdminTour.statsText": "Umamiから取得したWebサイトの訪問数と注文クリック数。合計値のみ。",
   "AdminTour.users": "ユーザー",
-  "AdminTour.usersText": "ユーザーを検索し、ブロック、セッションの終了、再設定リンクの送信。",
+  "AdminTour.usersText":
+    "ユーザーの検索、ブロック、セッションの終了、パスワード再設定メールの送信。",
   "AdminTour.groups": "グループ",
   "AdminTour.groupsText": "メンバー、招待、ファイル。ファイルの削除やオーナーの変更。",
   "AdminTour.billing": "請求",
@@ -652,7 +657,7 @@ export default {
   "AdminTour.tokensText": "すべてのAPIトークンと、その持ち主、最終使用日時。",
   "AdminTour.operator": "オペレーター",
   "AdminTour.operatorText":
-    "日々のサポート：ユーザーの検索、セッションの終了、パスワード再設定リンクの送信、グループの管理。",
+    "日々のサポート：ユーザーの検索、セッションの終了、パスワード再設定メールの送信、グループの管理。",
   "AdminTour.supervisor": "スーパーバイザー",
   "AdminTour.supervisorText":
     "上記に加えて、返金、サブスクリプションの即時解約、グループのほかのメンバーへの譲渡。",
@@ -700,7 +705,7 @@ export default {
   "CompareRow.makerkitLite": "Makerkit：Liteキットのみ",
   "CompareRow.openSource": "オープンソース（MIT）",
   "CompareRow.password": "パスワードでのログイン",
-  "CompareRow.magicLinks": "マジックリンク",
+  "CompareRow.magicLinks": "パスワード不要のメールログイン",
   "CompareRow.social": "ソーシャルログイン",
   "CompareRow.socialNote": "Seed：Google、GitHub",
   "CompareRow.totp": "認証アプリによる2段階認証",
@@ -833,6 +838,7 @@ export default {
   "Blog.published": "公開日：<time>{date}</time>",
   "Blog.updated": "· 更新日：<time>{date}</time>",
   "Blog.alsoIn": "他の言語：<links></links>",
+  "Blog.relatedFeature": "Seed の機能：{name} →",
   "Blog.minutes": {
     "other": "· {count}分で読めます",
   },
@@ -905,7 +911,7 @@ export default {
   "FeaturePage.all": "すべての機能",
   "FeaturePage.runtimeQuestion": "SeedはNodeやBunで動きますか？",
   "FeaturePage.runtimeAnswer":
-    "まだです。Seedは現在Denoで動いており、Deno・Node・Bunのどれでも動くようにする作業を進めています（#623）。機能ページのランタイム計画をご覧ください。",
+    "まだ一部だけです。APIとバックグラウンドのワーカーは、すでに設定ひとつ（APP_RUNTIME）でDeno・Node・Bunのどれでも動きます。Webサイトと開発ツールは今もDenoが必要で、こちらは作業中です（#623）。機能ページのランタイム計画をご覧ください。",
   "FeaturePageMissing.title": "この機能ページは見つかりません",
   "FeaturePageMissing.description":
     "移動した可能性があります。Seedのすべての機能は機能ページに載っています。",
@@ -913,19 +919,19 @@ export default {
   "FeaturePageSignIn.name": "ログイン",
   "FeaturePageSignIn.title": "SaaSのログイン機能を、認証サービスなしで",
   "FeaturePageSignIn.description":
-    "パスキー、メールのログインリンク、Google、GitHub、2段階認証。自分のAPIで検証するので、認証サービスもユーザー単位の料金も不要です。無料・MITライセンス。",
+    "パスキー、メールのログインコード、Google、GitHub、2段階認証。自分のAPIで検証するので、認証サービスもユーザー単位の料金も不要です。無料・MITライセンス。",
   "FeaturePageSignIn.h1": "SaaSにパスキーとログイン機能を、認証サービスなしで",
   "FeaturePageSignIn.answer":
-    "Seedは、パスキー、メールのログインリンク、Google、GitHubでのログインに対応し、その検証はサーバー上の自前のAPIが行います。外部の認証サービスは使いません。パスワード、パスキー、ログインリンクはデプロイした時点で使え、ユーザー単位の料金はかかりません。GoogleとGitHubは、それぞれenvファイルに2つのキーが必要です。",
+    "Seedは、パスキー、メールのログインコード、Google、GitHubでのログインに対応し、その検証はサーバー上の自前のAPIが行います。外部の認証サービスは使いません。パスワード、パスキー、ログインコードはデプロイした時点で使え、ユーザー単位の料金はかかりません。GoogleとGitHubは、それぞれenvファイルに2つのキーが必要です。",
   "FeaturePageSignIn.summary":
-    "パスキー、メールのログインリンク、Google、GitHub、2段階認証。認証サービスは不要です。",
+    "パスキー、メールのログインコード、Google、GitHub、2段階認証。認証サービスは不要です。",
   "FeaturePageSignIn.how1":
-    "APIがすべてのログインを自ら検証し、署名付きのセッションCookieを返します。パスキーはブラウザ標準のWebAuthnを使い、サーバーが保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効です。ログインリンクはログインにも登録にも使え、1回限り・15分間有効で、ハッシュとしてのみ保存されます。",
+    "APIがすべてのログインを自ら検証し、署名付きのセッションCookieを返します。パスキーはブラウザ標準のWebAuthnを使い、サーバーが保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効です。メールのログインコードはログインにも登録にも使え、1回限り・10分間、リクエストしたブラウザでのみ有効で、ハッシュとしてのみ保存されます。",
   "FeaturePageSignIn.how2":
     "認証アプリを使えば2段階認証を追加できます。プロフィールには、アカウントに入るすべての方法とログイン中のすべてのデバイスが一覧表示され、ログイン方法を変更するときは本人確認を求めてメールで通知します。訪問者はゲストアカウントで始めて、あとからログイン方法を追加することもできます。",
   "FeaturePageSignIn.authServiceQuestion": "認証サービスは必要ですか？",
   "FeaturePageSignIn.authServiceAnswer":
-    "いいえ。パスワード、パスキー、ログインリンク、そしてGoogleとGitHubからの応答は、Seed自身のAPIがサーバー上で検証するので、ユーザー単位の料金は一切かかりません。",
+    "いいえ。パスワード、パスキー、ログインコード、そしてGoogleとGitHubからの応答は、Seed自身のAPIがサーバー上で検証するので、ユーザー単位の料金は一切かかりません。",
   "FeaturePageSignIn.passkeysQuestion": "Seedはパスキーに対応していますか？",
   "FeaturePageSignIn.passkeysAnswer":
     "はい。ユーザーはプロフィールでパスキーを追加し、それでログインできます。サーバーが保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効です。",

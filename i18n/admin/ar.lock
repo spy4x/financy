@@ -151,6 +151,7 @@ AdminAuditEvent.groupExported	382b8ad9605e51b6
 AdminAuditEvent.groupImported	a82ec193d2251a20
 AdminAuditEvent.groupRenamed	d4f471cec061ad34
 AdminAuditEvent.groupRestored	0ce23a38c471e523
+AdminAuditEvent.groupTimeZoneChanged	f0c09de442ee6692
 AdminAuditEvent.guestDeleted	e0b52ec0a7d83f3d
 AdminAuditEvent.guestKept	d822c85bd5280f79
 AdminAuditEvent.guestStarted	27831ec2f7393c5b
@@ -179,7 +180,7 @@ AdminAuditEvent.pictureRemoved	12b9ee7642ee0e24
 AdminAuditEvent.pictureRemovedByPerson	07c83598863b98a5
 AdminAuditEvent.profileUpdated	7ef06a96db1fc071
 AdminAuditEvent.pushDeviceRemoved	43bf8619007dfe8c
-AdminAuditEvent.resetSent	22b25002d49535c9
+AdminAuditEvent.resetSent	7b53c162ccaa65a7
 AdminAuditEvent.roleChanged	9069fb59c1dc2a39
 AdminAuditEvent.sessionsEnded	17a8d863d5a6e6e7
 AdminAuditEvent.signedIn	ca566c8968e7e881
@@ -200,6 +201,7 @@ AdminAuditEvent.userUnblocked	77f772b34446bda9
 AdminAuditEvent.usersExported	3a78277f4b5b91eb
 AdminBilling.active	92340695899bd2d8
 AdminBilling.all	a52ace420f2175d0
+AdminBilling.billedYearly	f6f60960af8077cc
 AdminBilling.cancelled	d353a99eb4556847
 AdminBilling.chipCount	ce5efaf46c9edcae
 AdminBilling.clear	7179ea0035fca783
@@ -219,7 +221,7 @@ AdminBilling.listError	a98ee8f2d81f025c
 AdminBilling.loading	e575e509f70af151
 AdminBilling.loadingFigures	98e682443f91a5b4
 AdminBilling.mrr	013b174b769057a3
-AdminBilling.mrrHint	cde193bec3c672d9
+AdminBilling.mrrHint	44963d0e5ec63f55
 AdminBilling.newTab	9794bb09dfeecd40
 AdminBilling.nextCharge	4a4c42411f49eb2a
 AdminBilling.noEvent	fc102487bfb2a28c
@@ -304,6 +306,7 @@ AdminBillingCustomer.loading	5122290177028c6e
 AdminBillingCustomer.loadingLastPayment	608b480b67fc6238
 AdminBillingCustomer.loadingPayment	20b151af95db18a0
 AdminBillingCustomer.member	00ca8bff90921c40
+AdminBillingCustomer.monthly	9b11f6b707d2a03e
 AdminBillingCustomer.needsSupervisor	c0ae8e9d5db55986
 AdminBillingCustomer.noAnswer	eee225c7ec057aa6
 AdminBillingCustomer.noChargeUntil	7ea4e71550ae66b3
@@ -326,6 +329,7 @@ AdminBillingCustomer.paymentPartlyRefunded	141fa5bf505b8c81
 AdminBillingCustomer.paymentRefunded	2c604dc43660c1c3
 AdminBillingCustomer.paymentRefundedTitle	dc142ba534998801
 AdminBillingCustomer.perMonth	f6c260d29d68d0b3
+AdminBillingCustomer.period	a4a987fb16d9bd93
 AdminBillingCustomer.plan	fa8ed0bdabdd6bcb
 AdminBillingCustomer.planLine	345f52b9bba50d87
 AdminBillingCustomer.refundLast	8de66a4fa2c591a4
@@ -345,6 +349,7 @@ AdminBillingCustomer.status	920e413c7d411b61
 AdminBillingCustomer.timeGiven	af7998736faa755d
 AdminBillingCustomer.timeSubmit	80724d593080798f
 AdminBillingCustomer.timeText	dca593ab9231c92f
+AdminBillingCustomer.timeTextYear	cd306e0eec747a73
 AdminBillingCustomer.timeTitle	4d94699104b58490
 AdminBillingCustomer.timedOut	1d9e23300c618912
 AdminBillingCustomer.title	bf3763383aaf4306
@@ -354,6 +359,7 @@ AdminBillingCustomer.undoTitle	6022d387e4aad1cc
 AdminBillingCustomer.unknownPrice	24312ff42c1bc3fb
 AdminBillingCustomer.waiting	da2ed57a49c27458
 AdminBillingCustomer.when	cf9c7aa24a26aac4
+AdminBillingCustomer.yearly	6e69b59ed34d42ef
 AdminBillingCustomer.youBelong	020623d0a4ab0bb4
 AdminBlog.all	a52ace420f2175d0
 AdminBlog.chipAll	7ad000982d871de6
@@ -405,7 +411,7 @@ AdminBlogDialogs.figuresHiddenBody	6a958a0821940ee1
 AdminBlogDialogs.futureTime	ebfef07e2d2b1c17
 AdminBlogDialogs.goToProblems	8601a5eb067fa144
 AdminBlogDialogs.goesLiveAt	6e550d0a42349b25
-AdminBlogDialogs.linksBreak	52ad2e21a976b402
+AdminBlogDialogs.linksRedirect	1e61f9d631ef6941
 AdminBlogDialogs.liveOnItsOwn	9870ccfb4d9734fc
 AdminBlogDialogs.mailingList	13f40df7d6c966f0
 AdminBlogDialogs.newSlug	17fe8bbd217cf797
@@ -451,9 +457,11 @@ AdminBlogEditor.conflictTitle	793d3c102c95bfec
 AdminBlogEditor.counter	8a464f95ef5bd2fc
 AdminBlogEditor.coverAlt	8ddb41a4fb9f028f
 AdminBlogEditor.coverAltHint	a7699f79170f40e6
+AdminBlogEditor.coverBroken	fb051056ab45a894
+AdminBlogEditor.coverOf	0d4229231d2571cd
 AdminBlogEditor.coverPrivacy	fd6c960f0c0fb740
 AdminBlogEditor.coverUrl	6aeec91b65e7a8be
-AdminBlogEditor.coverUrlHint	97230c3cae879034
+AdminBlogEditor.coverUrlHint	4fc1217e873112f7
 AdminBlogEditor.deletePost	f4e967b40b9dc61d
 AdminBlogEditor.describeCover	f6776a2e346f9fd3
 AdminBlogEditor.description	526e0087cc3f254d
@@ -472,7 +480,14 @@ AdminBlogEditor.emptyPost	52c2633063e51a41
 AdminBlogEditor.figureHidden	b9f4f461fbe30979
 AdminBlogEditor.goToLine	f818f5b7e993e924
 AdminBlogEditor.goesLive	f2d9454d995e4ed3
+AdminBlogEditor.groupAddress	dcec4480ee5d137e
+AdminBlogEditor.groupCover	fa8d84566676ee2e
+AdminBlogEditor.groupLinks	9024c197d84940e4
+AdminBlogEditor.groupSummary	8e76a94ac8320d51
+AdminBlogEditor.history	f7c0b6faaf056809
 AdminBlogEditor.httpsCover	075b3b7f27038bc9
+AdminBlogEditor.intro	24601bcaae6e170b
+AdminBlogEditor.introHint	ef6dba2eeb744f9d
 AdminBlogEditor.keyPoint	83d7697e259de0ab
 AdminBlogEditor.keyPoints	c925a0fbcc77e84b
 AdminBlogEditor.keyPointsHint	33f17428f5a4d128
@@ -503,6 +518,8 @@ AdminBlogEditor.publishNow	bf74ddc5486eb7ba
 AdminBlogEditor.publishedOn	4bc41e7088f38b68
 AdminBlogEditor.publishedUpdated	b29b131e151a8b36
 AdminBlogEditor.publishing	26c81739396ded64
+AdminBlogEditor.relatedFeature	24ae6a265a2bf59f
+AdminBlogEditor.relatedFeatureHint	4a4b05c616207611
 AdminBlogEditor.reload	bdc090ec61e3fcfc
 AdminBlogEditor.removeKeyPoint	a6a944a0cd135ee1
 AdminBlogEditor.rendering	68b18112e87b6c56
@@ -519,7 +536,7 @@ AdminBlogEditor.significant	35547a4990bf2e58
 AdminBlogEditor.slug	d15387ecc6c5e22d
 AdminBlogEditor.slugHint	baaec1a362852e81
 AdminBlogEditor.slugHintEmpty	f8e506be4641e815
-AdminBlogEditor.slugLocked	20d6754b7bf5e056
+AdminBlogEditor.slugLocked	2a2ca16e622caa28
 AdminBlogEditor.slugRule	59c1bc41e3afb065
 AdminBlogEditor.slugTaken	ecdb6229d8ae9ac0
 AdminBlogEditor.title	7e8cd2056da73a7f
@@ -538,6 +555,15 @@ AdminBlogEditor.viewPost	fe9715bcd31d86c2
 AdminBlogEditor.willEmail	fb694f7099be66cb
 AdminBlogEditor.wordsRead	4a076103425d828f
 AdminBlogEditor.write	3f00927a719345ed
+AdminBlogHistory.body	6ccaa6415b5ee449
+AdminBlogHistory.empty	729f08042d49c450
+AdminBlogHistory.restore	0570daa12fe55db8
+AdminBlogHistory.restored	019a061dbda2267d
+AdminBlogHistory.savedBy	9b49246a51fa793f
+AdminBlogHistory.shown	2c79ad461bbca95a
+AdminBlogHistory.someone	b764cdc0eab71374
+AdminBlogHistory.title	0e76960093379060
+AdminBlogHistory.versions	401dc1a55cb963df
 AdminCatalog.addCategory	aafdf428fd0256ea
 AdminCatalog.addItem	d1a0b329a72b8f16
 AdminCatalog.categories	b8b1d894c6837252
@@ -961,6 +987,7 @@ AdminGroup.subscription	9a3bea7770f7ad99
 AdminGroup.tags	1331275bc537b4c2
 AdminGroup.theGroup	3e56466042cf9bf7
 AdminGroup.theMember	b7f9c38752f607b1
+AdminGroup.timeZone	b9fe1464783e1c0d
 AdminGroup.title	34ca0e76608842ff
 AdminGroup.transfer	3667f939d52f5974
 AdminGroup.transferSubmit	dde8bef78cbb7206
@@ -1375,7 +1402,7 @@ AdminUser.doneBlock	1b4e1954ad4a1dd4
 AdminUser.doneDeleteGuest	e5f9aef0032411c6
 AdminUser.doneEndSession	84bda720a54b7565
 AdminUser.doneEndSessions	6d5af81cb3714003
-AdminUser.donePasswordReset	6d08aec90947f96f
+AdminUser.donePasswordReset	d9ca83f22d16f7ae
 AdminUser.doneRemovePicture	7f77c678dd15d537
 AdminUser.doneRole	cae07fb6a1243de7
 AdminUser.doneRoleAdmin	e50fc22fcda70c32
@@ -1403,7 +1430,7 @@ AdminUser.lastSeen	21fd79c7de52e1cf
 AdminUser.lastUsed	8afb538bf0fb7df8
 AdminUser.loading	b94de327c68dd66a
 AdminUser.methodEmailCode	0adcdb5d55ecf545
-AdminUser.methodEmailLink	6f0d2f54ee125df8
+AdminUser.methodEmailLink	0adcdb5d55ecf545
 AdminUser.methodPasskey	904c9aa9baaef704
 AdminUser.methodPassword	e7cf3ef4f17c3999
 AdminUser.methods	477be86784059605
@@ -1431,12 +1458,12 @@ AdminUser.removePictureSubmit	1bc6f23b53041b45
 AdminUser.removePictureText	a2cb4e826fc9005a
 AdminUser.removePictureTitle	e044ed9115c2b3f0
 AdminUser.removing	d4b09919ec929f15
-AdminUser.resetText	66b22525c8c9f3d6
-AdminUser.resetTitle	2f4681fb90b756f8
+AdminUser.resetText	a0e5317b1c5fc054
+AdminUser.resetTitle	a189c7e99637bf97
 AdminUser.role	14736a2eb9f4159f
 AdminUser.roleNow	be2257fa1ce60ead
-AdminUser.sendLink	b386634c8b4382c8
-AdminUser.sendReset	b7bb5d08d1b73923
+AdminUser.sendLink	e0622cb6890a96e7
+AdminUser.sendReset	bbaeef9f6c66f0bc
 AdminUser.sending	b8ed5279e897be5d
 AdminUser.sentTo	a776531c00d938c3
 AdminUser.sessions	6fa3cbf451b2a1d5
@@ -1486,7 +1513,7 @@ AdminUsers.search	0a36d3dd1aab8ddf
 AdminUsers.searching	c31723ab330289fe
 AdminUsers.status	920e413c7d411b61
 AdminUsers.submit	49c266baaaa70981
-AdminUsers.subtitle	feef0a54cf34a4b8
+AdminUsers.subtitle	29ab3533a217b14d
 AdminUsers.title	6b0cc904d081a8c1
 AdminUsers.withSignIn	66a96b059abfe8fa
 AdminUsers.you	08b041935798fbf6

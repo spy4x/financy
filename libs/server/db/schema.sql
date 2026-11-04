@@ -186,6 +186,7 @@ CREATE TABLE groups (
     emoji VARCHAR(32),
     imported_at TIMESTAMPTZ,
     changes_oldest_sequence BIGINT DEFAULT 0 NOT NULL,
+    time_zone VARCHAR(64) DEFAULT 'UTC' NOT NULL,
     CONSTRAINT groups_name_check CHECK (length(btrim(name)) BETWEEN 1 AND 100),
     CONSTRAINT groups_description_check CHECK (char_length(description) <= 500),
     CONSTRAINT groups_color_check CHECK (color ~ '^#[0-9a-f]{6}$'),
@@ -403,11 +404,14 @@ CREATE INDEX idx_user_settings_selected_group
     ON user_settings (selected_group_id)
     WHERE selected_group_id IS NOT NULL;
 
--- Password reset by e-mail. See migration 2026_10_06_0001_password_reset.sql.
+-- Password reset by e-mail. See migrations 2026_10_06_0001_password_reset.sql and
+-- 2026_12_14_0002_email_codes.sql (#752: a code, waited for in the browser that asked).
 CREATE TABLE password_reset_requests (
     id UUID PRIMARY KEY,
     email TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    by_operator BOOLEAN DEFAULT false NOT NULL,
     CONSTRAINT password_reset_requests_email_check CHECK (length(email) BETWEEN 3 AND 254)
 );
 
@@ -514,14 +518,20 @@ CREATE TABLE subscriptions (
     -- The customer this subscription bills (#250), so a handed-over customer's subscription is
     -- known by its own customer and not by the group's current one.
     provider_customer_id VARCHAR(255),
+    -- How often the price the provider last reported bills (#695); `NULL` when that price is in no
+    -- plan.
+    billing_period INT2,
     CONSTRAINT subscriptions_status_check CHECK (status BETWEEN 1 AND 6),
     CONSTRAINT subscriptions_provider_event_rank_check CHECK (provider_event_rank BETWEEN 1 AND 3),
     CONSTRAINT subscriptions_past_due_since_check
-        CHECK ((status = 3) = (past_due_since IS NOT NULL))
+        CHECK ((status = 3) = (past_due_since IS NOT NULL)),
+    CONSTRAINT subscriptions_billing_period_check CHECK (billing_period IN (1, 2))
 );
 
 COMMENT ON COLUMN subscriptions.status IS
     '1=trialing, 2=active, 3=past_due, 4=canceled, 5=incomplete, 6=paused';
+
+COMMENT ON COLUMN subscriptions.billing_period IS '1=month, 2=year';
 
 CREATE INDEX idx_subscriptions_provider_subscription_id
     ON subscriptions (provider_subscription_id);
@@ -916,21 +926,24 @@ CREATE TABLE guest_reminders (
     CONSTRAINT guest_reminders_kind_check CHECK (kind BETWEEN 1 AND 3)
 );
 
--- #391: sign-in by e-mail link. See migration 2026_11_29_0001_sign_in_links.sql.
-CREATE TABLE sign_in_link_requests (
+-- #391: sign-in by e-mail (a link until #752, now a code). See migrations
+-- 2026_11_29_0001_sign_in_links.sql and 2026_12_14_0002_email_codes.sql.
+CREATE TABLE sign_in_code_requests (
     id UUID PRIMARY KEY,
     email TEXT NOT NULL,
     next TEXT,
     requested_by_user_id INT4 REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    -- #277: the language of the page that asked, for the link mail.
+    -- #277: the language of the page that asked, for the code mail.
     language TEXT,
-    CONSTRAINT sign_in_link_requests_email_check CHECK (length(email) BETWEEN 3 AND 254),
-    CONSTRAINT sign_in_link_requests_next_check CHECK (length(next) BETWEEN 1 AND 2048),
-    CONSTRAINT sign_in_link_requests_language_check CHECK (length(language) BETWEEN 2 AND 35)
+    -- #752: the request, and its code, work until then; a new code moves it on.
+    expires_at TIMESTAMPTZ NOT NULL,
+    CONSTRAINT sign_in_code_requests_email_check CHECK (length(email) BETWEEN 3 AND 254),
+    CONSTRAINT sign_in_code_requests_next_check CHECK (length(next) BETWEEN 1 AND 2048),
+    CONSTRAINT sign_in_code_requests_language_check CHECK (length(language) BETWEEN 2 AND 35)
 );
 
-CREATE INDEX idx_sign_in_link_requests_email ON sign_in_link_requests (email);
+CREATE INDEX idx_sign_in_code_requests_email ON sign_in_code_requests (email);
 
 -- #395: the blog's posts. See migration 2026_11_30_0001_blog_posts.sql.
 CREATE TABLE blog_posts (
@@ -967,6 +980,13 @@ CREATE TABLE blog_posts (
     ) STORED,
     -- #730: the page the author's name links to. See 2026_12_13_0001_blog_author_url.sql.
     author_url VARCHAR(2000),
+    -- #733: intro, related feature, a cover file, the Dev.to cross-post. See
+    -- 2026_12_14_0004_blog_publishing.sql.
+    intro VARCHAR(600),
+    related_feature VARCHAR(100),
+    cover_file VARCHAR(120),
+    crossposted_at TIMESTAMPTZ,
+    devto_url VARCHAR(2000),
     CONSTRAINT blog_posts_slug_unique UNIQUE (slug),
     CONSTRAINT blog_posts_slug_check CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
     CONSTRAINT blog_posts_status_check CHECK (status IN ('draft', 'scheduled', 'published')),
@@ -981,7 +1001,14 @@ CREATE TABLE blog_posts (
     CONSTRAINT blog_posts_language_check CHECK (length(language) BETWEEN 2 AND 35),
     CONSTRAINT blog_posts_translation_check CHECK (translation_of <> id),
     CONSTRAINT blog_posts_author_url_check
-        CHECK (author_url IS NULL OR author_url LIKE 'https://%')
+        CHECK (author_url IS NULL OR author_url LIKE 'https://%'),
+    CONSTRAINT blog_posts_related_feature_check
+        CHECK (related_feature IS NULL OR related_feature ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+    CONSTRAINT blog_posts_cover_file_check
+        CHECK (cover_file IS NULL OR
+            (cover_file ~ '^[a-z0-9]+(-[a-z0-9]+)*\.webp$' AND cover_alt IS NOT NULL)),
+    CONSTRAINT blog_posts_devto_url_check
+        CHECK (devto_url IS NULL OR (devto_url LIKE 'https://%' AND crossposted_at IS NOT NULL))
 );
 
 CREATE UNIQUE INDEX blog_posts_translation_language_unique
@@ -995,6 +1022,63 @@ CREATE INDEX idx_blog_posts_language_published
     ON blog_posts (language, published_at DESC) WHERE status = 'published';
 -- The admin list, most recently changed first.
 CREATE INDEX idx_blog_posts_updated ON blog_posts (updated_at DESC, id DESC);
+
+-- #418: the old addresses of posts that moved. See migration 2026_12_13_0002_blog_slug_redirects.sql.
+CREATE TABLE blog_slug_redirects (
+    slug VARCHAR(100) PRIMARY KEY,
+    post_id UUID NOT NULL REFERENCES blog_posts(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_blog_slug_redirects_post ON blog_slug_redirects (post_id);
+
+CREATE FUNCTION keep_blog_slug_redirect() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+    DELETE FROM blog_slug_redirects WHERE slug = NEW.slug;
+    IF TG_OP = 'UPDATE' AND OLD.published_at IS NOT NULL THEN
+        INSERT INTO blog_slug_redirects (slug, post_id) VALUES (OLD.slug, NEW.id)
+        ON CONFLICT (slug) DO UPDATE SET post_id = EXCLUDED.post_id, created_at = now();
+    END IF;
+    RETURN NULL;
+END;
+$$;
+
+CREATE TRIGGER blog_posts_slug_insert
+    AFTER INSERT ON blog_posts
+    FOR EACH ROW EXECUTE FUNCTION keep_blog_slug_redirect();
+
+CREATE TRIGGER blog_posts_slug_update
+    AFTER UPDATE OF slug ON blog_posts
+    FOR EACH ROW WHEN (OLD.slug IS DISTINCT FROM NEW.slug)
+    EXECUTE FUNCTION keep_blog_slug_redirect();
+
+-- #418: a post's earlier versions. See migration 2026_12_14_0001_blog_post_revisions.sql.
+CREATE TABLE blog_post_revisions (
+    id UUID PRIMARY KEY,
+    post_id UUID NOT NULL REFERENCES blog_posts(id) ON DELETE CASCADE,
+    slug VARCHAR(100) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    seo_title VARCHAR(70),
+    description VARCHAR(300) NOT NULL,
+    tldr TEXT[] DEFAULT '{}' NOT NULL,
+    topic VARCHAR(50),
+    cover_url VARCHAR(2000),
+    cover_alt VARCHAR(300),
+    author_url VARCHAR(2000),
+    body_md TEXT NOT NULL,
+    language TEXT NOT NULL,
+    translation_of UUID,
+    saved_by_id INT4,
+    saved_by_name VARCHAR(320),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    -- 2026_12_14_0004_blog_publishing.sql.
+    intro VARCHAR(600),
+    related_feature VARCHAR(100)
+);
+
+CREATE INDEX idx_blog_post_revisions_post
+    ON blog_post_revisions (post_id, created_at DESC, id DESC);
 
 -- #229: a person's data exports. See migration 2026_12_01_0001_data_exports.sql.
 CREATE TABLE data_exports (

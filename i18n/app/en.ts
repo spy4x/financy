@@ -55,6 +55,9 @@ export default {
     "<who>{who}</who> renamed the group from “<value>{from}</value>” to “<value>{to}</value>”",
   "GroupActivity.detailsUpdated":
     "<who>{who}</who> changed the group's description, colour or emoji",
+  "GroupActivity.timeZoneChanged":
+    "<who>{who}</who> changed the time zone from <value>{from}</value> to <value>{to}</value>",
+  "GroupActivity.timeZoneChangedPlain": "<who>{who}</who> changed the time zone",
   "GroupActivity.deleted": "<who>{who}</who> deleted the group",
   "GroupActivity.restored": "<who>{who}</who> restored the group",
   "GroupActivity.roleChanged": "<who>{who}</who> changed the role of <target>{target}</target>",
@@ -235,6 +238,10 @@ export default {
       "New groups start on the free plan. Your {count}-day free trial goes to the first group you move to a paid plan.",
   },
   "GroupEditor.readOnly": "Only admins and the owner can change this group's details.",
+  "GroupEditor.timeZoneHint": "Days and months start at midnight here, for everyone in the group.",
+  "GroupEditor.timeZoneInvalid": "We don't know this time zone. Pick another from the list.",
+  "GroupEditor.timeZoneChangedElsewhere":
+    "Someone else changed this to {zone} while you were editing. Save to use yours, or Discard.",
   "GroupEditor.nameRequired": "Enter a name.",
   "GroupEditor.nameInvalid":
     "Use at most 100 characters, with no line breaks or hidden characters.",
@@ -504,8 +511,7 @@ export default {
   "GroupBillingPanel.portalUnreachable":
     "Could not open Stripe's billing page. Check your connection and try again.",
   "GroupBillingPanel.title": "Billing",
-  "GroupBillingPanel.description":
-    "What <group>{group}</group> pays each month. Stripe handles the billing.",
+  "GroupBillingPanel.description": "What <group>{group}</group> pays. Stripe handles the billing.",
   "GroupBillingPanel.loading": "Loading the plan",
   "GroupBillingPanel.statusTrial": "Trial",
   "GroupBillingPanel.statusRenews": "Renews on {date}",
@@ -549,7 +555,7 @@ export default {
   "GroupBillingPanel.confirming":
     "Stripe is confirming your plan. This page will update on its own.",
   "GroupBillingPanel.paymentMethod": "Payment method",
-  "GroupBillingPanel.paymentMethodText": "The card Stripe charges each month.",
+  "GroupBillingPanel.paymentMethodText": "The card Stripe charges for this plan.",
   "GroupBillingPanel.changeCard": "Change card",
   "GroupBillingPanel.invoices": "Invoices",
   "GroupBillingPanel.invoicesText": "Every invoice and receipt, to read or download.",
@@ -558,6 +564,28 @@ export default {
   "GroupBillingPanel.cancelFree": "You won't be charged if you cancel before {date}.",
   "GroupBillingPanel.cancelKeep": "You keep {plan} until the period ends.",
   "GroupBillingPanel.cancelPlan": "Cancel plan",
+  "GroupBillingPanel.periodTitle": "Billing period",
+  "GroupBillingPanel.monthly": "Monthly",
+  "GroupBillingPanel.yearly": "Yearly",
+  "GroupBillingPanel.priceYear": "{plan} costs {price} per member a year.",
+  "GroupBillingPanel.priceForGroupYear": {
+    "one": "With {count} member, <group>{group}</group> would pay {total} a year.",
+    "other": "With {count} members, <group>{group}</group> would pay {total} a year.",
+  },
+  "GroupBillingPanel.saving": "{amount} less than paying monthly.",
+  "GroupBillingPanel.finePrintYear":
+    "Billed yearly per member. Cancel anytime and keep {plan} until the period ends.",
+  "GroupBillingPanel.trialThenYear":
+    "After that, <group>{group}</group> pays {total} a year unless you cancel.",
+  "GroupBillingPanel.seatsYear": {
+    "one": "{total} a year, for {count} member at {price} each, the owner included.",
+    "other": "{total} a year, for {count} members at {price} each, the owner included.",
+  },
+  "GroupBillingPanel.periodMonthly": "You pay monthly. Yearly costs {price} a year, {saving} less.",
+  "GroupBillingPanel.periodYearly": "You pay yearly. Monthly costs {price} a month.",
+  "GroupBillingPanel.periodHint": "Stripe shows what you pay today before you confirm.",
+  "GroupBillingPanel.switchYearly": "Switch to yearly",
+  "GroupBillingPanel.switchMonthly": "Switch to monthly",
   "GroupBillingView.trialStarted": {
     "one": "Your {count}-day {plan} trial has started",
     "other": "Your {count}-day {plan} trial has started",
@@ -679,6 +707,7 @@ export default {
   "OverviewScreen.customRange": "Custom range",
   "OverviewScreen.rangeTooLong": "Choose a range of a year or less.",
   "OverviewScreen.asOf": "As of {time}",
+  "OverviewScreen.zoneNote": "{city} time",
   "OverviewScreen.hide": "Hide widget",
   "OverviewView.opening": "Opening the overview…",
   "OverviewView.saveFailed": "We couldn't save your layout. Check your connection and try again.",
@@ -856,26 +885,25 @@ export default {
   "OAuthNotice.busy": "Too many attempts. Wait a minute, then try again.",
   "OAuthNotice.kept": "Sign-in method added. You can now sign in with it on any device.",
   "OAuthNotice.guestTaken": "That sign-in method belongs to another account.",
-  "PasswordResetScreen.forgotFailed": "Could not send the link",
+  "PasswordResetScreen.forgotFailed": "Couldn't send the code",
   "PasswordResetScreen.resetFailed": "Could not change the password",
-  "PasswordResetScreen.sent":
-    "If an account uses this email, we've sent it a link to reset the password.",
+  "PasswordResetScreen.sent": "If an account uses <email>{email}</email>, we sent it a code.",
   "PasswordResetScreen.forgotDescription": {
     "one":
-      "Enter the email you signed up with. We'll send you a link to choose a new password. It works once, for {count} minute.",
+      "Enter the email you signed up with. We'll send you a code to choose a new password. It works for {count} minute.",
     "other":
-      "Enter the email you signed up with. We'll send you a link to choose a new password. It works once, for {count} minutes.",
+      "Enter the email you signed up with. We'll send you a code to choose a new password. It works for {count} minutes.",
   },
   "PasswordResetScreen.remembered": "Remembered it? <link>Back to sign in</link>",
-  "PasswordResetScreen.send": "Send the link",
+  "PasswordResetScreen.send": "Send a code",
   "PasswordResetScreen.doneTitle": "Password changed",
   "PasswordResetScreen.done": "You've been signed out everywhere. Sign in with your new password.",
   "PasswordResetScreen.signIn": "Sign in",
-  "PasswordResetScreen.askNew": "Ask for a new link",
   "PasswordResetScreen.chooseTitle": "Choose a new password",
   "PasswordResetScreen.choose":
     "For <email>{email}</email>. Saving it signs you out on every device.",
-  "PasswordResetScreen.expired": "Link expired? <link>Ask for a new one</link>",
+  "PasswordResetScreen.expired": "Took too long? <link>Ask for a new code</link>",
+  "PasswordResetScreen.tookTooLong": "That took too long. Ask for a new code.",
   "PasswordResetScreen.newPassword": "New password",
   "PasswordResetScreen.newPasswordHint": "{min} to {max} characters.",
   "PasswordResetScreen.saving": "Saving…",
@@ -1176,6 +1204,8 @@ export default {
   "Preferences.updatedElsewhere": "Preferences updated from another device.",
   "SeatPriceConfirm.hint":
     "Each new member adds {price} a month, so one more member takes the group from {now} to {next}. The difference for the rest of this period is billed on the next invoice.",
+  "SeatPriceConfirm.hintYear":
+    "Each new member adds {price} a year, so one more member takes the group from {now} to {next}. The difference for the rest of this period is billed on the next invoice.",
   "SeatPriceConfirm.accept": "I accept the higher price for each person who joins",
   "ProfileAccount.name": "Name",
   "ProfileAccount.notSet": "Not set",
@@ -1391,7 +1421,7 @@ export default {
   "ProfileView.tokenRevoked": "Token revoked",
   "ProfileView.tokenRevokedBody": "That token no longer works.",
   "ProviderProof.passkey": "a passkey",
-  "ProviderProof.link": "a sign-in link",
+  "ProviderProof.link": "an email code",
   "ProviderProof.fresh": "You signed in with {methods} a moment ago, so you don't need a password.",
   "ProviderProof.needed": {
     "one":
@@ -1401,51 +1431,27 @@ export default {
   },
   "ProviderProof.passkeyAgain": "Sign in with a passkey again",
   "ProviderProof.providerAgain": "Sign in with {provider} again",
-  "SignInLinkScreen.sendFailed": "Could not send the link. Try again in a moment.",
-  "SignInLinkScreen.unreachable":
-    "Could not reach the server. Check your connection and press Continue again.",
-  "SignInLinkScreen.openFailed":
-    "Couldn't sign you in. Press Continue to try again, or ask for a new link.",
-  "SignInLinkScreen.title": "Sign in with a link",
-  "SignInLinkScreen.description":
-    "We'll email you a link that signs you in. No account with that email yet? The link creates one.",
-  "SignInLinkScreen.ratherPassword": "Prefer a password? <link>Back to sign in</link>",
-  "SignInLinkScreen.submit": "Email me a link",
-  "SignInLinkScreen.sent": {
-    "one": "We sent a sign-in link to <email>{email}</email>. It works once, for {count} minute.",
-    "other":
-      "We sent a sign-in link to <email>{email}</email>. It works once, for {count} minutes.",
-  },
-  "SignInLinkScreen.openHere": "Open it on this device to sign in here.",
-  "SignInLinkScreen.newLink": "Send a new link",
-  "SignInLinkScreen.waiting": {
-    "one": "Not there? Check your spam folder. You can send a new link in {count} second.",
-    "other": "Not there? Check your spam folder. You can send a new link in {count} seconds.",
-  },
-  "SignInLinkScreen.resent":
-    "A new link is on its way. Earlier links still work until one is used.",
-  "SignInLinkScreen.refusedTitle": "This link no longer works",
-  "SignInLinkScreen.refused": {
+  "SignInCodeScreen.sendFailed": "Couldn't send the code. Try again in a moment.",
+  "SignInCodeScreen.title": "Sign in with an email code",
+  "SignInCodeScreen.description":
+    "We'll email you a code to type here. No account with that email yet? The code creates one.",
+  "SignInCodeScreen.ratherPassword": "Prefer a password? <link>Back to sign in</link>",
+  "SignInCodeScreen.submit": "Email me a code",
+  "SignInCodeScreen.confirmTitle": "Confirm it's you",
+  "SignInCodeScreen.confirmDescription":
+    "We'll email a code to <email>{email}</email>. Type it on the next step to confirm it's you.",
+  "CodeStep.sent": "We sent a code to <email>{email}</email>.",
+  "CodeStep.invalid": "The code has 8 characters. Check for a missing one.",
+  "SignInCodeScreen.guest":
+    "You're using the app as a guest. Signing in saves what you made here under this email. If it already has an account, we'll ask you first.",
+  "CodeStep.deadTitle": "This code no longer works",
+  "CodeStep.dead": {
     "one":
-      "Sign-in links work once, for {count} minute. Ask for a new one and use the latest email.",
+      "Codes work once, for {count} minute, and only a few wrong tries are allowed. Send a new one and use the latest email.",
     "other":
-      "Sign-in links work once, for {count} minutes. Ask for a new one and use the latest email.",
+      "Codes work once, for {count} minutes, and only a few wrong tries are allowed. Send a new one and use the latest email.",
   },
-  "SignInLinkScreen.elsewhereTitle": "This link was requested in another browser",
-  "SignInLinkScreen.elsewhere":
-    "It didn't sign you in, and your guest account hasn't changed. Request a new link in this browser to sign in here.",
-  "SignInLinkScreen.incompleteTitle": "This link is incomplete",
-  "SignInLinkScreen.incomplete": "Open the link from the email again, or ask for a new one.",
-  "SignInLinkScreen.backToApp": "Back to the app",
-  "SignInLinkScreen.finishTitle": "Finish signing in",
-  "SignInLinkScreen.finish":
-    "Continue to sign in on this device. If the email is new, this creates your account.",
-  "SignInLinkScreen.signedInAs":
-    "You're signed in as <email>{email}</email>. Continuing signs you in to the link's account instead.",
-  "SignInLinkScreen.guest":
-    "You're using the app as a guest. If you requested this link in this browser, continuing saves this guest account under the link's email. If that email already has an account, we'll ask you first.",
-  "SignInLinkScreen.signingIn": "Signing in…",
-  "SignInLinkScreen.stay": "Stay signed in",
+  "CodeStep.differentEmail": "Use a different email",
   "SignInMethods.failed": "Couldn't change your sign-in methods",
   "SignInMethods.loadFailed":
     "Couldn't load your sign-in methods. Check your connection and try again.",
@@ -1496,15 +1502,9 @@ export default {
   "SignUpCodeScreen.offline": "You're offline. Connect and try again.",
   "SignUpCodeScreen.title": "Check your inbox",
   "SignUpCodeScreen.loading": "Loading…",
-  "SignUpCodeScreen.sent": {
-    "one": "We sent a code to <email>{email}</email>. It works for {count} minute.",
-    "other": "We sent a code to <email>{email}</email>. It works for {count} minutes.",
-  },
-  "SignUpCodeScreen.wrongAddress": "Wrong email? <button>Use a different one</button>",
   "SignUpCodeScreen.code": "Code",
   "SignUpCodeScreen.checking": "Checking…",
   "SignUpCodeScreen.resend": "Send a new code",
-  "SignUpCodeScreen.resent": "A new code is on its way.",
   "SignUpCodeScreen.resendFailed": "Couldn't send a new code",
   "SignUpCodeScreen.existsTitle": "You already have an account",
   "SignUpCodeScreen.exists":
@@ -1824,7 +1824,9 @@ export default {
   "AuthScreen.forgotten": "Done. This browser won't remember how you signed in.",
   "AuthScreen.lastPassword": "Last time you signed in with your password<email> ({email})</email>.",
   "AuthScreen.lastPasskey": "Last time you signed in with a passkey<email> ({email})</email>.",
-  "AuthScreen.lastLink": "Last time you signed in with an email link<email> ({email})</email>.",
+  "AuthScreen.lastLink": "Last time you signed in with an email code<email> ({email})</email>.",
+  "AuthScreen.emailSignInCode": "Email me a sign-in code",
+  "AuthScreen.emailSignUpCode": "Email me a sign-up code",
   "AuthScreen.lastProvider": "Last time you signed in with {provider}<email> ({email})</email>.",
   "AuthScreen.forget": "Not you? Use another account",
   "AuthScreen.openProfile": "Open your profile",
@@ -1836,8 +1838,6 @@ export default {
   "AuthScreen.haveAccount": "Already have an account? <link>Sign in</link>",
   "AuthScreen.lostDevice": "Lost your device? <link>Back to sign in</link>",
   "AuthScreen.sending": "Sending…",
-  "AuthScreen.emailSignInLink": "Email me a sign-in link",
-  "AuthScreen.emailSignUpLink": "Email me a sign-up link",
   "AuthScreen.orCreate": "or create an account",
   "AuthScreen.createAccount": "Create account",
   "AuthScreen.continue": "Continue",
@@ -1961,7 +1961,8 @@ export default {
   "Benchmark.noLargeTitle": "No large group yet",
   "Benchmark.noLargeBody": "Make one with the generator, then reload this page:",
   "Benchmark.copyCommand": "Copy command",
-  "Benchmark.noLargeFoot": "The sizes and how to remove the group again are in docs/capacity.md.",
+  "Benchmark.noLargeFoot":
+    "The sizes and how to remove the group again are in docs/large-group.md.",
   "Benchmark.lastStoppedTitle": "The last run stopped at {measure}",
   "Benchmark.lastStoppedBody":
     "The tab closed before the run finished, which usually means it ran out of memory or storage. Group: {group}, started {time}.",

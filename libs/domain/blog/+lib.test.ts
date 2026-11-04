@@ -2,6 +2,7 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import {
   BLOG_AUTHOR_URL_MAX_LENGTH,
+  BLOG_INTRO_MAX_LENGTH,
   BLOG_TLDR_MAX,
   BlogError,
   blogSlugProblem,
@@ -10,6 +11,7 @@ import {
   parseBlogPostFields,
   parseBlogStatusFilter,
   parsePublishTime,
+  readIndexNowKey,
 } from "./+lib.ts"
 
 const FIELDS = {
@@ -41,6 +43,7 @@ describe(`parseBlogPostFields`, () => {
       coverUrl: null,
       coverAlt: `left over`,
       authorUrl: `   `,
+      intro: ` `,
     })).toEqual({
       ...FIELDS,
       seoTitle: null,
@@ -49,6 +52,8 @@ describe(`parseBlogPostFields`, () => {
       coverUrl: null,
       coverAlt: null,
       authorUrl: null,
+      intro: null,
+      relatedFeature: null,
       language: `en`,
       translationOf: null,
     })
@@ -62,6 +67,21 @@ describe(`parseBlogPostFields`, () => {
   it(`refuses a slug that is no slug`, () => {
     for (const slug of [`Hello`, `hello world`, `-hello`, `hello--world`, `../admin`, ``]) {
       expect(refusedField({ ...FIELDS, slug })).toBe(`slug`)
+    }
+  })
+
+  it(`keeps an intro trimmed and refuses one past ${BLOG_INTRO_MAX_LENGTH} characters (#733)`, () => {
+    expect(parseBlogPostFields({ ...FIELDS, intro: ` Two sentences. ` }).intro)
+      .toBe(`Two sentences.`)
+    expect(refusedField({ ...FIELDS, intro: `a`.repeat(BLOG_INTRO_MAX_LENGTH) })).toBeNull()
+    expect(refusedField({ ...FIELDS, intro: `a`.repeat(BLOG_INTRO_MAX_LENGTH + 1) })).toBe(`intro`)
+  })
+
+  it(`takes a related feature only as a feature page's slug (#733)`, () => {
+    expect(parseBlogPostFields({ ...FIELDS, relatedFeature: ` realtime ` }).relatedFeature)
+      .toBe(`realtime`)
+    for (const relatedFeature of [`/features/realtime`, `Realtime`, `../admin`, `a b`]) {
+      expect(refusedField({ ...FIELDS, relatedFeature })).toBe(`relatedFeature`)
     }
   })
 
@@ -171,5 +191,28 @@ describe(`parseBlogPostEdit`, () => {
   it(`keeps the language and the link a save named, an unlink as null`, () => {
     expect(parseBlogPostEdit({ ...FIELDS, language: `de`, translationOf: null }))
       .toMatchObject({ language: `de`, translationOf: null })
+  })
+})
+
+describe(`readIndexNowKey`, () => {
+  const env = (value?: string) => ({
+    get: (name: string) => name === `INDEXNOW_KEY` ? value : undefined,
+  })
+
+  it(`answers the key, and null when it is unset or empty, so IndexNow stays off`, () => {
+    expect(readIndexNowKey(env(`0123abcd-ef45`))).toBe(`0123abcd-ef45`)
+    expect(readIndexNowKey(env())).toBeNull()
+    expect(readIndexNowKey(env(` `))).toBeNull()
+  })
+
+  it(`refuses a key IndexNow would not take, without naming it`, () => {
+    for (const bad of [`short`, `has space in it`, `a/b/c/d/e/f`, `k`.repeat(129)]) {
+      expect(() => readIndexNowKey(env(bad))).toThrow(`INDEXNOW_KEY must be`)
+      try {
+        readIndexNowKey(env(bad))
+      } catch (error) {
+        expect((error as Error).message).not.toContain(bad)
+      }
+    }
   })
 })

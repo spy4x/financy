@@ -7,6 +7,8 @@ import { createOutboxProcessor, startRepeatingJobs } from "@server/jobs/wiring.t
 import { TelegramClient } from "@spy4x/integrations/telegram"
 import { readTelegramSetup } from "@server/telegram/setup.ts"
 import { queueDueBlogJobs } from "@server/blog/blog-publish-job.ts"
+import { readIndexNowSetup } from "@server/blog/blog-indexnow-job.ts"
+import { readCrosspostSetup } from "@server/blog/blog-crosspost-job.ts"
 import { loadDemoBlogPosts } from "@server/blog/seed-posts.ts"
 import { PostgresIdempotencyStore } from "@spy4x/server/idempotency"
 import { startIdempotencySweep } from "./idempotency-sweep.ts"
@@ -44,7 +46,7 @@ const signal = shutdownSignal()
 
 console.log("Worker started")
 
-// Mail goes out from here, never from the API: a reset link is made and sent in one step.
+// Mail goes out from here, never from the API: a reset code is made and sent in one step.
 const domain = processEnv.get("DOMAIN")
 if (!domain) {
   console.error("❌ Missing environment variable: DOMAIN")
@@ -113,6 +115,21 @@ const telegram = telegramSetup
   ? new TelegramClient({ token: telegramSetup.token, apiBaseUrl: telegramSetup.apiBaseUrl })
   : null
 
+// IndexNow (#418, docs/blog.md): with `INDEXNOW_KEY` and `MPA_DOMAIN`, a blog post that goes live,
+// changes, moves or leaves is announced to the search engines. A malformed key stops the worker.
+const indexNow = readIndexNowSetup(processEnv, processEnv.get("ENV") === "dev" ? "dev" : "prod")
+if (!indexNow && processEnv.get("INDEXNOW_KEY")?.trim()) {
+  console.warn("IndexNow is off: INDEXNOW_KEY is set, but MPA_DOMAIN is not")
+}
+
+// The Dev.to cross-post (#733, docs/blog.md): with `DEVTO_API_KEY` and `MPA_DOMAIN`, a live post
+// is posted to Dev.to once ever, with its canonical address on the website. The key stays in the
+// client and is never logged.
+const crosspost = readCrosspostSetup(processEnv, processEnv.get("ENV") === "dev" ? "dev" : "prod")
+if (!crosspost && processEnv.get("DEVTO_API_KEY")?.trim()) {
+  console.warn("The Dev.to cross-post is off: DEVTO_API_KEY is set, but MPA_DOMAIN is not")
+}
+
 // The public demo (docs/demo.md) gives every new account its own sample groups.
 const demo = isDemoMode(readEnvRecord([`DEMO_MODE`]))
 // The owner's private administrator on the demo, when `DEMO_ADMIN_PASSWORD` is set. A bad value
@@ -157,6 +174,8 @@ const processor = createOutboxProcessor(
   files,
   telegram,
   imageScratch,
+  indexNow,
+  crosspost,
 )
 
 // Starts the nightly chain the first time; a restart finds the waiting row and adds nothing. A run

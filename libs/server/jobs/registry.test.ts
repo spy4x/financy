@@ -2,7 +2,7 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import type postgres from "postgres"
 import { ONE_DAY_IN_MILLISECONDS } from "@spy4x/platform/universal/time-constants"
-import { BLOG_PUBLISH_JOB } from "@domain/blog"
+import { BLOG_CROSSPOST_JOB, BLOG_INDEXNOW_JOB, BLOG_PUBLISH_JOB } from "@domain/blog"
 import { BILLING_NOTICE_JOBS } from "../billing/billing-notices.ts"
 import { SEAT_SYNC_JOB } from "../billing/seat-sync.ts"
 import {
@@ -21,7 +21,7 @@ import { OUTBOX_CLEANUP_JOB } from "./jobs.ts"
 import { PASSWORD_RESET_MAIL_JOB } from "./password-reset-mail.ts"
 import { SIGN_IN_METHOD_MAIL_JOB } from "./sign-in-method-mail.ts"
 import { SIGN_UP_CODE_MAIL_JOB } from "./sign-up-code-mail.ts"
-import { SIGN_IN_LINK_MAIL_JOB } from "./sign-in-link-mail.ts"
+import { SIGN_IN_CODE_MAIL_JOB } from "./sign-in-code-mail.ts"
 import { STARTER_DATA_JOB } from "./starter-data.ts"
 import { IMAGE_PROCESS_JOB, IMAGE_WIDTHS_JOB } from "../files/images.ts"
 import { TELEGRAM_NOTIFICATION_JOB } from "./telegram-notification.ts"
@@ -40,7 +40,7 @@ const QUEUED_KINDS = [
   PASSWORD_RESET_MAIL_JOB,
   EMAIL_CODE_MAIL_JOB,
   SIGN_UP_CODE_MAIL_JOB,
-  SIGN_IN_LINK_MAIL_JOB,
+  SIGN_IN_CODE_MAIL_JOB,
   SIGN_IN_METHOD_MAIL_JOB,
   API_TOKEN_CREATED_MAIL_JOB,
   ACCOUNT_DELETION_MAIL_JOB,
@@ -58,6 +58,8 @@ const QUEUED_KINDS = [
   SUBSCRIBER_WELCOME_MAIL_JOB,
   SUBSCRIBER_SEND_ISSUE_JOB,
   BLOG_PUBLISH_JOB,
+  BLOG_INDEXNOW_JOB,
+  BLOG_CROSSPOST_JOB,
 ]
 
 const noop = () => async () => {}
