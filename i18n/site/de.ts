@@ -6,7 +6,8 @@ export default {
   "SiteNav.blog": "Blog",
   "SiteNav.github": "GitHub",
   "SiteFrame.skip": "Zum Inhalt springen",
-  "SiteFooter.pitch": "Ein Haushaltsbuch für dich oder die Familie, in beliebig vielen Währungen.",
+  "SiteFooter.pitch":
+    "Ein Haushaltsbuch für dich oder deine Familie, in beliebig vielen Währungen.",
   "SiteFooter.builtBy": "Öffentlich gebaut von <author>{name}</author>. AGPL-3.0-Lizenz.",
   "SiteFooter.contact": "Kontakt",
   "SiteFooter.product": "Produkt",
@@ -89,11 +90,11 @@ export default {
   "NewsletterPage.description": "Bestätige oder beende dein Abo des {site}-Newsletters.",
   "NewsletterPage.subscribeTitle": "{site}-Newsletter: erfahre, wann es fertig ist",
   "NewsletterPage.subscribeDescription":
-    "Eine E-Mail an dem Tag, an dem {site} nutzbar ist, und kurze Neuigkeiten während des Baus: was erschienen ist, was kaputtging, was ich gelernt habe. Einmal bestätigen; ein Klick bestellt ab.",
+    "Eine E-Mail an dem Tag, an dem {site} nutzbar ist, und kurze Neuigkeiten während der Entwicklung: was erschienen ist, was kaputtging, was ich gelernt habe. Einmal bestätigen, mit einem Klick abbestellen.",
   "NewsletterPage.about": "Über den Newsletter",
   "NewsletterPage.heading": "Erfahre, wann {site} nutzbar ist",
   "NewsletterPage.lead":
-    "Ich schreibe an dem Tag, an dem du es nutzen kannst, und ab und zu, was erschienen ist und was kaputtging. Keine anderen E-Mails.",
+    "Ich schreibe dir an dem Tag, an dem du loslegen kannst, und ab und zu darüber, was erschienen ist und was kaputtging. Keine anderen E-Mails.",
   "NewsletterPage.promiseConfirm":
     "Du bestätigst zuerst über einen Link, damit niemand sonst dich anmelden kann.",
   "NewsletterPage.promiseUnsubscribe":
@@ -127,55 +128,55 @@ export default {
   "Architecture.captionBottom": "mit Valkey und Grafana",
   "Architecture.label":
     "So hängt Seed zusammen: Die Web-App und die Website rufen die API auf, die API schreibt jede Änderung samt ihren Events in Postgres, und der Worker verschickt daraus Mails und Push-Nachrichten. Alles läuft auf einem Server.",
-  "Home.title": "Financy: Haushaltsbuch für mehrere Währungen, Open Source",
+  "Home.title": "Financy: Haushaltsbuch für mehrere Währungen, selbst gehostet",
   "Home.description":
-    "Kostenloses Open-Source-Haushaltsbuch für dich oder die Familie, in beliebig vielen Währungen. Selbst hosten (AGPL-3.0); Cloud folgt. Wird neu gebaut.",
+    "Kostenloses Open-Source-Haushaltsbuch für dich oder deine Familie, in beliebig vielen Währungen. Selbst hosten unter AGPL-3.0; eine bezahlte Cloud folgt. Wird gerade neu gebaut.",
   "HomeProof.tests": "Testdateien in den Apps und Bibliotheken, alle laufen in der CI",
   "HomeProof.licence": "Lizenz: kostenlos selbst zu hosten",
   "HomeStatus.signIn": "Anmeldung per E-Mail, mit Passkeys und Zwei-Faktor-Schutz",
-  "HomeStatus.groups": "Haushalte mit Rollen von Betrachter bis Inhaber, und Einladungen",
+  "HomeStatus.groups": "Haushalte mit Einladungen und Rollen von Betrachter bis Inhaber",
   "HomeStatus.export": "Einen Haushalt in eine Datei exportieren und wieder importieren",
-  "HomeStatus.realtime": "Live-Updates auf jedem Gerät, und eine App, die offline öffnet",
+  "HomeStatus.realtime": "Live-Updates auf jedem Gerät und eine App, die auch offline startet",
   "HomeStatus.languages": "Die App und diese Website in neun Sprachen",
   "HomeFaq.freeQuestion": "Ist Financy kostenlos?",
   "HomeFaq.freeAnswer":
-    "Selbst hosten ist unter AGPL-3.0 kostenlos; du zahlst nur deinen Server. Die Cloud wird ein bezahlter Tarif.",
+    "Selbst hosten ist unter AGPL-3.0 kostenlos; du zahlst nur für deinen Server. Die Cloud wird ein bezahlter Tarif.",
   "HomeHero.title":
-    "Financy ist ein kostenloses Open-Source-Haushaltsbuch (AGPL-3.0) für dich oder die Familie, in beliebig vielen Währungen: selbst hosten oder die kostenpflichtige Cloud nutzen.",
-  "HomeHero.github": "Den Bau auf GitHub verfolgen",
+    "Financy ist ein kostenloses Open-Source-Haushaltsbuch (AGPL-3.0) für dich oder deine Familie, in beliebig vielen Währungen: selbst hosten oder die kostenpflichtige Cloud nutzen.",
+  "HomeHero.github": "Die Entwicklung auf GitHub verfolgen",
   "HomeHero.status":
-    "Wird öffentlich neu gebaut, noch nicht nutzbar. Stand: {date}. <status>Wo es steht</status>",
+    "Wird öffentlich neu gebaut und ist noch nicht nutzbar. Stand: {date}. <status>Zum aktuellen Stand</status>",
   "HomeQuickStart.terminal": "Terminal",
-  "HomeStatus.title": "Wo der Neubau steht",
+  "HomeStatus.title": "So weit ist der Neubau",
   "HomeStatus.works": "Funktioniert heute",
   "HomeStatus.notBuilt": "Noch nicht gebaut",
   "HomeWho.eyebrow": "Für wen",
   "HomeWho.title": "Geld in mehr als einer Währung",
   "HomeNewsletter.title": "Erfahre, wann {site} nutzbar ist",
   "HomeNewsletter.lead":
-    "Ich schreibe dir an dem Tag, an dem du es nutzen kannst, und ab und zu kurz, was neu ist. Sonst nichts; ein Klick bestellt ab.",
+    "Ich schreibe dir an dem Tag, an dem du loslegen kannst, und ab und zu kurz, was neu ist. Sonst nichts; abbestellen geht mit einem Klick.",
   "HomeNewsletter.hint": "Du bestätigst zuerst per E-Mail.",
   "HomeFaq.eyebrow": "Fragen",
   "HomeFaq.title": "Bevor du loslegst",
   "Pricing.title": "Financy-Preise: kostenlos selbst hosten, Cloud später",
   "Pricing.description":
-    "Financy ist unter AGPL-3.0 kostenlos selbst zu hosten. Der Betrieb kostet einen Linux-Server zum Preis deines Hosters. Die kostenpflichtige Cloud ist noch nicht offen.",
+    "Financy ist unter AGPL-3.0 kostenlos selbst zu hosten. Für den Betrieb brauchst du nur einen Linux-Server zum Preis deines Hosters. Die kostenpflichtige Cloud ist noch nicht gestartet.",
   "Pricing.crumb": "Preise",
   "Pricing.saving":
     "{plan} kostet {monthly} im Monat oder {yearly} im Jahr: {saving} weniger als bei monatlicher Zahlung.",
   "PricingFaq.paidQuestion": "Wird es eine bezahlte Version geben?",
   "PricingFaq.paidAnswer":
-    "Ja: eine kostenpflichtige Cloud für alle, die keinen Server betreiben wollen. Sie nutzt denselben Code, und ihr Preis steht auf dieser Seite, bevor sie öffnet.",
+    "Ja: eine kostenpflichtige Cloud für alle, die keinen eigenen Server betreiben wollen. Sie nutzt denselben Code, und ihr Preis steht auf dieser Seite, bevor sie startet.",
   "PricingFaq.serverQuestion": "Was kostet ein Server?",
   "PricingFaq.serverAnswer":
-    "Was dein Hoster für einen Linux-Rechner mit Docker verlangt. Financy selbst hat keine Gebühren pro Person.",
+    "Was dein Hoster für einen Linux-Rechner mit Docker verlangt. Financy selbst verlangt keine Gebühren pro Person.",
   "PricingFaq.oweQuestion": "Darf ich den Code ändern?",
   "PricingFaq.oweAnswer":
-    "Ja. Die AGPL-3.0 erlaubt, ihn zu ändern und zu betreiben. Bietest du deine geänderte Version anderen über ein Netzwerk an, teilst du ihren Quellcode unter derselben Lizenz.",
+    "Ja. Die AGPL-3.0 erlaubt dir, ihn zu ändern und zu betreiben. Bietest du deine geänderte Version anderen über ein Netzwerk an, musst du ihren Quellcode unter derselben Lizenz teilen.",
   "PricingHero.eyebrow": "Preise",
-  "PricingHero.title": "Financy selbst zu hosten ist kostenlos. Das kostet der Betrieb.",
+  "PricingHero.title": "Financy selbst zu hosten ist kostenlos. Das kostet dich der Betrieb.",
   "PricingHero.lead":
-    "Financy ist ein kostenloses Open-Source-Haushaltsbuch (AGPL-3.0). Selbst gehostet zahlst du nur den Server, auf dem es läuft. Die kostenpflichtige Cloud ist noch nicht offen.",
+    "Financy ist ein kostenloses Open-Source-Haushaltsbuch (AGPL-3.0). Selbst gehostet zahlst du nur den Server, auf dem es läuft. Die kostenpflichtige Cloud ist noch nicht gestartet.",
   "PricingFaq.title": "Zum Preis",
   "PricingWays.eyebrow": "Was du zahlst",
   "PricingWays.title": "Was Financy selbst zu hosten kostet",
@@ -219,13 +220,13 @@ export default {
   "FeatureTierSettled.eyebrow": "Funktioniert heute",
   "FeatureTierSettled.title": "Das Fundament für das Geld deines Haushalts",
   "FeatureTierSettled.lead":
-    "Diese Teile funktionieren und werden in der CI getestet. Das Geld selbst, Konten in jeder Währung und ihre Buchungen, kommt als Nächstes.",
+    "Diese Teile funktionieren und werden in der CI getestet. Als Nächstes kommt das Geld selbst: Konten in jeder Währung und ihre Buchungen.",
   "FeatureTierSettled.status":
-    "Die Anmeldung mit Google und GitHub braucht eigene Schlüssel des Servers, deshalb startet eine frisch selbst gehostete Kopie mit der Anmeldung per E-Mail.",
+    "Die Anmeldung mit Google und GitHub braucht eigene Schlüssel für den Server, deshalb bietet eine frische Installation zunächst nur die Anmeldung per E-Mail.",
   "FeatureSignIn.nav": "Konten und Anmeldung",
   "FeatureSignIn.title": "Anmeldung, erledigt",
   "FeatureSignIn.lead":
-    "Man registriert sich mit E-Mail-Adresse und Passwort und bestätigt die Adresse mit einem Code. Ein vergessenes Passwort lässt sich zurücksetzen; man kann sich mit Google oder GitHub, mit einem Passkey oder mit einem Anmeldecode per E-Mail anmelden. Eine Authenticator-App fügt Zwei-Faktor-Schutz (2FA) hinzu, und man sieht jedes angemeldete Gerät und kann die anderen abmelden.",
+    "Du registrierst dich mit E-Mail-Adresse und Passwort und bestätigst die Adresse mit einem Code. Ein vergessenes Passwort setzt du zurück; anmelden kannst du dich mit Google oder GitHub, mit einem Passkey oder mit einem Code per E-Mail. Eine Authenticator-App ergänzt den Zwei-Faktor-Schutz (2FA), und du siehst jedes Gerät, auf dem du angemeldet bist, und kannst die anderen abmelden.",
   "FeatureSignIn.fact1":
     "Passwörter mit PBKDF2-SHA-256 über Web Crypto gehasht, standardmäßig mit 600.000 Runden",
   "FeatureSignIn.fact2": "Signierte Sitzungscookies und ein Audit-Trail für jedes Anmeldeereignis",
@@ -234,40 +235,41 @@ export default {
   "FeatureTeams.nav": "Haushalte und Rollen",
   "FeatureTeams.title": "Ein Haushalt, jede Person mit eigenem Login",
   "FeatureTeams.lead":
-    "Ein Haushalt (in der App eine Gruppe) sind die Menschen, die sich Geld teilen. Lade Partner oder Familie ein, gib jeder Person eine Rolle von Betrachter bis Inhaber und übertrage den Haushalt, wenn nötig. Ein gelöschter Haushalt lässt sich 30 Tage lang wiederherstellen, und das Aktivitätsprotokoll zeigt, wer was geändert hat.",
-  "FeatureTeams.fact1": "Der Haushalt ist die eine Grenze, gegen die alle Daten geprüft werden",
+    "Ein Haushalt (in der App eine Gruppe) sind die Menschen, die sich Geld teilen. Lade deine Partnerin, deinen Partner oder die Familie ein, gib jeder Person eine Rolle von Betrachter bis Inhaber und übertrage die Inhaberschaft, wenn nötig. Ein gelöschter Haushalt lässt sich 30 Tage lang wiederherstellen, und das Aktivitätsprotokoll zeigt, wer was geändert hat.",
+  "FeatureTeams.fact1": "Der Haushalt ist die eine Grenze, an der alle Daten geprüft werden",
   "FeatureTeams.fact2": "Jede Person sieht nur die Haushalte, zu denen sie gehört",
-  "FeatureTeams.fact3": "Einladungen, Rollenwechsel und Übertragung, jeweils mit eigenen Tests",
+  "FeatureTeams.fact3":
+    "Einladungen, Rollenwechsel und Übertragung der Inhaberschaft, jeweils mit eigenen Tests",
   "FeatureTeams.code": "Code der Gruppen lesen",
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Deine Daten gehen mit dir",
   "FeatureExport.lead":
-    "Der Inhaber kann einen Haushalt jederzeit in eine offene JSON-Datei exportieren und später als neuen Haushalt importieren. Ein Import überschreibt nie das Original.",
+    "Wer Inhaber ist, kann einen Haushalt jederzeit in eine offene JSON-Datei exportieren und später als neuen Haushalt importieren. Ein Import überschreibt nie das Original.",
   "FeatureExport.fact1":
-    "Die ganze Datei wird geprüft, bevor etwas geschrieben wird, dann in einem Schritt importiert",
+    "Die ganze Datei wird geprüft, bevor etwas gespeichert wird, und dann in einem Schritt importiert",
   "FeatureExport.fact2":
-    "Jeder Datensatz bekommt eine neue ID, also kollidiert ein Import nie mit Vorhandenem",
+    "Jeder Datensatz bekommt eine neue ID, daher kollidiert ein Import nie mit vorhandenen Daten",
   "FeatureExport.code": "Code des Exports lesen",
   "FeatureLanguages.nav": "Sprachen",
   "FeatureLanguages.title": "In neun Sprachen",
   "FeatureLanguages.lead":
-    "Die App und diese Website sprechen {languages}. Jede Person wählt ihre Sprache in der App, also kann ein Haushalt mehrere nutzen.",
+    "Die App und diese Website gibt es auf {languages}. Jede Person wählt ihre Sprache in der App, so kann ein Haushalt mehrere Sprachen nutzen.",
   "FeatureLanguages.fact1":
     "Ein Katalog pro Sprache, geprüft von einem Test, der jede fehlende Nachricht nennt",
   "FeatureLanguages.fact2": "Zahlen und Daten über das Intl des Browsers",
-  "FeatureLanguages.fact3": "Arabische Seiten lesen sich von rechts nach links",
+  "FeatureLanguages.fact3": "Arabische Seiten laufen von rechts nach links",
   "FeatureLanguages.code": "Übersetzungsanleitung lesen",
   "FeatureRealtime.nav": "Live-Sync",
   "FeatureRealtime.title": "Änderungen erscheinen auf jedem Gerät ohne Neuladen",
   "FeatureRealtime.lead":
-    "Ändert eine Person im Haushalt etwas, sehen es alle anderen sofort, auf jedem offenen Gerät. Ein Laptop, der aus dem Ruhezustand erwacht, holt nach, was er verpasst hat.",
+    "Ändert eine Person im Haushalt etwas, sehen es alle anderen sofort, auf jedem offenen Gerät. Ein Laptop, der aus dem Ruhezustand aufwacht, holt nach, was er verpasst hat.",
   "FeatureRealtime.fact1": "Ein Standard-WebSocket, mit einer laufenden Nummer an jeder Änderung",
   "FeatureRealtime.fact2": "Ein Gerät, das sich neu verbindet, holt nach, was es verpasst hat",
   "FeatureRealtime.code": "Echtzeit-Design lesen",
   "FeatureOffline.nav": "Offline-App",
   "FeatureOffline.title": "Eine App, die ohne Netz startet",
   "FeatureOffline.lead":
-    "Installiere Financy auf Handy oder Computer, und es öffnet ohne Netz und zeigt, was es zuletzt gesehen hat.",
+    "Installiere Financy auf Handy oder Computer: Es startet auch ohne Netz und zeigt, was es zuletzt geladen hat.",
   "FeatureOffline.fact1":
     "Eine lokale Kopie jeder Liste in IndexedDB und eine Schreibwarteschlange mit Idempotenzschlüsseln",
   "FeatureOffline.fact2":
@@ -291,15 +293,15 @@ export default {
     "Postgres. Die Migrationen, Abfragen und Integrationstests setzen sie voraus.",
   "FeaturesFaq.nativeQuestion": "Gibt es eine App fürs Handy?",
   "FeaturesFaq.nativeAnswer":
-    "Noch nicht im Store. Heute installiert sich die Web-App aus dem Browser auf Handys und Computern und öffnet ohne Netz.",
+    "Noch nicht in den App-Stores. Die Web-App lässt sich schon heute aus dem Browser auf Handy und Computer installieren und startet auch ohne Netz.",
   "Features.title": "Financy-Funktionen: Haushalte, Sync, offline, selbst hosten",
   "Features.description":
     "Was Financy heute kann: Haushalte mit Rollen, Live-Updates auf jedem Gerät, eine App, die offline funktioniert, Export, neun Sprachen und Selbsthosting. Konten und Budgets kommen als Nächstes.",
   "FeaturesHero.title": "Was Financy heute kann, und was als Nächstes kommt",
   "FeaturesHero.lead":
-    "Financy wird neu gebaut. Was heute funktioniert, ist das Fundament für das Geld eines Haushalts: Anmeldung, gemeinsamer Zugang mit Rollen, Live-Updates, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt seinen Code.",
+    "Financy wird neu gebaut. Was heute funktioniert, ist das Fundament für das Geld eines Haushalts: Anmeldung, gemeinsamer Zugang mit Rollen, Live-Updates, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt auf seinen Code.",
   "FeaturesHero.note":
-    "Konten, Buchungen und Budgets sind noch nicht gebaut. <status>Sehen, wo der Neubau steht</status>.",
+    "Konten, Buchungen und Budgets sind noch nicht gebaut. <status>Zum aktuellen Stand des Neubaus</status>.",
   "FeaturesFaq.title": "Kann Financy das?",
   "FeatureSection.issue": "Issue #{number}",
   "FeatureSection.forDevelopers": "Für Entwickler",
@@ -426,7 +428,7 @@ export default {
     "Noch nicht ganz. Die API und der Hintergrund-Worker laufen schon auf Deno, Node oder Bun, gewählt mit einer Einstellung (APP_RUNTIME). Die Website und die Entwicklungswerkzeuge brauchen weiterhin Deno, daran wird gearbeitet (#623). Den Plan dazu findest du auf der Funktionsseite.",
   "FeaturePageMissing.title": "Diese Funktionsseite gibt es hier nicht",
   "FeaturePageMissing.description":
-    "Sie ist vielleicht umgezogen. Jede Funktion steht auf der Seite mit den Funktionen.",
+    "Vielleicht ist sie umgezogen. Alle Funktionen findest du auf der Funktionsseite.",
   "FeaturePageMissing.action": "Alle Funktionen ansehen",
   "FeaturePageSignIn.name": "Anmeldung",
   "FeaturePageSignIn.title": "Login für dein SaaS, ohne externen Auth-Dienst",
@@ -554,13 +556,13 @@ export default {
   "FeaturePageDeploy.backupQuestion": "Gibt es ein Backup?",
   "FeaturePageDeploy.backupAnswer":
     "Ja. Ein optionales tägliches, verschlüsseltes restic-Backup der Datenbank, mit einer schriftlichen Anleitung zur Wiederherstellung.",
-  "ErrorPage.status": "Sehen, was heute funktioniert",
+  "ErrorPage.status": "Ansehen, was heute funktioniert",
   "HomeHero.notify": "Benachrichtigen lassen",
   "HomeProof.languages": "Sprachen in der App und auf dieser Website",
   "HomeStatus.selfHost": "Betrieb auf deinem eigenen Server mit Docker Compose",
-  "HomeStatus.building": "Wird gerade gebaut",
+  "HomeStatus.building": "In Arbeit",
   "HomeStatus.accounts": "Konten in jeder Währung",
-  "HomeStatus.transactions": "Einnahmen und Ausgaben, mit dem ursprünglichen Betrag",
+  "HomeStatus.transactions": "Einnahmen und Ausgaben, der ursprüngliche Betrag bleibt erhalten",
   "HomeStatus.transfers": "Überweisungen zwischen Konten, auch über Währungen hinweg",
   "HomeStatus.month": "Das Geld dieses Monats auf einen Blick",
   "HomeStatus.later":
@@ -573,20 +575,21 @@ export default {
     "Teilt das Geld des Haushalts mit eigenem Login und trägt Ausgaben in Sekunden ein.",
   "HomeWho.selfHostTitle": "Wer selbst hostet",
   "HomeWho.selfHostText":
-    "Betreibt es auf dem eigenen Server, liest den Code und behält die Daten zu Hause.",
+    "Betreibt Financy auf dem eigenen Server, liest den Code und behält die Daten zu Hause.",
   "HomeWays.title": "Selbst hosten oder auf die Cloud warten",
   "HomeWays.selfHostTitle": "Selbst hosten",
   "HomeWays.selfHostText":
     "Kostenlos unter der AGPL-3.0-Lizenz. Es läuft mit Docker Compose auf deinem Server, und deine Daten bleiben dort.",
   "HomeWays.selfHostLink": "Den Code auf GitHub lesen",
   "HomeWays.cloudTitle": "Die Cloud",
-  "HomeWays.cloudText": "Noch nicht offen. Derselbe Code, für dich betrieben, als bezahlter Tarif.",
+  "HomeWays.cloudText":
+    "Noch nicht gestartet. Derselbe Code, für dich betrieben, als bezahlter Tarif.",
   "HomeFaq.useQuestion": "Kann ich Financy heute schon nutzen?",
   "HomeFaq.useAnswer":
     "Noch nicht. Anmeldung, Haushalte und Synchronisierung funktionieren; Konten und Buchungen werden gerade gebaut.",
-  "HomeFaq.currencyQuestion": "Welche Währungen wird es können?",
+  "HomeFaq.currencyQuestion": "Welche Währungen wird Financy unterstützen?",
   "HomeFaq.currencyAnswer":
-    "Jede Mischung, Kryptowährungen eingeschlossen; jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten. Geplant, noch nicht gebaut.",
+    "Beliebige, auch Kryptowährungen; jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten. Geplant, aber noch nicht gebaut.",
   "HomeFaq.bankQuestion": "Verbindet sich Financy mit meiner Bank?",
   "HomeFaq.bankAnswer": "Nein. Der Import von Kontoauszügen ist für die erste Version geplant.",
   "HomeFaq.stopsQuestion": "Was passiert, wenn Financy eingestellt wird?",

@@ -54,12 +54,12 @@ export default {
   "SubscribeForm.sentTitle": "受信トレイを確認してください",
   "SubscribeForm.sentText":
     "購読を確認するためのリンクをお送りしました。リンクの有効期限は3日間です。",
-  "SubscribeForm.title": "メールで知らせてもらう",
+  "SubscribeForm.title": "メールでお知らせを受け取る",
   "SubscribeForm.intro":
     "メールアドレスを入力してください。確認用のリンクをお送りします。どのメールにも購読解除のリンクが付いています。",
   "SubscribeForm.email": "メールアドレス",
   "SubscribeForm.sending": "送信中…",
-  "SubscribeForm.submit": "公開を知らせてもらう",
+  "SubscribeForm.submit": "通知を受け取る",
   "SubscriptionConfirm.askAgain": "新しいリンクをリクエスト",
   "SubscriptionConfirm.doneTitle": "購読が完了しました",
   "SubscriptionConfirm.doneText":
@@ -87,13 +87,13 @@ export default {
   "Unsubscribe.submit": "購読を解除する",
   "NewsletterPage.title": "ニュースレター",
   "NewsletterPage.description": "{site}ニュースレターの購読を確認、または解除します。",
-  "NewsletterPage.subscribeTitle": "{site} ニュースレター：使えるようになったら知らせます",
+  "NewsletterPage.subscribeTitle": "{site} ニュースレター：使えるようになったらお知らせします",
   "NewsletterPage.subscribeDescription":
-    "{site} が使えるようになった日に1通、開発中は短いニュースを。リリースしたもの、壊れたもの、学んだこと。確認は一度だけ、購読解除はワンクリックです。",
+    "{site} が使えるようになった日に1通、開発中は短いニュースをお届けします：リリースしたもの、壊れたもの、学んだこと。確認は一度だけ、購読解除はワンクリックです。",
   "NewsletterPage.about": "ニュースレターについて",
-  "NewsletterPage.heading": "{site} が使えるようになったら知らせます",
+  "NewsletterPage.heading": "{site} が使えるようになったらお知らせします",
   "NewsletterPage.lead":
-    "使い始められる日に書きます。ときどき、リリースしたものと壊れたものについても。ほかのメールは送りません。",
+    "使い始められる日にメールでお知らせします。ときどき、リリースしたものや壊れたものについても書きます。ほかのメールは送りません。",
   "NewsletterPage.promiseConfirm":
     "最初にリンクで確認するので、他人が勝手にあなたを登録することはできません。",
   "NewsletterPage.promiseUnsubscribe":
@@ -133,10 +133,10 @@ export default {
   "HomeProof.tests": "アプリとライブラリのテストファイル数。すべてCIで実行",
   "HomeProof.licence": "ライセンス：セルフホストは無料",
   "HomeStatus.signIn": "メールアドレス、パスキー、2段階認証でのログイン",
-  "HomeStatus.groups": "閲覧者からオーナーまでのロールと招待がある世帯",
-  "HomeStatus.export": "世帯をファイルに書き出し、また取り込む",
+  "HomeStatus.groups": "招待機能と、閲覧者からオーナーまでのロールがある世帯",
+  "HomeStatus.export": "世帯をファイルに書き出し、あとで取り込み直す",
   "HomeStatus.realtime": "すべての端末へのリアルタイム更新と、オフラインで開けるアプリ",
-  "HomeStatus.languages": "アプリとこのサイトは9言語",
+  "HomeStatus.languages": "アプリとこのサイトは9言語に対応",
   "HomeFaq.freeQuestion": "Financy は無料ですか？",
   "HomeFaq.freeAnswer":
     "セルフホストは AGPL-3.0 で無料です。払うのはサーバー代だけです。クラウドは有料プランになります。",
@@ -149,8 +149,8 @@ export default {
   "HomeStatus.works": "現在使えるもの",
   "HomeStatus.notBuilt": "まだないもの",
   "HomeWho.eyebrow": "こんな人のために",
-  "HomeWho.title": "お金が複数の通貨にまたがる人",
-  "HomeNewsletter.title": "{site} が使えるようになったら知らせます",
+  "HomeWho.title": "複数の通貨でお金を扱う人へ",
+  "HomeNewsletter.title": "{site} が使えるようになったらお知らせします",
   "HomeNewsletter.lead":
     "使い始められる日にメールを送ります。ときどき、何をリリースしたかの短いお知らせも。それ以外は送りません。購読解除はワンクリックです。",
   "HomeNewsletter.hint": "最初にメールで確認していただきます。",
@@ -162,7 +162,7 @@ export default {
   "Pricing.crumb": "料金",
   "Pricing.saving":
     "{plan} は月額 {monthly}、または年額 {yearly} です。月払いより {saving} お得です。",
-  "PricingFaq.paidQuestion": "有料版はできますか？",
+  "PricingFaq.paidQuestion": "有料版は出ますか？",
   "PricingFaq.paidAnswer":
     "はい。サーバーを運用したくない人のための有料クラウドです。同じコードで動き、料金は公開前にこのページに載せます。",
   "PricingFaq.serverQuestion": "サーバー代はいくらですか？",
@@ -170,20 +170,20 @@ export default {
     "Docker が動く Linux マシン1台に、ホスティング会社が請求する額です。Financy 自体にユーザーごとの料金はありません。",
   "PricingFaq.oweQuestion": "コードを変更できますか？",
   "PricingFaq.oweAnswer":
-    "はい。AGPL-3.0 では変更して動かせます。変更版をネットワーク越しにほかの人へ提供する場合は、そのソースコードを同じライセンスで公開します。",
+    "はい。AGPL-3.0 では変更して動かせます。変更版をネットワーク越しにほかの人へ提供する場合は、そのソースコードを同じライセンスで公開する必要があります。",
   "PricingHero.eyebrow": "料金",
-  "PricingHero.title": "Financy のセルフホストは無料です。動かす費用はこちら。",
+  "PricingHero.title": "Financy のセルフホストは無料です。運用にかかる費用はこちら。",
   "PricingHero.lead":
     "Financy は無料のオープンソース家計簿（AGPL-3.0）です。セルフホストなら、払うのは動かすサーバー代だけです。有料クラウドはまだ公開していません。",
   "PricingFaq.title": "料金について",
   "PricingWays.eyebrow": "かかる費用",
   "PricingWays.title": "Financy をセルフホストする費用",
   "PricingWays.lead":
-    "コードは AGPL-3.0 で無料です。ライセンスキーも、出し惜しみする機能もありません。",
+    "コードは AGPL-3.0 で無料です。ライセンスキーも、有料に回した機能もありません。",
   "PricingWays.useTitle": "Financy をセルフホスト",
   "PricingWays.useUnit": "AGPL-3.0 ライセンス、アカウント不要",
   "PricingWays.useText":
-    "AGPL-3.0 のソースコード一式。すべての機能とすべての更新を、あなたと世帯のために。",
+    "AGPL-3.0 のソースコード一式。すべての機能とすべての更新を、あなたとご家族に。",
   "PricingWays.runTitle": "本番環境で運用する",
   "PricingWays.runPrice": "サーバー1台",
   "PricingWays.runUnit": "ホスティング会社の料金",
@@ -214,9 +214,9 @@ export default {
   "FeatureTierSettled.eyebrow": "今できること",
   "FeatureTierSettled.title": "世帯のお金を載せる土台",
   "FeatureTierSettled.lead":
-    "これらの部分は動いていて、CI でテストされています。お金そのもの、つまりどの通貨でも使える口座とその取引は次です。",
+    "これらの部分はすでに動いていて、CI でテストされています。次はお金そのもの、つまりどの通貨でも使える口座とその取引です。",
   "FeatureTierSettled.status":
-    "Google と GitHub でのログインにはサーバー独自のキーが必要なため、新しくセルフホストしたコピーはメールでのログインから始まります。",
+    "Google と GitHub でのログインにはサーバー独自のキーが必要なため、新しくセルフホストした環境では、まずメールでのログインだけが使えます。",
   "FeatureSignIn.nav": "アカウントとログイン",
   "FeatureSignIn.title": "ログインは完成済み",
   "FeatureSignIn.lead":
@@ -248,12 +248,12 @@ export default {
   "FeatureLanguages.fact1":
     "言語ごとにひとつのカタログがあり、足りないメッセージをすべて挙げるテストで確認します",
   "FeatureLanguages.fact2": "数値と日付はブラウザ標準の Intl で表示します",
-  "FeatureLanguages.fact3": "アラビア語のページは右から左に読みます",
+  "FeatureLanguages.fact3": "アラビア語のページは右から左に表示されます",
   "FeatureLanguages.code": "翻訳ガイドを読む",
   "FeatureRealtime.nav": "リアルタイム同期",
   "FeatureRealtime.title": "変更は再読み込みなしで全端末に表示",
   "FeatureRealtime.lead":
-    "世帯の誰かが何かを変えると、ほかの人は開いているすべての端末ですぐに見られます。スリープから復帰したノートパソコンは、見逃した分を取り戻します。",
+    "世帯の誰かが何かを変えると、ほかの人は開いているすべての端末ですぐに見られます。スリープから復帰したノートパソコンは、その間の変更を取り込みます。",
   "FeatureRealtime.fact1": "標準の WebSocket で、変更ごとに通し番号が付きます",
   "FeatureRealtime.fact2": "再接続した端末は見逃した分を取得します",
   "FeatureRealtime.code": "リアルタイムの設計を読む",
@@ -418,7 +418,7 @@ export default {
     "まだ一部だけです。APIとバックグラウンドのワーカーは、すでに設定ひとつ（APP_RUNTIME）でDeno・Node・Bunのどれでも動きます。Webサイトと開発ツールは今もDenoが必要で、こちらは作業中です（#623）。機能ページのランタイム計画をご覧ください。",
   "FeaturePageMissing.title": "この機能ページは見つかりません",
   "FeaturePageMissing.description":
-    "移動した可能性があります。すべての機能は機能ページにあります。",
+    "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",
   "FeaturePageMissing.action": "すべての機能を見る",
   "FeaturePageSignIn.name": "ログイン",
   "FeaturePageSignIn.title": "SaaSのログイン機能を、認証サービスなしで",
@@ -544,7 +544,7 @@ export default {
   "FeaturePageDeploy.backupAnswer":
     "はい。オプトインで、データベースの暗号化resticバックアップを毎日取れます。復元手順も文書化されています。",
   "ErrorPage.status": "今できることを見る",
-  "HomeHero.notify": "公開を知らせてもらう",
+  "HomeHero.notify": "通知を受け取る",
   "HomeProof.languages": "言語（アプリとこのサイト）",
   "HomeStatus.selfHost": "Docker Compose で自分のサーバーで動かす",
   "HomeStatus.building": "開発中",
@@ -567,7 +567,8 @@ export default {
     "AGPL-3.0 ライセンスで無料。Docker Compose であなたのサーバー上で動き、データはそこに残ります。",
   "HomeWays.selfHostLink": "GitHub でコードを読む",
   "HomeWays.cloudTitle": "クラウド",
-  "HomeWays.cloudText": "まだ公開していません。同じコードを代わりに運用する有料プランです。",
+  "HomeWays.cloudText":
+    "まだ公開していません。同じコードを、サーバーの管理なしで使える有料プランです。",
   "HomeFaq.useQuestion": "Financy は今使えますか？",
   "HomeFaq.useAnswer":
     "まだです。ログイン、世帯、同期は動いています。口座と取引は今作っているところです。",
@@ -576,7 +577,7 @@ export default {
     "暗号資産を含め、どんな組み合わせでも。各取引は換算後の金額の隣に元の金額を残します。計画中で、まだできていません。",
   "HomeFaq.bankQuestion": "Financy は銀行と連携しますか？",
   "HomeFaq.bankAnswer": "いいえ。銀行明細の取り込みは最初のバージョンで予定しています。",
-  "HomeFaq.stopsQuestion": "Financy が終わってしまったら？",
+  "HomeFaq.stopsQuestion": "Financy の開発が止まったら？",
   "HomeFaq.stopsAnswer":
     "コードは AGPL-3.0 で GitHub にあるので誰でも動かし続けられますし、データはいつでも書き出せます。",
   "SiteFooter.aboutHint": "（antonshubin.comが開きます）",

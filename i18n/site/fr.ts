@@ -6,7 +6,7 @@ export default {
   "SiteNav.blog": "Blog",
   "SiteNav.github": "GitHub",
   "SiteFrame.skip": "Aller au contenu",
-  "SiteFooter.pitch": "Un suivi de budget pour vous ou votre famille, dans toutes vos devises.",
+  "SiteFooter.pitch": "Le suivi de vos finances, seul ou en famille, dans toutes vos devises.",
   "SiteFooter.builtBy": "Construit en public par <author>{name}</author>. Licence AGPL-3.0.",
   "SiteFooter.contact": "Contact",
   "SiteFooter.product": "Produit",
@@ -52,12 +52,12 @@ export default {
   "SubscribeForm.sentTitle": "Consultez votre boîte de réception",
   "SubscribeForm.sentText":
     "Nous vous avons envoyé un lien pour confirmer votre abonnement. Il reste valable trois jours.",
-  "SubscribeForm.title": "Être prévenu par e-mail",
+  "SubscribeForm.title": "Recevoir un e-mail au lancement",
   "SubscribeForm.intro":
     "Saisissez votre adresse e-mail. Nous vous enverrons un lien pour la confirmer, et chaque e-mail contient un lien de désabonnement.",
   "SubscribeForm.email": "Adresse e-mail",
   "SubscribeForm.sending": "Envoi…",
-  "SubscribeForm.submit": "Être prévenu",
+  "SubscribeForm.submit": "Me prévenir",
   "SubscriptionConfirm.askAgain": "Demander un nouveau lien",
   "SubscriptionConfirm.doneTitle": "Vous êtes abonné",
   "SubscriptionConfirm.doneText":
@@ -86,13 +86,13 @@ export default {
   "NewsletterPage.title": "Newsletter",
   "NewsletterPage.description":
     "Confirmez ou mettez fin à votre abonnement à la newsletter de {site}.",
-  "NewsletterPage.subscribeTitle": "Newsletter de {site} : sachez quand il sera prêt",
+  "NewsletterPage.subscribeTitle": "Newsletter de {site} : sachez quand il sera prêt",
   "NewsletterPage.subscribeDescription":
-    "Un e-mail le jour où {site} sera utilisable, et de courtes nouvelles pendant sa construction : ce qui est sorti, ce qui a cassé, ce que j’ai appris. Une confirmation ; un clic pour se désabonner.",
+    "Un e-mail le jour où {site} sera utilisable, et de courtes nouvelles pendant sa construction : ce qui est sorti, ce qui a cassé, ce que j’ai appris. Une confirmation suffit ; un clic pour vous désabonner.",
   "NewsletterPage.about": "À propos de la newsletter",
   "NewsletterPage.heading": "Sachez quand {site} sera prêt",
   "NewsletterPage.lead":
-    "J’écrirai le jour où vous pourrez l’utiliser, et de temps en temps sur ce qui est sorti et ce qui a cassé. Aucun autre e-mail.",
+    "Je vous écrirai le jour où vous pourrez commencer à l’utiliser, et de temps en temps pour raconter ce qui est sorti et ce qui a cassé. Aucun autre e-mail.",
   "NewsletterPage.promiseConfirm":
     "Vous confirmez d’abord par un lien : personne d’autre ne peut vous inscrire.",
   "NewsletterPage.promiseUnsubscribe":
@@ -126,26 +126,26 @@ export default {
   "Architecture.captionBottom": "avec Valkey et Grafana",
   "Architecture.label":
     "Comment Seed s’articule : l’application web et le site web appellent l’API, l’API écrit chaque modification et ses événements dans Postgres, et le worker envoie les e-mails et les notifications push à partir de ces événements. Tout tourne sur un seul serveur.",
-  "Home.title": "Financy : budget familial multidevise, auto-hébergé",
+  "Home.title": "Financy : finances personnelles multidevises, auto-hébergé",
   "Home.description":
-    "Suivi de budget gratuit et open source (AGPL-3.0), seul ou en famille, dans toutes vos devises. Auto-hébergez-le ; cloud payant plus tard. En reconstruction.",
+    "Suivez vos finances gratuitement, seul ou en famille, dans toutes vos devises. Open source (AGPL-3.0) et auto-hébergeable ; cloud payant plus tard. En reconstruction.",
   "HomeProof.tests":
     "fichiers de tests dans les applications et les bibliothèques, tous exécutés en CI",
-  "HomeProof.licence": "licence : gratuit en auto-hébergement",
+  "HomeProof.licence": "licence : gratuit en auto-hébergement",
   "HomeStatus.signIn": "Connexion par e-mail, clés d’accès et double authentification",
-  "HomeStatus.groups": "Des foyers avec des rôles de lecteur à propriétaire, et des invitations",
+  "HomeStatus.groups": "Des foyers avec invitations et rôles, de lecteur à propriétaire",
   "HomeStatus.export": "Exporter un foyer dans un fichier, et le réimporter",
   "HomeStatus.realtime":
     "Mises à jour instantanées sur chaque appareil, et une app qui s’ouvre hors ligne",
   "HomeStatus.languages": "L’app et ce site en neuf langues",
-  "HomeFaq.freeQuestion": "Financy est-il gratuit ?",
+  "HomeFaq.freeQuestion": "Financy est-il gratuit ?",
   "HomeFaq.freeAnswer":
-    "L’auto-hébergement est gratuit sous AGPL-3.0 ; vous ne payez que votre serveur. Le cloud sera une offre payante.",
+    "L’auto-hébergement est gratuit sous AGPL-3.0 ; vous ne payez que votre serveur. Le cloud sera une offre payante.",
   "HomeHero.title":
-    "Financy est un suivi de budget gratuit et open source (AGPL-3.0) pour vous ou votre famille, dans toutes vos devises : auto-hébergez-le, ou utilisez le cloud payant.",
-  "HomeHero.github": "Suivre le chantier sur GitHub",
+    "Financy est un outil gratuit et open source (AGPL-3.0) pour suivre vos finances, seul ou en famille, dans toutes vos devises : auto-hébergez-le, ou utilisez le cloud payant.",
+  "HomeHero.github": "Suivre le développement sur GitHub",
   "HomeHero.status":
-    "En reconstruction publique, pas encore utilisable. Mis à jour le {date}. <status>Où en est-on</status>",
+    "Reconstruit en public, pas encore utilisable. Mis à jour le {date}. <status>L’état d’avancement</status>",
   "HomeQuickStart.terminal": "Terminal",
   "HomeStatus.title": "Où en est la reconstruction",
   "HomeStatus.works": "Fonctionne aujourd’hui",
@@ -154,39 +154,39 @@ export default {
   "HomeWho.title": "De l’argent dans plus d’une devise",
   "HomeNewsletter.title": "Sachez quand {site} sera prêt",
   "HomeNewsletter.lead":
-    "Je vous écrirai le jour où vous pourrez l’utiliser, et de temps en temps un mot sur ce qui est sorti. Rien d’autre ; un clic suffit pour vous désabonner.",
+    "Je vous écrirai le jour où vous pourrez l’utiliser, et de temps en temps un mot sur ce qui est sorti. Rien d’autre ; un clic suffit pour vous désabonner.",
   "HomeNewsletter.hint": "Vous confirmerez d’abord par e-mail.",
   "HomeFaq.eyebrow": "Questions",
   "HomeFaq.title": "Avant de commencer",
-  "Pricing.title": "Tarifs de Financy : gratuit en auto-hébergement, cloud plus tard",
+  "Pricing.title": "Tarifs de Financy : gratuit en auto-hébergement, cloud plus tard",
   "Pricing.description":
-    "Financy est gratuit en auto-hébergement sous AGPL-3.0. Le faire tourner coûte un serveur Linux au prix de votre hébergeur. Le cloud payant n’est pas encore ouvert.",
+    "Financy est gratuit en auto-hébergement sous AGPL-3.0. Il suffit d’un serveur Linux, au prix de votre hébergeur. Le cloud payant n’est pas encore ouvert.",
   "Pricing.crumb": "Tarifs",
   "Pricing.saving":
     "{plan} coûte {monthly} par mois ou {yearly} par an : {saving} de moins qu’en payant chaque mois.",
-  "PricingFaq.paidQuestion": "Y aura-t-il une version payante ?",
+  "PricingFaq.paidQuestion": "Y aura-t-il une version payante ?",
   "PricingFaq.paidAnswer":
-    "Oui : un cloud payant, pour ceux qui ne veulent pas gérer de serveur. Il fait tourner le même code, et son prix sera sur cette page avant son ouverture.",
+    "Oui : un cloud payant, pour ceux qui ne veulent pas gérer de serveur. Il fait tourner le même code, et son prix sera sur cette page avant son ouverture.",
   "PricingFaq.serverQuestion": "Combien coûte un serveur ?",
   "PricingFaq.serverAnswer":
-    "Ce que votre hébergeur facture pour une machine Linux avec Docker. Financy n’a pas de frais par utilisateur.",
-  "PricingFaq.oweQuestion": "Puis-je modifier le code ?",
+    "Ce que votre hébergeur facture pour une machine Linux avec Docker. Financy lui-même ne facture rien par utilisateur.",
+  "PricingFaq.oweQuestion": "Puis-je modifier le code ?",
   "PricingFaq.oweAnswer":
-    "Oui. L’AGPL-3.0 vous permet de le modifier et de le faire tourner. Si vous proposez votre version modifiée à d’autres via un réseau, vous en partagez le code sous la même licence.",
+    "Oui. L’AGPL-3.0 vous permet de le modifier et de le faire tourner. Si vous proposez votre version modifiée à d’autres via un réseau, vous devez en partager le code sous la même licence.",
   "PricingHero.eyebrow": "Tarifs",
   "PricingHero.title":
     "Héberger Financy vous-même est gratuit. Voici ce que coûte son fonctionnement.",
   "PricingHero.lead":
-    "Financy est un suivi de budget gratuit et open source (AGPL-3.0). En auto-hébergement, vous ne payez que le serveur qui le fait tourner. Le cloud payant n’est pas encore ouvert.",
+    "Financy est un outil gratuit et open source (AGPL-3.0) pour suivre vos finances. En auto-hébergement, vous ne payez que le serveur qui le fait tourner. Le cloud payant n’est pas encore ouvert.",
   "PricingFaq.title": "À propos du prix",
   "PricingWays.eyebrow": "Ce que vous payez",
   "PricingWays.title": "Ce que coûte l’auto-hébergement de Financy",
   "PricingWays.lead":
-    "Le code est gratuit sous AGPL-3.0, sans clé de licence et sans rien de réservé.",
+    "Le code est gratuit sous AGPL-3.0, sans clé de licence et sans fonctionnalité réservée.",
   "PricingWays.useTitle": "Héberger Financy vous-même",
   "PricingWays.useUnit": "licence AGPL-3.0, sans compte",
   "PricingWays.useText":
-    "Tout le code source sous AGPL-3.0, chaque fonctionnalité, chaque mise à jour, pour vous et votre foyer.",
+    "Tout le code source sous AGPL-3.0, avec toutes les fonctionnalités et toutes les mises à jour, pour vous et votre foyer.",
   "PricingWays.runTitle": "Le faire tourner en production",
   "PricingWays.runPrice": "Un serveur",
   "PricingWays.runUnit": "au prix de votre hébergeur",
@@ -222,13 +222,13 @@ export default {
   "FeatureTierSettled.eyebrow": "Fonctionne aujourd’hui",
   "FeatureTierSettled.title": "Le socle sur lequel reposera l’argent de votre foyer",
   "FeatureTierSettled.lead":
-    "Ces parties fonctionnent et sont testées en CI. L’argent lui-même, les comptes dans toutes les devises et leurs opérations, vient ensuite.",
+    "Ces briques fonctionnent déjà et sont testées en CI. Prochaine étape : l’argent lui-même, avec des comptes dans toutes les devises et leurs opérations.",
   "FeatureTierSettled.status":
-    "La connexion avec Google et GitHub demande les clés propres du serveur ; une copie fraîchement auto-hébergée commence donc avec la connexion par e-mail.",
+    "La connexion avec Google et GitHub demande des clés propres au serveur ; une nouvelle installation commence donc avec la seule connexion par e-mail.",
   "FeatureSignIn.nav": "Comptes et connexion",
   "FeatureSignIn.title": "La connexion, c’est réglé",
   "FeatureSignIn.lead":
-    "On crée un compte avec une adresse e-mail et un mot de passe, puis on confirme l’adresse avec un code. On peut réinitialiser un mot de passe oublié, continuer avec Google ou GitHub, se connecter avec une clé d’accès ou avec un code reçu par e-mail. Une app d’authentification ajoute la double authentification (2FA), et chacun voit tous les appareils connectés et peut déconnecter les autres.",
+    "Vous créez un compte avec une adresse e-mail et un mot de passe, puis confirmez l’adresse avec un code. Vous pouvez réinitialiser un mot de passe oublié, continuer avec Google ou GitHub, vous connecter avec une clé d’accès ou avec un code reçu par e-mail. Une app d’authentification ajoute la double authentification (2FA), et vous voyez tous les appareils connectés et pouvez déconnecter les autres.",
   "FeatureSignIn.fact1":
     "Mots de passe hachés avec PBKDF2-SHA-256 via Web Crypto, 600 000 itérations par défaut",
   "FeatureSignIn.fact2":
@@ -239,8 +239,7 @@ export default {
   "FeatureTeams.title": "Un foyer, chacun avec son propre compte",
   "FeatureTeams.lead":
     "Un foyer (un groupe, dans l’app), ce sont les personnes qui partagent leur argent. Invitez votre conjoint ou votre famille, donnez à chacun un rôle de lecteur à propriétaire, et transférez la propriété quand il le faut. Un foyer supprimé peut être restauré pendant 30 jours, et le journal d’activité montre qui a changé quoi.",
-  "FeatureTeams.fact1":
-    "Le foyer est la seule frontière contre laquelle chaque donnée est vérifiée",
+  "FeatureTeams.fact1": "Chaque donnée est vérifiée par rapport à une seule frontière : le foyer",
   "FeatureTeams.fact2": "Chacun ne voit que les foyers dont il fait partie",
   "FeatureTeams.fact3":
     "Invitations, changements de rôle et transfert de propriété, chacun avec ses tests",
@@ -248,7 +247,7 @@ export default {
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Vos données partent avec vous",
   "FeatureExport.lead":
-    "Le propriétaire peut exporter un foyer dans un fichier JSON ouvert à tout moment, et l’importer plus tard comme un nouveau foyer. L’import n’écrase jamais l’original.",
+    "Le propriétaire peut à tout moment exporter un foyer dans un fichier JSON ouvert, puis l’importer plus tard comme nouveau foyer. L’import n’écrase jamais l’original.",
   "FeatureExport.fact1":
     "Tout le fichier est vérifié avant la moindre écriture, puis importé en une seule étape",
   "FeatureExport.fact2":
@@ -257,7 +256,7 @@ export default {
   "FeatureLanguages.nav": "Langues",
   "FeatureLanguages.title": "En neuf langues",
   "FeatureLanguages.lead":
-    "L’app et ce site parlent {languages}. Chacun choisit sa langue dans l’app, donc un foyer peut en utiliser plusieurs.",
+    "L’app et ce site sont disponibles en {languages}. Chacun choisit sa langue dans l’app, donc un foyer peut en utiliser plusieurs.",
   "FeatureLanguages.fact1":
     "Un catalogue par langue, vérifié par un test qui nomme chaque message manquant",
   "FeatureLanguages.fact2": "Les nombres et les dates via l’Intl du navigateur",
@@ -274,7 +273,7 @@ export default {
   "FeatureOffline.nav": "Application hors ligne",
   "FeatureOffline.title": "Une application qui s’ouvre sans réseau",
   "FeatureOffline.lead":
-    "Installez Financy sur votre téléphone ou votre ordinateur : il s’ouvre hors ligne et affiche ce qu’il a vu en dernier.",
+    "Installez Financy sur votre téléphone ou votre ordinateur : il s’ouvre hors ligne et affiche ce qu’il a vu en dernier.",
   "FeatureOffline.fact1":
     "Une copie locale de chaque liste dans IndexedDB, et une file d’écriture avec des clés d’idempotence",
   "FeatureOffline.fact2":
@@ -292,25 +291,25 @@ export default {
     "Une sauvegarde quotidienne et chiffrée de la base, en option, avec la restauration écrite pas à pas",
   "FeatureDeploy.code": "Lire les fichiers Compose",
   "FeaturesFaq.serverlessQuestion":
-    "Puis-je faire tourner Financy sur un hébergement mutualisé ou en serverless ?",
+    "Puis-je faire tourner Financy sur un hébergement mutualisé ou en serverless ?",
   "FeaturesFaq.serverlessAnswer":
     "Non. Financy tourne en conteneurs permanents avec Docker Compose sur un serveur Linux, car l’API garde des connexions WebSocket ouvertes et un worker vide une file d’attente.",
-  "FeaturesFaq.databaseQuestion": "Quelle base de données Financy utilise-t-il ?",
+  "FeaturesFaq.databaseQuestion": "Quelle base de données Financy utilise-t-il ?",
   "FeaturesFaq.databaseAnswer":
     "Postgres. Ses migrations, ses requêtes et ses tests d’intégration en dépendent.",
-  "FeaturesFaq.nativeQuestion": "Y a-t-il une app mobile ?",
+  "FeaturesFaq.nativeQuestion": "Y a-t-il une app mobile ?",
   "FeaturesFaq.nativeAnswer":
     "Pas encore dans un store. Aujourd’hui, l’app web s’installe depuis le navigateur sur téléphone et ordinateur, et s’ouvre hors ligne.",
   "Features.title":
-    "Fonctionnalités de Financy : foyers, synchronisation, hors ligne, auto-hébergement",
+    "Fonctionnalités de Financy : foyers, synchronisation, hors ligne, auto-hébergement",
   "Features.description":
-    "Ce que Financy fait aujourd’hui : des foyers avec des rôles, des mises à jour instantanées sur chaque appareil, une app hors ligne, l’export, neuf langues et l’auto-hébergement. Les comptes et les budgets arrivent ensuite.",
+    "Ce que Financy fait aujourd’hui : des foyers avec des rôles, des mises à jour instantanées sur chaque appareil, une app hors ligne, l’export, neuf langues et l’auto-hébergement. Les comptes et les budgets arrivent ensuite.",
   "FeaturesHero.title": "Ce que Financy fait aujourd’hui, et ce qui vient ensuite",
   "FeaturesHero.lead":
-    "Financy est en reconstruction. Ce qui marche aujourd’hui, c’est le socle sur lequel reposera l’argent d’un foyer : connexion, accès partagé avec des rôles, mises à jour instantanées, une app hors ligne, l’export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
+    "Financy est en reconstruction. Ce qui marche aujourd’hui, c’est le socle sur lequel reposera l’argent d’un foyer : connexion, accès partagé avec des rôles, mises à jour instantanées, une app hors ligne, l’export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
   "FeaturesHero.note":
     "Les comptes, les opérations et les budgets ne sont pas encore construits. <status>Voir où en est la reconstruction</status>.",
-  "FeaturesFaq.title": "Financy sait-il faire ça ?",
+  "FeaturesFaq.title": "Financy sait-il faire ça ?",
   "FeatureSection.issue": "issue n° {number}",
   "FeatureSection.forDevelopers": "Pour les développeurs",
   "FeatureVisuals.deployCaption":
@@ -572,41 +571,41 @@ export default {
   "FeaturePageDeploy.backupAnswer":
     "Oui. Une sauvegarde restic quotidienne et chiffrée de la base de données, à activer, avec une procédure de restauration écrite.",
   "ErrorPage.status": "Voir ce qui marche aujourd’hui",
-  "HomeHero.notify": "Être prévenu",
+  "HomeHero.notify": "Me prévenir",
   "HomeProof.languages": "langues dans l’app et sur ce site",
-  "HomeStatus.selfHost": "Fonctionner sur votre propre serveur avec Docker Compose",
+  "HomeStatus.selfHost": "Fonctionne sur votre propre serveur avec Docker Compose",
   "HomeStatus.building": "En cours",
   "HomeStatus.accounts": "Des comptes dans n’importe quelle devise",
   "HomeStatus.transactions": "Revenus et dépenses, avec le montant d’origine conservé",
   "HomeStatus.transfers": "Virements entre comptes, y compris entre devises",
   "HomeStatus.month": "L’argent du mois en un coup d’œil",
   "HomeStatus.later":
-    "Les budgets, l’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
+    "Les budgets, l’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
   "HomeWho.keeperTitle": "Celui ou celle qui tient les comptes",
   "HomeWho.keeperText":
-    "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul endroit qui fait le total.",
-  "HomeWho.partnerTitle": "Le conjoint",
+    "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul endroit qui fait le total.",
+  "HomeWho.partnerTitle": "Le conjoint ou la conjointe",
   "HomeWho.partnerText":
     "Partage l’argent du foyer avec son propre compte, et note ses dépenses en quelques secondes.",
   "HomeWho.selfHostTitle": "L’adepte de l’auto-hébergement",
   "HomeWho.selfHostText":
-    "Le fait tourner sur son propre serveur, lit le code et garde ses données chez soi.",
+    "Fait tourner Financy sur son propre serveur, lit le code et garde ses données chez soi.",
   "HomeWays.title": "Auto-hébergez-le, ou attendez le cloud",
   "HomeWays.selfHostTitle": "Auto-hébergement",
   "HomeWays.selfHostText":
     "Gratuit sous licence AGPL-3.0. Il tourne sur votre serveur avec Docker Compose, et vos données y restent.",
   "HomeWays.selfHostLink": "Lire le code sur GitHub",
   "HomeWays.cloudTitle": "Le cloud",
-  "HomeWays.cloudText": "Pas encore ouvert. Le même code, géré pour vous, en offre payante.",
-  "HomeFaq.useQuestion": "Puis-je utiliser Financy aujourd’hui ?",
+  "HomeWays.cloudText": "Pas encore ouvert. Le même code, sans serveur à gérer, en offre payante.",
+  "HomeFaq.useQuestion": "Puis-je utiliser Financy aujourd’hui ?",
   "HomeFaq.useAnswer":
-    "Pas encore. La connexion, les foyers et la synchronisation fonctionnent ; les comptes et les opérations sont en cours.",
-  "HomeFaq.currencyQuestion": "Quelles devises gérera-t-il ?",
+    "Pas encore. La connexion, les foyers et la synchronisation fonctionnent ; les comptes et les opérations sont en cours.",
+  "HomeFaq.currencyQuestion": "Quelles devises gérera-t-il ?",
   "HomeFaq.currencyAnswer":
-    "Toutes, cryptomonnaies comprises ; chaque opération garde son montant d’origine à côté du montant converti. Prévu, pas encore construit.",
-  "HomeFaq.bankQuestion": "Financy se connecte-t-il à ma banque ?",
+    "Toutes, cryptomonnaies comprises ; chaque opération garde son montant d’origine à côté du montant converti. Prévu, mais pas encore construit.",
+  "HomeFaq.bankQuestion": "Financy se connecte-t-il à ma banque ?",
   "HomeFaq.bankAnswer": "Non. L’import de relevés bancaires est prévu pour la première version.",
-  "HomeFaq.stopsQuestion": "Que se passe-t-il si Financy s’arrête ?",
+  "HomeFaq.stopsQuestion": "Que se passe-t-il si Financy est abandonné ?",
   "HomeFaq.stopsAnswer":
     "Le code est sous AGPL-3.0 sur GitHub, donc n’importe qui peut continuer à le faire tourner, et vous pouvez exporter vos données à tout moment.",
   "SiteFooter.aboutHint": "(ouvre antonshubin.com)",
