@@ -239,7 +239,7 @@ describe("the public website", () => {
     }
   })
 
-  it("gives every page the Financy mark as its tab icon and the canvas of the page's palette as its theme colour", async () => {
+  it("gives every page its tab icon and the canvas of the page's palette as its theme colour", async () => {
     for (const path of ["/", "/pricing", "/subscribe"]) {
       const { html } = await page(path)
 
