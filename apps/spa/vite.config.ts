@@ -81,9 +81,8 @@ export default defineConfig({
     webManifest({
       writeTextFile: Deno.writeTextFile,
       manifest: {
-        // Seed's own site: see docs/start-a-product.md
-        name: `Seed`,
-        short_name: `Seed`,
+        name: `Financy`,
+        short_name: `Financy`,
         // The light palette's canvas, as index.html's light theme-color: a manifest holds one.
         theme_color: `#f3f4f6`,
         background_color: `#f3f4f6`,

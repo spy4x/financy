@@ -10,6 +10,6 @@
 /* libs/ui holds the screens; Tailwind does not scan outside this app on its own. The file says
    why the @source line lives there. */
 @import "../../../libs/ui/sources.css";
-/* Seed's fonts and purple, the product's own: the operator area differs only by its "Admin"
+/* Financy's fonts and blue, the product's own: the operator area differs only by its "Admin"
    badge, so an operator recognises the product (preact-components docs/design-language.md). */
 @import "../../../libs/ui/brand.css";

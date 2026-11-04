@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test"
 import { AxeBuilder } from "@axe-core/playwright"
 
-const REPOSITORY = `https://github.com/spy4x/seed`
+const REPOSITORY = `https://github.com/spy4x/financy`
 /** The repository root, where each code link's path must exist. */
 const ROOT = new URL(`../../`, import.meta.url)
 /** The home page links to these sections of `/features`. */

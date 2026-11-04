@@ -224,7 +224,7 @@ test.describe("one frame for the SPA and the admin", () => {
       await ops.locator("[data-e2e=auth-form-password]").fill(password)
       await ops.locator("[data-e2e=auth-form-submit]").click()
       await expect(ops.locator("[data-e2e=admin-dashboard-title]")).toBeVisible()
-      await expect(ops).toHaveTitle("Dashboard · Admin · Seed")
+      await expect(ops).toHaveTitle("Dashboard · Admin · Financy")
       // A verified person sees no banner, so nothing may push the product's page below the admin's.
       expect(product).toEqual(await expectSharedFrame(ops))
     } finally {

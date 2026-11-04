@@ -1,9 +1,10 @@
 import type { ComponentChildren, ComponentType, JSX } from "preact"
-import type { IconProps } from "@spy4x/preact-icons"
+import { type IconProps, IconWallet } from "@spy4x/preact-icons"
 import { type AuthCredentials, AuthForm } from "@spy4x/preact-system/auth-form"
 import { type AccountMenuLanguage, AccountTag } from "@spy4x/preact-system/account-menu"
 import { AppShell } from "@spy4x/preact-system/app-shell"
 import { Badge } from "@spy4x/preact-ui/badge"
+import { BrandMark } from "@spy4x/preact-ui/brand-mark"
 import { Button } from "@spy4x/preact-ui/button"
 import { Card } from "@spy4x/preact-ui/card"
 import { EmptyState } from "@spy4x/preact-ui/empty-state"
@@ -30,9 +31,8 @@ export const ADMIN_PATHS = {
   oneTimeCode: "/one-time-code",
 } as const
 
-// Seed's own site: see docs/start-a-product.md
 /** The product's name, the last part of every admin page's title. */
-export const ADMIN_PRODUCT = "Seed"
+export const ADMIN_PRODUCT = "Financy"
 
 /**
  * The word that marks the operator area, in English: the titles' middle part where no translator
@@ -41,9 +41,9 @@ export const ADMIN_PRODUCT = "Seed"
 const ADMIN_TAG = "Admin"
 
 /**
- * The signed-out admin pages' brand: the product's name and the neutral "Admin" badge, which tells
- * an operator at once that this is not the product. The signed-in shell has no brand; the same
- * badge sits under the operator's avatar in the rail instead.
+ * The signed-out admin pages' brand: the product's mark and name and the neutral "Admin" badge,
+ * which tells an operator at once that this is not the product. The signed-in shell has no brand;
+ * the same badge sits under the operator's avatar in the rail instead.
  */
 function AdminBrand({ navigate }: { navigate?: Navigate }): JSX.Element {
   const t = useAdminText()
@@ -53,7 +53,7 @@ function AdminBrand({ navigate }: { navigate?: Navigate }): JSX.Element {
       navigate={navigate}
       class="-ms-2 flex min-h-11 shrink-0 items-center gap-2 rounded-md px-2"
     >
-      <span class="text-base font-semibold text-foreground">{ADMIN_PRODUCT}</span>
+      <BrandMark Icon={IconWallet} name={ADMIN_PRODUCT} />
       <span data-e2e="admin-mark">
         <AccountTag tag={t.t("AdminFrame.tag")} />
       </span>
@@ -134,9 +134,9 @@ export function AdminShell(
 }
 
 /**
- * The browser tab's title for an admin page: `Users · Admin · Seed`, named after the entry whose
+ * The browser tab's title for an admin page: `Users · Admin · Financy`, named after the entry whose
  * page it is or is under, so the tab itself says it is the operator area. A page under no entry
- * reads `Admin · Seed`. `tag` is "Admin" in the operator's language.
+ * reads `Admin · Financy`. `tag` is "Admin" in the operator's language.
  */
 export function adminPageTitle(
   navItems: readonly Pick<AdminNavItem, "href" | "name">[],

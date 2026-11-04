@@ -6,8 +6,8 @@ import {
   IconClock,
   IconDocumentText,
   IconSearch,
-  IconSprout,
   IconUsers,
+  IconWallet,
 } from "@spy4x/preact-icons"
 import {
   AppShell,
@@ -282,8 +282,7 @@ function Brand({ navigate }: { navigate?: Navigate }): JSX.Element {
       navigate={navigate}
       class="flex shrink-0 items-center gap-2 rounded-md"
     >
-      {/* Seed's own site: see docs/start-a-product.md */}
-      <BrandMark Icon={IconSprout} name="Seed" />
+      <BrandMark Icon={IconWallet} name="Financy" />
     </Link>
   )
 }

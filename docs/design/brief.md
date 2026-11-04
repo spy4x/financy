@@ -1,55 +1,58 @@
-# Seed: design brief
+# Financy: design brief
 
-What every screen of Seed is for and how it should feel. The house style (type, spacing, shell,
-components) is preact-components' `docs/design-language.md`; this page says only what is Seed's
-own.
+What every screen of Financy is for and how it should feel. The house style (type, spacing, shell,
+components) is preact-components' `docs/design-language.md`; this page says only what is Financy's
+own. Who Financy is for and what it does in detail: [product.md](../financy/product.md).
 
 ## Who it is for
 
-- **The builder**: a developer or a small team that starts a web product from Seed instead of
-  spending its first weeks on sign-in, teams, billing and an admin area. They read the code, run the
-  live demo and judge Seed by how finished it feels.
-- **The builder's users**: people who sign up to the product built on Seed and work in it together
-  in groups. They never hear the name Seed; the product they use carries its own name.
-- **The operator**: the founder or support person of that product, in the admin panel, answering
-  "who is this person, what happened, and what can I do about it".
+- **The money keeper**: an expat, a remote worker or an immigrant whose income, rent and savings
+  sit in different currencies. They leave a spreadsheet for Financy and judge it by whether the
+  total is honest.
+- **The partner**: adds a coffee in five seconds and checks what is left this month. If logging
+  feels like work, the household stops using Financy, so every screen is judged by them.
+- **The self-hoster**: runs Financy at home and reads the code and the docs before trusting it.
+- **The operator**: the person who runs a Financy server, in the admin panel, answering "who is
+  this person, what happened, and what can I do about it".
 
 ## Its job
 
-Seed is the groundwork of a SaaS, already built and tested: sign-in with a second factor, groups
-with roles and invitations, per-member Stripe billing, realtime, an app that works offline, a
-public website and an admin panel. It is free and MIT-licensed, and it deploys to one server the
-builder owns with Docker Compose. Every screen is a working example a builder keeps, so each one
-must be good enough to ship as it is.
+Financy shows a household where its money is and where it went, in every currency it holds, with
+one total in the household's base currency. Everyone in the household sees the same numbers live.
+It is free and open source (AGPL-3.0) to self-host, or a paid cloud for people who do not want to.
 
 ## Voice
 
-- Plain, calm and exact. Say what happened and what to do next; no "Oops", no exclamation marks, no
-  jokes in errors.
-- Honest about limits. When something is not built, or a number comes from a source with gaps,
-  the screen says so in one line.
+- Calm and exact. Money makes people anxious; the screen never adds to it. Say what happened and
+  what to do next; no "Oops", no exclamation marks, no jokes in errors, no praise for spending
+  less.
+- Honest about numbers. An amount shows its currency; a converted amount says it is converted and
+  at which rate; a total with a gap (a missing rate) says so in one line.
 - Sentence case, digits for numbers, one wording per action across the app.
-- To the builder (website, docs) Seed speaks as one developer to another: what it does and what
-  it costs them to adopt. Inside the app it stays out of the way and speaks about the user's work,
-  not about Seed.
+- Inside the app Financy speaks about the household's money, not about itself.
 
 ## Brand
 
-- Hue: purple, 305°. Light accent `oklch(0.381 0.176 305)` (`#59168b`), set as `--color-primary`
-  and `--color-accent`. Dark mode is the house ink palette with the same hue.
-- The brand mark is the house construction: a rounded square in the brand hue with a white glyph,
-  then "Seed" in Geist 500. It appears on the public website and the signed-out screens; a
-  signed-in page carries no brand, because the frame is the library's `AppShell`, the same in every
-  app of the house.
+- Hue: a deep blue, 262°: `oklch(0.48 0.19 262)` (`#1853c6`), set as `--color-primary` and
+  `--color-accent` in `libs/ui/brand.css`. Dark mode is the house ink palette with the same hue.
+  It is the hue preact-components' `docs/design-language.md` keeps for Financy.
+- Restraint: the blue marks the one primary action, focus rings, selected states and the mark. No
+  blue panels or gradients, and the browser's `theme-color` stays on the page colours. Status
+  colours (income, spending, errors) are never this blue.
+- The icon is `IconWallet`: "my money", without naming a currency. The brand mark is the house
+  construction: a rounded square in the hue with the white wallet, then "Financy" in Geist 500.
+  One SVG (`apps/spa/public/favicon.svg`) is the source of every favicon and launcher icon. The
+  wallet is the brand only: no rail or tab-bar item uses it.
 - The admin panel is told apart by a neutral gray "Admin" badge, never by a second accent: under
-  the operator's avatar in the rail, beside "Seed" on its sign-in page, and in its page titles
-  ("Users · Admin · Seed").
-- The accent marks the one primary action and "current". Status colours are never purple.
+  the operator's avatar in the rail, beside "Financy" on its sign-in page, and in its page titles
+  ("Users · Admin · Financy").
+- The name, icon and hue live in their constants only (`libs/ui/frame.tsx`,
+  `libs/ui/admin-frame.tsx`, `libs/ui/brand.css`, `apps/mpa/brand.ts`, the apps' `index.html` and
+  manifest), never drawn into artwork, so a rename is one short change.
 
 ## Reference products
 
-- **Linear**: restraint, one accent, near-black dark mode, keyboard first.
-- **Stripe Dashboard**: tables and money that respect the reader, a detail page per record with
-  its history, errors that say what to do. The bar for the admin panel.
-- **Plausible**: an open-source product with honest copy and a page a reader can skim in a
-  minute. The bar for the public website's tone.
+- **Actual Budget**: open source and self-hostable, fast entry, a local-first app that respects the
+  keyboard.
+- **Monarch Money**: a calm household view of every account, shared by a couple.
+- **YNAB**: "what is left this month" as the question every screen answers.
