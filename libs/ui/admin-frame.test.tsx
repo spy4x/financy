@@ -302,7 +302,7 @@ describe("adminPageTitle", () => {
 })
 
 describe("AdminFrame", () => {
-  it("shows the product's name with the same neutral Admin badge above the sign-in", async () => {
+  it("shows the product's wallet mark and name with the same neutral Admin badge above the sign-in", async () => {
     await mount(
       <AdminFrame operatorName={null} canSignOut={false} onSignOut={() => {}} wide={false}>
         {PAGE}
@@ -311,6 +311,7 @@ describe("AdminFrame", () => {
     const brand = find("header [data-e2e=admin-mark]").closest("a")!
     expect(brand.getAttribute("href")).toBe("/")
     expect(brand.textContent).toBe("FinancyAdmin")
+    expect(brand.querySelector("[data-e2e=brand-mark] [aria-hidden=true] svg")).not.toBeNull()
     expect(find("[data-e2e=admin-mark] span").className).not.toMatch(/accent|primary/)
   })
 })
