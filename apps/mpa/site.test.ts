@@ -1350,6 +1350,8 @@ describe("the public website", () => {
         `Exchange-rate sources`,
         `Umami`,
         `OpenAI, DeepSeek or Google Gemini`,
+        `Google or GitHub`,
+        `Your browser&#39;s push service`,
         `Telegram`,
       ]
     ) expect(html).toContain(`<strong>${processor}</strong>`)
@@ -1366,6 +1368,10 @@ describe("the public website", () => {
     for (
       const record of [
         `your passkeys`,
+        `the Google or GitHub account you linked`,
+        `API tokens, if you create any`,
+        `The time zone and language of the first device you signed in on`,
+        `short-lived cookies hold the step you are on`,
         `its invitations`,
         `crypto holdings`,
         `every transaction and`,
@@ -1377,6 +1383,35 @@ describe("the public website", () => {
     ) expect(html).toContain(record)
     expect(html).toContain(`Frankfurter`)
     expect(html).toContain(`It is not end-to-end encrypted`)
+  })
+
+  it("says on the privacy page that a deleted household stays restorable for 30 days and leaves the backups about seven months after the delete (#86)", async () => {
+    const { html } = await page("/privacy")
+    const summary = html.slice(html.indexOf(`data-e2e="tldr-box"`), html.indexOf(`</section>`))
+
+    expect(html).not.toContain(`leaves the live database at once`)
+    expect(html).toContain(`stays restorable for 30 days and is then removed for good`)
+    expect(html).toContain(`deleted for good 7 days later`)
+    expect(html).toContain(`gone from them about seven months after the delete`)
+    expect(html).toContain(`activity log is kept for a year, and outlives a deleted household`)
+    expect(summary).toContain(
+      `can be restored for 30 days and is gone from the backups about seven months`,
+    )
+  })
+
+  it("lists on the privacy page what operators see in the admin panel, uploaded files included, and when anyone looks at a household's finances (#86)", async () => {
+    const { html } = await page("/privacy")
+
+    expect(html).toContain(
+      `its sign-in records with IP addresses, its devices, notifications and API`,
+    )
+    expect(html).toContain(`and each household&#39;s members, plan and overview`)
+    expect(html).toContain(
+      `open and download a household&#39;s uploaded files, and each time they open one, it is recorded`,
+    )
+    expect(html).toContain(
+      `except when the household asks for help with a problem, or when the law requires it`,
+    )
   })
 
   it("states on the terms page the price in US dollars, the renewal, the 30-day money-back guarantee and that Financy gives no financial advice (#86)", async () => {

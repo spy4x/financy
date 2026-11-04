@@ -6,8 +6,8 @@ import { TldrBox } from "@spy4x/preact-ui/tldr-box"
 import { AUTHOR_URL, LegalPage, REPOSITORY_URL } from "../../site.tsx"
 import { define } from "../../utils.ts"
 
-// The ids are a contract: the app links to them (the AI switch to #ai, deleting an account to
-// #retention). Reword a label, never rename an id.
+// Keep the ids stable, so the app, the checkout and support can link to one section once they
+// do. Reword a label, never rename an id.
 const PRIVACY_SECTIONS = [
   { label: `Who runs Financy and where`, href: `#who` },
   { label: `What Financy stores`, href: `#stores` },
@@ -47,7 +47,7 @@ const SUMMARY = [
     `#protection`,
   ],
   [
-    `You can download or delete your data at any time; deleted data leaves the backups within six months.`,
+    `You can download or delete your data at any time; a deleted household can be restored for 30 days and is gone from the backups about seven months after you delete it.`,
     `#retention`,
   ],
 ] as const
@@ -98,7 +98,12 @@ export default define.page(function Privacy({ state }) {
       <ul>
         <li>
           How you sign in: your email address, the password as a salted hash only (never the
-          password itself), your passkeys, and the second-factor secret if you turn it on.
+          password itself), your passkeys, the second-factor secret if you turn it on, and the
+          Google or GitHub account you linked, if you sign in with one.
+        </li>
+        <li>
+          API tokens, if you create any: the name, the household, what the token may do, when it
+          expires and when it was last used. The token itself is kept only as a keyed hash.
         </li>
         <li>Your name and profile picture, if you add them.</li>
         <li>
@@ -111,14 +116,15 @@ export default define.page(function Privacy({ state }) {
         </li>
         <li>
           Your preferences: the theme, the region format, the time zone and the clock, and your
-          notifications inside the app. A read notification is deleted 90 days later.
+          notifications inside the app. A read notification is deleted 90 days later. The time zone
+          and language of the first device you signed in on are kept too.
         </li>
         <li>Your browser's push address, only if you allow notifications.</li>
       </ul>
       <h3 class={GROUP}>Your household</h3>
       <ul>
         <li>Its name and base currency, who is in it, each member's role, and its invitations.</li>
-        <li>An activity log: who changed what in the household and when.</li>
+        <li>An activity log: who changed what in the household and when, kept for a year.</li>
       </ul>
       <h3 class={GROUP}>Your finances</h3>
       <ul>
@@ -159,9 +165,12 @@ export default define.page(function Privacy({ state }) {
         email address and when they were last active.
       </p>
       <p>
-        To run the service, the operators see each account's email address, its households, their
-        members and their plan. Nobody at NeatSoft looks at a household's accounts or transactions,
-        except when the household asks for help with a problem, or when the law requires it.
+        To run the service and answer support, the operators can see in the admin panel each
+        account's details, its sign-in records with IP addresses, its devices, notifications and API
+        tokens, and each household's members, plan and overview. They can also open and download a
+        household's uploaded files, and each time they open one, it is recorded. Nobody at NeatSoft
+        looks at a household's accounts or transactions, except when the household asks for help
+        with a problem, or when the law requires it.
       </p>
 
       <h2 id="processors">Companies that handle it</h2>
@@ -205,6 +214,15 @@ export default define.page(function Privacy({ state }) {
           <a href="#ai">Reading statements with AI</a>.
         </li>
         <li>
+          <strong>Google or GitHub</strong>: confirms who you are, if you sign in with them. They
+          learn that you signed in to Financy, never your finances.
+        </li>
+        <li>
+          <strong>Your browser's push service</strong>{" "}
+          (Google, Mozilla or Apple, by browser): delivers notifications, if you allow them. It
+          receives your push address and the message, encrypted.
+        </li>
+        <li>
           <strong>Telegram</strong>: carries your messages with the Financy bot, if you link it.
         </li>
       </ul>
@@ -241,14 +259,19 @@ export default define.page(function Privacy({ state }) {
       <h2 id="retention">How long it is kept</h2>
       <ul>
         <li>
-          A transaction, account or anything else you delete leaves the live database at once.
+          A household you delete, and anything else the app lets you restore, stays restorable for
+          30 days and is then removed for good.
         </li>
         <li>
           A deleted account is hidden at once and deleted for good 7 days later; signing in during
           those 7 days brings it back.
         </li>
         <li>
-          Backups are kept for six months, so deleted data is gone from them within six months.
+          Backups are kept for six months, so data you deleted is gone from them about seven months
+          after the delete: 30 days to restore, then six months of backups.
+        </li>
+        <li>
+          A household's activity log is kept for a year, and outlives a deleted household.
         </li>
         <li>
           A household that stops paying keeps its data, read access and its export, until its owner
@@ -278,8 +301,8 @@ export default define.page(function Privacy({ state }) {
 
       <h2 id="cookies">Cookies and your browser</h2>
       <p>
-        The app sets two cookies when you sign in. Signing out removes them; otherwise they last two
-        months, counted again from each day you use the app.
+        While you are signed in, the app keeps two cookies. Signing out removes them; otherwise they
+        last two months, counted again from each day you use the app.
       </p>
       <ul>
         <li>A signed session cookie that scripts cannot read. It keeps you signed in.</li>
@@ -288,6 +311,11 @@ export default define.page(function Privacy({ state }) {
           read, so the app knows who is signed in before it asks the server.
         </li>
       </ul>
+      <p>
+        While you sign in or sign up, short-lived cookies hold the step you are on: the code sent to
+        you, or the Google or GitHub sign-in in progress with the name, address and picture that
+        account shared. Each expires when its step's time runs out.
+      </p>
       <p>
         There are no advertising or tracking cookies. So that the app opens without a network, it
         keeps a copy of your household's data in your browser's own storage, with who is signed in

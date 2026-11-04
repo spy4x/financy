@@ -6,8 +6,8 @@ import { TldrBox } from "@spy4x/preact-ui/tldr-box"
 import { AUTHOR_URL, LegalPage, REPOSITORY_URL } from "../../site.tsx"
 import { define } from "../../utils.ts"
 
-// The ids are a contract: the checkout links to #renewal and the pricing page to #refunds.
-// Reword a label, never rename an id.
+// Keep the ids stable, so the checkout and the pricing page can link to one section once they
+// do. Reword a label, never rename an id.
 const TERMS_SECTIONS = [
   { label: `What Financy is`, href: `#what` },
   { label: `Price and payment`, href: `#price` },
