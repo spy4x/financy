@@ -39,9 +39,8 @@ import type { Navigate } from "./progressive.tsx"
 export const ADMIN_STATS_PATH = `/stats`
 
 /** Where turning Stats on is described, for the "Stats are off" state. */
-// Seed's own site: see docs/start-a-product.md
 export const ADMIN_STATS_SETUP_URL =
-  `https://github.com/spy4x/seed/blob/main/docs/analytics.md#stats-in-the-admin-app`
+  `https://github.com/spy4x/financy/blob/main/docs/analytics.md#stats-in-the-admin-app`
 
 /** How long a first load waits before it draws the skeleton, so a fast answer never flashes one. */
 export const STATS_SKELETON_DELAY_MS = 300
