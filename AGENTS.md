@@ -70,10 +70,11 @@ there. Code from an outside contributor stays in Financy.
 
 ## Seed's rules hold here
 
-Read Seed's `AGENTS.md` (`~/sync/code/seed/AGENTS.md`, or on GitHub) before working here. Its
-sections apply to Financy as written, with "Seed" read as "Financy" where they name the product:
-"Three layers of UI", "Adding a feature", "The admin panel stays in sync", "The public website
-stays in sync", "Product screenshots", "Blog" and "Handoff". Under "Blog", Financy's posts are a
+Read Seed's `AGENTS.md` and `AGENTS.seed.md` (`~/sync/code/seed/`, or on GitHub) before working
+here. Their sections apply to Financy as written, with "Seed" read as "Financy" where they name the
+product: "Three layers of UI", "Adding a feature", "The admin panel stays in sync", "The public
+website stays in sync", "Product screenshots" (in `AGENTS.seed.md`), "Blog" (in both files) and
+"Handoff". Under "Blog", Financy's posts are a
 product's: written in Financy's admin app, not as Markdown files in the repository, and the
 monthly changelog is "What's new in Financy". Three sections do not apply: "The live demo is not
 production", "Products built on Seed" (Seed's rule for its own sync doc; "Taking Seed's changes"
