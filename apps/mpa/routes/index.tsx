@@ -354,7 +354,11 @@ function Newsletter(): JSX.Element {
               aria-describedby="home-email-hint"
               data-e2e="home-subscribe-email"
             />
-            <Button type="submit" data-e2e="home-subscribe-submit">
+            <Button
+              type="submit"
+              class="shrink-0 whitespace-nowrap"
+              data-e2e="home-subscribe-submit"
+            >
               {t.t(`HomeHero.notify`)}
             </Button>
           </div>
