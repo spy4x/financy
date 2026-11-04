@@ -14,7 +14,7 @@ import { localePath, SITE_LANGUAGES } from "../languages.ts"
  * names its language versions (`hreflang`), as its own head does. The newsletter page is left out while
  * subscriptions are off. The blog's index in each language with a live post follows, then each
  * post at its own language's address, with the day it was published or last significantly
- * updated; with no live post, or while the API cannot answer, the blog is left out. The admin panel video has its own sitemap, `/video-sitemap.xml`.
+ * updated; with no live post, or while the API cannot answer, the blog is left out.
  */
 export const handler = define.handlers({
   async GET(ctx) {

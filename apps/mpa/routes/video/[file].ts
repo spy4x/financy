@@ -20,7 +20,7 @@ function folder(paths: readonly string[], name: string): URL {
   return found
 }
 
-/** `apps/mpa/media/video/`: the admin panel video and the feature loops. */
+/** `apps/mpa/media/video/`: the feature loops. */
 const SITE = folder([`../../media/video/`, `../../../media/video/`], `apps/mpa/media/video/`)
 
 /**
@@ -31,7 +31,7 @@ const DEMO = folder([`../../../../media/demo/`, `../../../../../media/demo/`], `
 
 /** The files this route serves, by name, and their folder; any other name is a 404. */
 export const VIDEO_FILES: Readonly<Record<string, URL>> = Object.fromEntries([
-  ...[`admin-panel.webm`, `admin-panel.mp4`, ...LOOP_FILES].map((name) => [name, SITE]),
+  ...LOOP_FILES.map((name) => [name, SITE]),
   ...[`demo.webm`, `demo.mp4`].map((name) => [name, DEMO]),
 ])
 
