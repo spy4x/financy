@@ -57,7 +57,7 @@ const FULL_HTML = `<p>The worker <strong>wakes</strong> every second.</p>`
 /** The newer post as the API answers it in full, with a cover and an update. */
 const FULL: PublicBlogPost = {
   ...NEWER,
-  seoTitle: `Cron jobs in Seed`,
+  seoTitle: `Cron jobs in Financy`,
   tldr: [`One table holds every job.`, `A failed job is tried again.`],
   coverUrl: `https://images.example.com/cron.png`,
   coverAlt: `A clock over a server rack`,
@@ -461,7 +461,7 @@ describe("a blog post", () => {
     const { body } = await get("/blog/cron-jobs")
 
     // The SEO title names the site already, so the site's name is not added again.
-    expect(body).toContain(`<title>Cron jobs in Seed</title>`)
+    expect(body).toContain(`<title>Cron jobs in Financy</title>`)
     expect(metaContent(body, "description")).toBe(FULL.description)
     expect(canonical(body)).toBe(`${site}/blog/cron-jobs`)
     expect(metaContent(body, "og:type")).toBe(`article`)
@@ -488,7 +488,7 @@ describe("a blog post", () => {
     expect(trail).toMatchObject({
       "@type": `BreadcrumbList`,
       itemListElement: [
-        { position: 1, name: `Seed` },
+        { position: 1, name: `Financy` },
         { position: 2, name: `Blog`, item: `${site}/blog` },
         { position: 3, name: FULL.title },
       ],
@@ -636,11 +636,12 @@ describe("a blog post", () => {
     expect(heading).not.toMatch(/text-[3-9]xl/)
   })
 
-  it("ends with the demo's call to action while the newsletter is off", async () => {
+  it("ends with Read next and no newsletter form while the newsletter is off", async () => {
     const { get } = await blogSite(answers(FULL), { newsletter: false })
     const { body } = await get("/blog/cron-jobs")
 
-    expect(body).toContain(`data-e2e="cta-github"`)
+    expect(body).toContain(`data-e2e="blog-read-next"`)
+    expect(body).not.toContain(`data-e2e="blog-post-newsletter"`)
     expect(body).not.toContain(`<form`)
   })
 
@@ -907,7 +908,7 @@ describe("the Blog link", () => {
     expect(header(body)).toContain(`href="/blog"`)
     expect(footer(body)).toContain(`href="/blog"`)
     expect(body).toContain(
-      `<link rel="alternate" type="application/rss+xml" title="Seed blog" href="${site}/rss.xml"`,
+      `<link rel="alternate" type="application/rss+xml" title="Financy blog" href="${site}/rss.xml"`,
     )
   })
 

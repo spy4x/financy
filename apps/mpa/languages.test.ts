@@ -3,7 +3,7 @@ import { describe, it } from "@std/testing/bdd"
 import { App } from "fresh"
 import AppWrapper from "./routes/_app.tsx"
 import Layout from "./routes/_layout.tsx"
-import Pricing, { handler as pricing } from "./routes/[[lang]]/pricing.tsx"
+import Pricing from "./routes/[[lang]]/pricing.tsx"
 import Terms from "./routes/[[lang]]/terms.tsx"
 import { languageMiddleware, pageMiddleware } from "./middleware.ts"
 import { localePath, pathLanguage, segmentLanguage, SITE_LANGUAGES } from "./languages.ts"
@@ -34,7 +34,7 @@ const pages = new App<State>()
   .use(pageMiddleware(config, () => Promise.reject(new Error(`no API`)), () => true))
   .appWrapper(view(AppWrapper))
   .layout("*", view(Layout))
-  .route("{/:lang}?/pricing", { component: view(Pricing), handler: pricing })
+  .route("{/:lang}?/pricing", { component: view(Pricing) })
   .route("{/:lang}?/terms", { component: view(Terms) })
   .handler()
 
@@ -216,10 +216,8 @@ describe("a page's head in each language", () => {
   it("translates the title and description", async () => {
     const { html } = await get(pages, `/de/pricing`)
 
-    expect(html).toContain(
-      `<title>Seed-Preise: ein kostenloser SaaS-Starter unter MIT-Lizenz</title>`,
-    )
-    expect(html).not.toContain(`Seed pricing: a free, MIT-licensed SaaS starter`)
+    expect(html).toContain(`<title>Financy-Preise: kostenlos selbst hosten, Cloud später</title>`)
+    expect(html).not.toContain(`Financy pricing: free to self-host, cloud later`)
   })
 
   it("keeps a legal page English at a translated address, says so, and names no alternates", async () => {

@@ -586,7 +586,7 @@ describe("the subscription pages while subscriptions are off", () => {
       expect(response.status).toBe(503)
       const page = await response.text()
       expect(page).toContain("The newsletter is off")
-      expect(page).toMatch(/<h1\b[^>]*>The Seed newsletter<\/h1>/)
+      expect(page).toMatch(/<h1\b[^>]*>The Financy newsletter<\/h1>/)
       expect(page.match(/<a [^>]*data-e2e="newsletter-off-releases"[^>]*>/)?.[0]).toContain(
         `href="${REPOSITORY_URL}/releases"`,
       )
@@ -657,19 +657,6 @@ describe("an MPA on its own domain", () => {
 
     expect(response.status).toBe(403)
     expect(seen).toEqual([])
-  })
-
-  it(`links "Try the demo" to the app's /try at DOMAIN, not to the website's own host`, async () => {
-    const response = await new App<State>()
-      .use(pageMiddleware(ownDomain, fakeApi(() => Response.json({})).fetch, () => true))
-      .get("{/:lang}?/subscribe", subscribe.GET!)
-      .handler()(new Request(`${ownDomain.webAppOrigin}/subscribe`), info)
-
-    const page = await response.text()
-    expect(page).toMatch(
-      new RegExp(`<a [^>]*href="${ownDomain.apiOrigin}/try"[^>]*>Try the demo</a>`),
-    )
-    expect(page).not.toContain(`href="${ownDomain.webAppOrigin}/try"`)
   })
 
   it("passes an origin of null on unchanged for the API to judge", async () => {

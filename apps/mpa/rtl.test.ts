@@ -5,7 +5,6 @@ import { renderToString } from "preact-render-to-string"
 import { IconArrowLeft, IconArrowRight, IconChevronRight } from "@spy4x/preact-icons"
 import AppWrapper from "./routes/_app.tsx"
 import Layout from "./routes/_layout.tsx"
-import Admin from "./routes/[[lang]]/admin.tsx"
 import Features from "./routes/[[lang]]/features.tsx"
 import Home from "./routes/index.tsx"
 import { pageMiddleware } from "./middleware.ts"
@@ -31,11 +30,10 @@ const handler = new App<State>()
   .layout("*", view(Layout))
   .route("/:lang", { component: view(Home) })
   .route("/:lang/features", { component: view(Features) })
-  .route("/:lang/admin", { component: view(Admin) })
   .handler()
 
 /** The Arabic pages that draw arrows in their own content. */
-const ARABIC_PAGES = [`/ar`, `/ar/features`, `/ar/admin`]
+const ARABIC_PAGES = [`/ar`, `/ar/features`]
 
 /**
  * The class preact-icons gives a glyph that points along the reading direction; the built

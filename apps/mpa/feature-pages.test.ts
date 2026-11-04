@@ -85,13 +85,9 @@ describe("the feature pages", () => {
 
   it("leaves out Limits, and its On this page entry, when the feature has nothing not built yet", async () => {
     const signIn = await get(`/features/sign-in`)
-    const billing = await get(`/features/billing`)
 
     expect(sectionIds(signIn.html)).not.toContain(`limits`)
     expect(onThisPage(signIn.html)).not.toContain(`limits`)
-    expect(sectionIds(billing.html)).toContain(`limits`)
-    expect(onThisPage(billing.html)).toContain(`limits`)
-    expect(billing.html).toContain(`Payment providers other than Stripe`)
   })
 
   it("lists only the sections that have something to say", () => {
@@ -113,10 +109,10 @@ describe("the feature pages", () => {
     ).toEqual([`what`, `how`, `limits`, `questions`])
   })
 
-  // `/features/admin` itself never reaches this handler on the built server: Fresh routes it to
-  // `routes/features/admin.ts` (e2e/mpa/features.mpa.ts checks it there).
-  it("sends another language's /features/admin to the admin panel's page in that language", async () => {
-    expect(await get(`/de/features/admin`)).toMatchObject({ status: 301, location: `/de/admin` })
+  it("answers /features/admin with a 404 in every language, as Financy has no admin page", async () => {
+    for (const path of [`/features/admin`, `/de/features/admin`]) {
+      expect((await get(path)).status, path).toBe(404)
+    }
   })
 
   it("answers a slug that names a property every object has with a 404, not a crash", async () => {
@@ -240,8 +236,5 @@ describe("the feature pages", () => {
         )
       }
     }
-    expect((await get(`/de/features`)).html).toMatch(
-      /<a href="\/de\/admin"[^>]*data-e2e="feature-more-link"/,
-    )
   })
 })
