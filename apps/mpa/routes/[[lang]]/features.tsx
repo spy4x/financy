@@ -8,13 +8,9 @@ import { faqPageJsonLd } from "@spy4x/platform/universal/seo"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { siteEnglishText } from "@ui/site-text.ts"
 import { Band } from "../../components/band.tsx"
-import {
-  FeatureSection,
-  type FeatureSectionProps,
-  FeatureTier,
-} from "../../components/features-section.tsx"
+import { FeatureSection, FeatureTier } from "../../components/features-section.tsx"
 import { SectionIntro } from "../../components/section-intro.tsx"
-import { featurePath, pageOfFeature, tiers } from "../../features-data.tsx"
+import { tiers } from "../../features-data.tsx"
 import {
   PERSON_JSON_LD,
   REPOSITORY_URL,
@@ -81,12 +77,6 @@ function featuresJsonLd(site: Site, origin: string): unknown[] {
   ]
 }
 
-/** The feature page a section's text links to, in the page's language, when the feature has one. */
-function pageLink({ language }: Site, id: string): FeatureSectionProps["more"] {
-  const page = pageOfFeature(id)
-  return page && { href: featurePath(page.slug, language) }
-}
-
 /** The hero: what works today, a note that the money itself is not built yet, and the code. */
 function Hero(): JSX.Element {
   const { t, rich, href } = useSite()
@@ -146,12 +136,7 @@ export default define.page(function Features({ state }) {
           {sections.map(({ features, ...tier }) => (
             <FeatureTier key={tier.id} {...tier}>
               {features.map(({ nav: _nav, ...feature }, index) => (
-                <FeatureSection
-                  key={feature.id}
-                  {...feature}
-                  more={pageLink(site, feature.id)}
-                  flip={index % 2 === 1}
-                />
+                <FeatureSection key={feature.id} {...feature} flip={index % 2 === 1} />
               ))}
             </FeatureTier>
           ))}

@@ -12,7 +12,6 @@ import {
   featurePageIn,
   featurePageSections,
 } from "./features-data.tsx"
-import { SITE_LANGUAGES } from "./languages.ts"
 import { pageMiddleware } from "./middleware.ts"
 import type { State } from "./utils.ts"
 import { siteEnglishText } from "@ui/site-text.ts"
@@ -143,22 +142,11 @@ describe("the feature pages", () => {
     }
   })
 
-  it("answers another language's address in that language, naming and offering every version", async () => {
+  it("answers another language's address in that language, its language picker keeping the page", async () => {
     const { status, html } = await get(`/fr/features/sign-in`)
 
     expect(status).toBe(200)
     expect(html).toMatch(/<html [^>]*lang="fr"/)
-    const alternates = [
-      ...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g),
-    ]
-      .map((match) => [match[1], match[2].slice(site.length)])
-    expect(alternates).toEqual([
-      ...SITE_LANGUAGES.map((language) => [
-        language,
-        language === `en` ? `/features/sign-in` : `/${language}/features/sign-in`,
-      ]),
-      [`x-default`, `/features/sign-in`],
-    ])
     // The language picker goes to the same page in German, not to /de/features.
     expect(html).toContain(`<a href="/de/features/sign-in" hreflang="de"`)
   })
@@ -227,13 +215,24 @@ describe("the feature pages", () => {
     }
   })
 
-  it("links each feature on /features that has a page of its own, in the page's language", async () => {
-    for (const [path, prefix] of [[`/features`, ``], [`/de/features`, `/de`]]) {
+  it("links no feature page from /features in any language while the pages still describe Seed", async () => {
+    for (const path of [`/features`, `/de/features`]) {
       const { html } = await get(path)
+
+      expect(html, path).not.toContain(`data-e2e="feature-more-link"`)
       for (const page of FEATURE_PAGES) {
-        expect(html, path).toMatch(
-          new RegExp(`<a href="${prefix}/features/${page.slug}"[^>]*data-e2e="feature-more-link"`),
-        )
+        expect(html, path).not.toMatch(new RegExp(`href="(/de)?/features/${page.slug}"`))
+      }
+    }
+  })
+
+  it("keeps every feature page out of search engines while its words still describe Seed", async () => {
+    for (const page of FEATURE_PAGES) {
+      for (const path of [`/features/${page.slug}`, `/ru/features/${page.slug}`]) {
+        const { status, html } = await get(path)
+
+        expect(status, path).toBe(200)
+        expect(html, path).toMatch(/<meta name="robots" content="noindex/)
       }
     }
   })

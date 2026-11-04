@@ -383,11 +383,6 @@ export function featurePath(slug: string, language: Language = DEFAULT_LANGUAGE)
   return localePath(language, `/features/${slug}`)
 }
 
-/** The page about the feature with this id in {@link tiers}, or `undefined` when it has none. */
-export function pageOfFeature(id: string): FeaturePage | undefined {
-  return FEATURE_PAGES.find((page) => (page.feature ?? page.slug) === id)
-}
-
 /** The feature page at `/features/<slug>`, or `undefined` for an address that has none. */
 export function featurePage(slug: string): FeaturePage | undefined {
   return FEATURE_PAGES.find((page) => page.slug === slug)
