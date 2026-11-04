@@ -173,7 +173,8 @@ function Section(
 
 /**
  * The page in its fixed order: trail, heading, date, answer, then What you get, How it works,
- * Limits and Questions, each only when it has something to say, then the other features. From 1280 px "On this page" stands beside the body, in the blog post's grid.
+ * Limits and Questions, each only when it has something to say, then the other features. From
+ * 1280 px "On this page" stands beside the body, in the blog post's grid.
  */
 function FeaturePageBody({ page }: { page: FeaturePage }): JSX.Element {
   const { t, href, rich } = useSite()
