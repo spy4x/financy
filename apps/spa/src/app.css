@@ -10,5 +10,5 @@
 /* libs/ui holds the screens; Tailwind does not scan outside this app on its own. The file says
    why the @source line lives there. */
 @import "../../../libs/ui/sources.css";
-/* Seed's fonts and purple, shared with the admin app and the website. */
+/* Financy's fonts and blue, shared with the admin app and the website. */
 @import "../../../libs/ui/brand.css";

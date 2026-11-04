@@ -1,4 +1,4 @@
-/* Seed's brand, the same in the product (apps/spa), the admin app (apps/admin) and the website
+/* Financy's brand, the same in the product (apps/spa), the admin app (apps/admin) and the website
    (apps/mpa): each app's stylesheet imports this file after the library's tokens and ink.css
    (spy4x/template#444, preact-components docs/design-language.md).
 
@@ -101,10 +101,11 @@
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-/* Seed's one hue, purple at 305°, in every app. `--color-accent` is set too, so the dark palette,
-   ink included, draws its buttons, rings and selected states from the same purple. The admin app
-   differs from the product only by the "Admin" badge beside the mark. */
+/* Financy's one hue, a deep blue at 262° (`#1853c6`), in every app: the one preact-components'
+   docs/design-language.md keeps for Financy. `--color-accent` is set too, so the dark palette, ink
+   included, draws its buttons, rings and selected states from the same blue. The admin app differs
+   from the product only by the "Admin" badge beside the mark. */
 :root {
-  --color-primary: oklch(0.381 0.176 305);
-  --color-accent: oklch(0.381 0.176 305);
+  --color-primary: oklch(0.48 0.19 262);
+  --color-accent: oklch(0.48 0.19 262);
 }
