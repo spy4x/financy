@@ -47,9 +47,8 @@ export const FEATURE_NOT_FOUND = {
 /**
  * One feature's page, built from {@link FEATURE_PAGES} and the feature of the same id that
  * `/features` draws, in the address's language; an unknown slug, `constructor` too, answers 404.
- * While its words still describe Seed, it is `noindex`, names no other language version, and is
- * left out of the sitemap and `/features`; it opens only from the blog. #105 rewrites the pages
- * for Financy.
+ * While its words still describe Seed, it is left out of the sitemap and `/features`; it opens
+ * only from the blog. #105 rewrites the pages for Financy.
  */
 export const handler = define.handlers({
   GET(ctx) {
@@ -68,7 +67,6 @@ export const handler = define.handlers({
           description: page.description,
           og: `features`,
           jsonLd: pageJsonLd(t, ctx.state.webAppOrigin, page, language),
-          noindex: true,
         }}
       >
         <FeaturePageBody page={page} />

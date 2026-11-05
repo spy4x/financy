@@ -225,15 +225,4 @@ describe("the feature pages", () => {
       }
     }
   })
-
-  it("keeps every feature page out of search engines while its words still describe Seed", async () => {
-    for (const page of FEATURE_PAGES) {
-      for (const path of [`/features/${page.slug}`, `/ru/features/${page.slug}`]) {
-        const { status, html } = await get(path)
-
-        expect(status, path).toBe(200)
-        expect(html, path).toMatch(/<meta name="robots" content="noindex/)
-      }
-    }
-  })
 })
