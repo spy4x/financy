@@ -6,10 +6,7 @@
         "http://127.0.0.1:48411/features",
         "http://127.0.0.1:48411/features/sign-in",
         "http://127.0.0.1:48411/features/realtime",
-        "http://127.0.0.1:48411/features/shortcuts",
         "http://127.0.0.1:48411/pricing",
-        "http://127.0.0.1:48411/compare",
-        "http://127.0.0.1:48411/admin",
         "http://127.0.0.1:48411/privacy",
         "http://127.0.0.1:48411/docs/api",
         "http://127.0.0.1:48411/docs",
@@ -22,8 +19,7 @@
         "http://127.0.0.1:48411/de",
         "http://127.0.0.1:48411/ar",
         "http://127.0.0.1:48411/ru/features",
-        "http://127.0.0.1:48411/es/pricing",
-        "http://127.0.0.1:48411/pt-BR/compare"
+        "http://127.0.0.1:48411/es/pricing"
       ],
       "numberOfRuns": 3,
       "settings": {

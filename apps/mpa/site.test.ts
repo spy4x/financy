@@ -3,19 +3,14 @@ import { describe, it } from "@std/testing/bdd"
 import { App } from "fresh"
 import { h } from "preact"
 import { renderToString } from "preact-render-to-string"
-import { formatMoney } from "@spy4x/platform/universal/money"
-import { PLANS } from "@domain/billing"
 import AppWrapper from "./routes/_app.tsx"
 import Layout from "./routes/_layout.tsx"
-import Admin, { ADMIN_HEAD } from "./routes/[[lang]]/admin.tsx"
-import Compare from "./routes/[[lang]]/compare.tsx"
 import Features from "./routes/[[lang]]/features.tsx"
 import { handler as featurePage } from "./routes/[[lang]]/features/[slug].tsx"
-import Home, { HOME_HEAD, QUICK_START } from "./routes/index.tsx"
-import Pricing, { handler as pricing, PRICING_HEAD } from "./routes/[[lang]]/pricing.tsx"
+import Home, { HOME_HEAD, STATUS_UPDATED } from "./routes/index.tsx"
+import Pricing, { PRICING_UPDATED } from "./routes/[[lang]]/pricing.tsx"
 import Privacy, { PRIVACY_HEAD } from "./routes/[[lang]]/privacy.tsx"
 import Terms, { TERMS_HEAD } from "./routes/[[lang]]/terms.tsx"
-import { handler as mvp } from "./routes/mvp.ts"
 import ApiDocs from "./routes/[[lang]]/docs/api.tsx"
 import DocsIndex from "./routes/[[lang]]/docs/index.tsx"
 import { handler as doc } from "./routes/[[lang]]/docs/[slug].tsx"
@@ -25,18 +20,15 @@ import { handler as robots } from "./routes/robots.txt.ts"
 import { handler as subscribe } from "./routes/[[lang]]/subscribe/index.ts"
 import { handler as theme } from "./routes/theme.js.ts"
 import { handler as sitemap } from "./routes/sitemap.xml.ts"
-import { handler as videoSitemap } from "./routes/video-sitemap.xml.ts"
 import { handler as llms } from "./routes/llms.txt.ts"
 import { handler as unsubscribe } from "./routes/[[lang]]/unsubscribe.ts"
-import { pageMiddleware } from "./middleware.ts"
-// Seed's own site: see docs/start-a-product.md
-import { HIRE_PAGE_URL } from "./hire.ts"
-import { ogImageAlt, type OgImageKey, REPOSITORY_URL } from "./site.tsx"
+import { languageMiddleware, pageMiddleware } from "./middleware.ts"
+import { machineText, ogImageAlt, type OgImageKey, REPOSITORY_URL } from "./site.tsx"
 import { NotYetList } from "./components/features-section.tsx"
 import { SiteLanguage } from "./use-site.tsx"
 import { SITE_PAGES, type SitePage } from "./pages.ts"
 import { DOC_SLUGS } from "./docs-site.ts"
-import { localePath, pathLanguage, SITE_LANGUAGES } from "./languages.ts"
+import { localePath, pathLanguage, SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import type { MpaConfig } from "./config.ts"
 import type { State } from "./utils.ts"
 
@@ -71,12 +63,11 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .appWrapper(view(AppWrapper))
     .layout("*", view(Layout))
     .route("/", { component: view(Home) })
+    .use("/:lang", languageMiddleware)
+    .route("/:lang", { component: view(Home) })
     .route("/features", { component: view(Features) })
     .get("{/:lang}?/features/:slug", featurePage.GET!)
-    .route("/admin", { component: view(Admin) })
-    .route("/compare", { component: view(Compare) })
-    .route("/pricing", { component: view(Pricing), handler: pricing })
-    .get("/mvp", mvp.GET!)
+    .route("/pricing", { component: view(Pricing) })
     .route("/privacy", { component: view(Privacy) })
     .route("/docs/api", { component: view(ApiDocs) })
     .route("/docs", { component: view(DocsIndex) })
@@ -89,7 +80,6 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .get("/robots.txt", robots.GET!)
     .get("/theme.js", theme.GET!)
     .get("/sitemap.xml", sitemap.GET!)
-    .get("/video-sitemap.xml", videoSitemap.GET!)
     .get("/llms.txt", llms.GET!)
     .get("/unsubscribe", unsubscribe.GET!)
     .handler()
@@ -107,33 +97,6 @@ const withAnalytics = siteWith(() => true, { ...config, analytics: UMAMI })
 async function page(path: string, app = handler): Promise<{ status: number; html: string }> {
   const response = await app(new Request(`${site}${path}`), info)
   return { status: response.status, html: await response.text() }
-}
-
-/**
- * The width in CSS pixels a `sizes` attribute gives an image at `viewport`, for the forms the
- * website writes: `(min-width: Npx)` conditions, and `Npx`, `100vw` or `calc(100vw - Npx)`.
- */
-function slotWidth(sizes: string, viewport: number): number {
-  for (const entry of sizes.split(/,(?![^(]*\))/).map((part) => part.trim())) {
-    const media = entry.match(/^\(min-width: (\d+)px\)\s+(.+)$/)
-    if (media && viewport < Number(media[1])) continue
-    const length = media ? media[2] : entry
-    if (/^\d+px$/.test(length)) return parseInt(length)
-    if (length === `100vw`) return viewport
-    const calc = length.match(/^calc\(100vw - (\d+)px\)$/)
-    if (calc) return viewport - Number(calc[1])
-    throw new Error(`unknown length in sizes: ${length}`)
-  }
-  throw new Error(`no entry of "${sizes}" fits ${viewport}px`)
-}
-
-/** The file of `srcset` a browser fetches for `pixels` device pixels: the narrowest that covers them. */
-function chosenFile(srcset: string, pixels: number): string {
-  const files = srcset.split(`,`).map((entry) => {
-    const [url, width] = entry.trim().split(/\s+/)
-    return { url, width: parseInt(width) }
-  }).sort((a, b) => a.width - b.width)
-  return (files.find((file) => file.width >= pixels) ?? files.at(-1)!).url
 }
 
 /** The `<a>` whose text is `text`, or `undefined`: its whole opening tag, to read `href` from. */
@@ -201,221 +164,89 @@ function element(html: string, tag: string): string | undefined {
   return html.match(new RegExp(`<${tag}\\b[\\s\\S]*?</${tag}>`))?.[0]
 }
 
-/** Text of a piece of markup, its tags dropped. */
-function textOf(html: string): string {
-  return html.replace(/<[^>]+>/g, "").trim()
-}
-
-/**
- * The comparison table of `html`: the product of each column, then each row's capability, its
- * note and the value it shows each product, as a reader sees them.
- */
-function comparisonTable(html: string) {
-  const table = element(html, "table") ?? ""
-  const headers = [...(element(table, "thead") ?? "").matchAll(/<th\b[^>]*>([\s\S]*?)<\/th>/g)]
-    .slice(1)
-    .map((match) => textOf(match[1].replace(/<span\b[\s\S]*?<\/span>/g, "")))
-  const rows = [...(element(table, "tbody") ?? "").matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(
-    ([, row]) => {
-      const head = row.match(/<th\b[^>]*>([\s\S]*?)<\/th>/)?.[1] ?? ""
-      return {
-        capability: textOf(head.replace(/<span\b[\s\S]*?<\/span>/g, "")),
-        note: textOf(head.match(/<span\b[^>]*>([\s\S]*?)<\/span>/)?.[1] ?? ""),
-        values: [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map((cell) => textOf(cell[1])),
-      }
-    },
-  )
-  return { headers, rows }
-}
-
 describe("the public website", () => {
-  it("answers the home page with its heading, the demo and GitHub links and its head tags", async () => {
+  it("answers the home page with what Financy is as its heading, the notify and GitHub links and its head tags", async () => {
     const { status, html } = await page("/")
+    const main = element(html, "main")!
 
     expect(status).toBe(200)
-    expect(headingOne(html)).toBe("The groundwork of your SaaS, already built.")
-    expect(hrefOf(linkNamed(html, "Try the live demo"))).toBe(`${spa}/try`)
-    expect(hrefOf(linkNamed(html, "View on GitHub"))).toBe(REPOSITORY_URL)
-    expect(html).toContain(`<title>Seed: the free SaaS starter built on web standards</title>`)
+    expect(headingOne(html)).toBe(
+      "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or wait for the paid cloud.",
+    )
+    expect(hrefOf(linkNamed(main, "Get notified"))).toBe("#newsletter")
+    expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
+    expect(html).toContain(`<title>Financy: self-hosted multi-currency finance tracker</title>`)
     expect(html).toContain(`<link rel="canonical" href="${site}/"`)
     expect(metaContent(html, "og:url")).toBe(`${site}/`)
-    expect(metaContent(html, "description")).toBe(HOME_HEAD.description)
+    expect(metaContent(html, "description")).toBe(machineText(HOME_HEAD.description))
     expect(html.match(/<title>/g)).toHaveLength(1)
   })
 
-  it("plays the README's demo in the hero and keeps the quick-start commands in their section", async () => {
-    const { html } = await page("/")
+  it("opens the home page with the sentence that says what Financy is, in every language", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const path = localePath(language, "/")
+      const { status, html } = await page(path)
+      const heading = headingOne(html)?.replaceAll("&#39;", "'").replaceAll("&quot;", '"')
 
-    const hero = html.slice(html.indexOf(`id="hero-title"`), html.indexOf(`id="features"`))
-    const quickStart = html.slice(html.indexOf(`id="quick-start"`))
-    const play = hero.match(/<a [^>]*data-e2e="hero-demo"[^>]*>/)?.[0]
-    expect(play).toContain(`href="/video/demo.webm"`)
-    expect(hero).toContain(
-      `aria-label="Play video: Seed in one minute, from git clone to the admin panel"`,
-    )
-    expect(hero).not.toContain(`<video`)
-    for (const line of QUICK_START) {
-      expect(hero, line).not.toContain(`$ ${line}`)
-      expect(quickStart, line).toContain(`$ ${line}`)
+      expect(status, path).toBe(200)
+      expect(heading, path).toBe(siteTranslator(language).t(`HomeHero.title`))
+      expect(heading, path).toContain("Financy")
+      expect(heading, path).toContain("AGPL\u20113.0")
     }
   })
 
-  it("wraps a long quick-start command under its own start, past the $, instead of cutting it off", async () => {
-    const { html } = await page("/")
+  it("answers the home page with GitHub as its only action while the newsletter is off", async () => {
+    const { html } = await page("/", withoutNewsletter)
+    const main = element(html, "main")!
 
-    for (const line of QUICK_START) {
-      expect(html, line).toContain(
-        `class="block whitespace-pre-wrap ps-4 -indent-4">$ ${line}</span>`,
-      )
+    expect(linkNamed(html, "Get notified")).toBeUndefined()
+    expect(main).not.toContain(`id="newsletter"`)
+    expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
+  })
+
+  it("labels the header button just GitHub, in every language, while the newsletter is off", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const { html } = await page(localePath(language, "/"), withoutNewsletter)
+      const button = element(html, "header")!
+        .match(/<a\b[^>]*data-e2e="site-github"[^>]*>([\s\S]*?)<\/a>/)
+
+      expect(hrefOf(button?.[0]), language).toBe(REPOSITORY_URL)
+      expect(linkText(button?.[1] ?? ""), language).toBe("GitHub")
     }
   })
 
-  it("draws the realtime, offline and shortcuts loops on /features, each with its dark poster and its caption", async () => {
-    const { html } = await page("/features")
-
-    for (
-      const [loop, caption] of [
-        [`realtime`, `Two windows, one account. Save in one, and the other updates by itself.`],
-        [`offline`, `Offline edits wait in an outbox.`],
-        [`shortcuts`, `Press Ctrl+K (⌘K on a Mac).`],
-      ]
-    ) {
-      const start = html.indexOf(`data-e2e="loop-${loop}"`)
-      expect(start, loop).toBeGreaterThan(-1)
-      const box = html.slice(start, html.indexOf(`</figure>`, start))
-      expect(box, loop).toMatch(
-        new RegExp(`/video/${loop}-loop-dark-1440\\.webp(\\?[^ ]*)? 1440w`),
-      )
-      expect(box, loop).toMatch(
-        new RegExp(`<figcaption[^>]*>${caption.replace(/[.+()]/g, `\\$&`)}`),
-      )
-    }
-  })
-
-  it("titles the Teams picture's frame with the address of the group activity page it shows", async () => {
-    const { html } = await page("/features")
-    const teams = html.slice(html.indexOf(`id="teams"`))
-
-    expect(teams.slice(0, teams.indexOf(`/shots/activity-`))).toContain(
-      `app.financy.dev/groups/…/activity`,
-    )
-  })
-
-  it("keeps every quick-start line a bare command, since interactive zsh passes a comment's words on", () => {
-    for (const line of QUICK_START) expect(line, line).not.toContain("#")
-  })
-
-  it("draws the hero's demo and every feature loop from one dark poster and clip in both themes", async () => {
-    for (
-      const path of [
-        `/`,
-        `/features`,
-        `/features/realtime`,
-        `/features/offline`,
-        `/features/shortcuts`,
-      ]
-    ) {
+  // Their 404 comes from the built server's routing, which e2e/mpa/features.mpa.ts walks.
+  it("links /compare, /admin and /mvp from no page, in any language", async () => {
+    for (const path of everyLanguage(SITE_PAGES)) {
       const { html } = await page(path)
-      const hero = path === `/`
-        ? html.slice(html.indexOf(`id="hero"`), html.indexOf(`id="features"`))
-        : ``
-      const loops = [...html.matchAll(/data-e2e="loop-[a-z]+"[\s\S]*?<img [^>]*>/g)].map(([m]) => m)
-      expect(loops.length, path).toBeGreaterThan(0)
-      for (const media of [hero, ...loops]) {
-        expect(media, path).not.toMatch(/-light-\d+\.webp|-loop-light\./)
-        // A dark `<source media>` would swap the poster by theme.
-        expect(media, path).not.toContain(`<source`)
-      }
-      if (hero) expect(hero, path).toContain(`/shots/notes-dark-1280.webp`)
-      for (const loop of loops) expect(loop, path).toMatch(/\/video\/[a-z]+-loop-dark-720\.webp/)
+      expect(html, path).not.toMatch(/href="[^"]*\/(?:compare|admin|mvp)"/)
     }
   })
 
-  it("preloads only the hero demo's dark poster, and only where it is on the first screen", async () => {
-    const { html } = await page("/")
-    const preloads = html.match(/<link [^>]*rel="preload"[^>]*as="image"[^>]*>/g) ?? []
+  it("names a page after its own title, then the site, when the title does not name Financy", async () => {
+    const { html } = await page("/features/no-such-feature")
 
-    expect(preloads).toHaveLength(1)
-    expect(preloads[0]).toContain(`/shots/notes-dark-1280.webp`)
-    expect(preloads[0]).toContain(`media="(min-width: 1024px)"`)
+    expect(html).toContain(`<title>This feature page isn't here · Financy</title>`)
   })
 
-  it("fetches no 1280 px picture on the home page on a phone", async () => {
-    const { html } = await page("/")
-    const pictures = [...html.matchAll(/<(?:img|source)\b[^>]*\bsrcset="[^"]*"[^>]*>/g)]
-      .map(([tag]) => ({
-        srcset: tag.match(/\bsrcset="([^"]*)"/)![1],
-        sizes: tag.match(/\bsizes="([^"]*)"/)?.[1] ?? `100vw`,
-      }))
-    expect(pictures.length).toBeGreaterThan(5)
-    // A 390 px phone at device scale 2, and a 412 px one at 1.75 (Lighthouse) and 2.
-    for (const [viewport, scale] of [[390, 2], [412, 1.75], [412, 2]]) {
-      for (const { srcset, sizes } of pictures) {
-        const file = chosenFile(srcset, slotWidth(sizes, viewport) * scale)
-        expect(file, `${viewport} px at ${scale}: ${sizes}`).not.toMatch(/-1280\.webp(\?|$)/)
-      }
-    }
-  })
-
-  it("says under the hero's demo how long it is and what it shows", async () => {
-    const { html } = await page("/")
-
-    const caption = html.match(/<figcaption\b[^>]*>([\s\S]*?)<\/figcaption>/)?.[1]
-    expect(caption).toBe(
-      `1-minute demo with captions and music: clone, run, write a note, open the admin panel.`,
-    )
-  })
-
-  it("gives the billing card a picture of the app and the realtime card the realtime loop", async () => {
-    const { html } = await page("/")
-
+  it("keeps every title within 60 characters and naming Financy once, and every description within 155", async () => {
+    // The docs and the changelog still describe Seed: #91 and #90 rewrite them.
     for (
-      const [id, file] of [
-        ["feature-billing", "/shots/billing-plan-light-"],
-        ["feature-realtime", "/video/realtime-loop-dark-"],
-      ]
+      const { path } of SITE_PAGES.filter(({ path }) =>
+        !path.startsWith("/docs") && path !== "/changelog"
+      )
     ) {
-      const start = html.indexOf(`aria-labelledby="${id}"`)
-      const card = html.slice(start, html.indexOf(`role="article"`, start + 1))
-      expect(card, id).toContain(file)
-    }
-  })
-
-  it("draws the billing card from the plan-only picture, 780×416 at its widest", async () => {
-    const { html } = await page("/")
-    const start = html.indexOf(`aria-labelledby="feature-billing"`)
-    const card = html.slice(start, html.indexOf(`role="article"`, start + 1))
-
-    // 780×416 is the plan alone; the whole phone screen it was cut from is 780×1688.
-    expect(card).toMatch(/<img[^>]*width="780"[^>]*height="416"/)
-    const files = [...new Set(card.match(/\/shots\/[a-z-]+-\d+\.webp/g))]
-    expect(files.sort()).toEqual([
-      `/shots/billing-plan-dark-390.webp`,
-      `/shots/billing-plan-dark-780.webp`,
-      `/shots/billing-plan-light-390.webp`,
-      `/shots/billing-plan-light-780.webp`,
-    ])
-  })
-
-  it("names a page after its own title, then the site, when the title does not name Seed", async () => {
-    const { html } = await page("/admin")
-
-    expect(html).toContain(`<title>${ADMIN_HEAD.title} · Seed</title>`)
-  })
-
-  it("keeps every title within 60 characters and naming Seed once, and every description within 155", async () => {
-    for (const { path } of SITE_PAGES) {
       const { html } = await page(path)
       const title = html.match(/<title>([^<]*)<\/title>/)![1].replaceAll("&#39;", "'")
       const description = metaContent(html, "description")!
 
       expect(title.length, `${path}: ${title}`).toBeLessThanOrEqual(60)
-      expect(title.match(/Seed/g), `${path}: ${title}`).toHaveLength(1)
+      expect(title.match(/Financy/g), `${path}: ${title}`).toHaveLength(1)
       expect(description.length, `${path}: ${description}`).toBeLessThanOrEqual(155)
     }
   })
 
-  it("gives every page the Seed mark as its tab icon and the canvas of the page's palette as its theme colour", async () => {
+  it("gives every page its tab icon and the canvas of the page's palette as its theme colour", async () => {
     for (const path of ["/", "/pricing", "/subscribe"]) {
       const { html } = await page(path)
 
@@ -427,18 +258,6 @@ describe("the public website", () => {
       expect(html, path).toContain(
         `<meta name="theme-color" content="#080b10" media="(prefers-color-scheme: dark) and (scripting: enabled)"`,
       )
-    }
-  })
-
-  it("shows a picture's dark theme only with JavaScript on, as the page itself turns dark only then", async () => {
-    for (const path of ["/", "/features"]) {
-      const { html } = await page(path)
-      const sources = [...html.matchAll(/<source\b[^>]*>/g)].map((match) => match[0])
-
-      expect(sources.length, path).toBeGreaterThan(0)
-      for (const tag of sources) {
-        expect(tag, path).toContain(`media="(prefers-color-scheme: dark) and (scripting: enabled)"`)
-      }
     }
   })
 
@@ -466,7 +285,7 @@ describe("the public website", () => {
     }
   })
 
-  it("leads the header to every section of the site and the demo, and keeps sign-in in the footer", async () => {
+  it("leads the header to every section of the site and the newsletter, and links no sign-in", async () => {
     const { html } = await page("/")
     const header = element(html, "header")!
     const footer = element(html, "footer")!
@@ -476,14 +295,12 @@ describe("the public website", () => {
     expect(nav).toEqual(expect.arrayContaining([
       ["Features", "/features"],
       ["Docs", "/docs"],
-      ["Compare", "/compare"],
-      ["Pricing", "/pricing"],
-      ["Hire me (opens antonshubin.com)", HIRE_PAGE_URL.replaceAll("&", "&amp;")],
       ["GitHub", REPOSITORY_URL],
-      ["Try the demo", `${spa}/try`],
+      ["Get notified", "/#newsletter"],
     ]))
+    expect(nav.map(([name]) => name)).not.toContain("Pricing")
     expect(linkNamed(header, "Sign in")).toBeUndefined()
-    expect(hrefOf(linkNamed(footer, "Sign in"))).toBe(`${spa}/sign-in`)
+    expect(linkNamed(footer, "Sign in")).toBeUndefined()
     expect(header).not.toContain(`href="${site}/sign-`)
   })
 
@@ -501,32 +318,8 @@ describe("the public website", () => {
     expect(linkNamed(header, "Docs")).not.toContain(`aria-current`)
   })
 
-  it("links the home page's quick start to the Get started guide", async () => {
-    const { html } = await page("/")
-    const link = /<a [^>]*data-e2e="home-get-started"[^>]*>/.exec(html)?.[0]
-    expect(hrefOf(link)).toBe("/docs/get-started")
-  })
-
-  it("marks the header's Hire me as leaving the site: an icon after its label, and words for a screen reader", async () => {
-    const header = element((await page("/")).html, "header")!
-    const inner = (href: string) =>
-      [...header.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/g)]
-        .filter((match) => hrefOf(match[0]) === href).map((match) => match[1])
-
-    // Once in the desktop row and once in the mobile panel.
-    const hire = inner(HIRE_PAGE_URL.replaceAll("&", "&amp;"))
-    expect(hire).toHaveLength(2)
-    for (const link of hire) {
-      expect(link).toMatch(
-        /Hire me\s*<svg\b[^>]*aria-hidden="true"[\s\S]*<\/svg>\s*<span class="sr-only"> \(opens antonshubin\.com\)<\/span>\s*$/,
-      )
-    }
-    for (const link of inner("/pricing")) expect(link).not.toContain("<svg")
-  })
-
   const ogCards: [string, OgImageKey][] = [
     ["/", "home"],
-    ["/admin", "admin"],
     ["/subscribe", "subscribe"],
     ["/pricing", "pricing"],
     ["/privacy", "home"],
@@ -540,50 +333,16 @@ describe("the public website", () => {
       expect(metaContent(html, "og:image:width")).toBe("1200")
       expect(metaContent(html, "og:image:height")).toBe("630")
       expect(metaContent(html, "og:image:alt")).toBe(ogImageAlt(key))
-      expect(metaContent(html, "og:site_name")).toBe("Seed")
+      expect(metaContent(html, "og:site_name")).toBe("Financy")
     })
   }
 
-  it("names Seed among boilerplates in the comparison's description", async () => {
-    const compare = (await page("/compare")).html
+  it("opens the lead of /pricing with one sentence that says what Financy is", async () => {
+    const { html } = await page("/pricing")
+    const lead = html.slice(html.indexOf("</h1>")).match(/<p\b[^>]*>([\s\S]*?)<\/p>/)![1]
+      .replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim()
 
-    expect(metaContent(compare, "description")).toContain("boilerplates")
-  })
-
-  it("shows on /compare what each starter includes, Seed's gaps among them", async () => {
-    const { headers, rows } = comparisonTable((await page("/compare")).html)
-    const row = (capability: string) =>
-      rows.find((candidate) => candidate.capability === capability)
-
-    expect(headers).toEqual([
-      "Seed",
-      "ShipFast",
-      "Supastarter",
-      "Makerkit",
-      "Next.js SaaS Starter",
-      "Open SaaS",
-    ])
-    expect(row("App-based 2FA")?.values).toEqual(["Yes", "No", "Yes", "Yes", "No", "No"])
-    expect(row("Passkeys")?.values).toEqual(["Yes", "No", "Yes", "Yes", "No", "No"])
-    expect(row("Groups with roles")).toEqual({
-      capability: "Groups with roles",
-      note: "Next.js SaaS Starter: Owner and Member only",
-      values: ["Yes", "No", "Yes", "Yes", "Partial", "No"],
-    })
-    // Every row names a value for every product.
-    for (const { capability, values } of rows) {
-      expect(values.length, capability).toBe(headers.length)
-    }
-  })
-
-  it("opens the lead of each main page with one sentence that says what Seed is", async () => {
-    for (const path of ["/", "/features", "/compare", "/pricing"]) {
-      const { html } = await page(path)
-      const lead = html.slice(html.indexOf("</h1>")).match(/<p\b[^>]*>([\s\S]*?)<\/p>/)![1]
-        .replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim()
-
-      expect(lead, path).toMatch(/^Seed is (?:a free, MIT-licensed|the free) SaaS starter[^.]*\./)
-    }
+    expect(lead).toMatch(/^Financy is a free, open-source \(AGPL\u20113\.0\) finance tracker\./)
   })
 
   it("calls 2FA, groups and per-member billing by one name, the app's, on every page", async () => {
@@ -618,43 +377,13 @@ describe("the public website", () => {
     }
   })
 
-  it("tells the footer's two links to antonshubin.com apart, and says where each goes", async () => {
+  it("says where the footer's link to antonshubin.com goes, and offers no hire link", async () => {
     const footer = element((await page("/")).html, "footer")!
 
-    expect(hrefOf(linkNamed(footer, "Hire me for an MVP (opens antonshubin.com)"))).toBe(
-      HIRE_PAGE_URL.replaceAll("&", "&amp;"),
-    )
     expect(hrefOf(linkNamed(footer, "About Anton (opens antonshubin.com)"))).toBe(
       "https://antonshubin.com",
     )
     expect(linkNamed(footer, "Hire me")).toBeUndefined()
-  })
-
-  it("says /compare's check day one way, as its hero's Checked line does", async () => {
-    const { html } = await page("/compare")
-    const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")
-    const day = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" })
-      .format(new Date(`2026-10-16T00:00:00Z`))
-
-    const days = text.match(
-      /\b\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}\b/g,
-    )
-    expect(days?.length).toBeGreaterThan(2)
-    expect(new Set(days)).toEqual(new Set([day]))
-  })
-
-  it("links the home page to the MVP offer on antonshubin.com, with text that says so", async () => {
-    const { html } = await page("/")
-
-    const link = hrefOf(linkNamed(html, "My MVP offer on antonshubin.com"))?.replaceAll(
-      "&amp;",
-      "&",
-    )
-    expect(link).toBe(HIRE_PAGE_URL)
-    expect(link).toMatch(/^https:\/\/antonshubin\.com\/catalog\/zero-to-production-saas-mvp\?/)
-    // The link beside it says what it opens, not a second "antonshubin.com".
-    expect(hrefOf(linkNamed(html, "About me"))).toBe("https://antonshubin.com/about")
-    expect(linkNamed(html, "antonshubin.com")).toBeUndefined()
   })
 
   it("links a Not built yet item that has an open issue to that issue, by its number", () => {
@@ -669,76 +398,20 @@ describe("the public website", () => {
     expect(links).toEqual([{ href: tracked.issue, number: `215` }])
   })
 
-  it("says on /features that Seed is translated, and names every language (#276)", async () => {
+  it("says on /features that Financy is translated, and names every language (#276)", async () => {
     const { html } = await page("/features")
 
-    expect(html).toContain(`In nine languages from the start`)
+    expect(html).toContain(`In nine languages`)
     expect(html).toContain(
       `speak English, Russian, Spanish, German, Brazilian Portuguese, Arabic, French, Japanese, and Simplified Chinese.`,
     )
   })
 
-  it("lists Download my data as built on the home page, /features, /compare and /privacy (#229)", async () => {
-    const home = (await page("/")).html
-    const features = (await page("/features")).html
-    const compare = (await page("/compare")).html
-    const privacy = (await page("/privacy")).html
-
-    expect(home).toContain(`a download of your own data`)
-    expect(features).toContain(`Download my data: a ZIP of JSON and CSV files`)
-    expect(privacy).toContain(`choose Download my data in your profile`)
-    for (const html of [home, features, compare, privacy]) {
-      expect(html).not.toContain(`issues/229`)
-      expect(html).not.toContain(`Downloading an account&#39;s data`)
-      expect(html).not.toContain(`downloading an account&#39;s data`)
-      expect(html).not.toContain(`Downloading an account's data`)
-      expect(html).not.toContain(`downloading an account's data`)
-    }
-  })
-
   it("lists passkeys on /features as built, not under Not built yet", async () => {
     const { html } = await page("/features")
 
-    expect(html).toContain(`continue with Google or GitHub, sign in with a passkey`)
-    expect(html).toContain(`Passkeys: only the public key is stored`)
-    expect(html).toContain(
-      `Google and GitHub sign-in, passkeys, email sign-in codes, guest accounts, 2FA`,
-    )
+    expect(html).toContain(`continue with Google or GitHub, use a passkey`)
     expect(html).not.toContain(`issues/222`)
-  })
-
-  it("lists email sign-in codes as built on the home page, /features and /compare (#391, #752)", async () => {
-    const home = (await page("/")).html
-    const features = (await page("/features")).html
-    const { rows } = comparisonTable((await page("/compare")).html)
-
-    expect(home).toContain(`passkeys, email sign-in codes, 2FA`)
-    expect(features).toContain(
-      `Email sign-in codes: an 8-character code signs in or signs up, works once, for 10 minutes, only in the browser that asked`,
-    )
-    expect(rows.find((row) => row.capability === "Passwordless email sign-in")?.values[0])
-      .toBe("Yes")
-    // No "Not built yet" list, and no "gaps" line, names them any more.
-    for (const html of [home, features]) {
-      expect(html).not.toMatch(/>\s*Email sign-in codes\s*</)
-      expect(html).not.toMatch(/magic link/i)
-    }
-  })
-
-  it("lists note attachments as built on the home page, /features, /compare and /pricing (#225)", async () => {
-    const home = (await page("/")).html
-    const features = (await page("/features")).html
-    const { rows } = comparisonTable((await page("/compare")).html)
-    const pricing = (await page("/pricing")).html
-
-    expect(home).toContain(`Images and PDFs attached to notes`)
-    expect(features).toContain(`for images and PDFs on notes`)
-    expect(rows.find((row) => row.capability === "File uploads")?.values[0]).toBe("Yes")
-    expect(pricing).toContain(`100 files, 200 MB in all`)
-    for (const html of [home, features]) {
-      expect(html).not.toContain(`no screen uses`)
-      expect(html).not.toContain(`issues/225`)
-    }
   })
 
   it("ends /features with its questions, listed under On this page and in its structured data", async () => {
@@ -746,16 +419,12 @@ describe("the public website", () => {
     const graph = jsonLdGraph(html)
 
     const faqAt = html.indexOf(`<section id="faq"`)
-    expect(faqAt).toBeGreaterThan(html.indexOf(`id="quality"`))
-    expect(faqAt).toBeLessThan(html.indexOf(`aria-labelledby="cta-title"`))
+    expect(faqAt).toBeGreaterThan(html.indexOf(`id="deploy"`))
     expect(html).toContain(`href="#faq"`)
     const faq = graph.find((entity) => entity["@type"] === "FAQPage")!
     const questions = (faq.mainEntity as { name: string }[]).map((question) => question.name)
     expect(questions.length).toBeGreaterThanOrEqual(3)
-    for (const question of questions) {
-      expect(question).toMatch(/^Can Seed /)
-      expect(html).toContain(`>${question}<`)
-    }
+    for (const question of questions) expect(html).toContain(`>${question}<`)
   })
 
   it("describes the home page as the site, the source code, its author and its questions", async () => {
@@ -773,7 +442,7 @@ describe("the public website", () => {
     for (const question of questions) expect(html).toContain(`>${question}<`)
   })
 
-  it("describes Seed as one product, with one id that the pages about it point at", async () => {
+  it("describes Financy as one product, with one id that the pages about it point at", async () => {
     const home = graphIds(jsonLdGraph((await page("/")).html))
 
     for (const { path } of SITE_PAGES) {
@@ -789,10 +458,19 @@ describe("the public website", () => {
         }
       }
     }
-    for (const path of ["/", "/features", "/admin", "/compare", "/pricing"]) {
+    for (const path of ["/", "/features", "/pricing"]) {
       const { defined, referenced } = graphIds(jsonLdGraph((await page(path)).html))
       expect(defined.has(`${site}/#software`) || referenced.has(`${site}/#software`), path)
         .toBe(true)
+    }
+  })
+
+  it("gives Financy the AGPL-3.0 licence in its structured data on every page that describes it", async () => {
+    for (const path of ["/", "/features", "/pricing"]) {
+      const software = jsonLdGraph((await page(path)).html)
+        .find((entity) => isType(entity, "SoftwareApplication"))
+
+      expect(software?.license, path).toBe("https://www.gnu.org/licenses/agpl-3.0.html")
     }
   })
 
@@ -822,7 +500,7 @@ describe("the public website", () => {
       expect((crumbs!.itemListElement as unknown[])[0], path).toEqual({
         "@type": "ListItem",
         position: 1,
-        name: "Seed",
+        name: "Financy",
         item: `${site}/`,
       })
     }
@@ -839,7 +517,7 @@ describe("the public website", () => {
       })
       const crumbs = graph.find((entity) => entity["@type"] === "BreadcrumbList")
       expect(crumbs?.itemListElement, path).toEqual([
-        { "@type": "ListItem", position: 1, name: "Seed", item: `${site}/` },
+        { "@type": "ListItem", position: 1, name: "Financy", item: `${site}/` },
         { "@type": "ListItem", position: 2, name, item: `${site}${path}` },
       ])
     }
@@ -855,22 +533,6 @@ describe("the public website", () => {
     expect(await response.text()).toContain("prefers-color-scheme")
   })
 
-  it("says Seed is free, prices running it and having it built, and sends the founder to the hire page", async () => {
-    const { status, html } = await page("/pricing")
-
-    expect(status).toBe(200)
-    expect(headingOne(html)).toBe("Seed is free. Here is what it costs to run.")
-    expect(html).toContain(`<title>${PRICING_HEAD.title}</title>`)
-    for (const card of ["way-use", "way-run", "way-hire"]) expect(html).toContain(`id="${card}"`)
-    expect(html).toContain(">$0</span>")
-    expect(html).toContain(">From $8,000</span>")
-    // It leaves the site, so its name says where it goes.
-    expect(hrefOf(linkNamed(html, "See how it works (opens antonshubin.com)"))).toBe(
-      HIRE_PAGE_URL.replaceAll("&", "&amp;"),
-    )
-    expect(html).toContain(`<link rel="canonical" href="${site}/pricing"`)
-  })
-
   it("names no price above $0 in the pricing page's description", async () => {
     const { html } = await page("/pricing")
 
@@ -883,43 +545,21 @@ describe("the public website", () => {
     }
   })
 
-  it("prices every plan of the demo's catalog below Seed's own prices, as an example", async () => {
-    const { html } = await page("/pricing")
-
-    expect(html).toContain("These are not Seed's prices")
-    expect(html.indexOf(`id="demo-plans"`)).toBeGreaterThan(html.indexOf(`id="way-hire"`))
-    for (const plan of PLANS) {
-      expect(html).toContain(`>${plan.name}</h3>`)
-      expect(html).toContain(formatMoney(plan.amount, plan.currency))
-      expect(html).toContain(`name="planId" value="${plan.id}"`)
-    }
-    expect(html.match(/<form [^>]*action="\/pricing"[^>]*method="post"/g)).toHaveLength(
-      PLANS.length,
-    )
-    // Seed's own catalog sells no yearly price: no toggle and no saving sentence.
-    expect(html).not.toContain(`data-pricing-interval`)
-    expect(html).not.toContain(`data-e2e="pricing-saving"`)
-  })
-
-  it("offers only Seed itself, at no cost, in the pricing page's structured data", async () => {
+  it("offers only self-hosted Financy, at no cost, in the pricing page's structured data", async () => {
     const graph = jsonLdGraph((await page("/pricing")).html)
 
     const software = graph.find((entity) => isType(entity, "SoftwareApplication"))!
-    expect(software.offers).toEqual({ "@type": "Offer", price: 0, priceCurrency: "USD" })
+    expect(software.offers).toEqual({
+      "@type": "Offer",
+      name: "Self-hosted",
+      description: "Free to run on your own server under AGPL-3.0.",
+      price: 0,
+      priceCurrency: "USD",
+    })
     const offers = JSON.stringify(graph).match(/"@type":"Offer"/g)
     expect(offers).toHaveLength(1)
     expect(graph.map((entity) => entity["@type"])).toEqual(
       expect.arrayContaining(["Person", "FAQPage", "BreadcrumbList"]),
-    )
-  })
-
-  it("answers /mvp with a permanent redirect to the hire page on antonshubin.com", async () => {
-    const response = await handler(new Request(`${site}/mvp`), info)
-
-    expect(response.status).toBe(301)
-    expect(response.headers.get("location")).toBe(HIRE_PAGE_URL)
-    expect(HIRE_PAGE_URL).toMatch(
-      /^https:\/\/antonshubin\.com\/catalog\/zero-to-production-saas-mvp\?utm_source=seedsaas&/,
     )
   })
 
@@ -940,10 +580,10 @@ describe("the public website", () => {
     const { status, html } = await page("/docs")
 
     expect(status).toBe(200)
-    expect(headingOne(html)).toBe("Seed docs")
+    expect(headingOne(html)).toBe("Financy docs")
     const groups = [...html.matchAll(/<h2 id="docs-[^"]*"[^>]*>([\s\S]*?)<\/h2>/g)]
       .map((m) => linkText(m[1]))
-    expect(groups).toEqual(["New to Seed?", "Get started", "Guides", "Concepts", "Reference"])
+    expect(groups).toEqual(["New to Financy?", "Get started", "Guides", "Concepts", "Reference"])
     const first = /<section[^>]*data-e2e="docs-first"[\s\S]*?<\/section>/.exec(html)![0]
     expect(hrefOf(linkNamed(first, "Get started"))).toBe("/docs/get-started")
     expect(html.indexOf(`href="/docs/get-started"`)).toBeLessThan(
@@ -1014,61 +654,6 @@ describe("the public website", () => {
 
     expect(hrefOf(linkNamed(footer, "Docs"))).toBe("/docs")
     expect(hrefOf(linkNamed(footer, "Changelog"))).toBe("/changelog")
-  })
-
-  it("sends every hire link on the site to the hire page, and none to /mvp", async () => {
-    // The listed pages, and the not-found page every unknown address gets.
-    for (const path of [...SITE_PAGES.map((entry) => entry.path), "/no-such-page"]) {
-      const { html } = await page(path)
-
-      expect(html, path).not.toMatch(/href="(https:\/\/www\.example\.com)?\/mvp"/)
-    }
-    const hire = HIRE_PAGE_URL.replaceAll("&", "&amp;")
-    const notFound = await page("/no-such-page")
-    expect(notFound.status).toBe(404)
-    expect(hrefOf(linkNamed(notFound.html, "Hire me to build your MVP"))).toBe(hire)
-    const home = (await page("/")).html
-    expect(home.match(/<a\b[^>]*data-umami-event="hire-me"[^>]*>/g)?.length).toBeGreaterThan(0)
-    for (const link of home.match(/<a\b[^>]*data-umami-event="hire-me"[^>]*>/g)!) {
-      expect(link).toContain(`href="${hire}"`)
-    }
-  })
-
-  it("names the trial of every plan that has one, with its length from the catalog", async () => {
-    const { html } = await page("/pricing")
-
-    const withTrial = PLANS.filter((plan) => plan.trialDays > 0)
-    expect(withTrial.length).toBeGreaterThan(0)
-    for (const plan of withTrial) expect(html).toContain(`The first ${plan.trialDays} days free`)
-    expect(html.match(/days free/g)).toHaveLength(withTrial.length)
-  })
-
-  it("names every demo plan's button with its visible text, then the plan", async () => {
-    const { html } = await page("/pricing")
-
-    const buttons = [...html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)]
-      .filter((match) => match[1].includes(`type="submit"`) && match[2].includes("demo"))
-    expect(buttons).toHaveLength(PLANS.length)
-    for (const [index, plan] of PLANS.entries()) {
-      const [, attributes, content] = buttons[index]
-      const visible = content.replace(/<[^>]+>/g, "").trim()
-      const name = attributes.match(/aria-label="([^"]*)"/)?.[1]
-      expect(name, plan.name).toBe(`${visible}: ${plan.name}`)
-    }
-  })
-
-  it("sends a plan chosen without JavaScript to the app's /try, which opens the demo as a guest", async () => {
-    const response = await handler(
-      new Request(`${site}/pricing`, {
-        method: "POST",
-        headers: { origin: site, "sec-fetch-site": "same-origin" },
-        body: new URLSearchParams({ planId: PLANS[0].id }),
-      }),
-      info,
-    )
-
-    expect(response.status).toBe(303)
-    expect(response.headers.get("location")).toBe(`${spa}/try`)
   })
 
   for (const [path, title] of [["/privacy", "Privacy"], ["/terms", "Terms"]]) {
@@ -1165,96 +750,6 @@ describe("the public website", () => {
         "/fr/features",
         "/ja/features",
         "/zh-CN/features",
-        "/features/sign-in",
-        "/ru/features/sign-in",
-        "/es/features/sign-in",
-        "/de/features/sign-in",
-        "/pt-BR/features/sign-in",
-        "/ar/features/sign-in",
-        "/fr/features/sign-in",
-        "/ja/features/sign-in",
-        "/zh-CN/features/sign-in",
-        "/features/groups",
-        "/ru/features/groups",
-        "/es/features/groups",
-        "/de/features/groups",
-        "/pt-BR/features/groups",
-        "/ar/features/groups",
-        "/fr/features/groups",
-        "/ja/features/groups",
-        "/zh-CN/features/groups",
-        "/features/billing",
-        "/ru/features/billing",
-        "/es/features/billing",
-        "/de/features/billing",
-        "/pt-BR/features/billing",
-        "/ar/features/billing",
-        "/fr/features/billing",
-        "/ja/features/billing",
-        "/zh-CN/features/billing",
-        "/features/realtime",
-        "/ru/features/realtime",
-        "/es/features/realtime",
-        "/de/features/realtime",
-        "/pt-BR/features/realtime",
-        "/ar/features/realtime",
-        "/fr/features/realtime",
-        "/ja/features/realtime",
-        "/zh-CN/features/realtime",
-        "/features/offline",
-        "/ru/features/offline",
-        "/es/features/offline",
-        "/de/features/offline",
-        "/pt-BR/features/offline",
-        "/ar/features/offline",
-        "/fr/features/offline",
-        "/ja/features/offline",
-        "/zh-CN/features/offline",
-        "/features/shortcuts",
-        "/ru/features/shortcuts",
-        "/es/features/shortcuts",
-        "/de/features/shortcuts",
-        "/pt-BR/features/shortcuts",
-        "/ar/features/shortcuts",
-        "/fr/features/shortcuts",
-        "/ja/features/shortcuts",
-        "/zh-CN/features/shortcuts",
-        "/features/deploy",
-        "/ru/features/deploy",
-        "/es/features/deploy",
-        "/de/features/deploy",
-        "/pt-BR/features/deploy",
-        "/ar/features/deploy",
-        "/fr/features/deploy",
-        "/ja/features/deploy",
-        "/zh-CN/features/deploy",
-        "/admin",
-        "/ru/admin",
-        "/es/admin",
-        "/de/admin",
-        "/pt-BR/admin",
-        "/ar/admin",
-        "/fr/admin",
-        "/ja/admin",
-        "/zh-CN/admin",
-        "/compare",
-        "/ru/compare",
-        "/es/compare",
-        "/de/compare",
-        "/pt-BR/compare",
-        "/ar/compare",
-        "/fr/compare",
-        "/ja/compare",
-        "/zh-CN/compare",
-        "/pricing",
-        "/ru/pricing",
-        "/es/pricing",
-        "/de/pricing",
-        "/pt-BR/pricing",
-        "/ar/pricing",
-        "/fr/pricing",
-        "/ja/pricing",
-        "/zh-CN/pricing",
         "/docs/api",
         "/docs",
         ...DOC_SLUGS.map((slug) => `/docs/${slug}`),
@@ -1283,58 +778,25 @@ describe("the public website", () => {
     )
 
     // Every language of a page carries the English page's date: the translation says the same.
-    expect(lastmods["/de/pricing"]).toBe("2026-10-21T00:00:00.000Z")
-    expect(lastmods["/ar"]).toBe("2026-11-02T00:00:00.000Z")
+    expect(lastmods["/de/subscribe"]).toBe("2026-11-04T00:00:00.000Z")
+    expect(lastmods["/ar"]).toBe("2026-11-04T00:00:00.000Z")
     expect(Object.values(lastmods)).not.toContain(undefined)
     const english = Object.fromEntries(
       Object.entries(lastmods).filter(([path]) => pathLanguage(path).language === "en"),
     )
     expect(english).toEqual({
-      "/": "2026-11-02T00:00:00.000Z",
-      "/features": "2026-11-02T00:00:00.000Z",
-      "/features/sign-in": "2026-11-02T00:00:00.000Z",
-      "/features/groups": "2026-11-01T00:00:00.000Z",
-      "/features/billing": "2026-11-01T00:00:00.000Z",
-      "/features/realtime": "2026-11-02T00:00:00.000Z",
-      "/features/offline": "2026-11-01T00:00:00.000Z",
-      "/features/shortcuts": "2026-11-02T00:00:00.000Z",
-      "/features/deploy": "2026-11-02T00:00:00.000Z",
-      "/admin": "2026-10-28T00:00:00.000Z",
+      "/": "2026-11-04T00:00:00.000Z",
+      "/features": "2026-11-04T00:00:00.000Z",
       "/docs/api": "2026-10-23T00:00:00.000Z",
       // With no history to read, as under `deno test`, the guides and the changelog carry the day
       // they were first published.
       "/docs": "2026-11-01T00:00:00.000Z",
       ...Object.fromEntries(DOC_SLUGS.map((slug) => [`/docs/${slug}`, "2026-11-01T00:00:00.000Z"])),
       "/changelog": "2026-11-01T00:00:00.000Z",
-      "/compare": "2026-10-16T00:00:00.000Z",
-      "/pricing": "2026-10-21T00:00:00.000Z",
-      "/subscribe": "2026-10-30T00:00:00.000Z",
+      "/subscribe": "2026-11-04T00:00:00.000Z",
       "/privacy": "2026-10-23T00:00:00.000Z",
       "/terms": "2026-10-21T00:00:00.000Z",
     })
-  })
-
-  it("marks every link to the app's /try outside the footer nofollow, since opening it makes an account", async () => {
-    for (const path of ["/", "/features", "/pricing", "/compare"]) {
-      const { html } = await page(path)
-      const outsideFooter = html.slice(0, html.indexOf("<footer"))
-      const links = [...outsideFooter.matchAll(/<a\b[^>]*>/g)].map((match) => match[0])
-        .filter((tag) => hrefOf(tag) === `${spa}/try`)
-      expect(links.length, path).toBeGreaterThan(0)
-      for (const tag of links) expect(tag, path).toMatch(/\brel="nofollow"/)
-    }
-  })
-
-  it("answers on the home page whether Seed can be tried without an account, answer first", async () => {
-    const { html } = await page("/")
-    const faq = jsonLdGraph(html).find((entity) => entity["@type"] === "FAQPage")!
-    const question = (faq.mainEntity as { name: string; acceptedAnswer: { text: string } }[])
-      .find((entry) => entry.name === "Can I try it without an account?")!
-
-    expect(question.acceptedAnswer.text).toMatch(
-      /^Yes\. “Try the live demo” opens the app in a guest account/,
-    )
-    expect(html).toContain(`Guest accounts: try the app with one click`)
   })
 
   it("says on the privacy page that a guest account's cookie lasts a year from its last use", async () => {
@@ -1355,50 +817,45 @@ describe("the public website", () => {
     }
   })
 
-  it("names the author and the sitemap's day under the hero of /compare, /pricing and /features", async () => {
-    // /compare's day is when its rows were checked against the other products, so it says so.
-    const word: Record<string, string> = { "/compare": "Checked" }
-    const updated = Object.fromEntries(SITE_PAGES.map((entry) => [entry.path, entry.updated]))
+  it("names the author and the page's day under the hero of /pricing and /features", async () => {
+    const updated: Record<string, string> = {
+      "/pricing": PRICING_UPDATED,
+      "/features": SITE_PAGES.find(({ path }) => path === "/features")!.updated,
+    }
     const day = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" })
-    for (const path of ["/compare", "/pricing", "/features"]) {
+    for (const path of ["/pricing", "/features"]) {
       const { html } = await page(path)
       const meta = html.match(/<p [^>]*data-e2e="page-hero-meta"[^>]*>([\s\S]*?)<\/p>/)?.[1]
 
       expect(meta, path).toContain(`By <a`)
       expect(hrefOf(linkNamed(meta ?? "", "Anton Shubin")), path).toBe("https://antonshubin.com")
       expect(meta, path).toContain(
-        `${word[path] ?? "Updated"} <time datetime="${updated[path]}">` +
+        `Updated <time datetime="${updated[path]}">` +
           `${day.format(new Date(`${updated[path]}T00:00:00Z`))}</time>`,
       )
-      expect(html.indexOf("page-hero-meta"), path).toBeGreaterThan(
-        html.indexOf("Try the live demo"),
-      )
+      expect(html.indexOf("page-hero-meta"), path).toBeGreaterThan(html.indexOf("</h1>"))
     }
   })
 
-  it("draws no dated line on the home page, keeps the date out of /compare's lead and puts its disclosure under the byline", async () => {
-    const { html: home } = await page("/")
-    const { html: compare } = await page("/compare")
+  it("dates the home page in its status line under the actions, not in a byline", async () => {
+    const { html } = await page("/")
+    const status = html.match(/<p [^>]*data-e2e="home-status-line"[^>]*>([\s\S]*?)<\/p>/)?.[1]
 
-    expect(home).not.toContain("page-hero-meta")
-    const hero = compare.slice(
-      compare.indexOf(`data-e2e="page-hero"`),
-      compare.indexOf(`data-e2e="page-hero-meta"`),
+    expect(html).not.toContain("page-hero-meta")
+    expect(linkText(status ?? "")).toBe(
+      `Being rebuilt in public, not ready to use yet. Updated ${
+        new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" })
+          .format(new Date(`${STATUS_UPDATED}T00:00:00Z`))
+      }. Where it stands`,
     )
-    expect(hero).toContain("Here it is side by side with five other SaaS starters")
-    expect(hero).not.toContain("<time")
-    expect(hero).not.toContain("I am not neutral")
-    const note = compare.slice(compare.indexOf(`data-e2e="page-hero-meta"`))
-      .match(/<p [^>]*data-e2e="page-hero-note"[^>]*>([\s\S]*?)<\/p>/)?.[1]
-    expect(note).toContain("I build Seed, so I am not neutral.")
-    expect(note).toContain("A row out of date?")
+    expect(hrefOf(linkNamed(status ?? "", "Where it stands"))).toBe("#status")
   })
 
   it("takes each page's title and description in the page list from the page's own head", async () => {
     for (const { path, title, description } of SITE_PAGES) {
       const { html } = await page(path)
 
-      expect(metaContent(html, "description"), path).toBe(description)
+      expect(metaContent(html, "description"), path).toBe(machineText(description))
       const shown = html.match(/<title>([^<]*)<\/title>/)![1].replaceAll("&#39;", "'")
       expect(shown.startsWith(title), `${path}: ${shown}`).toBe(true)
     }
@@ -1409,11 +866,27 @@ describe("the public website", () => {
     const text = await response.text()
 
     expect(response.headers.get("content-type")).toBe("text/plain; charset=utf-8")
-    expect(text).toMatch(/^# Seed\n\n> The free, MIT-licensed SaaS starter built on web standards/)
+    expect(text).toMatch(
+      /^# Financy\n\n> Financy is a free, open-source \(AGPL-3\.0\) finance tracker for a person or a family/,
+    )
     for (const { path, title, description } of SITE_PAGES) {
-      expect(text, path).toContain(`- [${title}](${site}${path}): ${description}\n`)
+      expect(text, path).toContain(`- [${title}](${site}${path}): ${machineText(description)}\n`)
     }
     expect(text).toContain(`(${REPOSITORY_URL})`)
+  })
+
+  it("keeps AGPL-3.0 on one line in every language, and gives machines its plain hyphen", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const path = localePath(language, "/")
+      const { html } = await page(path)
+      const [head, body] = html.split("<body")
+
+      expect(headingOne(html), path).toContain("AGPL\u20113.0")
+      expect(body, path).not.toContain("AGPL-3.0")
+      expect(head, path).not.toContain("\u2011")
+    }
+    const llms = await (await handler(new Request(`${site}/llms.txt`), info)).text()
+    expect(llms).not.toContain("\u2011")
   })
 
   it("names the source code's licence in llms.txt as AGPL-3.0, Financy's own", async () => {
@@ -1440,16 +913,7 @@ describe("the public website", () => {
     }
     expect(text).not.toContain("Google-Extended")
     expect(text).not.toMatch(/Disallow: \/\n/)
-    expect(text).toContain(`Sitemap: ${site}/video-sitemap.xml`)
-  })
-
-  it("lists the admin panel video on its page in the video sitemap", async () => {
-    const response = await handler(new Request(`${site}/video-sitemap.xml`), info)
-    const xml = await response.text()
-
-    expect(response.headers.get("content-type")).toBe("application/xml; charset=utf-8")
-    expect(xml).toContain(`<url><loc>${site}/admin</loc><video:video>`)
-    expect(xml).toContain(`<video:content_loc>${site}/`)
+    expect(text).not.toContain("video-sitemap")
   })
 
   it("loads no tracker and no script of its own while analytics is off", async () => {
@@ -1483,17 +947,18 @@ describe("the public website", () => {
     expect(html).not.toContain("/analytics.js")
   })
 
-  it("names the demo links of the header and the hero, the hire link and the newsletter form for Umami", async () => {
+  it("names the notify links of the header and the hero, the hero's GitHub link and the newsletter form for Umami", async () => {
     const { html } = await page("/", withAnalytics)
 
-    const tryDemo = html.match(/<a[^>]*data-e2e="site-try-demo"[^>]*>/)?.[0]
-    expect(tryDemo).toContain(`data-umami-event="try-demo"`)
-    expect(tryDemo).toContain(`data-umami-event-from="header"`)
-    const heroDemo = html.match(/<a[^>]*data-e2e="home-try-demo"[^>]*>/)?.[0]
-    expect(heroDemo).toContain(`data-umami-event-from="hero"`)
-    expect(html.match(/<a[^>]*data-e2e="home-founders"[^>]*>/)?.[0]).toContain(
-      `data-umami-event="hire-me"`,
-    )
+    const header = html.match(/<a[^>]*data-e2e="site-notify"[^>]*>/)?.[0]
+    expect(header).toContain(`data-umami-event="notify"`)
+    expect(header).toContain(`data-umami-event-from="header"`)
+    const hero = html.match(/<a[^>]*data-e2e="home-notify"[^>]*>/)?.[0]
+    expect(hero).toContain(`data-umami-event="notify"`)
+    expect(hero).toContain(`data-umami-event-from="hero"`)
+    const github = html.match(/<a[^>]*data-e2e="home-github"[^>]*>/)?.[0]
+    expect(github).toContain(`data-umami-event="github"`)
+    expect(github).toContain(`data-umami-event-from="hero"`)
     expect(html.match(/<form[^>]*data-e2e="home-subscribe"[^>]*>/)?.[0]).toContain(
       `data-analytics-submit="newsletter-subscribe"`,
     )

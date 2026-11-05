@@ -23,7 +23,6 @@ import {
   TOC_MIN_MINUTES,
 } from "../../../blog.ts"
 import { coverImage, listCoverImage, ogCard } from "../../../blog-covers.ts"
-import { CtaBand } from "../../../components/cta-band.tsx"
 import { featurePage } from "../../../features-data.tsx"
 import {
   AUTHOR_URL,
@@ -34,7 +33,6 @@ import {
   SITE_NAME,
   SiteFrame,
   type SitePageHead,
-  spaLinks,
 } from "../../../site.tsx"
 import { define, type State } from "../../../utils.ts"
 import { figureCatalog, localePath, siteTranslator } from "../../../languages.ts"
@@ -59,7 +57,7 @@ export const POST_NOT_FOUND = postNotFound(siteEnglishText())
 
 /**
  * One live post: its trail, title, dates and reading time, cover, key points and body, then one
- * call to action (the newsletter while it is on, else the demo) and up to three posts to read next.
+ * the newsletter while it is on, and up to three posts to read next.
  * A draft, a scheduled post and an unknown address answer 404 with {@link POST_NOT_FOUND}.
  *
  * A post is written in one language and lives at that language's address (`/de/blog/<slug>` for
@@ -104,12 +102,7 @@ export const handler = define.handlers({
           {post.topic && <meta property="article:section" content={post.topic} />}
         </Head>
         <PostBody post={post} parts={body.parts} />
-        {ctx.state.newsletter ? <NewsletterBand /> : (
-          <CtaBand
-            title={t.t(`Blog.ctaTitle`, { site: SITE_NAME })}
-            demoHref={spaLinks(ctx.state.spaOrigin).try}
-          />
-        )}
+        {ctx.state.newsletter && <NewsletterBand />}
         <ReadNext posts={readNext} />
       </SiteFrame>,
     )

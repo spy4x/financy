@@ -113,6 +113,6 @@ describe("the newsletter under another product's name", () => {
     const page = await html("/")
 
     const title = page.match(/<h2\b[^>]*id="newsletter-title"[^>]*>([\s\S]*?)<\/h2>/)?.[1]
-    expect(text(title ?? "")).toBe(`Get a short email when ${SITE_NAME} has news`)
+    expect(text(title ?? "")).toBe(`Hear when ${SITE_NAME} is ready to use`)
   })
 })
