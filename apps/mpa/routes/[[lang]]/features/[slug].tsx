@@ -1,7 +1,7 @@
 // A feature page exists in every language the site serves: its words are keys of the `site`
 // catalog, named in `features-data.tsx`.
 import type { ComponentChildren, JSX } from "preact"
-import type { FreshContext } from "fresh"
+import type { Context } from "@spy4x/preact-server"
 import type { Language } from "@domain/identity"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { IconArrowRight, IconArrowUpRight } from "@spy4x/preact-icons"
@@ -305,7 +305,7 @@ function OtherFeatures({ current }: { current: string }): JSX.Element {
 }
 
 /** The 404 of an address with no feature page, and the way to every feature. */
-function renderNotFound(ctx: FreshContext<State>): Response | Promise<Response> {
+function renderNotFound(ctx: Context<State>): Response | Promise<Response> {
   const t = siteTranslator(ctx.state.language)
   return ctx.render(
     <SiteFrame

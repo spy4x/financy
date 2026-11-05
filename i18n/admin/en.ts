@@ -287,6 +287,13 @@ export default {
   "AdminBilling.perMonth": "Per month",
   "AdminBilling.unknownPrice": "Unknown price",
   "AdminBilling.nextCharge": "Next charge",
+  "AdminNeverPaid.title": "Never paid",
+  "AdminNeverPaid.subtitle": "Groups that have never paid, newest first.",
+  "AdminNeverPaid.created": "Created",
+  "AdminNeverPaid.empty": "Every group has paid at least once.",
+  "AdminNeverPaid.listError": "Couldn't load the groups. Check your connection and try again.",
+  "AdminNeverPaid.loading": "Loading the groups",
+  "AdminNeverPaid.pages": "Pages of groups",
   "AdminBilling.inTrash": "In trash",
   "AdminBilling.newTab": "{label} (opens a new tab)",
   "AdminBillingCustomer.notFound": "No customer with this group ID.",
@@ -1288,6 +1295,10 @@ export default {
   "AdminGroupOverview.description":
     "What members see on their Overview page, in the default layout. Members can hide and reorder these; their own layouts aren't shown here.",
   "AdminGroupOverview.gridLabel": "Overview widgets of {group}",
+  "AdminGroupOverview.membersOnly":
+    "Widgets that show this group's own figures are visible to its members only.",
+  "AdminGroupOverview.noneShown":
+    "Every widget on this group's Overview page shows the group's own figures, so only its members can see them.",
   "AdminGroups.active": "Active",
   "AdminGroups.inTrash": "In trash",
   "AdminGroups.noName": "No name",

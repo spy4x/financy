@@ -1,5 +1,5 @@
 Architecture.api	c8e5998f6a3955c2
-Architecture.apiNote	c71f747b3bc4cd13
+Architecture.apiNote	7ee5f40192f1a402
 Architecture.caption	5a468537f0280955
 Architecture.captionBottom	a3801fd5dbc9972e
 Architecture.captionTop	45a89ad45d745016
@@ -13,8 +13,8 @@ Architecture.webApp	f2dc406dd2f38bf8
 Architecture.webAppNote	8e3fbdf4cb773a9c
 Architecture.webAppNoteShort	a91010572026bddd
 Architecture.website	b5a229ac8becc603
-Architecture.websiteNote	ce07d5d2dbd75505
-Architecture.websiteNoteShort	f810b66877419ce9
+Architecture.websiteNote	35c11a097e38ad43
+Architecture.websiteNoteShort	339908b5d658c6ba
 Architecture.worker	a67b04cd5c491d4d
 Architecture.workerNote	830f8c5848a38958
 Blog.allPosts	3a2e5c2c34923fd5
@@ -106,7 +106,7 @@ FeaturePage.limits	dffb64dc70011ecf
 FeaturePage.otherFeatures	de63aea8203e9d0f
 FeaturePage.questions	9a72221a27476f3e
 FeaturePage.readMore	64f4599913b851eb
-FeaturePage.runtimeAnswer	4c7ddbaeaf9b84ea
+FeaturePage.runtimeAnswer	95bf5f6e723db5ae
 FeaturePage.runtimeQuestion	0fe34ce8ffc00e16
 FeaturePage.sectionLink	9dc5baf353535d6d
 FeaturePage.updated	9f46da2ff40683e5
