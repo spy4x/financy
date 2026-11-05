@@ -66,14 +66,9 @@ test("a visitor walks the website and its forms without a refusal under the cont
   await page.goto("/")
   expect((await stylesheet).status()).toBe(200)
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "The groundwork of your SaaS, already built.",
+    "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or wait for the paid cloud.",
   )
   expect(await page.evaluate(() => document.styleSheets.length)).toBeGreaterThan(0)
-
-  await page.goto("/pricing")
-  // A form that the website answers with a redirect, to the app's /try.
-  await page.getByRole("button", { name: "Try in the demo: Pro" }).click()
-  await expect(page).toHaveURL(/\/try$/)
 
   const email = `mpa-csp-${uuidV7().slice(-8)}@example.com`
   await page.goto("/privacy")

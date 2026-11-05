@@ -1,10 +1,6 @@
 import { API_DOCS_HEAD, API_DOCS_PATH } from "./api-docs.ts"
-import { ADMIN_HEAD, ADMIN_UPDATED } from "./routes/[[lang]]/admin.tsx"
-import { CHECKED_ON, COMPARE_HEAD } from "./routes/[[lang]]/compare.tsx"
 import { FEATURES_HEAD, FEATURES_UPDATED } from "./routes/[[lang]]/features.tsx"
-import { FEATURE_PAGES, featurePageIn, featurePath } from "./features-data.tsx"
 import { HOME_HEAD, HOME_UPDATED } from "./routes/index.tsx"
-import { PRICING_HEAD, PRICING_UPDATED } from "./routes/[[lang]]/pricing.tsx"
 import { PRIVACY_HEAD } from "./routes/[[lang]]/privacy.tsx"
 import { TERMS_HEAD } from "./routes/[[lang]]/terms.tsx"
 import { SUBSCRIBE_HEAD, SUBSCRIBE_UPDATED } from "./subscribers.tsx"
@@ -13,7 +9,6 @@ import { DOC_SLUGS, DOCS_PATH, readDoc } from "./docs-site.ts"
 import { CHANGELOG_HEAD } from "./routes/[[lang]]/changelog.tsx"
 import { DOCS_HEAD } from "./routes/[[lang]]/docs/index.tsx"
 import { docTitle } from "./routes/[[lang]]/docs/[slug].tsx"
-import { siteEnglishText } from "@ui/site-text.ts"
 
 /** One public page, as `sitemap.xml` and `llms.txt` describe it. */
 export interface SitePage {
@@ -69,18 +64,13 @@ const DOC_PAGES: readonly SitePage[] = DOC_SLUGS.map((slug) => {
 
 /**
  * The website's public pages, in the order a visitor meets them. It lives apart from `site.tsx`
- * because it reads every page's head, and every page imports `site.tsx`.
+ * because it reads every page's head, and every page imports `site.tsx`. `/pricing` and the
+ * single feature pages (`/features/<slug>`) are left out while they still describe Seed: #87 and
+ * #105 rewrite them for Financy and list them again.
  */
 export const SITE_PAGES: readonly SitePage[] = [
   sitePage(`/`, HOME_HEAD, HOME_UPDATED),
   sitePage(`/features`, FEATURES_HEAD, FEATURES_UPDATED),
-  ...FEATURE_PAGES.map((page) =>
-    sitePage(featurePath(page.slug), featurePageIn(siteEnglishText(), page), page.updated)
-  ),
-  sitePage(`/admin`, ADMIN_HEAD, ADMIN_UPDATED),
-  // Seed's own site: see docs/start-a-product.md
-  sitePage(`/compare`, COMPARE_HEAD, CHECKED_ON),
-  sitePage(`/pricing`, PRICING_HEAD, PRICING_UPDATED),
   sitePage(API_DOCS_PATH, API_DOCS_HEAD, API_DOCS_HEAD.updated, true),
   sitePage(DOCS_PATH, DOCS_HEAD, day(DOC_PAGES.map(({ updated }) => updated).sort().at(-1)), true),
   ...DOC_PAGES,

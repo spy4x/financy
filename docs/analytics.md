@@ -46,33 +46,22 @@ Event names are kebab-case. Umami stores the page of every event, so a name neve
 
 ## Events
 
-<!-- Seed's own site: see docs/start-a-product.md (hire-me, compare-source) -->
-
 | Event                     | Properties                    | When                                                                                 |
 | ------------------------- | ----------------------------- | ------------------------------------------------------------------------------------ |
-| `try-demo`                | `from`                        | A link to the demo's sign-up: header, hero, closing band, 404 page, footer           |
-| `sign-in`                 | `from`                        | The footer's link to the demo's sign-in                                              |
+| `try-demo`                | `from`                        | A link to the app's sign-up (none on the website while the cloud takes no sign-ups)  |
+| `sign-in`                 | `from`                        | A link to the app's sign-in (none on the website while the cloud takes no sign-ups)  |
+| `notify`                  | `from`                        | A "Get notified" link to the home page's newsletter form: header, hero, cloud card    |
 | `github`                  | `from`                        | A link into the GitHub repository that names no other event                          |
 | `read-code`               | `from`                        | A link to a part of the code or its docs ("Read the code", the deploy guide)         |
-| `hire-me`                 | `from`                        | A button or link to antonshubin.com's MVP page                                      |
-| `compare-source`          | `product`                     | A source link of a compared product on `/compare`                                    |
 | `on-this-page`            | `section`                     | A link of the "On this page" list (`/features`, `/privacy`, `/terms`)                |
 | `outbound-link`           | `url`, `from`                 | Any other link to another site                                                       |
 | `internal-link`           | `to`, `from`                  | A link within the website that names no event (header, footer, cards, text links)    |
-| `pricing-plan`            | `planId`                      | A demo plan's "Try in the demo" form on `/pricing`                                   |
 | `newsletter-subscribe`    |                               | A newsletter form submitted (home page, footer, `/subscribe`)                        |
 | `newsletter-sent`         | `path`                        | The page that says the confirm mail is on its way                                    |
 | `newsletter-confirmed`    | `path`                        | The page after the confirm link worked                                               |
 | `newsletter-unsubscribed` | `path`                        | The page after an unsubscribe                                                        |
 | `not-found`               | `path`                        | The 404 page                                                                         |
 | `error-page`              | `path`                        | The 500 page                                                                         |
-| `admin-video-play`        |                               | The first play of the admin panel video in a page view                               |
-| `admin-video-progress`    | `percent` (25, 50, 75, 100)   | Each quarter of the video watched, once per page view                                |
-| `admin-video-ended`       |                               | The video played to its end                                                          |
-| `admin-video-download`    | `from` (`player`, `transcript`) | A link to the MP4                                                                  |
-| `admin-transcript-jump`   |                               | "Read what the video shows" on `/admin`                                              |
-| `features-admin-video`    | `from` (`lead`, `still`)      | A link from `/features` to the video on `/admin`                                     |
-| `home-admin-card`         |                               | The admin card on the home page                                                      |
 
 `from` names the place on the page: `header`, `footer`, `hero`, `cta` (the closing band), or a
 section's own name. For a link `/analytics.js` names, it is `header`, `footer`, or the `id` of the
@@ -88,9 +77,7 @@ These exist in the Umami of seedsaas.com. A product built on Seed creates its ow
 | Goal: `github`                                          | Clicks through to the repository                  |
 | Goal: `newsletter-sent`                                 | Newsletter sign-ups the API accepted              |
 | Goal: `newsletter-confirmed`                            | Newsletter sign-ups confirmed from the mail       |
-| Goal: `admin-video-ended`                               | The admin panel video watched to the end          |
 | Funnel: any page (`/*`) → `try-demo`, 60 minutes        | Of all visitors, how many try the demo            |
-| Funnel: `/admin` → `admin-video-play` → `admin-video-ended`, 60 minutes | Of the visitors to `/admin`, how many start and finish the video |
 
 The demo's sign-up page is not a funnel step: the SPA loads no tracker, so Umami never sees it.
 `try-demo` is the last step the website can see.

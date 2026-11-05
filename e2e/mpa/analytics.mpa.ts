@@ -46,27 +46,18 @@ test("a page loads the tracker from the Umami origin and the website's own event
 })
 
 // The shared header takes no `data-umami-event`, so `/analytics.js` names its links by where they go.
-test("counts the shared header's GitHub and Pricing links as clicked in the header", async ({ page }) => {
+test("counts the shared header's GitHub and Docs links as clicked in the header", async ({ page }) => {
   await page.goto("/")
   await stayOnPage(page, "click")
   await page.getByRole("navigation", { name: "Main navigation" }).first()
     .getByRole("link", { name: "GitHub" }).click()
   await page.getByRole("navigation", { name: "Main navigation" }).first()
-    .getByRole("link", { name: "Pricing" }).click()
+    .getByRole("link", { name: "Docs" }).click()
 
   expect(await events(page)).toEqual([
     { name: "github", data: { from: "header" } },
-    { name: "internal-link", data: { to: "/pricing", from: "header" } },
+    { name: "internal-link", data: { to: "/docs", from: "header" } },
   ])
-})
-
-test("counts a demo plan chosen on the pricing page, with the plan", async ({ page }) => {
-  await page.goto("/pricing")
-  await stayOnPage(page, "submit")
-
-  await page.getByRole("button", { name: "Try in the demo: Pro" }).click()
-
-  expect(await events(page)).toEqual([{ name: "pricing-plan", data: { planId: "pro" } }])
 })
 
 test("counts the 404 page once it has loaded", async ({ page }) => {
@@ -76,51 +67,6 @@ test("counts the 404 page once it has loaded", async ({ page }) => {
     { name: "not-found", data: { path: "/no-such-page" } },
   ])
 })
-
-test("counts the admin video's first play, each quarter once, and its end", async ({ page }) => {
-  await page.goto("/admin")
-
-  // The file is not loaded (`preload="none"`): the test sets the clock the listeners read.
-  await page.locator("[data-e2e=admin-video]").evaluate((video: HTMLVideoElement) => {
-    let now = 0
-    Object.defineProperty(video, "duration", { value: 100 })
-    Object.defineProperty(video, "currentTime", { get: () => now })
-    const at = (seconds: number) => {
-      now = seconds
-      video.dispatchEvent(new Event("timeupdate"))
-    }
-    video.dispatchEvent(new Event("play"))
-    at(30)
-    video.dispatchEvent(new Event("play"))
-    at(80)
-    at(81)
-    video.dispatchEvent(new Event("ended"))
-  })
-
-  expect(await events(page)).toEqual([
-    { name: "admin-video-play" },
-    { name: "admin-video-progress", data: { percent: 25 } },
-    { name: "admin-video-progress", data: { percent: 50 } },
-    { name: "admin-video-progress", data: { percent: 75 } },
-    { name: "admin-video-progress", data: { percent: 100 } },
-    { name: "admin-video-ended" },
-  ])
-})
-
-// The island swaps the link for the player once pressed, so each way of pressing gets a fresh page.
-for (const how of ["a click", "Space"] as const) {
-  test(`counts a play of the hero's demo video pressed with ${how}, and not as a link`, async ({ page }) => {
-    await page.goto("/")
-    await stayOnPage(page, "click")
-    const play = page.locator("[data-e2e=hero-demo]")
-    if (how === "a click") await play.click()
-    else {
-      await play.focus()
-      await page.keyboard.press("Space")
-    }
-    expect(await events(page)).toEqual([{ name: "demo-video-play", data: { from: "hero" } }])
-  })
-}
 
 test("loads no tracker on a page whose address carries a newsletter token", async ({ page }) => {
   await page.goto("/unsubscribe?list=news&token=not-a-real-token")

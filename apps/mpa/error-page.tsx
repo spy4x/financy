@@ -1,11 +1,9 @@
-// Seed's own site: see docs/start-a-product.md
 import type { JSX } from "preact"
 import { type FreshContext, HttpError } from "fresh"
 import { Button } from "@spy4x/preact-ui/button"
-import { HIRE_PAGE_URL } from "./hire.ts"
 import { pathLanguage } from "./languages.ts"
 import { SiteLanguage, useSite } from "./use-site.tsx"
-import { REPOSITORY_URL, SiteFrame, spaLinks, TRY_ENTRY, TRY_REL } from "./site.tsx"
+import { REPOSITORY_URL, SiteFrame } from "./site.tsx"
 import type { State } from "./utils.ts"
 
 /**
@@ -37,7 +35,6 @@ function ErrorPage(
   const { t, href, rich } = useSite()
   const title = t.t(notFound ? `ErrorPage.notFoundTitle` : `ErrorPage.errorTitle`)
   const description = t.t(notFound ? `ErrorPage.notFoundDescription` : `ErrorPage.errorDescription`)
-  const spa = spaLinks(state.spaOrigin)
   return (
     <SiteFrame state={state} path={path} head={{ title, description, noindex: true }}>
       <section
@@ -57,17 +54,7 @@ function ErrorPage(
           {notFound
             ? (
               <>
-                <div class="flex w-full flex-col gap-4 sm:flex-row">
-                  <Button
-                    href={spa.try}
-                    rel={TRY_REL}
-                    data-umami-event="try-demo"
-                    data-umami-event-from="not-found"
-                  >
-                    {t.t(TRY_ENTRY.label)}
-                  </Button>
-                  <Button href={href(`/`)} variant="outline">{t.t(`ErrorPage.home`)}</Button>
-                </div>
+                <Button href={href(`/`)}>{t.t(`ErrorPage.home`)}</Button>
                 <ul class="flex flex-wrap gap-x-6 gap-y-2 font-medium">
                   <li>
                     <a href={href(`/features`)} class="text-primary underline">
@@ -75,13 +62,8 @@ function ErrorPage(
                     </a>
                   </li>
                   <li>
-                    <a
-                      href={HIRE_PAGE_URL}
-                      class="text-primary underline"
-                      data-umami-event="hire-me"
-                      data-umami-event-from="not-found"
-                    >
-                      {t.t(`ErrorPage.hire`)}
+                    <a href={`${href(`/`)}#status`} class="text-primary underline">
+                      {t.t(`ErrorPage.status`)}
                     </a>
                   </li>
                 </ul>

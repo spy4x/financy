@@ -37,19 +37,13 @@ const PAGES = [
     dir: `ltr`,
     heading: de[`PricingHero.title`],
   },
-  {
-    language: `pt-BR`,
-    path: `/pt-BR/compare`,
-    english: `/compare`,
-    dir: `ltr`,
-    heading: ptBr[`Compare.heroTitle`],
-  },
+  { language: `pt-BR`, path: `/pt-BR`, english: `/`, dir: `ltr`, heading: ptBr[`HomeHero.title`] },
   {
     language: `ar`,
-    path: `/ar/admin`,
-    english: `/admin`,
+    path: `/ar/features`,
+    english: `/features`,
     dir: `rtl`,
-    heading: ar[`AdminTour.heroTitle`],
+    heading: ar[`FeaturesHero.title`],
   },
   { language: `fr`, path: `/fr`, english: `/`, dir: `ltr`, heading: fr[`HomeHero.title`] },
   {

@@ -1,4 +1,3 @@
-// Seed's own site: see docs/start-a-product.md
 // A feature page exists in every language the site serves: its words are keys of the `site`
 // catalog, named in `features-data.tsx`.
 import type { ComponentChildren, JSX } from "preact"
@@ -14,9 +13,7 @@ import { useFormat } from "@spy4x/preact-ui/format"
 import { OnThisPage } from "@spy4x/preact-ui/on-this-page"
 import { breadcrumbListJsonLd, faqPageJsonLd } from "@spy4x/platform/universal/seo"
 import { Band } from "../../../components/band.tsx"
-import { CtaBand } from "../../../components/cta-band.tsx"
 import { FactList, NotYetList } from "../../../components/features-section.tsx"
-import { ShotViewer } from "../../../components/shot-viewer.tsx"
 import {
   type Feature,
   FEATURE_PAGES,
@@ -36,7 +33,6 @@ import {
   SiteFrame,
   softwareId,
   softwareJsonLd,
-  spaLinks,
 } from "../../../site.tsx"
 import { useSite } from "../../../use-site.tsx"
 import { define, type State } from "../../../utils.ts"
@@ -48,20 +44,15 @@ export const FEATURE_NOT_FOUND = {
   action: `FeaturePageMissing.action`,
 } as const
 
-/** The section of `/features` that has a page elsewhere: the admin panel's is `/admin`. */
-const MOVED: ReadonlyMap<string, string> = new Map([[`admin`, `/admin`]])
-
 /**
  * One feature's page, built from {@link FEATURE_PAGES} and the feature of the same id that
- * `/features` draws. `/de/features/admin` answers 301 to `/de/admin` (`/features/admin` never gets
- * here: `routes/features/admin.ts` answers it); every other page answers in the address's
- * language, naming its version in every language; an unknown slug, `constructor` too, answers 404.
+ * `/features` draws, in the address's language; an unknown slug, `constructor` too, answers 404.
+ * While its words still describe Seed, it is left out of the sitemap and `/features`; it opens
+ * only from the blog. #105 rewrites the pages for Financy.
  */
 export const handler = define.handlers({
   GET(ctx) {
     const slug = ctx.params.slug ?? ``
-    const moved = MOVED.get(slug)
-    if (moved) return ctx.redirect(localePath(ctx.state.language, moved), 301)
     const keys = featurePage(slug)
     if (!keys) return renderNotFound(ctx)
     const { language } = ctx.state
@@ -78,17 +69,11 @@ export const handler = define.handlers({
           jsonLd: pageJsonLd(t, ctx.state.webAppOrigin, page, language),
         }}
       >
-        <FeaturePageBody page={page} demo={demoAddress(ctx.state.spaOrigin, page)} />
+        <FeaturePageBody page={page} />
       </SiteFrame>,
     )
   },
 })
-
-/** The demo's `/try`, opening on the screen where the feature shows when the page names one. */
-function demoAddress(spaOrigin: string, page: FeaturePage): string {
-  const start = spaLinks(spaOrigin).try
-  return page.demo ? `${start}?${new URLSearchParams({ next: page.demo })}` : start
-}
 
 /** The page's structured data: the page about the software, its trail and its questions. */
 function pageJsonLd(
@@ -188,10 +173,10 @@ function Section(
 
 /**
  * The page in its fixed order: trail, heading, date, answer, then What you get, How it works,
- * Limits and Questions, each only when it has something to say, then the demo and the other
- * features. From 1280 px "On this page" stands beside the body, in the blog post's grid.
+ * Limits and Questions, each only when it has something to say, then the other features. From
+ * 1280 px "On this page" stands beside the body, in the blog post's grid.
  */
-function FeaturePageBody({ page, demo }: { page: FeaturePage; demo: string }): JSX.Element {
+function FeaturePageBody({ page }: { page: FeaturePage }): JSX.Element {
   const { t, href, rich } = useSite()
   const feature = useFeature(page.feature ?? page.slug)
   const format = useFormat().utc()
@@ -281,14 +266,12 @@ function FeaturePageBody({ page, demo }: { page: FeaturePage; demo: string }): J
           )}
         </div>
       </article>
-      <CtaBand demoHref={demo} />
       <OtherFeatures current={page.slug} />
-      {drawn.has(`how`) && feature.shots && <ShotViewer />}
     </>
   )
 }
 
-/** Three other feature pages as cards, then every feature and the comparison. */
+/** Three other feature pages as cards, then the way to every feature. */
 function OtherFeatures({ current }: { current: string }): JSX.Element {
   const { t, language, href } = useSite()
   const others = FEATURE_PAGES.filter(({ slug }) => slug !== current).slice(0, 3)
@@ -314,9 +297,6 @@ function OtherFeatures({ current }: { current: string }): JSX.Element {
         <p class="flex flex-wrap gap-x-6">
           <a href={href(`/features`)} class={LINK} data-e2e="feature-page-all">
             {t.t(`FeaturePage.all`)} <IconArrowRight class="size-4" aria-hidden="true" />
-          </a>
-          <a href={href(`/compare`)} class={LINK} data-e2e="feature-page-compare">
-            {t.t(`Features.compare`)} <IconArrowRight class="size-4" aria-hidden="true" />
           </a>
         </p>
       </div>

@@ -162,13 +162,16 @@ describe(`the changelog page`, () => {
           600 + index,
         ),
     )
-    const html = render(entries, new Map([[`What's new in Seed, October 2026`, `/blog/october`]]))
+    const html = render(
+      entries,
+      new Map([[`What's new in Financy, October 2026`, `/blog/october`]]),
+    )
 
     const months = [...html.matchAll(/<h2 id="(\d{4}-\d{2})"/g)].map((match) => match[1])
     expect(months).toEqual([`2026-10`, `2026-09`, `2026-08`, `2026-07`, `2026-06`, `2026-05`])
     expect(html).toContain(`aria-label="Pull request 600 on GitHub"`)
     expect(html).toContain(`href="/blog/october"`)
-    expect(html.match(/Read (?:&quot;|")What(?:&#39;|')s new in Seed/g)).toHaveLength(1)
+    expect(html.match(/Read (?:&quot;|")What(?:&#39;|')s new in Financy/g)).toHaveLength(1)
     // Every link to the history, the section list's included, is marked as leaving the site.
     const history = [...html.matchAll(/<a [^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/g)]
       .filter(([, href]) => href === CHANGELOG_HISTORY_URL)
