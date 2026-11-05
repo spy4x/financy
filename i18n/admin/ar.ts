@@ -309,6 +309,13 @@ export default {
   "AdminBilling.perMonth": "شهريًا",
   "AdminBilling.unknownPrice": "سعر غير معروف",
   "AdminBilling.nextCharge": "الدفعة التالية",
+  "AdminNeverPaid.title": "لم تدفع قط",
+  "AdminNeverPaid.subtitle": "المجموعات التي لم تدفع قط، الأحدث أولًا.",
+  "AdminNeverPaid.created": "تاريخ الإنشاء",
+  "AdminNeverPaid.empty": "دفعت كل مجموعة مرة واحدة على الأقل.",
+  "AdminNeverPaid.listError": "تعذّر تحميل المجموعات. تحقّق من اتصالك وحاول مرة أخرى.",
+  "AdminNeverPaid.loading": "جارٍ تحميل المجموعات",
+  "AdminNeverPaid.pages": "صفحات المجموعات",
   "AdminBilling.inTrash": "في سلة المهملات",
   "AdminBilling.newTab": "{label} (يفتح في علامة تبويب جديدة)",
   "AdminBillingCustomer.notFound": "لا يوجد عميل بمعرّف المجموعة هذا.",
@@ -1472,6 +1479,9 @@ export default {
   "AdminGroupOverview.description":
     "ما يراه الأعضاء في صفحة «نظرة عامة» بالترتيب الافتراضي. يستطيع الأعضاء إخفاء هذه الأدوات وإعادة ترتيبها، ولا تظهر ترتيباتهم الخاصة هنا.",
   "AdminGroupOverview.gridLabel": "أدوات النظرة العامة في {group}",
+  "AdminGroupOverview.membersOnly": "الأدوات التي تعرض أرقام المجموعة الخاصة لا يراها إلا أعضاؤها.",
+  "AdminGroupOverview.noneShown":
+    "كل الأدوات في صفحة «نظرة عامة» لهذه المجموعة تعرض أرقامها الخاصة، لذلك لا يراها إلا أعضاؤها.",
   "AdminGroups.active": "نشطة",
   "AdminGroups.inTrash": "في سلة المهملات",
   "AdminGroups.noName": "بلا اسم",

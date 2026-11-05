@@ -297,6 +297,14 @@ export default {
   "AdminBilling.perMonth": "Par mois",
   "AdminBilling.unknownPrice": "Prix inconnu",
   "AdminBilling.nextCharge": "Prochain prélèvement",
+  "AdminNeverPaid.title": "Jamais payé",
+  "AdminNeverPaid.subtitle": "Les groupes qui n’ont jamais payé, les plus récents d’abord.",
+  "AdminNeverPaid.created": "Créé le",
+  "AdminNeverPaid.empty": "Chaque groupe a payé au moins une fois.",
+  "AdminNeverPaid.listError":
+    "Impossible de charger les groupes. Vérifiez votre connexion et réessayez.",
+  "AdminNeverPaid.loading": "Chargement des groupes",
+  "AdminNeverPaid.pages": "Pages de groupes",
   "AdminBilling.inTrash": "Dans la corbeille",
   "AdminBilling.newTab": "{label} (s’ouvre dans un nouvel onglet)",
   "AdminBillingCustomer.notFound": "Aucun client avec cet ID de groupe.",
@@ -1383,6 +1391,10 @@ export default {
   "AdminGroupOverview.description":
     "Ce que les membres voient sur leur page Vue d’ensemble, dans la disposition par défaut. Les membres peuvent masquer et réordonner ces widgets ; leurs propres dispositions ne sont pas affichées ici.",
   "AdminGroupOverview.gridLabel": "Widgets de la vue d’ensemble de {group}",
+  "AdminGroupOverview.membersOnly":
+    "Les widgets qui affichent les chiffres propres au groupe ne sont visibles que par ses membres.",
+  "AdminGroupOverview.noneShown":
+    "Tous les widgets de la page Vue d’ensemble de ce groupe affichent ses propres chiffres, donc seuls ses membres peuvent les voir.",
   "AdminGroups.active": "Actifs",
   "AdminGroups.inTrash": "Dans la corbeille",
   "AdminGroups.noName": "Sans nom",

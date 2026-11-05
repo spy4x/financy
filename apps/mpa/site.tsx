@@ -1,5 +1,5 @@
 import type { ComponentChildren, JSX } from "preact"
-import { Head } from "fresh/runtime"
+import { Head } from "@spy4x/preact-server"
 import type { PublicContactLink } from "@domain/contact-links"
 import type { Language } from "@domain/identity"
 import { DEFAULT_SUBSCRIBER_LIST } from "@domain/subscribers"
@@ -141,7 +141,7 @@ export function softwareJsonLd(origin: string, extra: Record<string, unknown> = 
     license: `https://www.gnu.org/licenses/agpl-3.0.html`,
     codeRepository: REPOSITORY_URL,
     programmingLanguage: `TypeScript`,
-    runtimePlatform: `Deno`,
+    runtimePlatform: [`Deno`, `Node.js`, `Bun`],
     isAccessibleForFree: true,
     author: { "@id": PERSON_JSON_LD["@id"] },
     // Only self-hosting is offered so far; the cloud's offer comes with its price (#87).

@@ -282,6 +282,14 @@ export default {
   "AdminBilling.perMonth": "月額",
   "AdminBilling.unknownPrice": "不明な料金",
   "AdminBilling.nextCharge": "次回の請求",
+  "AdminNeverPaid.title": "支払い実績なし",
+  "AdminNeverPaid.subtitle": "一度も支払いのないグループ（新しい順）。",
+  "AdminNeverPaid.created": "作成日",
+  "AdminNeverPaid.empty": "すべてのグループが一度は支払っています。",
+  "AdminNeverPaid.listError":
+    "グループを読み込めませんでした。接続を確認して、もう一度お試しください。",
+  "AdminNeverPaid.loading": "グループを読み込み中",
+  "AdminNeverPaid.pages": "グループのページ",
   "AdminBilling.inTrash": "ゴミ箱内",
   "AdminBilling.newTab": "{label}（新しいタブで開きます）",
   "AdminBillingCustomer.notFound": "このグループIDの顧客はいません。",
@@ -1246,6 +1254,10 @@ export default {
   "AdminGroupOverview.description":
     "メンバーの概要ページに表示されるデフォルトのレイアウトです。メンバーはこれらを非表示にしたり並べ替えたりできますが、各自のレイアウトはここには表示されません。",
   "AdminGroupOverview.gridLabel": "{group}の概要ウィジェット",
+  "AdminGroupOverview.membersOnly":
+    "グループ自身の数値を表示するウィジェットは、そのメンバーだけが見られます。",
+  "AdminGroupOverview.noneShown":
+    "このグループの概要ページのウィジェットはすべてグループ自身の数値を表示するため、メンバーだけが見られます。",
   "AdminGroups.active": "有効",
   "AdminGroups.inTrash": "ゴミ箱内",
   "AdminGroups.noName": "名前なし",

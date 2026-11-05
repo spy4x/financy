@@ -11,9 +11,10 @@ Seed ships two web apps over the same API, with different jobs.
 - **The SPA** (`apps/spa`, Preact and Vite) is the product. Everything a signed-in person does
   happens there: sign-up, sign-in, notes, groups, billing and the profile. Compose serves it at
   `DOMAIN`.
-- **The MPA** (`apps/mpa`, Fresh) is the product's public website. It holds the home page, pricing,
-  the privacy and terms pages, the blog, the newsletter, `robots.txt`, `sitemap.xml` and
-  `llms.txt`. Its sign-in and sign-up links open the SPA.
+- **The MPA** (`apps/mpa`, Preact on a small Fresh-compatible layer built with Vite:
+  [the website's server](website-server.md)) is the product's public website. It holds the home
+  page, pricing, the privacy and terms pages, the blog, the newsletter, `robots.txt`,
+  `sitemap.xml` and `llms.txt`. Its sign-in and sign-up links open the SPA.
 
 In the SPA, people see each other's changes live over a WebSocket
 ([ADR 002](decisions/002-realtime-transport-and-sync.md)). It also works offline
@@ -117,8 +118,8 @@ Any other value of `SPA`, or none, runs the SPA.
 
 ## Runtime
 
-The API, the worker and the migration run on Deno unless the env file says otherwise. One line
-moves all three to Node or Bun:
+The API, the worker, the migration and the website run on Deno unless the env file says
+otherwise. One line moves them all to Node or Bun:
 
 ```sh
 APP_RUNTIME=node   # or bun; deno, empty or no line keeps Deno
@@ -126,19 +127,25 @@ APP_RUNTIME=node   # or bun; deno, empty or no line keeps Deno
 
 - `deno task compose`, and so every deploy, then adds
   [`compose.runtime-node.yml`](../infra/compose/compose.runtime-node.yml) (or `-bun`), which builds
-  [`apps/api/dockerfile.node`](../apps/api/dockerfile.node) (or `.bun`) for those three services.
-  The image bundles the code with `deno task server:build` at build time and runs the bundles on
-  Node 26 or Bun 1.4. Ports, environment variables and the order of the services stay the same.
+  [`apps/api/dockerfile.node`](../apps/api/dockerfile.node) (or `.bun`) for the API, the worker and
+  the migration, and [`apps/mpa/dockerfile.node`](../apps/mpa/dockerfile.node) (or `.bun`) for the
+  website. The API's image bundles the code with `deno task server:build` at build time; the
+  website's builds it with Vite and starts it with [`apps/mpa/start.ts`](../apps/mpa/start.ts).
+  Both run on Node 26 or Bun 1.4. Ports, environment variables and the order of the services stay
+  the same.
 - Any other value stops `deno task compose` before it starts anything.
 - The bundles are made when the image is built, so on Node or Bun a code change shows only after
   `deno task compose up -d --build`, in development too. Development with watch mode stays on Deno.
 - On Deno the worker may read and write only its image folder and run only `vips`. Node and Bun
   have no such permission limits: there the worker is confined only by its container and its
   non-root user.
-- The website, the SPA and the admin app are not affected: they keep their own images.
+- The SPA and the admin app are not affected: they are static files, served the same way.
 
-To start them on a machine without containers, `deno task api:node`, `api:bun`, `worker:node` and
-`worker:bun` build the bundles into `dist/server/` and run them.
+To start them on a machine without containers, `deno task api:node`, `api:bun`, `worker:node`,
+`worker:bun`, `mpa:node` and `mpa:bun` build the bundles and run them. `npm run` and `bun run` take
+the same names: the root `package.json` hands each one to `deno task`, so Deno stays the toolchain.
+`deno task test:runtimes` starts the API, the worker and the website on all three runtimes and
+checks that each answers, as CI does (step `runtimes`).
 
 ## Next
 

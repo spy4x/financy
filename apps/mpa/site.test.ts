@@ -1,6 +1,6 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
-import { App } from "fresh"
+import { App } from "@spy4x/preact-server"
 import { h } from "preact"
 import { renderToString } from "preact-render-to-string"
 import AppWrapper from "./routes/_app.tsx"
@@ -63,8 +63,6 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .appWrapper(view(AppWrapper))
     .layout("*", view(Layout))
     .route("/", { component: view(Home) })
-    .use("/:lang", languageMiddleware)
-    .route("/:lang", { component: view(Home) })
     .route("/features", { component: view(Features) })
     .get("{/:lang}?/features/:slug", featurePage.GET!)
     .route("/pricing", { component: view(Pricing) })
@@ -82,6 +80,8 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .get("/sitemap.xml", sitemap.GET!)
     .get("/llms.txt", llms.GET!)
     .get("/unsubscribe", unsubscribe.GET!)
+    // Last: the server takes the first route that fits, and `/:lang` fits `/llms.txt` too.
+    .route("/:lang", { component: view(Home) }, { middlewares: [languageMiddleware] })
     .handler()
 }
 const handler = siteWith(() => true)
