@@ -23,13 +23,13 @@ decimal above zero is refused and logged by its pair, day and source.
 
 ## How a rate is chosen
 
-- **The day's rate, else the latest earlier one.** A Saturday uses Friday's rate, and the screen
-  names Friday's date.
+- **The day's rate, else the latest earlier one.** A Saturday uses Friday's rate, and the lookup
+  returns Friday's date with it.
 - **Any pair goes through the euro.** Rates are stored against the euro, so US dollars to yen is
   the yen's rate divided by the dollar's, both from one source on one day.
 - **The ECB first.** On a day both sources have a rate, the ECB's is used.
 - **No rate is said, never guessed.** Before the oldest stored rate, or for a currency with no
-  rate at all, the screen says "No daily rate here"; no total uses 0 or 1.
+  rate at all, the lookup answers "no rate" with the date asked; no total uses 0 or 1.
 
 ## Rates before the first day
 
@@ -40,8 +40,9 @@ range call in ts-libs, so for now the requests wait in `rate_backfill_requests`.
 
 ## Checking it
 
-The admin panel's **Exchange rates** page shows the latest fetch of each source, the rates per
-day, and the fallback's calls this month against its cap. The **Jobs** page shows each run of
+`GET /api/admin/rates` returns the latest fetch of each source, the rates per day, and the
+fallback's calls this month against its cap. The admin panel's **Exchange rates** screen that
+shows them comes later, with a child issue of #93. The **Jobs** page shows each run of
 `rates.fetch`; a failed ECB call is retried there.
 
 Settings: [settings.md](../settings.md), "Exchange rates".
