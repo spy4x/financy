@@ -25,6 +25,7 @@ import type { AttachmentErrorCode, NoteErrorCode } from "@domain/notes"
 import type { NotificationErrorCode } from "@domain/notifications"
 import type { SubscriberTokenRefusal } from "@domain/subscribers"
 import type { TagErrorCode } from "@domain/tags"
+import type { AccountErrorCode } from "@domain/accounts"
 
 /** The closed list of error codes, the same on every transport. */
 export const ERROR_CODES = REALTIME_ERROR_CODES
@@ -81,6 +82,7 @@ export type ErrorReason =
   | PlanErrorCode
   | SubscriberTokenRefusal
   | TagErrorCode
+  | AccountErrorCode
 
 /** The arktype type of every error body the API sends. Nothing else may ride in it. */
 export const apiErrorBodySchema = type({

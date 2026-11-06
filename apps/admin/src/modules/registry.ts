@@ -5,6 +5,7 @@
  * @module
  */
 
+import { accountsModule } from "./accounts/module.tsx"
 import { apiTokensModule } from "./api-tokens/module.tsx"
 import { auditModule } from "./audit/module.tsx"
 import { billingModule } from "./billing/module.tsx"
@@ -26,6 +27,7 @@ export const ADMIN_MODULES: readonly AdminModule[] = [
   statsModule,
   usersModule,
   groupsModule,
+  accountsModule,
   billingModule,
   newsletterModule,
   blogModule,

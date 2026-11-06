@@ -43,6 +43,9 @@ import { householdPortable } from "@server/money/household-portable.ts"
 import { noteMovable } from "@server/notes/note-movable.ts"
 import { tagMovable } from "@server/tags/tag-movable.ts"
 import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
+import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
+import { accountMovable } from "@server/accounts/account-movable.ts"
+import { accountPortable } from "@server/accounts/account-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresAttachmentRepository } from "@server/notes/postgres-attachment-repository.ts"
@@ -187,7 +190,11 @@ export interface UserTotp {
  * joins here (`docs/aggregate-lifecycle.md`, "Make it movable"): put one that other aggregates
  * point at before the ones that point at it.
  */
-export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [tagMovable, noteMovable]
+export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
+  tagMovable,
+  noteMovable,
+  accountMovable,
+]
 
 /**
  * The aggregates a group's export file holds, in the order an import writes them. A new aggregate
@@ -197,6 +204,7 @@ export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [tagMovable, note
 export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   tagPortable,
   notePortable,
+  accountPortable,
   householdPortable,
 ]
 
@@ -321,6 +329,11 @@ export class AppDbBase extends DbServiceBase {
   /** The tags repository. Built per access, like `note`. */
   get tag(): PostgresTagRepository {
     return new PostgresTagRepository(this.sql)
+  }
+
+  /** The accounts repository. Built per access, like `note`. */
+  get account(): PostgresAccountRepository {
+    return new PostgresAccountRepository(this.sql)
   }
 
   /** A household's main currency. Built per access, like `note`. */

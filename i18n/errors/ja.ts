@@ -218,4 +218,16 @@ export default {
   "Reason.validation": "修正が必要な項目があります。確認して、もう一度お試しください。",
   "Reason.TRANSLATION_INVALID":
     "この記事を、選んだ記事の翻訳にすることはできません。別の言語の元記事を選ぶか、何も選ばないでください。",
+  "ImportIssue.archivedDefaultAccount": "アーカイブ済みなので、メインの口座にはできません。",
+  "ImportIssue.secondDefaultAccount": "ファイル内の別の口座がすでにメインです。",
+  "ImportIssue.tooManyAccounts": {
+    "other": "口座が {count} 件ありますが、1つの世帯に持てるのは {max} 件までです。",
+  },
+  "ImportPlace.accounts": "口座",
+  "ImportPlace.accountsEntry": "口座 {index}",
+  "Reason.ACCOUNT_ARCHIVED":
+    "アーカイブ済みの口座はメインにできません。先にアーカイブを解除してください。",
+  "Reason.ACCOUNT_LIMIT_REACHED":
+    "この世帯にはこれ以上口座を追加できません。先にどれかをアーカイブするか削除してください。",
+  "Reason.ACCOUNT_NOT_FOUND": "この口座はもうありません。",
 } satisfies Catalog

@@ -9,6 +9,8 @@ import { readAdminGroup } from "@server/groups/admin-groups.ts"
 import { portable } from "@server/groups/portable.ts"
 import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.ts"
 import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
+import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
+import { AccountKind } from "@domain/accounts"
 import { tagPortable } from "@server/tags/tag-portable.ts"
 import { notePortable } from "@server/notes/note-portable.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
@@ -62,7 +64,27 @@ async function seed(sql: postgres.Sql) {
   await notes.create({ groupId, id: noteIds[2], title: "Plain", body: "" }, owner, null)
   await notes.create({ groupId, id: noteIds[3], title: "Gone", body: "" }, owner, null)
   await notes.delete({ groupId, id: noteIds[3], expectedVersion: 1 }, owner)
-  return { owner, groupId, tagIds: [home, work], noteIds }
+  // A default bank account, an archived cash one in a currency without decimals, and one in the
+  // trash, which stays behind.
+  const accounts = new PostgresAccountRepository(sql)
+  const accountIds = [uuidV7(), uuidV7(), uuidV7()]
+  const account = (
+    id: string,
+    name: string,
+    kind: AccountKind,
+    currency: string,
+    balance: number,
+  ) => accounts.create({ groupId, id, name, kind, currency, startingBalance: balance }, owner)
+  await account(accountIds[0], "Main", AccountKind.BANK, "USD", 1234)
+  await account(accountIds[1], "Trip cash", AccountKind.CASH, "JPY", 500)
+  await account(accountIds[2], "Closed", AccountKind.CARD, "EUR", -99)
+  await accounts.setDefault(
+    { groupId, id: accountIds[0], isDefault: true, expectedVersion: 1 },
+    owner,
+  )
+  await accounts.archive({ groupId, id: accountIds[1], archived: true, expectedVersion: 1 }, owner)
+  await accounts.delete({ groupId, id: accountIds[2], expectedVersion: 1 }, owner)
+  return { owner, groupId, tagIds: [home, work], noteIds, accountIds }
 }
 
 /** The export file the owner downloads, through the handler, as the parsed JSON. */
@@ -103,13 +125,23 @@ async function contents(sql: postgres.Sql, groupId: string) {
   const tags = await sql<{ name: string; color: string }[]>`
     SELECT name, color FROM tags WHERE group_id = ${groupId} ORDER BY name
   `
-  return { notes: [...notes], tags: [...tags] }
+  const accounts = await sql<
+    { name: string; kind: number; currency: string; balance: string; archived: boolean }[]
+  >`
+    SELECT name, kind, currency, starting_balance::text AS balance,
+      archived_at IS NOT NULL AS archived, is_default
+    FROM accounts WHERE group_id = ${groupId} AND deleted_at IS NULL ORDER BY name
+  `
+  return { notes: [...notes], tags: [...tags], accounts: [...accounts] }
 }
 
 async function counts(sql: postgres.Sql) {
-  const [row] = await sql<{ groups: number; notes: number; tags: number; links: number }[]>`
+  const [row] = await sql<
+    { groups: number; notes: number; tags: number; links: number; accounts: number }[]
+  >`
     SELECT
       (SELECT count(*)::int FROM groups) AS groups,
+      (SELECT count(*)::int FROM accounts) AS accounts,
       (SELECT count(*)::int FROM notes) AS notes,
       (SELECT count(*)::int FROM tags) AS tags,
       (SELECT count(*)::int FROM note_tags) AS links
@@ -117,7 +149,7 @@ async function counts(sql: postgres.Sql) {
   return row
 }
 
-Deno.test("an export imported by another person gives the same notes and tags under new ids", async () => {
+Deno.test("an export imported by another person gives the same notes, tags and accounts under new ids", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
     const file = await exportAs(sql, source.groupId, source.owner) as {
@@ -137,16 +169,37 @@ Deno.test("an export imported by another person gives the same notes and tags un
     const copy = result.group.id
     expect(copy).not.toBe(source.groupId)
     expect(result.group.role).toBe(GroupRole.OWNER)
-    // The parts come by kind; this group has no entries of a product's own aggregates.
+    // The parts come by kind: every product aggregate has a part, and this group's are its two
+    // accounts; the others have no entries.
     const parts = result.parts.map((part) => [part.kind, part.count] as const)
     expect(new Map(parts)).toEqual(
       new Map([
         ["notes", 3],
         ["tags", 2],
         ...PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0] as const),
+        ["accounts", 2],
       ]),
     )
     expect(await contents(sql, copy)).toEqual(await contents(sql, source.groupId))
+    // The default and the archived account keep their state; the one in the trash stays behind.
+    expect((await contents(sql, copy)).accounts).toEqual([
+      {
+        name: "Main",
+        kind: AccountKind.BANK,
+        currency: "USD",
+        balance: "1234",
+        archived: false,
+        isDefault: true,
+      },
+      {
+        name: "Trip cash",
+        kind: AccountKind.CASH,
+        currency: "JPY",
+        balance: "500",
+        archived: true,
+        isDefault: false,
+      },
+    ])
 
     const [group] = await sql<
       { name: string; description: string; color: string; emoji: string; ownerUserId: number }[]
@@ -169,10 +222,11 @@ Deno.test("an export imported by another person gives the same notes and tags un
     // Every entity has a new id: none of the source's ids is in the copy.
     const ids = await sql<{ id: string }[]>`
       SELECT id FROM notes WHERE group_id = ${copy} UNION ALL SELECT id FROM tags WHERE group_id = ${copy}
+      UNION ALL SELECT id FROM accounts WHERE group_id = ${copy}
     `
-    expect(ids).toHaveLength(5)
+    expect(ids).toHaveLength(7)
     for (const { id } of ids) {
-      expect([...source.noteIds, ...source.tagIds]).not.toContain(id)
+      expect([...source.noteIds, ...source.tagIds, ...source.accountIds]).not.toContain(id)
       expect(id[14]).toBe("7")
     }
 
@@ -194,7 +248,8 @@ Deno.test("an export imported by another person gives the same notes and tags un
           notes: 3,
           tags: 2,
           ...Object.fromEntries(PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0])),
-          count: 5,
+          accounts: 2,
+          count: 7,
         },
       },
     ])
@@ -378,7 +433,7 @@ Deno.test("a refused file, a file over the plan and a failure halfway write noth
     })
     await attempt(
       () =>
-        new PostgresGroupPorter(sql, [tagPortable, failing, ...PRODUCT_AGGREGATES]).importGroup(
+        new PostgresGroupPorter(sql, [tagPortable, ...PRODUCT_AGGREGATES, failing]).importGroup(
           { file, name: null },
           source.owner,
           NO_CAP,

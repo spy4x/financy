@@ -81,3 +81,22 @@ export async function openNotes(page: Page, name: string): Promise<void> {
   await expect(page.getByRole("heading", { level: 1, name: "Notes", exact: true })).toBeVisible()
   await expect(page.locator("[data-e2e=notes-group]")).toHaveText(name)
 }
+
+/**
+ * Opens the accounts of the group named `name`: its page from the groups page, "Switch to this
+ * group" in its menu unless it is already the current group, then Accounts in the main navigation.
+ */
+export async function openAccounts(page: Page, name: string): Promise<void> {
+  await openGroups(page)
+  await openGroup(page, name)
+  if (await page.locator("[data-e2e=group-current]").count() === 0) {
+    await page.locator("[data-e2e=group-menu]").click()
+    await page.getByRole("menuitem", { name: "Switch to this group" }).click()
+    await expect(page.locator("[data-e2e=group-current]")).toBeVisible()
+  }
+  await page.getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Accounts" }).click()
+  await expect(page.getByRole("heading", { level: 1, name: "Accounts", exact: true }))
+    .toBeVisible()
+  await expect(page.locator("[data-e2e=accounts-group]")).toHaveText(name)
+}

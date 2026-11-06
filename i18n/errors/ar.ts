@@ -239,4 +239,19 @@ export default {
   "Reason.validation": "بعض الحقول تحتاج إلى تصحيح. راجعها وحاول مرة أخرى.",
   "Reason.TRANSLATION_INVALID":
     "لا يمكن أن يكون هذا المقال ترجمة لذلك المقال. اختر مقالًا أصليًا بلغة أخرى، أو لا تختر شيئًا.",
+  "ImportIssue.archivedDefaultAccount": "إنه مؤرشف، لذا لا يمكن أن يكون الحساب الافتراضي.",
+  "ImportIssue.secondDefaultAccount": "حساب آخر في الملف هو الافتراضي بالفعل.",
+  "ImportIssue.tooManyAccounts": {
+    "zero": "لا حسابات فيه، والأسرة يمكن أن يكون لها {max} على الأكثر.",
+    "one": "فيه حساب واحد، لكن الأسرة يمكن أن يكون لها {max} على الأكثر.",
+    "two": "فيه حسابان، لكن الأسرة يمكن أن يكون لها {max} على الأكثر.",
+    "few": "فيه {count} حسابات، لكن الأسرة يمكن أن يكون لها {max} على الأكثر.",
+    "many": "فيه {count} حسابًا، لكن الأسرة يمكن أن يكون لها {max} على الأكثر.",
+    "other": "فيه {count} حساب، لكن الأسرة يمكن أن يكون لها {max} على الأكثر.",
+  },
+  "ImportPlace.accounts": "الحسابات",
+  "ImportPlace.accountsEntry": "الحساب {index}",
+  "Reason.ACCOUNT_ARCHIVED": "لا يمكن أن يكون الحساب المؤرشف افتراضيًا. ألغِ أرشفته أولًا.",
+  "Reason.ACCOUNT_LIMIT_REACHED": "لا يمكن لهذه الأسرة إضافة حسابات أخرى. أرشف حسابًا أو احذفه أولًا.",
+  "Reason.ACCOUNT_NOT_FOUND": "هذا الحساب لم يعد موجودًا.",
 } satisfies Catalog

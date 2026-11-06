@@ -65,6 +65,17 @@ async function note(sql: postgres.Sql, groupId: string, userId: number, title: s
 }
 
 /** The person's sign-in rows, every one holding a secret from {@link SECRETS}. */
+/** A liability of -1.234 BHD named `name` in `groupId`, created by `userId`; answers its id. */
+async function account(sql: postgres.Sql, groupId: string, userId: number, name: string) {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO accounts (
+      id, group_id, name, kind, currency, starting_balance, change_sequence, created_by_user_id
+    ) VALUES (${id}, ${groupId}, ${name}, 6, 'BHD', -1234, 1, ${userId})
+  `
+  return id
+}
+
 async function signInRows(sql: postgres.Sql, userId: number, groupId: string) {
   const email = `person-${userId}@example.com`
   await sql`INSERT INTO auth_email_owners (email, user_id) VALUES (${email}, ${userId})`
@@ -160,6 +171,7 @@ Deno.test("data export: leaves out other people's notes, tags and groups, even i
       INSERT INTO tags (id, group_id, name, change_sequence, created_by_user_id)
       VALUES (${uuidV7()}, ${groupId}, 'Owner tag', 1, ${owner})
     `
+    await account(sql, groupId, owner, `Owner account`)
 
     const text = Object.values(unzip(await buildDataExport(sql, editor, new Date()))).join(`\n`)
 
@@ -167,7 +179,34 @@ Deno.test("data export: leaves out other people's notes, tags and groups, even i
     expect(text).not.toContain(`Owner's note`)
     expect(text).not.toContain(`Stranger's note`)
     expect(text).not.toContain(`Owner tag`)
+    expect(text).not.toContain(`Owner account`)
     expect(text).not.toContain(strangers.groupId)
+  })
+})
+
+Deno.test("data export: lists the finance accounts the person created, the kind as a word and the amount in the smallest unit", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, editor } = await team(sql)
+    const id = await account(sql, groupId, editor, `Wallet`)
+
+    const files = unzip(await buildDataExport(sql, editor, new Date()))
+
+    expect(JSON.parse(files[`data.json`]).sections.finance_accounts).toEqual([
+      expect.objectContaining({
+        id,
+        groupId,
+        name: `Wallet`,
+        kind: `liability`,
+        currency: `BHD`,
+        startingBalance: `-1234`,
+        isDefault: false,
+        archivedAt: null,
+        deletedAt: null,
+      }),
+    ])
+    expect(files[`finance_accounts.csv`].split(`\r\n`)[0]).toBe(
+      `\uFEFFid,groupId,name,kind,currency,startingBalance,isDefault,archivedAt,createdAt,updatedAt,deletedAt`,
+    )
   })
 })
 

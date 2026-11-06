@@ -2,6 +2,7 @@ import { expect } from "@std/expect"
 import { afterEach, beforeEach, describe, it } from "@std/testing/bdd"
 import { createMemoryReadCache } from "@spy4x/realtime/testing"
 import { createLocalReads, type LocalReads } from "../modules.ts"
+import { createAccountsStore, onlineAccounts } from "./accounts.ts"
 import { activityHttp, createActivityStore } from "./activity.ts"
 import { apiTokensHttp, createApiTokensStore } from "./api-tokens.ts"
 import { apiFetch } from "./api.ts"
@@ -57,6 +58,16 @@ interface Case {
 }
 
 const CASES: Case[] = [
+  {
+    name: "the accounts of a household",
+    body: { accounts: [{ id: "a-1", name: "Cash" }] },
+    open(device) {
+      const store = createAccountsStore(onlineAccounts, device)
+      return { load: () => store.open(groupId), shown: () => store.accounts.value }
+    },
+    painted: [{ id: "a-1", name: "Cash" }],
+    empty: [],
+  },
   {
     name: "the members of a group",
     body: {

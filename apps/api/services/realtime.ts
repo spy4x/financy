@@ -14,6 +14,7 @@ import { GROUP_AGGREGATE, GroupError } from "@domain/groups"
 import { AccessError, type Actor, PictureError, userChangeGroupId } from "@domain/identity"
 import { AttachmentError, NoteError, NoteVersionConflictError } from "@domain/notes"
 import { TagError, TagVersionConflictError } from "@domain/tags"
+import { AccountError, AccountVersionConflictError } from "@domain/accounts"
 import { HouseholdError, HouseholdVersionConflictError } from "@domain/money"
 import { PlanError, toPlanRefusal } from "@domain/billing"
 import { IdempotencyError } from "@spy4x/server/idempotency"
@@ -86,6 +87,15 @@ export function toRequestError(error: unknown): RealtimeRequestError | null {
       ? { code: error.code, currentVersion: error.currentVersion }
       : { code: error.code }
     return new RealtimeRequestError(TAG_ERROR_CODES[error.code], error.message, details, {
+      reason: error.code,
+      fields: error.fields,
+    })
+  }
+  if (error instanceof AccountError) {
+    const details = error instanceof AccountVersionConflictError
+      ? { code: error.code, currentVersion: error.currentVersion }
+      : { code: error.code }
+    return new RealtimeRequestError(ACCOUNT_ERROR_CODES[error.code], error.message, details, {
       reason: error.code,
       fields: error.fields,
     })
@@ -228,6 +238,20 @@ const TAG_ERROR_CODES: Record<
   TAG_LIMIT_REACHED: "conflict",
   TAG_NAME_TAKEN: "conflict",
   TAG_NOT_FOUND: "not_found",
+  VERSION_CONFLICT: "conflict",
+}
+
+const ACCOUNT_ERROR_CODES: Record<
+  AccountError["code"],
+  "bad_request" | "forbidden" | "not_found" | "conflict"
+> = {
+  ACCOUNT_ARCHIVED: "conflict",
+  ACCOUNT_LIMIT_REACHED: "conflict",
+  ACCOUNT_NOT_FOUND: "not_found",
+  GROUP_NOT_FOUND: "not_found",
+  ID_ALREADY_EXISTS: "conflict",
+  INVALID_REQUEST: "bad_request",
+  ROLE_INSUFFICIENT: "forbidden",
   VERSION_CONFLICT: "conflict",
 }
 

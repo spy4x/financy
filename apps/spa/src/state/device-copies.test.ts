@@ -2,6 +2,7 @@ import { expect } from "@std/expect"
 import { RealtimeRequestError } from "@spy4x/realtime"
 import { afterEach, describe, it } from "@std/testing/bdd"
 import { type LocalReads, noLocalReads } from "../modules.ts"
+import { createAccountsStore } from "./accounts.ts"
 import { createActivityStore } from "./activity.ts"
 import { createApiTokensStore } from "./api-tokens.ts"
 import { createBillingStore } from "./billing.ts"
@@ -95,6 +96,28 @@ const json = (read: () => Promise<unknown>) => async () =>
   new Response(JSON.stringify(await read()))
 
 const CASES: ListCase[] = [
+  {
+    name: "the accounts of a household",
+    answers: [[{ id: "a-1", name: "Cash" }], [{ id: "a-1", name: "Cash" }, {
+      id: "a-2",
+      name: "Bank",
+    }]],
+    open(read, device) {
+      const store = createAccountsStore({
+        fetchList: read as never,
+        create: unused,
+        update: unused,
+        archive: unused,
+        setDefault: unused,
+        delete: unused,
+        restore: unused,
+        newId: () => "unused",
+      }, device)
+      return { load: () => store.open(groupId), shown: () => store.accounts.value }
+    },
+    expected: (answer) => answer,
+    empty: [],
+  },
   {
     name: "the members of a group",
     answers: [

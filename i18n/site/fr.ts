@@ -223,8 +223,6 @@ export default {
   "DemoPlan.proRoles": "Promouvoir des membres au rôle d’éditeur ou d’administrateur",
   "FeatureTierSettled.eyebrow": "Fonctionne aujourd’hui",
   "FeatureTierSettled.title": "Le socle sur lequel reposera l’argent de votre foyer",
-  "FeatureTierSettled.lead":
-    "Ces briques fonctionnent déjà et sont testées en CI. Prochaine étape : l’argent lui-même, avec des comptes dans toutes les devises et leurs opérations.",
   "FeatureTierSettled.status":
     "La connexion avec Google et GitHub demande des clés propres au serveur ; une nouvelle installation commence donc avec la seule connexion par e-mail.",
   "FeatureSignIn.nav": "Comptes et connexion",
@@ -302,15 +300,7 @@ export default {
   "FeaturesFaq.nativeQuestion": "Y a-t-il une app mobile ?",
   "FeaturesFaq.nativeAnswer":
     "Pas encore dans un store. Aujourd’hui, l’app web s’installe depuis le navigateur sur téléphone et ordinateur, et s’ouvre hors ligne.",
-  "Features.title":
-    "Fonctionnalités de Financy : foyers, synchronisation, hors ligne, auto-hébergement",
-  "Features.description":
-    "Ce que Financy fait aujourd’hui : des foyers avec des rôles, des mises à jour instantanées sur chaque appareil, une app hors ligne, l’export, neuf langues et l’auto-hébergement. Les comptes et les budgets arrivent ensuite.",
   "FeaturesHero.title": "Ce que Financy fait aujourd’hui, et ce qui vient ensuite",
-  "FeaturesHero.lead":
-    "Financy est en reconstruction. Ce qui marche aujourd’hui, c’est le socle sur lequel reposera l’argent d’un foyer : connexion, accès partagé avec des rôles, mises à jour instantanées, une app hors ligne, l’export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
-  "FeaturesHero.note":
-    "Les comptes, les opérations et les budgets ne sont pas encore construits. <status>Voir où en est la reconstruction</status>.",
   "FeaturesFaq.title": "Financy sait-il faire ça ?",
   "FeatureSection.issue": "issue n° {number}",
   "FeatureSection.forDevelopers": "Pour les développeurs",
@@ -600,8 +590,6 @@ export default {
   "HomeWays.cloudTitle": "Le cloud",
   "HomeWays.cloudText": "Pas encore ouvert. Le même code, sans serveur à gérer, en offre payante.",
   "HomeFaq.useQuestion": "Puis-je utiliser Financy aujourd’hui ?",
-  "HomeFaq.useAnswer":
-    "Pas encore. La connexion, les foyers et la synchronisation fonctionnent ; les comptes et les opérations sont en cours.",
   "HomeFaq.currencyQuestion": "Quelles devises gérera-t-il ?",
   "HomeFaq.currencyAnswer":
     "Financy gérera n’importe quel mélange de devises, cryptomonnaies comprises. Chaque opération garde son montant d’origine à côté du montant converti, et les totaux s’affichent dans la devise principale du foyer. Pour une devise que la BCE ne couvre pas, comme une cryptomonnaie, vous saisissez le taux directement sur l’opération. En cours de construction.",
@@ -614,4 +602,26 @@ export default {
   "HomeFaq.stopsAnswer":
     "Le code est sous AGPL‑3.0 sur GitHub, donc n’importe qui peut continuer à le faire tourner, et vous pouvez exporter vos données à tout moment.",
   "SiteFooter.aboutHint": "(ouvre antonshubin.com)",
+  "FeatureAccounts.code": "Lire le code source des comptes",
+  "FeatureAccounts.fact1":
+    "Le serveur calcule chaque solde à la lecture et ne le stocke jamais, donc il ne peut pas dériver",
+  "FeatureAccounts.fact2":
+    "Les montants sont des entiers dans la plus petite unité de la devise : le yen n’en a pas, le dinar en a trois",
+  "FeatureAccounts.fact3":
+    "Un lecteur voit les comptes ; seuls les éditeurs et au-dessus les modifient, et le serveur le vérifie",
+  "FeatureAccounts.lead":
+    "Espèces, comptes bancaires, cartes, épargne, actifs et dettes, chacun dans sa devise, regroupés par type, avec un compte par défaut. Tout le foyer voit chaque modification aussitôt.",
+  "FeatureAccounts.nav": "Comptes",
+  "FeatureAccounts.title": "Chaque compte dans sa propre devise",
+  "FeatureTierSettled.lead":
+    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises sont là ; leurs opérations viennent ensuite.",
+  "Features.description":
+    "Financy aujourd’hui : comptes en toute devise, foyers avec rôles, synchro, appli hors ligne, export, neuf langues et votre serveur. Ensuite : les opérations.",
+  "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
+  "FeaturesHero.lead":
+    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
+  "FeaturesHero.note":
+    "Les opérations et les budgets ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
+  "HomeFaq.useAnswer":
+    "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
 } satisfies Catalog

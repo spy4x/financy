@@ -46,6 +46,7 @@ const realStore = { ...onboardingStore }
 
 const fresh: OnboardingStatus = {
   steps: {
+    accountCreated: false,
     emailVerified: false,
     noteCreated: false,
     memberInvited: false,

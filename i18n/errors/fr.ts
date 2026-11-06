@@ -234,4 +234,19 @@ export default {
   "Reason.validation": "Certains champs sont à corriger. Vérifiez-les et réessayez.",
   "Reason.TRANSLATION_INVALID":
     "Cet article ne peut pas être une traduction de celui-ci. Choisissez un article original dans une autre langue, ou aucun.",
+  "ImportIssue.archivedDefaultAccount":
+    "Il est archivé, il ne peut donc pas être le compte par défaut.",
+  "ImportIssue.secondDefaultAccount": "Un autre compte du fichier est déjà le compte par défaut.",
+  "ImportIssue.tooManyAccounts": {
+    "one": "Il contient {count} compte, mais un foyer peut en avoir au plus {max}.",
+    "many": "Il contient {count} de comptes, mais un foyer peut en avoir au plus {max}.",
+    "other": "Il contient {count} comptes, mais un foyer peut en avoir au plus {max}.",
+  },
+  "ImportPlace.accounts": "Comptes",
+  "ImportPlace.accountsEntry": "Compte {index}",
+  "Reason.ACCOUNT_ARCHIVED":
+    "Un compte archivé ne peut pas être le compte par défaut. Désarchivez-le d’abord.",
+  "Reason.ACCOUNT_LIMIT_REACHED":
+    "Ce foyer ne peut plus avoir de nouveaux comptes. Archivez ou supprimez-en un d’abord.",
+  "Reason.ACCOUNT_NOT_FOUND": "Ce compte n’existe plus.",
 } satisfies Catalog

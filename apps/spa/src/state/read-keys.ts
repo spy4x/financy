@@ -17,6 +17,7 @@ export const READ_KEYS = {
   overviewWidget: (groupId: string, widgetId: string, request: string) =>
     `overview:${groupId}:${widgetId}:${request}`,
   billing: (groupId: string) => `billing:${groupId}`,
+  accounts: (groupId: string) => `accounts:${groupId}`,
   apiTokens: "api-tokens",
   devices: "devices",
 } as const

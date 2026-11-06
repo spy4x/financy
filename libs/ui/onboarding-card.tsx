@@ -10,6 +10,7 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAppText } from "./i18n.ts"
 import { GUEST_PATHS } from "./guest-screens.tsx"
 import {
+  ACCOUNT_PATHS,
   GROUP_PATHS,
   type Navigate,
   NOTE_PATHS,
@@ -44,6 +45,13 @@ export function onboardingSteps(
   canChooseCurrency = false,
 ): OnboardingStep[] {
   const all: OnboardingStep[] = [
+    {
+      id: "account",
+      title: t.t(`OnboardingCard.accountTitle`),
+      description: t.t(`OnboardingCard.accountText`),
+      done: steps.accountCreated,
+      action: { label: t.t(`OnboardingCard.accountAction`), href: ACCOUNT_PATHS.new, navigate },
+    },
     {
       id: "email",
       title: t.t(`OnboardingCard.emailTitle`),
@@ -92,9 +100,10 @@ export function onboardingSteps(
       },
     },
   ]
-  // Only an admin or the owner can choose it, so nobody else is given a step they cannot take.
+  // Only an admin or the owner can choose it, so nobody else is given a step they cannot take. It
+  // follows the first note, as it did before the account step came first.
   if (canChooseCurrency && groupId) {
-    all.splice(2, 0, {
+    all.splice(all.findIndex((step) => step.id === "note") + 1, 0, {
       id: "currency",
       title: t.t(`OnboardingCard.currencyTitle`),
       description: t.t(`OnboardingCard.currencyText`),
@@ -114,7 +123,7 @@ export function onboardingSteps(
     done: false,
     action: { label: t.t(`OnboardingCard.keep`), href: GUEST_PATHS.keep, navigate },
   }
-  return [keep, ...all.filter((step) => step.id === "note")]
+  return [keep, ...all.filter((step) => step.id === "account" || step.id === "note")]
 }
 
 /** The link of the side navigation that opens `href`; hidden on a phone, where a step is a sheet. */

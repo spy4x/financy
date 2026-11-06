@@ -18,6 +18,7 @@ import {
 } from "@domain/identity"
 
 interface OnboardingRow extends postgres.Row {
+  accountCreated: boolean
   emailVerified: boolean
   noteCreated: boolean
   memberInvited: boolean
@@ -34,6 +35,8 @@ interface OnboardingRow extends postgres.Row {
  *
  * Each step is a fact another feature already keeps, so nothing has to remember to tick it:
  *
+ * - an account: the person added one to a household. None is made for a new person, so any account
+ *   they created counts, one in the trash too;
  * - the address: the password key, or the key of a sign-up by code, carries an address that a code
  *   proved;
  * - a note: the person created one. The welcome note of a new account
@@ -53,6 +56,9 @@ export async function readOnboarding(
 ): Promise<OnboardingStatus | null> {
   const [row] = await sql<OnboardingRow[]>`
     SELECT
+      EXISTS (
+        SELECT 1 FROM accounts WHERE accounts.created_by_user_id = users.id
+      ) AS "accountCreated",
       EXISTS (
         SELECT 1 FROM auth_keys
         WHERE auth_keys.user_id = users.id

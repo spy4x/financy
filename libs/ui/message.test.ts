@@ -18,6 +18,9 @@ const RUSSIAN = createTranslator({
  * `ErrorReason` and left out here fails `deno check`.
  */
 const REASONS: Record<ErrorReason, true> = {
+  ACCOUNT_ARCHIVED: true,
+  ACCOUNT_LIMIT_REACHED: true,
+  ACCOUNT_NOT_FOUND: true,
   ADDRESS_NOT_PROVEN: true,
   ALREADY_MEMBER: true,
   ALREADY_SUBSCRIBED: true,

@@ -59,6 +59,7 @@ afterEach(async () => {
 
 const fresh: OnboardingStatus = {
   steps: {
+    accountCreated: false,
     emailVerified: false,
     noteCreated: false,
     memberInvited: false,
@@ -235,7 +236,12 @@ describe("OnboardingView", () => {
   it("links the invitation step to the selected group's Members tab and opens a step through the router", async () => {
     selectionStore.groupId.value = "g-9"
     try {
-      const steps = { ...fresh.steps, emailVerified: true, noteCreated: true }
+      const steps = {
+        ...fresh.steps,
+        accountCreated: true,
+        emailVerified: true,
+        noteCreated: true,
+      }
       await mount(storeOver({ ...fresh, steps }).store)
       const link = root!.querySelector(`a[href="/groups/g-9/members"]`)
       expect(link).not.toBe(null)

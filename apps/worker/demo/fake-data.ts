@@ -3,6 +3,7 @@ import { BillingStatus } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
 import { RATE_SOURCES } from "@domain/money"
 import type { TagColor } from "@domain/tags"
+import { AccountKind } from "@domain/accounts"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import recordedEcbRates from "../../../libs/server/money/fixtures/frankfurter-saturday-ecb.json" with {
   type: "json",
@@ -91,6 +92,26 @@ export interface FakeNote {
   files?: { name: string; kind: `png` | `pdf` }[]
 }
 
+/** One account of a demo household: amounts in the currency's smallest unit. */
+export interface FakeAccount {
+  name: string
+  kind: AccountKind
+  currency: string
+  startingBalance: number
+  author: FakeMember
+  createdAgo: number
+}
+
+/**
+ * The accounts every demo household starts with, in three currencies with different smallest
+ * units: euro and dollar cents, and whole dong, which has none.
+ */
+export const DEMO_ACCOUNTS: readonly Omit<FakeAccount, "author" | "createdAgo">[] = [
+  { name: `Everyday account`, kind: AccountKind.BANK, currency: `EUR`, startingBalance: 248_350 },
+  { name: `Travel card`, kind: AccountKind.CARD, currency: `USD`, startingBalance: 52_000 },
+  { name: `Cash in Hanoi`, kind: AccountKind.CASH, currency: `VND`, startingBalance: 1_500_000 },
+]
+
 export interface FakeGroup {
   name: string
   /** The zone the group's days are cut in: one of {@link DEMO_TIME_ZONES}, by its name. */
@@ -99,6 +120,8 @@ export interface FakeGroup {
   createdAgo: number
   members: { member: FakeMember; role: GroupRole; joinedAgo: number }[]
   tags: { name: string; color: TagColor; author: FakeMember; createdAgo: number }[]
+  /** The household's accounts; the first is its default. */
+  accounts: FakeAccount[]
   notes: FakeNote[]
   /** Pending invitations: tied to an address, or `null` for a link anyone may use. */
   invitations: { email: string | null; role: GroupRole; author: FakeMember; createdAgo: number }[]
@@ -488,6 +511,12 @@ function fakeGroup(
     createdAgo: Math.max(joinedAgo(lead) - int(2, 40), 20),
   }))
   const tagsReady = Math.min(...tags.map((tag) => tag.createdAgo))
+  // No random draw here, so adding accounts left every other sample value as it was.
+  const accounts = DEMO_ACCOUNTS.map((account, index) => ({
+    ...account,
+    author: lead,
+    createdAgo: Math.max(tagsReady - index - 1, 10),
+  }))
   const notes = sample(theme.notes, theme.notes.length).map((note): FakeNote => {
     const author = pick(writers)
     const createdAgo = between(Math.min(tagsReady - 1, joinedAgo(author)), 15)
@@ -533,6 +562,7 @@ function fakeGroup(
     createdAgo,
     members,
     tags,
+    accounts,
     notes,
     invitations,
     promotions,
@@ -582,6 +612,7 @@ export function withStandIns(
   return {
     ...group,
     tags: group.tags.map((tag) => ({ ...tag, author: as(tag.author, writer) })),
+    accounts: group.accounts.map((account) => ({ ...account, author: as(account.author, writer) })),
     notes: group.notes.map((note) => ({
       ...note,
       author: as(note.author, writer),

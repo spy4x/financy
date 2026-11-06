@@ -118,6 +118,8 @@ Pick the guide that fits. New here? Start with [Get started](get-started.md). Th
 
 ## Financy
 
+- [Finance glossary](financy/glossary.md): the finance words of Financy's screens in all nine
+  languages, next to the shared glossary in `i18n/TRANSLATING.md`.
 - [Exchange rates](financy/exchange-rates.md): where the daily rates come from, the paid
   fallback and its cap, and how a rate is chosen.
 - [What we are building](financy/product.md): who Financy is for, the first version, the price,
