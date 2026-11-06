@@ -21,12 +21,21 @@ import { describeCron, parseCron } from "@spy4x/time/cron"
 import type { BillingProvider } from "@spy4x/billing"
 import { ONE_DAY_IN_MILLISECONDS } from "@spy4x/platform/universal/time-constants"
 import { BillingNoticeKind, type Plan } from "@domain/billing"
-import { BLOG_CROSSPOST_JOB, BLOG_INDEXNOW_JOB, BLOG_PUBLISH_JOB } from "@domain/blog"
+import {
+  BLOG_CROSSPOST_JOB,
+  BLOG_INDEXNOW_JOB,
+  BLOG_POST_JOBS,
+  BLOG_PUBLISH_JOB,
+  BLOG_SHARE_RESULTS_JOB,
+  type BlogPostJobKind,
+} from "@domain/blog"
 import { BILLING_NOTICE_JOBS } from "../billing/billing-notices.ts"
 import { SEAT_SYNC_JOB, seatSyncJob } from "../billing/seat-sync.ts"
 import { blogPublishJob } from "../blog/blog-publish-job.ts"
 import { blogIndexNowJob, type IndexNowSetup } from "../blog/blog-indexnow-job.ts"
 import { blogCrosspostJob, type BlogCrosspostSetup } from "../blog/blog-crosspost-job.ts"
+import { blogShareResultsJob, type ShareResultsSetup } from "../blog/blog-share-results-job.ts"
+import { autoPostJob, type AutoPostSetup } from "../blog/auto-post.ts"
 import type { SubscribersSetup } from "../subscribers/subscribers.ts"
 import {
   ACCOUNT_DELETION_MAIL_JOB,
@@ -97,6 +106,10 @@ export interface JobDeps {
   indexNow: IndexNowSetup | null
   /** The website's origin and a Dev.to client, or `null` while the cross-post is off. */
   crosspost: BlogCrosspostSetup | null
+  /** The readers of each channel's numbers, or `null` to read none (tests of other jobs). */
+  shareResults: ShareResultsSetup | null
+  /** The posters of the automatic posts whose keys are set; none when left out. */
+  autoPost?: AutoPostSetup
   /** How jobs ask the public website something, such as whether a post is live. */
   fetch: typeof fetch
   /** The plan catalog the billing jobs read, `PLANS` unless a test passes its own. */
@@ -196,6 +209,15 @@ const BILLING_NOTICE_LABELS: Record<BillingNoticeKind, string> = {
   [BillingNoticeKind.TrialEnding]: `Trial ending email`,
   [BillingNoticeKind.PaymentFailed]: `Payment failed email`,
   [BillingNoticeKind.PlanEnding]: `Plan ending email`,
+}
+
+/** What the admin's Jobs module calls each automatic post job. */
+const AUTO_POST_LABELS: Record<BlogPostJobKind, string> = {
+  telegram: `Post a blog post to Telegram`,
+  mastodon: `Post a blog post to Mastodon`,
+  bluesky: `Post a blog post to Bluesky`,
+  hashnode: `Post a blog post to Hashnode`,
+  linkedin: `Post a blog post to LinkedIn`,
 }
 
 /**
@@ -370,6 +392,7 @@ export const JOBS: readonly JobDefinition[] = [
         ...mailDeps(deps),
         setup: deps.subscribers,
         crosspost: deps.crosspost,
+        siteUrl: deps.autoPost?.siteUrl ?? null,
         fetch: deps.fetch,
       }),
   }),
@@ -380,6 +403,21 @@ export const JOBS: readonly JobDefinition[] = [
     handler: ({ sql, mail, crosspost }) =>
       blogCrosspostJob({ sql, setup: crosspost, log: mail.log }),
   }),
+  // Posts once: a run after one that may have posted asks the channel first, sends the same
+  // idempotency key, or leaves the row to the operator (libs/server/blog/auto-post.ts).
+  ...(Object.entries(AUTO_POST_LABELS) as [BlogPostJobKind, string][]).map(([kind, label]) =>
+    defineJob({
+      kind: BLOG_POST_JOBS[kind],
+      label,
+      handler: ({ sql, mail, autoPost }) =>
+        autoPostJob(kind, {
+          sql,
+          siteUrl: autoPost?.siteUrl ?? null,
+          poster: autoPost?.posters[kind] ?? null,
+          log: mail.log,
+        }),
+    })
+  ),
   // Monitoring-grade: a failed ping is logged and never retried, so running it again sends once more.
   defineJob({
     kind: BLOG_INDEXNOW_JOB,
@@ -392,6 +430,14 @@ export const JOBS: readonly JobDefinition[] = [
     label: `Exchange rates`,
     repeat: { cron: RATES_FETCH_CRON },
     handler: ({ sql, mail, rates }) => ratesFetchJob({ sql, setup: rates ?? null, log: mail.log }),
+  }),
+  // Reads only: a run that is repeated or retried stores one more reading, never a second post.
+  defineJob({
+    kind: BLOG_SHARE_RESULTS_JOB,
+    label: `Read blog sharing results`,
+    repeat: { cron: `17 * * * *` },
+    handler: ({ sql, mail, shareResults }) =>
+      blogShareResultsJob({ sql, setup: shareResults, log: mail.log }),
   }),
 ]
 
