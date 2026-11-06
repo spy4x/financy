@@ -1725,7 +1725,7 @@ export default {
   "AccountsView.savedTitle": "Account saved",
   "AccountsView.saved": "{name} is saved.",
   "AccountsView.archivedTitle": "Account archived",
-  "AccountsView.archived": "{name} is archived. It still counts in the total.",
+  "AccountsView.archived": "{name} is archived. Show archived accounts to see it again.",
   "AccountsView.unarchived": "{name} is back in use.",
   "AccountsView.defaultTitle": "Default account",
   "AccountsView.defaultSet": "{name} is now the default.",
