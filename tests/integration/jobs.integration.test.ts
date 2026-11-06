@@ -35,9 +35,6 @@ import { isUuid, uuidV7 } from "@spy4x/platform/universal/uuid"
 import { expectVersion7Ids } from "./ids.ts"
 import { isMembersOnlyPath, SPA_ROUTE_PATHS } from "../../apps/spa/src/views/spa-paths.ts"
 
-/** The nightly cleanup alone: a product's own repeating jobs would be claimed beside it. */
-const CLEANUP_ONLY = JOBS.filter((job) => job.kind === OUTBOX_CLEANUP_JOB)
-
 const JOB = {
   eventKind: OUTBOX_CLEANUP_JOB,
   aggregateType: JOB_AGGREGATE,
@@ -107,6 +104,8 @@ const BRAND = { webAppUrl: "http://app.localhost" }
  * at once, and the run it writes next (the 03:00 after now) is a different time.
  */
 const twoDaysAgo = () => new Date(Date.now() - 2 * 86_400_000)
+/** The nightly cleanup alone, for steps that count its runs: other repeating jobs add their own. */
+const CLEANUP_ONLY = JOBS.filter((job) => job.kind === OUTBOX_CLEANUP_JOB)
 
 /** The reset mail settings of a worker whose mail is off. */
 function mailOff(sql: postgres.Sql) {
