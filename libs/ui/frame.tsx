@@ -2,6 +2,7 @@ import type { ComponentChildren, JSX } from "preact"
 import { useRef } from "preact/hooks"
 import { canViewActivity } from "@domain/groups"
 import {
+  IconBank,
   IconChartPie,
   IconClock,
   IconDocumentText,
@@ -55,7 +56,7 @@ export function navItems(
       href: OVERVIEW_PATHS.root,
       Icon: IconChartPie,
     },
-    { key: "accounts", label: t.t("Frame.accounts"), href: ACCOUNT_PATHS.list, Icon: IconWallet },
+    { key: "accounts", label: t.t("Frame.accounts"), href: ACCOUNT_PATHS.list, Icon: IconBank },
     { key: "notes", label: t.t("Frame.notes"), href: NOTE_PATHS.list, Icon: IconDocumentText },
     ...(activityGroupId === null ? [] : [{
       key: "activity",

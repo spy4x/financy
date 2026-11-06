@@ -1,5 +1,6 @@
 import { expect } from "@std/expect"
 import { it } from "@std/testing/bdd"
+import { IconBank, IconWallet } from "@spy4x/preact-icons"
 import { ADMIN_API_MODULES } from "../../../api/routes/admin/registry.ts"
 import { ADMIN_USER_TABS } from "@ui/admin-user-screen.tsx"
 import { ADMIN_MODULES, adminPersonTabs, shownModules } from "./registry.ts"
@@ -46,4 +47,9 @@ it("shows the catalog only once the API lists it among the modules that are on",
   expect(ids([])).not.toContain("catalog")
   expect(ids([])).toContain("blog")
   expect(ids(["catalog"])).toContain("catalog")
+})
+
+it("marks Accounts with the bank icon and leaves the wallet to the brand", () => {
+  expect(ADMIN_MODULES.find((module) => module.id === `accounts`)?.nav.Icon).toBe(IconBank)
+  expect(ADMIN_MODULES.some((module) => module.nav.Icon === IconWallet)).toBe(false)
 })

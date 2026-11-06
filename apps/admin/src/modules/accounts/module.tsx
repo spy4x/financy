@@ -1,6 +1,6 @@
 import type { JSX } from "preact"
 import { useEffect } from "preact/hooks"
-import { IconWallet } from "@spy4x/preact-icons"
+import { IconBank } from "@spy4x/preact-icons"
 import { ADMIN_ACCOUNTS_PATH, AdminAccountsScreen } from "@ui/admin-accounts-screen.tsx"
 import type { AdminContext, AdminModule } from "../types.ts"
 import { type AccountsModuleState, createAccountsState } from "./state.ts"
@@ -36,6 +36,6 @@ function AccountsView({ context }: { context: AdminContext }): JSX.Element {
 /** How households use accounts: counts by kind and currency, never a name or an amount. */
 export const accountsModule: AdminModule = {
   id: `accounts`,
-  nav: { name: `AdminNav.accounts`, href: ADMIN_ACCOUNTS_PATH, Icon: IconWallet },
+  nav: { name: `AdminNav.accounts`, href: ADMIN_ACCOUNTS_PATH, Icon: IconBank },
   routes: [{ path: ADMIN_ACCOUNTS_PATH, View: AccountsView }],
 }
