@@ -187,7 +187,7 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
   {
     // The finance accounts the person created, in households they still belong to. The starting
     // balance is in the currency's smallest unit, as decimal text, as every BIGINT crosses.
-    name: `accounts`,
+    name: `finance_accounts`,
     columns: [
       `id`,
       `groupId`,
