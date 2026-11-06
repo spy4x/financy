@@ -8,6 +8,7 @@ import type { MovableAggregate } from "@server/groups/movable.ts"
 import { noteMovable } from "@server/notes/note-movable.ts"
 import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.ts"
 import { TAG_MAX_PER_GROUP } from "@domain/tags"
+import { ACCOUNT_MAX_PER_GROUP } from "@domain/accounts"
 import { MOVABLE_AGGREGATES } from "../../apps/api/services/db-base.ts"
 import { insertUser, runBlockedOnLock, withSchema } from "./group-team.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
@@ -55,6 +56,37 @@ async function eventKinds(sql: postgres.Sql, table: "audit_events" | "outbox_eve
   return (await sql<{ eventKind: string }[]>`
     SELECT event_kind FROM ${sql(table)} WHERE group_id = ${id} AND event_kind LIKE 'group.data%'
   `).map((row) => row.eventKind)
+}
+
+/** Inserts a USD bank account named `name` into `groupId`, created by `userId`; answers its id. */
+async function insertAccount(
+  sql: postgres.Sql,
+  groupId: string,
+  name: string,
+  userId: number,
+  state: { isDefault?: boolean; archived?: boolean; deleted?: boolean } = {},
+): Promise<string> {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO accounts (id, group_id, name, kind, currency, starting_balance, is_default,
+      archived_at, deleted_at, change_sequence, created_by_user_id, updated_by_user_id)
+    VALUES (${id}, ${groupId}, ${name}, 2, 'USD', 100, ${state.isDefault ?? false},
+      ${state.archived ? new Date() : null}, ${state.deleted ? new Date() : null}, 1,
+      ${userId}, ${userId})
+  `
+  return id
+}
+
+/** A group's accounts, deleted ones included, by name. */
+async function accountsOf(sql: postgres.Sql, groupId: string) {
+  return [
+    ...await sql<
+      { id: string; name: string; archived: boolean; isDefault: boolean; version: number }[]
+    >`
+      SELECT id, name, archived_at IS NOT NULL AS archived, is_default, version
+      FROM accounts WHERE group_id = ${groupId} ORDER BY name
+    `,
+  ]
 }
 
 /** Inserts a tag named `name` into `groupId`, created by `userId`; answers its id. */
@@ -272,7 +304,7 @@ Deno.test("moving all of a group's data", async (t) => {
         const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
 
         // Work, Idle and Old changed group; Shared joined the target's "shared".
-        expect(result).toEqual({ moved: 5, counts: { tags: 4, notes: 1 } })
+        expect(result).toEqual({ moved: 5, counts: { accounts: 0, tags: 4, notes: 1 } })
         expect(await tagsOf(sql, from)).toEqual([])
         expect(await tagsOf(sql, to)).toEqual([
           { id: idle, name: "Idle", version: 2 },
@@ -307,6 +339,59 @@ Deno.test("moving all of a group's data", async (t) => {
         expect(refused).toMatchObject({ code: "TAG_LIMIT_REACHED" })
         expect((await tagsOf(sql, from)).map((tag) => tag.id)).toEqual([idle])
         expect(await notes.count(from)).toBe(1)
+        expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
+      },
+    )
+
+    await t.step(
+      "the registered aggregates move every live account, and the target keeps its own default",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to } = await seed(sql, [])
+        const main = await insertAccount(sql, from, "Main", editor, { isDefault: true })
+        const saved = await insertAccount(sql, from, "Savings", editor, { archived: true })
+        const binned = await insertAccount(sql, from, "Binned", editor, { deleted: true })
+        const theirs = await insertAccount(sql, to, "Theirs", editor, { isDefault: true })
+
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result).toMatchObject({ moved: 2, counts: { accounts: 2 } })
+        expect(await accountsOf(sql, from)).toEqual([
+          { id: binned, name: "Binned", archived: false, isDefault: false, version: 1 },
+        ])
+        expect(await accountsOf(sql, to)).toEqual([
+          { id: main, name: "Main", archived: false, isDefault: false, version: 2 },
+          { id: saved, name: "Savings", archived: true, isDefault: false, version: 2 },
+          { id: theirs, name: "Theirs", archived: false, isDefault: true, version: 1 },
+        ])
+      },
+    )
+
+    await t.step(
+      "refuses whole when the source's accounts would take the target over its account cap",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to, ids, notes } = await seed(sql, ["a"])
+        const full = Array.from({ length: ACCOUNT_MAX_PER_GROUP }, (_, index) => ({
+          id: uuidV7(),
+          group_id: to,
+          name: `Full ${index}`,
+          kind: 1,
+          currency: "USD",
+          starting_balance: 0,
+          change_sequence: 1,
+          created_by_user_id: editor,
+          updated_by_user_id: editor,
+        }))
+        await sql`INSERT INTO accounts ${sql(full)}`
+        const main = await insertAccount(sql, from, "Main", editor)
+
+        const refused = await refusal(
+          app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP),
+        )
+
+        expect(refused).toMatchObject({ code: "ACCOUNT_LIMIT_REACHED" })
+        expect((await accountsOf(sql, from)).map((account) => account.id)).toEqual([main])
         expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
       },
     )
