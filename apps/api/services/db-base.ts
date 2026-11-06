@@ -39,6 +39,7 @@ import type { PortableAggregate } from "@server/groups/portable.ts"
 import { PostgresGroupPorter } from "@server/groups/postgres-group-porter.ts"
 import { notePortable } from "@server/notes/note-portable.ts"
 import { tagPortable } from "@server/tags/tag-portable.ts"
+import { householdPortable } from "@server/money/household-portable.ts"
 import { noteMovable } from "@server/notes/note-movable.ts"
 import { tagMovable } from "@server/tags/tag-movable.ts"
 import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
@@ -193,7 +194,11 @@ export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [tagMovable, note
  * joins here (`docs/aggregate-lifecycle.md`, "Make it exportable"): put one that other
  * aggregates point at before the ones that point at it.
  */
-export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [tagPortable, notePortable]
+export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
+  tagPortable,
+  notePortable,
+  householdPortable,
+]
 
 /**
  * The aggregates a device pulls the changes of, by group (`docs/aggregate-offline.md`, "Take part

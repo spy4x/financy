@@ -230,6 +230,28 @@ export interface HouseholdRateReader {
 }
 // #endregion Ports
 
+// #region Group files
+/**
+ * The household settings in a group's export file: one entry, named by the exported group's id,
+ * with the main currency and whether a person chose it. An import gives the new group the same.
+ */
+export const householdExportEntrySchema = type({
+  id: UUID_PATTERN,
+  baseCurrency: currencyCode,
+  chosen: "boolean",
+})
+export type HouseholdExportEntry = typeof householdExportEntrySchema.infer
+
+/** Checks one household entry of a file. Throws `INVALID_REQUEST` naming what is wrong. */
+export function parseHouseholdExportEntry(entry: unknown): HouseholdExportEntry {
+  const parsed = householdExportEntrySchema(entry)
+  if (parsed instanceof type.errors) {
+    throw new HouseholdError("INVALID_REQUEST", `household settings: ${parsed.summary}`)
+  }
+  return parsed
+}
+// #endregion Group files
+
 // #region Reading the API's answer
 const settingsShape = type({
   groupId: UUID_PATTERN,
