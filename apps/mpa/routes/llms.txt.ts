@@ -11,7 +11,7 @@ import { siteEnglishText } from "@ui/site-text.ts"
 
 /**
  * The website for AI assistants (llmstxt.org): what Financy is, in the home page's entity sentence
- * and with its status (#85), then every public page with its
+ * and with its status, then every public page with its
  * description, on this website's own origin. The newsletter page is left out while subscriptions
  * are off. The published guides follow in a Docs section. The blog's live posts follow in a section of their own, which is left out while no post
  * is live or the API cannot answer.

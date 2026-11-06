@@ -49,7 +49,7 @@ import { useAdminText } from "./i18n.ts"
 /** The billing module's pages in the admin app. */
 export const ADMIN_BILLING_PATHS = {
   list: `/billing`,
-  /** The groups that have never paid (#706). */
+  /** The groups that have never paid. */
   neverPaid: `/billing/never-paid`,
   customer: (groupId: string) => `/billing/${encodeURIComponent(groupId)}`,
 } as const
@@ -90,9 +90,17 @@ export function money(value: Money): string {
   return formatMoney(value.amount, value.currency)
 }
 
-/** The plan's name, `Pro`, or `Unknown plan` (in the operator's language) for a price no plan maps to. */
-export function billingPlanName(t: Translator<string>, planId: string | null): string {
-  return (planId === null ? null : findPlan(planId))?.name ?? t.t(`AdminBilling.unknownPlan`)
+/**
+ * The plan's name, `Pro`, or `Unknown plan` (in the operator's language) for a price no plan maps
+ * to. `plans` is the catalog, `PLANS` unless a test passes its own.
+ */
+export function billingPlanName(
+  t: Translator<string>,
+  planId: string | null,
+  plans?: readonly Plan[],
+): string {
+  return (planId === null ? null : findPlan(planId, plans))?.name ??
+    t.t(`AdminBilling.unknownPlan`)
 }
 
 const STATE_BADGES: Record<AdminBillingState, { key: string; color: BadgeColor }> = {
@@ -219,7 +227,7 @@ export interface AdminBillingListScreenProps {
 }
 
 /**
- * The billing page (#196): four figures from the stored subscriptions, then every customer with
+ * The billing page: four figures from the stored subscriptions, then every customer with
  * its status word, key date and monthly amount, searched by group or owner and filtered by status
  * chips that show their counts. Each name opens the customer's page, where the actions are.
  */
@@ -275,7 +283,7 @@ export function AdminBillingListScreen(props: AdminBillingListScreenProps): JSX.
           <EmptyState
             inset
             icon={<IconCreditCard class="size-8" aria-hidden="true" />}
-            // What the module says while billing is off (decision 10 of #196).
+            // What the module says while billing is off.
             title={t.t(`AdminBilling.off`)}
             description={t.t(`AdminBilling.offText`)}
             action={

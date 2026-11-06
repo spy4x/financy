@@ -11,6 +11,8 @@ import {
   BillingNoticeKind,
   type BillingRepository,
   findPlan,
+  type Plan,
+  PLANS,
   type StoredSubscription,
 } from "@domain/billing"
 import type { GroupRole } from "@domain/groups"
@@ -68,7 +70,11 @@ const PAYING_STATUSES: readonly SubscriptionStatus[] = [
  * after its signature passes.
  */
 export class PostgresBillingRepository implements BillingRepository {
-  constructor(private readonly sql: postgres.Sql) {}
+  /** `plans` is the catalog, `PLANS` unless a test passes its own. */
+  constructor(
+    private readonly sql: postgres.Sql,
+    private readonly plans: readonly Plan[] = PLANS,
+  ) {}
 
   async get(groupId: string): Promise<StoredSubscription | null> {
     const row = (
@@ -212,16 +218,16 @@ export class PostgresBillingRepository implements BillingRepository {
       const rank = EVENT_RANK[event.type]
       // A different subscription than the one held takes over when it pays, whatever the held one's
       // status, or when the held one has ended. One that does not pay, such as a late failed charge
-      // or the end of an old subscription, never takes the plan of the one held (#242).
+      // or the end of an old subscription, never takes the plan of the one held.
       const paying = PAYING_STATUSES.includes(subscription.status)
       // The grace period counts from the first past-due event of this subscription: a later one
       // (Stripe's `unpaid` arrives as past due too) keeps the stored start, and any other status
       // clears it.
       const pastDue = subscription.status === SubscriptionStatus.PastDue
-      // Only a subscription that has paid gets the grace period (#247): `ever_active` turns true at
+      // Only a subscription that has paid gets the grace period: `ever_active` turns true at
       // its first active event and stays true while the same subscription is held.
       const active = subscription.status === SubscriptionStatus.Active
-      // A customer handed over by a transfer of ownership (#250) only runs out the subscription
+      // A customer handed over by a transfer of ownership only runs out the subscription
       // the group holds: none of its subscriptions takes the group back, even one that pays.
       const handedOver = (await transaction`
         SELECT 1 FROM billing_handed_over_customers
@@ -310,7 +316,7 @@ export class PostgresBillingRepository implements BillingRepository {
       // One customer pays for one group. A customer another group already holds stays with it, so
       // an event naming it is still applied instead of failing on the unique index forever. A
       // handed-over customer written back here stays handed over: `customerOf` reads through
-      // `billing_handed_over_customers` (#250).
+      // `billing_handed_over_customers`.
       await transaction`
         INSERT INTO billing_customers (group_id, provider_customer_id)
         SELECT ${group.id}, ${subscription.customerId}
@@ -325,7 +331,7 @@ export class PostgresBillingRepository implements BillingRepository {
       // started before someone joined, is corrected by the worker.
       if (
         subscription.status !== SubscriptionStatus.Canceled &&
-        subscription.planId !== null && findPlan(subscription.planId)?.perSeat &&
+        subscription.planId !== null && findPlan(subscription.planId, this.plans)?.perSeat &&
         subscription.quantity !==
           await new PostgresInvitationRepository(transaction).countMembers(group.id)
       ) {

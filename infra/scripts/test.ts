@@ -68,7 +68,10 @@ export const GROUPS: TestGroup[] = [
     paths: [`apps/mpa/changelog-start.test.ts`],
   },
   // Each test below reads files, so it runs with its own read grant.
-  { flags: [`--allow-read=apps,libs`], paths: [`tests/spacing.test.ts`] },
+  {
+    flags: [`--allow-read=apps,libs`],
+    paths: [`tests/spacing.test.ts`, `tests/test-catalog-boundary.test.ts`],
+  },
   {
     flags: [`--allow-read=apps,libs/ui`],
     paths: [`tests/ui-boundary.test.ts`, `tests/no-direct-date-format.test.ts`],
@@ -118,6 +121,10 @@ export const GROUPS: TestGroup[] = [
     flags: [`--allow-read=libs/server/db/migrations`],
     paths: [`tests/migration-names.test.ts`],
   },
+  {
+    flags: [`--allow-read=docs`],
+    paths: [`tests/docs-map.test.ts`],
+  },
   // infra/scripts is left out of the other tools (deno.jsonc "exclude"); its tests run here.
   {
     flags: [
@@ -158,6 +165,7 @@ export const GROUPS: TestGroup[] = [
     flags: [`--allow-read=.`, `--allow-write=tests`, `--allow-run=git`],
     paths: [`tests/no-uuid-v4.test.ts`],
   },
+  { flags: [`--allow-read=apps,libs,e2e`], paths: [`tests/no-issue-numbers-in-comments.test.ts`] },
   {
     flags: [`--allow-read=.`, `--allow-env`, `--allow-sys`],
     paths: [`tests/playwright-retries.test.ts`],
