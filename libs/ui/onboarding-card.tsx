@@ -100,9 +100,10 @@ export function onboardingSteps(
       },
     },
   ]
-  // Only an admin or the owner can choose it, so nobody else is given a step they cannot take.
+  // Only an admin or the owner can choose it, so nobody else is given a step they cannot take. It
+  // follows the first note, as it did before the account step came first.
   if (canChooseCurrency && groupId) {
-    all.splice(2, 0, {
+    all.splice(all.findIndex((step) => step.id === "note") + 1, 0, {
       id: "currency",
       title: t.t(`OnboardingCard.currencyTitle`),
       description: t.t(`OnboardingCard.currencyText`),

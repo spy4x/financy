@@ -220,10 +220,12 @@ describe("first-steps card", () => {
   })
 
   it("offers an admin of the selected group the main currency step, opening its dialog", async () => {
-    const before = { ...NONE, emailVerified: true, noteCreated: true }
+    const before = { ...NONE, accountCreated: true, emailVerified: true, noteCreated: true }
     const { update } = await mount({ canChooseCurrency: true, steps: before })
     expect(control("Choose currency").getAttribute("href")).toBe("/groups/g-1?currency=choose")
-    expect(stepLines().length).toBe(6)
+    expect(stepLines().length).toBe(7)
+    // It comes right after the first note.
+    expect(stepLines()[3]).toContain("main currency")
 
     await update({ steps: { ...before, currencyChosen: true } })
     expect(all("a").some((link) => link.textContent?.trim() === "Choose currency")).toBe(false)
@@ -232,11 +234,11 @@ describe("first-steps card", () => {
   it("leaves the main currency step out for a person who cannot change it", async () => {
     await mount({
       canChooseCurrency: false,
-      steps: { ...NONE, emailVerified: true, noteCreated: true },
+      steps: { ...NONE, accountCreated: true, emailVerified: true, noteCreated: true },
     })
     expect(control("Invite someone")).toBeDefined()
     expect(all("a").some((link) => link.textContent?.trim() === "Choose currency")).toBe(false)
-    expect(stepLines().length).toBe(5)
+    expect(stepLines().length).toBe(6)
   })
 
   it("sends the invitation step to the groups page for a person with no selected group", async () => {
