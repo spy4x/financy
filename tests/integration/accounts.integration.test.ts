@@ -37,7 +37,7 @@ import { team, withSchema } from "./group-team.ts"
 import { expectVersion7Ids } from "./ids.ts"
 
 /**
- * Accounts against a real Postgres built from the migrations, through the handlers the API puts on
+ * Accounts against a real Postgres built from schema.sql, through the handlers the API puts on
  * its buses. Needs `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME` (recipe in docs/handoff.md); it
  * fails when they are missing rather than skipping.
  */
@@ -369,7 +369,7 @@ Deno.test("accounts against Postgres", async (t) => {
   })
 })
 
-Deno.test("the operator's accounts read counts live accounts by kind, currency and household, and carries no name or amount", async () => {
+Deno.test("the operator's accounts read counts live accounts by kind, currency and household, and carries no account name or amount", async () => {
   await withSchema(async (sql) => {
     const { commands } = buses(sql)
     const { groupId, owner } = await team(sql)
