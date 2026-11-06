@@ -1442,6 +1442,7 @@ CREATE TABLE blog_channels (
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     version INT4 DEFAULT 1 NOT NULL,
+    auto_post BOOLEAN DEFAULT false NOT NULL,
     CONSTRAINT blog_channels_utm_source_unique UNIQUE (utm_source),
     CONSTRAINT blog_channels_kind_check CHECK (kind IN (
         'devto', 'telegram', 'mastodon', 'bluesky', 'hashnode', 'linkedin', 'x', 'reddit',
@@ -1469,11 +1470,17 @@ CREATE TABLE blog_post_shares (
     error VARCHAR(500),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    -- Why the results job's last read failed, and when; both NULL after a good read.
+    read_error VARCHAR(500),
+    read_failed_at TIMESTAMPTZ,
+    post_attempted_at TIMESTAMPTZ,
     CONSTRAINT blog_post_shares_post_channel_unique UNIQUE (post_id, channel_id),
     CONSTRAINT blog_post_shares_status_check
         CHECK (status IN ('todo', 'suggested', 'posted', 'skipped')),
     CONSTRAINT blog_post_shares_url_check CHECK (url IS NULL OR url LIKE 'https://%'),
-    CONSTRAINT blog_post_shares_skip_reason_check CHECK (skip_reason IS NULL OR status = 'skipped')
+    CONSTRAINT blog_post_shares_skip_reason_check CHECK (skip_reason IS NULL OR status = 'skipped'),
+    CONSTRAINT blog_post_shares_read_error_check
+        CHECK ((read_error IS NULL) = (read_failed_at IS NULL))
 );
 
 CREATE INDEX idx_blog_post_shares_channel ON blog_post_shares (channel_id);
@@ -1553,7 +1560,7 @@ CREATE TABLE household_settings (
 CREATE INDEX idx_household_settings_updated_by ON household_settings (updated_by_user_id);
 CREATE INDEX idx_household_settings_base_currency ON household_settings (base_currency);
 
--- Accounts: Financy's first finance aggregate (migration 2026_12_15_0004_accounts.sql explains
+-- Accounts: Financy's first finance aggregate (migration 2026_12_16_0003_accounts.sql explains
 -- each column).
 CREATE TABLE accounts (
     id UUID PRIMARY KEY,

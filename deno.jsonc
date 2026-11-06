@@ -195,6 +195,10 @@
       "command": "sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean && sudo apt --fix-broken install && sudo do-release-upgrade",
       "description": "Upgrades the packages of an Ubuntu server, with sudo"
     },
+    "linkedin:sign-in": {
+      "command": "deno run -E=LINKEDIN_CLIENT_ID,LINKEDIN_CLIENT_SECRET,LINKEDIN_REDIRECT_PORT -N=www.linkedin.com,api.linkedin.com,127.0.0.1 ./infra/scripts/linkedin-sign-in.ts",
+      "description": "Signs in to LinkedIn for the blog's automatic posts and prints the three env lines (docs/blog.md)"
+    },
     "vapid-key:create": {
       "command": "deno run -W=infra/configs/vapid.json ./infra/scripts/vapid-keys-create.ts",
       "description": "Writes new web push keys to infra/configs/vapid.json"
@@ -409,7 +413,7 @@
     "@spy4x/platform": "jsr:@spy4x/platform@1.116.0",
     "@spy4x/server": "jsr:@spy4x/server@1.116.0",
     "@spy4x/realtime": "jsr:@spy4x/realtime@1.116.0",
-    "@spy4x/integrations": "jsr:@spy4x/integrations@1.116.0",
+    "@spy4x/integrations": "jsr:@spy4x/integrations@1.117.0",
     "@spy4x/email": "jsr:@spy4x/email@1.116.0",
     "@spy4x/net": "jsr:@spy4x/net@1.116.0",
     "@spy4x/billing": "jsr:@spy4x/billing@1.116.0",

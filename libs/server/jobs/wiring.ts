@@ -52,6 +52,8 @@ import type { ServerFiles } from "../files/files.ts"
  * IndexNow that a post's addresses changed; without it, that job sends nothing. With
  * `crosspost`, a live post is cross-posted to Dev.to once; without it, it is skipped.
  * `fetcher` is how `blog.publish` asks the website whether a post is live; tests pass a fake.
+ * With `shareResults`, the hourly `blog.share-results` job reads each posted copy's numbers;
+ * without it, that job reads nothing.
  * `rates` is where the exchange rate jobs fetch from; without it they fetch nothing.
  *
  * @throws Error when two jobs share a kind: one handler would silently replace the other.
@@ -71,6 +73,8 @@ export function createOutboxProcessor(
   indexNow: JobDeps["indexNow"] = null,
   crosspost: JobDeps["crosspost"] = null,
   fetcher: JobDeps["fetch"] = globalThis.fetch,
+  shareResults: JobDeps["shareResults"] = null,
+  autoPost: JobDeps["autoPost"] = undefined,
   rates: JobDeps["rates"] = null,
 ): OutboxProcessor {
   const notifier = new GroupChangeNotifier(sql)
@@ -87,6 +91,8 @@ export function createOutboxProcessor(
     imageScratch,
     indexNow,
     crosspost,
+    shareResults,
+    autoPost,
     fetch: fetcher,
     rates,
   }
