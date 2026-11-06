@@ -1626,6 +1626,7 @@ export default {
     "このアドレスに対応する管理ページはありません。入力ミスがないか確認するか、ダッシュボードから始めてください。",
   "AdminNotFound.toDashboard": "ダッシュボードへ",
   "AdminNav.dashboard": "ダッシュボード",
+  "AdminNav.rates": "為替レート",
   "AdminNav.stats": "統計",
   "AdminNav.system": "システム",
   "AdminNav.users": "ユーザー",
@@ -2014,4 +2015,7 @@ export default {
   "AdminBlogHistory.restore": "このバージョンを復元",
   "AdminBlogHistory.empty": "以前のバージョンはまだありません。保存するたびに1つ残ります。",
   "AdminBlogHistory.restored": "以前のバージョンを復元しました。保存すると反映されます。",
+  "AdminRates.title": "為替レート",
+  "AdminRates.subtitle":
+    "サーバーが毎日取得したレートを取得元ごとに表示し、有料の予備ソースが今月どれだけ使われたかも示します。",
 } satisfies Catalog

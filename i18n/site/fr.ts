@@ -585,7 +585,7 @@ export default {
     "Les budgets, l’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
   "HomeWho.keeperTitle": "Celui ou celle qui tient les comptes",
   "HomeWho.keeperText":
-    "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul endroit qui fait le total.",
+    "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul total aux taux de la BCE, avec leur date.",
   "HomeWho.partnerTitle": "Le conjoint ou la conjointe",
   "HomeWho.partnerText":
     "Partage l’argent du foyer avec son propre identifiant, et note ses dépenses en quelques secondes.",
@@ -604,7 +604,10 @@ export default {
     "Pas encore. La connexion, les foyers et la synchronisation fonctionnent ; les comptes et les opérations sont en cours.",
   "HomeFaq.currencyQuestion": "Quelles devises gérera-t-il ?",
   "HomeFaq.currencyAnswer":
-    "Toutes, cryptomonnaies comprises ; chaque opération garde son montant d’origine à côté du montant converti. Prévu, mais pas encore construit.",
+    "Financy gérera n’importe quel mélange de devises, cryptomonnaies comprises. Chaque opération garde son montant d’origine à côté du montant converti, et les totaux s’affichent dans la devise principale du foyer. Pour une devise que la BCE ne couvre pas, comme une cryptomonnaie, vous saisissez le taux directement sur l’opération. En cours de construction.",
+  "HomeFaq.ratesQuestion": "D’où viennent les taux de change ?",
+  "HomeFaq.ratesAnswer":
+    "De la Banque centrale européenne, récupérés chaque jour ouvré via Frankfurter, un service public et gratuit. Chaque total converti affiche la date des taux utilisés. Une devise sans taux est signalée et laissée hors du total, jamais comptée à 1. En cours de construction.",
   "HomeFaq.bankQuestion": "Financy se connecte-t-il à ma banque ?",
   "HomeFaq.bankAnswer": "Non. L’import de relevés bancaires est prévu pour la première version.",
   "HomeFaq.stopsQuestion": "Que se passe-t-il si Financy est abandonné ?",

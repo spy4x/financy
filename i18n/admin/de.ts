@@ -1741,6 +1741,7 @@ export default {
     "Unter dieser Adresse gibt es keine Admin-Seite. Prüfe sie auf Tippfehler oder starte im Dashboard.",
   "AdminNotFound.toDashboard": "Zum Dashboard",
   "AdminNav.dashboard": "Dashboard",
+  "AdminNav.rates": "Kurse",
   "AdminNav.stats": "Statistik",
   "AdminNav.system": "System",
   "AdminNav.users": "Personen",
@@ -2148,4 +2149,7 @@ export default {
   "AdminBlogHistory.restore": "Diese Version wiederherstellen",
   "AdminBlogHistory.empty": "Noch keine früheren Versionen. Jedes Speichern behält eine.",
   "AdminBlogHistory.restored": "Frühere Version wiederhergestellt. Speichern, um sie zu behalten.",
+  "AdminRates.title": "Wechselkurse",
+  "AdminRates.subtitle":
+    "Die Kurse, die der Server jeden Tag abgerufen hat, nach Quelle, und was die kostenpflichtige Ersatzquelle diesen Monat verbraucht hat.",
 } satisfies Catalog

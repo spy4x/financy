@@ -572,7 +572,7 @@ export default {
     "Orçamentos, importação de extratos bancários e a nuvem paga vêm depois: <plan>veja o plano completo</plan>.",
   "HomeWho.keeperTitle": "Quem cuida das contas",
   "HomeWho.keeperText":
-    "Salário numa moeda, aluguel em outra, poupança numa terceira: um só lugar que soma tudo.",
+    "Salário numa moeda, aluguel em outra, poupança numa terceira: um só total pelas taxas do BCE, com a data delas.",
   "HomeWho.partnerTitle": "O parceiro ou a parceira",
   "HomeWho.partnerText":
     "Divide o dinheiro da família com o próprio login e registra o que gasta em segundos.",
@@ -592,7 +592,10 @@ export default {
     "Ainda não. Entrar, famílias e sincronização funcionam; contas e lançamentos estão sendo construídos agora.",
   "HomeFaq.currencyQuestion": "Quais moedas ele vai aceitar?",
   "HomeFaq.currencyAnswer":
-    "Qualquer combinação, incluindo criptomoedas; cada lançamento guarda o valor original ao lado do convertido. Planejado, ainda não construído.",
+    "O Financy vai lidar com qualquer combinação de moedas, incluindo criptomoedas. Cada lançamento guarda o valor original ao lado do convertido, e os totais aparecem na moeda principal da família. Para uma moeda que o BCE não cobre, como uma criptomoeda, você informa a taxa no próprio lançamento. Em construção.",
+  "HomeFaq.ratesQuestion": "De onde vêm as taxas de câmbio?",
+  "HomeFaq.ratesAnswer":
+    "Do Banco Central Europeu, buscadas a cada dia útil pelo Frankfurter, um serviço público e gratuito. Todo total convertido mostra a data das taxas que usou. Uma moeda sem taxa aparece pelo nome e fica fora do total; nunca conta como 1. Em construção.",
   "HomeFaq.bankQuestion": "O Financy se conecta ao meu banco?",
   "HomeFaq.bankAnswer":
     "Não. A importação de extratos bancários está planejada para a primeira versão.",

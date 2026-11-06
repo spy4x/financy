@@ -1802,6 +1802,7 @@ export default {
     "Cette adresse ne mène à aucune page de l’administration. Vérifiez qu’elle ne contient pas de faute de frappe, ou repartez du tableau de bord.",
   "AdminNotFound.toDashboard": "Aller au tableau de bord",
   "AdminNav.dashboard": "Accueil",
+  "AdminNav.rates": "Taux",
   "AdminNav.stats": "Stats",
   "AdminNav.system": "Système",
   "AdminNav.users": "Utilisateurs",
@@ -2222,4 +2223,7 @@ export default {
   "AdminBlogHistory.empty":
     "Aucune version précédente pour l’instant. Chaque enregistrement en garde une.",
   "AdminBlogHistory.restored": "Version précédente restaurée. Enregistrez pour la garder.",
+  "AdminRates.title": "Taux de change",
+  "AdminRates.subtitle":
+    "Les taux que le serveur a récupérés chaque jour, par source, et ce que la source de secours payante a consommé ce mois-ci.",
 } satisfies Catalog

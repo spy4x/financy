@@ -1556,6 +1556,7 @@ export default {
     "这个地址不对应任何管理后台页面。请检查是否有拼写错误，或从仪表盘开始。",
   "AdminNotFound.toDashboard": "前往仪表盘",
   "AdminNav.dashboard": "仪表盘",
+  "AdminNav.rates": "汇率",
   "AdminNav.stats": "统计",
   "AdminNav.system": "系统",
   "AdminNav.users": "用户",
@@ -1932,4 +1933,6 @@ export default {
   "AdminBlogHistory.restore": "恢复此版本",
   "AdminBlogHistory.empty": "还没有早期版本。每次保存都会保留一个。",
   "AdminBlogHistory.restored": "已恢复早期版本。保存后才会生效。",
+  "AdminRates.title": "汇率",
+  "AdminRates.subtitle": "服务器每天按来源获取的汇率，以及付费备用来源本月的用量。",
 } satisfies Catalog

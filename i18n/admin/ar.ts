@@ -1908,6 +1908,7 @@ export default {
     "لا يؤدي هذا العنوان إلى أي صفحة في الإدارة. تحقّق من وجود خطأ في الكتابة، أو ابدأ من الرئيسية.",
   "AdminNotFound.toDashboard": "انتقل إلى الرئيسية",
   "AdminNav.dashboard": "الرئيسية",
+  "AdminNav.rates": "أسعار الصرف",
   "AdminNav.stats": "الإحصاءات",
   "AdminNav.system": "النظام",
   "AdminNav.users": "المستخدمون",
@@ -2355,4 +2356,7 @@ export default {
   "AdminBlogHistory.restore": "استعادة هذا الإصدار",
   "AdminBlogHistory.empty": "لا إصدارات سابقة بعد. كل حفظ يحتفظ بإصدار.",
   "AdminBlogHistory.restored": "تمت استعادة الإصدار السابق. احفظ للإبقاء عليه.",
+  "AdminRates.title": "أسعار الصرف",
+  "AdminRates.subtitle":
+    "الأسعار التي جلبها الخادم كل يوم، حسب المصدر، وما استهلكه المصدر الاحتياطي المدفوع هذا الشهر.",
 } satisfies Catalog

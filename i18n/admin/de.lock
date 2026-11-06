@@ -1323,6 +1323,7 @@ AdminNav.dashboard	67b696468610b879
 AdminNav.groups	39bbb719fa2b9d22
 AdminNav.jobs	2f17a0f8d518e491
 AdminNav.newsletter	f84ca2e7716bec94
+AdminNav.rates	54dd2169ecf0b330
 AdminNav.stats	b4a7365740ef880b
 AdminNav.system	6725e7bbcd28f3a8
 AdminNav.users	6b0cc904d081a8c1
@@ -1443,6 +1444,8 @@ AdminPreferences.timeZone	b9fe1464783e1c0d
 AdminPreferences.title	4f9555cd54eade38
 AdminPreferences.zoneNow	b0286af0cc38bdfa
 AdminPreferences.zoneSignedUp	02823cafa830bcf6
+AdminRates.subtitle	8590f514c11ae232
+AdminRates.title	a1875e41932859d0
 AdminShortcuts.addCategory	aafdf428fd0256ea
 AdminShortcuts.addChannel	a19c0adaf6a623f1
 AdminShortcuts.addItem	d1a0b329a72b8f16

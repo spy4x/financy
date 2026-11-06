@@ -1778,6 +1778,7 @@ export default {
     "Este endereço não leva a nenhuma página do admin. Confira se há algum erro de digitação ou comece pelo painel.",
   "AdminNotFound.toDashboard": "Ir para o painel",
   "AdminNav.dashboard": "Painel",
+  "AdminNav.rates": "Câmbio",
   "AdminNav.stats": "Estatísticas",
   "AdminNav.system": "Sistema",
   "AdminNav.users": "Usuários",
@@ -2193,4 +2194,7 @@ export default {
   "AdminBlogHistory.restore": "Restaurar esta versão",
   "AdminBlogHistory.empty": "Ainda não há versões anteriores. Cada salvamento guarda uma.",
   "AdminBlogHistory.restored": "Versão anterior restaurada. Salve para mantê-la.",
+  "AdminRates.title": "Taxas de câmbio",
+  "AdminRates.subtitle":
+    "As taxas que o servidor buscou a cada dia, por fonte, e quanto a fonte reserva paga já usou este mês.",
 } satisfies Catalog

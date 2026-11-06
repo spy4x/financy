@@ -1789,6 +1789,7 @@ export default {
     "Esta dirección no lleva a ninguna página de administración. Revisa si tiene una errata o empieza desde el panel.",
   "AdminNotFound.toDashboard": "Ir al panel",
   "AdminNav.dashboard": "Panel",
+  "AdminNav.rates": "Tipos de cambio",
   "AdminNav.stats": "Estadísticas",
   "AdminNav.system": "Sistema",
   "AdminNav.users": "Usuarios",
@@ -2204,4 +2205,7 @@ export default {
   "AdminBlogHistory.restore": "Restaurar esta versión",
   "AdminBlogHistory.empty": "Aún no hay versiones anteriores. Cada guardado conserva una.",
   "AdminBlogHistory.restored": "Versión anterior restaurada. Guarda para conservarla.",
+  "AdminRates.title": "Tipos de cambio",
+  "AdminRates.subtitle":
+    "Los tipos que el servidor obtuvo cada día, por fuente, y lo que lleva gastado este mes la fuente de respaldo de pago.",
 } satisfies Catalog

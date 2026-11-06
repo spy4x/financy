@@ -1834,6 +1834,7 @@ export default {
     "По этому адресу нет страницы админки. Проверьте, нет ли в нём опечатки, или начните со сводки.",
   "AdminNotFound.toDashboard": "Перейти к сводке",
   "AdminNav.dashboard": "Сводка",
+  "AdminNav.rates": "Курсы",
   "AdminNav.stats": "Статистика",
   "AdminNav.system": "Система",
   "AdminNav.users": "Люди",
@@ -2268,4 +2269,7 @@ export default {
   "AdminBlogHistory.restore": "Восстановить эту версию",
   "AdminBlogHistory.empty": "Прошлых версий пока нет. Каждое сохранение оставляет одну.",
   "AdminBlogHistory.restored": "Прошлая версия восстановлена. Сохраните, чтобы её оставить.",
+  "AdminRates.title": "Курсы валют",
+  "AdminRates.subtitle":
+    "Курсы, которые сервер получал каждый день, по источникам, и сколько платный резервный источник израсходовал в этом месяце.",
 } satisfies Catalog
