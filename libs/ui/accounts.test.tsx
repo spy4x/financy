@@ -284,6 +284,30 @@ describe("AccountsScreen", () => {
     expect(find(`[data-e2e=account-${old.id}]`).textContent).toContain("Archived")
   })
 
+  it("marks an archived row by its badge and a muted name, never by fading the row's text", async () => {
+    await mount(<AccountsScreen {...listDefaults} accounts={[old, wallet]} showArchived />)
+
+    // Every text the row shows, and each element between it and the row, keeps full opacity.
+    const row = find(`[data-e2e=account-${old.id}]`)
+    const faded = ["account-name", "account-currency", "account-balance"].flatMap((part) => {
+      const chain: string[] = []
+      for (
+        let at: Element | null = row.querySelector(`[data-e2e=${part}]`);
+        at;
+        at = at.parentElement
+      ) {
+        chain.push(at.getAttribute("class") ?? "")
+        if (at === row) break
+      }
+      return chain.filter((names) => /\bopacity-/.test(names))
+    })
+    expect(row.textContent).toContain("Archived")
+    expect(faded).toEqual([])
+    const name = (id: string) => find(`[data-e2e=account-${id}] [data-e2e=account-name]`).className
+    expect(name(old.id)).toMatch(/\btext-muted\b/)
+    expect(name(wallet.id)).not.toMatch(/\btext-muted\b/)
+  })
+
   it("gives a viewer no New button, no row menu and no links to the editor", async () => {
     await mount(
       <AccountsScreen {...listDefaults} group={viewerOfHome} accounts={[wallet, checking]} />,

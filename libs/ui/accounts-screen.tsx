@@ -259,11 +259,12 @@ function Row(
   },
 ): JSX.Element {
   const t = useAppText()
+  // An archived account reads as set aside by its badge and a muted name, never by fading the row:
+  // the muted token keeps the text at the house contrast, which opacity would drop below 4.5:1.
+  const muted = account.archived ? "text-muted" : ""
   return (
     <li
-      class={`flex min-h-14 items-center gap-3 px-4 py-3 sm:px-6 ${
-        account.archived ? "opacity-70" : ""
-      }`}
+      class="flex min-h-14 items-center gap-3 px-4 py-3 sm:px-6"
       data-e2e={`account-${account.id}`}
     >
       <KindIcon kind={account.kind} />
@@ -274,14 +275,14 @@ function Row(
               <Link
                 href={ACCOUNT_PATHS.account(account.id)}
                 navigate={navigate}
-                class="min-w-0 truncate rounded-sm font-medium focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-focus"
+                class={`min-w-0 truncate rounded-sm font-medium focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-focus ${muted}`}
                 data-e2e="account-name"
               >
                 <bdi>{account.name}</bdi>
               </Link>
             )
             : (
-              <span class="min-w-0 truncate font-medium" data-e2e="account-name">
+              <span class={`min-w-0 truncate font-medium ${muted}`} data-e2e="account-name">
                 <bdi>{account.name}</bdi>
               </span>
             )}
