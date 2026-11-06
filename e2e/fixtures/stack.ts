@@ -54,6 +54,8 @@ async function warmUp(browser: Browser, api: APIRequestContext, baseURL: string,
     await gotoApp(page, `/groups/${groupId}`, page.locator("[data-e2e=group-general-name]"))
     await gotoApp(page, "/notes", page.locator("[data-e2e=note-new]"))
     await gotoApp(page, `/notes/${noteId}`, page.locator("[data-e2e=note-title]"))
+    await gotoApp(page, "/accounts", page.locator("[data-e2e=account-new]"))
+    await gotoApp(page, "/accounts/new", page.locator("[data-e2e=account-name-input]"))
     await gotoApp(page, "/profile/account", page.locator("[data-e2e=email-current]"))
     await page.waitForLoadState("networkidle")
   } catch (error) {
