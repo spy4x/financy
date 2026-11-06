@@ -780,6 +780,9 @@ services:
       - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
       - TELEGRAM_POLLING=${TELEGRAM_POLLING:-}
       - TELEGRAM_API_URL=${TELEGRAM_API_URL:-}
+      # The admin's rates page shows the fallback's calls this month against its cap. The API never
+      # calls a rate source, so it gets no key.
+      - RATES_FALLBACK_MONTHLY_CAP=${RATES_FALLBACK_MONTHLY_CAP:-}
       - DENO_DIR=/tmp/deno-cache
       # The port apps/healthcheck.ts probes.
       - HEALTHCHECK_PORT=${API_PORT}
@@ -972,6 +975,11 @@ services:
       - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME:-}
       - TELEGRAM_POLLING=${TELEGRAM_POLLING:-}
       - TELEGRAM_API_URL=${TELEGRAM_API_URL:-}
+      # Exchange rates (docs/financy/exchange-rates.md): the worker fetches them. Only it receives
+      # the fallback's key.
+      - RATES_FRANKFURTER_URL=${RATES_FRANKFURTER_URL:-}
+      - RATES_FALLBACK_KEY=${RATES_FALLBACK_KEY:-}
+      - RATES_FALLBACK_MONTHLY_CAP=${RATES_FALLBACK_MONTHLY_CAP:-}
     deploy:
       resources:
         limits:

@@ -244,6 +244,14 @@ routes answer 404. Register `https://<DOMAIN>/api/auth/google/callback`, or `/gi
 | `TELEGRAM_POLLING`        | `true` or `false` overrides the default: polling with `ENV=dev`, the webhook in production.                | [Telegram](telegram.md) |
 | `TELEGRAM_API_URL`        | A local Bot API server. Empty: `https://api.telegram.org`.                                                 | [Telegram](telegram.md) |
 
+## Exchange rates
+
+| Variable                     | What it does                                                                                                                      | Guide                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `RATES_FRANKFURTER_URL`      | A self-hosted Frankfurter. Empty: `https://api.frankfurter.dev`. The ECB's rates need no key.                                     | [Exchange rates](financy/exchange-rates.md)      |
+| `RATES_FALLBACK_KEY`         | The exchangerate-api.com key of the paid fallback, worker only. Empty turns the fallback off.                                     | [Exchange rates](financy/exchange-rates.md)      |
+| `RATES_FALLBACK_MONTHLY_CAP` | Required with the key: the most fallback calls in one calendar month, `0` to `1000000`. The worker refuses to start without it.   | [Exchange rates](financy/exchange-rates.md)      |
+
 ## Error tracking and the SPA's modules
 
 | Variable                         | What it does                                                                                        | Guide                                |
