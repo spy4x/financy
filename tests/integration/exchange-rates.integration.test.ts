@@ -140,8 +140,11 @@ Deno.test("rate lookup: USD to JPY is a cross rate through the euro, from one so
       rate: number
     }[]
     await storeRates(sql, recorded.map((row) => rate(row.quote, String(row.rate), row.date)))
-    // A newer USD rate from the fallback alone has no JPY leg on its day, so it is not used.
-    await storeRates(sql, [rate(`USD`, `1.2000`, `2026-10-31`, RATE_SOURCES.fallback)])
+    // On a newer day USD comes from the fallback and JPY from the ECB: two sources, never mixed.
+    await storeRates(sql, [
+      rate(`USD`, `1.2000`, `2026-10-31`, RATE_SOURCES.fallback),
+      rate(`JPY`, `180.00`, `2026-10-31`),
+    ])
 
     const found = await new PostgresRateRepository(sql).lookup(`USD`, `JPY`, `2026-10-31`)
     if (!found.found) throw new Error(`no cross rate`)
