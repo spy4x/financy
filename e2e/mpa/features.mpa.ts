@@ -6,6 +6,7 @@ const REPOSITORY = `https://github.com/spy4x/financy`
 const ROOT = new URL(`../../`, import.meta.url)
 /** The sections of `/features`: what works today, then the questions. */
 const SECTIONS = [
+  `accounts`,
   `sign-in`,
   `teams`,
   `realtime`,
