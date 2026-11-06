@@ -14,6 +14,7 @@ import {
   OUTBOX_CLEANUP_JOB,
 } from "@server/jobs/jobs.ts"
 import { createOutboxProcessor, startRepeatingJobs } from "@server/jobs/wiring.ts"
+import { JOBS } from "@server/jobs/registry.ts"
 import { JOB_RETRY } from "@server/jobs/job-failures.ts"
 import { passwordResetExpiry, passwordResetRequests } from "@server/auth/password-reset.ts"
 import {
@@ -33,6 +34,9 @@ import { requireDbConnection } from "@spy4x/server/db/testing"
 import { isUuid, uuidV7 } from "@spy4x/platform/universal/uuid"
 import { expectVersion7Ids } from "./ids.ts"
 import { isMembersOnlyPath, SPA_ROUTE_PATHS } from "../../apps/spa/src/views/spa-paths.ts"
+
+/** The nightly cleanup alone: a product's own repeating jobs would be claimed beside it. */
+const CLEANUP_ONLY = JOBS.filter((job) => job.kind === OUTBOX_CLEANUP_JOB)
 
 const JOB = {
   eventKind: OUTBOX_CLEANUP_JOB,
@@ -603,15 +607,15 @@ Deno.test("the nightly cleanup and its fixed job id", async (t) => {
           )
         `
         // The worker starts: twice, as a restart would.
-        await startRepeatingJobs(sql, twoDaysAgo())
-        await startRepeatingJobs(sql, twoDaysAgo())
+        await startRepeatingJobs(sql, twoDaysAgo(), CLEANUP_ONLY)
+        await startRepeatingJobs(sql, twoDaysAgo(), CLEANUP_ONLY)
         expect(await waitingCleanups()).toEqual([{ aggregateId: LEGACY_JOB_AGGREGATE_ID }])
 
         const result = await createOutboxProcessor(sql, mailOff(sql)).drainOnce()
         expect(result).toEqual({ claimed: 1, published: 1, failed: 0 })
 
         // The next night's run keeps the stored id, and a later start still adds nothing.
-        await startRepeatingJobs(sql, twoDaysAgo())
+        await startRepeatingJobs(sql, twoDaysAgo(), CLEANUP_ONLY)
         expect(await waitingCleanups()).toEqual([{ aggregateId: LEGACY_JOB_AGGREGATE_ID }])
       },
     )
@@ -711,7 +715,7 @@ Deno.test("the worker's processor when a job keeps failing", async (t) => {
           ...mailOff(sql),
           log: (line) => logged.push(line),
         })
-        await startRepeatingJobs(sql, twoDaysAgo())
+        await startRepeatingJobs(sql, twoDaysAgo(), CLEANUP_ONLY)
         await skipWait(sql)
         // The second step of the cleanup reads this table; the group purge runs five steps later.
         await sql`ALTER TABLE password_reset_requests RENAME TO password_reset_requests_gone`
@@ -804,8 +808,8 @@ Deno.test("the worker's processor when a job keeps failing", async (t) => {
           ),
         )
         // The worker starts: twice, as a restart would.
-        await startRepeatingJobs(sql, twoDaysAgo())
-        await startRepeatingJobs(sql, twoDaysAgo())
+        await startRepeatingJobs(sql, twoDaysAgo(), CLEANUP_ONLY)
+        await startRepeatingJobs(sql, twoDaysAgo(), CLEANUP_ONLY)
 
         const rows = await cleanupRows()
         expect(rows.map((row) => [row.attemptCount, row.processed])).toEqual([
