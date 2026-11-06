@@ -176,10 +176,11 @@ describe("AccountEditorScreen", () => {
     expect(find(BALANCE_STATUS).textContent).not.toBe("")
   })
 
-  it("keeps the starting balance disabled until a currency is chosen", async () => {
-    await mount(<Editor start={NEW_FORM} seen={[]} />)
+  it("keeps the starting balance empty and disabled until a currency is chosen, even when it holds 0", async () => {
+    await mount(<Editor start={{ ...NEW_FORM, startingBalance: 0 }} seen={[]} />)
 
     expect(find<HTMLInputElement>(BALANCE).disabled).toBe(true)
+    expect(find<HTMLInputElement>(BALANCE).value).toBe("")
     expect(document.body.textContent).toContain("Choose a currency first")
   })
 

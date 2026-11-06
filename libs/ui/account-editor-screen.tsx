@@ -240,7 +240,9 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
               >
                 <div data-e2e="account-starting-balance">
                   <MoneyInput
-                    value={value.startingBalance}
+                    // An amount needs its currency's decimals to be drawn, so the field stays
+                    // empty, and disabled, until a currency is chosen.
+                    value={value.currency === null ? null : value.startingBalance}
                     onChange={(startingBalance) => onChange?.({ ...value, startingBalance })}
                     currency={value.currency ?? ""}
                     disabled={value.currency === null}
