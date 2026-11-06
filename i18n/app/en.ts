@@ -679,7 +679,10 @@ export default {
   "NotificationsScreen.loadMore": "Load more",
   "NotificationsScreen.unreadMark": "Unread:",
   "OnboardingCard.failed": "Couldn't save that. Try again.",
+  "OnboardingCard.accountTitle": "Add your first account",
+  "OnboardingCard.accountText":
     "Your wallet, your bank account or your card, each in its own currency.",
+  "OnboardingCard.accountAction": "Add account",
   "OnboardingCard.emailTitle": "Verify your email",
   "OnboardingCard.emailText":
     "Enter the code we sent you, so you can reset your password if you ever forget it.",

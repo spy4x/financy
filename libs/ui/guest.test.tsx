@@ -372,6 +372,7 @@ describe("GuestAccountDelete", () => {
 
 describe("onboardingSteps for a guest", () => {
   const steps: OnboardingSteps = {
+    accountCreated: false,
     emailVerified: false,
     noteCreated: false,
     memberInvited: false,
@@ -382,9 +383,11 @@ describe("onboardingSteps for a guest", () => {
   it("puts Keep your account first and leaves out the steps a guest is refused", () => {
     expect(onboardingSteps(ENGLISH, steps, null, undefined, true).map((step) => step.id)).toEqual([
       "keep",
+      "account",
       "note",
     ])
     expect(onboardingSteps(ENGLISH, steps, null).map((step) => step.id)).toEqual([
+      "account",
       "email",
       "note",
       "invite",
