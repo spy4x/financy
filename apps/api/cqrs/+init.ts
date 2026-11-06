@@ -156,6 +156,12 @@ import {
   TagUpdateCommand,
 } from "@domain/tags"
 import { tagCreateHandler } from "@api/cqrs/command-handlers/tag-create.ts"
+import { HouseholdSettingsQuery, HouseholdUpdateSettingsCommand } from "@domain/money"
+import {
+  createHouseholdSettingsHandler,
+  createHouseholdUpdateSettingsHandler,
+} from "../features/household/handlers.ts"
+import { householdDependencies } from "./household-dependencies.ts"
 import { tagUpdateHandler } from "@api/cqrs/command-handlers/tag-update.ts"
 import { tagDeleteHandler } from "@api/cqrs/command-handlers/tag-delete.ts"
 import { tagListHandler } from "@api/cqrs/query-handlers/tag-list.ts"
@@ -288,6 +294,10 @@ commandBus.register(PictureCancelCommand, createPictureCancelHandler(pictureDepe
 commandBus.register(PictureRemoveCommand, createPictureRemoveHandler(pictureDependencies))
 commandBus.register(TagUpdateCommand, tagUpdateHandler)
 commandBus.register(TagDeleteCommand, tagDeleteHandler)
+commandBus.register(
+  HouseholdUpdateSettingsCommand,
+  createHouseholdUpdateSettingsHandler(householdDependencies),
+)
 commandBus.register(BillingCheckoutCommand, billingCheckoutHandler)
 commandBus.register(BillingPortalCommand, billingPortalHandler)
 queryBus.register(UserProfileGetQuery, userProfileGetHandler)
@@ -316,6 +326,7 @@ queryBus.register(TagListQuery, tagListHandler)
 queryBus.register(AttachmentListQuery, createAttachmentListHandler(attachmentDependencies))
 queryBus.register(AttachmentDownloadQuery, createAttachmentDownloadHandler(attachmentDependencies))
 queryBus.register(TagGetQuery, tagGetHandler)
+queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)
 queryBus.register(NotificationListQuery, notificationListHandler)
