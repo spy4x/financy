@@ -124,6 +124,8 @@ interface Counts extends postgres.Row {
   members: number
   notes: number
   tags: number
+  accounts: number
+  defaults: number
   invitations: number
   subscribers: number
   activeSessions: number
@@ -138,6 +140,8 @@ async function count(sql: postgres.Sql): Promise<Counts> {
       (SELECT COUNT(*)::int FROM group_members) AS members,
       (SELECT COUNT(*)::int FROM notes) AS notes,
       (SELECT COUNT(*)::int FROM tags) AS tags,
+      (SELECT COUNT(*)::int FROM accounts) AS accounts,
+      (SELECT COUNT(*)::int FROM accounts WHERE is_default) AS defaults,
       (SELECT COUNT(*)::int FROM group_invitations) AS invitations,
       (SELECT COUNT(*)::int FROM subscribers) AS subscribers,
       (SELECT COUNT(*)::int FROM auth_sessions WHERE status = ${SessionStatus.Active})
@@ -234,10 +238,15 @@ async function drainJobs(
 
 /** What a visitor holds: their groups by name and role, their notes, tags and invitations. */
 async function workspaceOf(sql: postgres.Sql, userId: number) {
-  const groups = await sql<{ name: string; role: number; notes: number; tags: number }[]>`
+  const groups = await sql<
+    { name: string; role: number; notes: number; tags: number; currencies: string[] }[]
+  >`
     SELECT g.name, m.role,
       (SELECT COUNT(*)::int FROM notes n WHERE n.group_id = g.id) AS notes,
-      (SELECT COUNT(*)::int FROM tags t WHERE t.group_id = g.id) AS tags
+      (SELECT COUNT(*)::int FROM tags t WHERE t.group_id = g.id) AS tags,
+      ARRAY(
+        SELECT a.currency FROM accounts a WHERE a.group_id = g.id ORDER BY a.currency
+      ) AS currencies
     FROM group_members m JOIN groups g ON g.id = m.group_id
     WHERE m.user_id = ${userId}
     ORDER BY g.created_at, g.id
@@ -312,6 +321,10 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
     `
     expect(welcomes[0].late).toBe(0)
     expect(counts.tags).toBe(data.groups.reduce((sum, group) => sum + group.tags.length, 0))
+    expect(counts.accounts).toBe(
+      data.groups.reduce((sum, group) => sum + group.accounts.length, 0),
+    )
+    expect(counts.defaults).toBe(data.groups.filter((group) => group.accounts.length > 0).length)
     expect(counts.invitations).toBe(
       data.groups.reduce((sum, group) => sum + group.invitations.length, 0),
     )
@@ -387,7 +400,7 @@ Deno.test("a visitor who signs up to the demo gets sample groups once and opens 
     const workspace = await workspaceOf(sql, userId)
     expect(workspace.groups).toEqual([
       // Their own first group, with the welcome note, then the sample groups.
-      { name: "Personal", role: GroupRole.OWNER, notes: 1, tags: 0 },
+      { name: "Personal", role: GroupRole.OWNER, notes: 1, tags: 0, currencies: [] },
       ...sample.map((group) => ({
         name: group.name,
         role: group.owner === "you"
@@ -395,6 +408,7 @@ Deno.test("a visitor who signs up to the demo gets sample groups once and opens 
           : group.members.find((m) => m.member === "you")!.role,
         notes: group.notes.length,
         tags: group.tags.length,
+        currencies: ["EUR", "USD", "VND"],
       })),
     ])
     expect(workspace.selected).toBe(owned.name)
@@ -417,6 +431,7 @@ Deno.test("a visitor who signs up to the demo gets sample groups once and opens 
     expect(invitations).toBe(owned.invitations.length)
     // Someone else wrote the sample content, so the checklist starts unticked.
     const onboarding = await readOnboarding(sql, userId)
+    expect(onboarding?.steps.accountCreated).toBe(false)
     expect(onboarding?.steps.noteCreated).toBe(false)
     expect(onboarding?.steps.memberInvited).toBe(false)
     const welcome = await sql`
