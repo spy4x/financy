@@ -45,6 +45,7 @@ const fresh: OnboardingStatus = {
     memberInvited: false,
     notificationsOn: false,
     twoFactorOn: false,
+    currencyChosen: false,
   },
   dismissed: false,
   tourSeen: false,
