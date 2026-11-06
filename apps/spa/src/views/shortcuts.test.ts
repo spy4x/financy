@@ -1,6 +1,7 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import {
+  ACCOUNT_PATHS,
   GROUP_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
@@ -31,10 +32,20 @@ describe("SPA keyboard shortcuts", () => {
   it("goes to each section with its g sequence", () => {
     const { list, seen } = rows("0190a000-0000-7000-8000-000000000001")
     const goTo = list.filter((row) => row.keys.startsWith("g "))
-    expect(goTo.map((row) => row.keys)).toEqual(["g o", "g n", "g t", "g a", "g g", "g i", "g p"])
+    expect(goTo.map((row) => row.keys)).toEqual([
+      "g o",
+      "g f",
+      "g n",
+      "g t",
+      "g a",
+      "g g",
+      "g i",
+      "g p",
+    ])
     for (const row of goTo) row.run!()
     expect(seen.navigated).toEqual([
       OVERVIEW_PATHS.root,
+      ACCOUNT_PATHS.list,
       NOTE_PATHS.list,
       TAG_PATHS.list,
       GROUP_PATHS.activity("0190a000-0000-7000-8000-000000000001"),
