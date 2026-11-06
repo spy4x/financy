@@ -119,7 +119,7 @@ export interface AdminBillingCustomerScreenProps {
   plans?: readonly Plan[]
 }
 
-/** The menu item's second line when the operator's role is too low for it (decision 6 of #196). */
+/** The menu item's second line when the operator's role is too low for it. */
 const NEEDS_SUPERVISOR = `AdminBillingCustomer.needsSupervisor`
 
 /** Each length of free time as a person reads it, by catalog key. */
@@ -149,7 +149,7 @@ interface MenuEntry {
 }
 
 /**
- * The page's actions for this operator and this subscription (decisions 5 and 6 of #196). An
+ * The page's actions for this operator and this subscription. An
  * action that the subscription's state rules out is left out; one the operator's role or their
  * own membership rules out shows disabled with the reason. The API checks the same again.
  */
@@ -212,7 +212,7 @@ export function billingMenu(
 }
 
 /**
- * One customer in the admin app (#196): its stored subscription, its last payment as Stripe gives
+ * One customer in the admin app: its stored subscription, its last payment as Stripe gives
  * it when the page opens, a link to the customer in Stripe, and what operators did to it. The
  * actions sit in the header's "More actions" menu; each is confirmed in a dialog that names the
  * customer, the amount and what follows, and asks for an optional note for the audit log.
@@ -316,7 +316,7 @@ export function AdminBillingCustomerScreen(props: AdminBillingCustomerScreenProp
         <Fact label={t.t(`AdminBillingCustomer.status`)}>
           <BillingStatusLine view={view} dataE2E="admin-billing-status" />
         </Fact>
-        <Fact label={t.t(`AdminBillingCustomer.plan`)}>{planLine(t, customer)}</Fact>
+        <Fact label={t.t(`AdminBillingCustomer.plan`)}>{planLine(t, customer, props.plans)}</Fact>
         {customer.period !== null && (
           <Fact label={t.t(`AdminBillingCustomer.period`)}>
             <span data-e2e="admin-billing-period" data-period={customer.period}>
@@ -415,9 +415,13 @@ function Fact({ label, children }: { label: string; children: ComponentChildren 
 }
 
 /** `Pro, 4 members`. */
-function planLine(t: Translator<string>, customer: AdminBillingCustomer): string {
+function planLine(
+  t: Translator<string>,
+  customer: AdminBillingCustomer,
+  plans?: readonly Plan[],
+): string {
   return t.t(`AdminBillingCustomer.planLine`, {
-    plan: billingPlanName(t, customer.planId),
+    plan: billingPlanName(t, customer.planId, plans),
     count: seatsOf(customer),
   })
 }
@@ -607,7 +611,7 @@ function ActionDialog(
   const format = useFormat()
   const t = useAdminText()
   const group = customer.groupName
-  const plan = billingPlanName(t, customer.planId)
+  const plan = billingPlanName(t, customer.planId, props.plans)
   // What the next renewal charges: a yearly subscription renews at its yearly price.
   const price = billedPriceOf(customer, props.plans)
   const charge = price ? money(price) : t.t(`AdminBillingCustomer.itsPlanPrice`)

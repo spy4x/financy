@@ -20,7 +20,7 @@ import { stepsJob } from "@spy4x/server/outbox"
 import { describeCron, parseCron } from "@spy4x/time/cron"
 import type { BillingProvider } from "@spy4x/billing"
 import { ONE_DAY_IN_MILLISECONDS } from "@spy4x/platform/universal/time-constants"
-import { BillingNoticeKind } from "@domain/billing"
+import { BillingNoticeKind, type Plan } from "@domain/billing"
 import { BLOG_CROSSPOST_JOB, BLOG_INDEXNOW_JOB, BLOG_PUBLISH_JOB } from "@domain/blog"
 import { BILLING_NOTICE_JOBS } from "../billing/billing-notices.ts"
 import { SEAT_SYNC_JOB, seatSyncJob } from "../billing/seat-sync.ts"
@@ -87,16 +87,18 @@ export interface JobDeps {
   sampleData: StarterDataPlan["sampleData"]
   /** Where the worker keeps the files it makes, or `null` without file store settings. */
   files: ServerFiles | null
-  /** Sends to Telegram, or `null` while the bot is off (#269). */
+  /** Sends to Telegram, or `null` while the bot is off. */
   telegram: TelegramNotificationDeps["client"]
-  /** Where image processing works on disk, or `null` when the worker has none (#464). */
+  /** Where image processing works on disk, or `null` when the worker has none. */
   imageScratch: ImageScratch | null
-  /** IndexNow's key and the website's origin, or `null` while IndexNow is off (#418). */
+  /** IndexNow's key and the website's origin, or `null` while IndexNow is off. */
   indexNow: IndexNowSetup | null
-  /** The website's origin and a Dev.to client, or `null` while the cross-post is off (#733). */
+  /** The website's origin and a Dev.to client, or `null` while the cross-post is off. */
   crosspost: BlogCrosspostSetup | null
-  /** How jobs ask the public website something, such as whether a post is live (#733). */
+  /** How jobs ask the public website something, such as whether a post is live. */
   fetch: typeof fetch
+  /** The plan catalog the billing jobs read, `PLANS` unless a test passes its own. */
+  plans?: readonly Plan[]
 }
 
 /**
@@ -112,7 +114,7 @@ export type JobRepeat =
 /**
  * What a job's `aboutId` names, so the admin can link it: a group, a row of a table whose
  * `user_id` is a person, or an `images` row, which the admin shows with the catalog item its photo
- * belongs to (#514). A job about none of these leaves it out.
+ * belongs to. A job about none of these leaves it out.
  */
 export type JobAbout = { group: true } | { userIn: string } | { image: true }
 
@@ -201,14 +203,15 @@ export const JOBS: readonly JobDefinition[] = [
     kind: OUTBOX_CLEANUP_JOB,
     label: `Nightly cleanup`,
     repeat: { cron: `0 3 * * *` },
-    handler: ({ sql, provider, mail, files }) =>
-      stepsJob(`nightly cleanup`, cleanupSteps(sql, provider, mail.log, files), mail.log),
+    handler: ({ sql, provider, mail, files, plans }) =>
+      stepsJob(`nightly cleanup`, cleanupSteps(sql, provider, mail.log, files, plans), mail.log),
   }),
   defineJob({
     kind: SEAT_SYNC_JOB,
     label: `Seat count sync`,
     about: { group: true },
-    handler: ({ sql, provider }) => provider ? seatSyncJob({ sql, provider }) : async () => {},
+    handler: ({ sql, provider, plans }) =>
+      provider ? seatSyncJob({ sql, provider, plans }) : async () => {},
   }),
   defineJob({
     kind: PASSWORD_RESET_MAIL_JOB,

@@ -1,5 +1,5 @@
 /**
- * The operator area's billing module (#196) over Postgres: the figures, the customer list, one
+ * The operator area's billing module over Postgres: the figures, the customer list, one
  * customer's stored facts and operator history, and the bookkeeping that makes each action audited
  * once per idempotency key. It reads what the webhooks stored; it never calls the provider.
  *
@@ -24,6 +24,7 @@ import {
   BillingStatus,
   type Money,
   monthlyRevenueOf,
+  type Plan,
   readBillingAuditIdentifier,
 } from "@domain/billing"
 import { likeContains } from "@spy4x/server/db"
@@ -34,10 +35,14 @@ const LIVE = [BillingStatus.Trialing, BillingStatus.Active, BillingStatus.PastDu
 /** A subscription that pays: its list price counts toward monthly revenue. */
 const PAYING = [BillingStatus.Active, BillingStatus.PastDue]
 
-/** The figures above the list, over every stored subscription, a group in the trash included. */
+/**
+ * The figures above the list, over every stored subscription, a group in the trash included.
+ * Revenue is priced from `plans`, `PLANS` unless a test passes its own.
+ */
 export async function readAdminBillingFigures(
   sql: postgres.Sql,
   now: Date,
+  plans?: readonly Plan[],
 ): Promise<AdminBillingFigures> {
   const soon = new Date(now.getTime() + 7 * ONE_DAY_IN_MILLISECONDS)
   const rows = await sql<
@@ -69,7 +74,7 @@ export async function readAdminBillingFigures(
     lastEventAt: null,
   }
   for (const row of rows) {
-    const money = monthlyRevenueOf(row)
+    const money = monthlyRevenueOf(row, plans)
     if (money !== null) {
       revenue.set(money.currency, (revenue.get(money.currency) ?? 0) + money.amount * row.count)
     }
