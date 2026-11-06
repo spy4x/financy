@@ -1,8 +1,13 @@
 import { seededRandom } from "@spy4x/platform/universal/statistics"
 import { BillingStatus } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
+import { RATE_SOURCES } from "@domain/money"
 import type { TagColor } from "@domain/tags"
 import { AccountKind } from "@domain/accounts"
+import type { ExchangeRate } from "@spy4x/platform/universal/money"
+import recordedEcbRates from "../../../libs/server/money/fixtures/frankfurter-saturday-ecb.json" with {
+  type: "json",
+}
 import {
   DEVICES,
   FIRST_GROUP_NAMES,
@@ -869,4 +874,31 @@ function withSampleFiles(group: FakeGroup): FakeGroup {
     return { ...note, files }
   })
   return { ...group, notes }
+}
+
+/** How many working days of exchange rates the demo holds. */
+export const FAKE_RATE_DAYS = 5
+
+/**
+ * The demo's exchange rates: the ECB's recorded rates of one day (the fixture the rate tests use),
+ * on each of the {@link FAKE_RATE_DAYS} working days before `now`, so a demo household converts
+ * without the network. The daily job adds the real ones at 16:00 UTC.
+ */
+export function fakeRates(now: Date): ExchangeRate[] {
+  const days: string[] = []
+  const day = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+  while (days.length < FAKE_RATE_DAYS) {
+    day.setUTCDate(day.getUTCDate() - 1)
+    const weekday = day.getUTCDay()
+    if (weekday !== 0 && weekday !== 6) days.push(day.toISOString().slice(0, 10))
+  }
+  return days.flatMap((date) =>
+    recordedEcbRates.map((rate) => ({
+      base: rate.base,
+      quote: rate.quote,
+      rate: String(rate.rate),
+      date,
+      source: RATE_SOURCES.ecb,
+    }))
+  )
 }

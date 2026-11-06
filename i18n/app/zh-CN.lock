@@ -1100,6 +1100,9 @@ OfflineStatus.youDeletedTag	b0f2f90e381905bb
 OnboardingCard.accountAction	ee7ee5830f091690
 OnboardingCard.accountText	253f031f3807a15d
 OnboardingCard.accountTitle	18485bb3e8c19ae0
+OnboardingCard.currencyAction	138f4d7fd9000999
+OnboardingCard.currencyText	193106f9b4e1d7f6
+OnboardingCard.currencyTitle	9f7f57f321315164
 OnboardingCard.emailAction	e89a77e7fe58a6d1
 OnboardingCard.emailText	e59f9f4aa797d7d8
 OnboardingCard.emailTitle	bb265946234feb98

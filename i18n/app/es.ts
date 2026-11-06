@@ -739,6 +739,10 @@ export default {
   "OnboardingCard.notificationsTitle": "Activa las notificaciones",
   "OnboardingCard.notificationsText": "Entérate de los cambios, incluso con la app cerrada.",
   "OnboardingCard.notificationsAction": "Activar notificaciones",
+  "OnboardingCard.currencyTitle": "Elige tu moneda principal",
+  "OnboardingCard.currencyText":
+    "Todos los totales se muestran en esta moneda. Hasta que elijas otra, es el euro.",
+  "OnboardingCard.currencyAction": "Elegir moneda",
   "OnboardingCard.twoFactorTitle": "Configura la verificación en dos pasos",
   "OnboardingCard.twoFactorText":
     "Una app de autenticación protege tu cuenta, aunque se filtre tu contraseña.",

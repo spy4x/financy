@@ -15,6 +15,7 @@ import { AccessError, type Actor, PictureError, userChangeGroupId } from "@domai
 import { AttachmentError, NoteError, NoteVersionConflictError } from "@domain/notes"
 import { TagError, TagVersionConflictError } from "@domain/tags"
 import { AccountError, AccountVersionConflictError } from "@domain/accounts"
+import { HouseholdError, HouseholdVersionConflictError } from "@domain/money"
 import { PlanError, toPlanRefusal } from "@domain/billing"
 import { IdempotencyError } from "@spy4x/server/idempotency"
 import { actorFromAuth } from "../cqrs/actor.ts"
@@ -95,6 +96,16 @@ export function toRequestError(error: unknown): RealtimeRequestError | null {
       ? { code: error.code, currentVersion: error.currentVersion }
       : { code: error.code }
     return new RealtimeRequestError(ACCOUNT_ERROR_CODES[error.code], error.message, details, {
+      reason: error.code,
+      fields: error.fields,
+    })
+  }
+  if (error instanceof HouseholdError) {
+    // A conflict carries the settings as they are now, so the dialog can say what was chosen.
+    const details = error instanceof HouseholdVersionConflictError
+      ? { code: error.code, current: error.current }
+      : { code: error.code }
+    return new RealtimeRequestError(HOUSEHOLD_ERROR_CODES[error.code], error.message, details, {
       reason: error.code,
       fields: error.fields,
     })
@@ -204,6 +215,16 @@ const PICTURE_ERROR_CODES: Record<
   UPLOADS_PENDING: "conflict",
   UPLOAD_BUDGET: "rate_limited",
   UPLOAD_NOT_FOUND: "not_found",
+}
+
+const HOUSEHOLD_ERROR_CODES: Record<
+  HouseholdError["code"],
+  "bad_request" | "forbidden" | "not_found" | "conflict"
+> = {
+  GROUP_NOT_FOUND: "not_found",
+  INVALID_REQUEST: "bad_request",
+  ROLE_INSUFFICIENT: "forbidden",
+  VERSION_CONFLICT: "conflict",
 }
 
 const TAG_ERROR_CODES: Record<

@@ -96,6 +96,7 @@ const FAQ = [
   { id: `faq-use`, question: `HomeFaq.useQuestion`, answer: `HomeFaq.useAnswer` },
   { id: `faq-free`, question: `HomeFaq.freeQuestion`, answer: `HomeFaq.freeAnswer` },
   { id: `faq-currencies`, question: `HomeFaq.currencyQuestion`, answer: `HomeFaq.currencyAnswer` },
+  { id: `faq-rates`, question: `HomeFaq.ratesQuestion`, answer: `HomeFaq.ratesAnswer` },
   { id: `faq-bank`, question: `HomeFaq.bankQuestion`, answer: `HomeFaq.bankAnswer` },
   { id: `faq-stops`, question: `HomeFaq.stopsQuestion`, answer: `HomeFaq.stopsAnswer` },
 ] as const

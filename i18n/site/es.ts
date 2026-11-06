@@ -567,7 +567,7 @@ export default {
     "Los presupuestos, la importación de extractos bancarios y la nube de pago llegan después: <plan>ver el plan completo</plan>.",
   "HomeWho.keeperTitle": "Quien lleva las cuentas",
   "HomeWho.keeperText":
-    "El sueldo en una moneda, el alquiler en otra, los ahorros en una tercera: un solo lugar que lo suma todo.",
+    "El sueldo en una moneda, el alquiler en otra, los ahorros en una tercera: un solo total con los tipos del BCE y su fecha.",
   "HomeWho.partnerTitle": "La pareja",
   "HomeWho.partnerText":
     "Comparte el dinero del hogar con su propio acceso y anota lo que gasta en segundos.",
@@ -585,7 +585,10 @@ export default {
   "HomeFaq.useQuestion": "¿Puedo usar Financy hoy?",
   "HomeFaq.currencyQuestion": "¿Qué monedas admitirá?",
   "HomeFaq.currencyAnswer":
-    "Cualquier combinación, criptomonedas incluidas; cada movimiento guarda su importe original junto al convertido. Previsto, pero aún no construido.",
+    "Financy manejará cualquier combinación de monedas, criptomonedas incluidas. Cada movimiento guarda su importe original junto al convertido, y los totales se muestran en la moneda principal del hogar. Para una moneda que el BCE no cubre, como una criptomoneda, indicas el tipo de cambio en el propio movimiento. En construcción.",
+  "HomeFaq.ratesQuestion": "¿De dónde salen los tipos de cambio?",
+  "HomeFaq.ratesAnswer":
+    "Del Banco Central Europeo: los consultamos cada día hábil a través de Frankfurter, un servicio público y gratuito. Cada total convertido muestra la fecha de los tipos que usó. Una moneda sin tipo de cambio aparece nombrada y queda fuera del total; nunca se cuenta como 1. En construcción.",
   "HomeFaq.bankQuestion": "¿Financy se conecta a mi banco?",
   "HomeFaq.bankAnswer":
     "No. La importación de extractos bancarios está prevista para la primera versión.",

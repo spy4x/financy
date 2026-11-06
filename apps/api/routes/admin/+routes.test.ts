@@ -30,7 +30,9 @@ import { createAdminWebsiteStatsRoutes } from "./stats.ts"
 import { createAdminAccountsRoutes } from "./accounts.ts"
 import { ADMIN_API_MODULES } from "./registry.ts"
 import { CATALOG_DEFAULT_SETTINGS } from "@domain/catalog"
+import type { AdminRatesSnapshot } from "@domain/money"
 import type { AdminModuleContext } from "./module.ts"
+import { createAdminRatesRoutes } from "./rates.ts"
 import { apiError } from "../../_testing/api-error.ts"
 
 const target: AdminUserRow = {
@@ -138,6 +140,11 @@ function buildApp(
           limit: passThrough,
           read: () => (calls.push(["accounts"]), Promise.reject(new Error("not used"))),
         })
+      case `rates`:
+        return createAdminRatesRoutes({
+          limit: passThrough,
+          read: () => (calls.push(["rates"]), Promise.resolve(EMPTY_RATES)),
+        })
       default:
         // The empty modules read nothing, so they never touch the database.
         return module.routes({ ...context, db: null } as unknown as AdminModuleContext)
@@ -152,6 +159,15 @@ function buildApp(
 }
 
 /** Every path of the area, and one it does not have. */
+/** The Exchange rates page of a server that has fetched nothing yet. */
+const EMPTY_RATES: AdminRatesSnapshot = {
+  lastRun: null,
+  fetches: [],
+  missing: { date: `2026-11-06`, currencies: [] },
+  fallback: null,
+  days: [],
+}
+
 const ROUTES = [
   { method: "GET", path: "/admin/users" },
   { method: "GET", path: "/admin/users?q=ada&role=2&blocked=blocked&page=2" },
@@ -204,6 +220,7 @@ const ROUTES = [
   })),
   { method: "GET", path: "/admin/website-stats?days=7" },
   { method: "GET", path: "/admin/accounts" },
+  { method: "GET", path: "/admin/rates" },
 ]
 
 function send(
@@ -312,6 +329,7 @@ describe("operator area routes", () => {
       "catalog",
       "audit",
       "jobs",
+      "rates",
       "system",
       "api-tokens",
     ])

@@ -779,6 +779,10 @@ export default {
   "OnboardingCard.notificationsTitle": "Включите уведомления",
   "OnboardingCard.notificationsText": "Узнавайте об изменениях, даже когда приложение закрыто.",
   "OnboardingCard.notificationsAction": "Включить уведомления",
+  "OnboardingCard.currencyTitle": "Выберите основную валюту",
+  "OnboardingCard.currencyText":
+    "Все итоги показываются в этой валюте. Пока вы её не выберете, это евро.",
+  "OnboardingCard.currencyAction": "Выбрать валюту",
   "OnboardingCard.twoFactorTitle": "Включите двухфакторную защиту",
   "OnboardingCard.twoFactorText":
     "Приложение-аутентификатор защитит аккаунт, даже если пароль попадёт в чужие руки.",

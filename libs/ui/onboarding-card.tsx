@@ -24,11 +24,16 @@ import {
  */
 export const ONBOARDING_FAILURE = `OnboardingCard.failed`
 
+/** The query that opens the main currency dialog on a group's General tab. */
+export const CHOOSE_CURRENCY_QUERY = `currency=choose`
+
 /**
  * The first steps in the order a new person takes them, each with the link to the page that does
  * it. `groupId` is the person's selected group, where an invitation is made; without one the
  * step opens the groups page. For a guest the e-mail step is "Keep your account", and
  * the invitation and notification steps wait until the account is kept, since both are refused.
+ * The main currency step is shown only with `canChooseCurrency`: the person is an admin or the
+ * owner of the selected group.
  * The words are `t`'s.
  */
 export function onboardingSteps(
@@ -37,6 +42,7 @@ export function onboardingSteps(
   groupId: string | null,
   navigate?: Navigate,
   guest = false,
+  canChooseCurrency = false,
 ): OnboardingStep[] {
   const all: OnboardingStep[] = [
     {
@@ -94,6 +100,20 @@ export function onboardingSteps(
       },
     },
   ]
+  // Only an admin or the owner can choose it, so nobody else is given a step they cannot take.
+  if (canChooseCurrency && groupId) {
+    all.splice(2, 0, {
+      id: "currency",
+      title: t.t(`OnboardingCard.currencyTitle`),
+      description: t.t(`OnboardingCard.currencyText`),
+      done: steps.currencyChosen,
+      action: {
+        label: t.t(`OnboardingCard.currencyAction`),
+        href: `${GROUP_PATHS.settings(groupId)}?${CHOOSE_CURRENCY_QUERY}`,
+        navigate,
+      },
+    })
+  }
   if (!guest) return all
   const keep: OnboardingStep = {
     id: "keep",
@@ -164,6 +184,8 @@ export interface OnboardingCardProps {
   navigate?: Navigate
   /** The person is a guest: the steps lead to keeping the account first. */
   guest?: boolean
+  /** The person may change the selected group's main currency, so its step is shown. */
+  canChooseCurrency?: boolean
   /** Called by Dismiss and, once every step is done, by Finish. The app stops rendering the card. */
   onDismiss: () => void
   /**
@@ -203,6 +225,7 @@ export function OnboardingCard(
     groupId,
     navigate,
     guest = false,
+    canChooseCurrency = false,
     onDismiss,
     error = null,
     tourOffered,
@@ -234,7 +257,7 @@ export function OnboardingCard(
       <Stack gap="sm">
         <OnboardingChecklist
           title={t.t(`OnboardingCard.title`)}
-          steps={onboardingSteps(t, steps, groupId, navigate, guest)}
+          steps={onboardingSteps(t, steps, groupId, navigate, guest, canChooseCurrency)}
           onDismiss={onDismiss}
           // The page header's "New note" is the screen's one primary action.
           actionVariant="secondary"

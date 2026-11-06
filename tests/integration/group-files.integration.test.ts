@@ -19,6 +19,7 @@ import { UserMFAStatus } from "@domain/identity"
 import { GroupExportCommand } from "@domain/groups"
 import { createGroupExportHandler } from "../../apps/api/features/groups/files.ts"
 import { PORTABLE_AGGREGATES } from "../../apps/api/services/db-base.ts"
+import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { insertUser, withSchema } from "./group-team.ts"
 
 /**
@@ -29,6 +30,11 @@ import { insertUser, withSchema } from "./group-team.ts"
  */
 
 const NO_CAP = { maxNotes: null }
+
+/** The aggregates a product added to Seed's notes and tags; a file carries a key for each. */
+const PRODUCT_AGGREGATES = PORTABLE_AGGREGATES.filter((aggregate) =>
+  aggregate.kind !== "notes" && aggregate.kind !== "tags"
+)
 
 async function seed(sql: postgres.Sql) {
   const groups = new PostgresGroupRepository(sql)
@@ -163,11 +169,17 @@ Deno.test("an export imported by another person gives the same notes, tags and a
     const copy = result.group.id
     expect(copy).not.toBe(source.groupId)
     expect(result.group.role).toBe(GroupRole.OWNER)
-    expect(result.parts.map((part) => [part.kind, part.count])).toEqual([
-      ["accounts", 2],
-      ["notes", 3],
-      ["tags", 2],
-    ])
+    // The parts come by kind: every product aggregate has a part, and this group's are its two
+    // accounts; the others have no entries.
+    const parts = result.parts.map((part) => [part.kind, part.count] as const)
+    expect(new Map(parts)).toEqual(
+      new Map([
+        ["notes", 3],
+        ["tags", 2],
+        ...PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0] as const),
+        ["accounts", 2],
+      ]),
+    )
     expect(await contents(sql, copy)).toEqual(await contents(sql, source.groupId))
     // The default and the archived account keep their state; the one in the trash stays behind.
     expect((await contents(sql, copy)).accounts).toEqual([
@@ -230,7 +242,16 @@ Deno.test("an export imported by another person gives the same notes, tags and a
       WHERE group_id = ${copy} AND event_kind = 'group.imported'
     `
     expect([...imported]).toEqual([
-      { actorUserId: importer, details: { accounts: 2, notes: 3, tags: 2, count: 7 } },
+      {
+        actorUserId: importer,
+        details: {
+          notes: 3,
+          tags: 2,
+          ...Object.fromEntries(PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0])),
+          accounts: 2,
+          count: 7,
+        },
+      },
     ])
     const outbox = await sql`SELECT 1 FROM outbox_events WHERE group_id = ${copy}`
     expect(outbox.length).toBe(1)
@@ -265,6 +286,64 @@ Deno.test("an export carries the group's time zone, and the import keeps it", as
       NO_CAP,
     )
     expect(result.group.timeZone).toBe("Asia/Tokyo")
+  })
+})
+
+Deno.test("an export carries the household's main currency, and the import keeps it as chosen", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const plain = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, unknown[]>
+    }
+    expect(plain.aggregates.household ?? []).toEqual([])
+
+    await new PostgresHouseholdSettingsRepository(sql).update(
+      { groupId: source.groupId, baseCurrency: "JPY", expectedVersion: 0 },
+      source.owner,
+    )
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, unknown[]>
+    }
+    expect(file.aggregates.household).toEqual([
+      { id: source.groupId, baseCurrency: "JPY", chosen: true },
+    ])
+
+    const importer = await insertUser(sql)
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file, name: null },
+      importer,
+      NO_CAP,
+    )
+    expect(await new PostgresHouseholdSettingsRepository(sql).get(result.group.id)).toMatchObject({
+      baseCurrency: "JPY",
+      chosen: true,
+    })
+  })
+})
+
+Deno.test("a main currency nobody chose here stays unchosen through an import and the next export", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, unknown[]>
+    }
+    file.aggregates.household = [{ id: source.groupId, baseCurrency: "GBP", chosen: false }]
+    const importer = await insertUser(sql)
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file, name: null },
+      importer,
+      NO_CAP,
+    )
+    expect(await new PostgresHouseholdSettingsRepository(sql).get(result.group.id)).toMatchObject({
+      baseCurrency: "GBP",
+      chosen: false,
+    })
+    const again = await exportAs(sql, result.group.id, importer) as {
+      aggregates: Record<string, unknown[]>
+    }
+    expect(again.aggregates.household).toEqual([
+      { id: result.group.id, baseCurrency: "GBP", chosen: false },
+    ])
   })
 })
 
@@ -354,10 +433,7 @@ Deno.test("a refused file, a file over the plan and a failure halfway write noth
     })
     await attempt(
       () =>
-        new PostgresGroupPorter(sql, [
-          ...PORTABLE_AGGREGATES.filter((aggregate) => aggregate.kind !== "notes"),
-          failing,
-        ]).importGroup(
+        new PostgresGroupPorter(sql, [tagPortable, ...PRODUCT_AGGREGATES, failing]).importGroup(
           { file, name: null },
           source.owner,
           NO_CAP,

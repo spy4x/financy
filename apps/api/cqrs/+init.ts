@@ -174,6 +174,12 @@ import { accountRestoreHandler } from "@api/cqrs/command-handlers/account-restor
 import { accountListHandler } from "@api/cqrs/query-handlers/account-list.ts"
 import { accountGetHandler } from "@api/cqrs/query-handlers/account-get.ts"
 import { tagCreateHandler } from "@api/cqrs/command-handlers/tag-create.ts"
+import { HouseholdSettingsQuery, HouseholdUpdateSettingsCommand } from "@domain/money"
+import {
+  createHouseholdSettingsHandler,
+  createHouseholdUpdateSettingsHandler,
+} from "../features/household/handlers.ts"
+import { householdDependencies } from "./household-dependencies.ts"
 import { tagUpdateHandler } from "@api/cqrs/command-handlers/tag-update.ts"
 import { tagDeleteHandler } from "@api/cqrs/command-handlers/tag-delete.ts"
 import { tagListHandler } from "@api/cqrs/query-handlers/tag-list.ts"
@@ -312,6 +318,10 @@ commandBus.register(AccountArchiveCommand, accountArchiveHandler)
 commandBus.register(AccountSetDefaultCommand, accountSetDefaultHandler)
 commandBus.register(AccountDeleteCommand, accountDeleteHandler)
 commandBus.register(AccountRestoreCommand, accountRestoreHandler)
+commandBus.register(
+  HouseholdUpdateSettingsCommand,
+  createHouseholdUpdateSettingsHandler(householdDependencies),
+)
 commandBus.register(BillingCheckoutCommand, billingCheckoutHandler)
 commandBus.register(BillingPortalCommand, billingPortalHandler)
 queryBus.register(UserProfileGetQuery, userProfileGetHandler)
@@ -342,6 +352,7 @@ queryBus.register(AttachmentDownloadQuery, createAttachmentDownloadHandler(attac
 queryBus.register(TagGetQuery, tagGetHandler)
 queryBus.register(AccountListQuery, accountListHandler)
 queryBus.register(AccountGetQuery, accountGetHandler)
+queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)
 queryBus.register(NotificationListQuery, notificationListHandler)

@@ -246,11 +246,13 @@ Home.description	e5a7f381bf969f0e
 Home.title	9ad883e212643359
 HomeFaq.bankAnswer	9719f053909edc54
 HomeFaq.bankQuestion	51c4d302f8712ec6
-HomeFaq.currencyAnswer	4576d2350d13fbce
+HomeFaq.currencyAnswer	3937d3355bcf49c5
 HomeFaq.currencyQuestion	635f83d785160125
 HomeFaq.eyebrow	9a72221a27476f3e
 HomeFaq.freeAnswer	55be9a45f4aca1df
 HomeFaq.freeQuestion	af30e81df39efacb
+HomeFaq.ratesAnswer	406acecf63700dc8
+HomeFaq.ratesQuestion	d35764cb95b57ea5
 HomeFaq.stopsAnswer	da15906459b7bbdb
 HomeFaq.stopsQuestion	b7de140ed7fc7cfd
 HomeFaq.title	74e492d5d0df0bab
@@ -289,7 +291,7 @@ HomeWays.selfHostText	98072fc871e69c0b
 HomeWays.selfHostTitle	37a5d04181b5d8c4
 HomeWays.title	f98f61648f1f1b7a
 HomeWho.eyebrow	bcdecc549d07363c
-HomeWho.keeperText	eb0d8d8c9216fb2a
+HomeWho.keeperText	e2385d2f49528a91
 HomeWho.keeperTitle	439d2ca7f72a9394
 HomeWho.partnerText	555bb3a9d9820479
 HomeWho.partnerTitle	b87b0b1f004fcbf6

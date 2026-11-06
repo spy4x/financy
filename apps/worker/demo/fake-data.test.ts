@@ -8,10 +8,12 @@ import {
   DEMO_TIME_ZONES,
   FAKE_COUNTS,
   FAKE_PASSKEYS,
+  FAKE_RATE_DAYS,
   fakeDemoData,
   type FakeGroup,
   type FakeMember,
   fakePeople,
+  fakeRates,
   fakeWorkspace,
   VIDEO_PERSON_INDEX,
   withStandIns,
@@ -367,4 +369,17 @@ Deno.test("a visitor's sample groups on another day's population are written onl
 
 Deno.test("sample groups whose members all have accounts keep every author as drawn", () => {
   for (const group of fakeWorkspace(7)) expect(withStandIns(group, () => true)).toEqual(group)
+})
+
+Deno.test("the demo's exchange rates fill the working days before now and skip the weekend", () => {
+  // From a Tuesday, the five working days before it run back to the Tuesday a week earlier.
+  const rates = fakeRates(NOW)
+  const days = [...new Set(rates.map((rate) => rate.date))]
+  expect(days).toEqual([`2026-10-19`, `2026-10-16`, `2026-10-15`, `2026-10-14`, `2026-10-13`])
+  expect(days).toHaveLength(FAKE_RATE_DAYS)
+  expect(rates.filter((rate) => rate.date === `2026-10-19`)).toEqual([
+    { base: `EUR`, quote: `GBP`, rate: `0.8338`, date: `2026-10-19`, source: `frankfurter:ECB` },
+    { base: `EUR`, quote: `JPY`, rate: `175.68`, date: `2026-10-19`, source: `frankfurter:ECB` },
+    { base: `EUR`, quote: `USD`, rate: `1.1172`, date: `2026-10-19`, source: `frankfurter:ECB` },
+  ])
 })

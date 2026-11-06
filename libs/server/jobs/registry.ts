@@ -49,6 +49,8 @@ import {
 import { billingNoticeMailJob } from "./billing-notice-mail.ts"
 import { cleanupSteps } from "./cleanup.ts"
 import { EMAIL_CODE_MAIL_JOB, emailCodeMailJob } from "./email-code-mail.ts"
+import { RATES_FETCH_CRON, RATES_FETCH_JOB, ratesFetchJob } from "./exchange-rates.ts"
+import type { RatesSetup } from "../money/rates-setup.ts"
 import { type JobHandler, OUTBOX_CLEANUP_JOB } from "./jobs.ts"
 import {
   PASSWORD_RESET_MAIL_JOB,
@@ -99,6 +101,8 @@ export interface JobDeps {
   fetch: typeof fetch
   /** The plan catalog the billing jobs read, `PLANS` unless a test passes its own. */
   plans?: readonly Plan[]
+  /** Where the rate jobs fetch from; without it they fetch nothing (docs/financy/exchange-rates.md). */
+  rates?: RatesSetup | null
 }
 
 /**
@@ -381,6 +385,13 @@ export const JOBS: readonly JobDefinition[] = [
     kind: BLOG_INDEXNOW_JOB,
     label: `Tell search engines a blog post changed`,
     handler: ({ sql, mail, indexNow }) => blogIndexNowJob({ sql, setup: indexNow, log: mail.log }),
+  }),
+  // Runs in every environment, development and the demo included: totals need the day's rates.
+  defineJob({
+    kind: RATES_FETCH_JOB,
+    label: `Exchange rates`,
+    repeat: { cron: RATES_FETCH_CRON },
+    handler: ({ sql, mail, rates }) => ratesFetchJob({ sql, setup: rates ?? null, log: mail.log }),
   }),
 ]
 

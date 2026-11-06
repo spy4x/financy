@@ -700,6 +700,10 @@ export default {
   "OnboardingCard.notificationsTitle": "Turn on notifications",
   "OnboardingCard.notificationsText": "Get notified about changes, even when the app is closed.",
   "OnboardingCard.notificationsAction": "Turn on notifications",
+  "OnboardingCard.currencyTitle": "Choose your main currency",
+  "OnboardingCard.currencyText":
+    "Every total is shown in this one currency. It's the euro until you choose.",
+  "OnboardingCard.currencyAction": "Choose currency",
   "OnboardingCard.twoFactorTitle": "Set up two-factor sign-in",
   "OnboardingCard.twoFactorText":
     "An authenticator app keeps your account safe, even if your password leaks.",

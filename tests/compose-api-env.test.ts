@@ -162,3 +162,15 @@ Deno.test("the worker container receives the demo administrator's password and t
 Deno.test("the api container receives the SPA switch", async () => {
   expect(await environmentOf("api")).toContain("SPA")
 })
+
+Deno.test("the worker receives every exchange-rate variable, and only the worker gets the fallback key", async () => {
+  const worker = await environmentOf("worker")
+  for (
+    const name of ["RATES_FRANKFURTER_URL", "RATES_FALLBACK_KEY", "RATES_FALLBACK_MONTHLY_CAP"]
+  ) {
+    expect(worker, name).toContain(name)
+  }
+  const api = await environmentOf("api")
+  expect(api).toContain("RATES_FALLBACK_MONTHLY_CAP")
+  expect(api).not.toContain("RATES_FALLBACK_KEY")
+})

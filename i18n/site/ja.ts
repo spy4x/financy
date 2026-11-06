@@ -549,7 +549,7 @@ export default {
     "予算、銀行明細の取り込み、有料クラウドはその後です：<plan>計画の全体を見る</plan>。",
   "HomeWho.keeperTitle": "家計を管理する人",
   "HomeWho.keeperText":
-    "給料はある通貨、家賃は別の通貨、貯金はさらに別の通貨。それを一か所で合計します。",
+    "給料はある通貨、家賃は別の通貨、貯金はさらに別の通貨。欧州中央銀行のレートでひとつの合計にまとめ、レートの日付も添えます。",
   "HomeWho.partnerTitle": "パートナー",
   "HomeWho.partnerText": "自分のログインで世帯のお金を共有し、使った分を数秒で記録します。",
   "HomeWho.selfHostTitle": "セルフホストする人",
@@ -565,7 +565,10 @@ export default {
   "HomeFaq.useQuestion": "Financy は今使えますか？",
   "HomeFaq.currencyQuestion": "どの通貨に対応しますか？",
   "HomeFaq.currencyAnswer":
-    "暗号資産を含め、どんな組み合わせでも。各取引は換算後の金額の隣に元の金額を残します。計画中で、まだできていません。",
+    "Financy は暗号資産を含め、どんな通貨の組み合わせにも対応する予定です。各取引は換算後の金額の隣に元の金額を残し、合計は世帯のメイン通貨で表示します。欧州中央銀行が扱わない通貨（暗号資産など）は、取引ごとにレートを入力します。現在開発中です。",
+  "HomeFaq.ratesQuestion": "為替レートはどこから取得していますか？",
+  "HomeFaq.ratesAnswer":
+    "欧州中央銀行のレートを、無料の公開サービス Frankfurter を通じて営業日ごとに取得します。換算した合計には、使ったレートの日付を表示します。レートのない通貨は名前を示したうえで合計から外し、1 として数えることはありません。現在開発中です。",
   "HomeFaq.bankQuestion": "Financy は銀行と連携しますか？",
   "HomeFaq.bankAnswer": "いいえ。銀行明細の取り込みは最初のバージョンで予定しています。",
   "HomeFaq.stopsQuestion": "Financy の開発が止まったら？",

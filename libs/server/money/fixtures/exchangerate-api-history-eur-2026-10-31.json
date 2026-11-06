@@ -1,0 +1,17 @@
+{
+  "result": "success",
+  "documentation": "https://www.exchangerate-api.com/docs",
+  "terms-of-use": "https://www.exchangerate-api.com/terms",
+  "year": 2026,
+  "month": 10,
+  "day": 31,
+  "base_code": "EUR",
+  "conversion_rates": {
+    "EUR": 1,
+    "AED": 4.1046,
+    "GBP": 0.8338,
+    "JPY": 175.68,
+    "USD": 1.1172,
+    "VND": 28790.5
+  }
+}

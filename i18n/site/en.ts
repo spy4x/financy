@@ -562,7 +562,7 @@ export default {
     "Budgets, bank statement import and the paid cloud come later: <plan>see the whole plan</plan>.",
   "HomeWho.keeperTitle": "The money keeper",
   "HomeWho.keeperText":
-    "Salary in one currency, rent in another, savings in a third: one place that adds them up.",
+    "Salary in one currency, rent in another, savings in a third: one total at the ECB's rates, with their date on it.",
   "HomeWho.partnerTitle": "The partner",
   "HomeWho.partnerText":
     "Shares the household's money with their own login, and adds what they spend in seconds.",
@@ -581,7 +581,10 @@ export default {
     "Not yet. Sign-in, households, sync and accounts in any currency work; transactions are being built now.",
   "HomeFaq.currencyQuestion": "Which currencies will it handle?",
   "HomeFaq.currencyAnswer":
-    "Any mix, crypto included; each transaction keeps its original amount next to the converted one. Planned, not built yet.",
+    "Financy will handle any mix of currencies, crypto included. Each transaction keeps its original amount next to the converted one, and totals show in the household's main currency. For a currency the ECB doesn't cover, such as crypto, you enter the rate on the transaction. Being built now.",
+  "HomeFaq.ratesQuestion": "Where do the exchange rates come from?",
+  "HomeFaq.ratesAnswer":
+    "From the European Central Bank, fetched each working day through Frankfurter, a free public service. Every converted total shows the date of the rates it used. A currency with no rate is named and left out of the total, never counted as 1. Being built now.",
   "HomeFaq.bankQuestion": "Does Financy connect to my bank?",
   "HomeFaq.bankAnswer": "No. Bank statement import is planned for the first version.",
   "HomeFaq.stopsQuestion": "What happens if Financy stops?",

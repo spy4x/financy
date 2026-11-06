@@ -13,6 +13,7 @@ import type { SubscribersSetup } from "@server/subscribers/subscribers.ts"
 import type { AppDbBase } from "../../api/services/db-base.ts"
 import type { ServerFiles } from "@server/files/files.ts"
 import { attachmentObjectKey } from "@domain/notes"
+import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { sampleFile } from "./sample-files.ts"
 import { createSignIn } from "../../api/services/sign-in.ts"
 import {
@@ -20,6 +21,7 @@ import {
   type FakeGroup,
   type FakeMember,
   fakePeople,
+  fakeRates,
   fakeWorkspace,
   withStandIns,
 } from "./fake-data.ts"
@@ -132,6 +134,10 @@ export async function seedDemo(
   if (options.subscribers) await writeNewsletter(sql, data, options.subscribers, at)
   // The shop's sample items, for a product that turns the catalog on (docs/catalog.md).
   await seedSampleCatalog(sql, at(0))
+  // A few days of recorded rates, so a demo household converts before the daily job runs.
+  await new PostgresRateRepository(sql).insert(fakeRates(now), now, (rate, problem) => {
+    throw new Error(`the demo's rate ${rate.base}/${rate.quote} is refused: ${problem}`)
+  })
   if (admin) {
     await writeOperator(sql, admin.id, admin.created, data, userIds, subscriptions, at)
     await writeDevelopmentBackup(sql, at)

@@ -562,7 +562,7 @@ export default {
     "Budgets, der Import von Kontoauszügen und die kostenpflichtige Cloud kommen später: <plan>den ganzen Plan ansehen</plan>.",
   "HomeWho.keeperTitle": "Wer das Geld verwaltet",
   "HomeWho.keeperText":
-    "Gehalt in einer Währung, Miete in einer anderen, Erspartes in einer dritten: ein Ort, der alles zusammenrechnet.",
+    "Gehalt in einer Währung, Miete in einer anderen, Erspartes in einer dritten: eine Summe zu den Kursen der EZB, mit deren Datum.",
   "HomeWho.partnerTitle": "Der Partner oder die Partnerin",
   "HomeWho.partnerText":
     "Teilt das Geld des Haushalts mit eigenem Login und trägt Ausgaben in Sekunden ein.",
@@ -580,7 +580,10 @@ export default {
   "HomeFaq.useQuestion": "Kann ich Financy heute schon nutzen?",
   "HomeFaq.currencyQuestion": "Welche Währungen wird Financy unterstützen?",
   "HomeFaq.currencyAnswer":
-    "Beliebige, auch Kryptowährungen; jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten. Geplant, aber noch nicht gebaut.",
+    "Financy wird mit jeder Mischung von Währungen umgehen, auch mit Kryptowährungen. Jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten, und Summen erscheinen in der Hauptwährung des Haushalts. Für eine Währung, die die EZB nicht abdeckt, etwa Krypto, trägst du den Kurs direkt in der Buchung ein. Wird gerade gebaut.",
+  "HomeFaq.ratesQuestion": "Woher kommen die Wechselkurse?",
+  "HomeFaq.ratesAnswer":
+    "Von der Europäischen Zentralbank, an jedem Werktag über Frankfurter abgerufen, einen kostenlosen öffentlichen Dienst. Jede umgerechnete Summe zeigt das Datum der Kurse, mit denen sie gerechnet wurde. Eine Währung ohne Kurs wird genannt und aus der Summe herausgelassen, nie mit 1 gerechnet. Wird gerade gebaut.",
   "HomeFaq.bankQuestion": "Verbindet sich Financy mit meiner Bank?",
   "HomeFaq.bankAnswer": "Nein. Der Import von Kontoauszügen ist für die erste Version geplant.",
   "HomeFaq.stopsQuestion": "Was passiert, wenn Financy eingestellt wird?",
