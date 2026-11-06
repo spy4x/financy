@@ -266,6 +266,32 @@ Deno.test("an export carries the household's main currency, and the import keeps
   })
 })
 
+Deno.test("a main currency nobody chose here stays unchosen through an import and the next export", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, unknown[]>
+    }
+    file.aggregates.household = [{ id: source.groupId, baseCurrency: "GBP", chosen: false }]
+    const importer = await insertUser(sql)
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file, name: null },
+      importer,
+      NO_CAP,
+    )
+    expect(await new PostgresHouseholdSettingsRepository(sql).get(result.group.id)).toMatchObject({
+      baseCurrency: "GBP",
+      chosen: false,
+    })
+    const again = await exportAs(sql, result.group.id, importer) as {
+      aggregates: Record<string, unknown[]>
+    }
+    expect(again.aggregates.household).toEqual([
+      { id: result.group.id, baseCurrency: "GBP", chosen: false },
+    ])
+  })
+})
+
 Deno.test("an import takes the name the person gave instead of the file's", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
