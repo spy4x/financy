@@ -20,6 +20,7 @@ import {
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { purgeDeletedAccounts } from "@server/accounts/purge-deleted-accounts.ts"
+import { readAdminAccounts } from "@server/accounts/admin-accounts.ts"
 import { createSessionGate } from "../../apps/api/cqrs/session-gate.ts"
 import {
   createAccountArchiveHandler,
@@ -365,5 +366,42 @@ Deno.test("accounts against Postgres", async (t) => {
         expect(left.map((row) => row.id)).toEqual([recent.id])
       },
     )
+  })
+})
+
+Deno.test("the operator's accounts read counts live accounts by kind, currency and household, and carries no name or amount", async () => {
+  await withSchema(async (sql) => {
+    const { commands } = buses(sql)
+    const { groupId, owner } = await team(sql)
+    const add = (more: Partial<typeof fields>) =>
+      commands.execute(
+        new AccountCreateCommand({
+          actor: actor(owner),
+          groupId,
+          id: uuidV7(),
+          ...fields,
+          ...more,
+        }),
+      )
+    await add({ name: "Secret savings", currency: "EUR", startingBalance: 987_654 })
+    await add({ kind: AccountKind.CASH, currency: "VND", startingBalance: 1_500_000 })
+    const { account } = await add({ kind: AccountKind.CARD, currency: "USD" })
+    await sql`UPDATE accounts SET deleted_at = now() WHERE id = ${account.id}`
+
+    const overview = await readAdminAccounts(sql)
+
+    expect(overview).toEqual({
+      accounts: 2,
+      households: 1,
+      byKind: [
+        { kind: AccountKind.CASH, accounts: 1 },
+        { kind: AccountKind.BANK, accounts: 1 },
+      ],
+      byCurrency: [{ currency: "EUR", accounts: 1 }, { currency: "VND", accounts: 1 }],
+      topHouseholds: [{ groupId, groupName: "Team", accounts: 2, currencies: ["EUR", "VND"] }],
+    })
+    const text = JSON.stringify(overview)
+    expect(text).not.toContain("Secret savings")
+    expect(text).not.toContain("987654")
   })
 })

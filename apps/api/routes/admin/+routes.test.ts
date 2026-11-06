@@ -27,6 +27,7 @@ import { createAdminRoute } from "./+routes.ts"
 import { ADMIN_OUTRANKED, ADMIN_SELF, createAdminUsersRoutes } from "./users.ts"
 import { createAdminStatsRoutes } from "./dashboard.ts"
 import { createAdminWebsiteStatsRoutes } from "./stats.ts"
+import { createAdminAccountsRoutes } from "./accounts.ts"
 import { ADMIN_API_MODULES } from "./registry.ts"
 import { CATALOG_DEFAULT_SETTINGS } from "@domain/catalog"
 import type { AdminModuleContext } from "./module.ts"
@@ -110,7 +111,7 @@ function buildApp(
     catalog: { on: true, settings: CATALOG_DEFAULT_SETTINGS },
     websiteStats: { setup: null, missing: [], itemPath: `/{slug}` },
   }
-  // The real registry, with the two modules that read data swapped for fakes of their services.
+  // The real registry, with the modules that read data swapped for fakes of their services.
   const modules = ADMIN_API_MODULES.map((module) => {
     switch (module.id) {
       case `users`:
@@ -131,6 +132,11 @@ function buildApp(
           limit: passThrough,
           read:
             () => (calls.push(["website-stats"]), Promise.resolve({ state: `off`, missing: [] })),
+        })
+      case `accounts`:
+        return createAdminAccountsRoutes({
+          limit: passThrough,
+          read: () => (calls.push(["accounts"]), Promise.reject(new Error("not used"))),
         })
       default:
         // The empty modules read nothing, so they never touch the database.
@@ -197,6 +203,7 @@ const ROUTES = [
       `/admin/groups/0199f0a0-0000-7000-8000-000000000001/files/0199f0a0-0000-7000-8000-000000000002/${access}`,
   })),
   { method: "GET", path: "/admin/website-stats?days=7" },
+  { method: "GET", path: "/admin/accounts" },
 ]
 
 function send(
@@ -297,6 +304,7 @@ describe("operator area routes", () => {
       "stats",
       "users",
       "groups",
+      "accounts",
       "billing",
       "newsletter",
       "blog",

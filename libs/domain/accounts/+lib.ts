@@ -533,3 +533,25 @@ export function accountExportProblems(
   return problems
 }
 // #endregion Export file
+
+// #region Admin
+/** How many households the operator's accounts page lists, the ones with the most accounts. */
+export const ADMIN_ACCOUNTS_HOUSEHOLD_LIMIT = 20
+
+/**
+ * What the operator's accounts page shows: counts, kinds and currency codes of live accounts.
+ * Never an account's name or an amount (product.md §5): a household's money is not the operator's.
+ */
+export interface AdminAccountsOverview {
+  /** Live accounts, archived ones included; deleted ones are left out. */
+  accounts: number
+  /** Households with at least one live account. */
+  households: number
+  /** One row per kind in use, in {@link ACCOUNT_KINDS} order. */
+  byKind: { kind: AccountKind; accounts: number }[]
+  /** One row per currency code in use, most accounts first. */
+  byCurrency: { currency: string; accounts: number }[]
+  /** The households with the most accounts, at most {@link ADMIN_ACCOUNTS_HOUSEHOLD_LIMIT}. */
+  topHouseholds: { groupId: string; groupName: string; accounts: number; currencies: string[] }[]
+}
+// #endregion Admin
