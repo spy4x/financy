@@ -211,9 +211,20 @@ export default {
   "FeatureTierSettled.eyebrow": "Works today",
   "FeatureTierSettled.title": "The ground your household's money will sit on",
   "FeatureTierSettled.lead":
-    "These parts work and are tested in CI. The money itself, accounts in any currency and their transactions, is next.",
+    "These parts work and are tested in CI. Accounts in any currency are here; their transactions come next.",
   "FeatureTierSettled.status":
     "Google and GitHub sign-in need the server's own keys, so a fresh self-hosted copy starts with email sign-in.",
+  "FeatureAccounts.nav": "Accounts",
+  "FeatureAccounts.title": "Every account in its own currency",
+  "FeatureAccounts.lead":
+    "Cash, bank accounts, cards, savings, assets and debts, each in its own currency, grouped by kind, with one default. Everyone in the household sees a change at once.",
+  "FeatureAccounts.fact1":
+    "The server works each balance out when it is read and never stores it, so it cannot drift",
+  "FeatureAccounts.fact2":
+    "Amounts are whole numbers in the currency's smallest unit: a yen has none, a dinar has three",
+  "FeatureAccounts.fact3":
+    "A viewer reads the accounts; only an editor or above changes them, checked on the server",
+  "FeatureAccounts.code": "Read the accounts domain",
   "FeatureSignIn.nav": "Accounts and sign-in",
   "FeatureSignIn.title": "Sign-in, done",
   "FeatureSignIn.lead":
@@ -283,14 +294,14 @@ export default {
   "FeaturesFaq.nativeQuestion": "Is there a phone app?",
   "FeaturesFaq.nativeAnswer":
     "Not in a store yet. Today the web app installs from the browser on phones and computers and opens with no network.",
-  "Features.title": "Financy features: households, sync, offline, self-hosting",
+  "Features.title": "Financy features: accounts, households, sync, offline",
   "Features.description":
-    "What Financy does today: households with roles, live updates, an offline app, export, nine languages and self-hosting. Accounts and budgets come next.",
+    "Financy today: accounts in any currency, households with roles, live sync, an offline app, export, nine languages and self-hosting. Transactions come next.",
   "FeaturesHero.title": "What Financy does today, and what comes next",
   "FeaturesHero.lead":
-    "Financy is being rebuilt. What works today is the ground a household's money will sit on: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
+    "Financy is being rebuilt. What works today: accounts in any currency, and the ground under them: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
   "FeaturesHero.note":
-    "Accounts, transactions and budgets are not built yet. <status>See where the rebuild stands</status>.",
+    "Transactions and budgets are not built yet. <status>See where the rebuild stands</status>.",
   "FeaturesFaq.title": "Can Financy do that?",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "For developers",
@@ -567,7 +578,7 @@ export default {
   "HomeWays.cloudText": "Not open yet. The same code, run for you, as a paid plan.",
   "HomeFaq.useQuestion": "Can I use Financy today?",
   "HomeFaq.useAnswer":
-    "Not yet. Sign-in, households and sync work; accounts and transactions are being built now.",
+    "Not yet. Sign-in, households, sync and accounts in any currency work; transactions are being built now.",
   "HomeFaq.currencyQuestion": "Which currencies will it handle?",
   "HomeFaq.currencyAnswer":
     "Any mix, crypto included; each transaction keeps its original amount next to the converted one. Planned, not built yet.",

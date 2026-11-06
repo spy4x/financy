@@ -780,14 +780,14 @@ describe("the public website", () => {
 
     // Every language of a page carries the English page's date: the translation says the same.
     expect(lastmods["/de/subscribe"]).toBe("2026-11-04T00:00:00.000Z")
-    expect(lastmods["/ar"]).toBe("2026-11-04T00:00:00.000Z")
+    expect(lastmods["/ar"]).toBe("2026-11-06T00:00:00.000Z")
     expect(Object.values(lastmods)).not.toContain(undefined)
     const english = Object.fromEntries(
       Object.entries(lastmods).filter(([path]) => pathLanguage(path).language === "en"),
     )
     expect(english).toEqual({
-      "/": "2026-11-04T00:00:00.000Z",
-      "/features": "2026-11-04T00:00:00.000Z",
+      "/": "2026-11-06T00:00:00.000Z",
+      "/features": "2026-11-06T00:00:00.000Z",
       "/docs/api": "2026-10-23T00:00:00.000Z",
       // With no history to read, as under `deno test`, the guides and the changelog carry the day
       // they were first published.
