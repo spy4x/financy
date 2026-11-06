@@ -45,6 +45,10 @@ export const SPA_ROUTES = {
   // `/overview` opens the selected group's overview.
   "/overview": { open: false },
   "/overview/:groupId": { open: false },
+  "/accounts": { open: false },
+  // Before the account's page, or "new" would be read as an account's id.
+  "/accounts/new": { open: false },
+  "/accounts/:accountId": { open: false },
   "/tags": { open: false },
   // Before the tag's page, or "new" would be read as a tag's id.
   "/tags/new": { open: false },

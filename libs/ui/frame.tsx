@@ -22,6 +22,7 @@ import { LanguageButton } from "@spy4x/preact-ui/language-picker"
 import type { AccountMenuLanguage } from "@spy4x/preact-system/account-menu"
 import { GroupPicker, type GroupPickerData, GroupSheet } from "./group-picker.tsx"
 import {
+  ACCOUNT_PATHS,
   GROUP_PATHS,
   type Navigate,
   NOTE_PATHS,
@@ -52,6 +53,7 @@ export function navItems(
       href: OVERVIEW_PATHS.root,
       Icon: IconChartPie,
     },
+    { key: "accounts", label: t.t("Frame.accounts"), href: ACCOUNT_PATHS.list, Icon: IconWallet },
     { key: "notes", label: t.t("Frame.notes"), href: NOTE_PATHS.list, Icon: IconDocumentText },
     ...(activityGroupId === null ? [] : [{
       key: "activity",
