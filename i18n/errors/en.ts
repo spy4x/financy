@@ -95,6 +95,10 @@ export default {
   "ImportPlace.tagsEntry": "Tag {index}",
   "ImportProblem.line": "{place}: {problem}",
   "ImportProblem.lineField": "{place}, “{field}”: {problem}",
+  "Reason.ACCOUNT_ARCHIVED": "An archived account can't be the default. Unarchive it first.",
+  "Reason.ACCOUNT_LIMIT_REACHED":
+    "This household can't have any more accounts. Archive or delete one first.",
+  "Reason.ACCOUNT_NOT_FOUND": "This account no longer exists.",
   "Reason.ADDRESS_NOT_PROVEN": "Confirm your email in your profile first.",
   "Reason.ALREADY_MEMBER": "You're already a member of this group.",
   "Reason.ALREADY_SUBSCRIBED": "This group already has a subscription.",

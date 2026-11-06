@@ -4,6 +4,7 @@ import { GroupError, GroupErrorCode, GroupImportError } from "@domain/groups"
 import { AccessError } from "@domain/identity"
 import { PlanError, type PlanErrorCode, toPlanRefusal } from "@domain/billing"
 import { TagError } from "@domain/tags"
+import { AccountError } from "@domain/accounts"
 import { IdempotencyError } from "@spy4x/server/idempotency"
 import { APIContext } from "../../_types.ts"
 import { PasswordLockedError, passwordLockedMessage } from "../../services/password-locked.ts"
@@ -21,6 +22,7 @@ export type GroupFeatureErrorCode =
   | PlanErrorCode
   | "REQUEST_ORIGIN_INVALID"
   | "TAG_LIMIT_REACHED"
+  | "ACCOUNT_LIMIT_REACHED"
 
 export class GroupFeatureError extends Error {
   constructor(
@@ -74,6 +76,10 @@ const ERROR_DEFINITIONS: Record<GroupFeatureErrorCode, ErrorDefinition> = {
     status: 409,
     message: "The other group has no room for this group's tags",
   },
+  ACCOUNT_LIMIT_REACHED: {
+    status: 409,
+    message: "The other group has no room for this group's accounts",
+  },
   SUBSCRIPTION_RENEWS: {
     status: 409,
     message: "Cancel the group's subscription in the billing portal before transferring it",
@@ -106,6 +112,9 @@ export function groupErrorResponse(c: Context<APIContext>, error: unknown): Resp
     ? IDEMPOTENCY_CODES[error.code]
     // Moving all data creates the notes' tags in the other group, which may be full of tags.
     : error instanceof TagError && error.code === "TAG_LIMIT_REACHED"
+    ? error.code
+    // And moves the accounts, which may not fit under the other group's cap.
+    : error instanceof AccountError && error.code === "ACCOUNT_LIMIT_REACHED"
     ? error.code
     : "INTERNAL_ERROR"
   const definition = ERROR_DEFINITIONS[code]
