@@ -35,6 +35,16 @@ export const NOTE_PATHS = {
 } as const
 
 /** Where the tags pages live. Tags are the SPA's: the website has no session. */
+/** The pages of a household's accounts, in the person's selected group. */
+export const ACCOUNT_PATHS = {
+  /** The accounts by kind, each with its balance; archived ones behind "Show archived accounts". */
+  list: "/accounts",
+  /** The create page: the account editor with no account yet. */
+  new: "/accounts/new",
+  /** One account's editor. */
+  account: (accountId: string) => `/accounts/${accountId}`,
+} as const
+
 export const TAG_PATHS = {
   /** A group's tags, each a link to its editor, and a delete in each row's menu. */
   list: "/tags",
