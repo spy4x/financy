@@ -377,6 +377,7 @@ describe("onboardingSteps for a guest", () => {
     memberInvited: false,
     notificationsOn: false,
     twoFactorOn: false,
+    currencyChosen: false,
   }
 
   it("puts Keep your account first and leaves out the steps a guest is refused", () => {
