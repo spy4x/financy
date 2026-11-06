@@ -1475,6 +1475,7 @@ export default {
   "AdminNav.contactLinks": "Contact links",
   "AdminNav.newsletter": "Newsletter",
   "AdminNav.jobs": "Jobs",
+  "AdminNav.rates": "Rates",
   "AdminNav.apiTokens": "API tokens",
   "AdminNav.catalog": "Catalog",
   "AdminNewsletter.doneRemove": "{email} no longer gets the newsletter.",
@@ -1853,4 +1854,7 @@ export default {
   "AdminBlogHistory.restore": "Restore this version",
   "AdminBlogHistory.empty": "No earlier versions yet. Each save keeps one.",
   "AdminBlogHistory.restored": "Earlier version restored. Save to keep it.",
+  "AdminRates.title": "Exchange rates",
+  "AdminRates.subtitle":
+    "Rates the server fetched each day, by source, and what the paid fallback has used this month.",
 } satisfies Catalog

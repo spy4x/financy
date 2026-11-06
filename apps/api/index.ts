@@ -110,6 +110,7 @@ import { createPostgresSubscriberStore } from "@spy4x/server/subscribers/postgre
 import { createErrorReporter } from "@spy4x/platform"
 import { processEnv } from "@spy4x/platform/server/process"
 import { readTelegramSetup, telegramOffNote } from "@server/telegram/setup.ts"
+import { readAdminFallbackCap } from "@server/money/admin-rates.ts"
 import { createTelegramRoute, createTelegramWebhookRoute } from "./routes/telegram.ts"
 import { createTelegramAccounts, createTelegramRuntime } from "./services/telegram.ts"
 import { createTelegramProduct } from "./telegram/commands.ts"
@@ -300,6 +301,7 @@ app.route(
       catalog: catalogSetup,
       files: serverFiles,
       websiteStats,
+      rates: { fallbackCap: readAdminFallbackCap(processEnv) },
     }).concat(
       createAdminOwnPreferencesRoute({
         limit: rateLimits.normal,

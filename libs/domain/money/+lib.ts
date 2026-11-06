@@ -285,3 +285,21 @@ export function readHouseholdSettings(value: unknown): HouseholdSettings | null 
   return parsed instanceof type.errors ? null : parsed
 }
 // #endregion Reading the API's answer
+
+/**
+ * The admin's Exchange rates page (`GET /api/admin/rates`): the daily job's last run, each
+ * source's last fetch, the main currencies in use with no rate on the latest rate day, the paid
+ * fallback's calls this month, and the last 7 days. It names no household and counts none.
+ */
+export interface AdminRatesSnapshot {
+  /** The daily job's last finished run, or `null` before the first. */
+  lastRun: { at: string; failed: boolean } | null
+  /** Each source's last fetch: when (ISO 8601) and how many rates it stored then. */
+  fetches: { source: string; fetchedAt: string; count: number }[]
+  /** The main currencies in use with no rate on `date`: the latest ECB day, else today. */
+  missing: { date: string; currencies: string[] }
+  /** The paid fallback's calls this month, or `null` while it is off. */
+  fallback: { used: number; cap: number; resetsOn: string } | null
+  /** The last 7 days, newest first; a day no source has rates for has no rows. */
+  days: { date: string; rows: { source: string; currencies: number; fetchedAt: string }[] }[]
+}

@@ -52,6 +52,8 @@ export interface AdminModuleContext {
    * deployed. Read on its own, so it holds while the newsletter is off.
    */
   siteUrl: string | null
+  /** The exchange rates module's setting: the paid fallback's monthly cap, `null` while it is off. */
+  rates: { fallbackCap: number | null }
   /** The payment provider for the billing module; `provider` is `null` while billing is off. */
   billing: {
     provider: Required<BillingProvider> | null
