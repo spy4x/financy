@@ -215,8 +215,6 @@ export default {
   "DemoPlan.proRoles": "メンバーを編集者や管理者に昇格",
   "FeatureTierSettled.eyebrow": "今できること",
   "FeatureTierSettled.title": "世帯のお金を載せる土台",
-  "FeatureTierSettled.lead":
-    "これらの部分はすでに動いていて、CI でテストされています。次はお金そのもの、つまりどの通貨でも使える口座とその取引です。",
   "FeatureTierSettled.status":
     "Google と GitHub でのログインにはサーバー独自のキーが必要なため、新しくセルフホストした環境では、まずメールでのログインだけが使えます。",
   "FeatureSignIn.nav": "アカウントとログイン",
@@ -287,14 +285,7 @@ export default {
   "FeaturesFaq.nativeQuestion": "スマホアプリはありますか？",
   "FeaturesFaq.nativeAnswer":
     "ストアにはまだありません。今は Web アプリをブラウザからスマホやパソコンにインストールでき、オフラインでも開けます。",
-  "Features.title": "Financy の機能：世帯、同期、オフライン、セルフホスト",
-  "Features.description":
-    "Financy が今できること：ロールのある世帯、すべての端末へのリアルタイム更新、オフラインで動くアプリ、書き出し、9言語、セルフホスト。口座と予算はこの次です。",
   "FeaturesHero.title": "Financy が今できること、次にできること",
-  "FeaturesHero.lead":
-    "Financy は作り直し中です。今動いているのは、世帯のお金を載せる土台です。ログイン、ロールによる共有、リアルタイム更新、オフラインアプリ、書き出し、9言語、そしてあなた自身のサーバー。各セクションからそのコードへリンクしています。",
-  "FeaturesHero.note":
-    "口座、取引、予算はまだできていません。<status>作り直しの進み具合を見る</status>。",
   "FeaturesFaq.title": "Financy でできますか？",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "開発者向け",
@@ -572,8 +563,6 @@ export default {
   "HomeWays.cloudText":
     "まだ公開していません。同じコードを、サーバーの管理なしで使える有料プランです。",
   "HomeFaq.useQuestion": "Financy は今使えますか？",
-  "HomeFaq.useAnswer":
-    "まだです。ログイン、世帯、同期は動いています。口座と取引は今作っているところです。",
   "HomeFaq.currencyQuestion": "どの通貨に対応しますか？",
   "HomeFaq.currencyAnswer":
     "暗号資産を含め、どんな組み合わせでも。各取引は換算後の金額の隣に元の金額を残します。計画中で、まだできていません。",
@@ -583,4 +572,25 @@ export default {
   "HomeFaq.stopsAnswer":
     "コードは AGPL‑3.0 で GitHub にあるので誰でも動かし続けられますし、データはいつでも書き出せます。",
   "SiteFooter.aboutHint": "（antonshubin.comが開きます）",
+  "FeatureAccounts.code": "口座のコードを読む",
+  "FeatureAccounts.fact1":
+    "残高はサーバーが読み出すたびに計算し、どこにも保存しないので、ずれることがありません",
+  "FeatureAccounts.fact2": "金額は通貨の最小単位の整数です。円には小数がなく、ディナールは3桁です",
+  "FeatureAccounts.fact3":
+    "閲覧者は口座を見るだけで、変更できるのは編集者以上。サーバーが確認します",
+  "FeatureAccounts.lead":
+    "現金、銀行口座、カード、貯蓄、資産、負債を、それぞれの通貨で。種類ごとにまとめ、メインの口座を1つ決められます。変更は世帯の全員にすぐ届きます。",
+  "FeatureAccounts.nav": "口座",
+  "FeatureAccounts.title": "口座ごとに、それぞれの通貨で",
+  "FeatureTierSettled.lead":
+    "これらは動いていて、CI でテストされています。どの通貨の口座も使えます。口座の取引は次に来ます。",
+  "Features.description":
+    "Financy の現在：どの通貨でも使える口座、ロール付きの世帯、リアルタイム同期、オフラインアプリ、エクスポート、9 言語、セルフホスト。次は取引です。",
+  "Features.title": "Financy の機能：口座、世帯、同期、オフライン",
+  "FeaturesHero.lead":
+    "Financy は作り直しの最中です。今日使えるもの：どの通貨でも使える口座と、それを支える土台。ログイン、ロールによる共有、リアルタイムの更新、オフラインアプリ、エクスポート、9 言語、そしてあなた自身のサーバー。各セクションから、そのコードに飛べます。",
+  "FeaturesHero.note":
+    "取引と予算はまだできていません。<status>作り直しの進み具合を見る</status>。",
+  "HomeFaq.useAnswer":
+    "まだです。ログイン、世帯、同期、どの通貨でも使える口座は動いています。取引はいま作っているところです。",
 } satisfies Catalog

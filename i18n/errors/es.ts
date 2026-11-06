@@ -212,4 +212,19 @@ export default {
   "Reason.validation": "Hay campos que corregir. Revísalos y vuelve a intentarlo.",
   "Reason.TRANSLATION_INVALID":
     "Esta entrada no puede ser una traducción de esa. Elige una entrada original en otro idioma, o ninguna.",
+  "ImportIssue.archivedDefaultAccount":
+    "Está archivada, así que no puede ser la cuenta predeterminada.",
+  "ImportIssue.secondDefaultAccount": "Otra cuenta del archivo ya es la predeterminada.",
+  "ImportIssue.tooManyAccounts": {
+    "one": "Contiene {count} cuenta y un hogar puede tener como máximo {max}.",
+    "many": "Contiene {count} de cuentas y un hogar puede tener como máximo {max}.",
+    "other": "Contiene {count} cuentas y un hogar puede tener como máximo {max}.",
+  },
+  "ImportPlace.accounts": "Cuentas",
+  "ImportPlace.accountsEntry": "Cuenta {index}",
+  "Reason.ACCOUNT_ARCHIVED":
+    "Una cuenta archivada no puede ser la predeterminada. Desarchívala primero.",
+  "Reason.ACCOUNT_LIMIT_REACHED":
+    "Este hogar no puede tener más cuentas. Archiva o elimina una primero.",
+  "Reason.ACCOUNT_NOT_FOUND": "Esta cuenta ya no existe.",
 } satisfies Catalog

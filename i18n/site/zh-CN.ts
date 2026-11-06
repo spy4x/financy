@@ -196,8 +196,6 @@ export default {
   "DemoPlan.proRoles": "可将成员设为编辑者或管理员",
   "FeatureTierSettled.eyebrow": "现在可用",
   "FeatureTierSettled.title": "家庭财务的地基",
-  "FeatureTierSettled.lead":
-    "这些部分已经可用，并在 CI 中测试。下一步是资金本身：任意货币的账户及其交易。",
   "FeatureTierSettled.status":
     "Google 和 GitHub 登录需要服务器自己的密钥，所以新部署的实例先只支持邮箱登录。",
   "FeatureSignIn.nav": "账号与登录",
@@ -261,13 +259,7 @@ export default {
   "FeaturesFaq.nativeQuestion": "有手机应用吗？",
   "FeaturesFaq.nativeAnswer":
     "应用商店里还没有。目前网页应用可以从浏览器安装到手机和电脑上，并能离线打开。",
-  "Features.title": "Financy 功能：家庭、同步、离线、自托管",
-  "Features.description":
-    "Financy 现在能做什么：带角色的家庭、每台设备实时更新、可离线使用的应用、导出、九种语言和自托管。接下来是账户和预算。",
   "FeaturesHero.title": "Financy 现在能做什么，接下来做什么",
-  "FeaturesHero.lead":
-    "Financy 正在重写。现在可用的部分，是家庭财务的地基：登录、按角色共享访问、实时更新、离线应用、导出、九种语言和你自己的服务器。每一节都链接到对应的代码。",
-  "FeaturesHero.note": "账户、交易和预算尚未开发。<status>查看重写进展</status>。",
   "FeaturesFaq.title": "Financy 能做到吗？",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "面向开发者",
@@ -528,7 +520,6 @@ export default {
   "HomeWays.cloudTitle": "云服务",
   "HomeWays.cloudText": "尚未开放。同样的代码，免去自己维护服务器，按付费方案使用。",
   "HomeFaq.useQuestion": "现在能用 Financy 吗？",
-  "HomeFaq.useAnswer": "还不能。登录、家庭和同步已经可用；账户和交易正在开发中。",
   "HomeFaq.currencyQuestion": "Financy 将支持哪些货币？",
   "HomeFaq.currencyAnswer":
     "任意组合，包括加密货币；每笔交易都会在换算金额旁保留原始金额。已在计划中，尚未开发。",
@@ -538,4 +529,21 @@ export default {
   "HomeFaq.stopsAnswer":
     "代码以 AGPL‑3.0 开源在 GitHub 上，任何人都能继续运行它，你也可以随时导出数据。",
   "SiteFooter.aboutHint": "（打开 antonshubin.com）",
+  "FeatureAccounts.code": "阅读账户代码",
+  "FeatureAccounts.fact1": "服务器在每次读取时计算余额，从不存储，因此余额不会偏差",
+  "FeatureAccounts.fact2": "金额是币种最小单位的整数：日元没有小数，第纳尔有三位",
+  "FeatureAccounts.fact3": "查看者可以看到账户；只有编辑者及以上角色可以更改，由服务器检查",
+  "FeatureAccounts.lead":
+    "现金、银行账户、银行卡、储蓄、资产和负债，各用自己的币种，按类型分组，并有一个默认账户。家庭里的每个人都能立即看到每次更改。",
+  "FeatureAccounts.nav": "账户",
+  "FeatureAccounts.title": "每个账户都有自己的币种",
+  "FeatureTierSettled.lead":
+    "这些部分已经可用，并在 CI 中测试。任意币种的账户已经上线；账户里的交易是下一步。",
+  "Features.description":
+    "Financy 现状：任意币种的账户、带角色的家庭、实时同步、离线应用、导出、九种语言和自托管。接下来是交易。",
+  "Features.title": "Financy 功能：账户、家庭、同步、离线",
+  "FeaturesHero.lead":
+    "Financy 正在重建。今天已经可用的：任意币种的账户，以及它下面的基础：登录、按角色共享访问、实时更新、离线应用、导出、九种语言和你自己的服务器。每一节都链接到它的代码。",
+  "FeaturesHero.note": "交易和预算还没有做好。<status>看看重建进行到哪一步了</status>。",
+  "HomeFaq.useAnswer": "还不行。登录、家庭、同步和任意币种的账户已经可用；交易正在开发中。",
 } satisfies Catalog

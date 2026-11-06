@@ -182,4 +182,14 @@ export default {
   "Reason.result_unknown": "我们没有收到支付服务商的回复。重试之前，请先查看账单页面。",
   "Reason.validation": "有些字段需要修改，请检查后重试。",
   "Reason.TRANSLATION_INVALID": "这篇文章不能作为那篇文章的翻译。请选择另一种语言的原文，或不选。",
+  "ImportIssue.archivedDefaultAccount": "它已归档，所以不能作为默认账户。",
+  "ImportIssue.secondDefaultAccount": "文件中已有另一个账户是默认账户。",
+  "ImportIssue.tooManyAccounts": {
+    "other": "其中有 {count} 个账户，但一个家庭最多只能有 {max} 个。",
+  },
+  "ImportPlace.accounts": "账户",
+  "ImportPlace.accountsEntry": "账户 {index}",
+  "Reason.ACCOUNT_ARCHIVED": "已归档的账户不能设为默认。请先取消归档。",
+  "Reason.ACCOUNT_LIMIT_REACHED": "这个家庭不能再添加账户了。请先归档或删除一个。",
+  "Reason.ACCOUNT_NOT_FOUND": "这个账户已不存在。",
 } satisfies Catalog

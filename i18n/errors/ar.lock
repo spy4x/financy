@@ -50,6 +50,7 @@ Field.unstorableCharacters	2a52ba1e1a7840c4
 Field.weightBothEnds	96fc48965564ce76
 Field.weightWholeNumbers	4a3214257d6978bc
 Field.withinYears	c9cb51a4f00cbfd5
+ImportIssue.archivedDefaultAccount	3d63f0d7a50d0605
 ImportIssue.domain	4eb02e0d1d17c943
 ImportIssue.duplicateId	7129ea15edc468da
 ImportIssue.duplicateTagName	3e2ae215ac250818
@@ -57,9 +58,13 @@ ImportIssue.notDate	213ea10e15477b71
 ImportIssue.notList	ef6ef968f5b93c74
 ImportIssue.notObject	77a46ade25b55ed9
 ImportIssue.required	4aa125054edfd050
+ImportIssue.secondDefaultAccount	2c28b0e7dab64200
+ImportIssue.tooManyAccounts	43303fa112b6bff9
 ImportIssue.tooManyEntries	80f4e5f82e8fd115
 ImportIssue.tooManyTags	7abc8554735b28eb
 ImportIssue.unknownKey	2cec8a9d31ac9573
+ImportPlace.accounts	8a7c8b67fe8bde8b
+ImportPlace.accountsEntry	66d72dedf2afce16
 ImportPlace.file	d79f8eaeb0f30c4a
 ImportPlace.notes	8a7525b1492fb848
 ImportPlace.notesEntry	1f30dea23a4dd68b
@@ -68,6 +73,9 @@ ImportPlace.tags	1331275bc537b4c2
 ImportPlace.tagsEntry	83b281ac9c5bbe2c
 ImportProblem.line	9f4a5acd0a57b0ce
 ImportProblem.lineField	19e642856bffa01b
+Reason.ACCOUNT_ARCHIVED	510a9392dd5ecc89
+Reason.ACCOUNT_LIMIT_REACHED	b2b78bed44ad3ac2
+Reason.ACCOUNT_NOT_FOUND	4925b5a05acf8e98
 Reason.ADDRESS_NOT_PROVEN	15597fc289f10bee
 Reason.ALREADY_MEMBER	8939252c120e4b1f
 Reason.ALREADY_SUBSCRIBED	cb8d9f81e31e2857

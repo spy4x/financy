@@ -219,8 +219,6 @@ export default {
   "DemoPlan.proRoles": "Promova membros a editor ou administrador",
   "FeatureTierSettled.eyebrow": "Funciona hoje",
   "FeatureTierSettled.title": "A base onde vai ficar o dinheiro da sua família",
-  "FeatureTierSettled.lead":
-    "Estas partes já funcionam e são testadas na CI. O próximo passo é o dinheiro em si: contas em qualquer moeda e seus lançamentos.",
   "FeatureTierSettled.status":
     "Entrar com Google e GitHub exige chaves próprias do servidor, então uma instalação nova começa só com o login por e-mail.",
   "FeatureSignIn.nav": "Contas e login",
@@ -295,14 +293,7 @@ export default {
   "FeaturesFaq.nativeQuestion": "Tem app para celular?",
   "FeaturesFaq.nativeAnswer":
     "Ainda não está nas lojas. Hoje o app web se instala pelo navegador no celular e no computador e abre offline.",
-  "Features.title": "Recursos do Financy: famílias, sincronização, offline, hospedagem própria",
-  "Features.description":
-    "O que o Financy faz hoje: famílias com funções, atualizações na hora em todo dispositivo, um app que funciona offline, exportação, nove idiomas e hospedagem própria. Contas e orçamentos vêm a seguir.",
   "FeaturesHero.title": "O que o Financy faz hoje, e o que vem a seguir",
-  "FeaturesHero.lead":
-    "O Financy está sendo reconstruído. O que funciona hoje é a base onde vai ficar o dinheiro de uma família: entrar, acesso compartilhado com funções, atualizações na hora, um app offline, exportação, nove idiomas e o seu próprio servidor. Cada seção leva ao seu código.",
-  "FeaturesHero.note":
-    "Contas, lançamentos e orçamentos ainda não foram construídos. <status>Veja em que pé está a reconstrução</status>.",
   "FeaturesFaq.title": "O Financy faz isso?",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "Para desenvolvedores",
@@ -588,8 +579,6 @@ export default {
   "HomeWays.cloudText":
     "Ainda não abriu. O mesmo código, sem você precisar cuidar de servidor, num plano pago.",
   "HomeFaq.useQuestion": "Posso usar o Financy hoje?",
-  "HomeFaq.useAnswer":
-    "Ainda não. Entrar, famílias e sincronização funcionam; contas e lançamentos estão sendo construídos agora.",
   "HomeFaq.currencyQuestion": "Quais moedas ele vai aceitar?",
   "HomeFaq.currencyAnswer":
     "Qualquer combinação, incluindo criptomoedas; cada lançamento guarda o valor original ao lado do convertido. Planejado, ainda não construído.",
@@ -600,4 +589,26 @@ export default {
   "HomeFaq.stopsAnswer":
     "O código está no GitHub sob AGPL‑3.0, então qualquer pessoa pode continuar rodando, e você pode exportar seus dados quando quiser.",
   "SiteFooter.aboutHint": "(abre antonshubin.com)",
+  "FeatureAccounts.code": "Ler o código das contas",
+  "FeatureAccounts.fact1":
+    "O servidor calcula cada saldo quando ele é lido e nunca o guarda, então ele não se desvia",
+  "FeatureAccounts.fact2":
+    "Os valores são inteiros na menor unidade da moeda: o iene não tem nenhuma, o dinar tem três casas",
+  "FeatureAccounts.fact3":
+    "Quem só visualiza vê as contas; só editores ou acima as alteram, e o servidor confere",
+  "FeatureAccounts.lead":
+    "Dinheiro, contas bancárias, cartões, poupança, ativos e dívidas, cada um na própria moeda, agrupados por tipo e com uma conta padrão. Toda a família vê cada mudança na hora.",
+  "FeatureAccounts.nav": "Contas",
+  "FeatureAccounts.title": "Cada conta na própria moeda",
+  "FeatureTierSettled.lead":
+    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda já estão aqui; os lançamentos nelas vêm a seguir.",
+  "Features.description":
+    "Financy hoje: contas em qualquer moeda, famílias com funções, sincronização, app offline, exportação, nove idiomas e seu servidor. Depois, lançamentos.",
+  "Features.title": "Recursos do Financy: contas, famílias, sincronização",
+  "FeaturesHero.lead":
+    "O Financy está sendo reconstruído. O que funciona hoje: contas em qualquer moeda e a base por trás delas: login, acesso compartilhado com funções, atualizações ao vivo, um app offline, exportação, nove idiomas e seu próprio servidor. Cada seção leva ao código dela.",
+  "FeaturesHero.note":
+    "Lançamentos e orçamentos ainda não existem. <status>Veja em que ponto está a reconstrução</status>.",
+  "HomeFaq.useAnswer":
+    "Ainda não. Login, famílias, sincronização e contas em qualquer moeda funcionam; os lançamentos estão sendo feitos agora.",
 } satisfies Catalog

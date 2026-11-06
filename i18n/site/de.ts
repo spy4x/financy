@@ -221,8 +221,6 @@ export default {
   "DemoPlan.proRoles": "Mitglieder zu Bearbeitern oder Admins machen",
   "FeatureTierSettled.eyebrow": "Funktioniert heute",
   "FeatureTierSettled.title": "Das Fundament für das Geld deines Haushalts",
-  "FeatureTierSettled.lead":
-    "Diese Teile funktionieren und werden in der CI getestet. Als Nächstes kommt das Geld selbst: Konten in jeder Währung und ihre Buchungen.",
   "FeatureTierSettled.status":
     "Die Anmeldung mit Google und GitHub braucht eigene Schlüssel für den Server, deshalb bietet eine frische Installation zunächst nur die Anmeldung per E-Mail.",
   "FeatureSignIn.nav": "Konten und Anmeldung",
@@ -296,14 +294,7 @@ export default {
   "FeaturesFaq.nativeQuestion": "Gibt es eine App fürs Handy?",
   "FeaturesFaq.nativeAnswer":
     "Noch nicht in den App-Stores. Die Web-App lässt sich schon heute aus dem Browser auf Handy und Computer installieren und startet auch ohne Netz.",
-  "Features.title": "Financy-Funktionen: Haushalte, Sync, offline, selbst hosten",
-  "Features.description":
-    "Was Financy heute kann: Haushalte mit Rollen, Live-Updates auf jedem Gerät, eine App, die offline funktioniert, Export, neun Sprachen und Selbsthosting. Konten und Budgets kommen als Nächstes.",
   "FeaturesHero.title": "Was Financy heute kann, und was als Nächstes kommt",
-  "FeaturesHero.lead":
-    "Financy wird neu gebaut. Was heute funktioniert, ist das Fundament für das Geld eines Haushalts: Anmeldung, gemeinsamer Zugang mit Rollen, Live-Updates, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt auf seinen Code.",
-  "FeaturesHero.note":
-    "Konten, Buchungen und Budgets sind noch nicht gebaut. <status>Zum aktuellen Stand des Neubaus</status>.",
   "FeaturesFaq.title": "Kann Financy das?",
   "FeatureSection.issue": "Issue #{number}",
   "FeatureSection.forDevelopers": "Für Entwickler",
@@ -587,8 +578,6 @@ export default {
   "HomeWays.cloudText":
     "Noch nicht gestartet. Derselbe Code, für dich betrieben, als bezahlter Tarif.",
   "HomeFaq.useQuestion": "Kann ich Financy heute schon nutzen?",
-  "HomeFaq.useAnswer":
-    "Noch nicht. Anmeldung, Haushalte und Synchronisierung funktionieren; Konten und Buchungen werden gerade gebaut.",
   "HomeFaq.currencyQuestion": "Welche Währungen wird Financy unterstützen?",
   "HomeFaq.currencyAnswer":
     "Beliebige, auch Kryptowährungen; jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten. Geplant, aber noch nicht gebaut.",
@@ -598,4 +587,26 @@ export default {
   "HomeFaq.stopsAnswer":
     "Der Code steht unter AGPL‑3.0 auf GitHub, also kann ihn jeder weiter betreiben, und du kannst deine Daten jederzeit exportieren.",
   "SiteFooter.aboutHint": "(öffnet antonshubin.com)",
+  "FeatureAccounts.code": "Code der Konten lesen",
+  "FeatureAccounts.fact1":
+    "Der Server berechnet den Kontostand bei jedem Lesen und speichert ihn nirgends, deshalb weicht er nie ab",
+  "FeatureAccounts.fact2":
+    "Beträge sind ganze Zahlen in der kleinsten Einheit der Währung: Der Yen hat keine, der Dinar drei Nachkommastellen",
+  "FeatureAccounts.fact3":
+    "Ein Betrachter sieht die Konten; ändern können sie nur Bearbeiter und höher, und der Server prüft das",
+  "FeatureAccounts.lead":
+    "Bargeld, Bankkonten, Karten, Ersparnisse, Vermögenswerte und Schulden, jedes in seiner eigenen Währung, nach Art gruppiert und mit einem Standardkonto. Der ganze Haushalt sieht jede Änderung sofort.",
+  "FeatureAccounts.nav": "Konten",
+  "FeatureAccounts.title": "Jedes Konto in seiner eigenen Währung",
+  "FeatureTierSettled.lead":
+    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung sind da; Buchungen darauf kommen als Nächstes.",
+  "Features.description":
+    "Financy heute: Konten in jeder Währung, Haushalte mit Rollen, Sync, Offline-App, Export, neun Sprachen und dein eigener Server. Als Nächstes: Buchungen.",
+  "Features.title": "Financy-Funktionen: Konten, Haushalte, Sync, offline",
+  "FeaturesHero.lead":
+    "Financy wird von Grund auf neu gebaut. Was heute funktioniert: Konten in jeder Währung und das Fundament darunter: Anmeldung, Teilen mit Rollen, Änderungen in Echtzeit, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt den Code dahinter.",
+  "FeaturesHero.note":
+    "Buchungen und Budgets gibt es noch nicht. <status>Sieh nach, wie weit der Neubau ist</status>.",
+  "HomeFaq.useAnswer":
+    "Noch nicht. Anmeldung, Haushalte, Synchronisierung und Konten in jeder Währung funktionieren; Buchungen werden gerade gebaut.",
 } satisfies Catalog

@@ -219,4 +219,18 @@ export default {
   "Reason.validation": "Некоторые поля заполнены неверно. Проверьте их и попробуйте ещё раз.",
   "Reason.TRANSLATION_INVALID":
     "Этот пост не может быть переводом того. Выберите исходный пост на другом языке или не выбирайте ничего.",
+  "ImportIssue.archivedDefaultAccount": "Он в архиве, поэтому не может быть основным счётом.",
+  "ImportIssue.secondDefaultAccount": "Другой счёт в файле уже основной.",
+  "ImportIssue.tooManyAccounts": {
+    "one": "В нём {count} счёт, а в семье может быть не больше {max}.",
+    "few": "В нём {count} счёта, а в семье может быть не больше {max}.",
+    "many": "В нём {count} счетов, а в семье может быть не больше {max}.",
+    "other": "В нём {count} счёта, а в семье может быть не больше {max}.",
+  },
+  "ImportPlace.accounts": "Счета",
+  "ImportPlace.accountsEntry": "Счёт {index}",
+  "Reason.ACCOUNT_ARCHIVED": "Архивный счёт не может быть основным. Сначала верните его из архива.",
+  "Reason.ACCOUNT_LIMIT_REACHED":
+    "В этой семье больше нельзя добавить счета. Сначала уберите один в архив или удалите.",
+  "Reason.ACCOUNT_NOT_FOUND": "Этого счёта больше нет.",
 } satisfies Catalog

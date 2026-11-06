@@ -207,4 +207,17 @@ export default {
   "Reason.validation": "Alguns campos precisam de correção. Confira e tente de novo.",
   "Reason.TRANSLATION_INVALID":
     "Este post não pode ser tradução daquele. Escolha um post original em outro idioma, ou nenhum.",
+  "ImportIssue.archivedDefaultAccount": "Ela está arquivada, então não pode ser a conta padrão.",
+  "ImportIssue.secondDefaultAccount": "Outra conta no arquivo já é a padrão.",
+  "ImportIssue.tooManyAccounts": {
+    "one": "Ele tem {count} conta, mas uma família pode ter no máximo {max}.",
+    "many": "Ele tem {count} de contas, mas uma família pode ter no máximo {max}.",
+    "other": "Ele tem {count} contas, mas uma família pode ter no máximo {max}.",
+  },
+  "ImportPlace.accounts": "Contas",
+  "ImportPlace.accountsEntry": "Conta {index}",
+  "Reason.ACCOUNT_ARCHIVED": "Uma conta arquivada não pode ser a padrão. Desarquive-a primeiro.",
+  "Reason.ACCOUNT_LIMIT_REACHED":
+    "Esta família não pode ter mais contas. Arquive ou exclua uma primeiro.",
+  "Reason.ACCOUNT_NOT_FOUND": "Esta conta não existe mais.",
 } satisfies Catalog

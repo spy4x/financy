@@ -218,4 +218,19 @@ export default {
   "Reason.validation": "Einige Felder stimmen noch nicht. Prüfe sie und versuche es noch einmal.",
   "Reason.TRANSLATION_INVALID":
     "Dieser Beitrag kann keine Übersetzung des gewählten Beitrags sein. Wähle einen Originalbeitrag in einer anderen Sprache oder keinen.",
+  "ImportIssue.archivedDefaultAccount":
+    "Es ist archiviert und kann daher nicht das Standardkonto sein.",
+  "ImportIssue.secondDefaultAccount":
+    "Ein anderes Konto in der Datei ist bereits das Standardkonto.",
+  "ImportIssue.tooManyAccounts": {
+    "one": "Sie enthält {count} Konto, ein Haushalt kann aber höchstens {max} haben.",
+    "other": "Sie enthält {count} Konten, ein Haushalt kann aber höchstens {max} haben.",
+  },
+  "ImportPlace.accounts": "Konten",
+  "ImportPlace.accountsEntry": "Konto {index}",
+  "Reason.ACCOUNT_ARCHIVED":
+    "Ein archiviertes Konto kann nicht das Standardkonto sein. Hol es zuerst aus dem Archiv.",
+  "Reason.ACCOUNT_LIMIT_REACHED":
+    "Dieser Haushalt kann keine weiteren Konten haben. Archiviere oder lösche zuerst eins.",
+  "Reason.ACCOUNT_NOT_FOUND": "Dieses Konto gibt es nicht mehr.",
 } satisfies Catalog

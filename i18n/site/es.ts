@@ -219,8 +219,6 @@ export default {
   "DemoPlan.proRoles": "Convierte a miembros en editores o administradores",
   "FeatureTierSettled.eyebrow": "Funciona hoy",
   "FeatureTierSettled.title": "La base donde vivirá el dinero de tu hogar",
-  "FeatureTierSettled.lead":
-    "Estas partes ya funcionan y se prueban en CI. Lo siguiente es el dinero en sí: cuentas en cualquier moneda y sus movimientos.",
   "FeatureTierSettled.status":
     "El inicio de sesión con Google y GitHub necesita claves propias del servidor, así que una instalación nueva empieza solo con el inicio de sesión por correo.",
   "FeatureSignIn.nav": "Cuentas e inicio de sesión",
@@ -295,14 +293,7 @@ export default {
   "FeaturesFaq.nativeQuestion": "¿Hay una app para el móvil?",
   "FeaturesFaq.nativeAnswer":
     "Todavía no está en las tiendas. Por ahora, la app web se instala desde el navegador en móviles y ordenadores y se abre sin conexión.",
-  "Features.title": "Funciones de Financy: hogares, sincronización, sin conexión, autoalojado",
-  "Features.description":
-    "Lo que Financy hace hoy: hogares con roles, cambios al instante en cada dispositivo, una app que funciona sin conexión, exportación, nueve idiomas y alojamiento propio. Después llegan las cuentas y los presupuestos.",
   "FeaturesHero.title": "Lo que Financy hace hoy, y lo que viene después",
-  "FeaturesHero.lead":
-    "Financy se está reconstruyendo. Lo que funciona hoy es la base donde vivirá el dinero de un hogar: inicio de sesión, acceso compartido con roles, cambios al instante, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza a su código.",
-  "FeaturesHero.note":
-    "Las cuentas, los movimientos y los presupuestos aún no están construidos. <status>Ver cómo va la reconstrucción</status>.",
   "FeaturesFaq.title": "¿Financy puede hacer eso?",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "Para desarrolladores",
@@ -592,8 +583,6 @@ export default {
   "HomeWays.cloudText":
     "Aún no está abierta. El mismo código, sin que tengas que mantener un servidor, en un plan de pago.",
   "HomeFaq.useQuestion": "¿Puedo usar Financy hoy?",
-  "HomeFaq.useAnswer":
-    "Todavía no. El inicio de sesión, los hogares y la sincronización funcionan; las cuentas y los movimientos se están construyendo ahora.",
   "HomeFaq.currencyQuestion": "¿Qué monedas admitirá?",
   "HomeFaq.currencyAnswer":
     "Cualquier combinación, criptomonedas incluidas; cada movimiento guarda su importe original junto al convertido. Previsto, pero aún no construido.",
@@ -604,4 +593,26 @@ export default {
   "HomeFaq.stopsAnswer":
     "El código está en GitHub bajo AGPL‑3.0, así que cualquiera puede seguir ejecutándolo, y puedes exportar tus datos cuando quieras.",
   "SiteFooter.aboutHint": "(abre antonshubin.com)",
+  "FeatureAccounts.code": "Ver el código de las cuentas",
+  "FeatureAccounts.fact1":
+    "El servidor calcula el saldo en cada lectura y no lo guarda en ningún sitio, así que nunca se desvía",
+  "FeatureAccounts.fact2":
+    "Los importes son enteros en la unidad más pequeña de la moneda: el yen no tiene, el dinar tiene tres decimales",
+  "FeatureAccounts.fact3":
+    "Un lector ve las cuentas; solo los editores y roles superiores pueden cambiarlas, y el servidor lo comprueba",
+  "FeatureAccounts.lead":
+    "Efectivo, cuentas bancarias, tarjetas, ahorros, activos y deudas, cada una en su moneda, agrupadas por tipo y con una predeterminada. Todo el hogar ve cada cambio al momento.",
+  "FeatureAccounts.nav": "Cuentas",
+  "FeatureAccounts.title": "Cada cuenta en su propia moneda",
+  "FeatureTierSettled.lead":
+    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda ya están; los movimientos en ellas son lo siguiente.",
+  "Features.description":
+    "Financy hoy: cuentas en cualquier moneda, hogares con roles, sincronización, app sin conexión, exportación, nueve idiomas y tu servidor. Luego, movimientos.",
+  "Features.title": "Funciones de Financy: cuentas, hogares, sincronización",
+  "FeaturesHero.lead":
+    "Financy se está reconstruyendo desde cero. Lo que funciona hoy: cuentas en cualquier moneda y la base que hay debajo: inicio de sesión, uso compartido con roles, cambios en tiempo real, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza al código que la hace.",
+  "FeaturesHero.note":
+    "Los movimientos y los presupuestos aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
+  "HomeFaq.useAnswer":
+    "Todavía no. El inicio de sesión, los hogares, la sincronización y las cuentas en cualquier moneda funcionan; los movimientos están en marcha.",
 } satisfies Catalog
