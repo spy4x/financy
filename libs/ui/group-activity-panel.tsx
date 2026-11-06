@@ -286,6 +286,23 @@ export function activityMessage(event: Pick<ActivityEvent, "kind" | "details">):
         ? one(`GroupActivity.tagDeleted`, { name })
         : one(`GroupActivity.tagDeletedUnnamed`)
     }
+    case "account.updated": {
+      const from = text(details.from)
+      if (from && name) return one(`GroupActivity.accountRenamed`, { from, name })
+      return name
+        ? one(`GroupActivity.accountChanged`, { name })
+        : one(`GroupActivity.accountChangedUnnamed`)
+    }
+    case "account.created":
+    case "account.archived":
+    case "account.unarchived":
+    case "account.default_set":
+    case "account.default_cleared":
+    case "account.deleted":
+    case "account.restored":
+      return name
+        ? one(ACCOUNT_SENTENCES[event.kind], { name })
+        : one(`GroupActivity.accountChangedUnnamed`)
     default:
       return one(`GroupActivity.unknown`)
   }
@@ -346,4 +363,15 @@ export function ActivitySentence(
       }}
     />
   )
+}
+
+/** The sentence of each account event that names the account. */
+const ACCOUNT_SENTENCES: Record<string, string> = {
+  "account.created": `GroupActivity.accountCreated`,
+  "account.archived": `GroupActivity.accountArchived`,
+  "account.unarchived": `GroupActivity.accountUnarchived`,
+  "account.default_set": `GroupActivity.accountDefaultSet`,
+  "account.default_cleared": `GroupActivity.accountDefaultCleared`,
+  "account.deleted": `GroupActivity.accountDeleted`,
+  "account.restored": `GroupActivity.accountRestored`,
 }

@@ -158,6 +158,20 @@ export default {
     "one": "<who>{who}</who> deleted a tag used on {count} note",
     "other": "<who>{who}</who> deleted a tag used on {count} notes",
   },
+  "GroupActivity.accountCreated": "<who>{who}</who> added the account “<value>{name}</value>”",
+  "GroupActivity.accountRenamed":
+    "<who>{who}</who> renamed the account “<value>{from}</value>” to “<value>{name}</value>”",
+  "GroupActivity.accountChanged": "<who>{who}</who> changed the account “<value>{name}</value>”",
+  "GroupActivity.accountChangedUnnamed": "<who>{who}</who> changed an account",
+  "GroupActivity.accountArchived": "<who>{who}</who> archived the account “<value>{name}</value>”",
+  "GroupActivity.accountUnarchived":
+    "<who>{who}</who> unarchived the account “<value>{name}</value>”",
+  "GroupActivity.accountDefaultSet":
+    "<who>{who}</who> made the account “<value>{name}</value>” the default",
+  "GroupActivity.accountDefaultCleared":
+    "<who>{who}</who> stopped using the account “<value>{name}</value>” as the default",
+  "GroupActivity.accountDeleted": "<who>{who}</who> deleted the account “<value>{name}</value>”",
+  "GroupActivity.accountRestored": "<who>{who}</who> restored the account “<value>{name}</value>”",
   "GroupActivity.unknown": "<who>{who}</who> changed something in the group",
   "GroupActivity.loadFailed": "Could not load the activity",
   "GroupActivity.loadMoreFailed": "Could not load more activity",

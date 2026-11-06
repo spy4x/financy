@@ -121,6 +121,26 @@ Deno.test("activity: a tag's changes read as sentences that name the tag", () =>
   )
 })
 
+Deno.test("activity: an account's changes read as sentences that name the account", () => {
+  expect(say("account.created", { details: { name: "Wallet" } })).toBe(
+    "Ada added the account “Wallet”",
+  )
+  expect(say("account.created")).toBe("Ada added an account")
+  expect(say("account.updated", { details: { name: "Cash", from: "Wallet" } })).toBe(
+    "Ada renamed the account “Wallet” to “Cash”",
+  )
+  expect(say("account.updated", { details: { name: "Cash" } })).toBe(
+    "Ada changed the account “Cash”",
+  )
+  expect(say("account.archived", { details: { name: "Cash" } })).toBe(
+    "Ada archived the account “Cash”",
+  )
+  expect(say("account.default_set", { details: { name: "Cash" } })).toBe(
+    "Ada made the account “Cash” the default",
+  )
+  expect(say("account.default_cleared")).toBe("Ada stopped using an account as the default")
+})
+
 Deno.test("activity: every kind the server writes has its own sentence", () => {
   for (const kind of ACTIVITY_KINDS) {
     expect(say(kind)).not.toBe(say("future.kind"))
