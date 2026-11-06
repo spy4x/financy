@@ -657,12 +657,13 @@ describe("the public website", () => {
   })
 
   for (const [path, title] of [["/privacy", "Privacy"], ["/terms", "Terms"]]) {
-    it(`answers ${path} with its heading, a notice to adapt it and its canonical address`, async () => {
+    it(`answers ${path} with its heading, its "In short" summary in place of the template notice, and its canonical address`, async () => {
       const { status, html } = await page(path)
 
       expect(status).toBe(200)
       expect(headingOne(html)).toBe(title)
-      expect(html).toContain("A starting point, not legal advice")
+      expect(html).toContain(`data-e2e="tldr-box"`)
+      expect(html).not.toContain("A starting point, not legal advice")
       expect(html).toContain(`<link rel="canonical" href="${site}${path}"`)
     })
   }
@@ -794,16 +795,138 @@ describe("the public website", () => {
       ...Object.fromEntries(DOC_SLUGS.map((slug) => [`/docs/${slug}`, "2026-11-01T00:00:00.000Z"])),
       "/changelog": "2026-11-01T00:00:00.000Z",
       "/subscribe": "2026-11-04T00:00:00.000Z",
-      "/privacy": "2026-10-23T00:00:00.000Z",
-      "/terms": "2026-10-21T00:00:00.000Z",
+      "/privacy": "2026-11-06T00:00:00.000Z",
+      "/terms": "2026-11-06T00:00:00.000Z",
     })
   })
 
-  it("says on the privacy page that a guest account's cookie lasts a year from its last use", async () => {
+  it("names on the privacy page the controller, every company that handles data and every kind of record Financy stores (#86)", async () => {
+    const { html } = await page("/privacy", withAnalytics)
+
+    expect(html).toContain(`NeatSoft PTE LTD in Singapore`)
+    for (
+      const processor of [
+        `Stripe`,
+        `The mail provider`,
+        `Exchange-rate sources`,
+        `Umami`,
+        `DeepSeek`,
+        `Google or GitHub`,
+        `Your browser&#39;s push service`,
+        `Telegram`,
+      ]
+    ) expect(html).toContain(`<strong>${processor}</strong>`)
+    for (
+      const group of [
+        `Your account`,
+        `Your household`,
+        `Your finances`,
+        `Imports`,
+        `Connections`,
+        `Payments`,
+      ]
+    ) expect(html).toContain(`>${group}</h3>`)
+    for (
+      const record of [
+        `your passkeys`,
+        `the Google or GitHub account you linked`,
+        `API tokens, if you create any`,
+        `The time zone and language of the first device you signed in on`,
+        `short-lived cookies hold the step you are on`,
+        `its invitations`,
+        `crypto holdings`,
+        `every transaction and`,
+        `Categories, monthly budgets and recurring transactions`,
+        `A bank statement you upload, until its import is saved or abandoned`,
+        `your Telegram account&#39;s id`,
+        `Stripe&#39;s customer and subscription numbers`,
+      ]
+    ) expect(html).toContain(record)
+    expect(html).toContain(`Frankfurter`)
+    expect(html).toContain(`It is not end-to-end encrypted`)
+  })
+
+  it("says on the privacy page that a deleted household stays restorable for 30 days and leaves the backups about seven months after the delete (#86)", async () => {
+    const { html } = await page("/privacy")
+    const summary = html.slice(html.indexOf(`data-e2e="tldr-box"`), html.indexOf(`</section>`))
+
+    expect(html).not.toContain(`leaves the live database at once`)
+    expect(html).toContain(`stays restorable for 30 days and is then removed for good`)
+    expect(html).toContain(`deleted for good 7 days later`)
+    expect(html).toContain(`gone from them about seven months after the delete`)
+    expect(html).toContain(`activity log is kept for a year, and outlives a deleted household`)
+    expect(summary).toContain(
+      `can be restored for 30 days and is gone from the backups about seven months`,
+    )
+  })
+
+  it("lists on the privacy page what operators see in the admin panel, uploaded files included, and when anyone looks at a household's finances (#86)", async () => {
     const { html } = await page("/privacy")
 
-    expect(html).toContain(`two months, or for a guest account one year`)
-    expect(html).toContain(`A guest account that stays empty is deleted after 7 days`)
+    expect(html).toContain(
+      `its sign-in records with IP addresses, its devices, notifications and API`,
+    )
+    expect(html).toContain(`and each household&#39;s members, plan and overview`)
+    expect(html).toContain(
+      `open and download a household&#39;s uploaded files, and each time they open one, it is recorded`,
+    )
+    expect(html).toContain(`The small image previews in the file list are not recorded`)
+    expect(html).toContain(
+      `except when the household asks for help with a problem, or when the law requires it`,
+    )
+  })
+
+  it("says on the privacy page that a sign-in cookie holds a reference to the code, never the code (#86)", async () => {
+    const { html } = await page("/privacy")
+
+    expect(html).toContain(`a signed reference to the code we sent you (never the code itself)`)
+  })
+
+  it("states on the terms page the price in US dollars, the renewal, the 30-day money-back guarantee and that Financy gives no financial advice (#86)", async () => {
+    const { html } = await page("/terms")
+
+    expect(html).toContain(`$4 a month or $40 a year, in US dollars, per household of up to 6`)
+    expect(html).toContain(`$40 today, then $40 every year until you cancel.`)
+    expect(html).toContain(`$4 today, then $4 every month until you cancel.`)
+    expect(html).toContain(`If you are a consumer in Germany`)
+    expect(html).toContain(`If you ask within 30 days of your first payment, I refund it in full`)
+    expect(html).toContain(`It does not give financial, tax or investment advice`)
+    expect(html).toContain(`A total in your base currency is an estimate`)
+  })
+
+  it("says on the privacy page that data stays in Singapore on an unencrypted disk, with no EU representative yet (#86)", async () => {
+    const { html } = await page("/privacy")
+
+    expect(html).toContain(`stored in Singapore, on a server NeatSoft runs itself`)
+    expect(html).toContain(`NeatSoft&#39;s own machines in Singapore and Vietnam`)
+    expect(html).toContain(`the EU has not recognised Singapore`)
+    expect(html).toContain(`Financy has none yet. It will name one once 10 households in the EU`)
+    expect(html).toContain(`The server&#39;s own disk is not encrypted`)
+    expect(html).not.toMatch(/encrypted[^.]*on (the server&#39;s )?disk/)
+    expect(html).toContain(`own key and address for another AI provider`)
+    expect(html).toContain(`href="mailto:privacy@financy.dev"`)
+  })
+
+  it("states on the terms page the renewal refund windows, Singapore law and the contact address (#86)", async () => {
+    const { html } = await page("/terms")
+
+    expect(html).toContain(`If you have not used Financy since the renewal, ask within 14 days`)
+    expect(html).toContain(`If you have used it, ask within 5 days.`)
+    expect(html).toContain(`<h2 id="law">Law and courts</h2>`)
+    expect(html).toContain(`follow the law of Singapore`)
+    expect(html).toContain(`href="mailto:hi@financy.dev"`)
+  })
+
+  it("keeps Seed's site, Seed's demo and any trial offer off both legal pages (#86)", async () => {
+    for (const path of ["/privacy", "/terms"]) {
+      const { html } = await page(path, withAnalytics)
+      const article = html.slice(html.indexOf("<h1"), html.indexOf("<footer"))
+
+      expect(article, path).not.toMatch(/seedsaas|Seed demo|demo of Seed|Seed&#39;s demo/i)
+      for (const [trial] of article.matchAll(/[\w ]{0,8}trial/gi)) {
+        expect(trial, path).toBe(`no free trial`)
+      }
+    }
   })
 
   it("shows on each legal page the same day its sitemap entry carries", async () => {
@@ -967,7 +1090,7 @@ describe("the public website", () => {
   it("says on the privacy page that visits are counted in a self-hosted Umami without cookies, and what it records", async () => {
     const { html } = await page("/privacy", withAnalytics)
 
-    expect(html).toContain(`<h2 id="statistics">Visitor statistics</h2>`)
+    expect(html).toContain(`<h2 id="website">This website and its statistics</h2>`)
     expect(html).toContain("counts visits with Umami, which I host myself")
     expect(html).toContain("It sets no cookies")
     expect(html).toContain("If your browser sends Do Not Track, nothing is counted.")
@@ -977,7 +1100,7 @@ describe("the public website", () => {
   it("says on the privacy page that no visits are counted while analytics is off", async () => {
     const { html } = await page("/privacy")
 
-    expect(html).toContain("This website keeps no visitor statistics, and neither does the demo.")
+    expect(html).toContain("This website keeps no visitor statistics, and neither does the app.")
     expect(html).not.toContain("Umami")
   })
 })
