@@ -21,6 +21,7 @@ import {
   FAKE_PASSKEYS,
   fakeDemoData,
   fakePeople,
+  fakeRates,
   fakeWorkspace,
   VIDEO_PERSON_INDEX,
 } from "../../apps/worker/demo/fake-data.ts"
@@ -355,6 +356,11 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
         (SELECT COUNT(*)::int FROM catalog_tracking_links) AS links
     `
     expect({ sources, links }).toEqual({ sources: SAMPLE_CATALOG_SOURCES.length, links: 0 })
+    // A few days of recorded exchange rates, so a demo household converts without the network.
+    const [{ rates }] = await sql<{ rates: number }[]>`
+      SELECT COUNT(*)::int AS rates FROM exchange_rates
+    `
+    expect(rates).toBe(fakeRates(NOW).length)
   })
 })
 
