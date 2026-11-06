@@ -20,6 +20,7 @@ import { Button } from "@spy4x/preact-ui/button"
 import { Link } from "@spy4x/preact-ui/link"
 import { LanguageButton } from "@spy4x/preact-ui/language-picker"
 import type { AccountMenuLanguage } from "@spy4x/preact-system/account-menu"
+import { PRODUCT_NAME } from "./brand.ts"
 import { GroupPicker, type GroupPickerData, GroupSheet } from "./group-picker.tsx"
 import {
   GROUP_PATHS,
@@ -282,7 +283,7 @@ function Brand({ navigate }: { navigate?: Navigate }): JSX.Element {
       navigate={navigate}
       class="flex shrink-0 items-center gap-2 rounded-md"
     >
-      <BrandMark Icon={IconWallet} name="Financy" />
+      <BrandMark Icon={IconWallet} name={PRODUCT_NAME} />
     </Link>
   )
 }
