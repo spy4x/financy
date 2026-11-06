@@ -9,6 +9,7 @@ import { readTelegramSetup } from "@server/telegram/setup.ts"
 import { queueDueBlogJobs } from "@server/blog/blog-publish-job.ts"
 import { readIndexNowSetup } from "@server/blog/blog-indexnow-job.ts"
 import { readCrosspostSetup } from "@server/blog/blog-crosspost-job.ts"
+import { readRatesSetup, type RatesSetup } from "@server/money/rates-setup.ts"
 import { loadDemoBlogPosts } from "@server/blog/seed-posts.ts"
 import { PostgresIdempotencyStore } from "@spy4x/server/idempotency"
 import { startIdempotencySweep } from "./idempotency-sweep.ts"
@@ -130,6 +131,17 @@ if (!crosspost && processEnv.get("DEVTO_API_KEY")?.trim()) {
   console.warn("The Dev.to cross-post is off: DEVTO_API_KEY is set, but MPA_DOMAIN is not")
 }
 
+// Exchange rates (docs/financy/exchange-rates.md): the ECB's through Frankfurter in every
+// environment, and the paid fallback only with `RATES_FALLBACK_KEY`, under its monthly cap. A key
+// without a cap stops the worker here; the message names the variable, never the key.
+let rates: RatesSetup
+try {
+  rates = readRatesSetup(processEnv)
+} catch (error) {
+  console.error(`❌ ${(error as Error).message}`)
+  exitProcess(1)
+}
+
 // The public demo (docs/demo.md) gives every new account its own sample groups.
 const demo = isDemoMode(readEnvRecord([`DEMO_MODE`]))
 // The owner's private administrator on the demo, when `DEMO_ADMIN_PASSWORD` is set. A bad value
@@ -176,6 +188,8 @@ const processor = createOutboxProcessor(
   imageScratch,
   indexNow,
   crosspost,
+  undefined,
+  rates,
 )
 
 // Starts the nightly chain the first time; a restart finds the waiting row and adds nothing. A run

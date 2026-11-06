@@ -1,0 +1,5 @@
+[
+  { "date": "2026-10-30", "base": "EUR", "quote": "GBP", "rate": 0.8338 },
+  { "date": "2026-10-30", "base": "EUR", "quote": "JPY", "rate": 175.68 },
+  { "date": "2026-10-30", "base": "EUR", "quote": "USD", "rate": 1.1172 }
+]
