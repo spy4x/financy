@@ -289,6 +289,10 @@ export default {
     "one": "{count} tag",
     "other": "{count} tags",
   },
+  "GroupImport.accounts": {
+    "one": "{count} account",
+    "other": "{count} accounts",
+  },
   "GroupImport.settings": "settings",
   "GroupImport.newerVersion":
     "This file comes from a newer version of the app. Update the app, or export again from a matching version.",

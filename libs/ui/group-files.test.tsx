@@ -354,6 +354,35 @@ describe("group file wording", () => {
   })
 })
 
+describe("an account file's wording", () => {
+  it("counts the accounts a file holds and names an account's problem by its place and code", () => {
+    const EN = createTranslator({
+      language: `en`,
+      catalogs: [{ source: appEn }, { source: errorsEn }],
+    })
+    expect(fileContents(EN, [{ kind: "accounts", count: 3, one: "a", other: "as" }], "unit"))
+      .toBe("3 accounts")
+    const problem = {
+      kind: "invalid" as const,
+      where: "accounts[1]",
+      problem: "another account in the file is already the default",
+      place: { part: "accounts", index: 2 },
+      issue: { code: "secondDefaultAccount" },
+    }
+    expect(problemText(EN, problem)).toBe(
+      "Account 2: Another account in the file is already the default.",
+    )
+    expect(
+      problemText(EN, {
+        ...problem,
+        place: { part: "accounts" },
+        issue: { code: "tooManyAccounts", values: { count: 101, max: 100 } },
+      }),
+    )
+      .toBe("Accounts: It has 101 accounts, but a household can have at most 100.")
+  })
+})
+
 describe("group file menu items", () => {
   const groupId = "7b6d8d6c-1af5-4f04-8ae4-b1ee5d111001"
   const team = { id: groupId, name: "Team", role: GroupRole.OWNER }
