@@ -343,7 +343,7 @@ Deno.test("fallback calls: ten reservations side by side never pass a cap of thr
   })
 })
 
-Deno.test("backfill requests: days before the oldest rate, clamped to 1999-01-04, merged when they touch", async () => {
+Deno.test("backfill requests: days before the oldest rate, clamped to 1999-01-04, merged when they overlap", async () => {
   await withSchema(async (sql) => {
     expect(await requestBackfillBefore(sql, `2020-01-01`)).toBeNull()
     await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
@@ -362,6 +362,19 @@ Deno.test("backfill requests: days before the oldest rate, clamped to 1999-01-04
     await requestBackfillBefore(sql, `1990-05-05`)
     expect(await openBackfillRequests(sql)).toEqual([
       { id: expect.any(String), fromDate: `1999-01-04`, toDate: `2026-10-29` },
+    ])
+  })
+})
+
+Deno.test("backfill requests: a request that ends the day before an open one joins it", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
+    await requestBackfillBefore(sql, `2026-01-01`)
+    // The open request's first day got its rate, so the next request ends the day before it.
+    await storeRates(sql, [rate(`USD`, `1.0300`, `2026-01-01`)])
+    await requestBackfillBefore(sql, `2025-06-01`)
+    expect(await openBackfillRequests(sql)).toEqual([
+      { id: expect.any(String), fromDate: `2025-06-01`, toDate: `2026-10-29` },
     ])
   })
 })
