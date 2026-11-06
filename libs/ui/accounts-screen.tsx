@@ -267,7 +267,7 @@ function Row(
       data-e2e={`account-${account.id}`}
     >
       <KindIcon kind={account.kind} />
-      <div class="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-3">
+      <div class="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
         <div class="flex min-w-0 items-center gap-2">
           {canWrite
             ? (
