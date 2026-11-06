@@ -37,8 +37,9 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAppText } from "./i18n.ts"
 
 /**
- * The daily destinations, in the order the rail and the phone tab bar show them. Four at most, so
- * the phone bar keeps its last slot for the Account sheet. Activity belongs to the selected group and
+ * The daily destinations, in the order the rail and the phone tab bar show them. The rail shows
+ * them all; the phone bar shows the first four and moves the rest into the Account sheet behind its
+ * last slot, so the order puts the destinations used most first. Activity belongs to the selected group and
  * shows only while there is one whose log the person may read. Profile and Tags are in the account
  * menu; Tags is in Notes' "More actions" too. Labels come from `t`, the app's translator.
  */
