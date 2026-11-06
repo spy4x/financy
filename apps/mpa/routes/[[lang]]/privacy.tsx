@@ -1,9 +1,9 @@
 // deno-lint-ignore-file ui-text/no-literal
 // This page is English at every language's address: a translated policy could say something the
-// English does not, so it is not translated (#276). The frame around it is.
+// English does not, so it is not translated. The frame around it is.
 import { Fragment } from "preact"
 import { TldrBox } from "@spy4x/preact-ui/tldr-box"
-import { AUTHOR_URL, LegalPage, REPOSITORY_URL } from "../../site.tsx"
+import { LegalPage, REPOSITORY_URL } from "../../site.tsx"
 import { define } from "../../utils.ts"
 
 // Keep the ids stable, so the app, the checkout and support can link to one section once they
@@ -28,7 +28,7 @@ export const PRIVACY_HEAD = {
   title: `Privacy: what is kept about your household`,
   description: `What Financy's cloud stores about your household's money, who sees it, which ` +
     `companies handle it, how long it stays and how to delete it.`,
-  updated: `2026-11-04`,
+  updated: `2026-11-06`,
 } as const
 
 /** A group's heading inside a section: `LegalPage` styles `h2` only. */
@@ -36,14 +36,17 @@ const GROUP = `mt-2 font-semibold`
 
 /** The "In short" points, each with the section that proves it. */
 const SUMMARY = [
-  [`NeatSoft PTE LTD, my company in Singapore, runs Financy's cloud.`, `#who`],
+  [
+    `NeatSoft PTE LTD, my company in Singapore, runs Financy's cloud, and your data is stored in Singapore.`,
+    `#who`,
+  ],
   [`Only the members of your household see its accounts, transactions and budgets.`, `#who-sees`],
   [
     `Nothing is sold, there are no ads, and reading statements with AI stays off until you turn it on.`,
     `#processors`,
   ],
   [
-    `Your data is encrypted on its way to Financy, on disk and in backups. It is not end-to-end encrypted.`,
+    `Your data is encrypted on its way to Financy and in backups. It is not end-to-end encrypted.`,
     `#protection`,
   ],
   [
@@ -65,7 +68,7 @@ export default define.page(function Privacy({ state }) {
       title="Privacy"
       headTitle={PRIVACY_HEAD.title}
       description={PRIVACY_HEAD.description}
-      updated="4 November 2026"
+      updated="6 November 2026"
       sections={PRIVACY_SECTIONS}
       lead={
         <TldrBox
@@ -89,8 +92,23 @@ export default define.page(function Privacy({ state }) {
         controller. This page says what the cloud keeps about you and your household, and why.
       </p>
       <p>
-        Your household's data is stored on servers in{" "}
-        <mark>[OWNER: where the cloud runs on launch day]</mark>.
+        Your household's data is stored in Singapore, on a server NeatSoft runs itself, so no
+        hosting company holds it. Its encrypted backups are kept on NeatSoft's own machines in
+        Singapore and Vietnam. Once Financy has more paying households, it moves to a dedicated
+        server at Hetzner in the European Union, and this page changes before it does.
+      </p>
+      <p>
+        If you live in the European Union, this means your data leaves it: the EU has not recognised
+        Singapore's data protection law as equal to its own.
+      </p>
+      <p>
+        Financy follows the EU's data protection law (GDPR): you can download, correct and delete
+        your data at any time, and this page says what is kept, who handles it and for how long. One
+        thing is missing: a company outside the EU must name a representative inside it, and Financy
+        has none yet. It will name one once 10 households in the EU pay for the cloud. If you need
+        this, say so on{" "}
+        <a href={`${REPOSITORY_URL}/issues/141`}>GitHub</a>. Until then, you can run Financy on your
+        own server, which shares nothing with NeatSoft.
       </p>
 
       <h2 id="stores">What Financy stores</h2>
@@ -182,11 +200,6 @@ export default define.page(function Privacy({ state }) {
       <h3 class={GROUP}>Always</h3>
       <ul>
         <li>
-          <strong>The hosting provider</strong> named under{" "}
-          <a href="#who">Who runs Financy and where</a>: runs the servers and keeps the backups. It
-          holds everything, encrypted on disk.
-        </li>
-        <li>
           <strong>Stripe</strong>{" "}
           (United States): takes payments. It receives your email address and card, never your
           finances.
@@ -210,8 +223,8 @@ export default define.page(function Privacy({ state }) {
       <h3 class={GROUP}>Only when you turn it on</h3>
       <ul>
         <li>
-          <strong>OpenAI, DeepSeek or Google Gemini</strong>, the one your household picks: reads a
-          masked sample of a bank statement Financy does not recognise. See{" "}
+          <strong>DeepSeek</strong>, or the AI provider your household brings its own key for: reads
+          a masked sample of a bank statement Financy does not recognise. See{" "}
           <a href="#ai">Reading statements with AI</a>.
         </li>
         <li>
@@ -232,8 +245,12 @@ export default define.page(function Privacy({ state }) {
       <p>
         Financy reads most bank statements on its own. For a layout it has not seen, it can ask an
         AI model which column holds the date, the amount and the description. This is off until your
-        household turns it on, and your household picks the provider: OpenAI (United States),
-        DeepSeek (China) or Google Gemini (United States).
+        household turns it on.
+      </p>
+      <p>
+        Financy's cloud uses DeepSeek, a company in China. Instead, your household can enter its own
+        key and address for another AI provider; the sample then goes to that provider, under your
+        own agreement with it.
       </p>
       <p>
         The provider receives a masked sample of the statement, never the file. Every letter and
@@ -242,14 +259,15 @@ export default define.page(function Privacy({ state }) {
         setting off stops it at once.
       </p>
       <p>
-        On your own server, you can point Financy at Ollama instead, so the sample never leaves your
-        machine.
+        On your own server, you can point Financy at a local model with Ollama instead, so the
+        sample never leaves your machine.
       </p>
 
       <h2 id="protection">How it is protected</h2>
       <p>
-        Your data is encrypted on its way between your device and Financy (HTTPS), on the server's
-        disk, and in the backups. Passwords are kept only as salted hashes.
+        Your data is encrypted on its way between your device and Financy (HTTPS), and in the
+        backups. Passwords are kept only as salted hashes. The server's own disk is not encrypted
+        yet; it will be on the dedicated server Financy moves to.
       </p>
       <p>
         It is not end-to-end encrypted: the server can read your data, because it adds up balances,
@@ -367,15 +385,15 @@ export default define.page(function Privacy({ state }) {
 
       <h2 id="changes">Changes and questions</h2>
       <ul>
-        <li>4 November 2026: the first version, for Financy's cloud.</li>
+        <li>6 November 2026: the first version, for Financy's cloud.</li>
       </ul>
       <p>
         When this page changes, the new text appears here with its date, and the full history is
         {" "}
         <a href={`${REPOSITORY_URL}/commits/main/apps/mpa/routes/%5B%5Blang%5D%5D/privacy.tsx`}>
           on GitHub
-        </a>. Questions, and requests for a copy or deletion, go to me through{" "}
-        <a href={AUTHOR_URL}>antonshubin.com</a>.
+        </a>. Questions, and requests for a copy or deletion, go to me at{" "}
+        <a href="mailto:privacy@financy.dev">privacy@financy.dev</a>.
       </p>
     </LegalPage>
   )

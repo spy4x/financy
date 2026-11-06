@@ -1,5 +1,5 @@
 import type { ComponentChildren, JSX } from "preact"
-import { Head } from "fresh/runtime"
+import { Head } from "@spy4x/preact-server"
 import type { PublicContactLink } from "@domain/contact-links"
 import type { Language } from "@domain/identity"
 import { DEFAULT_SUBSCRIBER_LIST } from "@domain/subscribers"
@@ -141,10 +141,10 @@ export function softwareJsonLd(origin: string, extra: Record<string, unknown> = 
     license: `https://www.gnu.org/licenses/agpl-3.0.html`,
     codeRepository: REPOSITORY_URL,
     programmingLanguage: `TypeScript`,
-    runtimePlatform: `Deno`,
+    runtimePlatform: [`Deno`, `Node.js`, `Bun`],
     isAccessibleForFree: true,
     author: { "@id": PERSON_JSON_LD["@id"] },
-    // Only self-hosting is offered so far; the cloud's offer comes with its price (#87).
+    // Only self-hosting is offered so far; the cloud's offer comes with its price.
     offers: {
       "@type": `Offer`,
       name: `Self-hosted`,
@@ -266,7 +266,7 @@ export interface SiteFrameProps {
 
 /**
  * The header's links, in display order, by catalog key. The Blog link joins them once a post is
- * live. Pricing is left out until it describes Financy's own plan (#87).
+ * live. Pricing is left out until it describes Financy's own plan.
  */
 export const NAV_LINKS = [
   { label: `SiteNav.features`, href: `/features` },
@@ -292,7 +292,7 @@ export function SiteFrame(
   const origin = state.webAppOrigin
   const navLinks = blog ? NAV_LINKS : NAV_LINKS.filter((link) => link.href !== BLOG_PATH)
   // This page in another language: its translated version, or where the page says to go instead;
-  // the home page in place of another language's blog index while it has no posts (#530).
+  // the home page in place of another language's blog index while it has no posts.
   const languageHref = (tag: string) => {
     const target = isSiteLanguage(tag) ? tag : DEFAULT_LANGUAGE
     const version = head.alternates?.find(({ language }) => language === target)

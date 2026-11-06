@@ -1,9 +1,9 @@
 // deno-lint-ignore-file ui-text/no-literal
 // This page is English at every language's address: a translated contract could say something the
-// English does not, so it is not translated (#276). The frame around it is.
+// English does not, so it is not translated. The frame around it is.
 import { Fragment } from "preact"
 import { TldrBox } from "@spy4x/preact-ui/tldr-box"
-import { AUTHOR_URL, LegalPage, REPOSITORY_URL } from "../../site.tsx"
+import { LegalPage, REPOSITORY_URL } from "../../site.tsx"
 import { define } from "../../utils.ts"
 
 // Keep the ids stable, so the checkout and the pricing page can link to one section once they
@@ -20,6 +20,7 @@ const TERMS_SECTIONS = [
   { label: `What is not allowed`, href: `#not-allowed` },
   { label: `Availability and liability`, href: `#availability` },
   { label: `Self-hosting and the AGPL-3.0 licence`, href: `#code` },
+  { label: `Law and courts`, href: `#law` },
   { label: `Changes and questions`, href: `#changes` },
 ] as const
 
@@ -28,7 +29,7 @@ export const TERMS_HEAD = {
   title: `Terms: price, renewal and refunds`,
   description: `What Financy's cloud costs, how renewal, cancelling and the 30-day money-back ` +
     `guarantee work, and what Financy is not: financial advice.`,
-  updated: `2026-11-04`,
+  updated: `2026-11-06`,
 } as const
 
 /** The "In short" points, each with the section that proves it. */
@@ -58,7 +59,7 @@ export default define.page(function Terms({ state }) {
       title="Terms"
       headTitle={TERMS_HEAD.title}
       description={TERMS_HEAD.description}
-      updated="4 November 2026"
+      updated="6 November 2026"
       sections={TERMS_SECTIONS}
       lead={
         <TldrBox
@@ -126,8 +127,9 @@ export default define.page(function Terms({ state }) {
         The guarantee covers a household's first payment, monthly or yearly.
       </p>
       <p>
-        If a renewal charged you and you did not mean to renew, write to me within 14 days of the
-        charge and I refund it in full and cancel the plan.
+        Forgot to cancel before a renewal? If you have not used Financy since the renewal, ask
+        within 14 days of the charge and I refund it in full and cancel the plan. If you have used
+        it, ask within 5 days.
       </p>
       <p>
         Your rights under the consumer law of the country you live in come on top of these, and
@@ -191,16 +193,24 @@ export default define.page(function Terms({ state }) {
         this page, governs what you may do with the code, and these terms apply only to the cloud.
       </p>
 
+      <h2 id="law">Law and courts</h2>
+      <p>
+        These terms follow the law of Singapore, and disputes about them go to the courts of
+        Singapore. If you are a consumer, you also keep the protection of the law of the country you
+        live in, and you may take a dispute to its courts.
+      </p>
+
       <h2 id="changes">Changes and questions</h2>
       <ul>
-        <li>4 November 2026: the first version, for Financy's cloud.</li>
+        <li>6 November 2026: the first version, for Financy's cloud.</li>
       </ul>
       <p>
         When these terms change, the new text appears here with its date, and a paying household
         gets an e-mail before a change that affects it takes effect. The full history is{" "}
         <a href={`${REPOSITORY_URL}/commits/main/apps/mpa/routes/%5B%5Blang%5D%5D/terms.tsx`}>
           on GitHub
-        </a>. Questions go to me through <a href={AUTHOR_URL}>antonshubin.com</a>.
+        </a>. Questions and refund requests go to me at{" "}
+        <a href="mailto:hi@financy.dev">hi@financy.dev</a>.
       </p>
     </LegalPage>
   )

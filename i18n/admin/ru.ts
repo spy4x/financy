@@ -300,6 +300,14 @@ export default {
   "AdminBilling.perMonth": "В месяц",
   "AdminBilling.unknownPrice": "Цена неизвестна",
   "AdminBilling.nextCharge": "Следующее списание",
+  "AdminNeverPaid.title": "Ни разу не платили",
+  "AdminNeverPaid.subtitle": "Группы, которые ещё ни разу не платили, сначала новые.",
+  "AdminNeverPaid.created": "Создана",
+  "AdminNeverPaid.empty": "Каждая группа платила хотя бы раз.",
+  "AdminNeverPaid.listError":
+    "Не удалось загрузить группы. Проверьте подключение и попробуйте ещё раз.",
+  "AdminNeverPaid.loading": "Загружаем группы",
+  "AdminNeverPaid.pages": "Страницы списка групп",
   "AdminBilling.inTrash": "В корзине",
   "AdminBilling.newTab": "{label} (откроется в новой вкладке)",
   "AdminBillingCustomer.notFound": "Клиента с таким ID группы нет.",
@@ -1412,6 +1420,9 @@ export default {
   "AdminGroupOverview.description":
     "Что участники видят на странице «Обзор» при стандартной раскладке. Участники могут скрывать виджеты и менять их порядок, но их собственные раскладки здесь не показаны.",
   "AdminGroupOverview.gridLabel": "Виджеты обзора группы {group}",
+  "AdminGroupOverview.membersOnly": "Виджеты с данными самой группы видны только её участникам.",
+  "AdminGroupOverview.noneShown":
+    "Все виджеты на странице «Обзор» этой группы показывают её собственные данные, поэтому их видят только участники группы.",
   "AdminGroups.active": "Активные",
   "AdminGroups.inTrash": "В корзине",
   "AdminGroups.noName": "Без названия",

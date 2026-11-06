@@ -1,6 +1,6 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
-import { App } from "fresh"
+import { App } from "@spy4x/preact-server"
 import { h } from "preact"
 import { renderToString } from "preact-render-to-string"
 import AppWrapper from "./routes/_app.tsx"
@@ -63,8 +63,6 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .appWrapper(view(AppWrapper))
     .layout("*", view(Layout))
     .route("/", { component: view(Home) })
-    .use("/:lang", languageMiddleware)
-    .route("/:lang", { component: view(Home) })
     .route("/features", { component: view(Features) })
     .get("{/:lang}?/features/:slug", featurePage.GET!)
     .route("/pricing", { component: view(Pricing) })
@@ -82,6 +80,8 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .get("/sitemap.xml", sitemap.GET!)
     .get("/llms.txt", llms.GET!)
     .get("/unsubscribe", unsubscribe.GET!)
+    // Last: the server takes the first route that fits, and `/:lang` fits `/llms.txt` too.
+    .route("/:lang", { component: view(Home) }, { middlewares: [languageMiddleware] })
     .handler()
 }
 const handler = siteWith(() => true)
@@ -795,8 +795,8 @@ describe("the public website", () => {
       ...Object.fromEntries(DOC_SLUGS.map((slug) => [`/docs/${slug}`, "2026-11-01T00:00:00.000Z"])),
       "/changelog": "2026-11-01T00:00:00.000Z",
       "/subscribe": "2026-11-04T00:00:00.000Z",
-      "/privacy": "2026-11-04T00:00:00.000Z",
-      "/terms": "2026-11-04T00:00:00.000Z",
+      "/privacy": "2026-11-06T00:00:00.000Z",
+      "/terms": "2026-11-06T00:00:00.000Z",
     })
   })
 
@@ -806,12 +806,11 @@ describe("the public website", () => {
     expect(html).toContain(`NeatSoft PTE LTD in Singapore`)
     for (
       const processor of [
-        `The hosting provider`,
         `Stripe`,
         `The mail provider`,
         `Exchange-rate sources`,
         `Umami`,
-        `OpenAI, DeepSeek or Google Gemini`,
+        `DeepSeek`,
         `Google or GitHub`,
         `Your browser&#39;s push service`,
         `Telegram`,
@@ -893,6 +892,29 @@ describe("the public website", () => {
     expect(html).toContain(`If you ask within 30 days of your first payment, I refund it in full`)
     expect(html).toContain(`It does not give financial, tax or investment advice`)
     expect(html).toContain(`A total in your base currency is an estimate`)
+  })
+
+  it("says on the privacy page that data stays in Singapore on an unencrypted disk, with no EU representative yet (#86)", async () => {
+    const { html } = await page("/privacy")
+
+    expect(html).toContain(`stored in Singapore, on a server NeatSoft runs itself`)
+    expect(html).toContain(`NeatSoft&#39;s own machines in Singapore and Vietnam`)
+    expect(html).toContain(`the EU has not recognised Singapore`)
+    expect(html).toContain(`Financy has none yet. It will name one once 10 households in the EU`)
+    expect(html).toContain(`The server&#39;s own disk is not encrypted`)
+    expect(html).not.toMatch(/encrypted[^.]*on (the server&#39;s )?disk/)
+    expect(html).toContain(`own key and address for another AI provider`)
+    expect(html).toContain(`href="mailto:privacy@financy.dev"`)
+  })
+
+  it("states on the terms page the renewal refund windows, Singapore law and the contact address (#86)", async () => {
+    const { html } = await page("/terms")
+
+    expect(html).toContain(`If you have not used Financy since the renewal, ask within 14 days`)
+    expect(html).toContain(`If you have used it, ask within 5 days.`)
+    expect(html).toContain(`<h2 id="law">Law and courts</h2>`)
+    expect(html).toContain(`follow the law of Singapore`)
+    expect(html).toContain(`href="mailto:hi@financy.dev"`)
   })
 
   it("keeps Seed's site, Seed's demo and any trial offer off both legal pages (#86)", async () => {

@@ -8,7 +8,7 @@ import {
   starterDataJob,
   WELCOME_NOTE_TITLE,
 } from "@server/jobs/starter-data.ts"
-import { entitlementsOf, FREE_PLAN_ID } from "@domain/billing"
+import { freePlanAllowsNothing } from "@domain/billing"
 import { JOB_AGGREGATE } from "@server/jobs/jobs.ts"
 import type { OutboxEvent } from "@spy4x/server/outbox"
 import { createPostgresAuthStore } from "@spy4x/server/auth/postgres"
@@ -16,6 +16,7 @@ import { buildPostgresOptions } from "@spy4x/server/db/postgres"
 import { requireDbConnection } from "@spy4x/server/db/testing"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { expectVersion7Ids } from "./ids.ts"
+import { TEST_FREE_PLAN, TEST_PLANS } from "../../libs/domain/billing/test-plans.ts"
 
 /** Runs `body` on a fresh schema built from schema.sql. */
 async function withSchema(body: (sql: postgres.Sql) => Promise<void>): Promise<void> {
@@ -149,8 +150,8 @@ Deno.test("the welcome note goes in the person's first group, and a request with
 })
 
 /** The job's event for one request, as the outbox hands it over. */
-/** The free plan's note cap, read from the plan, not copied. */
-const FREE_NOTES = entitlementsOf(FREE_PLAN_ID, true).limits.maxNotes!
+/** The test catalog's free note cap, read from the plan, not copied. */
+const FREE_NOTES = TEST_FREE_PLAN.entitlements.limits.maxNotes!
 
 const eventOf = (requestId: string) =>
   ({
@@ -200,7 +201,7 @@ Deno.test("four workers running the same job at once make one welcome note", asy
 
 Deno.test("the welcome note respects the group's plan cap", async (t) => {
   await withSchema(async (sql) => {
-    const free = { billingEnabled: true }
+    const free = { billingEnabled: true, plans: TEST_PLANS }
     const fill = async (groupId: string, userId: number, count: number) => {
       for (let index = 0; index < count; index++) {
         await sql`
@@ -225,6 +226,30 @@ Deno.test("the welcome note respects the group's plan cap", async (t) => {
       await starterDataJob(sql, free)(eventOf(requestId))
 
       expect(await notesOf(sql, groupId)).toHaveLength(FREE_NOTES)
+      const [row] = await sql<{ doneAt: Date | null }[]>`
+        SELECT done_at FROM starter_data_requests WHERE id = ${requestId}`
+      expect(row.doneAt).not.toBeNull()
+    })
+
+    await t.step("a new group under a free plan that allows nothing starts empty", async () => {
+      const [freePlan, ...paid] = TEST_PLANS
+      const plans = [
+        {
+          ...freePlan,
+          entitlements: {
+            ...freePlan.entitlements,
+            limits: { maxMembers: 1, maxNotes: 0, maxAttachments: 0, storageBytes: 0 },
+          },
+        },
+        ...paid,
+      ]
+      expect(freePlanAllowsNothing(plans)).toBe(true)
+      const { userId, groupId } = await signedUpPerson(sql)
+      const requestId = await requestFor(sql, userId)
+
+      await starterDataJob(sql, { ...free, plans })(eventOf(requestId))
+
+      expect(await notesOf(sql, groupId)).toEqual([])
       const [row] = await sql<{ doneAt: Date | null }[]>`
         SELECT done_at FROM starter_data_requests WHERE id = ${requestId}`
       expect(row.doneAt).not.toBeNull()

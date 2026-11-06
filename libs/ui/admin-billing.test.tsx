@@ -1,5 +1,5 @@
 /**
- * The admin app's billing screens (#196), driven in a browser DOM (happy-dom): what the list's
+ * The admin app's billing screens, driven in a browser DOM (happy-dom): what the list's
  * figures, chips and rows show, what a customer's page offers to whom, what each confirmed action
  * sends, and what a dialog says when the result is unknown.
  */
@@ -15,10 +15,10 @@ import {
   type AdminBillingDetail,
   type AdminBillingFigures,
   type AdminBillingListResponse,
+  type AdminNeverPaidGroup,
   BILLING_AUDIT_EVENTS,
   BillingPeriod,
   BillingStatus,
-  PLANS,
   PRO_PLAN_ID,
 } from "@domain/billing"
 import { UserRole } from "@domain/identity"
@@ -31,12 +31,14 @@ import {
   AdminBillingCustomerScreen,
   type AdminBillingCustomerScreenProps,
 } from "./admin-billing-detail.tsx"
+import { AdminNeverPaidScreen, type AdminNeverPaidScreenProps } from "./admin-never-paid.tsx"
 import { ADMIN_ENGLISH, ADMIN_PSEUDO, englishLeft } from "./i18n-testing.ts"
 
 /** A day as the screens write it on this device: the default formatter, with no person's settings. */
 const day = (at: string) => createFormatters().date(at)
 
 import { I18nContext } from "@spy4x/preact-ui/i18n"
+import { TEST_PLANS } from "../domain/billing/test-plans.ts"
 const window = new Window({ url: `http://admin.localhost/` })
 const own = {
   document: globalThis.document,
@@ -139,8 +141,8 @@ function customer(overrides: Partial<AdminBillingCustomer> = {}): AdminBillingCu
   }
 }
 
-/** Seed's catalog with Pro sold yearly too, at €90.00 a member a year against €9.00 a month. */
-const YEARLY_PLANS = PLANS.map((plan) =>
+/** The test catalog with Pro sold yearly too, at €90.00 a member a year against €9.00 a month. */
+const YEARLY_PLANS = TEST_PLANS.map((plan) =>
   plan.id === PRO_PLAN_ID ? { ...plan, yearlyAmount: 9000 } : plan
 )
 
@@ -183,6 +185,7 @@ function listProps(calls: unknown[][], props: Partial<AdminBillingListScreenProp
     onSearch: (filter) => void calls.push([`search`, filter]),
     onPage: (page) => void calls.push([`page`, page]),
     onRetry: () => void calls.push([`retry`]),
+    plans: TEST_PLANS,
     ...props,
   } satisfies AdminBillingListScreenProps
 }
@@ -396,6 +399,7 @@ function customerProps(
     actionError: null,
     pending: false,
     onAction: (action) => void calls.push([`action`, action]),
+    plans: TEST_PLANS,
     waiting: null,
     navigate: undefined,
     ...props,
@@ -652,6 +656,75 @@ describe(`one customer in the admin app`, () => {
   })
 })
 
+function neverPaidGroup(overrides: Partial<AdminNeverPaidGroup> = {}): AdminNeverPaidGroup {
+  return {
+    groupId: GROUP_ID,
+    groupName: `Acme Studio`,
+    owner: { id: 7, name: `Ada Lovelace`, email: `ada@acme.test` },
+    createdAt: `2026-10-16T09:00:00.000Z`,
+    ...overrides,
+  }
+}
+
+function neverPaidProps(calls: unknown[][], props: Partial<AdminNeverPaidScreenProps> = {}) {
+  return {
+    list: { enabled: true, groups: [neverPaidGroup()], total: 26, page: 1, pageSize: 25 },
+    pending: false,
+    error: null,
+    onPage: (page) => void calls.push([`page`, page]),
+    onRetry: () => void calls.push([`retry`]),
+    ...props,
+  } satisfies AdminNeverPaidScreenProps
+}
+
+describe(`the groups that never paid`, () => {
+  it(`is linked from the billing list while billing is on`, async () => {
+    await mount(<AdminBillingListScreen {...listProps([])} />)
+    const link = find(`[data-e2e=admin-billing-never-paid]`)
+    expect(link.getAttribute(`href`)).toBe(`/billing/never-paid`)
+    expect(link.textContent).toBe(`Never paid`)
+    await mount(<AdminBillingListScreen {...listProps([], { list: { enabled: false } })} />)
+    expect(has(`[data-e2e=admin-billing-never-paid]`)).toBe(false)
+  })
+
+  it(`lists each group with its owner and the day it was made, linked to the group's page`, async () => {
+    await mount(<AdminNeverPaidScreen {...neverPaidProps([])} />)
+    expect(find(`[data-e2e=admin-never-paid-count]`).textContent).toBe(`26 groups`)
+    const row = find(`[data-e2e=admin-never-paid-list] tbody tr`)
+    expect(row.querySelector(`a`)?.getAttribute(`href`)).toBe(`/groups/${GROUP_ID}`)
+    expect(row.textContent).toContain(`Acme Studio`)
+    expect(row.textContent).toContain(`Ada Lovelace`)
+    expect(row.textContent).toContain(`ada@acme.test`)
+    expect(row.textContent).toContain(day(`2026-10-16T09:00:00.000Z`))
+  })
+
+  it(`says every group has paid when none is left, and that billing is off while it is`, async () => {
+    await mount(
+      <AdminNeverPaidScreen
+        {...neverPaidProps([], {
+          list: { enabled: true, groups: [], total: 0, page: 1, pageSize: 25 },
+        })}
+      />,
+    )
+    expect(find(`[data-e2e=admin-never-paid-list]`).textContent).toContain(
+      `Every group has paid at least once.`,
+    )
+    await mount(<AdminNeverPaidScreen {...neverPaidProps([], { list: { enabled: false } })} />)
+    expect(find(`[data-e2e=admin-never-paid-off]`).textContent).toContain(`Billing is off`)
+    expect(has(`[data-e2e=admin-never-paid-list]`)).toBe(false)
+  })
+
+  it(`says the list could not be read, in plain words, and reads it again on Try again`, async () => {
+    const calls: unknown[][] = []
+    await mount(<AdminNeverPaidScreen {...neverPaidProps(calls, { list: null, error: `boom` })} />)
+    const error = find(`[data-e2e=admin-never-paid-error]`).textContent
+    expect(error).toContain(ADMIN_ENGLISH.t(`AdminNeverPaid.listError`))
+    expect(error).not.toContain(`boom`)
+    await press(`[data-e2e=admin-never-paid-error]`, `Try again`)
+    expect(calls).toEqual([[`retry`]])
+  })
+})
+
 describe("the billing screens in en-XA", () => {
   it("shows no English outside the catalog: every word is pseudo-language or data", async () => {
     await mount(
@@ -675,8 +748,17 @@ describe("the billing screens in en-XA", () => {
             plans: YEARLY_PLANS,
           })}
         />
+        <AdminNeverPaidScreen {...neverPaidProps([])} />
+        <AdminNeverPaidScreen
+          {...neverPaidProps([], {
+            list: { enabled: true, groups: [], total: 0, page: 1, pageSize: 25 },
+          })}
+        />
+        <AdminNeverPaidScreen {...neverPaidProps([], { list: null, error: `boom` })} />
       </I18nContext.Provider>,
     )
-    expect(englishLeft(document.body, [`Acme Studio`, `Ada Lovelace`, `ada@acme.test`])).toEqual([])
+    expect(
+      englishLeft(document.body, [`Acme Studio`, `Ada Lovelace`, `ada@acme.test`, `October`]),
+    ).toEqual([])
   })
 })
