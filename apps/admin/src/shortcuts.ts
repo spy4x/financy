@@ -15,6 +15,7 @@ export const ADMIN_GO_KEYS: Readonly<Record<string, string>> = {
   catalog: "c",
   audit: "a",
   jobs: "j",
+  rates: "r",
   system: "s",
   "api-tokens": "k",
 }
