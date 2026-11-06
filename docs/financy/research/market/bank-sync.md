@@ -6,8 +6,7 @@ comes later. This file lists the providers that could feed it, where each one wo
 a small app, and whether a self-hoster can bring their own key. It also shows which open-source
 apps use which provider.
 
-Every page was read on **2026-11-03**. **Unconfirmed** marks a figure I could not check on the
-provider's own page. Checked again on **2026-11-06**: Enable Banking's terms, Salt Edge, Akahu,
+Every page was read on **2026-11-03**. Checked again on **2026-11-06**: Enable Banking's terms, Salt Edge, Akahu,
 and the prices of SimpleFIN, Teller and Lunch Flow.
 
 ## In short
@@ -18,8 +17,8 @@ and the prices of SimpleFIN, Teller and Lunch Flow.
   lets each self-hoster connect their own accounts with their own key. Its terms forbid that mode
   for a hosted service, so Financy's cloud needs a contract with it.
 - **SimpleFIN Bridge covers the US and Canada,** and the user pays $15 a year directly.
-- **For the cloud, every aggregator except Teller and Basiq hides its price** behind a sales
-  call. A small app needs a quote from Enable Banking (EU) and possibly Plaid (US, UK).
+- **For the cloud, most aggregators hide their price** behind a sales call; Teller, Basiq and
+  Pluggy publish theirs. A small app needs a quote from Enable Banking (EU) and possibly Plaid (US, UK).
 - **Expats are the people aggregators cover worst.** Their money is spread across banks in several
   countries, plus Wise and Revolut. Statement import, done well, stays the main path even after
   sync ships.
@@ -112,9 +111,10 @@ Options:
 - **A. User-pays bridges only** (SimpleFIN and Lunch Flow). Consequence: no cost or contract for
   NeatSoft, but setup is clumsy for a non-technical household. Enable Banking's free mode cannot be
   part of it: its terms limit that mode to the personal use of the person who linked the accounts
-  (see Sources above). So in the cloud, a European household gets only Lunch Flow.
+  (see Sources above). So in the cloud, a European household gets only Lunch Flow, and only if Lunch Flow lets a hosted
+  app read a user's own account: its developer API takes no new apps now (not checked further).
 - **B. One commercial aggregator for Europe** (Enable Banking first, because the open-source apps
-  already use it and it covers 30 countries), priced per connected account. Consequence: a cost per
+  already use it and it covers 30 countries), at a quoted price. Consequence: a cost per
   household that the $4-a-month plan has to absorb or pass on as a paid add-on. PocketSmith and
   Money Lover charge extra for bank feeds, so an add-on is normal in this market.
 
