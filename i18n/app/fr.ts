@@ -2303,7 +2303,6 @@ export default {
   "Accounts.hideArchived": "Masquer les comptes archivés",
   "Accounts.loading": "Chargement des comptes…",
   "Accounts.makeDefault": "Utiliser par défaut",
-  "Accounts.new": "Nouveau compte",
   "Accounts.readOnly":
     "Vous pouvez consulter les comptes, mais seuls les éditeurs peuvent les modifier.",
   "Accounts.restore": "Restaurer",

@@ -1648,7 +1648,6 @@ export default {
   "Accounts.title": "Accounts",
   "Accounts.trashTitle": "Deleted accounts",
   "Accounts.back": "Back to accounts",
-  "Accounts.new": "New account",
   "Accounts.add": "Add account",
   "Accounts.loading": "Loading accounts…",
   "Accounts.empty": "Add your first account",

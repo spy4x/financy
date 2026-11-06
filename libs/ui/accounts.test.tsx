@@ -308,6 +308,18 @@ describe("AccountsScreen", () => {
     expect(name(wallet.id)).not.toMatch(/\btext-muted\b/)
   })
 
+  it("offers one filled button on an empty list, and both buttons say Add account", async () => {
+    await mount(<AccountsScreen {...listDefaults} />)
+
+    const header = find("[data-e2e=account-new]")
+    const empty = find("[data-e2e=account-new-empty]")
+    expect(header.textContent).toContain("Add account")
+    expect(empty.textContent).toContain("Add account")
+    expect(document.body.textContent).not.toContain("New account")
+    expect(count(".bg-accent-900")).toBe(1)
+    expect(empty.className).not.toMatch(/\bbg-accent-900\b/)
+  })
+
   it("gives a viewer no New button, no row menu and no links to the editor", async () => {
     await mount(
       <AccountsScreen {...listDefaults} group={viewerOfHome} accounts={[wallet, checking]} />,

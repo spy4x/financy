@@ -2317,7 +2317,6 @@ export default {
   "Accounts.hideArchived": "Скрыть архивные счета",
   "Accounts.loading": "Загружаем счета…",
   "Accounts.makeDefault": "Сделать основным",
-  "Accounts.new": "Новый счёт",
   "Accounts.readOnly": "Вы можете смотреть счета, но менять их могут только редакторы.",
   "Accounts.restore": "Восстановить",
   "Accounts.restoreNamed": "Восстановить счёт {name}",

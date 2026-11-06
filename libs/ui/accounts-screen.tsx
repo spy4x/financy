@@ -53,7 +53,7 @@ export interface AccountsScreenProps {
 
 /**
  * A household's accounts at `/accounts`: grouped by kind in a fixed order, each with its currency
- * and its balance, the default marked. "New account" and each name lead to the editor; each row's
+ * and its balance, the default marked. "Add account" and each name lead to the editor; each row's
  * menu archives, sets the default or deletes. Archived accounts show only on request; the trash
  * lists deleted ones with Restore.
  */
@@ -80,7 +80,7 @@ export function AccountsScreen(props: AccountsScreenProps): JSX.Element {
         navigate={trash ? () => props.onShowDeleted?.(false) : navigate}
         action={canWrite && !trash && (
           <PageAction
-            label={t.t(`Accounts.new`)}
+            label={t.t(`Accounts.add`)}
             Icon={IconPlus}
             href={ACCOUNT_PATHS.new}
             navigate={navigate}
@@ -140,7 +140,12 @@ function Live(props: Listed): JSX.Element {
           : t.t(`Accounts.emptyViewer`)}
         description={props.loading || !canWrite || hidden ? undefined : t.t(`Accounts.emptyHint`)}
         action={!props.loading && canWrite && !hidden && (
-          <Button href={ACCOUNT_PATHS.new} navigate={navigate} data-e2e="account-new-empty">
+          <Button
+            href={ACCOUNT_PATHS.new}
+            navigate={navigate}
+            variant="secondary"
+            data-e2e="account-new-empty"
+          >
             {t.t(`Accounts.add`)}
           </Button>
         )}

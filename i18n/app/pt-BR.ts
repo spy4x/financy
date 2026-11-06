@@ -2225,7 +2225,6 @@ export default {
   "Accounts.hideArchived": "Ocultar contas arquivadas",
   "Accounts.loading": "Carregando contas…",
   "Accounts.makeDefault": "Tornar padrão",
-  "Accounts.new": "Nova conta",
   "Accounts.readOnly": "Você pode ver as contas, mas só editores podem alterá-las.",
   "Accounts.restore": "Restaurar",
   "Accounts.restoreNamed": "Restaurar {name}",

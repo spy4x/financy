@@ -68,7 +68,6 @@ Accounts.emptyViewer	84a7e27178d91639
 Accounts.hideArchived	a46c6f0d521e01c1
 Accounts.loading	2494bdb5bc468296
 Accounts.makeDefault	f43b94251094a888
-Accounts.new	b8773d75259ed491
 Accounts.readOnly	f36935e271ce7048
 Accounts.restore	a76e13b9839270eb
 Accounts.restoreNamed	7ad4831331334084

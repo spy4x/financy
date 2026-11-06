@@ -2012,7 +2012,6 @@ export default {
   "Accounts.hideArchived": "アーカイブ済みの口座を隠す",
   "Accounts.loading": "口座を読み込んでいます…",
   "Accounts.makeDefault": "メインにする",
-  "Accounts.new": "新しい口座",
   "Accounts.readOnly": "口座は見られますが、変更できるのは編集者だけです。",
   "Accounts.restore": "復元",
   "Accounts.restoreNamed": "{name} を復元",

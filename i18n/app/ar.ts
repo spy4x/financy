@@ -2378,7 +2378,6 @@ export default {
   "Accounts.hideArchived": "إخفاء الحسابات المؤرشفة",
   "Accounts.loading": "جارٍ تحميل الحسابات…",
   "Accounts.makeDefault": "جعله افتراضيًا",
-  "Accounts.new": "حساب جديد",
   "Accounts.readOnly": "يمكنك الاطلاع على الحسابات، لكن المحررين وحدهم يمكنهم تغييرها.",
   "Accounts.restore": "استعادة",
   "Accounts.restoreNamed": "استعادة {name}",

@@ -1840,7 +1840,6 @@ export default {
   "Accounts.hideArchived": "隐藏已归档的账户",
   "Accounts.loading": "正在加载账户…",
   "Accounts.makeDefault": "设为默认",
-  "Accounts.new": "新建账户",
   "Accounts.readOnly": "你可以查看账户，但只有编辑者可以更改。",
   "Accounts.restore": "恢复",
   "Accounts.restoreNamed": "恢复 {name}",
