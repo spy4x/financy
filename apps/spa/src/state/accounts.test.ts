@@ -173,6 +173,11 @@ describe("accounts store", () => {
   it("makes an account the default and reads the list again, so the old default loses its mark", async () => {
     const { store } = harness()
     await store.open(groupId)
+    // "a" holds the mark first, as the server would have it before the change.
+    store.accounts.value = store.accounts.value.map((account) => ({
+      ...account,
+      isDefault: account.id === "a",
+    }))
 
     await store.setDefault("b", true)
     await settle()
