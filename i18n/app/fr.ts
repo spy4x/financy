@@ -766,6 +766,10 @@ export default {
   "OnboardingCard.notificationsText":
     "Soyez informé des modifications, même quand l’application est fermée.",
   "OnboardingCard.notificationsAction": "Activer les notifications",
+  "OnboardingCard.currencyTitle": "Choisissez votre devise principale",
+  "OnboardingCard.currencyText":
+    "Tous les totaux s’affichent dans cette devise. Tant que vous n’en choisissez pas, c’est l’euro.",
+  "OnboardingCard.currencyAction": "Choisir la devise",
   "OnboardingCard.twoFactorTitle": "Configurez la double authentification",
   "OnboardingCard.twoFactorText":
     "Une application d’authentification protège votre compte, même si votre mot de passe fuite.",

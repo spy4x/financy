@@ -70,6 +70,7 @@ const NOTHING_DONE = {
   memberInvited: false,
   notificationsOn: false,
   twoFactorOn: false,
+  currencyChosen: false,
 }
 
 Deno.test("each first step is done exactly when the person's own data says so", async (t) => {
@@ -119,6 +120,7 @@ Deno.test("each first step is done exactly when the person's own data says so", 
         memberInvited: true,
         notificationsOn: true,
         twoFactorOn: true,
+        currencyChosen: false,
       })
     })
 
@@ -188,6 +190,23 @@ Deno.test("each first step is done exactly when the person's own data says so", 
 
       expect((await readOnboarding(sql, userId))?.steps.twoFactorOn).toBe(true)
     })
+
+    await t.step(
+      "a saved main currency ticks the step of the group's owner and admins, the default does not",
+      async () => {
+        const viewer = await newAccount(sql, "cy@example.com")
+        await sql`INSERT INTO group_members (group_id, user_id, role, added_by_user_id)
+          VALUES (${groupId}, ${viewer.userId}, 1, ${userId})`
+        await sql`INSERT INTO household_settings (group_id) VALUES (${groupId})`
+        expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(false)
+
+        await sql`UPDATE household_settings SET base_currency = 'JPY', updated_by_user_id = ${other.userId}
+          WHERE group_id = ${groupId}`
+        expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(true)
+        expect((await readOnboarding(sql, other.userId))?.steps.currencyChosen).toBe(true)
+        expect((await readOnboarding(sql, viewer.userId))?.steps.currencyChosen).toBe(false)
+      },
+    )
   })
 })
 

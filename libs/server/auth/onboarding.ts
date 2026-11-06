@@ -9,6 +9,7 @@
 
 import type postgres from "postgres"
 import { PASSWORD_METHOD } from "@spy4x/server/auth/password"
+import { GroupRole } from "@domain/groups"
 import {
   type OnboardingMark,
   type OnboardingStatus,
@@ -22,6 +23,7 @@ interface OnboardingRow extends postgres.Row {
   memberInvited: boolean
   notificationsOn: boolean
   twoFactorOn: boolean
+  currencyChosen: boolean
   dismissed: boolean
   tourSeen: boolean
 }
@@ -40,7 +42,10 @@ interface OnboardingRow extends postgres.Row {
  *   note does not untick the step;
  * - an invitation: the person made one, whatever became of it;
  * - notifications: one of their browsers is registered for push;
- * - two-factor: an authenticator app is set up.
+ * - two-factor: an authenticator app is set up;
+ * - the main currency: someone saved it for a group the person is an admin or the owner of
+ *   (`household_settings` with `updated_by_user_id` set). It is the household's setting, so a
+ *   co-admin's choice counts; the default euro, which every group starts with, does not.
  */
 export async function readOnboarding(
   sql: postgres.Sql,
@@ -73,6 +78,13 @@ export async function readOnboarding(
           AND user_push_tokens.deleted_at IS NULL
       ) AS "notificationsOn",
       users.mfa = ${UserMFAStatus.CONFIGURED} AS "twoFactorOn",
+      EXISTS (
+        SELECT 1 FROM household_settings
+        INNER JOIN group_members ON group_members.group_id = household_settings.group_id
+        WHERE group_members.user_id = users.id
+          AND group_members.role >= ${GroupRole.ADMIN}
+          AND household_settings.updated_by_user_id IS NOT NULL
+      ) AS "currencyChosen",
       users.onboarding_dismissed_at IS NOT NULL AS "dismissed",
       users.onboarding_tour_seen_at IS NOT NULL AS "tourSeen"
     FROM users

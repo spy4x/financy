@@ -72,6 +72,7 @@ const NONE: OnboardingSteps = {
   memberInvited: false,
   notificationsOn: false,
   twoFactorOn: false,
+  currencyChosen: false,
 }
 
 /** What the card called, in order. */
@@ -207,6 +208,26 @@ describe("first-steps card", () => {
     ])
   })
 
+  it("offers an admin of the selected group the main currency step, opening its dialog", async () => {
+    const before = { ...NONE, emailVerified: true, noteCreated: true }
+    const { update } = await mount({ canChooseCurrency: true, steps: before })
+    expect(control("Choose currency").getAttribute("href")).toBe("/groups/g-1?currency=choose")
+    expect(stepLines().length).toBe(6)
+
+    await update({ steps: { ...before, currencyChosen: true } })
+    expect(all("a").some((link) => link.textContent?.trim() === "Choose currency")).toBe(false)
+  })
+
+  it("leaves the main currency step out for a person who cannot change it", async () => {
+    await mount({
+      canChooseCurrency: false,
+      steps: { ...NONE, emailVerified: true, noteCreated: true },
+    })
+    expect(control("Invite someone")).toBeDefined()
+    expect(all("a").some((link) => link.textContent?.trim() === "Choose currency")).toBe(false)
+    expect(stepLines().length).toBe(5)
+  })
+
   it("sends the invitation step to the groups page for a person with no selected group", async () => {
     await mount({ groupId: null, steps: { ...NONE, emailVerified: true, noteCreated: true } })
 
@@ -239,6 +260,7 @@ describe("first-steps card", () => {
         memberInvited: true,
         notificationsOn: true,
         twoFactorOn: true,
+        currencyChosen: true,
       },
     })
     expect(all("a").length).toBe(0)

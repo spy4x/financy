@@ -30,6 +30,7 @@ COPY libs/domain/groups/deno.json ./libs/domain/groups/deno.json
 COPY libs/domain/identity/deno.json ./libs/domain/identity/deno.json
 COPY libs/domain/notes/deno.json ./libs/domain/notes/deno.json
 COPY libs/domain/tags/deno.json ./libs/domain/tags/deno.json
+COPY libs/domain/money/deno.json ./libs/domain/money/deno.json
 COPY libs/domain/notifications/deno.json ./libs/domain/notifications/deno.json
 COPY libs/domain/subscribers/deno.json ./libs/domain/subscribers/deno.json
 COPY libs/domain/errors/deno.json ./libs/domain/errors/deno.json
@@ -45,6 +46,7 @@ COPY libs/server/jobs/deno.json ./libs/server/jobs/deno.json
 COPY libs/server/mail/deno.json ./libs/server/mail/deno.json
 COPY libs/server/notes/deno.json ./libs/server/notes/deno.json
 COPY libs/server/tags/deno.json ./libs/server/tags/deno.json
+COPY libs/server/money/deno.json ./libs/server/money/deno.json
 COPY libs/server/notifications/deno.json ./libs/server/notifications/deno.json
 COPY libs/server/subscribers/deno.json ./libs/server/subscribers/deno.json
 COPY libs/server/telegram/deno.json ./libs/server/telegram/deno.json

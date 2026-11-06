@@ -717,6 +717,10 @@ export default {
   "OnboardingCard.notificationsTitle": "Benachrichtigungen einschalten",
   "OnboardingCard.notificationsText": "Erfahre von Änderungen, auch wenn die App geschlossen ist.",
   "OnboardingCard.notificationsAction": "Benachrichtigungen einschalten",
+  "OnboardingCard.currencyTitle": "Wähle deine Hauptwährung",
+  "OnboardingCard.currencyText":
+    "Alle Summen erscheinen in dieser einen Währung. Bis du eine wählst, ist es der Euro.",
+  "OnboardingCard.currencyAction": "Währung wählen",
   "OnboardingCard.twoFactorTitle": "Zwei-Faktor-Schutz einrichten",
   "OnboardingCard.twoFactorText":
     "Eine Authenticator-App schützt dein Konto, selbst wenn dein Passwort in falsche Hände gerät.",

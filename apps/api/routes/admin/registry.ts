@@ -12,6 +12,7 @@ import { contactLinksAdminModule } from "./contact-links.ts"
 import { catalogAdminModule } from "./catalog.ts"
 import { auditAdminModule } from "./audit.ts"
 import { jobsAdminModule } from "./jobs.ts"
+import { ratesAdminModule } from "./rates.ts"
 import { systemAdminModule } from "./system.ts"
 import { apiTokensAdminModule } from "./api-tokens.ts"
 
@@ -31,6 +32,7 @@ export const ADMIN_API_MODULES: readonly AdminApiModule[] = [
   catalogAdminModule,
   auditAdminModule,
   jobsAdminModule,
+  ratesAdminModule,
   systemAdminModule,
   apiTokensAdminModule,
 ]

@@ -118,6 +118,8 @@ Pick the guide that fits. New here? Start with [Get started](get-started.md). Th
 
 ## Financy
 
+- [Exchange rates](financy/exchange-rates.md): where the daily rates come from, the paid
+  fallback and its cap, and how a rate is chosen.
 - [What we are building](financy/product.md): who Financy is for, the first version, the price,
   and the owner's decisions.
 - [Research for the rebuild on Seed](financy/research/README.md), and its parts:

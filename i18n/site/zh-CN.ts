@@ -515,7 +515,8 @@ export default {
   "HomeStatus.month": "本月资金一目了然",
   "HomeStatus.later": "预算、银行流水导入和付费云服务稍后推出：<plan>查看完整计划</plan>。",
   "HomeWho.keeperTitle": "管钱的人",
-  "HomeWho.keeperText": "工资是一种货币，房租是另一种，存款又是第三种：一个地方把它们加在一起。",
+  "HomeWho.keeperText":
+    "工资是一种货币，房租是另一种，存款又是第三种：按欧洲央行汇率算出一个总额，并标明汇率日期。",
   "HomeWho.partnerTitle": "伴侣",
   "HomeWho.partnerText": "用自己的账号共享家庭资金，几秒钟就能记下一笔开销。",
   "HomeWho.selfHostTitle": "自托管玩家",
@@ -531,7 +532,10 @@ export default {
   "HomeFaq.useAnswer": "还不能。登录、家庭和同步已经可用；账户和交易正在开发中。",
   "HomeFaq.currencyQuestion": "Financy 将支持哪些货币？",
   "HomeFaq.currencyAnswer":
-    "任意组合，包括加密货币；每笔交易都会在换算金额旁保留原始金额。已在计划中，尚未开发。",
+    "Financy 将支持任意货币组合，包括加密货币。每笔交易都会在换算金额旁保留原始金额，合计以家庭的主货币显示。对于欧洲央行不覆盖的货币（例如加密货币），你可以在交易上自行填写汇率。正在开发中。",
+  "HomeFaq.ratesQuestion": "汇率从哪里来？",
+  "HomeFaq.ratesAnswer":
+    "来自欧洲央行，每个工作日通过免费公共服务 Frankfurter 获取。每个换算后的总额都会标明所用汇率的日期。没有汇率的货币会被列出并排除在总额之外，绝不会按 1 计算。正在开发中。",
   "HomeFaq.bankQuestion": "Financy 会连接我的银行吗？",
   "HomeFaq.bankAnswer": "不会。银行流水导入计划在第一个版本中提供。",
   "HomeFaq.stopsQuestion": "如果 Financy 停止开发怎么办？",

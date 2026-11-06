@@ -220,6 +220,11 @@ export interface OnboardingSteps {
   notificationsOn: boolean
   /** An authenticator app is set up. */
   twoFactorOn: boolean
+  /**
+   * Someone chose the main currency of a group this person is an admin or the owner of; the
+   * default euro does not count.
+   */
+  currencyChosen: boolean
 }
 
 /** What the SPA's first-steps checklist and tour show (`onboarding.get`). Kept per person. */
