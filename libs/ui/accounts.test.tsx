@@ -292,6 +292,9 @@ describe("AccountEditorScreen", () => {
     const text = title.firstElementChild!
     expect(text.className).toMatch(/\bline-clamp-2\b/)
     expect(text.className).not.toMatch(/\btruncate\b/)
+    // `block` sets a display of its own, which overrides the clamp's: the name would run past two
+    // lines.
+    expect(text.className).not.toMatch(/\bblock\b/)
   })
 })
 
