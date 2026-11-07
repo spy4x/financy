@@ -190,7 +190,7 @@ export default {
   "PricingWays.runUnit": "pelo preço do seu provedor",
   "PricingWays.runAction": "Ler o guia de deploy",
   "PricingWays.runText":
-    "O Financy roda num servidor Linux, alugado ou seu. Ele precisa de um provedor de e-mail para mandar os códigos de criar conta e de entrar; entrar com Google ou GitHub é opcional. Cada um cobra você diretamente.",
+    "O Financy roda num servidor Linux, alugado ou seu. Ele precisa de um provedor de e-mail para mandar os códigos para criar conta e entrar; entrar com Google ou GitHub é opcional. Cada um cobra você diretamente.",
   "DemoPlans.eyebrow": "Cobrança funcionando",
   "DemoPlans.title": "Os planos da demo: um exemplo da cobrança que você recebe pronta",
   "DemoPlans.noticeTitle": "Estes não são preços do Seed",

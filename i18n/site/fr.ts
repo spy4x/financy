@@ -302,7 +302,7 @@ export default {
     "Pas encore dans un store. Aujourd’hui, l’app web s’installe depuis le navigateur sur téléphone et ordinateur, et s’ouvre hors ligne.",
   "FeaturesHero.title": "Ce que Financy fait aujourd’hui, et ce qui vient ensuite",
   "FeaturesFaq.title": "Financy sait-il faire ça ?",
-  "FeatureSection.issue": "issue n° {number}",
+  "FeatureSection.issue": "ticket n° {number}",
   "FeatureSection.forDevelopers": "Pour les développeurs",
   "FeatureVisuals.deployCaption":
     "Version abrégée : la sortie de rsync et de Compose entre les étapes est omise.",
