@@ -2258,7 +2258,6 @@ export default {
   "AdminRates.lastFetch": "Última busca",
   "AdminRates.sourceEcb": "BCE, via Frankfurter",
   "AdminRates.sourceFallback": "{provider} (reserva paga)",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "one": "{time} · {count} cotação",
     "many": "{time} · {count} cotações",

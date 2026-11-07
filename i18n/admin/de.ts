@@ -2204,7 +2204,6 @@ export default {
   "AdminRates.lastFetch": "Letzter Abruf",
   "AdminRates.sourceEcb": "EZB, über Frankfurter",
   "AdminRates.sourceFallback": "{provider} (kostenpflichtige Ersatzquelle)",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "one": "{time} · {count} Kurs",
     "other": "{time} · {count} Kurse",

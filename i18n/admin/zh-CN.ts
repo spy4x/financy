@@ -1980,7 +1980,6 @@ export default {
   "AdminRates.lastFetch": "上次获取",
   "AdminRates.sourceEcb": "欧洲央行（经 Frankfurter）",
   "AdminRates.sourceFallback": "{provider}（付费备用来源）",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "other": "{time} · {count} 个汇率",
   },

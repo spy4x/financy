@@ -2421,7 +2421,6 @@ export default {
   "AdminRates.lastFetch": "آخر جلب",
   "AdminRates.sourceEcb": "البنك المركزي الأوروبي، عبر Frankfurter",
   "AdminRates.sourceFallback": "{provider} (المصدر الاحتياطي المدفوع)",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "zero": "{time} · {count} سعر",
     "one": "{time} · سعر واحد",

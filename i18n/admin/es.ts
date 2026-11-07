@@ -2267,7 +2267,6 @@ export default {
   "AdminRates.lastFetch": "Última obtención",
   "AdminRates.sourceEcb": "BCE, a través de Frankfurter",
   "AdminRates.sourceFallback": "{provider} (respaldo de pago)",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "one": "{time} · {count} tipo",
     "many": "{time} · {count} tipos",

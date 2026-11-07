@@ -2332,7 +2332,6 @@ export default {
   "AdminRates.lastFetch": "Последнее получение",
   "AdminRates.sourceEcb": "ЕЦБ через Frankfurter",
   "AdminRates.sourceFallback": "{provider} (платный резервный источник)",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "one": "{time} · {count} курс",
     "few": "{time} · {count} курса",

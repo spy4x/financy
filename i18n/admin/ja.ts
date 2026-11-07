@@ -2065,7 +2065,6 @@ export default {
   "AdminRates.lastFetch": "前回の取得",
   "AdminRates.sourceEcb": "ECB（Frankfurter経由）",
   "AdminRates.sourceFallback": "{provider}（有料の予備ソース）",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "other": "{time} · {count}件",
   },

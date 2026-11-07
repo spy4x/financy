@@ -2131,7 +2131,6 @@ export default {
   "AdminRates.lastFetch": "Last fetch",
   "AdminRates.sourceEcb": "ECB, through Frankfurter",
   "AdminRates.sourceFallback": "{provider} (paid fallback)",
-  "AdminRates.utc": "{time} UTC",
   "AdminRates.fetch": {
     "one": "{time} · {count} rate",
     "other": "{time} · {count} rates",

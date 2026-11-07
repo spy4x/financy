@@ -11,6 +11,7 @@ import { LoadingSkeleton } from "@spy4x/preact-ui/loading-skeleton"
 import { Notice } from "@spy4x/preact-ui/notice"
 import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
 import { UsageMeter } from "@spy4x/preact-ui/usage-meter"
+import { useFormat } from "@spy4x/preact-ui/format"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { type AdminRatesSnapshot, RATE_SOURCES } from "@domain/money"
 import { ADMIN_JOB_PATHS } from "./admin-jobs-screen.tsx"
@@ -45,32 +46,24 @@ function sourceName(t: Translator<string>, source: string): string {
   })
 }
 
-/** `6 Nov, 16:02 UTC`: a fetch time, in UTC as the job runs on it. */
-function timeUtc(t: Translator<string>, iso: string): string {
-  const time = new Intl.DateTimeFormat(t.language, {
-    day: `numeric`,
-    month: `short`,
-    hour: `2-digit`,
-    minute: `2-digit`,
-    timeZone: `UTC`,
-  }).format(new Date(iso))
-  return t.t(`AdminRates.utc`, { time })
+/** The page's dates, all in UTC as the daily job counts them, in the person's region format. */
+interface RateDates {
+  /** `Nov 6, 4:02 PM UTC`: a fetch time. */
+  at: (iso: string) => string
+  /** `Friday, November 6, 2026`: a rate day (`YYYY-MM-DD`), a calendar date, not a moment. */
+  day: (date: string) => string
+  /** `November 6, 2026`: a date in a sentence. */
+  long: (date: string) => string
 }
 
-/** `Fri, 6 Nov`: a rate day (`YYYY-MM-DD`), which is a calendar date, not a moment. */
-function dayName(t: Translator<string>, date: string): string {
-  return new Intl.DateTimeFormat(t.language, {
-    weekday: `short`,
-    day: `numeric`,
-    month: `short`,
-    timeZone: `UTC`,
-  }).format(new Date(`${date}T00:00:00Z`))
-}
-
-/** `6 November 2026`: a date in a sentence. */
-function longDate(t: Translator<string>, date: string): string {
-  return new Intl.DateTimeFormat(t.language, { dateStyle: `long`, timeZone: `UTC` })
-    .format(new Date(`${date}T00:00:00Z`))
+function useRateDates(): RateDates {
+  const utc = useFormat().utc()
+  const t = useAdminText()
+  return {
+    at: (iso) => t.t(`AdminJobs.atClock`, { day: utc.dayMonth(iso), time: utc.time(iso) }),
+    day: (date) => utc.date(`${date}T00:00:00Z`, `full`),
+    long: (date) => utc.date(`${date}T00:00:00Z`, `long`),
+  }
 }
 
 /**
@@ -128,12 +121,13 @@ export function AdminRatesScreen(props: AdminRatesScreenProps): JSX.Element {
 
 function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element {
   const t = useAdminText()
+  const dates = useRateDates()
   const { lastRun, fetches, missing, fallback } = snapshot
   const failed = lastRun?.failed
     ? (
       <div data-e2e="admin-rates-failed">
         <Notice tone="danger">
-          {t.t(`AdminRates.jobFailed`, { time: timeUtc(t, lastRun.at) })}
+          {t.t(`AdminRates.jobFailed`, { time: dates.at(lastRun.at) })}
         </Notice>
       </div>
     )
@@ -167,7 +161,7 @@ function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element 
               value: (
                 <span class="tabular-nums">
                   {t.t(`AdminRates.fetch`, {
-                    time: timeUtc(t, last.fetchedAt),
+                    time: dates.at(last.fetchedAt),
                     count: last.count,
                   })}
                 </span>
@@ -179,7 +173,7 @@ function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element 
           {missing.currencies.length === 0
             ? (
               <p class="text-sm text-muted">
-                {t.t(`AdminRates.missingNone`, { date: longDate(t, missing.date) })}
+                {t.t(`AdminRates.missingNone`, { date: dates.long(missing.date) })}
               </p>
             )
             : (
@@ -188,7 +182,7 @@ function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element 
                   <span class="font-medium tabular-nums" translate={false}>
                     {missing.currencies.join(`, `)}
                   </span>
-                  <span>{t.t(`AdminRates.missingText`, { date: longDate(t, missing.date) })}</span>
+                  <span>{t.t(`AdminRates.missingText`, { date: dates.long(missing.date) })}</span>
                 </span>
               </Notice>
             )}
@@ -212,13 +206,13 @@ function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element 
                   ? (
                     <Notice tone="warning">
                       {t.t(`AdminRates.fallbackCapped`, {
-                        date: longDate(t, fallback.resetsOn),
+                        date: dates.long(fallback.resetsOn),
                       })}
                     </Notice>
                   )
                   : (
                     <p class="text-xs text-muted">
-                      {t.t(`AdminRates.fallbackHint`, { date: longDate(t, fallback.resetsOn) })}
+                      {t.t(`AdminRates.fallbackHint`, { date: dates.long(fallback.resetsOn) })}
                     </p>
                   )}
               </>
@@ -259,6 +253,7 @@ const TABLE_CLASS = [
  */
 function RatesByDay({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element {
   const t = useAdminText()
+  const dates = useRateDates()
   const rows: DayRow[] = snapshot.days.flatMap((day): DayRow[] =>
     day.rows.length === 0
       ? [{ key: day.date, date: day.date, source: null, currencies: 0, fetchedAt: null }]
@@ -278,13 +273,13 @@ function RatesByDay({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element
       render: (row) => (
         <div class="flex min-w-0 flex-col gap-1" data-weekend={row.source === null || undefined}>
           <span class={row.source === null ? `text-sm text-muted` : `text-sm font-medium`}>
-            {dayName(t, row.date)}
+            {dates.day(row.date)}
           </span>
           <span class="text-xs text-muted sm:hidden">
             {row.source === null
               ? t.t(`AdminRates.weekend`)
               : `${sourceName(t, row.source)} · ${
-                t.t(`AdminRates.fetch`, { time: timeUtc(t, row.fetchedAt!), count: row.currencies })
+                t.t(`AdminRates.fetch`, { time: dates.at(row.fetchedAt!), count: row.currencies })
               }`}
           </span>
         </div>
@@ -313,7 +308,7 @@ function RatesByDay({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element
       render: (row) =>
         row.fetchedAt === null
           ? muted(`—`)
-          : <span class="whitespace-nowrap text-sm">{timeUtc(t, row.fetchedAt)}</span>,
+          : <span class="whitespace-nowrap text-sm">{dates.at(row.fetchedAt)}</span>,
     },
   ]
   return (
