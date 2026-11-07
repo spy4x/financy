@@ -55,6 +55,7 @@ export function AccountsView() {
       onShowDeleted={(show) => void store.showDeleted(show)}
       loading={store.loading.value || groupsStore.loading.value || groupId === null}
       listError={store.listError.value}
+      listPlan={store.listPlan.value}
       pendingId={store.pendingId.value}
       actions={canWrite ? accountActions(t, store, toasts) : undefined}
       navigate={navigate}

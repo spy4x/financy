@@ -21,6 +21,8 @@ import { AccountsTotal } from "./accounts-total.tsx"
 import { ACCOUNT_PATHS, type Navigate } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 import { type Message, messageText } from "./message.ts"
+import { PlanRefusalNotice } from "./plan-refusal.tsx"
+import type { PlanRefusal } from "@domain/billing"
 
 export type { AccountRow }
 
@@ -51,6 +53,8 @@ export interface AccountsScreenProps {
   loading: boolean
   /** The error of the list itself, such as a failed read or a refused change. */
   listError: Message | null
+  /** The plan's refusal of a restore: the household has no paid plan. Shown in place of `listError`. */
+  listPlan?: PlanRefusal | null
   /** The account whose change is in flight: its menu is disabled meanwhile. */
   pendingId?: string | null
   actions?: AccountActions
@@ -117,7 +121,15 @@ export function AccountsScreen(props: AccountsScreenProps): JSX.Element {
             {t.t(`Accounts.readOnly`)}
           </p>
         )}
-        <ErrorState message={messageText(t, props.listError)} />
+        {props.listPlan && props.group
+          ? (
+            <PlanRefusalNotice
+              groupId={props.group.id}
+              refusal={props.listPlan}
+              navigate={props.navigate}
+            />
+          )
+          : <ErrorState message={messageText(t, props.listError)} />}
         {!trash && props.total !== undefined && (props.accounts.length > 0 || props.loading) && (
           <AccountsTotal total={props.total} />
         )}
