@@ -30,7 +30,7 @@ basic investments view is filed for later (https://github.com/spy4x/financy/issu
 - Income, expenses and transfers, cross-currency transfers included, with the original amount
   kept next to the converted one.
 - Categories with one level of parents, and monthly budgets that roll up to the parent.
-- The month view: income, spending and what is left, in the household's base currency.
+- The month view: income, expenses and what is left, in the household's base currency.
 - Bank statement import: CSV in any bank's layout, OFX, QIF, CAMT.053, MT940 and PDF, with AI
   help for a layout Financy has not seen.
 - Recurring transactions, and the Telegram bot for quick entry and balances.
