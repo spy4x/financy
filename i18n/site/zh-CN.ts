@@ -198,7 +198,7 @@ export default {
   "FeatureTierSettled.title": "家庭财务的地基",
   "FeatureTierSettled.status":
     "Google 和 GitHub 登录需要服务器自己的密钥，所以新部署的实例先只支持邮箱登录。",
-  "FeatureSignIn.nav": "账号与登录",
+  "FeatureSignIn.nav": "登录与安全",
   "FeatureSignIn.title": "登录，已搞定",
   "FeatureSignIn.lead":
     "用邮箱和密码注册，再用验证码确认邮箱。忘记密码可以重置，也可以用 Google 或 GitHub 继续、用通行密钥登录，或通过邮件收到的登录码登录。身份验证器应用可开启双重验证（2FA），你还能看到所有已登录的设备，并让其他设备退出登录。",
