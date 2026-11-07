@@ -314,6 +314,8 @@ export interface AccountWriteResult {
 
 export class AccountCreateCommand implements Command<AccountCreatePayload, AccountWriteResult> {
   __resultType?: AccountWriteResult
+  /** The household's plan cap on accounts (`maxAccounts`), set by the entitlement gate. */
+  allowance?: number | null
   constructor(public data: AccountCreatePayload) {}
 }
 
@@ -368,6 +370,8 @@ export type AccountRestorePayload = AccountCommandBase
 /** Brings a deleted account back; it counts against the household's cap again. */
 export class AccountRestoreCommand implements Command<AccountRestorePayload, { account: Account }> {
   __resultType?: { account: Account }
+  /** The household's plan cap on accounts (`maxAccounts`), set by the entitlement gate. */
+  allowance?: number | null
   constructor(public data: AccountRestorePayload) {}
 }
 
@@ -481,7 +485,15 @@ interface AccountInputBase {
   requestId?: string
 }
 
-export interface AccountCreateInput extends AccountInputBase, AccountFields {}
+/**
+ * The household's plan cap on accounts, as the entitlement gate read it; `null` is no cap. The
+ * write counts again under the household's lock, so two requests cannot both take the last slot.
+ */
+interface AccountAllowance {
+  allowance: number | null
+}
+
+export interface AccountCreateInput extends AccountInputBase, AccountFields, AccountAllowance {}
 
 export interface AccountUpdateInput extends AccountInputBase, AccountFields {
   expectedVersion: number
@@ -501,7 +513,7 @@ export interface AccountDeleteInput extends AccountInputBase {
   expectedVersion: number
 }
 
-export type AccountRestoreInput = AccountInputBase
+export interface AccountRestoreInput extends AccountInputBase, AccountAllowance {}
 
 /**
  * Where accounts are kept. Every write checks the actor's role again on the locked membership row
@@ -515,8 +527,9 @@ export interface AccountRepository {
   /** A live account of the group, with its balance; `null` for a deleted one or another group's. */
   get(groupId: string, id: string): Promise<ListedAccount | null>
   /**
-   * Throws `ID_ALREADY_EXISTS` when the id holds a different account and `ACCOUNT_LIMIT_REACHED`
-   * when the household is full. A retry of a create that landed is answered with its account.
+   * Throws `ID_ALREADY_EXISTS` when the id holds a different account, `ACCOUNT_LIMIT_REACHED`
+   * when the household is full, and a `PlanError` when its plan's `allowance` is used up. A retry
+   * of a create that landed is answered with its account.
    */
   create(input: AccountCreateInput, actorId: number): Promise<AccountWriteResult>
   /** Throws `ACCOUNT_NOT_FOUND` or {@link AccountVersionConflictError}. */
@@ -530,7 +543,10 @@ export interface AccountRepository {
   setDefault(input: AccountSetDefaultInput, actorId: number): Promise<Account>
   /** Throws `ACCOUNT_NOT_FOUND` or {@link AccountVersionConflictError}. */
   delete(input: AccountDeleteInput, actorId: number): Promise<Account>
-  /** Throws `ACCOUNT_NOT_FOUND` for an account that is not deleted, or `ACCOUNT_LIMIT_REACHED`. */
+  /**
+   * Throws `ACCOUNT_NOT_FOUND` for an account that is not deleted, `ACCOUNT_LIMIT_REACHED`, or a
+   * `PlanError` when the plan's `allowance` is used up.
+   */
   restore(input: AccountRestoreInput, actorId: number): Promise<Account>
 }
 // #endregion Ports

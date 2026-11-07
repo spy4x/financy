@@ -28,6 +28,7 @@ function bus(notes: number) {
       usage: {
         maxNotes: () => Promise.resolve(group.notes),
         maxMembers: () => Promise.reject(new Error("not part of this test")),
+        maxAccounts: () => Promise.reject(new Error("not part of this test")),
       },
       plans: TEST_PLANS,
     }, ENTITLEMENT_NEEDS),

@@ -36,6 +36,13 @@ const REFUSAL_KEYS: Record<
     unnamed: `PlanRefusalNotice.storageTitleUnnamed`,
     message: `PlanRefusalNotice.storageText`,
   },
+  // Financy sells accounts with no cap, and the free plan allows none: its refusal always has a cap
+  // of 0, which the notice words as "no plan" below.
+  maxAccounts: {
+    named: `PlanRefusalNotice.noPlanTitle`,
+    unnamed: `PlanRefusalNotice.noPlanTitleUnnamed`,
+    message: `PlanRefusalNotice.noPlanText`,
+  },
   memberRoles: {
     named: `PlanRefusalNotice.rolesTitle`,
     unnamed: `PlanRefusalNotice.rolesTitle`,

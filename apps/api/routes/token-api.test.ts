@@ -87,6 +87,7 @@ function buildApp(limit = 100) {
       maxNotes: (group) =>
         Promise.resolve([...notes.notes.values()].filter((note) => note.groupId === group).length),
       maxMembers: () => Promise.reject(new Error("not part of this test")),
+      maxAccounts: () => Promise.reject(new Error("not part of this test")),
     },
   }, ENTITLEMENT_NEEDS))
   commands.register(NoteCreateCommand, createNoteCreateHandler(dependencies))

@@ -77,6 +77,7 @@ function stack(plans: Record<string, string> = { [FROM]: PRO_PLAN_ID, [TO]: PRO_
     usage: {
       maxNotes: () => Promise.reject(new Error("the move counts in its own transaction")),
       maxMembers: () => Promise.reject(new Error("not part of this test")),
+      maxAccounts: () => Promise.reject(new Error("not part of this test")),
     },
   }, ENTITLEMENT_NEEDS))
   commands.register(GroupMoveAllCommand, createGroupMoveAllHandler(repository, mover))

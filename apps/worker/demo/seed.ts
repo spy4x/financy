@@ -330,7 +330,11 @@ async function seedGroups(
       const when = at(account.createdAgo)
       const author = writer(account.author)
       const { name, kind, currency, startingBalance } = account
-      await db.account.create({ id, groupId, name, kind, currency, startingBalance }, author)
+      // The demo seeds its households directly: no plan applies to what it writes.
+      await db.account.create(
+        { id, groupId, name, kind, currency, startingBalance, allowance: null },
+        author,
+      )
       if (index === 0) {
         await db.account.setDefault(
           { id, groupId, expectedVersion: 1, isDefault: true },

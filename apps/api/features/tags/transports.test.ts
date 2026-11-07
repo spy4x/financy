@@ -101,6 +101,7 @@ function stack() {
     usage: {
       maxNotes: () => Promise.resolve(0),
       maxMembers: () => Promise.reject(new Error("not part of this test")),
+      maxAccounts: () => Promise.reject(new Error("not part of this test")),
     },
   }, ENTITLEMENT_NEEDS))
   commands.register(NoteCreateCommand, createNoteCreateHandler(noteDependencies))

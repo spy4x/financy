@@ -13,12 +13,14 @@ const WRITE_BATCH = 1_000
  * Accounts in a household's export file: what a person typed (name, kind, currency, starting
  * balance) and whether each was archived or the default. Never a balance, which is derived, nor a
  * deleted account. Each gets a new id on import. A file's accounts fit one household: at most
- * `ACCOUNT_MAX_PER_GROUP`, one default, never an archived one.
+ * `ACCOUNT_MAX_PER_GROUP`, one default, never an archived one. They count against the new
+ * household's `maxAccounts`.
  */
 export const accountPortable = portable<AccountExportEntry>({
   kind: "accounts",
   one: "account",
   other: "accounts",
+  limit: "maxAccounts",
   parse: parseAccountExportEntry,
   check: accountExportProblems,
   async *read(sql, groupId) {

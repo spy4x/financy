@@ -37,7 +37,11 @@ function bus(overrides: Partial<EntitlementGateDependencies> = {}, notes = 0, me
     billingEnabled: true,
     planOf: () => Promise.resolve(FREE_PLAN_ID),
     roleOf: (_group, userId) => Promise.resolve(ROLES[userId] ?? null),
-    usage: { maxNotes: () => Promise.resolve(notes), maxMembers: () => Promise.resolve(members) },
+    usage: {
+      maxNotes: () => Promise.resolve(notes),
+      maxMembers: () => Promise.resolve(members),
+      maxAccounts: () => Promise.reject(new Error("not part of this test")),
+    },
     plans: TEST_PLANS,
     ...overrides,
   }, ENTITLEMENT_NEEDS))

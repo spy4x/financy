@@ -26,6 +26,19 @@ export interface AccountHandlerDependencies {
 }
 
 /**
+ * Throws unless the entitlement gate set the plan's cap on the command: a bus without the gate
+ * would add accounts to a household that has no plan, so it fails closed.
+ */
+function assertGated(
+  allowance: number | null | undefined,
+  command: string,
+): asserts allowance is number | null {
+  if (allowance === undefined) {
+    throw new Error(`${command} reached its handler without the entitlement gate`)
+  }
+}
+
+/**
  * The account handlers. Each one decides who may act before it touches an account: every member
  * reads, an editor or above writes, and a stranger is told the household does not exist. The
  * repository checks the role again inside each write's transaction, so a write that races a
@@ -34,10 +47,12 @@ export interface AccountHandlerDependencies {
 export function createAccountCreateHandler(
   { accounts, groups }: AccountHandlerDependencies,
 ): CommandHandler<AccountCreateCommand> {
-  return async ({ data }) => {
+  return async ({ data, allowance }) => {
+    assertGated(allowance, "AccountCreateCommand")
     assertCanWriteAccounts(await groups.roleOf(data.groupId, data.actor.userId))
     return await accounts.create(
       {
+        allowance,
         groupId: data.groupId,
         id: data.id,
         name: data.name,
@@ -132,10 +147,11 @@ export function createAccountDeleteHandler(
 export function createAccountRestoreHandler(
   { accounts, groups }: AccountHandlerDependencies,
 ): CommandHandler<AccountRestoreCommand> {
-  return async ({ data }) => {
+  return async ({ data, allowance }) => {
+    assertGated(allowance, "AccountRestoreCommand")
     assertCanWriteAccounts(await groups.roleOf(data.groupId, data.actor.userId))
     const account = await accounts.restore(
-      { groupId: data.groupId, id: data.id, requestId: data.requestId },
+      { allowance, groupId: data.groupId, id: data.id, requestId: data.requestId },
       data.actor.userId,
     )
     return { account }

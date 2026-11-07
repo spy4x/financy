@@ -7,6 +7,7 @@ import {
   invitableRoles,
 } from "@domain/groups"
 import { NoteCreateCommand, NoteMoveCommand, NoteRestoreCommand } from "@domain/notes"
+import { AccountCreateCommand, AccountRestoreCommand } from "@domain/accounts"
 import { type EntitlementNeeds, needsFeature, needsRoom } from "./entitlement-gate.ts"
 
 /**
@@ -53,6 +54,21 @@ export const ENTITLEMENT_NEEDS: EntitlementNeeds = new Map([
     "maxMembers",
     (command) => command.data.groupId,
     (actor, command) => invitableRoles(actor).includes(command.data.role),
+  ),
+  // An account added, or restored from the trash, counts against the household's plan. Every other
+  // account write (edit, archive, default, delete) passes on every plan, so a household that
+  // stopped paying keeps its accounts in order. A viewer is not judged: the handler answers 403.
+  needsRoom(
+    AccountCreateCommand,
+    "maxAccounts",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
+  ),
+  needsRoom(
+    AccountRestoreCommand,
+    "maxAccounts",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
   ),
   needsFeature(
     GroupMemberRoleCommand,

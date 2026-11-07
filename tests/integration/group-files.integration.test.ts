@@ -74,7 +74,11 @@ async function seed(sql: postgres.Sql) {
     kind: AccountKind,
     currency: string,
     balance: number,
-  ) => accounts.create({ groupId, id, name, kind, currency, startingBalance: balance }, owner)
+  ) =>
+    accounts.create(
+      { groupId, id, name, kind, currency, startingBalance: balance, allowance: null },
+      owner,
+    )
   await account(accountIds[0], "Main", AccountKind.BANK, "USD", 1234)
   await account(accountIds[1], "Trip cash", AccountKind.CASH, "JPY", 500)
   await account(accountIds[2], "Closed", AccountKind.CARD, "EUR", -99)

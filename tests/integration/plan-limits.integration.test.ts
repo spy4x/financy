@@ -57,6 +57,7 @@ function noteBus(sql: postgres.Sql, usage?: EntitlementGateDependencies["usage"]
     usage: usage ?? {
       maxNotes: (groupId) => notes.count(groupId),
       maxMembers: () => Promise.reject(new Error("not part of this test")),
+      maxAccounts: () => Promise.reject(new Error("not part of this test")),
     },
   }, ENTITLEMENT_NEEDS))
   bus.register(NoteCreateCommand, createNoteCreateHandler({ notes, groups }))

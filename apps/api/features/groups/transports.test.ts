@@ -86,6 +86,7 @@ function stack(plan = PRO_PLAN_ID) {
     usage: {
       maxNotes: () => Promise.reject(new Error("not part of this test")),
       maxMembers: () => Promise.reject(new Error("not part of this test")),
+      maxAccounts: () => Promise.reject(new Error("not part of this test")),
     },
   }, ENTITLEMENT_NEEDS))
   commands.register(GroupRenameCommand, createGroupRenameHandler(groups))

@@ -133,6 +133,7 @@ function buses(sql: postgres.Sql) {
     usage: {
       maxNotes: () => Promise.reject(new Error("billing is off")),
       maxMembers: () => Promise.reject(new Error("billing is off")),
+      maxAccounts: () => Promise.reject(new Error("billing is off")),
     },
   }, ENTITLEMENT_NEEDS))
   commands.register(NoteCreateCommand, createNoteCreateHandler(dependencies))

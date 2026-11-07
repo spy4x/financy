@@ -22,7 +22,8 @@ import {
   recordGroupChange,
 } from "@server/groups/group-change-log.ts"
 import { writeAuditEvent } from "@server/groups/audit.ts"
-import type { AuditDetails } from "@domain/groups"
+import type { AuditDetails, GroupRole } from "@domain/groups"
+import { assertRoomFor } from "@domain/billing"
 
 /** A row as postgres.js reads it: the two BIGINT columns come as decimal text. */
 interface AccountRow extends postgres.Row, Omit<Account, "startingBalance"> {
@@ -53,14 +54,19 @@ async function recordAccountChange(
   }
 }
 
-/** Checks, in the write's own transaction, that the actor may still change the accounts. */
+/**
+ * Checks, in the write's own transaction, that the actor may still change the accounts, and
+ * returns their role.
+ */
 async function assertWriterNow(
   transaction: postgres.TransactionSql,
   groupId: string,
   actorId: number,
-): Promise<void> {
+): Promise<GroupRole> {
   try {
-    assertCanWriteAccounts(await lockActorRole(transaction, groupId, actorId))
+    const role = await lockActorRole(transaction, groupId, actorId)
+    assertCanWriteAccounts(role)
+    return role as GroupRole
   } catch (error) {
     if (error instanceof GroupNotActiveError) {
       throw new AccountError("GROUP_NOT_FOUND", "Group not found")
@@ -108,6 +114,17 @@ export class PostgresAccountRepository implements AccountRepository {
     return row ? toListedAccount(row) : null
   }
 
+  /**
+   * Refuses a write that just added a live account to a household past its caps: Financy's own
+   * (`ACCOUNT_MAX_PER_GROUP`) and the plan's `allowance`. It runs after the write, under the lock
+   * on the household that every other account write takes.
+   */
+  async assertRoom(groupId: string, allowance: number | null, role: GroupRole): Promise<void> {
+    const count = await this.count(groupId)
+    assertAccountRoom(count)
+    assertRoomFor("maxAccounts", allowance, count - 1, role)
+  }
+
   /** How many live accounts the household holds, archived ones included. */
   async count(groupId: string): Promise<number> {
     const [{ count }] = await this.sql<{ count: number }[]>`
@@ -119,7 +136,7 @@ export class PostgresAccountRepository implements AccountRepository {
   async create(input: AccountCreateInput, actorId: number): Promise<AccountWriteResult> {
     return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
       const repository = new PostgresAccountRepository(transaction)
-      await assertWriterNow(transaction, input.groupId, actorId)
+      const role = await assertWriterNow(transaction, input.groupId, actorId)
       // The id is the primary key, so a retry of this request inserts nothing.
       const inserted = (
         await transaction<{ id: string }[]>`
@@ -135,7 +152,7 @@ export class PostgresAccountRepository implements AccountRepository {
         `
       )[0]
       if (inserted) {
-        assertAccountRoom(await repository.count(input.groupId))
+        await repository.assertRoom(input.groupId, input.allowance, role)
         await repository.audit(transaction, ACCOUNT_EVENTS.created, input, actorId, {
           name: input.name,
         })
@@ -283,7 +300,7 @@ export class PostgresAccountRepository implements AccountRepository {
   async restore(input: AccountRestoreInput, actorId: number): Promise<Account> {
     return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
       const repository = new PostgresAccountRepository(transaction)
-      await assertWriterNow(transaction, input.groupId, actorId)
+      const role = await assertWriterNow(transaction, input.groupId, actorId)
       const [row] = await transaction<{ name: string }[]>`
         UPDATE accounts
         SET deleted_at = NULL,
@@ -294,7 +311,7 @@ export class PostgresAccountRepository implements AccountRepository {
         RETURNING name
       `
       if (!row) throw new AccountError("ACCOUNT_NOT_FOUND", "Account not found")
-      assertAccountRoom(await repository.count(input.groupId))
+      await repository.assertRoom(input.groupId, input.allowance, role)
       await repository.audit(transaction, ACCOUNT_EVENTS.restored, input, actorId, {
         name: row.name,
       })

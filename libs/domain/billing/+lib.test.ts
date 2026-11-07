@@ -558,7 +558,14 @@ describe("billing domain", () => {
         ...free,
         entitlements: {
           ...free.entitlements,
-          limits: { maxMembers: 1, maxNotes: 0, maxAttachments: 0, storageBytes: 0, ...limits },
+          limits: {
+            maxMembers: 1,
+            maxNotes: 0,
+            maxAttachments: 0,
+            storageBytes: 0,
+            maxAccounts: 0,
+            ...limits,
+          },
         },
       },
       pro,

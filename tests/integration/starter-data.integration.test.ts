@@ -238,7 +238,13 @@ Deno.test("the welcome note respects the group's plan cap", async (t) => {
           ...freePlan,
           entitlements: {
             ...freePlan.entitlements,
-            limits: { maxMembers: 1, maxNotes: 0, maxAttachments: 0, storageBytes: 0 },
+            limits: {
+              maxMembers: 1,
+              maxNotes: 0,
+              maxAttachments: 0,
+              storageBytes: 0,
+              maxAccounts: 0,
+            },
           },
         },
         ...paid,

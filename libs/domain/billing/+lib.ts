@@ -15,8 +15,10 @@ import { canManageBilling, canRead, GroupRole } from "@domain/groups"
 export const FREE_PLAN_ID = "free"
 
 /**
- * The paid plan. Its provider prices come from the environment: `STRIPE_PRICE_PRO` bills it
- * monthly, and `STRIPE_PRICE_PRO_YEARLY` yearly when the plan has a {@link Plan.yearlyAmount}.
+ * The paid plan, Financy's Household plan. Its provider prices come from the environment:
+ * `STRIPE_PRICE_PRO` bills it monthly, and `STRIPE_PRICE_PRO_YEARLY` yearly when the plan has a
+ * {@link Plan.yearlyAmount}. The id stays `pro`, as Seed's code and its development provider name
+ * it (`docs/billing-plans.md`, "Replace the catalog in a product"); only the name changes.
  */
 export const PRO_PLAN_ID = "pro"
 
@@ -38,8 +40,11 @@ export type FeatureKey =
  * - `maxAttachments`: files attached to the group's notes, deleted notes' files included until the
  *   notes are purged.
  * - `storageBytes`: bytes of those files.
+ * - `maxAccounts`: Financy's money accounts in the household that are not deleted, archived ones
+ *   included. Financy sells it at 0 or with no cap: a household without a paid plan adds no
+ *   account, and keeps reading, editing and exporting the ones it has.
  */
-export type LimitKey = "maxMembers" | "maxNotes" | "maxAttachments" | "storageBytes"
+export type LimitKey = "maxMembers" | "maxNotes" | "maxAttachments" | "storageBytes" | "maxAccounts"
 
 /** What a plan allows: which features it includes, and how much of each count, `null` for no cap. */
 export interface Entitlements {
@@ -50,7 +55,13 @@ export interface Entitlements {
 /** What a deployment that takes no payments allows every group: everything, with no cap. */
 export const UNLIMITED: Entitlements = {
   features: { memberRoles: true },
-  limits: { maxMembers: null, maxNotes: null, maxAttachments: null, storageBytes: null },
+  limits: {
+    maxMembers: null,
+    maxNotes: null,
+    maxAttachments: null,
+    storageBytes: null,
+    maxAccounts: null,
+  },
 }
 
 /**
@@ -111,23 +122,30 @@ export interface Plan {
   refundDays?: number
 }
 
-/** Every plan, free first. The paid ones are the ones a checkout may name. */
+/**
+ * Every plan, free first. The paid ones are the ones a checkout may name.
+ *
+ * Financy sells one plan, Household, and is paid from sign-up (`docs/financy/product.md`, "Price"):
+ * the free plan allows nothing, so a new owner is sent to checkout and a household whose
+ * subscription ended can read, edit and export what it has but add nothing.
+ */
 export const PLANS: readonly Plan[] = [
   {
     id: FREE_PLAN_ID,
     name: "Free",
     amount: 0,
     yearlyAmount: null,
-    currency: "EUR",
-    description: "For trying things out.",
-    features: ["Up to 10 notes", "Up to 3 members", "100 files, 200 MB in all"],
+    currency: "USD",
+    description: "A household without a paid plan: read, edit and export, add nothing.",
+    features: ["Read, edit and export what the household has", "No new entries"],
     entitlements: {
       features: { memberRoles: false },
       limits: {
-        maxMembers: 3,
-        maxNotes: 10,
-        maxAttachments: 100,
-        storageBytes: 200 * 1024 * 1024,
+        maxMembers: 1,
+        maxNotes: 0,
+        maxAttachments: 0,
+        storageBytes: 0,
+        maxAccounts: 0,
       },
     },
     attachments: { maxFileBytes: 2 * 1024 * 1024, maxPerNote: 10 },
@@ -136,30 +154,33 @@ export const PLANS: readonly Plan[] = [
   },
   {
     id: PRO_PLAN_ID,
-    name: "Pro",
-    amount: 900,
-    yearlyAmount: null,
-    currency: "EUR",
-    description: "For a group that relies on it.",
+    name: "Household",
+    amount: 400,
+    yearlyAmount: 4000,
+    currency: "USD",
+    description: "The cloud, run for you.",
     features: [
-      "Billed per member, the owner included",
-      "Unlimited notes",
-      "Unlimited files, 10 GB in all",
-      "Up to 50 members",
-      "Promote members to editor or admin",
+      "Up to 6 people, each with their own login",
+      "Inviting your partner never costs more",
+      "Live on every device, and readable offline",
+      "Export your household to a file at any time",
+      "No server to look after",
     ],
     entitlements: {
       features: { memberRoles: true },
       limits: {
-        maxMembers: 50,
+        maxMembers: 6,
         maxNotes: null,
         maxAttachments: null,
+        // Not a cap the plan sells: it keeps one household's files from filling the server.
         storageBytes: 10 * 1024 * 1024 * 1024,
+        maxAccounts: null,
       },
     },
     attachments: { maxFileBytes: 2 * 1024 * 1024, maxPerNote: 10 },
-    trialDays: 14,
-    perSeat: true,
+    trialDays: 0,
+    perSeat: false,
+    refundDays: 30,
   },
 ]
 
