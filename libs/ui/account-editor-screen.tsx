@@ -200,6 +200,16 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
         back={{ href: ACCOUNT_PATHS.list, label: t.t(`AccountEditor.back`) }}
         navigate={navigate}
         title={account ? account.name : t.t(`AccountEditor.new`)}
+        heading={
+          // The library's plain title truncates to one line; a long account name wraps to two
+          // instead, as the spec's lists do, and the full name stays the heading's tooltip.
+
+
+            <span dir="auto" class="block line-clamp-2 break-words [text-align:match-parent]">
+              {account ? account.name : t.t(`AccountEditor.new`)}
+            </span>
+
+        }
         titleDataE2E="account-title"
         subtitle={account ? <Summary account={account} /> : group.name}
         subtitleDataE2E="account-summary"

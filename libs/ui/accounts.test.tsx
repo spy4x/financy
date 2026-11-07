@@ -274,6 +274,25 @@ describe("AccountEditorScreen", () => {
     expect(count("[data-e2e=account-editor-menu]")).toBe(0)
     expect(count("[data-e2e=account-read-only]")).toBe(1)
   })
+
+  it("wraps a long account name in the title to two lines instead of cutting it, and keeps the full name as its tooltip", async () => {
+    const name = "Joint savings account for the summer holiday in Portugal"
+    const saved = account({ id: "019a0000-0000-7000-8000-0000000000a2", name, currency: "EUR" })
+    await mount(
+      <Editor
+        account={saved}
+        start={{ name, kind: AccountKind.BANK, currency: "EUR", startingBalance: 0 }}
+        seen={[]}
+      />,
+    )
+
+    const title = find("[data-e2e=account-title]")
+    expect(title.getAttribute("title")).toBe(name)
+    expect(title.textContent).toBe(name)
+    const text = title.firstElementChild!
+    expect(text.className).toMatch(/\bline-clamp-2\b/)
+    expect(text.className).not.toMatch(/\btruncate\b/)
+  })
 })
 
 describe("AccountsScreen", () => {
@@ -348,6 +367,30 @@ describe("AccountsScreen", () => {
       render(<AccountsScreen {...listDefaults} accounts={[old]} showArchived />, root!)
     )
     expect(find(`[data-e2e=account-${old.id}]`).textContent).toContain("Archived")
+  })
+
+  it("puts the Default and Archived badges on the currency line, so the name keeps its own line and wraps to two", async () => {
+    const long = account({
+      id: "019a0000-0000-7000-8000-0000000000b9",
+      name: "Main account for the household's everyday spending",
+      currency: "EUR",
+      isDefault: true,
+      archived: true,
+    })
+    await mount(<AccountsScreen {...listDefaults} accounts={[long]} showArchived />)
+
+    const row = `[data-e2e=account-${long.id}]`
+    const name = find(`${row} [data-e2e=account-name]`)
+    expect(name.className).toMatch(/\bline-clamp-2\b/)
+    expect(name.className).not.toMatch(/\btruncate\b/)
+    // Nothing else shares the name's line: the badges sit with the currency code under it.
+    expect(name.textContent).toBe(long.name)
+    const meta = find(`${row} [data-e2e=account-meta]`)
+    expect(name.nextElementSibling).toBe(meta)
+    expect(meta.textContent).toContain("EUR")
+    expect(meta.textContent).toContain("Default")
+    expect(meta.textContent).toContain("Archived")
+    expect(meta.contains(name)).toBe(false)
   })
 
   it("marks an archived row by its badge and a muted name, never by fading the row's text", async () => {
