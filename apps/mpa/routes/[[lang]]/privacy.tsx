@@ -28,7 +28,7 @@ export const PRIVACY_HEAD = {
   title: `Privacy: what is kept about your household`,
   description: `What Financy's cloud stores about your household's money, who sees it, which ` +
     `companies handle it, how long it stays and how to delete it.`,
-  updated: `2026-11-06`,
+  updated: `2026-11-07`,
 } as const
 
 /** A group's heading inside a section: `LegalPage` styles `h2` only. */
@@ -68,7 +68,7 @@ export default define.page(function Privacy({ state }) {
       title="Privacy"
       headTitle={PRIVACY_HEAD.title}
       description={PRIVACY_HEAD.description}
-      updated="6 November 2026"
+      updated="7 November 2026"
       sections={PRIVACY_SECTIONS}
       lead={
         <TldrBox
@@ -104,11 +104,12 @@ export default define.page(function Privacy({ state }) {
       <p>
         Financy follows the EU's data protection law (GDPR): you can download, correct and delete
         your data at any time, and this page says what is kept, who handles it and for how long. One
-        thing is missing: a company outside the EU must name a representative inside it, and Financy
-        has none yet. It will name one once 10 households in the EU pay for the cloud. If you need
-        this, say so on{" "}
-        <a href={`${REPOSITORY_URL}/issues/141`}>GitHub</a>. Until then, you can run Financy on your
-        own server, which shares nothing with NeatSoft.
+        thing is missing: a company outside the EU must name a representative inside it, a contact
+        that EU residents and regulators can write to, and Financy has none yet. It will name one
+        once 10 households in the EU pay for the cloud. If you need this, say so in{" "}
+        <a href={`${REPOSITORY_URL}/issues/141`}>the GitHub issue about it</a> or write to{" "}
+        <a href="mailto:privacy@financy.dev">privacy@financy.dev</a>. Until then, you can run
+        Financy on your own server, which shares nothing with NeatSoft.
       </p>
 
       <h2 id="stores">What Financy stores</h2>
@@ -223,8 +224,9 @@ export default define.page(function Privacy({ state }) {
       <h3 class={GROUP}>Only when you turn it on</h3>
       <ul>
         <li>
-          <strong>DeepSeek</strong>, or the AI provider your household brings its own key for: reads
-          a masked sample of a bank statement Financy does not recognise. See{" "}
+          <strong>DeepSeek</strong>{" "}
+          (China), or the AI provider your household brings its own key for: reads a masked sample
+          of a bank statement Financy does not recognise. See{" "}
           <a href="#ai">Reading statements with AI</a>.
         </li>
         <li>
@@ -249,8 +251,8 @@ export default define.page(function Privacy({ state }) {
       </p>
       <p>
         Financy's cloud uses DeepSeek, a company in China. Instead, your household can enter its own
-        key and address for another AI provider; the sample then goes to that provider, under your
-        own agreement with it.
+        API key for another AI provider, with the API address Financy sends requests to; the sample
+        then goes to that provider, under your own agreement with it.
       </p>
       <p>
         The provider receives a masked sample of the statement, never the file. Every letter and

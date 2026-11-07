@@ -29,7 +29,7 @@ export const TERMS_HEAD = {
   title: `Terms: price, renewal and refunds`,
   description: `What Financy's cloud costs, how renewal, cancelling and the 30-day money-back ` +
     `guarantee work, and what Financy is not: financial advice.`,
-  updated: `2026-11-06`,
+  updated: `2026-11-07`,
 } as const
 
 /** The "In short" points, each with the section that proves it. */
@@ -59,7 +59,7 @@ export default define.page(function Terms({ state }) {
       title="Terms"
       headTitle={TERMS_HEAD.title}
       description={TERMS_HEAD.description}
-      updated="6 November 2026"
+      updated="7 November 2026"
       sections={TERMS_SECTIONS}
       lead={
         <TldrBox
@@ -129,7 +129,8 @@ export default define.page(function Terms({ state }) {
       <p>
         Forgot to cancel before a renewal? If you have not used Financy since the renewal, ask
         within 14 days of the charge and I refund it in full and cancel the plan. If you have used
-        it, ask within 5 days.
+        it since the renewal, which means you signed in or wrote to the Financy bot on Telegram, ask
+        within 5 days of the charge and I still refund it in full.
       </p>
       <p>
         Your rights under the consumer law of the country you live in come on top of these, and
