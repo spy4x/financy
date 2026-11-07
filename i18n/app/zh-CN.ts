@@ -1832,6 +1832,13 @@ export default {
   "Accounts.allArchived": "所有账户都已归档。显示已归档的账户即可看到。",
   "Accounts.archive": "归档",
   "Accounts.archivedBadge": "已归档",
+  "AccountsTotal.title": "Total",
+  "AccountsTotal.about": "about {amount}",
+  "AccountsTotal.rates": "At the exchange rates of {date}",
+  "AccountsTotal.leftOut": {
+    "other": "Leaves out {count} accounts: no exchange rate for {currencies} yet.",
+  },
+  "AccountsTotal.tooLarge": "The total is too large to show.",
   "Accounts.back": "返回账户",
   "Accounts.clearDefault": "不再设为默认",
   "Accounts.defaultBadge": "默认",

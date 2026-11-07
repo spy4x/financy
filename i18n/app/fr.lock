@@ -78,6 +78,11 @@ Accounts.trashEmpty	5ce38c4d0fcf8707
 Accounts.trashHint	73b2ab329c7c81d2
 Accounts.trashTitle	5b282ecf423da9a9
 Accounts.unarchive	f565318d124534cf
+AccountsTotal.about	e448a4a843d932c2
+AccountsTotal.leftOut	6438c107d9174e8b
+AccountsTotal.rates	7a95bcf6cebe9c76
+AccountsTotal.title	c9b3c38247f744e1
+AccountsTotal.tooLarge	bb03151be452e544
 AccountsView.archived	9e55c6b4420de8a6
 AccountsView.archivedTitle	4fecdfb6719ef35e
 AccountsView.created	18389b3c55481892
