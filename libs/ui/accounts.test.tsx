@@ -205,6 +205,22 @@ describe("AccountEditorScreen", () => {
     expect(document.body.textContent).not.toContain("does not fit")
   })
 
+  it("ties the cleared-balance message to the balance input, so a screen reader hears it on focus", async () => {
+    await mount(<Editor start={{ ...NEW_FORM, currency: "USD" }} seen={[]} />)
+    await type(BALANCE, "12.34")
+
+    await pickCurrency("JPY")
+
+    const input = find<HTMLInputElement>(BALANCE)
+    const described = (input.getAttribute("aria-describedby") ?? "").split(" ")
+      .map((id) => document.getElementById(id)?.textContent ?? "")
+    expect(described).toContain(
+      "US$12.34 does not fit JPY, so the starting balance was cleared. Type it again.",
+    )
+    expect(input.getAttribute("aria-invalid")).toBe("true")
+    expect(find(`label[for="${input.id}"]`).textContent).toContain("Starting balance")
+  })
+
   for (
     const [from, typed, to, shown, stored] of [
       ["USD", "12.00", "JPY", "12", 12],

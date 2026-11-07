@@ -268,42 +268,50 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
                   />
                 </div>
               </Field>
-              <Field
-                id="account-starting-balance"
-                label={t.t(`AccountEditor.startingBalance`)}
-                error={cleared}
-                hint={value.currency === null
-                  ? t.t(`AccountEditor.chooseCurrencyFirst`)
-                  : value.kind === AccountKind.LIABILITY
-                  ? t.t(`AccountEditor.liabilityHint`)
-                  : t.t(`AccountEditor.startingBalanceHint`)}
-              >
-                <div data-e2e="account-starting-balance">
-                  <MoneyInput
-                    // An amount needs its currency's decimals to be drawn, so the field stays
-                    // empty, and disabled, until a currency is chosen.
-                    value={value.currency === null ? null : value.startingBalance}
-                    onChange={(startingBalance) => {
-                      setCleared(null)
-                      onChange?.({ ...value, startingBalance })
-                    }}
-                    currency={value.currency ?? ""}
-                    disabled={value.currency === null}
-                    min={-ACCOUNT_AMOUNT_MAX}
-                    max={ACCOUNT_AMOUNT_MAX}
-                    placeholder="0"
-                    invalidMessage={t.t(`AccountEditor.amountInvalid`)}
-                    rangeMessage={() => t.t(`AccountEditor.amountTooLarge`)}
-                    decimalsMessage={(decimals) =>
-                      decimals === 0
-                        ? t.t(`AccountEditor.amountNoDecimals`, { currency: value.currency ?? "" })
-                        : t.t(`AccountEditor.amountDecimals`, {
-                          count: decimals,
-                          currency: value.currency ?? "",
-                        })}
-                  />
-                </div>
-              </Field>
+              {/* The test hook stays outside Field, which would wire a wrapper instead of the input. */}
+              <div data-e2e="account-starting-balance">
+                <Field
+                  id="account-starting-balance"
+                  label={t.t(`AccountEditor.startingBalance`)}
+                  error={cleared}
+                  hint={value.currency === null
+                    ? t.t(`AccountEditor.chooseCurrencyFirst`)
+                    : value.kind === AccountKind.LIABILITY
+                    ? t.t(`AccountEditor.liabilityHint`)
+                    : t.t(`AccountEditor.startingBalanceHint`)}
+                >
+                  {(wiring) => (
+                    <MoneyInput
+                      id={wiring.id}
+                      aria-describedby={wiring["aria-describedby"]}
+                      aria-invalid={cleared !== null}
+                      // An amount needs its currency's decimals to be drawn, so the field stays
+                      // empty, and disabled, until a currency is chosen.
+                      value={value.currency === null ? null : value.startingBalance}
+                      onChange={(startingBalance) => {
+                        setCleared(null)
+                        onChange?.({ ...value, startingBalance })
+                      }}
+                      currency={value.currency ?? ""}
+                      disabled={value.currency === null}
+                      min={-ACCOUNT_AMOUNT_MAX}
+                      max={ACCOUNT_AMOUNT_MAX}
+                      placeholder="0"
+                      invalidMessage={t.t(`AccountEditor.amountInvalid`)}
+                      rangeMessage={() => t.t(`AccountEditor.amountTooLarge`)}
+                      decimalsMessage={(decimals) =>
+                        decimals === 0
+                          ? t.t(`AccountEditor.amountNoDecimals`, {
+                            currency: value.currency ?? "",
+                          })
+                          : t.t(`AccountEditor.amountDecimals`, {
+                            count: decimals,
+                            currency: value.currency ?? "",
+                          })}
+                    />
+                  )}
+                </Field>
+              </div>
             </Stack>
           </fieldset>
           <ErrorState message={messageText(t, errors.form)} />
