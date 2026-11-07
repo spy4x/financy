@@ -46,9 +46,10 @@ interface OnboardingRow extends postgres.Row {
  * - an invitation: the person made one, whatever became of it;
  * - notifications: one of their browsers is registered for push;
  * - two-factor: an authenticator app is set up;
- * - the main currency: someone saved it for a group the person is an admin or the owner of
- *   (`household_settings` with `updated_by_user_id` set). It is the household's setting, so a
- *   co-admin's choice counts; the default euro, which every group starts with, does not.
+ * - the main currency: someone chose it for a live group the person is an admin or the owner
+ *   of (`household_settings` with `chosen_at` set). It is the household's setting, so a co-admin's
+ *   choice counts, and it stays chosen when that co-admin's account is deleted; the default euro,
+ *   which every group starts with, does not. A deleted group's choice does not count.
  */
 export async function readOnboarding(
   sql: postgres.Sql,
@@ -87,9 +88,11 @@ export async function readOnboarding(
       EXISTS (
         SELECT 1 FROM household_settings
         INNER JOIN group_members ON group_members.group_id = household_settings.group_id
+        INNER JOIN groups ON groups.id = household_settings.group_id
         WHERE group_members.user_id = users.id
           AND group_members.role >= ${GroupRole.ADMIN}
-          AND household_settings.updated_by_user_id IS NOT NULL
+          AND groups.deleted_at IS NULL
+          AND household_settings.chosen_at IS NOT NULL
       ) AS "currencyChosen",
       users.onboarding_dismissed_at IS NOT NULL AS "dismissed",
       users.onboarding_tour_seen_at IS NOT NULL AS "tourSeen"

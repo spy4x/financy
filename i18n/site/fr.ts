@@ -186,7 +186,7 @@ export default {
   "PricingWays.lead":
     "Le code est gratuit sous AGPL‑3.0, sans clé de licence et sans fonctionnalité réservée.",
   "PricingWays.useTitle": "Héberger Financy vous-même",
-  "PricingWays.useUnit": "licence AGPL‑3.0, sans compte",
+  "PricingWays.useUnit": "licence AGPL‑3.0, sans inscription",
   "PricingWays.useText":
     "Tout le code source sous AGPL‑3.0, avec toutes les fonctionnalités et toutes les mises à jour, pour vous et votre foyer.",
   "PricingWays.runTitle": "Le faire tourner en production",
@@ -194,7 +194,7 @@ export default {
   "PricingWays.runUnit": "au prix de votre hébergeur",
   "PricingWays.runAction": "Lire le guide de déploiement",
   "PricingWays.runText":
-    "Financy tourne sur un serveur Linux, loué ou à vous. Il lui faut un fournisseur d’e-mail pour envoyer les codes de création de compte et de connexion ; la connexion avec Google ou GitHub est facultative. Chacun vous facture directement.",
+    "Financy tourne sur un serveur Linux, loué ou à vous. Il lui faut un fournisseur d’e-mail pour envoyer les codes d’inscription et de connexion ; la connexion avec Google ou GitHub est facultative. Chacun vous facture directement.",
   "DemoPlans.eyebrow": "La facturation, en action",
   "DemoPlans.title": "Les forfaits de la démo : un exemple de la facturation que vous obtenez",
   "DemoPlans.noticeTitle": "Ce ne sont pas les prix de Seed",
@@ -311,7 +311,7 @@ export default {
   "Loops.realtimeTitle":
     "Une note enregistrée dans la fenêtre de gauche apparaît dans celle de droite en moins d’une seconde, sans rechargement.",
   "Loops.realtimeCaption":
-    "Deux fenêtres, un compte. Enregistrez dans l’une, l’autre se met à jour d’elle-même.",
+    "Deux fenêtres, un même compte utilisateur. Enregistrez dans l’une, l’autre se met à jour d’elle-même.",
   "Loops.offlineName": "Modification hors ligne",
   "Loops.offlineTitle":
     "L’application passe hors ligne, une note est modifiée, et à la reconnexion le choix de conflit demande quelle version garder.",
@@ -445,7 +445,7 @@ export default {
   "FeaturePageSignIn.how1":
     "L’API vérifie elle-même chaque connexion et répond avec un cookie de session signé. Une clé d’accès utilise le WebAuthn du navigateur : le serveur ne garde que sa clé publique, et chaque défi de connexion ne sert qu’une fois. Un code de connexion envoyé par e-mail connecte ou crée le compte, ne sert qu’une fois, reste valable 10 minutes, uniquement dans le navigateur qui l’a demandé, et n’est stocké que sous forme de hachage.",
   "FeaturePageSignIn.how2":
-    "Une application d’authentification ajoute la double authentification. Le profil liste chaque méthode de connexion au compte et chaque appareil connecté, et changer une méthode de connexion demande une preuve et envoie un e-mail. Un visiteur peut aussi commencer dans un compte invité et ajouter une méthode de connexion plus tard.",
+    "Une application d’authentification ajoute la double authentification. Le profil liste chaque méthode de connexion au compte utilisateur et chaque appareil connecté, et changer une méthode de connexion demande une preuve et envoie un e-mail. Un visiteur peut aussi commencer dans un compte invité et ajouter une méthode de connexion plus tard.",
   "FeaturePageSignIn.authServiceQuestion": "Ai-je besoin d’un service d’authentification ?",
   "FeaturePageSignIn.authServiceAnswer":
     "Non. La propre API de Seed vérifie les mots de passe, les clés d’accès, les codes de connexion et les réponses de Google et de GitHub, sur votre serveur : rien n’est facturé par utilisateur.",
@@ -465,16 +465,16 @@ export default {
     "Groupes et rôles de lecteur à propriétaire, invitations, transfert de propriété, journal d’activité, un seul contrôle multi-tenant. Gratuit, licence MIT.",
   "FeaturePageGroups.h1": "Groupes et rôles pour votre SaaS, sans développer le multi-tenant",
   "FeaturePageGroups.answer":
-    "Seed donne à chaque compte un groupe personnel à l’inscription, et les utilisateurs créent des groupes partagés, invitent d’autres personnes et leur attribuent un rôle, de lecteur à propriétaire. Le groupe est l’unique frontière entre locataires : une fonctionnalité que vous ajoutez passe la même vérification dès qu’elle copie l’agrégat des notes.",
+    "Seed donne à chaque compte utilisateur un groupe personnel à l’inscription, et les utilisateurs créent des groupes partagés, invitent d’autres personnes et leur attribuent un rôle, de lecteur à propriétaire. Le groupe est l’unique frontière entre locataires : une fonctionnalité que vous ajoutez passe la même vérification dès qu’elle copie l’agrégat des notes.",
   "FeaturePageGroups.summary":
     "Groupes avec rôles de lecteur à propriétaire, invitations et journal d’activité.",
   "FeaturePageGroups.how1":
     "Chaque ligne de données partagées appartient à un groupe, et l’API vérifie le rôle de la personne dans ce groupe avant toute lecture ou écriture. Un lecteur lit, un éditeur modifie aussi les données du groupe, et un administrateur et le propriétaire gèrent en plus les membres et lisent le journal d’activité.",
   "FeaturePageGroups.how2":
-    "Le propriétaire transfère la propriété en une étape, et un groupe supprimé peut être restauré pendant 30 jours. Seul un compte dont l’adresse e-mail est confirmée peut inviter.",
-  "FeaturePageGroups.personalGroupQuestion": "Chaque compte a-t-il un groupe ?",
+    "Le propriétaire transfère la propriété en une étape, et un groupe supprimé peut être restauré pendant 30 jours. Seul un compte utilisateur dont l’adresse e-mail est confirmée peut inviter.",
+  "FeaturePageGroups.personalGroupQuestion": "Chaque compte utilisateur a-t-il un groupe ?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Oui. Chaque compte reçoit un groupe personnel à l’inscription ; un groupe personnel et un groupe partagé passent la même vérification.",
+    "Oui. Chaque compte utilisateur reçoit un groupe personnel à l’inscription ; un groupe personnel et un groupe partagé passent la même vérification.",
   "FeaturePageGroups.viewerQuestion": "Un lecteur peut-il modifier les données d’un groupe ?",
   "FeaturePageGroups.viewerAnswer":
     "Non. Un lecteur lit les données du groupe ; un éditeur, un administrateur ou le propriétaire peut les modifier.",

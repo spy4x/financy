@@ -359,7 +359,7 @@ export default {
   "GroupInvitations.role": "Função",
   "GroupInvitations.email": "E-mail (opcional)",
   "GroupInvitations.emailHint":
-    "Só a conta que confirmou este e-mail pode aceitar o convite, e ele vale para uma pessoa.",
+    "Só a conta de usuário que confirmou este e-mail pode aceitar o convite, e ele vale para uma pessoa.",
   "GroupInvitations.sendEmail": "Enviar o link para este e-mail",
   "GroupInvitations.days": "Expira em (dias)",
   "GroupInvitations.uses": "Quantas pessoas podem entrar",
@@ -402,7 +402,7 @@ export default {
   "GroupInvitations.acceptNamed": "Aceitar o convite para {name}",
   "GroupInvitations.verifyEmail": "Confirmar e-mail",
   "GroupInvitations.notForYou":
-    "Este convite foi enviado para outro e-mail. Se ele for seu, confirme-o primeiro no seu <link>perfil</link> ou entre com a conta que usa esse e-mail.",
+    "Este convite foi enviado para outro e-mail. Se ele for seu, confirme-o primeiro no seu <link>perfil</link> ou entre com a conta de usuário que usa esse e-mail.",
   "GroupInvitations.somethingWrong": "Algo deu errado. Tente de novo.",
   "GroupInvitations.unreachable": "Não foi possível falar com o servidor. Tente de novo.",
   "GroupMembers.unnamed": "Membro sem nome",
@@ -427,7 +427,7 @@ export default {
   "GroupMembers.removeConfirm": "Remover membro",
   "GroupMembers.cancel": "Cancelar",
   "GroupMembers.removeConfirmation":
-    "A pessoa perde o acesso na hora, em todos os dispositivos. O que ela escreveu continua no grupo. Se este for o único grupo dela, ela ganha um novo, vazio, chamado “Pessoal”. Se ela ainda tiver um link de convite, pode voltar com ele usando outra conta, então revogue esses links também.",
+    "A pessoa perde o acesso na hora, em todos os dispositivos. O que ela escreveu continua no grupo. Se este for o único grupo dela, ela ganha um novo, vazio, chamado “Pessoal”. Se ela ainda tiver um link de convite, pode voltar com ele usando outra conta de usuário, então revogue esses links também.",
   "GroupMembers.loadFailed": "Não foi possível carregar os membros",
   "GroupMembers.roleFailed": "Não foi possível mudar a função",
   "GroupMembers.removeFailed": "Não foi possível remover o membro",
@@ -464,7 +464,7 @@ export default {
   "GroupPicker.new": "Novo grupo",
   "GroupPicker.sheetHeading": "Grupo",
   "GroupTransfer.explanation":
-    "A pessoa passa a ser a dona do grupo, e você vira administrador. Só o dono pode excluir o grupo, gerenciar o plano ou transferi-lo de novo. Antes de excluir sua conta, transfira todos os grupos que você divide com outras pessoas.",
+    "A pessoa passa a ser a dona do grupo, e você vira administrador. Só o dono pode excluir o grupo, gerenciar o plano ou transferi-lo de novo. Antes de excluir sua conta de usuário, transfira todos os grupos que você divide com outras pessoas.",
   "GroupTransfer.newOwner": "Novo dono",
   "GroupTransfer.typeName": "Digite “{name}” para confirmar",
   "GroupTransfer.password": "Sua senha",
@@ -697,10 +697,11 @@ export default {
   "NotificationsScreen.reminderFirstNote":
     "Não perca a nota que você acabou de escrever. Por enquanto, ela só existe neste navegador. Adicione uma forma de entrar para abri-la em qualquer dispositivo.",
   "NotificationsScreen.reminderThirdVisit":
-    "Quer usar esta conta nos seus outros dispositivos? Agora, só este navegador consegue abri-la. Adicione uma forma de entrar para usá-la em qualquer lugar.",
+    "Quer usar esta conta de usuário nos seus outros dispositivos? Agora, só este navegador consegue abri-la. Adicione uma forma de entrar para usá-la em qualquer lugar.",
   "NotificationsScreen.reminderInvite":
     "Adicione uma forma de entrar para convidar pessoas: quem você convidar vê quem fez o convite. Depois, convide pelas configurações do grupo.",
-  "NotificationsScreen.reminderKeep": "Adicione uma forma de entrar para não perder sua conta.",
+  "NotificationsScreen.reminderKeep":
+    "Adicione uma forma de entrar para não perder sua conta de usuário.",
   "NotificationsScreen.exportReady": "Seus dados estão prontos. Baixe-os no seu perfil.",
   "NotificationsScreen.exportReadyUntil":
     "Seus dados estão prontos. Baixe-os no seu perfil até {date}.",
@@ -738,7 +739,7 @@ export default {
   "OnboardingCard.currencyAction": "Escolher moeda",
   "OnboardingCard.twoFactorTitle": "Ative a verificação em duas etapas",
   "OnboardingCard.twoFactorText":
-    "Um app autenticador protege sua conta, mesmo que sua senha vaze.",
+    "Um app autenticador protege sua conta de usuário, mesmo que sua senha vaze.",
   "OnboardingCard.twoFactorAction": "Ativar verificação",
   "OnboardingCard.tourNotesTitle": "Notas",
   "OnboardingCard.tourNotesText":
@@ -751,16 +752,16 @@ export default {
     "O que aconteceu enquanto você estava fora, como um convite.",
   "OnboardingCard.tourProfileTitle": "Perfil",
   "OnboardingCard.tourProfileText":
-    "Sua conta: nome, senha, verificação em duas etapas, dispositivos, o tema e o botão Sair.",
+    "Sua conta de usuário: nome, senha, verificação em duas etapas, dispositivos, o tema e o botão Sair.",
   "OnboardingCard.goTo": "Ir para {place}",
   "OnboardingCard.goToHighlighted": "Ir para o item destacado",
   "OnboardingCard.title": "Primeiros passos",
   "OnboardingCard.tourOffer": "Chegou agora? Faça um tour rápido.",
   "OnboardingCard.tourStart": "Fazer o tour",
   "OnboardingCard.tourSkip": "Pular o tour",
-  "OnboardingCard.keep": "Não perca sua conta",
+  "OnboardingCard.keep": "Não perca sua conta de usuário",
   "OnboardingCard.keepText":
-    "Adicione uma forma de entrar para abrir esta conta em qualquer dispositivo.",
+    "Adicione uma forma de entrar para abrir esta conta de usuário em qualquer dispositivo.",
   "OverviewScreen.last7Days": "Últimos 7 dias",
   "OverviewScreen.last30Days": "Últimos 30 dias",
   "OverviewScreen.last90Days": "Últimos 90 dias",
@@ -843,7 +844,7 @@ export default {
   "PlanRefusalNotice.noPlanTitle": "{group} não tem plano pago",
   "PlanRefusalNotice.noPlanTitleUnnamed": "Este grupo não tem plano pago",
   "PlanRefusalNotice.noPlanText": "Escolha um plano para começar a adicionar.",
-  "GuestProfile.accountType": "Tipo de conta",
+  "GuestProfile.accountType": "Tipo de conta de usuário",
   "GuestProfile.guestAccount": "Conta de visitante. Só este navegador consegue abri-la.",
   "GuestProfile.methods": "Formas de entrar",
   "GuestProfile.noMethods": "Nenhuma forma de entrar ainda",
@@ -863,61 +864,61 @@ export default {
   "GuestProfile.pushText": "Adicione uma e depois ative as notificações aqui.",
   "GuestProfile.apiTokenTitle": "Para usar tokens de API, adicione uma forma de entrar",
   "GuestProfile.apiTokenText":
-    "Um token abre esta conta fora do navegador. Adicione uma forma de entrar primeiro.",
+    "Um token abre esta conta de usuário fora do navegador. Adicione uma forma de entrar primeiro.",
   "GuestProfile.uploadTitle": "Para importar, adicione uma forma de entrar",
-  "GuestProfile.uploadText": "Adicione uma à sua conta e depois importe o arquivo.",
+  "GuestProfile.uploadText": "Adicione uma à sua conta de usuário e depois importe o arquivo.",
   "GuestProfile.billingTitle": "Para assinar um plano pago, adicione uma forma de entrar",
   "GuestProfile.billingText":
-    "Os planos são cobrados de uma conta em que você sempre consiga entrar de novo. Adicione uma forma de entrar primeiro.",
+    "Os planos são cobrados de uma conta de usuário em que você sempre consiga entrar de novo. Adicione uma forma de entrar primeiro.",
   "GuestProfile.telegramTitle": "Para usar o Telegram, adicione uma forma de entrar",
   "GuestProfile.telegramText":
     "Um chat vinculado age em seu nome fora do navegador. Adicione uma forma de entrar primeiro.",
   "GuestProfile.otherTitle": "Para isso, adicione uma forma de entrar",
-  "GuestProfile.otherText": "Adicione uma à sua conta e tente de novo.",
+  "GuestProfile.otherText": "Adicione uma à sua conta de usuário e tente de novo.",
   "GuestProfile.notNow": "Agora não",
-  "GuestScreens.keep": "Não perca sua conta",
+  "GuestScreens.keep": "Não perca sua conta de usuário",
   "GuestScreens.createAccount": "Criar conta",
   "GuestScreens.createInstead": "Prefiro criar uma conta",
   "GuestScreens.tryTitle": "Experimente o app",
   "GuestScreens.opening": "Abrindo o app…",
-  "GuestScreens.rateLimited": "Contas novas demais criadas na sua rede",
+  "GuestScreens.rateLimited": "Foram criadas contas de usuário demais na sua rede",
   "GuestScreens.failed": "Não foi possível abrir o app",
   "GuestScreens.failedText": "Confira sua conexão e tente de novo.",
   "GuestScreens.tryAgain": "Tentar de novo",
   "GuestScreens.signedIn": "Você já entrou",
   "GuestScreens.signedInText":
-    "Sua conta está aberta neste navegador. Saia primeiro para experimentar o app como visitante.",
+    "Sua conta de usuário está aberta neste navegador. Saia primeiro para experimentar o app como visitante.",
   "GuestScreens.openApp": "Abrir o app",
   "GuestScreens.off": "Crie uma conta para começar",
-  "GuestScreens.offText": "Aqui não dá para experimentar o app sem conta.",
+  "GuestScreens.offText": "Aqui não dá para experimentar o app sem criar conta.",
   "GuestScreens.terms":
     "Ao continuar, você aceita os <terms>termos de uso</terms> e o <privacy>aviso de privacidade</privacy>.",
   "GuestScreens.tryNow": "Experimentar agora",
   "GuestScreens.tryLine":
-    "Não precisa de conta. Depois, adicione uma forma de entrar para não perder o que fez.",
-  "GuestScreens.noAccount": "Ainda não tem conta?",
-  "GuestScreens.tryWithout": "Experimentar sem conta",
-  "GuestScreens.tryFromSignIn": "Você recebe uma conta nova e vazia neste navegador.",
+    "Não precisa criar conta. Depois, adicione uma forma de entrar para não perder o que fez.",
+  "GuestScreens.noAccount": "Ainda não tem conta de usuário?",
+  "GuestScreens.tryWithout": "Experimentar sem criar conta",
+  "GuestScreens.tryFromSignIn": "Você recebe uma conta de usuário nova e vazia neste navegador.",
   "GuestScreens.tryFromSignInDemo":
-    "Você recebe uma conta nova com dados de exemplo para explorar.",
+    "Você recebe uma conta de usuário nova com dados de exemplo para explorar.",
   "GuestScreens.demoWipe":
-    "Você está usando uma conta de visitante em uma demonstração pública. Tudo aqui é apagado toda noite às {time}, mesmo com uma forma de entrar. Adicione uma assim mesmo para ver como funciona manter a conta.",
+    "Você está usando uma conta de visitante em uma demonstração pública. Tudo aqui é apagado toda noite às {time}, mesmo com uma forma de entrar. Adicione uma assim mesmo para ver como funciona manter a conta de usuário.",
   "GuestScreens.banner":
-    "Esta conta só existe neste navegador. Se os dados do navegador forem apagados, ela some. Adicione uma forma de entrar para não perdê-la.",
+    "Esta conta de usuário só existe neste navegador. Se os dados do navegador forem apagados, ela some. Adicione uma forma de entrar para não perdê-la.",
   "GuestScreens.hide": "Ocultar esta mensagem",
   "GuestScreens.keptPasskey":
-    "Agora você pode entrar com uma chave de acesso em qualquer dispositivo. Nada mudou na sua conta.",
+    "Agora você pode entrar com uma chave de acesso em qualquer dispositivo. Nada mudou na sua conta de usuário.",
   "GuestScreens.keptEmail":
-    "Agora você pode entrar com seu e-mail em qualquer dispositivo. Nada mudou na sua conta.",
+    "Agora você pode entrar com seu e-mail em qualquer dispositivo. Nada mudou na sua conta de usuário.",
   "GuestScreens.keptProvider":
-    "Agora você pode entrar com {provider} em qualquer dispositivo. Nada mudou na sua conta.",
+    "Agora você pode entrar com {provider} em qualquer dispositivo. Nada mudou na sua conta de usuário.",
   "GuestScreens.added": "Forma de entrar adicionada",
   "GuestScreens.done": "Pronto",
-  "GuestScreens.isKept": "Sua conta está salva",
+  "GuestScreens.isKept": "Sua conta de usuário está salva",
   "GuestScreens.isKeptText":
     "Ela tem uma forma de entrar, então você pode abri-la em qualquer dispositivo.",
   "GuestScreens.keepText":
-    "Adicione uma forma de entrar e abra esta conta em qualquer dispositivo. Suas notas e grupos continuam como estão.",
+    "Adicione uma forma de entrar e abra esta conta de usuário em qualquer dispositivo. Suas notas e grupos continuam como estão.",
   "GuestScreens.ways": "Formas de entrar",
   "GuestScreens.openingProvider": "Abrindo {provider}…",
   "GuestScreens.addPasskey": "Adicionar chave de acesso",
@@ -929,20 +930,20 @@ export default {
     "other": "Pelo menos {count} caracteres.",
   },
   "GuestScreens.saving": "Salvando…",
-  "GuestScreens.takenProvider": "Esta conta {provider} já está vinculada a outra conta.",
-  "GuestScreens.takenAddress": "Já existe uma conta com esse e-mail.",
-  "GuestScreens.takenEmail": "Já existe uma conta com <email>{email}</email>.",
+  "GuestScreens.takenProvider": "Esta conta {provider} já está vinculada a outra conta de usuário.",
+  "GuestScreens.takenAddress": "Já existe uma conta de usuário com esse e-mail.",
+  "GuestScreens.takenEmail": "Já existe uma conta de usuário com <email>{email}</email>.",
   "GuestScreens.takenRest":
     "Sua conta de visitante não mudou. Escolha o que fazer com o que você criou como visitante.",
   "GuestScreens.moveOne":
-    "Entre nessa conta e leve <name>{name}</name> para lá. Depois, a conta de visitante é excluída.",
+    "Entre nessa conta de usuário e leve <name>{name}</name> para lá. Depois, a conta de visitante é excluída.",
   "GuestScreens.moveMany": {
     "one":
-      "Entre nessa conta e leve para lá {count} grupo desta conta de visitante. Depois, a conta de visitante é excluída.",
+      "Entre nessa conta de usuário e leve para lá {count} grupo desta conta de visitante. Depois, a conta de visitante é excluída.",
     "many":
-      "Entre nessa conta e leve para lá {count} de grupos desta conta de visitante. Depois, a conta de visitante é excluída.",
+      "Entre nessa conta de usuário e leve para lá {count} de grupos desta conta de visitante. Depois, a conta de visitante é excluída.",
     "other":
-      "Entre nessa conta e leve para lá {count} grupos desta conta de visitante. Depois, a conta de visitante é excluída.",
+      "Entre nessa conta de usuário e leve para lá {count} grupos desta conta de visitante. Depois, a conta de visitante é excluída.",
   },
   "GuestScreens.checking": "Verificando…",
   "GuestScreens.loading": "Carregando…",
@@ -952,15 +953,15 @@ export default {
   "GuestScreens.move": "Trocar e levar meus grupos",
   "GuestScreens.delete": "Trocar e excluir os dados de visitante",
   "GuestScreens.deleteHint":
-    "Entre nessa conta e exclua esta conta de visitante com tudo o que há nela.",
+    "Entre nessa conta de usuário e exclua esta conta de visitante com tudo o que há nela.",
   "GuestScreens.keepGuest": "Manter a conta de visitante",
   "GuestScreens.keepGuestHint": "Nada muda. Você pode adicionar outra forma de entrar.",
-  "GuestScreens.linked": "Já vinculado a outra conta",
+  "GuestScreens.linked": "Já vinculado a outra conta de usuário",
   "GuestScreens.legend": "O que acontece com esta conta de visitante",
   "GuestScreens.choose": "Escolha o que fazer com o que você criou como visitante.",
   "GuestScreens.passwordOf": "A senha de {email}.",
-  "GuestScreens.passwordOfThat": "A senha dessa conta.",
-  "GuestScreens.otp": "Código do app autenticador dessa conta",
+  "GuestScreens.passwordOfThat": "A senha dessa conta de usuário.",
+  "GuestScreens.otp": "Código do app autenticador dessa conta de usuário",
   "GuestScreens.sixDigits": "Seis dígitos.",
   "GuestScreens.deleteAndSwitch": "Excluir e trocar",
   "GuestScreens.notes": {
@@ -974,30 +975,31 @@ export default {
     "other": "{count} grupos",
   },
   "GuestScreens.confirmEmail":
-    "Isso exclui {notes} e {groups} desta conta e faz você entrar como <email>{email}</email>. Não dá para desfazer.",
+    "Isso exclui {notes} e {groups} desta conta de visitante e faz você entrar como <email>{email}</email>. Não dá para desfazer.",
   "GuestScreens.confirmAccount":
-    "Isso exclui {notes} e {groups} desta conta e faz você entrar naquela conta. Não dá para desfazer.",
+    "Isso exclui {notes} e {groups} desta conta de visitante e faz você entrar naquela conta de usuário. Não dá para desfazer.",
   "GuestScreens.signOutTitle": "Sair de uma conta de visitante?",
   "GuestScreens.signOutAnyway": "Sair mesmo assim",
   "GuestScreens.signOutText":
-    "Esta conta não tem forma de entrar, então você não vai conseguir voltar a ela. Tudo o que há nela será perdido.",
+    "Esta conta de visitante não tem forma de entrar, então você não vai conseguir voltar a ela. Tudo o que há nela será perdido.",
   "GuestScreens.offline": "Você está offline. Conecte-se e tente de novo.",
   "GuestScreens.providerFailed":
-    "O {provider} não concluiu. Sua conta não mudou. Tente de novo ou escolha outra forma.",
+    "O {provider} não concluiu. Sua conta de visitante não mudou. Tente de novo ou escolha outra forma.",
   "GuestScreens.noPasskey":
     "Nenhuma chave de acesso foi adicionada. Sua conta continua sendo de visitante.",
   "GuestScreens.didNotWork": "Não funcionou. Tente de novo.",
   "OAuthNotice.failed": "Não deu para entrar assim. Tente de novo.",
   "OAuthNotice.linked": "Vinculado. Agora você pode entrar com ele.",
   "OAuthNotice.linkExists": "Já estava vinculado. Você pode entrar com ele como antes.",
-  "OAuthNotice.linkTaken": "Não vinculado: essa conta já está vinculada a outra conta aqui.",
+  "OAuthNotice.linkTaken":
+    "Não vinculado: essa conta já está vinculada a outra conta de usuário aqui.",
   "OAuthNotice.busy": "Muitas tentativas. Espere um minuto e tente de novo.",
   "OAuthNotice.kept": "Forma de entrar adicionada. Agora você pode usá-la em qualquer dispositivo.",
-  "OAuthNotice.guestTaken": "Essa forma de entrar pertence a outra conta.",
+  "OAuthNotice.guestTaken": "Essa forma de entrar pertence a outra conta de usuário.",
   "PasswordResetScreen.forgotFailed": "Não foi possível enviar o código",
   "PasswordResetScreen.resetFailed": "Não foi possível trocar a senha",
   "PasswordResetScreen.sent":
-    "Se houver uma conta com <email>{email}</email>, enviamos um código para ela.",
+    "Se houver uma conta de usuário com <email>{email}</email>, enviamos um código para ela.",
   "PasswordResetScreen.forgotDescription": {
     "one":
       "Digite o e-mail que você usou no cadastro. Vamos enviar um código para você escolher uma nova senha. Ele funciona por {count} minuto.",
@@ -1010,11 +1012,11 @@ export default {
   "PasswordResetScreen.send": "Enviar código",
   "PasswordResetScreen.doneTitle": "Senha alterada",
   "PasswordResetScreen.done":
-    "Você saiu da conta em todos os dispositivos. Entre com sua nova senha.",
+    "Você foi desconectado de todos os dispositivos. Entre com sua nova senha.",
   "PasswordResetScreen.signIn": "Entrar",
   "PasswordResetScreen.chooseTitle": "Escolha uma nova senha",
   "PasswordResetScreen.choose":
-    "Para <email>{email}</email>. Ao salvar, você sai da conta em todos os dispositivos.",
+    "Para <email>{email}</email>. Ao salvar, você é desconectado de todos os dispositivos.",
   "PasswordResetScreen.expired": "Demorou demais? <link>Peça um novo código</link>",
   "PasswordResetScreen.tookTooLong": "Demorou demais. Peça um novo código.",
   "PasswordResetScreen.newPassword": "Nova senha",
@@ -1421,10 +1423,10 @@ export default {
     "Não foi possível adicionar este dispositivo. Permita notificações deste site no navegador e tente de novo.",
   "ProfileScreen.pushRemoveFailed":
     "Não foi possível remover este dispositivo. Confira sua conexão e tente de novo.",
-  "ProfileScreen.account": "Conta",
+  "ProfileScreen.account": "Conta de usuário",
   "ProfileScreen.accountText": "Sua foto, nome, e-mail e uma cópia dos seus dados.",
   "ProfileScreen.security": "Acesso e segurança",
-  "ProfileScreen.securityText": "Como você entra e onde sua conta está conectada.",
+  "ProfileScreen.securityText": "Como você entra e onde sua conta de usuário está conectada.",
   "ProfileScreen.region": "Idioma e região",
   "ProfileScreen.regionText": "Seu idioma e como aparecem datas, horas e números.",
   "ProfileScreen.appearance": "Aparência",
@@ -1434,8 +1436,8 @@ export default {
   "ProfileScreen.apiTokens": "Tokens de API",
   "ProfileScreen.apiTokensText":
     "Deixe um script ou outro serviço usar um dos seus grupos sem a sua senha.",
-  "ProfileScreen.dangerZone": "Excluir conta",
-  "ProfileScreen.dangerZoneText": "Exclua sua conta e tudo o que só você pode ver.",
+  "ProfileScreen.dangerZone": "Excluir conta de usuário",
+  "ProfileScreen.dangerZoneText": "Exclua sua conta de usuário e tudo o que só você pode ver.",
   "ProfileScreen.codeTitle": "Digite seu código de uso único",
   "ProfileScreen.codeText": "Digite o código do seu app autenticador para abrir seu perfil.",
   "ProfileScreen.signInTitle": "Entre para ver seu perfil",
@@ -1471,7 +1473,7 @@ export default {
   "ProfileSecurity.changeTitle": "Trocar senha",
   "ProfileSecurity.setText": "Adicione uma senha para também poder entrar com seu e-mail.",
   "ProfileSecurity.setNeedsEmail":
-    "Para entrar com senha, você precisa de um e-mail, e esta conta ainda não tem nenhum. Adicione um e-mail primeiro e depois volte aqui para definir a senha.",
+    "Para entrar com senha, você precisa de um e-mail, e esta conta de usuário ainda não tem nenhum. Adicione um e-mail primeiro e depois volte aqui para definir a senha.",
   "ProfileSecurity.setNeedsCode":
     "Para entrar com senha, você precisa de um e-mail confirmado. Confirme <email>{email}</email> com o código que enviamos para esse endereço e depois volte aqui para definir a senha.",
   "ProfileSecurity.addEmail": "Adicionar e-mail",
@@ -1517,7 +1519,7 @@ export default {
   "ProfileTelegram.unlinkText":
     "As notificações deixam de ir para o Telegram, e {bot} não pode mais agir em seu nome por lá. Para vincular de novo, você vai precisar de um novo código.",
   "ProfileTelegram.open":
-    "Abra o chat com <strong>{bot}</strong>, toque em Iniciar e depois em {button}. Esta janela fecha sozinha quando sua conta for vinculada.",
+    "Abra o chat com <strong>{bot}</strong>, toque em Iniciar e depois em {button}. Esta janela fecha sozinha quando sua conta de usuário for vinculada.",
   "ProfileTelegram.openButton": "Abrir o Telegram",
   "ProfileTelegram.elsewhere":
     "O Telegram está em outro dispositivo? Envie esta mensagem para {bot}:",
@@ -1532,7 +1534,7 @@ export default {
   "ProfileView.codeMissing": "Digite o código do seu app autenticador",
   "ProfileView.telegramLinked": "Telegram vinculado",
   "ProfileView.telegramLinkedBody": "Agora suas notificações chegam pelo Telegram.",
-  "ProfileView.switched": "Você entrou na sua conta",
+  "ProfileView.switched": "Você entrou na sua conta de usuário",
   "ProfileView.switchedMoved": {
     "one": "{count} grupo veio da sua conta de visitante.",
     "many": "{count} de grupos vieram da sua conta de visitante.",
@@ -1559,7 +1561,7 @@ export default {
   "ProfileView.usePassword": "Use a nova senha da próxima vez que entrar.",
   "ProfileView.passwordSet": "Senha definida",
   "ProfileView.passwordSetBody": "Agora você também pode entrar com seu e-mail e esta senha.",
-  "ProfileView.accountDeleted": "Conta excluída",
+  "ProfileView.accountDeleted": "Conta de usuário excluída",
   "ProfileView.accountDeletedBody":
     "Ela será excluída de vez em {day}. Entre antes disso se quiser mantê-la.",
   "ProfileView.guestDeleted": "Conta de visitante excluída",
@@ -1573,18 +1575,18 @@ export default {
   "ProviderProof.fresh": "Você entrou com {methods} agora há pouco, então não precisa de senha.",
   "ProviderProof.needed": {
     "one":
-      "Esta conta não tem senha para confirmar isso. Entre de novo com {methods} e volte aqui em até {count} minuto.",
+      "Esta conta de usuário não tem senha para confirmar isso. Entre de novo com {methods} e volte aqui em até {count} minuto.",
     "many":
-      "Esta conta não tem senha para confirmar isso. Entre de novo com {methods} e volte aqui em até {count} de minutos.",
+      "Esta conta de usuário não tem senha para confirmar isso. Entre de novo com {methods} e volte aqui em até {count} de minutos.",
     "other":
-      "Esta conta não tem senha para confirmar isso. Entre de novo com {methods} e volte aqui em até {count} minutos.",
+      "Esta conta de usuário não tem senha para confirmar isso. Entre de novo com {methods} e volte aqui em até {count} minutos.",
   },
   "ProviderProof.passkeyAgain": "Entrar de novo com uma chave de acesso",
   "ProviderProof.providerAgain": "Entrar de novo com {provider}",
   "SignInCodeScreen.sendFailed": "Não foi possível enviar o código. Tente de novo em instantes.",
   "SignInCodeScreen.title": "Entrar com um código por e-mail",
   "SignInCodeScreen.description":
-    "Vamos enviar por e-mail um código para você digitar aqui. Ainda não tem conta com esse e-mail? O código cria uma.",
+    "Vamos enviar por e-mail um código para você digitar aqui. Ainda não tem conta de usuário com esse e-mail? O código cria uma.",
   "SignInCodeScreen.ratherPassword": "Prefere usar senha? <link>Voltar para o login</link>",
   "SignInCodeScreen.submit": "Receber código por e-mail",
   "SignInCodeScreen.confirmTitle": "Confirme que é você",
@@ -1593,7 +1595,7 @@ export default {
   "CodeStep.sent": "Enviamos um código para <email>{email}</email>.",
   "CodeStep.invalid": "O código tem 8 caracteres. Veja se está faltando algum.",
   "SignInCodeScreen.guest":
-    "Você está usando o app como visitante. Ao entrar, o que você criou aqui fica salvo com este e-mail. Se ele já tiver uma conta, perguntamos antes.",
+    "Você está usando o app como visitante. Ao entrar, o que você criou aqui fica salvo com este e-mail. Se ele já tiver uma conta de usuário, perguntamos antes.",
   "CodeStep.deadTitle": "Este código não funciona mais",
   "CodeStep.dead": {
     "one":
@@ -1651,7 +1653,8 @@ export default {
   "SignInMethods.onlyLinked":
     "Esta é sua única forma de entrar, então você não pode desvinculá-la.",
   "SignInMethods.passkeyNotSaved": "Não foi possível salvar a chave de acesso. Tente de novo.",
-  "SignInMethods.passkeyOnDevice": "Este dispositivo já tem uma chave de acesso para sua conta.",
+  "SignInMethods.passkeyOnDevice":
+    "Este dispositivo já tem uma chave de acesso para sua conta de usuário.",
   "SignUpCodeScreen.checkFailed": "Não foi possível verificar o código",
   "SignUpCodeScreen.offline": "Você está offline. Conecte-se e tente de novo.",
   "SignUpCodeScreen.title": "Confira seu e-mail",
@@ -1660,12 +1663,12 @@ export default {
   "SignUpCodeScreen.checking": "Verificando…",
   "SignUpCodeScreen.resend": "Enviar novo código",
   "SignUpCodeScreen.resendFailed": "Não foi possível enviar um novo código",
-  "SignUpCodeScreen.existsTitle": "Você já tem uma conta",
+  "SignUpCodeScreen.existsTitle": "Você já tem uma conta de usuário",
   "SignUpCodeScreen.exists":
-    "Já existe uma conta com <email>{email}</email> aqui. Nenhuma conta nova foi criada.",
+    "Já existe uma conta de usuário com <email>{email}</email> aqui. Nada novo foi criado.",
   "SignUpCodeScreen.existsWith":
-    "Já existe uma conta com <email>{email}</email> aqui, que entra com {providers}. Nenhuma conta nova foi criada.",
-  "SignUpCodeScreen.signInInstead": "Entrar na conta",
+    "Já existe uma conta de usuário com <email>{email}</email> aqui, que entra com {providers}. Nada novo foi criado.",
+  "SignUpCodeScreen.signInInstead": "Entrar",
   "SignUpCodeScreen.expiredTitle": "Este cadastro expirou",
   "SignUpCodeScreen.expired": {
     "one":
@@ -1682,7 +1685,7 @@ export default {
     "Não foi possível falar com o servidor. Mostrando a lista salva neste dispositivo: {time}. Dispositivos conectados ou desconectados depois disso não aparecem.",
   "SignedInDevices.title": "Dispositivos conectados",
   "SignedInDevices.description":
-    "Onde sua conta está conectada. Desconecte qualquer dispositivo que você não reconheça.",
+    "Onde sua conta de usuário está conectada. Desconecte qualquer dispositivo que você não reconheça.",
   "SignedInDevices.loading": "Carregando seus dispositivos…",
   "SignedInDevices.signOutDevice": "Desconectar<device> {device}</device>",
   "SignedInDevices.signingOut": "Desconectando…",
@@ -1722,7 +1725,7 @@ export default {
   "Search.untitled": "Nota sem título",
   "Search.current": "Atual",
   "Search.inGroup": "Em {group}",
-  "Search.keep": "Não perca sua conta",
+  "Search.keep": "Não perca sua conta de usuário",
   "Search.keepDetail":
     "Criar conta, cadastrar ou salvar esta conta de visitante com uma forma de entrar",
   "Search.newNote": "Nova nota",
@@ -1833,18 +1836,18 @@ export default {
   "TelegramNotification.open": "Abrir",
   "TelegramBot.linkButton": "Vincular",
   "TelegramBot.confirmNameAddress":
-    "Vincular este Telegram à conta de {name} no {app} ({address})? Toque em “{button}” só se a conta for sua. Se você não pediu isso, ignore esta mensagem.",
+    "Vincular este Telegram à conta de usuário de {name} no {app} ({address})? Toque em “{button}” só se ela for sua. Se você não pediu isso, ignore esta mensagem.",
   "TelegramBot.confirmName":
-    "Vincular este Telegram à conta de {name} no {app}? Toque em “{button}” só se a conta for sua. Se você não pediu isso, ignore esta mensagem.",
+    "Vincular este Telegram à conta de usuário de {name} no {app}? Toque em “{button}” só se ela for sua. Se você não pediu isso, ignore esta mensagem.",
   "TelegramBot.confirmAddress":
-    "Vincular este Telegram a uma conta no {app} ({address})? Toque em “{button}” só se a conta for sua. Se você não pediu isso, ignore esta mensagem.",
+    "Vincular este Telegram a uma conta de usuário no {app} ({address})? Toque em “{button}” só se ela for sua. Se você não pediu isso, ignore esta mensagem.",
   "TelegramBot.confirmAnonymous":
-    "Vincular este Telegram a uma conta no {app} sem nome nem e-mail? Toque em “{button}” só se a conta for sua. Se você não pediu isso, ignore esta mensagem.",
+    "Vincular este Telegram a uma conta de usuário no {app} sem nome nem e-mail? Toque em “{button}” só se ela for sua. Se você não pediu isso, ignore esta mensagem.",
   "TelegramBot.linked":
-    "Pronto: este chat está vinculado à sua conta. Agora suas notificações chegam aqui. Envie /help para ver o que eu sei fazer.",
-  "TelegramBot.already": "Esta conta do Telegram já está vinculada à sua conta.",
+    "Pronto: este chat está vinculado à sua conta de usuário. Agora suas notificações chegam aqui. Envie /help para ver o que eu sei fazer.",
+  "TelegramBot.already": "Esta conta do Telegram já está vinculada à sua conta de usuário.",
   "TelegramBot.taken":
-    "Esta conta do Telegram está vinculada a outra conta. Envie /unlink primeiro e depois o código de novo.",
+    "Esta conta do Telegram está vinculada a outra conta de usuário. Envie /unlink primeiro e depois o código de novo.",
   "TelegramBot.invalid": {
     "one":
       "Esse código não funciona. Ele pode ter sido digitado errado, já ter sido usado ou ter mais de {count} minuto. Gere um novo no app.",
@@ -1864,13 +1867,15 @@ export default {
   "TelegramBot.privateOnly": "Me mande isso em um chat privado.",
   "TelegramBot.codeSpent":
     "Esse código foi enviado onde outras pessoas podem ler, então ele não funciona mais. Gere um novo no app e me mande em um chat privado.",
-  "TelegramBot.unlinked": "Desvinculado. Este chat não recebe mais notificações da sua conta.",
-  "TelegramBot.notLinked": "Esta conta do Telegram não está vinculada a nenhuma conta.",
+  "TelegramBot.unlinked":
+    "Desvinculado. Este chat não recebe mais notificações da sua conta de usuário.",
+  "TelegramBot.notLinked": "Esta conta do Telegram não está vinculada a nenhuma conta de usuário.",
   "TelegramBot.howToLink":
-    "Para vincular sua conta, abra {url}, escolha “{action}” e me mande o código que aparecer.",
-  "TelegramBot.hello": "Oi! Sua conta está vinculada. Envie /help para ver o que eu sei fazer.",
+    "Para vincular sua conta de usuário, abra {url}, escolha “{action}” e me mande o código que aparecer.",
+  "TelegramBot.hello":
+    "Oi! Sua conta de usuário está vinculada. Envie /help para ver o que eu sei fazer.",
   "TelegramBot.helloName":
-    "Oi, {name}! Sua conta está vinculada. Envie /help para ver o que eu sei fazer.",
+    "Oi, {name}! Sua conta de usuário está vinculada. Envie /help para ver o que eu sei fazer.",
   "UndoToast.title": "Nota excluída",
   "UndoToast.deleted": "“{title}” foi excluída.",
   "UndoToast.deletedUntitled": "A nota foi excluída.",
@@ -1953,38 +1958,38 @@ export default {
   "AccountDelete.planEnding": "O plano foi cancelado, mas continua até {day}. Espere ele terminar.",
   "AccountDelete.planEndingPeriod":
     "O plano foi cancelado, mas continua até o fim do período. Espere ele terminar.",
-  "AccountDelete.title": "Excluir minha conta",
+  "AccountDelete.title": "Excluir minha conta de usuário",
   "AccountDelete.summary": {
     "one":
-      "Sua conta e os grupos que só você usa são excluídos de vez {count} dia depois do pedido. Entre antes disso para mantê-los.",
+      "Sua conta de usuário e os grupos que só você usa são excluídos de vez {count} dia depois do pedido. Entre antes disso para mantê-los.",
     "many":
-      "Sua conta e os grupos que só você usa são excluídos de vez {count} de dias depois do pedido. Entre antes disso para mantê-los.",
+      "Sua conta de usuário e os grupos que só você usa são excluídos de vez {count} de dias depois do pedido. Entre antes disso para mantê-los.",
     "other":
-      "Sua conta e os grupos que só você usa são excluídos de vez {count} dias depois do pedido. Entre antes disso para mantê-los.",
+      "Sua conta de usuário e os grupos que só você usa são excluídos de vez {count} dias depois do pedido. Entre antes disso para mantê-los.",
   },
   "AccountDelete.copyFirst": "Quer uma cópia antes? <link>Baixe seus dados</link>.",
-  "AccountDelete.deleteHidden": "Excluir<hidden> minha conta</hidden>",
+  "AccountDelete.deleteHidden": "Excluir<hidden> minha conta de usuário</hidden>",
   "AccountDelete.checking": "Verificando seus grupos…",
   "AccountDelete.explain": {
     "one":
-      "Você vai sair da conta na hora, em todos os dispositivos. Sua conta e os grupos que só você usa serão excluídos de vez em {count} dia. Entre antes disso para recuperar sua conta. As notas que você escreveu em grupos de outras pessoas continuam lá, assinadas como “Usuário excluído”.",
+      "Você será desconectado na hora, em todos os dispositivos. Sua conta de usuário e os grupos que só você usa serão excluídos de vez em {count} dia. Entre antes disso para recuperar sua conta de usuário. As notas que você escreveu em grupos de outras pessoas continuam lá, assinadas como “Usuário excluído”.",
     "many":
-      "Você vai sair da conta na hora, em todos os dispositivos. Sua conta e os grupos que só você usa serão excluídos de vez em {count} de dias. Entre antes disso para recuperar sua conta. As notas que você escreveu em grupos de outras pessoas continuam lá, assinadas como “Usuário excluído”.",
+      "Você será desconectado na hora, em todos os dispositivos. Sua conta de usuário e os grupos que só você usa serão excluídos de vez em {count} de dias. Entre antes disso para recuperar sua conta de usuário. As notas que você escreveu em grupos de outras pessoas continuam lá, assinadas como “Usuário excluído”.",
     "other":
-      "Você vai sair da conta na hora, em todos os dispositivos. Sua conta e os grupos que só você usa serão excluídos de vez em {count} dias. Entre antes disso para recuperar sua conta. As notas que você escreveu em grupos de outras pessoas continuam lá, assinadas como “Usuário excluído”.",
+      "Você será desconectado na hora, em todos os dispositivos. Sua conta de usuário e os grupos que só você usa serão excluídos de vez em {count} dias. Entre antes disso para recuperar sua conta de usuário. As notas que você escreveu em grupos de outras pessoas continuam lá, assinadas como “Usuário excluído”.",
   },
   "AccountDelete.deleting": "Excluindo…",
   "AccountDelete.blocked":
     "Você é dono de grupos que outras pessoas ainda usam ou pagam. Resolva cada um deles primeiro e depois volte aqui.",
   "AuthScreen.demoNote":
-    "Esta é uma demonstração pública, apagada toda noite. Contas novas já vêm com dados de exemplo para explorar.",
+    "Esta é uma demonstração pública, apagada toda noite. Contas de usuário novas já vêm com dados de exemplo para explorar.",
   "AuthScreen.demoGuestNote":
-    "Esta é uma demonstração pública, apagada toda noite. Toda conta nova, de visitante ou não, já vem com dados de exemplo para explorar.",
+    "Esta é uma demonstração pública, apagada toda noite. Toda conta de usuário nova, de visitante ou não, já vem com dados de exemplo para explorar.",
   "AuthScreen.tryFirst": "Experimente o app primeiro ou crie uma conta com seu e-mail.",
   "AuthScreen.invitedTitle": "Você foi convidado para um grupo",
   "AuthScreen.invitedSignIn": "Entre para ver o convite e participar.",
   "AuthScreen.invitedSignUp":
-    "Crie uma conta para ver o convite e participar. Já tem conta? Então entre.",
+    "Crie uma conta para ver o convite e participar. Já tem uma? Então entre.",
   "AuthScreen.loginOrUsername": "E-mail ou nome de usuário",
   "AuthScreen.email": "E-mail",
   "AuthScreen.signInTitle": "Que bom te ver de novo",
@@ -2007,14 +2012,14 @@ export default {
   "AuthScreen.emailSignInCode": "Receber código de login por e-mail",
   "AuthScreen.emailSignUpCode": "Receber código de cadastro por e-mail",
   "AuthScreen.lastProvider": "Da última vez, você entrou com {provider}<email> ({email})</email>.",
-  "AuthScreen.forget": "Não é você? Use outra conta",
+  "AuthScreen.forget": "Não é você? Use outra conta de usuário",
   "AuthScreen.openProfile": "Abrir seu perfil",
   "AuthScreen.noCodeTitle": "Não precisa de código",
   "AuthScreen.noCodeText": "Este acesso não precisa de código.",
   "AuthScreen.signedInTitle": "Você já entrou",
   "AuthScreen.signedInText": "Não há nada a fazer aqui.",
   "AuthScreen.newHere": "Primeira vez aqui? <link>Crie uma conta</link>",
-  "AuthScreen.haveAccount": "Já tem uma conta? <link>Entrar</link>",
+  "AuthScreen.haveAccount": "Já tem uma conta de usuário? <link>Entrar</link>",
   "AuthScreen.lostDevice": "Perdeu seu dispositivo? <link>Voltar para o login</link>",
   "AuthScreen.sending": "Enviando…",
   "AuthScreen.orCreate": "ou crie uma conta",
@@ -2032,14 +2037,15 @@ export default {
   "ConfirmSignUpScreen.gone":
     "Este pedido expirou depois de dez minutos, ou você já respondeu a ele. Nenhuma conta foi criada.",
   "ConfirmSignUpScreen.backToSignIn": "Voltar para o login",
-  "ConfirmSignUpScreen.unknown": "Esta conta {provider} não está vinculada a nenhuma conta aqui.",
+  "ConfirmSignUpScreen.unknown":
+    "Esta conta {provider} não está vinculada a nenhuma conta de usuário aqui.",
   "ConfirmSignUpScreen.unknownColon":
-    "Esta conta {provider} não está vinculada a nenhuma conta aqui:",
+    "Esta conta {provider} não está vinculada a nenhuma conta de usuário aqui:",
   "ConfirmSignUpScreen.goBack":
-    "Já tem uma conta? Volte, entre do jeito de sempre e depois vincule {provider} no seu perfil. Nada foi criado ainda.",
+    "Já tem uma conta de usuário? Volte, entre do jeito de sempre e depois vincule {provider} no seu perfil. Nada foi criado ainda.",
   "ConfirmSignUpScreen.unconfirmed":
-    "<strong>Já existe uma conta aqui com este e-mail, mas ele nunca foi confirmado.</strong> Se você criar uma conta nova, aquela será bloqueada: a senha dela para de funcionar e os dispositivos dela são desconectados. Para mantê-la, volte, entre com a senha dela e confirme o e-mail com o código que vamos enviar.",
-  "ConfirmSignUpScreen.back": "Já tenho uma conta. Voltar para o login",
+    "<strong>Já existe uma conta de usuário aqui com este e-mail, mas ele nunca foi confirmado.</strong> Se você criar uma conta nova, aquela será bloqueada: a senha dela para de funcionar e os dispositivos dela são desconectados. Para mantê-la, volte, entre com a senha dela e confirme o e-mail com o código que vamos enviar.",
+  "ConfirmSignUpScreen.back": "Já tenho uma conta de usuário. Voltar para o login",
   "ConfirmSignUpScreen.creating": "Criando sua conta…",
   "ConfirmSignUpScreen.create": "Criar uma conta nova",
   "EmailScreen.verifyFailed": "Não foi possível verificar o código",

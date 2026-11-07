@@ -20,7 +20,7 @@ interface SettingsRow {
   groupId: string
   baseCurrency: string
   version: number
-  updatedByUserId: number | null
+  chosen: boolean
   updatedAt: Date
 }
 
@@ -29,7 +29,7 @@ function toSettings(row: SettingsRow): HouseholdSettings {
     groupId: row.groupId,
     baseCurrency: row.baseCurrency,
     version: row.version,
-    chosen: row.updatedByUserId !== null,
+    chosen: row.chosen,
     updatedAt: row.updatedAt,
   }
 }
@@ -45,7 +45,7 @@ export class PostgresHouseholdSettingsRepository implements HouseholdSettingsRep
 
   async get(groupId: string): Promise<HouseholdSettings> {
     const [row] = await this.sql<SettingsRow[]>`
-      SELECT group_id, base_currency, version, updated_by_user_id, updated_at
+      SELECT group_id, base_currency, version, chosen_at IS NOT NULL AS chosen, updated_at
       FROM household_settings WHERE group_id = ${groupId}
     `
     return row ? toSettings(row) : defaultHouseholdSettings(groupId)
@@ -68,14 +68,16 @@ export class PostgresHouseholdSettingsRepository implements HouseholdSettingsRep
       // The group row is locked above, so no other save of this group runs between the read and
       // this write: version 0 inserts the first row, any other version moves the existing one.
       const [row] = await transaction<SettingsRow[]>`
-        INSERT INTO household_settings (group_id, base_currency, version, updated_by_user_id)
-        VALUES (${input.groupId}, ${input.baseCurrency}, 1, ${actorId})
+        INSERT INTO household_settings
+          (group_id, base_currency, version, updated_by_user_id, chosen_at)
+        VALUES (${input.groupId}, ${input.baseCurrency}, 1, ${actorId}, CURRENT_TIMESTAMP)
         ON CONFLICT (group_id) DO UPDATE SET
           base_currency = EXCLUDED.base_currency,
           version = household_settings.version + 1,
           updated_by_user_id = EXCLUDED.updated_by_user_id,
+          chosen_at = COALESCE(household_settings.chosen_at, CURRENT_TIMESTAMP),
           updated_at = CURRENT_TIMESTAMP
-        RETURNING group_id, base_currency, version, updated_by_user_id, updated_at
+        RETURNING group_id, base_currency, version, chosen_at IS NOT NULL AS chosen, updated_at
       `
       await writeAuditEvent(transaction, {
         eventKind: HOUSEHOLD_EVENTS.mainCurrencyChanged,

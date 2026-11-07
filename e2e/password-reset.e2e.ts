@@ -100,7 +100,7 @@ test("the answer to a code request is in the page's language, not the server's E
   await page.locator("[data-e2e=forgot-password-submit]").click()
   // The same neutral line as for any address, so it says nothing about whether an account exists.
   await expect(page.locator("[data-e2e=mailed-code-step]")).toContainText(
-    `Falls es ein Konto mit ${email} gibt, haben wir einen Code dorthin geschickt.`,
+    `Falls es ein Benutzerkonto mit ${email} gibt, haben wir einen Code dorthin geschickt.`,
   )
   await expect(page.locator("[data-e2e=mailed-code-step-code]")).toBeFocused()
 })

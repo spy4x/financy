@@ -72,7 +72,8 @@ sentence needs another grammatical form of it.
 
 | English                 | ru                        | es                          | de                       | pt-BR                             | ar                        | zh-CN           | ja                              | fr                        |
 | ----------------------- | ------------------------- | --------------------------- | ------------------------ | --------------------------------- | ------------------------- | --------------- | ------------------------------- | ------------------------- |
-| account                 | аккаунт                   | cuenta                      | Konto                    | conta                             | حساب                      | 账号            | アカウント                      | compte                    |
+| account (sign-in)       | аккаунт                   | cuenta de usuario           | Benutzerkonto            | conta de usuário                  | حساب المستخدم             | 账号            | アカウント                      | compte utilisateur        |
+| account (money)         | счёт                      | cuenta                      | Konto                    | conta                             | حساب                      | 账户            | 口座                            | compte                    |
 | sign in                 | войти / вход              | iniciar sesión              | anmelden / Anmeldung     | entrar                            | تسجيل الدخول              | 登录            | ログイン                        | se connecter / connexion  |
 | sign out                | выйти                     | cerrar sesión               | abmelden                 | sair                              | تسجيل الخروج              | 退出登录        | ログアウト                      | se déconnecter            |
 | sign up                 | зарегистрироваться        | registrarse                 | registrieren             | criar conta                       | إنشاء حساب                | 注册            | 新規登録                        | créer un compte           |
@@ -131,6 +132,12 @@ sentence needs another grammatical form of it.
 | block (a person)        | заблокировать             | bloquear                    | sperren                  | bloquear                          | حظر                       | 封禁            | ブロック                        | bloquer                   |
 | sign-in method          | способ входа              | método de inicio de sesión  | Anmeldemethode           | forma de entrar                   | طريقة تسجيل الدخول        | 登录方式        | ログイン方法                    | méthode de connexion      |
 | trash                   | корзина                   | papelera                    | Papierkorb               | lixeira                           | سلة المهملات              | 回收站          | ゴミ箱                          | corbeille                 |
+
+"Account" means two things in Financy: the account a person signs in to, and a money account (cash,
+a card, savings). Where one word would serve both, as in de, es, fr, pt-BR and ar, the sign-in sense
+always takes the longer term, so "Delete my account" can never be read as deleting a money account.
+A compound that already says whose account it is (de Gastkonto, es cuenta de invitado) stays as it
+is.
 
 ## Voice
 

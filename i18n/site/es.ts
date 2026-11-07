@@ -182,7 +182,7 @@ export default {
   "PricingWays.lead":
     "El código es gratis bajo AGPL‑3.0, sin clave de licencia y sin funciones reservadas.",
   "PricingWays.useTitle": "Aloja Financy tú mismo",
-  "PricingWays.useUnit": "licencia AGPL‑3.0, sin cuenta",
+  "PricingWays.useUnit": "licencia AGPL‑3.0, sin cuenta de usuario",
   "PricingWays.useText":
     "Todo el código bajo AGPL‑3.0, con todas las funciones y actualizaciones, para ti y tu hogar.",
   "PricingWays.runTitle": "Llévalo a producción",
@@ -303,7 +303,8 @@ export default {
   "Loops.realtimeName": "Sincronización en tiempo real",
   "Loops.realtimeTitle":
     "Una nota guardada en la ventana izquierda aparece en la derecha en menos de un segundo, sin recargar.",
-  "Loops.realtimeCaption": "Dos ventanas, una cuenta. Guarda en una y la otra se actualiza sola.",
+  "Loops.realtimeCaption":
+    "Dos ventanas, una cuenta de usuario. Guarda en una y la otra se actualiza sola.",
   "Loops.offlineName": "Edición sin conexión",
   "Loops.offlineTitle":
     "La app se queda sin conexión, se edita una nota y, al reconectar, el selector de conflictos pregunta qué versión conservar.",
@@ -437,7 +438,7 @@ export default {
   "FeaturePageSignIn.how1":
     "La API comprueba cada inicio de sesión por sí misma y responde con una cookie de sesión firmada. Una llave de acceso usa el WebAuthn del propio navegador: el servidor guarda solo su clave pública, y cada desafío de inicio de sesión sirve una sola vez. Un código de inicio de sesión por correo sirve para entrar o para registrarse, funciona una sola vez durante 10 minutos, solo en el navegador que lo pidió, y se guarda solo como hash.",
   "FeaturePageSignIn.how2":
-    "Una app de autenticación añade la verificación en dos pasos. El perfil muestra cada forma de entrar en la cuenta y cada dispositivo con la sesión iniciada, y cambiar una forma de entrar pide una prueba y envía un correo. Un visitante también puede empezar con una cuenta de invitado y añadir un método de inicio de sesión más tarde.",
+    "Una app de autenticación añade la verificación en dos pasos. El perfil muestra cada forma de entrar en la cuenta de usuario y cada dispositivo con la sesión iniciada, y cambiar una forma de entrar pide una prueba y envía un correo. Un visitante también puede empezar con una cuenta de invitado y añadir un método de inicio de sesión más tarde.",
   "FeaturePageSignIn.authServiceQuestion": "¿Necesito un servicio de autenticación?",
   "FeaturePageSignIn.authServiceAnswer":
     "No. La propia API de Seed comprueba las contraseñas, las llaves de acceso, los códigos de inicio de sesión y las respuestas de Google y GitHub en tu servidor, así que no se cobra nada por usuario.",
@@ -457,16 +458,16 @@ export default {
     "Grupos con roles de lector a propietario, invitaciones, cesión de propiedad y registro de actividad, con un solo control de inquilino. Gratis y MIT.",
   "FeaturePageGroups.h1": "Grupos y roles para tu SaaS, sin construir la arquitectura multi-tenant",
   "FeaturePageGroups.answer":
-    "Seed da a cada cuenta un grupo personal al registrarse, y la gente crea grupos compartidos, invita a otras personas y les da roles de lector a propietario. El grupo es el único límite entre inquilinos, así que una función que añadas pasa la misma comprobación en cuanto copia el agregado de notas.",
+    "Seed da a cada cuenta de usuario un grupo personal al registrarse, y la gente crea grupos compartidos, invita a otras personas y les da roles de lector a propietario. El grupo es el único límite entre inquilinos, así que una función que añadas pasa la misma comprobación en cuanto copia el agregado de notas.",
   "FeaturePageGroups.summary":
     "Grupos con roles de lector a propietario, invitaciones y registro de actividad.",
   "FeaturePageGroups.how1":
     "Cada fila de datos compartidos pertenece a un grupo, y la API comprueba el rol de la persona en ese grupo antes de leer o escribir. Un lector lee; un editor además cambia los datos del grupo; un administrador y el propietario además gestionan los miembros y leen el registro de actividad.",
   "FeaturePageGroups.how2":
-    "El propietario cede la propiedad en un solo paso, y un grupo eliminado se puede restaurar durante 30 días. Solo una cuenta con el correo electrónico confirmado puede invitar.",
-  "FeaturePageGroups.personalGroupQuestion": "¿Cada cuenta recibe un grupo?",
+    "El propietario cede la propiedad en un solo paso, y un grupo eliminado se puede restaurar durante 30 días. Solo una cuenta de usuario con el correo electrónico confirmado puede invitar.",
+  "FeaturePageGroups.personalGroupQuestion": "¿Cada cuenta de usuario recibe un grupo?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Sí. Cada cuenta recibe un grupo personal al registrarse; un grupo personal y uno compartido pasan la misma comprobación.",
+    "Sí. Cada cuenta de usuario recibe un grupo personal al registrarse; un grupo personal y uno compartido pasan la misma comprobación.",
   "FeaturePageGroups.viewerQuestion": "¿Un lector puede cambiar los datos de un grupo?",
   "FeaturePageGroups.viewerAnswer":
     "No. Un lector lee los datos del grupo; un editor, un administrador o el propietario pueden cambiarlos.",

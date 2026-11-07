@@ -218,13 +218,20 @@ Deno.test("each first step is done exactly when the person's own data says so", 
         await sql`INSERT INTO household_settings (group_id) VALUES (${groupId})`
         expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(false)
 
-        await sql`UPDATE household_settings SET base_currency = 'JPY', updated_by_user_id = ${other.userId}
-          WHERE group_id = ${groupId}`
+        await sql`UPDATE household_settings SET base_currency = 'JPY', updated_by_user_id = ${other.userId},
+          chosen_at = now() WHERE group_id = ${groupId}`
         expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(true)
         expect((await readOnboarding(sql, other.userId))?.steps.currencyChosen).toBe(true)
         expect((await readOnboarding(sql, viewer.userId))?.steps.currencyChosen).toBe(false)
       },
     )
+
+    await t.step("a deleted group's chosen currency does not tick the step", async () => {
+      await sql`UPDATE groups SET deleted_at = now() WHERE id = ${groupId}`
+
+      expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(false)
+      expect((await readOnboarding(sql, other.userId))?.steps.currencyChosen).toBe(false)
+    })
   })
 })
 
