@@ -1551,10 +1551,10 @@ CREATE TABLE household_settings (
     base_currency VARCHAR(3) DEFAULT 'EUR' NOT NULL,
     version INT4 DEFAULT 1 NOT NULL,
     updated_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
-    -- Set the first time a person saved the currency or an import carried a choice; never cleared.
-    chosen_at TIMESTAMPTZ(3),
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    -- Set the first time a person saved the currency or an import carried a choice; never cleared.
+    chosen_at TIMESTAMPTZ(3),
     CONSTRAINT household_settings_base_currency_check CHECK (base_currency ~ '^[A-Z]{3}$'),
     CONSTRAINT household_settings_version_check CHECK (version >= 1)
 );
