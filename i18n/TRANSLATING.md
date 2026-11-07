@@ -1,9 +1,9 @@
 # Translating
 
-Every word Seed's own screens show lives in a catalog: `i18n/<namespace>/<language>.ts`, with
+Every word Financy's screens show lives in a catalog: `i18n/<namespace>/<language>.ts`, with
 `en.ts` as the source. Each catalog is a TypeScript module, `export default { … } satisfies
 Catalog`, with its keys and messages in double quotes. The components of preact-components bring
-their own catalogs; this folder holds only Seed's words.
+their own catalogs; this folder holds only Financy's words.
 
 | Namespace | What it holds                                                   | Loaded by      |
 | --------- | --------------------------------------------------------------- | -------------- |
@@ -158,7 +158,7 @@ The operator area (`admin`) speaks of the person whose account it shows in the t
 
 ## Terms kept in English
 
-- The product's name (Seed), brand names, and file formats.
+- The product's name (Financy), brand names, and file formats.
 - Key names on the keyboard: Enter, Tab, Esc, Shift, Ctrl, Alt, Command.
 - Offsets such as `GMT+2`.
 
