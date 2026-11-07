@@ -6,6 +6,7 @@ import type { AccountRow } from "@ui/account-parts.tsx"
 import { useAppText } from "@ui/i18n.ts"
 import { type AccountItem, accountsStore } from "../state/accounts.ts"
 import { groupsStore } from "../state/groups.ts"
+import { householdTotalStore } from "../state/household-total.ts"
 import { selectionStore } from "../state/selection.ts"
 import { toasts } from "../state/toasts.ts"
 import { accountActions } from "./account-actions.ts"
@@ -34,7 +35,7 @@ export function AccountsView() {
   const store = accountsStore
   const groupId = selectionStore.groupId.value
   useEffect(() => {
-    if (groupId) void store.open(groupId)
+    if (groupId) void Promise.all([store.open(groupId), householdTotalStore.open(groupId)])
   }, [groupId])
   // The trash closes when the page is left, so the list is what a return shows.
   useEffect(() => () => void store.showDeleted(false), [])
@@ -42,11 +43,13 @@ export function AccountsView() {
     ? groupsStore.groups.value.find((group) => group.id === groupId)
     : undefined
   const canWrite = membership ? canMutateNotes(membership.role) : false
+  const total = householdTotalStore.total.value
   return (
     <AccountsScreen
       group={membership ? { id: membership.id, name: membership.name, canWrite } : null}
       accounts={store.accounts.value.map(accountRow)}
       deleted={store.deleted.value?.map(accountRow) ?? null}
+      total={total === null && householdTotalStore.failed.value ? undefined : total}
       showArchived={store.showArchived.value}
       onShowArchived={(show) => void (store.showArchived.value = show)}
       onShowDeleted={(show) => void store.showDeleted(show)}

@@ -21,6 +21,7 @@ import { groupsStore } from "./state/groups.ts"
 import { notesStore } from "./state/notes.ts"
 import { tagsStore } from "./state/tags.ts"
 import { accountsStore } from "./state/accounts.ts"
+import { householdTotalStore } from "./state/household-total.ts"
 import { selectionStore } from "./state/selection.ts"
 import { benchmarkOpen } from "./state/demo.ts"
 import { useAppText } from "@ui/i18n.ts"
@@ -322,6 +323,7 @@ export function App() {
       notesStore.reset()
       tagsStore.reset()
       accountsStore.reset()
+      householdTotalStore.reset()
       profileStore.reset()
       selectionStore.reset()
       emailStore.reset()
@@ -344,7 +346,13 @@ export function App() {
       groups: groupsStore,
       notes: notesStore,
       tags: tagsStore,
-      accounts: accountsStore,
+      // The total is read with the list: a hint about the household moves both.
+      accounts: {
+        groupId: accountsStore.groupId,
+        refresh: async () => {
+          await Promise.all([accountsStore.refresh(), householdTotalStore.refresh()])
+        },
+      },
       members: membersStore,
       notifications: notificationsStore,
       onboarding: onboardingStore,
