@@ -1,10 +1,11 @@
 import type { ComponentChildren, JSX } from "preact"
-import { useEffect, useMemo, useRef } from "preact/hooks"
+import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 import { Button } from "@spy4x/preact-ui/button"
 import { CurrencyField } from "@spy4x/preact-ui/currency-field"
 import { DropdownItem } from "@spy4x/preact-ui/dropdown"
 import { ErrorState } from "@spy4x/preact-ui/error-state"
 import { Field } from "@spy4x/preact-ui/field"
+import { useFormat } from "@spy4x/preact-ui/format"
 import { Input, Select } from "@spy4x/preact-ui/input"
 import { LoadingSkeleton } from "@spy4x/preact-ui/loading-skeleton"
 import { Stack } from "@spy4x/preact-ui/layout"
@@ -12,7 +13,11 @@ import { MoneyDisplay } from "@spy4x/preact-ui/money-display"
 import { MoneyInput } from "@spy4x/preact-ui/money-input"
 import { Notice } from "@spy4x/preact-ui/notice"
 import { PageHeader } from "@spy4x/preact-ui/page-header"
-import { currencyOptions } from "@spy4x/platform/universal/money-core"
+import {
+  currencyDecimals,
+  currencyOptions,
+  formatMoney,
+} from "@spy4x/platform/universal/money-core"
 import { ACCOUNT_AMOUNT_MAX, ACCOUNT_NAME_MAX_LENGTH, AccountKind } from "@domain/accounts"
 import { ListEmpty, NoGroup, type NotesGroup } from "./notes-screen.tsx"
 import { type AccountRow, kindOptions } from "./account-parts.tsx"
@@ -29,6 +34,24 @@ export interface AccountFormValue {
   currency: string | null
   /** In the currency's smallest unit; `null` while the field is empty. */
   startingBalance: number | null
+}
+
+/**
+ * The starting balance moved to currency `to`: the same amount the person sees, in `to`'s smallest
+ * unit, so 12.00 USD (1200) is 12 JPY. `undefined` when `to` cannot hold it exactly (12.34 USD in
+ * JPY) or it grows past the largest amount; rounding would change the amount without a word.
+ * Without a currency the field shows nothing, so clearing the currency clears the amount too.
+ */
+export function balanceInCurrency(
+  amount: number | null,
+  from: string | null,
+  to: string | null,
+): number | null | undefined {
+  if (to === null) return null
+  if (amount === null || from === null) return amount
+  const shift = currencyDecimals(to) - currencyDecimals(from)
+  const scaled = shift >= 0 ? amount * 10 ** shift : amount / 10 ** -shift
+  return Number.isSafeInteger(scaled) && Math.abs(scaled) <= ACCOUNT_AMOUNT_MAX ? scaled : undefined
 }
 
 /** The errors of the account editor: per field, and for the form as a whole. */
@@ -122,6 +145,22 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
     if (errors.name) name.current?.focus()
   }, [errors.name])
   const options = useMemo(() => currencyOptions(t.language, []), [t.language])
+  const { locale } = useFormat()
+  /** Says why a currency change emptied the starting balance, until the person types one. */
+  const [cleared, setCleared] = useState<string | null>(null)
+  function changeCurrency(currency: string | null): void {
+    const { startingBalance: amount, currency: from } = value
+    const kept = balanceInCurrency(amount, from, currency)
+    setCleared(
+      kept === undefined && amount !== null && from !== null && currency !== null
+        ? t.t(`AccountEditor.amountCleared`, {
+          amount: formatMoney(amount, from, locale),
+          currency,
+        })
+        : null,
+    )
+    onChange?.({ ...value, currency, startingBalance: kept ?? null })
+  }
   const showFooter = canWrite && (account === null || props.dirty)
   const menu = canWrite && account && (
     <>
@@ -223,7 +262,7 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
                 <div data-e2e="account-currency-field">
                   <CurrencyField
                     value={value.currency}
-                    onChange={(currency) => onChange?.({ ...value, currency })}
+                    onChange={changeCurrency}
                     options={options}
                     recent={props.recentCurrencies}
                   />
@@ -232,6 +271,7 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
               <Field
                 id="account-starting-balance"
                 label={t.t(`AccountEditor.startingBalance`)}
+                error={cleared}
                 hint={value.currency === null
                   ? t.t(`AccountEditor.chooseCurrencyFirst`)
                   : value.kind === AccountKind.LIABILITY
@@ -243,7 +283,10 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
                     // An amount needs its currency's decimals to be drawn, so the field stays
                     // empty, and disabled, until a currency is chosen.
                     value={value.currency === null ? null : value.startingBalance}
-                    onChange={(startingBalance) => onChange?.({ ...value, startingBalance })}
+                    onChange={(startingBalance) => {
+                      setCleared(null)
+                      onChange?.({ ...value, startingBalance })
+                    }}
                     currency={value.currency ?? ""}
                     disabled={value.currency === null}
                     min={-ACCOUNT_AMOUNT_MAX}

@@ -2247,6 +2247,8 @@ export default {
   "AccountEditor.amountInvalid": "Saisissez un montant, par exemple 12,34.",
   "AccountEditor.amountNoDecimals": "{currency} n’a pas de centimes : saisissez un montant entier.",
   "AccountEditor.amountTooLarge": "Ce montant est trop élevé.",
+  "AccountEditor.amountCleared":
+    "{amount} ne peut pas s’écrire en {currency} : le solde initial a été vidé. Saisissez-le à nouveau.",
   "AccountEditor.back": "Retour aux comptes",
   "AccountEditor.balance": "Solde",
   "AccountEditor.cancel": "Annuler",

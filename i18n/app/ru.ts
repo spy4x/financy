@@ -2264,6 +2264,8 @@ export default {
   "AccountEditor.amountInvalid": "Введите сумму, например 12,34.",
   "AccountEditor.amountNoDecimals": "У {currency} нет копеек: введите целую сумму.",
   "AccountEditor.amountTooLarge": "Слишком большая сумма.",
+  "AccountEditor.amountCleared":
+    "Сумму {amount} нельзя записать в {currency}, поэтому начальный баланс очищен. Введите его заново.",
   "AccountEditor.back": "К счетам",
   "AccountEditor.balance": "Баланс",
   "AccountEditor.cancel": "Отмена",

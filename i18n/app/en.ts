@@ -1698,6 +1698,8 @@ export default {
   "AccountEditor.chooseCurrencyFirst": "Choose a currency first.",
   "AccountEditor.amountInvalid": "Type an amount, like 12.34.",
   "AccountEditor.amountTooLarge": "This amount is too large.",
+  "AccountEditor.amountCleared":
+    "{amount} does not fit {currency}, so the starting balance was cleared. Type it again.",
   "AccountEditor.amountNoDecimals": "{currency} has no cents: type a whole amount.",
   "AccountEditor.amountDecimals": {
     "one": "{currency} takes at most {count} decimal.",

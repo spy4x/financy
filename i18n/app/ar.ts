@@ -2326,6 +2326,8 @@ export default {
   "AccountEditor.amountInvalid": "اكتب مبلغًا، مثل 12.34.",
   "AccountEditor.amountNoDecimals": "لا كسور في {currency}: اكتب مبلغًا صحيحًا.",
   "AccountEditor.amountTooLarge": "هذا المبلغ كبير جدًا.",
+  "AccountEditor.amountCleared":
+    "لا يمكن كتابة {amount} بعملة {currency}، لذا أفرغنا الرصيد الافتتاحي. اكتبه من جديد.",
   "AccountEditor.back": "العودة إلى الحسابات",
   "AccountEditor.balance": "الرصيد",
   "AccountEditor.cancel": "إلغاء",

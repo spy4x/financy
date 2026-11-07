@@ -134,6 +134,7 @@ function Editor(
 }
 
 const BALANCE = "[data-e2e=account-starting-balance] input[type=text]"
+const CURRENCY = "[data-e2e=account-currency-field] input"
 const BALANCE_STATUS = "[data-e2e=account-starting-balance] [role=status]"
 
 describe("AccountEditorScreen", () => {
@@ -175,6 +176,53 @@ describe("AccountEditorScreen", () => {
     expect(seen).toEqual([])
     expect(find(BALANCE_STATUS).textContent).not.toBe("")
   })
+
+  /** Picks `code` in the currency field the way a person does: types it, then presses Enter. */
+  async function pickCurrency(code: string): Promise<void> {
+    await type(CURRENCY, code)
+    await act(() => {
+      find(CURRENCY).dispatchEvent(
+        new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }) as unknown as Event,
+      )
+    })
+  }
+
+  it("clears 12.34 dollars and says why when the currency becomes the yen, never showing 1,234", async () => {
+    const seen: AccountFormValue[] = []
+    await mount(<Editor start={{ ...NEW_FORM, currency: "USD" }} seen={seen} />)
+    await type(BALANCE, "12.34")
+
+    await pickCurrency("JPY")
+
+    expect(seen.at(-1)).toMatchObject({ currency: "JPY", startingBalance: null })
+    expect(find<HTMLInputElement>(BALANCE).value).toBe("")
+    expect(document.body.textContent).toContain(
+      "$12.34 does not fit JPY, so the starting balance was cleared. Type it again.",
+    )
+
+    await type(BALANCE, "12")
+
+    expect(document.body.textContent).not.toContain("does not fit")
+  })
+
+  for (
+    const [from, typed, to, shown, stored] of [
+      ["USD", "12.00", "JPY", "12", 12],
+      ["JPY", "500", "USD", "500.00", 50000],
+    ] as const
+  ) {
+    it(`keeps ${typed} ${from} as ${shown} when the currency becomes ${to}`, async () => {
+      const seen: AccountFormValue[] = []
+      await mount(<Editor start={{ ...NEW_FORM, currency: from }} seen={seen} />)
+      await type(BALANCE, typed)
+
+      await pickCurrency(to)
+
+      expect(seen.at(-1)).toMatchObject({ currency: to, startingBalance: stored })
+      expect(find<HTMLInputElement>(BALANCE).value).toBe(shown)
+      expect(document.body.textContent).not.toContain("does not fit")
+    })
+  }
 
   it("keeps the starting balance empty and disabled until a currency is chosen, even when it holds 0", async () => {
     await mount(<Editor start={{ ...NEW_FORM, startingBalance: 0 }} seen={[]} />)

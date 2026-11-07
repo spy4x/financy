@@ -2192,6 +2192,8 @@ export default {
   "AccountEditor.amountInvalid": "Escribe un importe, como 12.34.",
   "AccountEditor.amountNoDecimals": "{currency} no tiene céntimos: escribe un importe entero.",
   "AccountEditor.amountTooLarge": "El importe es demasiado grande.",
+  "AccountEditor.amountCleared":
+    "{amount} no se puede expresar en {currency}, así que vaciamos el saldo inicial. Escríbelo de nuevo.",
   "AccountEditor.back": "Volver a las cuentas",
   "AccountEditor.balance": "Saldo",
   "AccountEditor.cancel": "Cancelar",

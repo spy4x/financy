@@ -2133,6 +2133,8 @@ export default {
   "AccountEditor.amountInvalid": "Gib einen Betrag ein, etwa 12,34.",
   "AccountEditor.amountNoDecimals": "{currency} hat keine Cents: Gib einen ganzen Betrag ein.",
   "AccountEditor.amountTooLarge": "Der Betrag ist zu groß.",
+  "AccountEditor.amountCleared":
+    "{amount} passt nicht in {currency}, deshalb wurde der Anfangsbestand geleert. Gib ihn neu ein.",
   "AccountEditor.back": "Zurück zu den Konten",
   "AccountEditor.balance": "Kontostand",
   "AccountEditor.cancel": "Abbrechen",
