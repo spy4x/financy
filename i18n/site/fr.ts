@@ -133,7 +133,7 @@ export default {
   "HomeProof.tests":
     "fichiers de tests dans les applications et les bibliothèques, tous exécutés en CI",
   "HomeProof.licence": "licence : gratuit en auto-hébergement",
-  "HomeStatus.signIn": "Connexion par e-mail, clés d’accès et double authentification",
+  "HomeStatus.signIn": "Connexion par e‑mail, clés d’accès et double authentification",
   "HomeStatus.groups":
     "Des foyers partagés : invitez des personnes et donnez à chacune un rôle, de lecteur à propriétaire",
   "HomeStatus.export": "Exporter un foyer dans un fichier, et le réimporter",
@@ -194,7 +194,7 @@ export default {
   "PricingWays.runUnit": "au prix de votre hébergeur",
   "PricingWays.runAction": "Lire le guide de déploiement",
   "PricingWays.runText":
-    "Financy tourne sur un serveur Linux, loué ou à vous. Un fournisseur d’e-mail et la connexion avec Google ou GitHub sont facultatifs, et chacun vous facture directement.",
+    "Financy tourne sur un serveur Linux, loué ou à vous. Il lui faut un fournisseur d’e-mail pour envoyer les codes de création de compte et de connexion ; la connexion avec Google ou GitHub est facultative. Chacun vous facture directement.",
   "DemoPlans.eyebrow": "La facturation, en action",
   "DemoPlans.title": "Les forfaits de la démo : un exemple de la facturation que vous obtenez",
   "DemoPlans.noticeTitle": "Ce ne sont pas les prix de Seed",
@@ -302,7 +302,7 @@ export default {
     "Pas encore dans un store. Aujourd’hui, l’app web s’installe depuis le navigateur sur téléphone et ordinateur, et s’ouvre hors ligne.",
   "FeaturesHero.title": "Ce que Financy fait aujourd’hui, et ce qui vient ensuite",
   "FeaturesFaq.title": "Financy sait-il faire ça ?",
-  "FeatureSection.issue": "issue n° {number}",
+  "FeatureSection.issue": "ticket n° {number}",
   "FeatureSection.forDevelopers": "Pour les développeurs",
   "FeatureVisuals.deployCaption":
     "Version abrégée : la sortie de rsync et de Compose entre les étapes est omise.",

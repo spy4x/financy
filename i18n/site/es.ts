@@ -190,7 +190,7 @@ export default {
   "PricingWays.runUnit": "al precio de tu proveedor",
   "PricingWays.runAction": "Leer la guía de despliegue",
   "PricingWays.runText":
-    "Financy funciona en un servidor Linux que alquiles o que sea tuyo. Un proveedor de correo y el inicio de sesión con Google o GitHub son opcionales, y cada uno te cobra directamente.",
+    "Financy funciona en un servidor Linux que alquiles o que sea tuyo. Necesita un proveedor de correo que envíe los códigos para registrarte e iniciar sesión; iniciar sesión con Google o GitHub es opcional. Cada uno te cobra directamente.",
   "DemoPlans.eyebrow": "Facturación funcionando",
   "DemoPlans.title": "Los planes de la demo: un ejemplo de la facturación que recibes",
   "DemoPlans.noticeTitle": "Estos no son los precios de Seed",
@@ -295,7 +295,7 @@ export default {
     "Todavía no está en las tiendas. Por ahora, la app web se instala desde el navegador en móviles y ordenadores y se abre sin conexión.",
   "FeaturesHero.title": "Lo que Financy hace hoy, y lo que viene después",
   "FeaturesFaq.title": "¿Financy puede hacer eso?",
-  "FeatureSection.issue": "issue #{number}",
+  "FeatureSection.issue": "tarea #{number}",
   "FeatureSection.forDevelopers": "Para desarrolladores",
   "FeatureVisuals.deployCaption":
     "Resumido: se omite la salida de rsync y Compose entre los pasos.",

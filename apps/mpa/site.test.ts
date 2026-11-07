@@ -1012,6 +1012,41 @@ describe("the public website", () => {
     expect(llms).not.toContain("\u2011")
   })
 
+  it("breaks no word of the home page's status card at a hyphen, in any language", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const path = localePath(language, "/")
+      const { html } = await page(path)
+      // The card ends with its one paragraph, the plan's line.
+      const start = html.indexOf(`data-e2e="home-status"`)
+      const card = html.slice(start, html.indexOf("</p>", start))
+
+      expect(start, path).toBeGreaterThan(-1)
+      expect(linkText(`<${card}`), path).not.toMatch(/\p{L}-\p{L}/u)
+    }
+  })
+
+  it("ends the home page's status line with one full stop before its link, in every language", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const path = localePath(language, "/")
+      const { html } = await page(path)
+      const status = html.match(/<p [^>]*data-e2e="home-status-line"[^>]*>([\s\S]*?)<\/p>/)?.[1]
+
+      expect(status, path).toBeDefined()
+      expect(linkText(status ?? ""), path).not.toMatch(/[.。]\s*[.。]/)
+    }
+  })
+
+  it("loads the focus script on the home page, naming the newsletter section and its email field", async () => {
+    const { html } = await page("/")
+    const script = html.match(/<script [^>]*src="\/field-focus\.js"[^>]*>/)?.[0] ?? ""
+
+    expect(script).toContain(`data-hash="newsletter"`)
+    expect(script).toContain(`data-field="home-email"`)
+    expect(script).toContain(`defer`)
+    expect(html).toContain(`id="newsletter"`)
+    expect(html).toMatch(/<input [^>]*id="home-email"/)
+  })
+
   it("names the source code's licence in llms.txt as AGPL-3.0, Financy's own", async () => {
     const text = await (await handler(new Request(`${site}/llms.txt`), info)).text()
 

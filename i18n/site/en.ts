@@ -124,7 +124,7 @@ export default {
     "A free, open-source finance tracker for a person or a family, in any mix of currencies. Self-host it under AGPL‑3.0; a paid cloud follows. Being rebuilt.",
   "HomeProof.tests": "test files in the apps and libraries, all run in CI",
   "HomeProof.licence": "licence: free to self-host",
-  "HomeStatus.signIn": "Sign-in with email, passkeys and two-factor authentication",
+  "HomeStatus.signIn": "Sign‑in with email, passkeys and two‑factor authentication",
   "HomeStatus.groups":
     "Shared households: invite people and give each a role, from viewer to owner",
   "HomeStatus.export": "Export a household to a file, and import it again",
@@ -182,7 +182,7 @@ export default {
   "PricingWays.runUnit": "at your host's price",
   "PricingWays.runAction": "Read the deploy guide",
   "PricingWays.runText":
-    "Financy runs on one Linux server you rent or own. An email provider and Google or GitHub sign-in are optional, and each bills you directly.",
+    "Financy runs on one Linux server you rent or own. It needs an email provider to send the sign-up and sign-in codes; Google or GitHub sign-in is optional. Each bills you directly.",
   "DemoPlans.eyebrow": "Billing, working",
   "DemoPlans.title": "The demo's plans: an example of the billing you get",
   "DemoPlans.noticeTitle": "These are not Seed's prices",

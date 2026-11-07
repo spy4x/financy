@@ -179,7 +179,7 @@ export default {
   "PricingWays.runUnit": "بسعر مزوّد الاستضافة",
   "PricingWays.runAction": "اقرأ دليل النشر",
   "PricingWays.runText":
-    "يعمل Financy على خادم Linux واحد تستأجره أو تملكه. مزوّد البريد الإلكتروني وتسجيل الدخول عبر Google أو GitHub اختيارية، وكلٌّ منها يحاسبك مباشرة.",
+    "يعمل Financy على خادم Linux واحد تستأجره أو تملكه. ويحتاج إلى مزوّد بريد إلكتروني يرسل رموز إنشاء الحساب وتسجيل الدخول، أما تسجيل الدخول عبر Google أو GitHub فاختياري. وكل مزوّد يحاسبك مباشرة.",
   "DemoPlans.eyebrow": "الفوترة تعمل",
   "DemoPlans.title": "خطط العرض: مثال على الفوترة التي تحصل عليها",
   "DemoPlans.noticeTitle": "هذه ليست أسعار Seed",
