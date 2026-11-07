@@ -4,7 +4,7 @@ import { callQuery } from "../modules.ts"
 
 /** What the total store needs from the outside. Injected so tests need no socket. */
 export interface HouseholdTotalDependencies {
-  fetch(groupId: string): Promise<HouseholdTotal>
+  read(groupId: string): Promise<HouseholdTotal>
 }
 
 /**
@@ -27,7 +27,7 @@ export function createHouseholdTotalStore(dependencies: HouseholdTotalDependenci
     if (id === null) return
     const read = ++reads
     try {
-      const answer = await dependencies.fetch(id)
+      const answer = await dependencies.read(id)
       if (read !== reads) return
       total.value = answer
       failed.value = false
@@ -58,6 +58,6 @@ export function createHouseholdTotalStore(dependencies: HouseholdTotalDependenci
 
 /** The accounts page's total, read over the calls port. */
 export const householdTotalStore = createHouseholdTotalStore({
-  fetch: async (groupId) =>
+  read: async (groupId) =>
     (await callQuery<{ total: HouseholdTotal }>(`account.total`, { groupId })).total,
 })

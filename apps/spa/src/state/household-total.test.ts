@@ -19,7 +19,7 @@ function deferredFetch() {
   const pending: { groupId: string; resolve(total: HouseholdTotal): void; reject(): void }[] = []
   return {
     pending,
-    fetch: (groupId: string) =>
+    read: (groupId: string) =>
       new Promise<HouseholdTotal>((resolve, reject) =>
         pending.push({ groupId, resolve, reject: () => reject(new Error("offline")) })
       ),
@@ -29,7 +29,7 @@ function deferredFetch() {
 describe("the household total store", () => {
   it("shows the open household's total once the server answers, and reads it again on refresh", async () => {
     let amount = 100
-    const store = createHouseholdTotalStore({ fetch: () => Promise.resolve(totalOf(amount)) })
+    const store = createHouseholdTotalStore({ read: () => Promise.resolve(totalOf(amount)) })
 
     await store.open(HOME)
     expect(store.total.value?.amount).toBe(100)
