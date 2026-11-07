@@ -795,8 +795,8 @@ describe("the public website", () => {
       ...Object.fromEntries(DOC_SLUGS.map((slug) => [`/docs/${slug}`, "2026-11-01T00:00:00.000Z"])),
       "/changelog": "2026-11-01T00:00:00.000Z",
       "/subscribe": "2026-11-04T00:00:00.000Z",
-      "/privacy": "2026-11-06T00:00:00.000Z",
-      "/terms": "2026-11-06T00:00:00.000Z",
+      "/privacy": "2026-11-07T00:00:00.000Z",
+      "/terms": "2026-11-07T00:00:00.000Z",
     })
   })
 
@@ -890,6 +890,9 @@ describe("the public website", () => {
     expect(html).toContain(`$4 today, then $4 every month until you cancel.`)
     expect(html).toContain(`If you are a consumer in Germany`)
     expect(html).toContain(`If you ask within 30 days of your first payment, I refund it in full`)
+    expect(html).toContain(
+      `Your rights under the consumer law of the country you live in come on top of these`,
+    )
     expect(html).toContain(`It does not give financial, tax or investment advice`)
     expect(html).toContain(`A total in your base currency is an estimate`)
   })
@@ -900,10 +903,17 @@ describe("the public website", () => {
     expect(html).toContain(`stored in Singapore, on a server NeatSoft runs itself`)
     expect(html).toContain(`NeatSoft&#39;s own machines in Singapore and Vietnam`)
     expect(html).toContain(`the EU has not recognised Singapore`)
+    expect(html).toContain(`a contact that EU residents and regulators can write to`)
+    expect(html).toContain(`>the GitHub issue about it</a> or write to`)
     expect(html).toContain(`Financy has none yet. It will name one once 10 households in the EU`)
     expect(html).toContain(`The server&#39;s own disk is not encrypted`)
-    expect(html).not.toMatch(/encrypted[^.]*on (the server&#39;s )?disk/)
-    expect(html).toContain(`own key and address for another AI provider`)
+    expect(html).not.toMatch(/encrypted[^.]*(on (the server&#39;s )?disk|at rest)/)
+    expect(html).toContain(
+      `Your data is encrypted on its way to Financy and in backups. It is not end-to-end encrypted.`,
+    )
+    expect(html).toContain(`Financy&#39;s cloud uses DeepSeek, a company in China.`)
+    expect(html).toContain(`<strong>DeepSeek</strong> (China)`)
+    expect(html).toContain(`own API key for another AI provider, with the API address`)
     expect(html).toContain(`href="mailto:privacy@financy.dev"`)
   })
 
@@ -911,7 +921,8 @@ describe("the public website", () => {
     const { html } = await page("/terms")
 
     expect(html).toContain(`If you have not used Financy since the renewal, ask within 14 days`)
-    expect(html).toContain(`If you have used it, ask within 5 days.`)
+    expect(html).toContain(`which means you opened the app or wrote to the Financy bot`)
+    expect(html).toContain(`ask within 5 days of the charge and I still refund it in full.`)
     expect(html).toContain(`<h2 id="law">Law and courts</h2>`)
     expect(html).toContain(`follow the law of Singapore`)
     expect(html).toContain(`href="mailto:hi@financy.dev"`)
