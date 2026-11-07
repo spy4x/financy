@@ -8,19 +8,19 @@ export default {
   "Mail.dontShare": "Não compartilhe este código. {host} nunca vai pedir esse código a você.",
   "PasswordResetMail.subject": "Seu código para redefinir a senha",
   "PasswordResetMail.asked":
-    "Alguém pediu para redefinir a senha da sua conta em {host}. Digite este código na aba em que fez o pedido:",
+    "Alguém pediu para redefinir a senha da sua conta de usuário em {host}. Digite este código na aba em que fez o pedido:",
   "PasswordResetMail.valid": {
     "one":
-      "Ele só funciona uma vez, por {count} minuto. Ao usá-lo, você sai da conta em todos os dispositivos.",
+      "Ele só funciona uma vez, por {count} minuto. Ao usá-lo, você é desconectado de todos os dispositivos.",
     "many":
-      "Ele só funciona uma vez, por {count} minutos. Ao usá-lo, você sai da conta em todos os dispositivos.",
+      "Ele só funciona uma vez, por {count} minutos. Ao usá-lo, você é desconectado de todos os dispositivos.",
     "other":
-      "Ele só funciona uma vez, por {count} minutos. Ao usá-lo, você sai da conta em todos os dispositivos.",
+      "Ele só funciona uma vez, por {count} minutos. Ao usá-lo, você é desconectado de todos os dispositivos.",
   },
   "PasswordResetMail.ignore": "Se não foi você, ignore este e-mail. Sua senha continua a mesma.",
   "PasswordResetNoticeMail.subject": "Redefina sua senha",
   "PasswordResetNoticeMail.asked":
-    "A equipe de {host} enviou este e-mail para você escolher uma senha nova para a sua conta.",
+    "A equipe de {host} enviou este e-mail para você escolher uma senha nova para a sua conta de usuário.",
   "PasswordResetNoticeMail.how":
     "Abra a página abaixo e digite este e-mail. Lá, você recebe um código e escolhe a senha nova.",
   "PasswordResetNoticeMail.button": "Redefinir a senha",
@@ -31,11 +31,11 @@ export default {
     "Alguém pediu para entrar em {host} com este e-mail em {when}. Digite este código na aba em que fez o pedido:",
   "SignInCodeMail.valid": {
     "one":
-      "Ele só funciona uma vez, por {count} minuto. Se ainda não houver uma conta com este e-mail, ele cria uma.",
+      "Ele só funciona uma vez, por {count} minuto. Se ainda não houver uma conta de usuário com este e-mail, ele cria uma.",
     "many":
-      "Ele só funciona uma vez, por {count} minutos. Se ainda não houver uma conta com este e-mail, ele cria uma.",
+      "Ele só funciona uma vez, por {count} minutos. Se ainda não houver uma conta de usuário com este e-mail, ele cria uma.",
     "other":
-      "Ele só funciona uma vez, por {count} minutos. Se ainda não houver uma conta com este e-mail, ele cria uma.",
+      "Ele só funciona uma vez, por {count} minutos. Se ainda não houver uma conta de usuário com este e-mail, ele cria uma.",
   },
   "SignInCodeMail.ignore":
     "Se não foi você, ignore este e-mail. Ninguém consegue entrar sem o código.",
@@ -59,45 +59,49 @@ export default {
   },
   "InvitationMail.button": "Abrir o convite",
   "InvitationMail.account":
-    "O convite é para este e-mail, então aceite pela conta que usa este endereço.",
+    "O convite é para este e-mail, então aceite pela conta de usuário que usa este endereço.",
   "InvitationMail.ignore": "Se não quiser entrar, é só ignorar este e-mail.",
-  "AccountDeletionMail.subject": "Sua conta será excluída em {date}",
+  "AccountDeletionMail.subject": "Sua conta de usuário será excluída em {date}",
   "AccountDeletionMail.asked":
-    "Como você pediu, sua conta em {host} será excluída de vez em <strong>{date}</strong>.",
-  "AccountDeletionMail.keep": "Mudou de ideia? Entre antes dessa data para manter sua conta.",
+    "Como você pediu, sua conta de usuário em {host} será excluída de vez em <strong>{date}</strong>.",
+  "AccountDeletionMail.keep":
+    "Mudou de ideia? Entre antes dessa data para manter sua conta de usuário.",
   "AccountDeletionMail.notYou":
-    "Se não foi você, entre agora para manter sua conta e depois troque sua senha.",
-  "AccountRestoredMail.subject": "Sua conta não será mais excluída",
+    "Se não foi você, entre agora para manter sua conta de usuário e depois troque sua senha.",
+  "AccountRestoredMail.subject": "Sua conta de usuário não será mais excluída",
   "AccountRestoredMail.restored":
-    "Alguém entrou na sua conta em {host}, então ela não será mais excluída.",
+    "Alguém entrou na sua conta de usuário em {host}, então ela não será mais excluída.",
   "AccountRestoredMail.notYou":
-    "Se não foi você, entre, troque sua senha e peça a exclusão da conta de novo.",
+    "Se não foi você, entre, troque sua senha e peça a exclusão da sua conta de usuário de novo.",
   "DataExportReadyMail.subject": "Seus dados estão prontos",
   "DataExportReadyMail.ready": "Baixe pelo seu perfil até <strong>{date}</strong>.",
   "DataExportReadyMail.notYou":
-    "Se não foi você, troque sua senha e saia da conta nos outros dispositivos.",
-  "SignInMethodMail.passkeyAddedSubject": "Uma chave de acesso foi adicionada à sua conta",
+    "Se não foi você, troque sua senha e desconecte os outros dispositivos.",
+  "SignInMethodMail.passkeyAddedSubject":
+    "Uma chave de acesso foi adicionada à sua conta de usuário",
   "SignInMethodMail.passkeyAdded":
-    "Uma chave de acesso foi adicionada à sua conta em {host} em {when}. A partir de agora, ela pode ser usada para entrar.",
+    "Uma chave de acesso foi adicionada à sua conta de usuário em {host} em {when}. A partir de agora, ela pode ser usada para entrar.",
   "SignInMethodMail.passkeyAddedNotYou":
     "Se não foi você, remova a chave de acesso no seu perfil e troque sua senha.",
-  "SignInMethodMail.passkeyRemovedSubject": "Uma chave de acesso foi removida da sua conta",
+  "SignInMethodMail.passkeyRemovedSubject":
+    "Uma chave de acesso foi removida da sua conta de usuário",
   "SignInMethodMail.passkeyRemoved":
-    "Uma chave de acesso foi removida da sua conta em {host} em {when}. Ela não serve mais para entrar.",
+    "Uma chave de acesso foi removida da sua conta de usuário em {host} em {when}. Ela não serve mais para entrar.",
   "SignInMethodMail.passkeyRemovedNotYou":
     "Se não foi você, entre, troque sua senha e adicione sua chave de acesso de novo.",
-  "SignInMethodMail.linkedSubject": "{provider} foi vinculado à sua conta",
+  "SignInMethodMail.linkedSubject": "{provider} foi vinculado à sua conta de usuário",
   "SignInMethodMail.linked":
-    "{provider} foi vinculado à sua conta em {host} em {when}. Agora você pode entrar com ele.",
+    "{provider} foi vinculado à sua conta de usuário em {host} em {when}. Agora você pode entrar com ele.",
   "SignInMethodMail.linkedNotYou":
     "Se não foi você, desvincule {provider} no seu perfil e troque sua senha.",
-  "SignInMethodMail.unlinkedSubject": "{provider} foi desvinculado da sua conta",
+  "SignInMethodMail.unlinkedSubject": "{provider} foi desvinculado da sua conta de usuário",
   "SignInMethodMail.unlinked":
-    "{provider} foi desvinculado da sua conta em {host} em {when}. Você não pode mais entrar com ele.",
+    "{provider} foi desvinculado da sua conta de usuário em {host} em {when}. Você não pode mais entrar com ele.",
   "SignInMethodMail.unlinkedNotYou":
     "Se não foi você, entre, troque sua senha e vincule {provider} de novo.",
   "ApiTokenMail.subject": "Um novo token de API foi criado",
-  "ApiTokenMail.created": "Um token de API chamado “{name}” foi criado para sua conta em {host}.",
+  "ApiTokenMail.created":
+    "Um token de API chamado “{name}” foi criado para sua conta de usuário em {host}.",
   "ApiTokenMail.readUntil": "Ele pode ler o grupo “{group}” e expira em {date}.",
   "ApiTokenMail.readForever": "Ele pode ler o grupo “{group}” e não expira.",
   "ApiTokenMail.writeUntil": "Ele pode ler e alterar o grupo “{group}” e expira em {date}.",

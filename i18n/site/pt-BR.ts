@@ -182,7 +182,7 @@ export default {
   "PricingWays.lead":
     "O código é grátis sob AGPL‑3.0, sem chave de licença e sem nenhum recurso reservado.",
   "PricingWays.useTitle": "Hospede o Financy você mesmo",
-  "PricingWays.useUnit": "licença AGPL‑3.0, sem conta",
+  "PricingWays.useUnit": "licença AGPL‑3.0, sem cadastro",
   "PricingWays.useText":
     "Todo o código-fonte sob AGPL‑3.0, com todos os recursos e atualizações, para você e sua família.",
   "PricingWays.runTitle": "Coloque em produção",
@@ -221,7 +221,7 @@ export default {
   "FeatureTierSettled.title": "A base onde vai ficar o dinheiro da sua família",
   "FeatureTierSettled.status":
     "Entrar com Google e GitHub exige chaves próprias do servidor, então uma instalação nova começa só com o login por e-mail.",
-  "FeatureSignIn.nav": "Contas e login",
+  "FeatureSignIn.nav": "Cadastro e login",
   "FeatureSignIn.title": "Login resolvido",
   "FeatureSignIn.lead":
     "Você cria a conta com e-mail e senha e confirma o e-mail com um código. Pode redefinir uma senha esquecida, continuar com Google ou GitHub, entrar com uma chave de acesso ou receber um código por e-mail. Um app autenticador adiciona a verificação em duas etapas (2FA), e você vê todos os dispositivos conectados e pode desconectar os outros.",
@@ -303,7 +303,8 @@ export default {
   "Loops.realtimeName": "Sincronização em tempo real",
   "Loops.realtimeTitle":
     "Uma nota salva na janela da esquerda aparece na da direita em menos de um segundo, sem recarregar.",
-  "Loops.realtimeCaption": "Duas janelas, uma conta. Salve em uma, e a outra se atualiza sozinha.",
+  "Loops.realtimeCaption":
+    "Duas janelas, a mesma conta de usuário. Salve em uma, e a outra se atualiza sozinha.",
   "Loops.offlineName": "Edição offline",
   "Loops.offlineTitle":
     "O app fica offline, uma nota é editada e, ao reconectar, o seletor de conflitos pergunta qual versão manter.",
@@ -435,7 +436,7 @@ export default {
   "FeaturePageSignIn.how1":
     "A API verifica cada login por conta própria e responde com um cookie de sessão assinado. Uma chave de acesso usa o WebAuthn do próprio navegador: o servidor guarda só a chave pública, e cada desafio de login vale uma vez. Um código de login por e-mail serve para entrar ou criar a conta, vale uma vez, por 10 minutos, só no navegador que o pediu, e é guardado só como hash.",
   "FeaturePageSignIn.how2":
-    "Um app autenticador ativa a verificação em duas etapas. O perfil lista todas as formas de entrar na conta e todos os dispositivos conectados, e mudar uma forma de entrar exige confirmação e envia um e-mail. Quem chega também pode começar numa conta de visitante e adicionar uma forma de entrar depois.",
+    "Um app autenticador ativa a verificação em duas etapas. O perfil lista todas as formas de entrar e todos os dispositivos conectados, e mudar uma forma de entrar exige confirmação e envia um e-mail. Quem chega também pode começar numa conta de visitante e adicionar uma forma de entrar depois.",
   "FeaturePageSignIn.authServiceQuestion": "Preciso de um serviço de autenticação?",
   "FeaturePageSignIn.authServiceAnswer":
     "Não. A própria API do Seed verifica senhas, chaves de acesso, códigos de login e as respostas do Google e do GitHub, no seu servidor, então nada é cobrado por usuário.",
@@ -454,16 +455,16 @@ export default {
     "Grupos com funções de leitor a dono, convites, transferência de dono e registro de atividades, com uma verificação de isolamento para tudo. Grátis, MIT.",
   "FeaturePageGroups.h1": "Grupos e funções para seu SaaS, sem implementar multi-tenancy",
   "FeaturePageGroups.answer":
-    "O Seed dá a cada conta um grupo pessoal no cadastro, e as pessoas criam grupos compartilhados, convidam outras e dão funções de leitor a dono. O grupo é a única fronteira de isolamento, então um recurso que você adiciona passa pela mesma verificação assim que copia o agregado de notas.",
+    "O Seed dá a cada conta de usuário um grupo pessoal no cadastro, e as pessoas criam grupos compartilhados, convidam outras e dão funções de leitor a dono. O grupo é a única fronteira de isolamento, então um recurso que você adiciona passa pela mesma verificação assim que copia o agregado de notas.",
   "FeaturePageGroups.summary":
     "Grupos com funções de leitor a dono, convites e registro de atividades.",
   "FeaturePageGroups.how1":
     "Cada linha de dados compartilhados pertence a um grupo, e a API verifica a função da pessoa nesse grupo antes de ler ou gravar. Um leitor lê, um editor também altera os dados do grupo, e um administrador e o dono também gerenciam membros e leem o registro de atividades.",
   "FeaturePageGroups.how2":
-    "O dono passa a posse adiante num passo só, e um grupo excluído pode ser restaurado em até 30 dias. Só uma conta com o endereço de e-mail confirmado pode convidar.",
-  "FeaturePageGroups.personalGroupQuestion": "Toda conta ganha um grupo?",
+    "O dono passa a posse adiante num passo só, e um grupo excluído pode ser restaurado em até 30 dias. Só uma conta de usuário com o endereço de e-mail confirmado pode convidar.",
+  "FeaturePageGroups.personalGroupQuestion": "Toda conta de usuário ganha um grupo?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Sim. Cada conta ganha um grupo pessoal no cadastro; um grupo pessoal e um compartilhado passam pela mesma verificação.",
+    "Sim. Cada conta de usuário ganha um grupo pessoal no cadastro; um grupo pessoal e um compartilhado passam pela mesma verificação.",
   "FeaturePageGroups.viewerQuestion": "Um leitor pode alterar os dados de um grupo?",
   "FeaturePageGroups.viewerAnswer":
     "Não. Um leitor lê os dados do grupo; um editor, um administrador ou o dono podem alterá-los.",

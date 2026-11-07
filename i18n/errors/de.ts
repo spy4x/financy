@@ -145,7 +145,7 @@ export default {
   "Reason.INVITATION_REVOKED": "Diese Einladung wurde zurückgezogen oder abgelehnt.",
   "Reason.INVITATION_USED_UP": "Diese Einladung ist schon aufgebraucht. Bitte um eine neue.",
   "Reason.INVITATION_WRONG_ACCOUNT":
-    "Diese Einladung ist für eine andere E-Mail-Adresse. Melde dich mit dem Konto an, zu dem sie gehört.",
+    "Diese Einladung ist für eine andere E-Mail-Adresse. Melde dich mit dem Benutzerkonto an, zu dem sie gehört.",
   "Reason.ITEM_NOT_FOUND": "Diesen Artikel gibt es nicht mehr.",
   "Reason.LAST_GROUP": "Du brauchst mindestens eine Gruppe. Erstelle zuerst eine neue.",
   "Reason.LAST_OWNER":
@@ -221,7 +221,7 @@ export default {
     "Du hast das stündliche Upload-Limit erreicht. Versuche es später noch einmal.",
   "Reason.UPLOAD_NOT_FOUND": "Diesen Upload gibt es nicht mehr.",
   "Reason.UTM_SOURCE_TAKEN": "Diesen Quell-Tag hat schon ein anderer Kanal.",
-  "Reason.USER_NOT_ACTIVE": "Dieses Konto ist nicht aktiv.",
+  "Reason.USER_NOT_ACTIVE": "Dieses Benutzerkonto ist nicht aktiv.",
   "Reason.VERSION_CONFLICT":
     "Jemand anderes hat das geändert. Lade die Seite neu, um die Änderungen zu sehen.",
   "Reason.expired": "Dieser Link ist abgelaufen.",

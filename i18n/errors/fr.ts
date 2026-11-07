@@ -150,7 +150,7 @@ export default {
   "Reason.INVITATION_USED_UP":
     "Cette invitation a atteint son nombre d’utilisations. Demandez-en une nouvelle.",
   "Reason.INVITATION_WRONG_ACCOUNT":
-    "Cette invitation est destinée à une autre adresse e-mail. Connectez-vous avec le compte qui l’utilise.",
+    "Cette invitation est destinée à une autre adresse e-mail. Connectez-vous avec le compte utilisateur qui l’utilise.",
   "Reason.ITEM_NOT_FOUND": "Cet article n’existe plus.",
   "Reason.LAST_GROUP": "Vous devez avoir au moins un groupe. Créez-en d’abord un autre.",
   "Reason.LAST_OWNER":
@@ -221,7 +221,7 @@ export default {
   "Reason.UPLOAD_BUDGET": "Vous avez atteint la limite d’imports par heure. Réessayez plus tard.",
   "Reason.UPLOAD_NOT_FOUND": "Cet import n’existe plus.",
   "Reason.UTM_SOURCE_TAKEN": "Un autre canal utilise déjà cette étiquette de source.",
-  "Reason.USER_NOT_ACTIVE": "Ce compte n’est pas actif.",
+  "Reason.USER_NOT_ACTIVE": "Ce compte utilisateur n’est pas actif.",
   "Reason.VERSION_CONFLICT":
     "Quelqu’un d’autre a modifié cet élément. Rechargez pour voir ses modifications.",
   "Reason.expired": "Ce lien a expiré.",
