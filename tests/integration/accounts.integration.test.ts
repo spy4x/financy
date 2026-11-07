@@ -22,6 +22,8 @@ import { PostgresAccountRepository } from "@server/accounts/postgres-account-rep
 import { purgeDeletedAccounts } from "@server/accounts/purge-deleted-accounts.ts"
 import { readAdminAccounts } from "@server/accounts/admin-accounts.ts"
 import { createSessionGate } from "../../apps/api/cqrs/session-gate.ts"
+import { createEntitlementGate } from "../../apps/api/cqrs/entitlement-gate.ts"
+import { ENTITLEMENT_NEEDS } from "../../apps/api/cqrs/entitlement-needs.ts"
 import {
   createAccountArchiveHandler,
   createAccountCreateHandler,
@@ -57,6 +59,18 @@ function buses(sql: postgres.Sql) {
   const dependencies = { accounts: new PostgresAccountRepository(sql), groups: { roleOf } }
   const commands = new CommandBus()
   commands.use(createSessionGate([]))
+  // As the API wires it, with billing off: these steps are about accounts. The plan's re-count
+  // under the household lock has its own step below.
+  commands.use(createEntitlementGate({
+    billingEnabled: false,
+    planOf: () => Promise.reject(new Error("billing is off")),
+    roleOf,
+    usage: {
+      maxNotes: () => Promise.reject(new Error("billing is off")),
+      maxMembers: () => Promise.reject(new Error("billing is off")),
+      maxAccounts: () => Promise.reject(new Error("billing is off")),
+    },
+  }, ENTITLEMENT_NEEDS))
   commands.register(AccountCreateCommand, createAccountCreateHandler(dependencies))
   commands.register(AccountUpdateCommand, createAccountUpdateHandler(dependencies))
   commands.register(AccountArchiveCommand, createAccountArchiveHandler(dependencies))
@@ -67,7 +81,7 @@ function buses(sql: postgres.Sql) {
   queries.use(createSessionGate([]))
   queries.register(AccountListQuery, createAccountListHandler(dependencies))
   queries.register(AccountGetQuery, createAccountGetHandler(dependencies))
-  return { commands, queries }
+  return { commands, queries, accounts: dependencies.accounts }
 }
 
 const fields = { name: "Main account", kind: AccountKind.BANK, currency: "USD", startingBalance: 0 }
@@ -310,6 +324,27 @@ Deno.test("accounts against Postgres", async (t) => {
         SELECT count(*)::int AS count FROM accounts WHERE group_id = ${groupId}
       `
       expect(count).toBe(ACCOUNT_MAX_PER_GROUP)
+    })
+
+    await t.step("the plan's cap holds when two creates race for its last place", async () => {
+      const { groupId, owner, editor } = await team(sql)
+      const { accounts } = buses(sql)
+      // The gate counted 0 for both, so each arrives with room for one: only the count under the
+      // household lock sees the other.
+      const write = (userId: number) =>
+        accounts.create({ groupId, id: uuidV7(), ...fields, allowance: 1 }, userId)
+
+      const outcomes = await Promise.allSettled([write(owner), write(editor)])
+
+      expect(outcomes.map((outcome) => outcome.status).sort()).toEqual(["fulfilled", "rejected"])
+      const rejected = outcomes.find((outcome) => outcome.status === "rejected")
+      expect((rejected as PromiseRejectedResult).reason).toMatchObject({
+        code: "PLAN_LIMIT_REACHED",
+      })
+      const [{ count }] = await sql<{ count: number }[]>`
+        SELECT count(*)::int AS count FROM accounts WHERE group_id = ${groupId}
+      `
+      expect(count).toBe(1)
     })
 
     await t.step(

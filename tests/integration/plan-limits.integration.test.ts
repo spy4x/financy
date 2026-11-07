@@ -126,6 +126,7 @@ Deno.test("the free plan's note cap on Postgres", async (t) => {
             return used
           },
           maxMembers: () => Promise.reject(new Error("not part of this test")),
+          maxAccounts: () => Promise.reject(new Error("not part of this test")),
         })
 
         const outcomes = await Promise.allSettled([
