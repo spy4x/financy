@@ -7,9 +7,15 @@ import type { toasts } from "../state/toasts.ts"
 /** How long a deleted account's toast offers Undo. */
 export const ACCOUNT_UNDO_MS = 8_000
 
+/** The id of the archive toast: a second archive replaces the first instead of stacking on it. */
+export const ACCOUNT_ARCHIVED_TOAST_ID = `account-archived`
+
 /**
- * The menu changes of the list and the editor, each followed by a toast that says what happened.
- * A delete's toast offers Undo for {@link ACCOUNT_UNDO_MS}, which restores the account.
+ * The menu changes of the list and the editor. A change the screen already shows (setting or
+ * clearing the default, a restore) shows no toast. An archive does, because the account leaves
+ * the list unless archived accounts are shown; repeated archives share one toast
+ * ({@link ACCOUNT_ARCHIVED_TOAST_ID}) so they never stack over the list. A delete's toast offers
+ * Undo for {@link ACCOUNT_UNDO_MS}, which restores the account.
  */
 export function accountActions(
   t: Translator<string>,
@@ -22,6 +28,7 @@ export function accountActions(
       if (!account) return
       const name = isolate(account.name)
       toastList.success({
+        id: ACCOUNT_ARCHIVED_TOAST_ID,
         title: t.t(`AccountsView.archivedTitle`),
         body: archived
           ? t.t(`AccountsView.archived`, { name })
@@ -30,16 +37,7 @@ export function accountActions(
       })
     },
     async onSetDefault(id, isDefault) {
-      const account = await store.setDefault(id, isDefault)
-      if (!account) return
-      const name = isolate(account.name)
-      toastList.success({
-        title: t.t(`AccountsView.defaultTitle`),
-        body: isDefault
-          ? t.t(`AccountsView.defaultSet`, { name })
-          : t.t(`AccountsView.defaultCleared`, { name }),
-        dataE2E: "account-default-set",
-      })
+      await store.setDefault(id, isDefault)
     },
     async onDelete(id) {
       const account = await store.remove(id)
@@ -58,13 +56,7 @@ export function accountActions(
       })
     },
     async onRestore(id) {
-      const account = await store.restore(id)
-      if (!account) return
-      toastList.success({
-        title: t.t(`AccountsView.restoredTitle`),
-        body: t.t(`AccountsView.restored`, { name: isolate(account.name) }),
-        dataE2E: "account-restored",
-      })
+      await store.restore(id)
     },
   }
   return actions

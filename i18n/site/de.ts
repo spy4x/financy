@@ -223,7 +223,7 @@ export default {
   "FeatureTierSettled.title": "Das Fundament für das Geld deines Haushalts",
   "FeatureTierSettled.status":
     "Die Anmeldung mit Google und GitHub braucht eigene Schlüssel für den Server, deshalb bietet eine frische Installation zunächst nur die Anmeldung per E-Mail.",
-  "FeatureSignIn.nav": "Konten und Anmeldung",
+  "FeatureSignIn.nav": "Anmeldung und Sicherheit",
   "FeatureSignIn.title": "Anmeldung, erledigt",
   "FeatureSignIn.lead":
     "Du registrierst dich mit E-Mail-Adresse und Passwort und bestätigst die Adresse mit einem Code. Ein vergessenes Passwort setzt du zurück; anmelden kannst du dich mit Google oder GitHub, mit einem Passkey oder mit einem Code per E-Mail. Eine Authenticator-App ergänzt den Zwei-Faktor-Schutz (2FA), und du siehst jedes Gerät, auf dem du angemeldet bist, und kannst die anderen abmelden.",

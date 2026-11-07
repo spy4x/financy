@@ -61,6 +61,16 @@ describe("AdminAccountsScreen", () => {
     expect(text("[data-e2e=admin-accounts-households]")).toContain("3 accounts")
   })
 
+  it("shows what the page leaves out as a wrapping paragraph under the title, not a one-line subtitle that truncates", async () => {
+    await mount(<AdminAccountsScreen overview={overview} error={null} onRetry={() => {}} />)
+
+    const intro = document.querySelector("[data-e2e=admin-accounts-intro]")
+    expect(intro?.tagName).toBe("P")
+    expect(intro?.textContent).toContain("Counts only: no account names or amounts.")
+    expect(intro?.className).not.toMatch(/\btruncate\b/)
+    expect(text("[data-e2e=page-header]")).not.toContain("Counts only")
+  })
+
   it("says it is loading until the counts arrive, and offers a retry when they fail", async () => {
     await mount(<AdminAccountsScreen overview={null} error={null} onRetry={() => {}} />)
     expect(document.querySelector("[data-e2e=admin-accounts-loading]")).not.toBe(null)

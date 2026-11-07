@@ -194,12 +194,20 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
       )}
     </>
   )
+  // The library's plain title truncates to one line; a long account name wraps to two instead, as
+  // the spec's lists do, and the full name stays the heading's tooltip. No `block` on the span: it
+  // would replace the clamp's own display and let the name run past two lines.
   return (
     <Page>
       <PageHeader
         back={{ href: ACCOUNT_PATHS.list, label: t.t(`AccountEditor.back`) }}
         navigate={navigate}
         title={account ? account.name : t.t(`AccountEditor.new`)}
+        heading={
+          <span dir="auto" class="line-clamp-2 break-words [text-align:match-parent]">
+            {account ? account.name : t.t(`AccountEditor.new`)}
+          </span>
+        }
         titleDataE2E="account-title"
         subtitle={account ? <Summary account={account} /> : group.name}
         subtitleDataE2E="account-summary"

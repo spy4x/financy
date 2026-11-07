@@ -221,7 +221,7 @@ export default {
   "FeatureTierSettled.title": "A base onde vai ficar o dinheiro da sua família",
   "FeatureTierSettled.status":
     "Entrar com Google e GitHub exige chaves próprias do servidor, então uma instalação nova começa só com o login por e-mail.",
-  "FeatureSignIn.nav": "Contas e login",
+  "FeatureSignIn.nav": "Login e segurança",
   "FeatureSignIn.title": "Login resolvido",
   "FeatureSignIn.lead":
     "Você cria a conta com e-mail e senha e confirma o e-mail com um código. Pode redefinir uma senha esquecida, continuar com Google ou GitHub, entrar com uma chave de acesso ou receber um código por e-mail. Um app autenticador adiciona a verificação em duas etapas (2FA), e você vê todos os dispositivos conectados e pode desconectar os outros.",
