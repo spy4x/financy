@@ -3,7 +3,11 @@ import { expect } from "@std/expect"
 import type postgres from "postgres"
 import { HOUSEHOLD_EVENTS, HouseholdError, HouseholdVersionConflictError } from "@domain/money"
 import { recordAccessChange } from "@server/groups/group-change-log.ts"
+import { hardDeleteAccount, HardDeleteOutcome } from "@server/auth/account-deletion.ts"
+import { readOnboarding } from "@server/auth/onboarding.ts"
+import { householdPortable } from "@server/money/household-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
+import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { team, withSchema } from "./group-team.ts"
 
 /**
@@ -117,5 +121,69 @@ Deno.test("household settings: a save waiting on the admin's removal is refused 
 
     expect(await saving).toBe(`GROUP_NOT_FOUND`)
     expect((await settings.get(groupId)).version).toBe(0)
+  })
+})
+
+Deno.test("household settings: the currency stays chosen after its saver's account is deleted for good", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, owner, admin } = await team(sql)
+    const settings = new PostgresHouseholdSettingsRepository(sql)
+    await settings.update({ groupId, baseCurrency: `JPY`, expectedVersion: 0 }, admin)
+    // The account was deleted 7 days ago and its wait is over, as the nightly run finds it.
+    await sql`UPDATE users SET deleted_at = now() WHERE id = ${admin}`
+    const deletionId = uuidV7()
+    await sql`INSERT INTO account_deletions (id, user_id, delete_after)
+      VALUES (${deletionId}, ${admin}, now() - INTERVAL '1 second')`
+    expect(await hardDeleteAccount(sql, deletionId)).toBe(HardDeleteOutcome.Deleted)
+    expect(await sql`SELECT updated_by_user_id FROM household_settings`).toEqual([
+      { updatedByUserId: null },
+    ])
+
+    expect(await settings.get(groupId)).toMatchObject({ baseCurrency: `JPY`, chosen: true })
+    expect((await readOnboarding(sql, owner))?.steps.currencyChosen).toBe(true)
+    const exported = []
+    for await (const entries of householdPortable.read(sql, groupId)) exported.push(...entries)
+    expect(exported).toEqual([{ id: groupId, baseCurrency: `JPY`, chosen: true }])
+  })
+})
+
+Deno.test("household settings: a later save keeps the time the currency was first chosen", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, admin } = await team(sql)
+    const settings = new PostgresHouseholdSettingsRepository(sql)
+    await settings.update({ groupId, baseCurrency: `JPY`, expectedVersion: 0 }, admin)
+    await sql`UPDATE household_settings SET chosen_at = '2026-01-01T00:00:00Z'`
+    await settings.update({ groupId, baseCurrency: `USD`, expectedVersion: 1 }, admin)
+
+    expect(await sql`SELECT chosen_at FROM household_settings`).toEqual([
+      { chosenAt: new Date(`2026-01-01T00:00:00Z`) },
+    ])
+  })
+})
+
+Deno.test("household settings: the migration marks a currency a person saved as chosen, and a rerun changes nothing", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, owner, admin } = await team(sql)
+    const [own] = await sql<{ id: string }[]>`
+      SELECT id FROM groups WHERE owner_user_id = ${admin}
+    `
+    await sql`ALTER TABLE household_settings DROP COLUMN chosen_at`
+    await sql`INSERT INTO household_settings (group_id, base_currency, updated_by_user_id, updated_at)
+      VALUES (${groupId}, 'JPY', ${owner}, '2026-01-01T00:00:00Z'), (${own.id}, 'EUR', NULL, now())`
+    const migration = await Deno.readTextFile(
+      `libs/server/db/migrations/2026_12_16_0004_household_chosen_at.sql`,
+    )
+
+    await sql.unsafe(migration)
+    await sql.unsafe(migration)
+
+    const settings = new PostgresHouseholdSettingsRepository(sql)
+    expect(await settings.get(groupId)).toMatchObject({ chosen: true })
+    expect(await settings.get(own.id)).toMatchObject({ chosen: false })
+    expect(await sql`SELECT chosen_at FROM household_settings WHERE group_id = ${groupId}`).toEqual(
+      [
+        { chosenAt: new Date(`2026-01-01T00:00:00Z`) },
+      ],
+    )
   })
 })

@@ -84,8 +84,8 @@ async function rowCount(sql: postgres.Sql): Promise<number> {
 
 async function chooseCurrency(sql: postgres.Sql, groupId: string, code: string, by: number) {
   await sql`
-    INSERT INTO household_settings (group_id, base_currency, updated_by_user_id)
-    VALUES (${groupId}, ${code}, ${by})
+    INSERT INTO household_settings (group_id, base_currency, updated_by_user_id, chosen_at)
+    VALUES (${groupId}, ${code}, ${by}, CURRENT_TIMESTAMP)
   `
 }
 
