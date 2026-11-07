@@ -15,8 +15,10 @@ import {
   AccountListQuery,
   AccountRestoreCommand,
   AccountSetDefaultCommand,
+  AccountTotalQuery,
   AccountUpdateCommand,
 } from "@domain/accounts"
+import { defaultHouseholdSettings, type RateLookup } from "@domain/money"
 import { createSessionGate } from "../../cqrs/session-gate.ts"
 import { createEntitlementGate } from "../../cqrs/entitlement-gate.ts"
 import { ENTITLEMENT_NEEDS } from "../../cqrs/entitlement-needs.ts"
@@ -40,6 +42,7 @@ import {
   createAccountListHandler,
   createAccountRestoreHandler,
   createAccountSetDefaultHandler,
+  createAccountTotalHandler,
   createAccountUpdateHandler,
 } from "./handlers.ts"
 import { createAccountOperations } from "./operations.ts"
@@ -99,6 +102,26 @@ function stack() {
   queries.use(createSessionGate([]))
   queries.register(AccountListQuery, createAccountListHandler(dependencies))
   queries.register(AccountGetQuery, createAccountGetHandler(dependencies))
+  queries.register(
+    AccountTotalQuery,
+    createAccountTotalHandler({
+      ...dependencies,
+      settings: { get: (group) => Promise.resolve(defaultHouseholdSettings(group)) },
+      // One euro buys 1.25 dollars; no other currency has a rate.
+      rates: {
+        lookup: (base, quote, date): Promise<RateLookup> =>
+          Promise.resolve(
+            base === "USD" && quote === "EUR"
+              ? {
+                found: true,
+                rate: { base: "EUR", quote: "USD", rate: "1.25", date, source: "ecb" },
+              }
+              : { found: false, reason: "no-rate" },
+          ),
+      },
+      today: () => "2026-11-06",
+    }),
+  )
   const operations = createAccountOperations({
     create: (command) => commands.execute(command),
     update: (command) => commands.execute(command),
@@ -108,6 +131,7 @@ function stack() {
     restore: (command) => commands.execute(command),
     list: (query) => queries.execute(query),
     get: (query) => queries.execute(query),
+    total: (query) => queries.execute(query),
   })
   /** Takes the member out of the household, as the owner's removal does. */
   const remove = (group: string, user: number) => delete memberships[`${group}:${user}`]
@@ -283,6 +307,66 @@ for (const [via, open] of TRANSPORTS) {
       }
       expect(s.accounts.writes).toBe(0)
       as.shutdown()
+    })
+
+    it("lets a viewer read the household total in the base currency, archived accounts in and deleted ones out", async () => {
+      const s = stack()
+      // $12.34 at 1.25 dollars a euro is €9.872, so 987 cents.
+      await s.accounts.create(create, OWNER)
+      const cash = { ...create, id: secondAccountId, name: "Cash", currency: "EUR" }
+      await s.accounts.create({ ...cash, startingBalance: 500 }, OWNER)
+      const archived = uuidV7()
+      await s.accounts.create({ ...cash, id: archived, startingBalance: 1_000 }, OWNER)
+      await s.accounts.archive({ groupId, id: archived, archived: true, expectedVersion: 1 }, OWNER)
+      const deleted = uuidV7()
+      await s.accounts.create({ ...cash, id: deleted, startingBalance: 7_000 }, OWNER)
+      await s.accounts.delete({ groupId, id: deleted, expectedVersion: 1 }, OWNER)
+      await s.accounts.create(
+        { ...cash, groupId: otherGroupId, id: uuidV7(), startingBalance: 90_000 },
+        OWNER,
+      )
+      const as = open(s, VIEWER)
+
+      expect(await as.query("account.total", { groupId })).toEqual({
+        kind: "server.result",
+        payload: {
+          total: {
+            amount: 987 + 500 + 1_000,
+            currency: "EUR",
+            rateDate: "2026-11-06",
+            leftOut: [],
+            tooLarge: false,
+          },
+        },
+      })
+      as.shutdown()
+    })
+
+    it("refuses the total to a removed member and for another household's id, as an unknown household", async () => {
+      const s = stack()
+      await s.accounts.create(create, OWNER)
+      await s.accounts.create({ ...create, groupId: otherGroupId, id: uuidV7() }, OWNER)
+      const viewer = open(s, VIEWER)
+      const editor = open(s, EDITOR)
+      expect(await editor.query("account.total", { groupId })).toMatchObject({
+        kind: "server.result",
+      })
+      s.remove(groupId, EDITOR)
+
+      const answers = [
+        await editor.query("account.total", { groupId }),
+        await viewer.query("account.total", { groupId: otherGroupId }),
+      ]
+
+      for (const answer of answers) {
+        expect(answer).toMatchObject({
+          kind: "server.error",
+          code: "not_found",
+          details: { code: "GROUP_NOT_FOUND" },
+        })
+      }
+      viewer.shutdown()
+      editor.shutdown()
     })
 
     it("refuses a removed member at once, though the same session wrote a moment before (R16)", async () => {
