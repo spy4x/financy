@@ -52,6 +52,11 @@ async function mount(node: VNode): Promise<void> {
   )
 }
 
+/** How many elements match: a count, so a failure prints a number, not a DOM node. */
+function count(selector: string): number {
+  return document.querySelectorAll(selector).length
+}
+
 function text(selector: string): string | null {
   return document.querySelector(selector)?.textContent ?? null
 }
@@ -97,7 +102,7 @@ describe("the household total card", () => {
     await mount(<AccountsScreen {...screen} total={exact} />)
 
     expect(text("[data-e2e=accounts-total-amount]")).toBe("€12,345.67")
-    expect(document.querySelector("[data-e2e=accounts-total-rates]")).toBeNull()
+    expect(count("[data-e2e=accounts-total-rates]")).toBe(0)
   })
 
   it("shows a negative total with its minus sign and not in the danger colour", async () => {
@@ -105,7 +110,7 @@ describe("the household total card", () => {
 
     const amount = document.querySelector("[data-e2e=accounts-total-amount]")!
     expect(amount.textContent).toBe("-€500.00")
-    expect(document.querySelector("[data-e2e=accounts-total] .text-danger")).toBeNull()
+    expect(count("[data-e2e=accounts-total] .text-danger")).toBe(0)
   })
 
   it("names the accounts left out for lack of a rate, and shows no number when none converted", async () => {
@@ -134,33 +139,33 @@ describe("the household total card", () => {
     expect(text("[data-e2e=accounts-total-left-out]")).toBe(
       "Leaves out 3 accounts: no exchange rate for AMD and GEL yet.",
     )
-    expect(document.querySelector("[data-e2e=accounts-total-amount]")).toBeNull()
+    expect(count("[data-e2e=accounts-total-amount]")).toBe(0)
   })
 
   it("says a total too large to hold exactly is not shown", async () => {
     await mount(<AccountsScreen {...screen} total={{ ...exact, amount: null, tooLarge: true }} />)
 
     expect(text("[data-e2e=accounts-total-too-large]")).toBe("The total is too large to show.")
-    expect(document.querySelector("[data-e2e=accounts-total-amount]")).toBeNull()
+    expect(count("[data-e2e=accounts-total-amount]")).toBe(0)
   })
 
   it("holds the card's place with a bar while the total loads", async () => {
     await mount(<AccountsScreen {...screen} total={null} />)
 
-    expect(document.querySelector("[data-e2e=accounts-total] [aria-hidden=true]")).not.toBeNull()
-    expect(document.querySelector("[data-e2e=accounts-total-amount]")).toBeNull()
+    expect(count("[data-e2e=accounts-total] [aria-hidden=true]")).toBe(1)
+    expect(count("[data-e2e=accounts-total-amount]")).toBe(0)
   })
 
   it("shows no card for a household with no accounts, in the trash, or when the total failed", async () => {
     await mount(<AccountsScreen {...screen} accounts={[]} total={exact} />)
-    expect(document.querySelector("[data-e2e=accounts-total]")).toBeNull()
+    expect(count("[data-e2e=accounts-total]")).toBe(0)
     await act(() => render(null, root!))
 
     await mount(<AccountsScreen {...screen} deleted={[]} total={exact} />)
-    expect(document.querySelector("[data-e2e=accounts-total]")).toBeNull()
+    expect(count("[data-e2e=accounts-total]")).toBe(0)
     await act(() => render(null, root!))
 
     await mount(<AccountsScreen {...screen} total={undefined} />)
-    expect(document.querySelector("[data-e2e=accounts-total]")).toBeNull()
+    expect(count("[data-e2e=accounts-total]")).toBe(0)
   })
 })
