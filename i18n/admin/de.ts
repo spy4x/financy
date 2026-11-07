@@ -2216,7 +2216,7 @@ export default {
     "Für diese Währungen gibt es keinen Kurs für den {date}. Summen, die sie enthalten, lassen sie weg und sagen das.",
   "AdminRates.missingNone": "Jede verwendete Währung hat einen Kurs für den {date}.",
   "AdminRates.fallbackTitle": "Kostenpflichtige Ersatzquelle",
-  "AdminRates.fallbackUsage": "{used} von {cap} Abfragen diesen Monat",
+  "AdminRates.fallbackCalls": "Abfragen diesen Monat",
   "AdminRates.fallbackHint":
     "Sie wird nur für Währungen gefragt, die die EZB nicht hat, und stoppt am Limit. Der Zähler beginnt am {date} neu.",
   "AdminRates.fallbackCapped":

@@ -2279,7 +2279,7 @@ export default {
     "Estas monedas no tienen tipo para el {date}. Los totales que las incluyen las dejan fuera y lo indican.",
   "AdminRates.missingNone": "Todas las monedas en uso tienen tipo para el {date}.",
   "AdminRates.fallbackTitle": "Respaldo de pago",
-  "AdminRates.fallbackUsage": "{used} de {cap} consultas este mes",
+  "AdminRates.fallbackCalls": "Consultas este mes",
   "AdminRates.fallbackHint":
     "Solo se consulta para monedas que el BCE no tiene, y se detiene al llegar al límite. El contador se reinicia el {date}.",
   "AdminRates.fallbackCapped":

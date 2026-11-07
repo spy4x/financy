@@ -160,7 +160,8 @@ function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element 
       >
         <FactCard title={t.t(`AdminRates.lastFetch`)} dataE2E="admin-rates-last-fetch">
           <FactList
-            class="-my-3"
+            // A third of the page is too narrow for a label beside its value: stacked there too.
+            class="-my-3 lg:[&>div]:grid-cols-1 lg:[&_dd]:col-span-1"
             facts={fetches.map((last) => ({
               label: sourceName(t, last.source),
               value: (
@@ -204,12 +205,8 @@ function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element 
                 <UsageMeter
                   used={fallback.used}
                   limit={fallback.cap}
-                  label={t.t(`AdminRates.fallbackTitle`)}
+                  label={t.t(`AdminRates.fallbackCalls`)}
                   format={(amount) => new Intl.NumberFormat(t.language).format(amount)}
-                  labels={{
-                    value: (used, cap) => t.t(`AdminRates.fallbackUsage`, { used, cap }),
-                    valueOver: (used, cap) => t.t(`AdminRates.fallbackUsage`, { used, cap }),
-                  }}
                 />
                 {fallback.used >= fallback.cap
                   ? (

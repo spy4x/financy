@@ -2270,7 +2270,7 @@ export default {
     "Estas moedas não têm cotação para {date}. Os totais que as incluem as deixam de fora e avisam.",
   "AdminRates.missingNone": "Todas as moedas em uso têm cotação para {date}.",
   "AdminRates.fallbackTitle": "Reserva paga",
-  "AdminRates.fallbackUsage": "{used} de {cap} consultas este mês",
+  "AdminRates.fallbackCalls": "Consultas este mês",
   "AdminRates.fallbackHint":
     "Ela só é consultada para moedas que o BCE não tem e para no limite. A contagem recomeça em {date}.",
   "AdminRates.fallbackCapped":

@@ -2297,7 +2297,7 @@ export default {
     "Ces devises n’ont pas de taux pour le {date}. Les totaux qui les incluent les laissent de côté et le signalent.",
   "AdminRates.missingNone": "Chaque devise utilisée a un taux pour le {date}.",
   "AdminRates.fallbackTitle": "Secours payant",
-  "AdminRates.fallbackUsage": "{used} appels sur {cap} ce mois-ci",
+  "AdminRates.fallbackCalls": "Appels ce mois-ci",
   "AdminRates.fallbackHint":
     "Il n’est sollicité que pour les devises que la BCE ne couvre pas, et s’arrête au plafond. Le compteur repart le {date}.",
   "AdminRates.fallbackCapped":

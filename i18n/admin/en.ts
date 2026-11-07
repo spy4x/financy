@@ -2142,7 +2142,7 @@ export default {
     "These currencies have no rate for {date}. Totals that include them leave them out and say so.",
   "AdminRates.missingNone": "Every currency in use has a rate for {date}.",
   "AdminRates.fallbackTitle": "Paid fallback",
-  "AdminRates.fallbackUsage": "{used} of {cap} calls this month",
+  "AdminRates.fallbackCalls": "Calls this month",
   "AdminRates.fallbackHint":
     "It's asked only for currencies the ECB lacks, and stops at the cap. The count starts again on {date}.",
   "AdminRates.fallbackCapped":

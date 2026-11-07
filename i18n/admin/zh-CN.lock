@@ -1487,12 +1487,12 @@ AdminRates.day	8f2364e11b8be3ff
 AdminRates.daysTitle	d3a3f6100b6cff93
 AdminRates.emptyText	cc528e479cbfdf2f
 AdminRates.emptyTitle	61cca56528aea578
+AdminRates.fallbackCalls	f701fff630d6ef25
 AdminRates.fallbackCapped	729669de86a81ac8
 AdminRates.fallbackHint	dc0c5106863efa0f
 AdminRates.fallbackOffText	054fea5fccec7cd6
 AdminRates.fallbackOffTitle	ec6d4e8b38e04a53
 AdminRates.fallbackTitle	d829e7c6ce5eea1c
-AdminRates.fallbackUsage	a63aff61cfd4548f
 AdminRates.fetch	5d5dcad0bd9f8fd6
 AdminRates.fetchedAt	65ac6dca10dd2062
 AdminRates.jobFailed	3229a1a1072fa2d0

@@ -2346,7 +2346,7 @@ export default {
     "У этих валют нет курса на {date}. Итоги с ними считаются без них, и об этом сказано.",
   "AdminRates.missingNone": "У всех используемых валют есть курс на {date}.",
   "AdminRates.fallbackTitle": "Платный резервный источник",
-  "AdminRates.fallbackUsage": "{used} из {cap} запросов в этом месяце",
+  "AdminRates.fallbackCalls": "Запросы в этом месяце",
   "AdminRates.fallbackHint":
     "К нему обращаются только за валютами, которых нет у ЕЦБ, и останавливаются на лимите. Счётчик обнулится {date}.",
   "AdminRates.fallbackCapped":

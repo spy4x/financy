@@ -126,7 +126,8 @@ describe("AdminRatesScreen", () => {
     const meter = find("[data-e2e=admin-rates-fallback] [role=meter]")
     expect(meter.getAttribute("aria-valuenow")).toBe("12")
     expect(meter.getAttribute("aria-valuemax")).toBe("1000")
-    expect(text("[data-e2e=admin-rates-fallback]")).toContain("12 of 1,000 calls this month")
+    expect(meter.textContent).toContain("Calls this month")
+    expect(meter.textContent).toContain("12 of 1,000")
     expect(text("[data-e2e=admin-rates-fallback]")).not.toContain("cap is reached")
   })
 

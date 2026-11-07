@@ -2436,7 +2436,7 @@ export default {
     "لا يوجد سعر لهذه العملات في {date}. المجاميع التي تتضمنها تستبعدها وتشير إلى ذلك.",
   "AdminRates.missingNone": "لكل عملة مستخدمة سعر في {date}.",
   "AdminRates.fallbackTitle": "المصدر الاحتياطي المدفوع",
-  "AdminRates.fallbackUsage": "{used} من {cap} طلب هذا الشهر",
+  "AdminRates.fallbackCalls": "الطلبات هذا الشهر",
   "AdminRates.fallbackHint":
     "لا يُطلب إلا للعملات التي لا يغطيها البنك المركزي الأوروبي، ويتوقف عند الحد. يبدأ العدّ من جديد في {date}.",
   "AdminRates.fallbackCapped":

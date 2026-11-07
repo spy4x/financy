@@ -2075,7 +2075,7 @@ export default {
     "次の通貨には{date}のレートがありません。これらを含む合計では除外され、その旨が表示されます。",
   "AdminRates.missingNone": "使用中のすべての通貨に{date}のレートがあります。",
   "AdminRates.fallbackTitle": "有料の予備ソース",
-  "AdminRates.fallbackUsage": "今月の呼び出し {used} / {cap} 回",
+  "AdminRates.fallbackCalls": "今月の呼び出し回数",
   "AdminRates.fallbackHint":
     "ECBにない通貨のときだけ使われ、上限で止まります。カウントは{date}にリセットされます。",
   "AdminRates.fallbackCapped":

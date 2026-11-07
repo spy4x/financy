@@ -1989,7 +1989,7 @@ export default {
   "AdminRates.missingText": "以下货币没有 {date} 的汇率。包含它们的合计会将其排除，并注明。",
   "AdminRates.missingNone": "所有在用货币都有 {date} 的汇率。",
   "AdminRates.fallbackTitle": "付费备用来源",
-  "AdminRates.fallbackUsage": "本月已调用 {used} / {cap} 次",
+  "AdminRates.fallbackCalls": "本月调用次数",
   "AdminRates.fallbackHint":
     "只在欧洲央行缺少某种货币时才调用，达到上限后停止。计数将于 {date} 重新开始。",
   "AdminRates.fallbackCapped":
