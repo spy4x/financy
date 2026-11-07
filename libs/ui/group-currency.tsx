@@ -71,55 +71,62 @@ export function GroupCurrencySection(props: GroupCurrencySectionProps): JSX.Elem
     if (wasOpen.current && !dialogOpen) change.current?.focus()
     wasOpen.current = dialogOpen
   }, [dialogOpen])
+  // The slot follows the group's form with no gap, and the form's fields are `max-w-md` wide.
   return (
-    <SettingGroup title={t.t(`GroupCurrency.section`)} dataE2E="group-currency">
-      <SettingList>
-        <SettingRow
-          label={t.t(`GroupCurrency.label`)}
-          dataE2E="group-currency-row"
-          value={
-            <span data-e2e="group-currency-value">
-              {code === null ? `…` : currencyLabel(t, options, code)}
-            </span>
-          }
-          action={canChange && (
-            <Button
-              ref={change}
-              type="button"
-              variant="secondary"
-              size="sm"
-              class={TOUCH_TARGET}
-              disabled={offline || view === null}
-              aria-describedby={offline ? `group-currency-offline` : undefined}
-              onClick={props.onOpen}
-              data-e2e="group-currency-change"
-            >
-              <Rich parts={t.parts(`GroupCurrency.change`)} tags={{ hidden }} />
-            </Button>
-          )}
-        />
-      </SettingList>
-      <p class="text-sm text-muted">{t.t(`GroupCurrency.hint`)}</p>
-      {!canChange && (
-        <p class="text-sm text-muted" data-e2e="group-currency-read-only">
-          {t.t(`GroupCurrency.readOnly`)}
-        </p>
-      )}
-      {canChange && offline && (
-        <p id="group-currency-offline" class="text-sm text-muted" data-e2e="group-currency-offline">
-          {t.t(`GroupCurrency.offline`)}
-        </p>
-      )}
-      <ErrorState message={props.loadError ?? null} dataE2E="group-currency-load-error" />
-      {canChange && view && (
-        <CurrencyDialog
-          {...props}
-          view={view}
-          options={options}
-          open={dialogOpen}
-        />
-      )}
-    </SettingGroup>
+    <div class="mt-8 max-w-md">
+      <SettingGroup title={t.t(`GroupCurrency.section`)} dataE2E="group-currency">
+        <SettingList>
+          <SettingRow
+            label={t.t(`GroupCurrency.label`)}
+            dataE2E="group-currency-row"
+            value={
+              <span data-e2e="group-currency-value">
+                {code === null ? `…` : currencyLabel(t, options, code)}
+              </span>
+            }
+            action={canChange && (
+              <Button
+                ref={change}
+                type="button"
+                variant="secondary"
+                size="sm"
+                class={TOUCH_TARGET}
+                disabled={offline || view === null}
+                aria-describedby={offline ? `group-currency-offline` : undefined}
+                onClick={props.onOpen}
+                data-e2e="group-currency-change"
+              >
+                <Rich parts={t.parts(`GroupCurrency.change`)} tags={{ hidden }} />
+              </Button>
+            )}
+          />
+        </SettingList>
+        <p class="text-sm text-muted">{t.t(`GroupCurrency.hint`)}</p>
+        {!canChange && (
+          <p class="text-sm text-muted" data-e2e="group-currency-read-only">
+            {t.t(`GroupCurrency.readOnly`)}
+          </p>
+        )}
+        {canChange && offline && (
+          <p
+            id="group-currency-offline"
+            class="text-sm text-muted"
+            data-e2e="group-currency-offline"
+          >
+            {t.t(`GroupCurrency.offline`)}
+          </p>
+        )}
+        <ErrorState message={props.loadError ?? null} dataE2E="group-currency-load-error" />
+        {canChange && view && (
+          <CurrencyDialog
+            {...props}
+            view={view}
+            options={options}
+            open={dialogOpen}
+          />
+        )}
+      </SettingGroup>
+    </div>
   )
 }
 
@@ -161,12 +168,16 @@ function CurrencyDialog(
       title={t.t(`GroupCurrency.label`)}
       cancelLabel={t.t(`EmailScreen.close`)}
       dataE2E="group-currency-dialog"
+      // The open list may reach past the dialog's foot; scrolling the dialog to it would hide the
+      // title and the buttons.
+      class="overflow-visible!"
     >
       <ScreenForm pending={saving} onSubmit={() => props.onSave(choice)}>
         <Stack>
           <Field
             id={CURRENCY_FIELD_ID}
-            label={t.t(`GroupCurrency.label`)}
+            // The dialog's title already says it; the label stays for a screen reader.
+            label={<span class="sr-only">{t.t(`GroupCurrency.label`)}</span>}
             hint={t.t(`GroupCurrency.changeNote`)}
           >
             {(wiring) => (
