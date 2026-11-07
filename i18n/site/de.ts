@@ -134,11 +134,11 @@ export default {
     "Kostenloses Open-Source-Haushaltsbuch für dich oder deine Familie, in beliebig vielen Währungen. Selbst hosten unter AGPL‑3.0; eine bezahlte Cloud folgt. Wird gerade neu gebaut.",
   "HomeProof.tests": "Testdateien in den Apps und Bibliotheken, alle laufen in der CI",
   "HomeProof.licence": "Lizenz: kostenlos selbst zu hosten",
-  "HomeStatus.signIn": "Anmeldung per E-Mail, mit Passkeys und Zwei-Faktor-Schutz",
+  "HomeStatus.signIn": "Anmeldung per E‑Mail, mit Passkeys und Zwei‑Faktor‑Schutz",
   "HomeStatus.groups":
     "Gemeinsame Haushalte: Leute einladen und jedem eine Rolle geben, von Betrachter bis Inhaber",
   "HomeStatus.export": "Einen Haushalt in eine Datei exportieren und wieder importieren",
-  "HomeStatus.realtime": "Live-Updates auf jedem Gerät und eine App, die auch offline startet",
+  "HomeStatus.realtime": "Live‑Updates auf jedem Gerät und eine App, die auch offline startet",
   "HomeStatus.languages": "Die App und diese Website in neun Sprachen",
   "HomeFaq.freeQuestion": "Ist Financy kostenlos?",
   "HomeFaq.freeAnswer":
@@ -193,7 +193,7 @@ export default {
   "PricingWays.runUnit": "zum Preis deines Hosters",
   "PricingWays.runAction": "Deploy-Anleitung lesen",
   "PricingWays.runText":
-    "Financy läuft auf einem Linux-Server, den du mietest oder besitzt. Ein E-Mail-Anbieter und die Anmeldung mit Google oder GitHub sind optional und rechnen jeweils direkt mit dir ab.",
+    "Financy läuft auf einem Linux-Server, den du mietest oder besitzt. Dazu brauchst du einen E-Mail-Anbieter, der die Codes für Registrierung und Anmeldung verschickt; die Anmeldung mit Google oder GitHub ist optional. Jeder Anbieter rechnet direkt mit dir ab.",
   "DemoPlans.eyebrow": "Abrechnung, die funktioniert",
   "DemoPlans.title": "Die Tarife der Demo: ein Beispiel für die Abrechnung, die du bekommst",
   "DemoPlans.noticeTitle": "Das sind nicht die Preise von Seed",

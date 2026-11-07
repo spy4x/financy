@@ -279,7 +279,7 @@ HomeStatus.month	4c49e8afa777c729
 HomeStatus.notBuilt	45ecacee6d987c49
 HomeStatus.realtime	0fafebb5d51850a6
 HomeStatus.selfHost	cbd492e04bf27b28
-HomeStatus.signIn	1c4d4b3e97228cf5
+HomeStatus.signIn	c9cf57502f977962
 HomeStatus.title	16ae6501339300ea
 HomeStatus.transactions	120330db469a6e07
 HomeStatus.transfers	46c9d6db7360c537
@@ -402,7 +402,7 @@ PricingWays.eyebrow	eb95a967e640e4f9
 PricingWays.lead	5f3b2aa35db71f0b
 PricingWays.runAction	f4f2b386699115c3
 PricingWays.runPrice	bfb26d09e1749c92
-PricingWays.runText	0dfa03043d12899f
+PricingWays.runText	cc38529033d59d1c
 PricingWays.runTitle	fc77d95b2768ab22
 PricingWays.runUnit	35b1f2f68abf090b
 PricingWays.title	aa9296aa070e5c23

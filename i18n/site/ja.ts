@@ -191,7 +191,7 @@ export default {
   "PricingWays.runUnit": "ホスティング会社の料金",
   "PricingWays.runAction": "デプロイガイドを読む",
   "PricingWays.runText":
-    "Financy は、借りたサーバーでも自前のサーバーでも、Linux サーバー1台で動きます。メール配信サービスや Google・GitHub でのログインは任意で、それぞれ直接あなたに請求します。",
+    "Financy は、借りたサーバーでも自前のサーバーでも、Linux サーバー1台で動きます。新規登録とログインのコードを送るために、メール配信サービスが必要です。Google・GitHub でのログインは任意です。料金はそれぞれのサービスから直接請求されます。",
   "DemoPlans.eyebrow": "動く課金機能",
   "DemoPlans.title": "デモのプラン：手に入る課金機能の一例",
   "DemoPlans.noticeTitle": "これはSeedの料金ではありません",
@@ -287,7 +287,7 @@ export default {
     "ストアにはまだありません。今は Web アプリをブラウザからスマホやパソコンにインストールでき、オフラインでも開けます。",
   "FeaturesHero.title": "Financy が今できること、次にできること",
   "FeaturesFaq.title": "Financy でできますか？",
-  "FeatureSection.issue": "issue #{number}",
+  "FeatureSection.issue": "課題 #{number}",
   "FeatureSection.forDevelopers": "開発者向け",
   "FeatureVisuals.deployCaption":
     "一部省略：各ステップの間のrsyncとComposeの出力は割愛しています。",

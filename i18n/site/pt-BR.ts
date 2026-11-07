@@ -131,7 +131,7 @@ export default {
     "Controle financeiro grátis e de código aberto para você ou sua família, em várias moedas. Hospede no seu servidor sob AGPL‑3.0; a nuvem paga vem depois. Em reconstrução.",
   "HomeProof.tests": "arquivos de teste nos apps e nas bibliotecas, todos rodando no CI",
   "HomeProof.licence": "licença: grátis para hospedar",
-  "HomeStatus.signIn": "Entrar com e-mail, chaves de acesso e verificação em duas etapas",
+  "HomeStatus.signIn": "Entrar com e‑mail, chaves de acesso e verificação em duas etapas",
   "HomeStatus.groups":
     "Famílias compartilhadas: convide pessoas e dê uma função a cada uma, de leitor a dono",
   "HomeStatus.export": "Exportar uma família para um arquivo e importar de novo",
@@ -190,7 +190,7 @@ export default {
   "PricingWays.runUnit": "pelo preço do seu provedor",
   "PricingWays.runAction": "Ler o guia de deploy",
   "PricingWays.runText":
-    "O Financy roda num servidor Linux, alugado ou seu. Um provedor de e-mail e o login com Google ou GitHub são opcionais, e cada um cobra você diretamente.",
+    "O Financy roda num servidor Linux, alugado ou seu. Ele precisa de um provedor de e-mail para mandar os códigos de criar conta e de entrar; entrar com Google ou GitHub é opcional. Cada um cobra você diretamente.",
   "DemoPlans.eyebrow": "Cobrança funcionando",
   "DemoPlans.title": "Os planos da demo: um exemplo da cobrança que você recebe pronta",
   "DemoPlans.noticeTitle": "Estes não são preços do Seed",
@@ -295,7 +295,7 @@ export default {
     "Ainda não está nas lojas. Hoje o app web se instala pelo navegador no celular e no computador e abre offline.",
   "FeaturesHero.title": "O que o Financy faz hoje, e o que vem a seguir",
   "FeaturesFaq.title": "O Financy faz isso?",
-  "FeatureSection.issue": "issue #{number}",
+  "FeatureSection.issue": "tarefa #{number}",
   "FeatureSection.forDevelopers": "Para desenvolvedores",
   "FeatureVisuals.deployCaption":
     "Resumido: a saída do rsync e do Compose entre os passos foi omitida.",

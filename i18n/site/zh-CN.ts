@@ -172,7 +172,7 @@ export default {
   "PricingWays.runUnit": "按你的服务商价格",
   "PricingWays.runAction": "阅读部署指南",
   "PricingWays.runText":
-    "Financy 运行在一台你租用或自有的 Linux 服务器上。邮件服务商以及 Google 或 GitHub 登录都是可选的，各自直接向你收费。",
+    "Financy 运行在一台你租用或自有的 Linux 服务器上。它需要一个邮件服务商来发送注册和登录验证码；Google 或 GitHub 登录则是可选的。这些服务商都直接向你收费。",
   "DemoPlans.eyebrow": "计费，已就绪",
   "DemoPlans.title": "演示中的套餐：你将获得的计费功能示例",
   "DemoPlans.noticeTitle": "这些不是 Seed 的价格",
@@ -261,7 +261,7 @@ export default {
     "应用商店里还没有。目前网页应用可以从浏览器安装到手机和电脑上，并能离线打开。",
   "FeaturesHero.title": "Financy 现在能做什么，接下来做什么",
   "FeaturesFaq.title": "Financy 能做到吗？",
-  "FeatureSection.issue": "issue #{number}",
+  "FeatureSection.issue": "议题 #{number}",
   "FeatureSection.forDevelopers": "面向开发者",
   "FeatureVisuals.deployCaption": "已精简：省略了各步骤之间 rsync 和 Compose 的输出。",
   "FeatureVisuals.services": "服务器上的服务",
