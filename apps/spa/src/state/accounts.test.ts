@@ -121,6 +121,29 @@ describe("accounts store", () => {
     expect(store.byId.value.get("new-1")?.currency).toBe("JPY")
   })
 
+  it("makes one account when Save is pressed again after the first answer was lost", async () => {
+    // The server keys a create by its id: a second create with the same id makes no second row.
+    const rows = new Map<string, AccountItem>()
+    let ids = 0
+    let answers = 0
+    const { store } = harness({
+      newId: () => `new-${++ids}`,
+      create(input) {
+        if (!rows.has(input.id)) rows.set(input.id, item(input.id, input))
+        if (++answers === 1) return Promise.reject(new Error("connection lost"))
+        return Promise.resolve({ account: rows.get(input.id)! })
+      },
+    })
+    await store.open(groupId)
+    store.startCreate()
+    store.change({ name: "Wallet", kind: AccountKind.CASH, currency: "USD", startingBalance: 0 })
+
+    expect(await store.save()).toBeNull()
+    await store.save()
+
+    expect([...rows.keys()]).toEqual(["new-1"])
+  })
+
   it("names both missing fields and calls nothing when the name and the currency are empty", async () => {
     const { store, calls } = harness()
     await store.open(groupId)

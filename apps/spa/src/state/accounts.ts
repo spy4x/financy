@@ -153,6 +153,8 @@ export function createAccountsStore(
     return [...counts].sort((a, b) => b[1] - a[1]).map(([code]) => code)
   })
   let reads = 0
+  /** The id of the new account in the editor: every Save of that draft sends it, so a retry is the same create. */
+  let draftId = ""
 
   /** Reads the open household's accounts again; a read answered for another group is dropped. */
   async function refresh(): Promise<void> {
@@ -206,6 +208,7 @@ export function createAccountsStore(
 
   function startCreate(): void {
     if (form.value?.id === null) return
+    draftId = dependencies.newId()
     form.value = { id: null, ...NEW_ACCOUNT, version: 0, base: NEW_ACCOUNT }
     formErrors.value = NO_ERRORS
   }
@@ -269,7 +272,7 @@ export function createAccountsStore(
     formErrors.value = NO_ERRORS
     try {
       const { account } = current.id === null
-        ? await dependencies.create({ groupId: forGroup, id: dependencies.newId(), ...fields })
+        ? await dependencies.create({ groupId: forGroup, id: draftId, ...fields })
         : await dependencies.update({
           groupId: forGroup,
           id: current.id,
