@@ -286,6 +286,24 @@ export default {
     "Nous ne connaissons pas ce fuseau horaire. Choisissez-en un autre dans la liste.",
   "GroupEditor.timeZoneChangedElsewhere":
     "Quelqu’un d’autre l’a changé en {zone} pendant que vous modifiiez. Enregistrez pour garder le vôtre, ou Abandonnez.",
+  "GroupCurrency.section": "Argent",
+  "GroupCurrency.label": "Devise principale",
+  "GroupCurrency.hint":
+    "Les totaux s’affichent dans cette devise, pour tout le groupe. Chaque montant garde sa propre devise.",
+  "GroupCurrency.change": "Modifier<hidden> la devise principale</hidden>",
+  "GroupCurrency.changeNote":
+    "Aucun montant ne change. Chacun reste dans sa devise, seuls les totaux sont reconvertis.",
+  "GroupCurrency.noRate": "Pas de taux quotidien ici",
+  "GroupCurrency.use": "Passer en {name}",
+  "GroupCurrency.saved": "Les totaux s’affichent désormais en {name} ({code}).",
+  "GroupCurrency.readOnly":
+    "Seuls les administrateurs et le propriétaire peuvent modifier la devise principale.",
+  "GroupCurrency.offline": "Une connexion est nécessaire pour modifier la devise principale.",
+  "GroupCurrency.failed": "Impossible d’enregistrer la devise principale. Réessayez.",
+  "GroupCurrency.changedElsewhere":
+    "Quelqu’un d’autre l’a changée en {code} pendant que vous choisissiez. Gardez la vôtre, ou Annulez.",
+  "GroupCurrency.loadFailed":
+    "Impossible de charger la devise principale. Vérifiez votre connexion et réessayez.",
   "GroupEditor.nameRequired": "Saisissez un nom.",
   "GroupEditor.nameInvalid":
     "100 caractères maximum, sans retour à la ligne ni caractère invisible.",

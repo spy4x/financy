@@ -266,6 +266,24 @@ export default {
     "Diese Zeitzone kennen wir nicht. Wähle eine andere aus der Liste.",
   "GroupEditor.timeZoneChangedElsewhere":
     "Jemand anderes hat das auf {zone} geändert, während du bearbeitet hast. Speichere, um deine zu nehmen, oder verwirf.",
+  "GroupCurrency.section": "Geld",
+  "GroupCurrency.label": "Hauptwährung",
+  "GroupCurrency.hint":
+    "Summen erscheinen für alle in der Gruppe in dieser Währung. Jeder Betrag behält seine eigene Währung.",
+  "GroupCurrency.change": "Ändern<hidden>: Hauptwährung</hidden>",
+  "GroupCurrency.changeNote":
+    "Dabei ändert sich kein Betrag. Jeder bleibt in seiner Währung; nur die Summen werden neu umgerechnet.",
+  "GroupCurrency.noRate": "Hier kein Tageskurs",
+  "GroupCurrency.use": "{name} verwenden",
+  "GroupCurrency.saved": "Summen erscheinen jetzt in {name} ({code}).",
+  "GroupCurrency.readOnly": "Nur Admins und der Inhaber können die Hauptwährung ändern.",
+  "GroupCurrency.offline": "Zum Ändern der Hauptwährung brauchst du eine Verbindung.",
+  "GroupCurrency.failed":
+    "Die Hauptwährung konnte nicht gespeichert werden. Versuch es noch einmal.",
+  "GroupCurrency.changedElsewhere":
+    "Jemand anderes hat das auf {code} geändert, während du gewählt hast. Nimm deine Wahl oder wähle Abbrechen.",
+  "GroupCurrency.loadFailed":
+    "Die Hauptwährung konnte nicht geladen werden. Prüf deine Verbindung und versuch es noch einmal.",
   "GroupEditor.nameRequired": "Gib einen Namen ein.",
   "GroupEditor.nameInvalid": "Höchstens 100 Zeichen, ohne Zeilenumbrüche und unsichtbare Zeichen.",
   "GroupEditor.descriptionTooLong": {

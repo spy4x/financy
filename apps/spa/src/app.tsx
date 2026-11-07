@@ -22,6 +22,7 @@ import { notesStore } from "./state/notes.ts"
 import { tagsStore } from "./state/tags.ts"
 import { accountsStore } from "./state/accounts.ts"
 import { householdTotalStore } from "./state/household-total.ts"
+import { householdSettingsStore } from "./state/household-settings.ts"
 import { selectionStore } from "./state/selection.ts"
 import { benchmarkOpen } from "./state/demo.ts"
 import { useAppText } from "@ui/i18n.ts"
@@ -324,6 +325,7 @@ export function App() {
       tagsStore.reset()
       accountsStore.reset()
       householdTotalStore.reset()
+      householdSettingsStore.reset()
       profileStore.reset()
       selectionStore.reset()
       emailStore.reset()
@@ -353,7 +355,14 @@ export function App() {
           await Promise.all([accountsStore.refresh(), householdTotalStore.refresh()])
         },
       },
-      members: membersStore,
+      // The main currency is read with the members of the group whose settings are open: a save
+      // moves the group's sequence, and the same page shows both.
+      members: {
+        groupId: membersStore.groupId,
+        refresh: async () => {
+          await Promise.all([membersStore.refresh(), householdSettingsStore.refresh()])
+        },
+      },
       notifications: notificationsStore,
       onboarding: onboardingStore,
       preferences: preferencesState,
