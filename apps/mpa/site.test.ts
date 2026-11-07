@@ -1036,6 +1036,17 @@ describe("the public website", () => {
     }
   })
 
+  it("loads the focus script on the home page, naming the newsletter section and its email field", async () => {
+    const { html } = await page("/")
+    const script = html.match(/<script [^>]*src="\/field-focus\.js"[^>]*>/)?.[0] ?? ""
+
+    expect(script).toContain(`data-hash="newsletter"`)
+    expect(script).toContain(`data-field="home-email"`)
+    expect(script).toContain(`defer`)
+    expect(html).toContain(`id="newsletter"`)
+    expect(html).toMatch(/<input [^>]*id="home-email"/)
+  })
+
   it("names the source code's licence in llms.txt as AGPL-3.0, Financy's own", async () => {
     const text = await (await handler(new Request(`${site}/llms.txt`), info)).text()
 

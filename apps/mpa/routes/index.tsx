@@ -365,6 +365,8 @@ function Newsletter(): JSX.Element {
           </div>
           <p id="home-email-hint" class="text-sm text-muted">{t.t(`HomeNewsletter.hint`)}</p>
         </form>
+        {/* Every "Get notified" link leads here: arriving puts the cursor in the email field. */}
+        <script defer src="/field-focus.js" data-hash="newsletter" data-field="home-email" />
       </div>
     </Band>
   )
