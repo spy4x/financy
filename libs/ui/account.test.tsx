@@ -354,7 +354,7 @@ describe("AppFrame", () => {
     expect(column()).not.toContain("max-w-3xl")
   })
 
-  it("lists Overview, Notes, Activity and Groups, with Activity pointing at the selected group", async () => {
+  it("lists Overview, Accounts, Notes, Activity and Groups, with Activity pointing at the selected group", async () => {
     await mount(
       <AppFrame
         user={ada}
@@ -365,9 +365,9 @@ describe("AppFrame", () => {
       </AppFrame>,
     )
     const rail = '[data-e2e=rail-shell-rail] a[data-e2e="rail-shell-entry"]'
-    expect(railLabels()).toEqual(["Overview", "Notes", "Activity", "Groups"])
+    expect(railLabels()).toEqual(["Overview", "Accounts", "Notes", "Activity", "Groups"])
     expect([...document.querySelectorAll(rail)].map((link) => link.getAttribute("href")))
-      .toEqual(["/overview", "/notes", "/groups/g-1/activity", "/groups"])
+      .toEqual(["/overview", "/accounts", "/notes", "/groups/g-1/activity", "/groups"])
     expect(texts('[data-e2e=rail-shell-tabbar] [data-e2e="rail-shell-entry"]')).toHaveLength(4)
   })
 
@@ -390,9 +390,9 @@ describe("AppFrame", () => {
       </AppFrame>
     )
     await mount(frame(null))
-    expect(railLabels()).toEqual(["Overview", "Notes", "Groups"])
+    expect(railLabels()).toEqual(["Overview", "Accounts", "Notes", "Groups"])
     await rerender(frame("g-2"))
-    expect(railLabels()).toEqual(["Overview", "Notes", "Groups"])
+    expect(railLabels()).toEqual(["Overview", "Accounts", "Notes", "Groups"])
   })
 
   it("follows a plain click on a navigation entry through navigate, and leaves a Ctrl-click to the browser", async () => {

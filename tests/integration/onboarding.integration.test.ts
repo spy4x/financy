@@ -64,12 +64,18 @@ const addNote = (sql: postgres.Sql, groupId: string, userId: number) =>
   sql`INSERT INTO notes (id, group_id, title, change_sequence, created_by_user_id)
     VALUES (${uuidV7()}, ${groupId}, 'Mine', 50, ${userId})`
 
+const addAccount = (sql: postgres.Sql, groupId: string, userId: number) =>
+  sql`INSERT INTO accounts (id, group_id, name, kind, currency, change_sequence, created_by_user_id)
+    VALUES (${uuidV7()}, ${groupId}, 'Wallet', 1, 'EUR', 51, ${userId})`
+
 const NOTHING_DONE = {
+  accountCreated: false,
   emailVerified: false,
   noteCreated: false,
   memberInvited: false,
   notificationsOn: false,
   twoFactorOn: false,
+  currencyChosen: false,
 }
 
 Deno.test("each first step is done exactly when the person's own data says so", async (t) => {
@@ -83,6 +89,7 @@ Deno.test("each first step is done exactly when the person's own data says so", 
     await sql`INSERT INTO auth_email_owners (email, user_id) VALUES ('bob@example.com', ${other.userId})`
     await sql`UPDATE auth_keys SET proven_at = now() WHERE user_id = ${other.userId}`
     await addNote(sql, groupId, other.userId)
+    await addAccount(sql, groupId, other.userId)
     await sql`INSERT INTO group_invitations (id, group_id, token_hash, role, created_by_user_id, expires_at)
       VALUES (${uuidV7()}, ${groupId}, ${
       "a".repeat(64)
@@ -112,13 +119,15 @@ Deno.test("each first step is done exactly when the person's own data says so", 
       },
     )
 
-    await t.step("the other person, who did all five, has all five done", async () => {
+    await t.step("the other person, who did all six, has all six done", async () => {
       expect((await readOnboarding(sql, other.userId))?.steps).toEqual({
+        accountCreated: true,
         emailVerified: true,
         noteCreated: true,
         memberInvited: true,
         notificationsOn: true,
         twoFactorOn: true,
+        currencyChosen: false,
       })
     })
 
@@ -141,6 +150,17 @@ Deno.test("each first step is done exactly when the person's own data says so", 
         await sql`UPDATE auth_keys SET method = ${SIGN_IN_LINK_METHOD}, subject = ${uuidV7()},
         proven_at = now() WHERE user_id = ${linked.userId}`
         expect((await readOnboarding(sql, linked.userId))?.steps.emailVerified).toBe(true)
+      },
+    )
+
+    await t.step(
+      "an account of their own ticks the account step, and stays ticked in the trash",
+      async () => {
+        await addAccount(sql, groupId, userId)
+        expect((await readOnboarding(sql, userId))?.steps.accountCreated).toBe(true)
+
+        await sql`UPDATE accounts SET deleted_at = now() WHERE created_by_user_id = ${userId}`
+        expect((await readOnboarding(sql, userId))?.steps.accountCreated).toBe(true)
       },
     )
 
@@ -187,6 +207,30 @@ Deno.test("each first step is done exactly when the person's own data says so", 
       await sql`UPDATE users SET mfa = ${UserMFAStatus.CONFIGURED} WHERE id = ${userId}`
 
       expect((await readOnboarding(sql, userId))?.steps.twoFactorOn).toBe(true)
+    })
+
+    await t.step(
+      "a saved main currency ticks the step of the group's owner and admins, the default does not",
+      async () => {
+        const viewer = await newAccount(sql, "cy@example.com")
+        await sql`INSERT INTO group_members (group_id, user_id, role, added_by_user_id)
+          VALUES (${groupId}, ${viewer.userId}, 1, ${userId})`
+        await sql`INSERT INTO household_settings (group_id) VALUES (${groupId})`
+        expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(false)
+
+        await sql`UPDATE household_settings SET base_currency = 'JPY', updated_by_user_id = ${other.userId},
+          chosen_at = now() WHERE group_id = ${groupId}`
+        expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(true)
+        expect((await readOnboarding(sql, other.userId))?.steps.currencyChosen).toBe(true)
+        expect((await readOnboarding(sql, viewer.userId))?.steps.currencyChosen).toBe(false)
+      },
+    )
+
+    await t.step("a deleted group's chosen currency does not tick the step", async () => {
+      await sql`UPDATE groups SET deleted_at = now() WHERE id = ${groupId}`
+
+      expect((await readOnboarding(sql, userId))?.steps.currencyChosen).toBe(false)
+      expect((await readOnboarding(sql, other.userId))?.steps.currencyChosen).toBe(false)
     })
   })
 })

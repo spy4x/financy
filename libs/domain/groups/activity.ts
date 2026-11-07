@@ -14,7 +14,7 @@ export const ACTIVITY_PAGE_MAX = 100
 export const ACTIVITY_PAGE_DEFAULT = 50
 
 /** What an audit event can point at besides a member: the thing the event is about. */
-export type AuditEntityType = "note" | "invitation" | "tag"
+export type AuditEntityType = "note" | "invitation" | "tag" | "account"
 
 /** Short facts an event keeps for its sentence: names, roles, a count. Never a body or an address. */
 export type AuditDetails = Record<string, string | number>
@@ -52,6 +52,14 @@ export const ACTIVITY_KINDS = [
   "tag.created",
   "tag.updated",
   "tag.deleted",
+  "account.created",
+  "account.updated",
+  "account.archived",
+  "account.unarchived",
+  "account.default_set",
+  "account.default_cleared",
+  "account.deleted",
+  "account.restored",
 ] as const
 
 /**
@@ -310,7 +318,35 @@ export function describeActivity(
         ? `${deleted}, which ${counted(details.notes, "note")} carried`
         : deleted
     }
+    case "account.created":
+    case "account.archived":
+    case "account.unarchived":
+    case "account.default_set":
+    case "account.default_cleared":
+    case "account.deleted":
+    case "account.restored": {
+      const name = quoted(details.name)
+      const verb = ACCOUNT_VERBS[event.kind]
+      return name ? `${who} ${verb(`the account ${name}`)}` : `${who} ${verb("an account")}`
+    }
+    case "account.updated": {
+      const name = quoted(details.name)
+      const from = quoted(details.from)
+      if (from && name) return `${who} renamed the account ${from} to ${name}`
+      return name ? `${who} changed the account ${name}` : `${who} changed an account`
+    }
     default:
       return `${who} changed something in the group`
   }
+}
+
+/** How the log says each account event, around the account it names. */
+const ACCOUNT_VERBS: Record<string, (account: string) => string> = {
+  "account.created": (account) => `added ${account}`,
+  "account.archived": (account) => `archived ${account}`,
+  "account.unarchived": (account) => `unarchived ${account}`,
+  "account.default_set": (account) => `made ${account} the default`,
+  "account.default_cleared": (account) => `stopped using ${account} as the default`,
+  "account.deleted": (account) => `deleted ${account}`,
+  "account.restored": (account) => `restored ${account}`,
 }

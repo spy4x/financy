@@ -17,11 +17,13 @@ const actor = {
 const signal = new AbortController().signal
 const status: OnboardingStatus = {
   steps: {
+    accountCreated: false,
     emailVerified: true,
     noteCreated: false,
     memberInvited: false,
     notificationsOn: false,
     twoFactorOn: false,
+    currencyChosen: false,
   },
   dismissed: false,
   tourSeen: false,

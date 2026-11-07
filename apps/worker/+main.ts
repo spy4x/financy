@@ -9,13 +9,25 @@ import { readTelegramSetup } from "@server/telegram/setup.ts"
 import { queueDueBlogJobs } from "@server/blog/blog-publish-job.ts"
 import { readIndexNowSetup } from "@server/blog/blog-indexnow-job.ts"
 import { readCrosspostSetup } from "@server/blog/blog-crosspost-job.ts"
+import { type RatesSetup, readRatesSetup } from "@server/money/rates-setup.ts"
+import { readShareResultsSetup } from "@server/blog/blog-share-results-job.ts"
+import type { AutoPostSetup } from "@server/blog/auto-post.ts"
+import { telegramPoster } from "@server/blog/blog-post-telegram-job.ts"
+import { readMastodonPoster } from "@server/blog/blog-post-mastodon-job.ts"
+import { readBlueskyPoster } from "@server/blog/blog-post-bluesky-job.ts"
+import { readHashnodePoster } from "@server/blog/blog-post-hashnode-job.ts"
+import { readLinkedinPoster } from "@server/blog/blog-post-linkedin-job.ts"
 import { loadDemoBlogPosts } from "@server/blog/seed-posts.ts"
 import { PostgresIdempotencyStore } from "@spy4x/server/idempotency"
 import { startIdempotencySweep } from "./idempotency-sweep.ts"
 import { shutdownSignal, ShutdownSignalError } from "@spy4x/platform/server/shutdown-signal"
 import { createPostgresAuthStore } from "@spy4x/server/auth/postgres"
 import { createMailSender, mailOffWarning, readMailSetup } from "@server/mail/mail.ts"
-import { readSubscribersSetup, subscribersOffWarning } from "@server/subscribers/subscribers.ts"
+import {
+  readSiteUrl,
+  readSubscribersSetup,
+  subscribersOffWarning,
+} from "@server/subscribers/subscribers.ts"
 // The API's own reading of the billing variables, so both processes run one provider.
 import { readBillingSetup } from "@server/billing/setup.ts"
 import { isDemoMode } from "@server/auth/demo-accounts.ts"
@@ -130,6 +142,39 @@ if (!crosspost && processEnv.get("DEVTO_API_KEY")?.trim()) {
   console.warn("The Dev.to cross-post is off: DEVTO_API_KEY is set, but MPA_DOMAIN is not")
 }
 
+// Exchange rates (docs/financy/exchange-rates.md): the ECB's through Frankfurter in every
+// environment, and the paid fallback only with `RATES_FALLBACK_KEY`, under its monthly cap. A key
+// without a cap stops the worker here; the message names the variable, never the key.
+let rates: RatesSetup
+try {
+  rates = readRatesSetup(processEnv)
+} catch (error) {
+  console.error(`❌ ${(error as Error).message}`)
+  exitProcess(1)
+}
+
+// Sharing results (docs/blog.md): every hour, the numbers of each copy posted to Dev.to, Reddit,
+// Hacker News, Mastodon, Bluesky or Hashnode in the last 90 days are read when due. Dev.to reads
+// with `DEVTO_API_KEY`; Dev.to and Reddit need `MPA_DOMAIN`; the others read public numbers.
+const shareResults = readShareResultsSetup(
+  processEnv,
+  processEnv.get("ENV") === "dev" ? "dev" : "prod",
+)
+
+// Automatic posts (docs/blog.md): each sharing channel with "Post automatically" on gets every
+// post that goes live, while its kind's keys are set. Without them its rows stay manual, and each
+// post logs one line. The keys stay in the clients and are never logged.
+const autoPost: AutoPostSetup = {
+  siteUrl: readSiteUrl(processEnv, processEnv.get("ENV") === "dev" ? "dev" : "prod"),
+  posters: {
+    telegram: telegram && telegramSetup ? telegramPoster(telegram, telegramSetup.token) : null,
+    mastodon: readMastodonPoster(processEnv),
+    bluesky: readBlueskyPoster(processEnv),
+    hashnode: readHashnodePoster(processEnv),
+    linkedin: readLinkedinPoster(processEnv),
+  },
+}
+
 // The public demo (docs/demo.md) gives every new account its own sample groups.
 const demo = isDemoMode(readEnvRecord([`DEMO_MODE`]))
 // The owner's private administrator on the demo, when `DEMO_ADMIN_PASSWORD` is set. A bad value
@@ -176,6 +221,10 @@ const processor = createOutboxProcessor(
   imageScratch,
   indexNow,
   crosspost,
+  undefined,
+  shareResults,
+  autoPost,
+  rates,
 )
 
 // Starts the nightly chain the first time; a restart finds the waiting row and adds nothing. A run

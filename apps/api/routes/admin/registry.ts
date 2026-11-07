@@ -5,6 +5,7 @@ import { dashboardAdminModule } from "./dashboard.ts"
 import { statsAdminModule } from "./stats.ts"
 import { usersAdminModule } from "./users.ts"
 import { groupsAdminModule } from "./groups.ts"
+import { accountsAdminModule } from "./accounts.ts"
 import { billingAdminModule } from "./billing.ts"
 import { newsletterAdminModule } from "./newsletter.ts"
 import { blogAdminModule } from "./blog.ts"
@@ -12,6 +13,7 @@ import { contactLinksAdminModule } from "./contact-links.ts"
 import { catalogAdminModule } from "./catalog.ts"
 import { auditAdminModule } from "./audit.ts"
 import { jobsAdminModule } from "./jobs.ts"
+import { ratesAdminModule } from "./rates.ts"
 import { systemAdminModule } from "./system.ts"
 import { apiTokensAdminModule } from "./api-tokens.ts"
 
@@ -24,6 +26,7 @@ export const ADMIN_API_MODULES: readonly AdminApiModule[] = [
   statsAdminModule,
   usersAdminModule,
   groupsAdminModule,
+  accountsAdminModule,
   billingAdminModule,
   newsletterAdminModule,
   blogAdminModule,
@@ -31,6 +34,7 @@ export const ADMIN_API_MODULES: readonly AdminApiModule[] = [
   catalogAdminModule,
   auditAdminModule,
   jobsAdminModule,
+  ratesAdminModule,
   systemAdminModule,
   apiTokensAdminModule,
 ]

@@ -182,7 +182,7 @@ export default {
   "PricingWays.lead":
     "El código es gratis bajo AGPL‑3.0, sin clave de licencia y sin funciones reservadas.",
   "PricingWays.useTitle": "Aloja Financy tú mismo",
-  "PricingWays.useUnit": "licencia AGPL‑3.0, sin cuenta",
+  "PricingWays.useUnit": "licencia AGPL‑3.0, sin cuenta de usuario",
   "PricingWays.useText":
     "Todo el código bajo AGPL‑3.0, con todas las funciones y actualizaciones, para ti y tu hogar.",
   "PricingWays.runTitle": "Llévalo a producción",
@@ -190,7 +190,7 @@ export default {
   "PricingWays.runUnit": "al precio de tu proveedor",
   "PricingWays.runAction": "Leer la guía de despliegue",
   "PricingWays.runText":
-    "Financy funciona en un servidor Linux que alquiles o que sea tuyo. Un proveedor de correo y el inicio de sesión con Google o GitHub son opcionales, y cada uno te cobra directamente.",
+    "Financy funciona en un servidor Linux que alquiles o que sea tuyo. Necesita un proveedor de correo que envíe los códigos para registrarte e iniciar sesión; iniciar sesión con Google o GitHub es opcional. Cada uno te cobra directamente.",
   "DemoPlans.eyebrow": "Facturación funcionando",
   "DemoPlans.title": "Los planes de la demo: un ejemplo de la facturación que recibes",
   "DemoPlans.noticeTitle": "Estos no son los precios de Seed",
@@ -219,11 +219,9 @@ export default {
   "DemoPlan.proRoles": "Convierte a miembros en editores o administradores",
   "FeatureTierSettled.eyebrow": "Funciona hoy",
   "FeatureTierSettled.title": "La base donde vivirá el dinero de tu hogar",
-  "FeatureTierSettled.lead":
-    "Estas partes ya funcionan y se prueban en CI. Lo siguiente es el dinero en sí: cuentas en cualquier moneda y sus movimientos.",
   "FeatureTierSettled.status":
     "El inicio de sesión con Google y GitHub necesita claves propias del servidor, así que una instalación nueva empieza solo con el inicio de sesión por correo.",
-  "FeatureSignIn.nav": "Cuentas e inicio de sesión",
+  "FeatureSignIn.nav": "Inicio de sesión y seguridad",
   "FeatureSignIn.title": "Inicio de sesión, resuelto",
   "FeatureSignIn.lead":
     "Te registras con correo y contraseña y confirmas el correo con un código. Puedes restablecer una contraseña olvidada, continuar con Google o GitHub, entrar con una llave de acceso o pedir un código por correo. Una app de autenticación añade la verificación en dos pasos (2FA), y ves todos los dispositivos con sesión abierta y puedes cerrar la sesión en los demás.",
@@ -295,16 +293,9 @@ export default {
   "FeaturesFaq.nativeQuestion": "¿Hay una app para el móvil?",
   "FeaturesFaq.nativeAnswer":
     "Todavía no está en las tiendas. Por ahora, la app web se instala desde el navegador en móviles y ordenadores y se abre sin conexión.",
-  "Features.title": "Funciones de Financy: hogares, sincronización, sin conexión, autoalojado",
-  "Features.description":
-    "Lo que Financy hace hoy: hogares con roles, cambios al instante en cada dispositivo, una app que funciona sin conexión, exportación, nueve idiomas y alojamiento propio. Después llegan las cuentas y los presupuestos.",
   "FeaturesHero.title": "Lo que Financy hace hoy, y lo que viene después",
-  "FeaturesHero.lead":
-    "Financy se está reconstruyendo. Lo que funciona hoy es la base donde vivirá el dinero de un hogar: inicio de sesión, acceso compartido con roles, cambios al instante, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza a su código.",
-  "FeaturesHero.note":
-    "Las cuentas, los movimientos y los presupuestos aún no están construidos. <status>Ver cómo va la reconstrucción</status>.",
   "FeaturesFaq.title": "¿Financy puede hacer eso?",
-  "FeatureSection.issue": "issue #{number}",
+  "FeatureSection.issue": "tarea #{number}",
   "FeatureSection.forDevelopers": "Para desarrolladores",
   "FeatureVisuals.deployCaption":
     "Resumido: se omite la salida de rsync y Compose entre los pasos.",
@@ -312,7 +303,8 @@ export default {
   "Loops.realtimeName": "Sincronización en tiempo real",
   "Loops.realtimeTitle":
     "Una nota guardada en la ventana izquierda aparece en la derecha en menos de un segundo, sin recargar.",
-  "Loops.realtimeCaption": "Dos ventanas, una cuenta. Guarda en una y la otra se actualiza sola.",
+  "Loops.realtimeCaption":
+    "Dos ventanas, una cuenta de usuario. Guarda en una y la otra se actualiza sola.",
   "Loops.offlineName": "Edición sin conexión",
   "Loops.offlineTitle":
     "La app se queda sin conexión, se edita una nota y, al reconectar, el selector de conflictos pregunta qué versión conservar.",
@@ -446,7 +438,7 @@ export default {
   "FeaturePageSignIn.how1":
     "La API comprueba cada inicio de sesión por sí misma y responde con una cookie de sesión firmada. Una llave de acceso usa el WebAuthn del propio navegador: el servidor guarda solo su clave pública, y cada desafío de inicio de sesión sirve una sola vez. Un código de inicio de sesión por correo sirve para entrar o para registrarse, funciona una sola vez durante 10 minutos, solo en el navegador que lo pidió, y se guarda solo como hash.",
   "FeaturePageSignIn.how2":
-    "Una app de autenticación añade la verificación en dos pasos. El perfil muestra cada forma de entrar en la cuenta y cada dispositivo con la sesión iniciada, y cambiar una forma de entrar pide una prueba y envía un correo. Un visitante también puede empezar con una cuenta de invitado y añadir un método de inicio de sesión más tarde.",
+    "Una app de autenticación añade la verificación en dos pasos. El perfil muestra cada forma de entrar en la cuenta de usuario y cada dispositivo con la sesión iniciada, y cambiar una forma de entrar pide una prueba y envía un correo. Un visitante también puede empezar con una cuenta de invitado y añadir un método de inicio de sesión más tarde.",
   "FeaturePageSignIn.authServiceQuestion": "¿Necesito un servicio de autenticación?",
   "FeaturePageSignIn.authServiceAnswer":
     "No. La propia API de Seed comprueba las contraseñas, las llaves de acceso, los códigos de inicio de sesión y las respuestas de Google y GitHub en tu servidor, así que no se cobra nada por usuario.",
@@ -466,16 +458,16 @@ export default {
     "Grupos con roles de lector a propietario, invitaciones, cesión de propiedad y registro de actividad, con un solo control de inquilino. Gratis y MIT.",
   "FeaturePageGroups.h1": "Grupos y roles para tu SaaS, sin construir la arquitectura multi-tenant",
   "FeaturePageGroups.answer":
-    "Seed da a cada cuenta un grupo personal al registrarse, y la gente crea grupos compartidos, invita a otras personas y les da roles de lector a propietario. El grupo es el único límite entre inquilinos, así que una función que añadas pasa la misma comprobación en cuanto copia el agregado de notas.",
+    "Seed da a cada cuenta de usuario un grupo personal al registrarse, y la gente crea grupos compartidos, invita a otras personas y les da roles de lector a propietario. El grupo es el único límite entre inquilinos, así que una función que añadas pasa la misma comprobación en cuanto copia el agregado de notas.",
   "FeaturePageGroups.summary":
     "Grupos con roles de lector a propietario, invitaciones y registro de actividad.",
   "FeaturePageGroups.how1":
     "Cada fila de datos compartidos pertenece a un grupo, y la API comprueba el rol de la persona en ese grupo antes de leer o escribir. Un lector lee; un editor además cambia los datos del grupo; un administrador y el propietario además gestionan los miembros y leen el registro de actividad.",
   "FeaturePageGroups.how2":
-    "El propietario cede la propiedad en un solo paso, y un grupo eliminado se puede restaurar durante 30 días. Solo una cuenta con el correo electrónico confirmado puede invitar.",
-  "FeaturePageGroups.personalGroupQuestion": "¿Cada cuenta recibe un grupo?",
+    "El propietario cede la propiedad en un solo paso, y un grupo eliminado se puede restaurar durante 30 días. Solo una cuenta de usuario con el correo electrónico confirmado puede invitar.",
+  "FeaturePageGroups.personalGroupQuestion": "¿Cada cuenta de usuario recibe un grupo?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Sí. Cada cuenta recibe un grupo personal al registrarse; un grupo personal y uno compartido pasan la misma comprobación.",
+    "Sí. Cada cuenta de usuario recibe un grupo personal al registrarse; un grupo personal y uno compartido pasan la misma comprobación.",
   "FeaturePageGroups.viewerQuestion": "¿Un lector puede cambiar los datos de un grupo?",
   "FeaturePageGroups.viewerAnswer":
     "No. Un lector lee los datos del grupo; un editor, un administrador o el propietario pueden cambiarlos.",
@@ -576,7 +568,7 @@ export default {
     "Los presupuestos, la importación de extractos bancarios y la nube de pago llegan después: <plan>ver el plan completo</plan>.",
   "HomeWho.keeperTitle": "Quien lleva las cuentas",
   "HomeWho.keeperText":
-    "El sueldo en una moneda, el alquiler en otra, los ahorros en una tercera: un solo lugar que lo suma todo.",
+    "El sueldo en una moneda, el alquiler en otra, los ahorros en una tercera: un solo total con los tipos del BCE y su fecha.",
   "HomeWho.partnerTitle": "La pareja",
   "HomeWho.partnerText":
     "Comparte el dinero del hogar con su propio acceso y anota lo que gasta en segundos.",
@@ -592,11 +584,12 @@ export default {
   "HomeWays.cloudText":
     "Aún no está abierta. El mismo código, sin que tengas que mantener un servidor, en un plan de pago.",
   "HomeFaq.useQuestion": "¿Puedo usar Financy hoy?",
-  "HomeFaq.useAnswer":
-    "Todavía no. El inicio de sesión, los hogares y la sincronización funcionan; las cuentas y los movimientos se están construyendo ahora.",
   "HomeFaq.currencyQuestion": "¿Qué monedas admitirá?",
   "HomeFaq.currencyAnswer":
-    "Cualquier combinación, criptomonedas incluidas; cada movimiento guarda su importe original junto al convertido. Previsto, pero aún no construido.",
+    "Financy manejará cualquier combinación de monedas, criptomonedas incluidas. Cada movimiento guarda su importe original junto al convertido, y los totales se muestran en la moneda principal del hogar. Para una moneda que el BCE no cubre, como una criptomoneda, indicas el tipo de cambio en el propio movimiento. En construcción.",
+  "HomeFaq.ratesQuestion": "¿De dónde salen los tipos de cambio?",
+  "HomeFaq.ratesAnswer":
+    "Del Banco Central Europeo: los consultamos cada día hábil a través de Frankfurter, un servicio público y gratuito. Cada total convertido muestra la fecha de los tipos que usó. Una moneda sin tipo de cambio aparece nombrada y queda fuera del total; nunca se cuenta como 1. En construcción.",
   "HomeFaq.bankQuestion": "¿Financy se conecta a mi banco?",
   "HomeFaq.bankAnswer":
     "No. La importación de extractos bancarios está prevista para la primera versión.",
@@ -604,4 +597,26 @@ export default {
   "HomeFaq.stopsAnswer":
     "El código está en GitHub bajo AGPL‑3.0, así que cualquiera puede seguir ejecutándolo, y puedes exportar tus datos cuando quieras.",
   "SiteFooter.aboutHint": "(abre antonshubin.com)",
+  "FeatureAccounts.code": "Ver el código de las cuentas",
+  "FeatureAccounts.fact1":
+    "El servidor calcula el saldo en cada lectura y no lo guarda en ningún sitio, así que nunca se desvía",
+  "FeatureAccounts.fact2":
+    "Los importes son enteros en la unidad más pequeña de la moneda: el yen no tiene, el dinar tiene tres decimales",
+  "FeatureAccounts.fact3":
+    "Un lector ve las cuentas; solo los editores y roles superiores pueden cambiarlas, y el servidor lo comprueba",
+  "FeatureAccounts.lead":
+    "Efectivo, cuentas bancarias, tarjetas, ahorros, activos y deudas, cada una en su moneda, agrupadas por tipo y con una predeterminada. Todo el hogar ve cada cambio al momento.",
+  "FeatureAccounts.nav": "Cuentas",
+  "FeatureAccounts.title": "Cada cuenta en su propia moneda",
+  "FeatureTierSettled.lead":
+    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda ya están; los movimientos en ellas son lo siguiente.",
+  "Features.description":
+    "Financy hoy: cuentas en cualquier moneda, hogares con roles, sincronización, app sin conexión, exportación, nueve idiomas y tu servidor. Luego, movimientos.",
+  "Features.title": "Funciones de Financy: cuentas, hogares, sincronización",
+  "FeaturesHero.lead":
+    "Financy se está reconstruyendo desde cero. Lo que funciona hoy: cuentas en cualquier moneda y la base que hay debajo: inicio de sesión, uso compartido con roles, cambios en tiempo real, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza al código que la hace.",
+  "FeaturesHero.note":
+    "Los movimientos y los presupuestos aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
+  "HomeFaq.useAnswer":
+    "Todavía no. El inicio de sesión, los hogares, la sincronización y las cuentas en cualquier moneda funcionan; los movimientos están en marcha.",
 } satisfies Catalog

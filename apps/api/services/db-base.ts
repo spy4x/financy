@@ -39,9 +39,15 @@ import type { PortableAggregate } from "@server/groups/portable.ts"
 import { PostgresGroupPorter } from "@server/groups/postgres-group-porter.ts"
 import { notePortable } from "@server/notes/note-portable.ts"
 import { tagPortable } from "@server/tags/tag-portable.ts"
+import { householdPortable } from "@server/money/household-portable.ts"
 import { noteMovable } from "@server/notes/note-movable.ts"
 import { tagMovable } from "@server/tags/tag-movable.ts"
 import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
+import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
+import { accountMovable } from "@server/accounts/account-movable.ts"
+import { accountPortable } from "@server/accounts/account-portable.ts"
+import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
+import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresAttachmentRepository } from "@server/notes/postgres-attachment-repository.ts"
 import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.ts"
 import { PostgresNoteOverview } from "@server/notes/note-overview.ts"
@@ -184,14 +190,23 @@ export interface UserTotp {
  * joins here (`docs/aggregate-lifecycle.md`, "Make it movable"): put one that other aggregates
  * point at before the ones that point at it.
  */
-export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [tagMovable, noteMovable]
+export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
+  tagMovable,
+  noteMovable,
+  accountMovable,
+]
 
 /**
  * The aggregates a group's export file holds, in the order an import writes them. A new aggregate
  * joins here (`docs/aggregate-lifecycle.md`, "Make it exportable"): put one that other
  * aggregates point at before the ones that point at it.
  */
-export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [tagPortable, notePortable]
+export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
+  tagPortable,
+  notePortable,
+  accountPortable,
+  householdPortable,
+]
 
 /**
  * The aggregates a device pulls the changes of, by group (`docs/aggregate-offline.md`, "Take part
@@ -314,6 +329,21 @@ export class AppDbBase extends DbServiceBase {
   /** The tags repository. Built per access, like `note`. */
   get tag(): PostgresTagRepository {
     return new PostgresTagRepository(this.sql)
+  }
+
+  /** The accounts repository. Built per access, like `note`. */
+  get account(): PostgresAccountRepository {
+    return new PostgresAccountRepository(this.sql)
+  }
+
+  /** A household's main currency. Built per access, like `note`. */
+  get householdSettings(): PostgresHouseholdSettingsRepository {
+    return new PostgresHouseholdSettingsRepository(this.sql)
+  }
+
+  /** The stored exchange rates. Built per access, like `note`. */
+  get rates(): PostgresRateRepository {
+    return new PostgresRateRepository(this.sql)
   }
 
   get attachment(): PostgresAttachmentRepository {

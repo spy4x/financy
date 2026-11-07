@@ -780,6 +780,9 @@ services:
       - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
       - TELEGRAM_POLLING=${TELEGRAM_POLLING:-}
       - TELEGRAM_API_URL=${TELEGRAM_API_URL:-}
+      # The admin's rates page shows the fallback's calls this month against its cap. The API never
+      # calls a rate source, so it gets no key.
+      - RATES_FALLBACK_MONTHLY_CAP=${RATES_FALLBACK_MONTHLY_CAP:-}
       - DENO_DIR=/tmp/deno-cache
       # The port apps/healthcheck.ts probes.
       - HEALTHCHECK_PORT=${API_PORT}
@@ -832,6 +835,9 @@ services:
       - UMAMI_API_TOKEN=${UMAMI_API_TOKEN:-}
       # The website's id in Umami: with the two above, the admin app's Stats page (docs/analytics.md).
       - MPA_UMAMI_WEBSITE_ID=${MPA_UMAMI_WEBSITE_ID:-}
+      # When the LinkedIn sign-in runs out (docs/blog.md): the admin warns 14 days before. Only the
+      # date: the API never gets the token.
+      - LINKEDIN_TOKEN_EXPIRES_AT=${LINKEDIN_TOKEN_EXPIRES_AT:-}
       # Mail subscriptions: the API checks the links the worker signs. Unset → off in production.
       - SUBSCRIBERS_SECRET=${SUBSCRIBERS_SECRET:-}
       - SUBSCRIBERS_PREVIOUS_SECRETS=${SUBSCRIBERS_PREVIOUS_SECRETS:-}
@@ -951,6 +957,18 @@ services:
       - INDEXNOW_KEY=${INDEXNOW_KEY:-}
       # Dev.to (docs/blog.md): with MPA_DOMAIN, a live post is cross-posted once. Unset → off.
       - DEVTO_API_KEY=${DEVTO_API_KEY:-}
+      # Automatic posts (docs/blog.md): with MPA_DOMAIN, a live post goes by itself to each channel
+      # with "Post automatically" on whose keys are set. Unset → that kind stays manual.
+      - MASTODON_ACCESS_TOKEN=${MASTODON_ACCESS_TOKEN:-}
+      - MASTODON_INSTANCE_URL=${MASTODON_INSTANCE_URL:-}
+      - BLUESKY_IDENTIFIER=${BLUESKY_IDENTIFIER:-}
+      - BLUESKY_APP_PASSWORD=${BLUESKY_APP_PASSWORD:-}
+      - BLUESKY_SERVICE=${BLUESKY_SERVICE:-}
+      - HASHNODE_TOKEN=${HASHNODE_TOKEN:-}
+      - HASHNODE_PUBLICATION_ID=${HASHNODE_PUBLICATION_ID:-}
+      - LINKEDIN_ACCESS_TOKEN=${LINKEDIN_ACCESS_TOKEN:-}
+      - LINKEDIN_MEMBER_ID=${LINKEDIN_MEMBER_ID:-}
+      - LINKEDIN_TOKEN_EXPIRES_AT=${LINKEDIN_TOKEN_EXPIRES_AT:-}
       # The public demo (docs/demo.md): `true` wipes and seeds the database every night and gives
       # every new account sample groups. Unset → off.
       - DEMO_MODE=${DEMO_MODE:-}
@@ -972,6 +990,11 @@ services:
       - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME:-}
       - TELEGRAM_POLLING=${TELEGRAM_POLLING:-}
       - TELEGRAM_API_URL=${TELEGRAM_API_URL:-}
+      # Exchange rates (docs/financy/exchange-rates.md): the worker fetches them. Only it receives
+      # the fallback's key.
+      - RATES_FRANKFURTER_URL=${RATES_FRANKFURTER_URL:-}
+      - RATES_FALLBACK_KEY=${RATES_FALLBACK_KEY:-}
+      - RATES_FALLBACK_MONTHLY_CAP=${RATES_FALLBACK_MONTHLY_CAP:-}
     deploy:
       resources:
         limits:

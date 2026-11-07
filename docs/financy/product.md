@@ -30,7 +30,7 @@ basic investments view is filed for later (https://github.com/spy4x/financy/issu
 - Income, expenses and transfers, cross-currency transfers included, with the original amount
   kept next to the converted one.
 - Categories with one level of parents, and monthly budgets that roll up to the parent.
-- The month view: income, spending and what is left, in the household's base currency.
+- The month view: income, expenses and what is left, in the household's base currency.
 - Bank statement import: CSV in any bank's layout, OFX, QIF, CAMT.053, MT940 and PDF, with AI
   help for a layout Financy has not seen.
 - Recurring transactions, and the Telegram bot for quick entry and balances.
@@ -75,9 +75,10 @@ natural-language entry, the token API and the MCP server, and the store apps.
 
 financy.dev, with the app and the admin panel on subdomains, with NeatSoft PTE LTD as the data
 controller. The first deploy runs on the owner's home server, which also runs Seed's live demo,
-and reuses that server's Traefik and shared monitoring. What runs on the owner's cloud server, and
-a move to a server of Financy's own in the EU (Hetzner) before the public launch, are open for the
-owner to decide. The public demo is a separate deployment with its own database. The new Financy
+in Singapore, and reuses that server's Traefik and shared monitoring. Its backups go only to the
+owner's machines in Singapore and Vietnam. Once 10 households pay, Financy moves to a Hetzner
+dedicated server in the EU with encrypted disks, and its backups to Hetzner's object storage
+(https://github.com/spy4x/financy/issues/140). The public demo is a separate deployment with its own database. The new Financy
 starts with an empty database: nothing moves from the old one.
 
 ## The owner's decisions
@@ -110,6 +111,11 @@ description the option carried, or the owner's words.
 | Stripe Tax for EU and UK VAT (2026-11-04) | "`Stripe Tax at about $0.02 per $4 charge.` sounds fair, i pick this." |
 | Individuals, households and small businesses, with a plain note that it is not double-entry (2026-11-04) | "We don't have to only focus marketing on households. Individuals are welcomed too! And small businesses (just note that it's not double entry)." |
 | Each group picks its budgeting method (2026-11-04) | "I want to support multiple different systems, so user could pick per group. Makes sense?" |
+| Home server in Singapore first; a Hetzner dedicated server at 10 paying customers; backups only in Singapore and Vietnam until then (2026-11-06) | "We run at home server in SG for now, we move to Hetzner's Dedicated server as soon as we get first 10 paying customers." and "Can limit to Singapore, and Vietnam atm, and only Hetzner's S3-solution after deploy to there." |
+| No EU representative until EU customers cover its cost (2026-11-06; 10 households, https://github.com/spy4x/financy/issues/141) | "we'll have a EU representative once we have 50 clients from EU (or how many clients would cover the costs?)" |
+| Statement AI: DeepSeek in the cloud, or the household's own key and provider address, or a local model (2026-11-06) | "DeepSeek or BYOK (and provider base url with it) or local AI - your choice." |
+| A renewal refund: 14 days if the app was not used since, 5 days if it was (2026-11-06) | "If less than 14 days passed from the renewal and you did not use the app - full refund, no worries. If you used the app - 5 days." |
+| The terms follow Singapore law and courts (2026-11-06) | "singapore" |
 
 ## The lead's picks
 

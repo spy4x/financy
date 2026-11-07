@@ -172,7 +172,7 @@ export default {
   "PricingWays.runUnit": "按你的服务商价格",
   "PricingWays.runAction": "阅读部署指南",
   "PricingWays.runText":
-    "Financy 运行在一台你租用或自有的 Linux 服务器上。邮件服务商以及 Google 或 GitHub 登录都是可选的，各自直接向你收费。",
+    "Financy 运行在一台你租用或自有的 Linux 服务器上。它需要一个邮件服务商来发送注册和登录验证码；Google 或 GitHub 登录则是可选的。这些服务商都直接向你收费。",
   "DemoPlans.eyebrow": "计费，已就绪",
   "DemoPlans.title": "演示中的套餐：你将获得的计费功能示例",
   "DemoPlans.noticeTitle": "这些不是 Seed 的价格",
@@ -196,11 +196,9 @@ export default {
   "DemoPlan.proRoles": "可将成员设为编辑者或管理员",
   "FeatureTierSettled.eyebrow": "现在可用",
   "FeatureTierSettled.title": "家庭财务的地基",
-  "FeatureTierSettled.lead":
-    "这些部分已经可用，并在 CI 中测试。下一步是资金本身：任意货币的账户及其交易。",
   "FeatureTierSettled.status":
     "Google 和 GitHub 登录需要服务器自己的密钥，所以新部署的实例先只支持邮箱登录。",
-  "FeatureSignIn.nav": "账号与登录",
+  "FeatureSignIn.nav": "登录与安全",
   "FeatureSignIn.title": "登录，已搞定",
   "FeatureSignIn.lead":
     "用邮箱和密码注册，再用验证码确认邮箱。忘记密码可以重置，也可以用 Google 或 GitHub 继续、用通行密钥登录，或通过邮件收到的登录码登录。身份验证器应用可开启双重验证（2FA），你还能看到所有已登录的设备，并让其他设备退出登录。",
@@ -261,15 +259,9 @@ export default {
   "FeaturesFaq.nativeQuestion": "有手机应用吗？",
   "FeaturesFaq.nativeAnswer":
     "应用商店里还没有。目前网页应用可以从浏览器安装到手机和电脑上，并能离线打开。",
-  "Features.title": "Financy 功能：家庭、同步、离线、自托管",
-  "Features.description":
-    "Financy 现在能做什么：带角色的家庭、每台设备实时更新、可离线使用的应用、导出、九种语言和自托管。接下来是账户和预算。",
   "FeaturesHero.title": "Financy 现在能做什么，接下来做什么",
-  "FeaturesHero.lead":
-    "Financy 正在重写。现在可用的部分，是家庭财务的地基：登录、按角色共享访问、实时更新、离线应用、导出、九种语言和你自己的服务器。每一节都链接到对应的代码。",
-  "FeaturesHero.note": "账户、交易和预算尚未开发。<status>查看重写进展</status>。",
   "FeaturesFaq.title": "Financy 能做到吗？",
-  "FeatureSection.issue": "issue #{number}",
+  "FeatureSection.issue": "议题 #{number}",
   "FeatureSection.forDevelopers": "面向开发者",
   "FeatureVisuals.deployCaption": "已精简：省略了各步骤之间 rsync 和 Compose 的输出。",
   "FeatureVisuals.services": "服务器上的服务",
@@ -515,7 +507,8 @@ export default {
   "HomeStatus.month": "本月资金一目了然",
   "HomeStatus.later": "预算、银行流水导入和付费云服务稍后推出：<plan>查看完整计划</plan>。",
   "HomeWho.keeperTitle": "管钱的人",
-  "HomeWho.keeperText": "工资是一种货币，房租是另一种，存款又是第三种：一个地方把它们加在一起。",
+  "HomeWho.keeperText":
+    "工资是一种货币，房租是另一种，存款又是第三种：按欧洲央行汇率算出一个总额，并标明汇率日期。",
   "HomeWho.partnerTitle": "伴侣",
   "HomeWho.partnerText": "用自己的账号共享家庭资金，几秒钟就能记下一笔开销。",
   "HomeWho.selfHostTitle": "自托管玩家",
@@ -528,14 +521,33 @@ export default {
   "HomeWays.cloudTitle": "云服务",
   "HomeWays.cloudText": "尚未开放。同样的代码，免去自己维护服务器，按付费方案使用。",
   "HomeFaq.useQuestion": "现在能用 Financy 吗？",
-  "HomeFaq.useAnswer": "还不能。登录、家庭和同步已经可用；账户和交易正在开发中。",
   "HomeFaq.currencyQuestion": "Financy 将支持哪些货币？",
   "HomeFaq.currencyAnswer":
-    "任意组合，包括加密货币；每笔交易都会在换算金额旁保留原始金额。已在计划中，尚未开发。",
+    "Financy 将支持任意货币组合，包括加密货币。每笔交易都会在换算金额旁保留原始金额，合计以家庭的主货币显示。对于欧洲央行不覆盖的货币（例如加密货币），你可以在交易上自行填写汇率。正在开发中。",
+  "HomeFaq.ratesQuestion": "汇率从哪里来？",
+  "HomeFaq.ratesAnswer":
+    "来自欧洲央行，每个工作日通过免费公共服务 Frankfurter 获取。每个换算后的总额都会标明所用汇率的日期。没有汇率的货币会被列出并排除在总额之外，绝不会按 1 计算。正在开发中。",
   "HomeFaq.bankQuestion": "Financy 会连接我的银行吗？",
   "HomeFaq.bankAnswer": "不会。银行流水导入计划在第一个版本中提供。",
   "HomeFaq.stopsQuestion": "如果 Financy 停止开发怎么办？",
   "HomeFaq.stopsAnswer":
     "代码以 AGPL‑3.0 开源在 GitHub 上，任何人都能继续运行它，你也可以随时导出数据。",
   "SiteFooter.aboutHint": "（打开 antonshubin.com）",
+  "FeatureAccounts.code": "阅读账户代码",
+  "FeatureAccounts.fact1": "服务器在每次读取时计算余额，从不存储，因此余额不会偏差",
+  "FeatureAccounts.fact2": "金额是币种最小单位的整数：日元没有小数，第纳尔有三位",
+  "FeatureAccounts.fact3": "查看者可以看到账户；只有编辑者及以上角色可以更改，由服务器检查",
+  "FeatureAccounts.lead":
+    "现金、银行账户、银行卡、储蓄、资产和负债，各用自己的币种，按类型分组，并有一个默认账户。家庭里的每个人都能立即看到每次更改。",
+  "FeatureAccounts.nav": "账户",
+  "FeatureAccounts.title": "每个账户都有自己的币种",
+  "FeatureTierSettled.lead":
+    "这些部分已经可用，并在 CI 中测试。任意币种的账户已经上线；账户里的交易是下一步。",
+  "Features.description":
+    "Financy 现状：任意币种的账户、带角色的家庭、实时同步、离线应用、导出、九种语言和自托管。接下来是交易。",
+  "Features.title": "Financy 功能：账户、家庭、同步、离线",
+  "FeaturesHero.lead":
+    "Financy 正在重建。今天已经可用的：任意币种的账户，以及它下面的基础：登录、按角色共享访问、实时更新、离线应用、导出、九种语言和你自己的服务器。每一节都链接到它的代码。",
+  "FeaturesHero.note": "交易和预算还没有做好。<status>看看重建进行到哪一步了</status>。",
+  "HomeFaq.useAnswer": "还不行。登录、家庭、同步和任意币种的账户已经可用；交易正在开发中。",
 } satisfies Catalog

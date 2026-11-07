@@ -1424,3 +1424,179 @@ CREATE TABLE group_change_tombstones (
 CREATE INDEX idx_group_change_tombstones_group_sequence
     ON group_change_tombstones (group_id, change_sequence);
 CREATE INDEX idx_group_change_tombstones_created_at ON group_change_tombstones (created_at);
+
+-- See migration 2026_12_15_0002_blog_sharing_channels.sql.
+-- The places posts are shared in: a subreddit, a Telegram channel, a newsletter. Every live post
+-- in one of `languages` that went live on or after `starts_at` (any, when NULL) lists the channel
+-- on its sharing checklist, until the channel is archived. `utm_source` tags the links to the post.
+CREATE TABLE blog_channels (
+    id UUID PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    kind VARCHAR(16) NOT NULL,
+    address VARCHAR(2000) NOT NULL,
+    utm_source VARCHAR(60) NOT NULL,
+    add_utm BOOLEAN DEFAULT true NOT NULL,
+    languages TEXT[] NOT NULL,
+    starts_at TIMESTAMPTZ,
+    archived_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    version INT4 DEFAULT 1 NOT NULL,
+    auto_post BOOLEAN DEFAULT false NOT NULL,
+    CONSTRAINT blog_channels_utm_source_unique UNIQUE (utm_source),
+    CONSTRAINT blog_channels_kind_check CHECK (kind IN (
+        'devto', 'telegram', 'mastodon', 'bluesky', 'hashnode', 'linkedin', 'x', 'reddit',
+        'hackernews', 'newsletter', 'other'
+    )),
+    CONSTRAINT blog_channels_name_check CHECK (length(btrim(name)) >= 1),
+    CONSTRAINT blog_channels_address_check CHECK (length(btrim(address)) >= 1),
+    CONSTRAINT blog_channels_utm_source_check CHECK (utm_source ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+    CONSTRAINT blog_channels_languages_check CHECK (cardinality(languages) BETWEEN 1 AND 20),
+    CONSTRAINT blog_channels_version_check CHECK (version >= 1)
+);
+
+CREATE UNIQUE INDEX blog_channels_name_unique ON blog_channels (lower(name));
+
+-- What happened to one post on one channel. No row means "to do", the same as a `todo` row.
+CREATE TABLE blog_post_shares (
+    id UUID PRIMARY KEY,
+    post_id UUID NOT NULL REFERENCES blog_posts(id) ON DELETE CASCADE,
+    channel_id UUID NOT NULL REFERENCES blog_channels(id) ON DELETE RESTRICT,
+    status VARCHAR(16) NOT NULL,
+    url VARCHAR(2000),
+    shared_at TIMESTAMPTZ,
+    skip_reason VARCHAR(200),
+    automatic BOOLEAN DEFAULT false NOT NULL,
+    error VARCHAR(500),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    -- Why the results job's last read failed, and when; both NULL after a good read.
+    read_error VARCHAR(500),
+    read_failed_at TIMESTAMPTZ,
+    post_attempted_at TIMESTAMPTZ,
+    CONSTRAINT blog_post_shares_post_channel_unique UNIQUE (post_id, channel_id),
+    CONSTRAINT blog_post_shares_status_check
+        CHECK (status IN ('todo', 'suggested', 'posted', 'skipped')),
+    CONSTRAINT blog_post_shares_url_check CHECK (url IS NULL OR url LIKE 'https://%'),
+    CONSTRAINT blog_post_shares_skip_reason_check CHECK (skip_reason IS NULL OR status = 'skipped'),
+    CONSTRAINT blog_post_shares_read_error_check
+        CHECK ((read_error IS NULL) = (read_failed_at IS NULL))
+);
+
+CREATE INDEX idx_blog_post_shares_channel ON blog_post_shares (channel_id);
+
+-- The numbers one shared copy got, as read at `read_at`: by the results job or typed by hand.
+-- Counts only; NULL is a number the channel does not show.
+CREATE TABLE blog_share_results (
+    id UUID PRIMARY KEY,
+    share_id UUID NOT NULL REFERENCES blog_post_shares(id) ON DELETE CASCADE,
+    read_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    source VARCHAR(8) NOT NULL,
+    views INT4,
+    reactions INT4,
+    comments INT4,
+    score INT4,
+    CONSTRAINT blog_share_results_source_check CHECK (source IN ('job', 'hand')),
+    CONSTRAINT blog_share_results_counts_check CHECK (
+        (views IS NULL OR views >= 0) AND (reactions IS NULL OR reactions >= 0) AND
+        (comments IS NULL OR comments >= 0) AND (score IS NULL OR score >= 0)
+    ),
+    CONSTRAINT blog_share_results_any_check CHECK (num_nonnulls(views, reactions, comments, score) >= 1)
+);
+
+CREATE INDEX idx_blog_share_results_share
+    ON blog_share_results (share_id, read_at DESC);
+
+-- A household's main currency and the daily exchange rates. See migration
+-- 2026_12_15_0003_exchange_rates.sql.
+CREATE TABLE exchange_rates (
+    id UUID PRIMARY KEY,
+    base VARCHAR(12) NOT NULL,
+    quote VARCHAR(12) NOT NULL,
+    rate NUMERIC NOT NULL,
+    rate_date DATE NOT NULL,
+    source VARCHAR(40) NOT NULL,
+    fetched_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT exchange_rates_base_check CHECK (base ~ '^[A-Z][A-Z0-9]{1,11}$'),
+    CONSTRAINT exchange_rates_quote_check CHECK (quote ~ '^[A-Z][A-Z0-9]{1,11}$'),
+    CONSTRAINT exchange_rates_pair_check CHECK (base <> quote),
+    CONSTRAINT exchange_rates_rate_check CHECK (rate > 0),
+    CONSTRAINT exchange_rates_source_check CHECK (length(btrim(source)) BETWEEN 1 AND 40),
+    CONSTRAINT exchange_rates_unique UNIQUE (base, quote, rate_date, source)
+);
+
+CREATE INDEX idx_exchange_rates_lookup ON exchange_rates (base, quote, rate_date DESC);
+CREATE INDEX idx_exchange_rates_date_source ON exchange_rates (rate_date, source);
+
+CREATE TABLE rate_backfill_requests (
+    id UUID PRIMARY KEY,
+    from_date DATE NOT NULL,
+    to_date DATE NOT NULL,
+    created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT rate_backfill_requests_from_check CHECK (from_date >= DATE '1999-01-04'),
+    CONSTRAINT rate_backfill_requests_range_check CHECK (from_date <= to_date)
+);
+
+CREATE TABLE rate_source_calls (
+    source VARCHAR(40) NOT NULL,
+    month DATE NOT NULL,
+    calls INT4 DEFAULT 0 NOT NULL,
+    PRIMARY KEY (source, month),
+    CONSTRAINT rate_source_calls_month_check CHECK (EXTRACT(DAY FROM month) = 1),
+    CONSTRAINT rate_source_calls_calls_check CHECK (calls >= 0)
+);
+
+CREATE TABLE household_settings (
+    group_id UUID PRIMARY KEY REFERENCES groups(id) ON DELETE CASCADE,
+    base_currency VARCHAR(3) DEFAULT 'EUR' NOT NULL,
+    version INT4 DEFAULT 1 NOT NULL,
+    updated_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    -- Set the first time a person saved the currency or an import carried a choice; never cleared.
+    chosen_at TIMESTAMPTZ(3),
+    CONSTRAINT household_settings_base_currency_check CHECK (base_currency ~ '^[A-Z]{3}$'),
+    CONSTRAINT household_settings_version_check CHECK (version >= 1)
+);
+
+CREATE INDEX idx_household_settings_updated_by ON household_settings (updated_by_user_id);
+CREATE INDEX idx_household_settings_base_currency ON household_settings (base_currency);
+
+-- Accounts: Financy's first finance aggregate (migration 2026_12_16_0003_accounts.sql explains
+-- each column).
+CREATE TABLE accounts (
+    id UUID PRIMARY KEY,
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    name VARCHAR(60) NOT NULL,
+    kind INT2 NOT NULL,
+    currency VARCHAR(12) NOT NULL,
+    starting_balance BIGINT DEFAULT 0 NOT NULL,
+    archived_at TIMESTAMPTZ(3),
+    is_default BOOLEAN DEFAULT false NOT NULL,
+    version INT4 DEFAULT 1 NOT NULL,
+    change_sequence BIGINT NOT NULL,
+    created_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
+    updated_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMPTZ(3),
+    CONSTRAINT accounts_name_check CHECK (length(btrim(name)) BETWEEN 1 AND 60),
+    CONSTRAINT accounts_kind_check CHECK (kind BETWEEN 1 AND 6),
+    CONSTRAINT accounts_currency_check CHECK (currency ~ '^[A-Z]{3}$'),
+    CONSTRAINT accounts_starting_balance_check
+        CHECK (starting_balance BETWEEN -9007199254740991 AND 9007199254740991),
+    CONSTRAINT accounts_default_live_check
+        CHECK (NOT is_default OR (archived_at IS NULL AND deleted_at IS NULL)),
+    CONSTRAINT accounts_version_check CHECK (version >= 1),
+    CONSTRAINT accounts_change_sequence_check CHECK (change_sequence >= 1)
+);
+
+-- One default per household.
+CREATE UNIQUE INDEX idx_accounts_group_default ON accounts (group_id) WHERE is_default;
+-- The list: a household's live accounts; the trash is read through the same index's group prefix.
+CREATE INDEX idx_accounts_group_live ON accounts (group_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_accounts_group_change_sequence ON accounts (group_id, change_sequence);
+-- The worker's purge of accounts deleted longer ago than the restore window.
+CREATE INDEX idx_accounts_deleted_at ON accounts (deleted_at) WHERE deleted_at IS NOT NULL;
+CREATE INDEX idx_accounts_created_by ON accounts (created_by_user_id);
+CREATE INDEX idx_accounts_updated_by ON accounts (updated_by_user_id);

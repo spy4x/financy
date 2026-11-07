@@ -210,6 +210,8 @@ export function emailToVerify(status: EmailStatus): string | null {
 
 /** The first steps of a new account, each `true` once the person's own data says it is done. */
 export interface OnboardingSteps {
+  /** The person added an account to a household; no account is made for them. */
+  accountCreated: boolean
   /** A code proved the address the account signs in with. */
   emailVerified: boolean
   /** The person wrote a note themselves; the welcome note a new account starts with does not count. */
@@ -220,6 +222,11 @@ export interface OnboardingSteps {
   notificationsOn: boolean
   /** An authenticator app is set up. */
   twoFactorOn: boolean
+  /**
+   * Someone chose the main currency of a group this person is an admin or the owner of; the
+   * default euro does not count.
+   */
+  currencyChosen: boolean
 }
 
 /** What the SPA's first-steps checklist and tour show (`onboarding.get`). Kept per person. */

@@ -20,6 +20,8 @@ import { rememberSignIn } from "./state/last-sign-in.ts"
 import { groupsStore } from "./state/groups.ts"
 import { notesStore } from "./state/notes.ts"
 import { tagsStore } from "./state/tags.ts"
+import { accountsStore } from "./state/accounts.ts"
+import { householdTotalStore } from "./state/household-total.ts"
 import { selectionStore } from "./state/selection.ts"
 import { benchmarkOpen } from "./state/demo.ts"
 import { useAppText } from "@ui/i18n.ts"
@@ -63,6 +65,8 @@ import { billingStore } from "./state/billing.ts"
 import { NoteEditorView } from "./views/NoteEditorView.tsx"
 import { NotesView } from "./views/NotesView.tsx"
 import { TagsView } from "./views/TagsView.tsx"
+import { AccountsView } from "./views/AccountsView.tsx"
+import { AccountEditorView } from "./views/AccountEditorView.tsx"
 import { TagEditorView } from "./views/TagEditorView.tsx"
 import { ProfileView } from "./views/ProfileView.tsx"
 import { ApiTokenNewView } from "./views/ApiTokenNewView.tsx"
@@ -164,6 +168,11 @@ const PAGES: {
   "/notifications": () => <NotificationsView />,
   "/overview": () => <OverviewRedirect />,
   "/overview/:groupId": (params) => <OverviewView key={params.groupId} groupId={params.groupId} />,
+  "/accounts": () => <AccountsView />,
+  "/accounts/new": () => <AccountEditorView key="new" />,
+  "/accounts/:accountId": (params) => (
+    <AccountEditorView key={params.accountId} accountId={params.accountId} />
+  ),
   "/tags": () => <TagsView />,
   "/tags/new": () => <TagEditorView key="new" />,
   "/tags/:tagId": (params) => <TagEditorView key={params.tagId} tagId={params.tagId} />,
@@ -313,6 +322,8 @@ export function App() {
       membersStore.reset()
       notesStore.reset()
       tagsStore.reset()
+      accountsStore.reset()
+      householdTotalStore.reset()
       profileStore.reset()
       selectionStore.reset()
       emailStore.reset()
@@ -335,6 +346,13 @@ export function App() {
       groups: groupsStore,
       notes: notesStore,
       tags: tagsStore,
+      // The total is read with the list: a hint about the household moves both.
+      accounts: {
+        groupId: accountsStore.groupId,
+        refresh: async () => {
+          await Promise.all([accountsStore.refresh(), householdTotalStore.refresh()])
+        },
+      },
       members: membersStore,
       notifications: notificationsStore,
       onboarding: onboardingStore,

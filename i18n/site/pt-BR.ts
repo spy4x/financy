@@ -131,7 +131,7 @@ export default {
     "Controle financeiro grátis e de código aberto para você ou sua família, em várias moedas. Hospede no seu servidor sob AGPL‑3.0; a nuvem paga vem depois. Em reconstrução.",
   "HomeProof.tests": "arquivos de teste nos apps e nas bibliotecas, todos rodando no CI",
   "HomeProof.licence": "licença: grátis para hospedar",
-  "HomeStatus.signIn": "Entrar com e-mail, chaves de acesso e verificação em duas etapas",
+  "HomeStatus.signIn": "Entrar com e‑mail, chaves de acesso e verificação em duas etapas",
   "HomeStatus.groups":
     "Famílias compartilhadas: convide pessoas e dê uma função a cada uma, de leitor a dono",
   "HomeStatus.export": "Exportar uma família para um arquivo e importar de novo",
@@ -182,7 +182,7 @@ export default {
   "PricingWays.lead":
     "O código é grátis sob AGPL‑3.0, sem chave de licença e sem nenhum recurso reservado.",
   "PricingWays.useTitle": "Hospede o Financy você mesmo",
-  "PricingWays.useUnit": "licença AGPL‑3.0, sem conta",
+  "PricingWays.useUnit": "licença AGPL‑3.0, sem cadastro",
   "PricingWays.useText":
     "Todo o código-fonte sob AGPL‑3.0, com todos os recursos e atualizações, para você e sua família.",
   "PricingWays.runTitle": "Coloque em produção",
@@ -190,7 +190,7 @@ export default {
   "PricingWays.runUnit": "pelo preço do seu provedor",
   "PricingWays.runAction": "Ler o guia de deploy",
   "PricingWays.runText":
-    "O Financy roda num servidor Linux, alugado ou seu. Um provedor de e-mail e o login com Google ou GitHub são opcionais, e cada um cobra você diretamente.",
+    "O Financy roda num servidor Linux, alugado ou seu. Ele precisa de um provedor de e-mail para mandar os códigos para criar conta e entrar; entrar com Google ou GitHub é opcional. Cada um cobra você diretamente.",
   "DemoPlans.eyebrow": "Cobrança funcionando",
   "DemoPlans.title": "Os planos da demo: um exemplo da cobrança que você recebe pronta",
   "DemoPlans.noticeTitle": "Estes não são preços do Seed",
@@ -219,11 +219,9 @@ export default {
   "DemoPlan.proRoles": "Promova membros a editor ou administrador",
   "FeatureTierSettled.eyebrow": "Funciona hoje",
   "FeatureTierSettled.title": "A base onde vai ficar o dinheiro da sua família",
-  "FeatureTierSettled.lead":
-    "Estas partes já funcionam e são testadas na CI. O próximo passo é o dinheiro em si: contas em qualquer moeda e seus lançamentos.",
   "FeatureTierSettled.status":
     "Entrar com Google e GitHub exige chaves próprias do servidor, então uma instalação nova começa só com o login por e-mail.",
-  "FeatureSignIn.nav": "Contas e login",
+  "FeatureSignIn.nav": "Login e segurança",
   "FeatureSignIn.title": "Login resolvido",
   "FeatureSignIn.lead":
     "Você cria a conta com e-mail e senha e confirma o e-mail com um código. Pode redefinir uma senha esquecida, continuar com Google ou GitHub, entrar com uma chave de acesso ou receber um código por e-mail. Um app autenticador adiciona a verificação em duas etapas (2FA), e você vê todos os dispositivos conectados e pode desconectar os outros.",
@@ -295,16 +293,9 @@ export default {
   "FeaturesFaq.nativeQuestion": "Tem app para celular?",
   "FeaturesFaq.nativeAnswer":
     "Ainda não está nas lojas. Hoje o app web se instala pelo navegador no celular e no computador e abre offline.",
-  "Features.title": "Recursos do Financy: famílias, sincronização, offline, hospedagem própria",
-  "Features.description":
-    "O que o Financy faz hoje: famílias com funções, atualizações na hora em todo dispositivo, um app que funciona offline, exportação, nove idiomas e hospedagem própria. Contas e orçamentos vêm a seguir.",
   "FeaturesHero.title": "O que o Financy faz hoje, e o que vem a seguir",
-  "FeaturesHero.lead":
-    "O Financy está sendo reconstruído. O que funciona hoje é a base onde vai ficar o dinheiro de uma família: entrar, acesso compartilhado com funções, atualizações na hora, um app offline, exportação, nove idiomas e o seu próprio servidor. Cada seção leva ao seu código.",
-  "FeaturesHero.note":
-    "Contas, lançamentos e orçamentos ainda não foram construídos. <status>Veja em que pé está a reconstrução</status>.",
   "FeaturesFaq.title": "O Financy faz isso?",
-  "FeatureSection.issue": "issue #{number}",
+  "FeatureSection.issue": "tarefa #{number}",
   "FeatureSection.forDevelopers": "Para desenvolvedores",
   "FeatureVisuals.deployCaption":
     "Resumido: a saída do rsync e do Compose entre os passos foi omitida.",
@@ -312,7 +303,8 @@ export default {
   "Loops.realtimeName": "Sincronização em tempo real",
   "Loops.realtimeTitle":
     "Uma nota salva na janela da esquerda aparece na da direita em menos de um segundo, sem recarregar.",
-  "Loops.realtimeCaption": "Duas janelas, uma conta. Salve em uma, e a outra se atualiza sozinha.",
+  "Loops.realtimeCaption":
+    "Duas janelas, a mesma conta de usuário. Salve em uma, e a outra se atualiza sozinha.",
   "Loops.offlineName": "Edição offline",
   "Loops.offlineTitle":
     "O app fica offline, uma nota é editada e, ao reconectar, o seletor de conflitos pergunta qual versão manter.",
@@ -444,7 +436,7 @@ export default {
   "FeaturePageSignIn.how1":
     "A API verifica cada login por conta própria e responde com um cookie de sessão assinado. Uma chave de acesso usa o WebAuthn do próprio navegador: o servidor guarda só a chave pública, e cada desafio de login vale uma vez. Um código de login por e-mail serve para entrar ou criar a conta, vale uma vez, por 10 minutos, só no navegador que o pediu, e é guardado só como hash.",
   "FeaturePageSignIn.how2":
-    "Um app autenticador ativa a verificação em duas etapas. O perfil lista todas as formas de entrar na conta e todos os dispositivos conectados, e mudar uma forma de entrar exige confirmação e envia um e-mail. Quem chega também pode começar numa conta de visitante e adicionar uma forma de entrar depois.",
+    "Um app autenticador ativa a verificação em duas etapas. O perfil lista todas as formas de entrar e todos os dispositivos conectados, e mudar uma forma de entrar exige confirmação e envia um e-mail. Quem chega também pode começar numa conta de visitante e adicionar uma forma de entrar depois.",
   "FeaturePageSignIn.authServiceQuestion": "Preciso de um serviço de autenticação?",
   "FeaturePageSignIn.authServiceAnswer":
     "Não. A própria API do Seed verifica senhas, chaves de acesso, códigos de login e as respostas do Google e do GitHub, no seu servidor, então nada é cobrado por usuário.",
@@ -463,16 +455,16 @@ export default {
     "Grupos com funções de leitor a dono, convites, transferência de dono e registro de atividades, com uma verificação de isolamento para tudo. Grátis, MIT.",
   "FeaturePageGroups.h1": "Grupos e funções para seu SaaS, sem implementar multi-tenancy",
   "FeaturePageGroups.answer":
-    "O Seed dá a cada conta um grupo pessoal no cadastro, e as pessoas criam grupos compartilhados, convidam outras e dão funções de leitor a dono. O grupo é a única fronteira de isolamento, então um recurso que você adiciona passa pela mesma verificação assim que copia o agregado de notas.",
+    "O Seed dá a cada conta de usuário um grupo pessoal no cadastro, e as pessoas criam grupos compartilhados, convidam outras e dão funções de leitor a dono. O grupo é a única fronteira de isolamento, então um recurso que você adiciona passa pela mesma verificação assim que copia o agregado de notas.",
   "FeaturePageGroups.summary":
     "Grupos com funções de leitor a dono, convites e registro de atividades.",
   "FeaturePageGroups.how1":
     "Cada linha de dados compartilhados pertence a um grupo, e a API verifica a função da pessoa nesse grupo antes de ler ou gravar. Um leitor lê, um editor também altera os dados do grupo, e um administrador e o dono também gerenciam membros e leem o registro de atividades.",
   "FeaturePageGroups.how2":
-    "O dono passa a posse adiante num passo só, e um grupo excluído pode ser restaurado em até 30 dias. Só uma conta com o endereço de e-mail confirmado pode convidar.",
-  "FeaturePageGroups.personalGroupQuestion": "Toda conta ganha um grupo?",
+    "O dono passa a posse adiante num passo só, e um grupo excluído pode ser restaurado em até 30 dias. Só uma conta de usuário com o endereço de e-mail confirmado pode convidar.",
+  "FeaturePageGroups.personalGroupQuestion": "Toda conta de usuário ganha um grupo?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Sim. Cada conta ganha um grupo pessoal no cadastro; um grupo pessoal e um compartilhado passam pela mesma verificação.",
+    "Sim. Cada conta de usuário ganha um grupo pessoal no cadastro; um grupo pessoal e um compartilhado passam pela mesma verificação.",
   "FeaturePageGroups.viewerQuestion": "Um leitor pode alterar os dados de um grupo?",
   "FeaturePageGroups.viewerAnswer":
     "Não. Um leitor lê os dados do grupo; um editor, um administrador ou o dono podem alterá-los.",
@@ -572,7 +564,7 @@ export default {
     "Orçamentos, importação de extratos bancários e a nuvem paga vêm depois: <plan>veja o plano completo</plan>.",
   "HomeWho.keeperTitle": "Quem cuida das contas",
   "HomeWho.keeperText":
-    "Salário numa moeda, aluguel em outra, poupança numa terceira: um só lugar que soma tudo.",
+    "Salário numa moeda, aluguel em outra, poupança numa terceira: um só total pelas taxas do BCE, com a data delas.",
   "HomeWho.partnerTitle": "O parceiro ou a parceira",
   "HomeWho.partnerText":
     "Divide o dinheiro da família com o próprio login e registra o que gasta em segundos.",
@@ -588,11 +580,12 @@ export default {
   "HomeWays.cloudText":
     "Ainda não abriu. O mesmo código, sem você precisar cuidar de servidor, num plano pago.",
   "HomeFaq.useQuestion": "Posso usar o Financy hoje?",
-  "HomeFaq.useAnswer":
-    "Ainda não. Entrar, famílias e sincronização funcionam; contas e lançamentos estão sendo construídos agora.",
   "HomeFaq.currencyQuestion": "Quais moedas ele vai aceitar?",
   "HomeFaq.currencyAnswer":
-    "Qualquer combinação, incluindo criptomoedas; cada lançamento guarda o valor original ao lado do convertido. Planejado, ainda não construído.",
+    "O Financy vai lidar com qualquer combinação de moedas, incluindo criptomoedas. Cada lançamento guarda o valor original ao lado do convertido, e os totais aparecem na moeda principal da família. Para uma moeda que o BCE não cobre, como uma criptomoeda, você informa a taxa no próprio lançamento. Em construção.",
+  "HomeFaq.ratesQuestion": "De onde vêm as taxas de câmbio?",
+  "HomeFaq.ratesAnswer":
+    "Do Banco Central Europeu, buscadas a cada dia útil pelo Frankfurter, um serviço público e gratuito. Todo total convertido mostra a data das taxas que usou. Uma moeda sem taxa aparece pelo nome e fica fora do total; nunca conta como 1. Em construção.",
   "HomeFaq.bankQuestion": "O Financy se conecta ao meu banco?",
   "HomeFaq.bankAnswer":
     "Não. A importação de extratos bancários está planejada para a primeira versão.",
@@ -600,4 +593,26 @@ export default {
   "HomeFaq.stopsAnswer":
     "O código está no GitHub sob AGPL‑3.0, então qualquer pessoa pode continuar rodando, e você pode exportar seus dados quando quiser.",
   "SiteFooter.aboutHint": "(abre antonshubin.com)",
+  "FeatureAccounts.code": "Ler o código das contas",
+  "FeatureAccounts.fact1":
+    "O servidor calcula cada saldo quando ele é lido e nunca o guarda, então ele não se desvia",
+  "FeatureAccounts.fact2":
+    "Os valores são inteiros na menor unidade da moeda: o iene não tem nenhuma, o dinar tem três casas",
+  "FeatureAccounts.fact3":
+    "Quem só visualiza vê as contas; só editores ou acima as alteram, e o servidor confere",
+  "FeatureAccounts.lead":
+    "Dinheiro, contas bancárias, cartões, poupança, ativos e dívidas, cada um na própria moeda, agrupados por tipo e com uma conta padrão. Toda a família vê cada mudança na hora.",
+  "FeatureAccounts.nav": "Contas",
+  "FeatureAccounts.title": "Cada conta na própria moeda",
+  "FeatureTierSettled.lead":
+    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda já estão aqui; os lançamentos nelas vêm a seguir.",
+  "Features.description":
+    "Financy hoje: contas em qualquer moeda, famílias com funções, sincronização, app offline, exportação, nove idiomas e seu servidor. Depois, lançamentos.",
+  "Features.title": "Recursos do Financy: contas, famílias, sincronização",
+  "FeaturesHero.lead":
+    "O Financy está sendo reconstruído. O que funciona hoje: contas em qualquer moeda e a base por trás delas: login, acesso compartilhado com funções, atualizações ao vivo, um app offline, exportação, nove idiomas e seu próprio servidor. Cada seção leva ao código dela.",
+  "FeaturesHero.note":
+    "Lançamentos e orçamentos ainda não existem. <status>Veja em que ponto está a reconstrução</status>.",
+  "HomeFaq.useAnswer":
+    "Ainda não. Login, famílias, sincronização e contas em qualquer moeda funcionam; os lançamentos estão sendo feitos agora.",
 } satisfies Catalog

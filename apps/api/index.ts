@@ -24,6 +24,7 @@ import { createGroupFilesRoute } from "./routes/group-files.ts"
 import { createGroupFileRateLimits } from "./features/groups/file-rate-limits.ts"
 import { createNotesRoute } from "./routes/notes.ts"
 import { createTagsRoute } from "./routes/tags.ts"
+import { createAccountsRoute } from "./routes/accounts.ts"
 import { createApiTokensRoute } from "./routes/api-tokens.ts"
 import { createDataExportRoute } from "./routes/data-export.ts"
 import { createPictureRoute } from "./routes/pictures.ts"
@@ -77,6 +78,7 @@ import { createHealthRoute } from "./routes/health.ts"
 import { isCacheConnected, kv } from "./services/cache.ts"
 import { files } from "./services/files.ts"
 import { s3ServerFiles } from "@server/files/files.ts"
+import { readLinkedinExpiry } from "@server/blog/blog-post-linkedin-job.ts"
 import { readCatalogSetup } from "@server/catalog/setup.ts"
 import { createUmamiLinks, DEFAULT_ITEM_PATH, readTrackingSetup } from "@server/catalog/tracking.ts"
 import { readWebsiteStatsSetup } from "./services/website-stats.ts"
@@ -110,6 +112,7 @@ import { createPostgresSubscriberStore } from "@spy4x/server/subscribers/postgre
 import { createErrorReporter } from "@spy4x/platform"
 import { processEnv } from "@spy4x/platform/server/process"
 import { readTelegramSetup, telegramOffNote } from "@server/telegram/setup.ts"
+import { readAdminFallbackCap } from "@server/money/admin-rates.ts"
 import { createTelegramRoute, createTelegramWebhookRoute } from "./routes/telegram.ts"
 import { createTelegramAccounts, createTelegramRuntime } from "./services/telegram.ts"
 import { createTelegramProduct } from "./telegram/commands.ts"
@@ -287,6 +290,7 @@ app.route(
       sql,
       subscribers: subscribersSetup,
       siteUrl,
+      linkedinExpiresAt: readLinkedinExpiry(processEnv),
       limit: rateLimits.normal,
       resetByAddress: rateLimits.resetByAddress,
       emit,
@@ -300,6 +304,7 @@ app.route(
       catalog: catalogSetup,
       files: serverFiles,
       websiteStats,
+      rates: { fallbackCap: readAdminFallbackCap(processEnv) },
     }).concat(
       createAdminOwnPreferencesRoute({
         limit: rateLimits.normal,
@@ -370,6 +375,10 @@ app.route(
 app.route(
   "/groups/:groupId/tags",
   createTagsRoute({ list: (query) => queryBus.execute(query) }),
+)
+app.route(
+  "/groups/:groupId/accounts",
+  createAccountsRoute({ list: (query) => queryBus.execute(query) }),
 )
 // Before "/groups" too, for the same reason.
 app.route(

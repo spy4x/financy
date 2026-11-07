@@ -363,7 +363,7 @@ export default {
   "GroupInvitations.role": "Rol",
   "GroupInvitations.email": "Correo electrónico (opcional)",
   "GroupInvitations.emailHint":
-    "Solo podrá aceptarla la cuenta que haya confirmado este correo, y sirve para una sola persona.",
+    "Solo podrá aceptarla la cuenta de usuario que haya confirmado este correo, y sirve para una sola persona.",
   "GroupInvitations.sendEmail": "Enviar el enlace a este correo",
   "GroupInvitations.days": "Caduca en (días)",
   "GroupInvitations.uses": "Cuántas personas pueden unirse",
@@ -406,7 +406,7 @@ export default {
   "GroupInvitations.acceptNamed": "Aceptar la invitación a {name}",
   "GroupInvitations.verifyEmail": "Verificar correo",
   "GroupInvitations.notForYou":
-    "Esta invitación se envió a otro correo. Si es tuyo, confírmalo primero en tu <link>perfil</link> o inicia sesión con la cuenta que lo usa.",
+    "Esta invitación se envió a otro correo. Si es tuyo, confírmalo primero en tu <link>perfil</link> o inicia sesión con la cuenta de usuario que lo usa.",
   "GroupInvitations.somethingWrong": "Algo salió mal. Vuelve a intentarlo.",
   "GroupInvitations.unreachable": "No se puede conectar con el servidor. Vuelve a intentarlo.",
   "GroupMembers.unnamed": "Miembro sin nombre",
@@ -431,7 +431,7 @@ export default {
   "GroupMembers.removeConfirm": "Quitar miembro",
   "GroupMembers.cancel": "Cancelar",
   "GroupMembers.removeConfirmation":
-    "Perderá el acceso al instante, en todos sus dispositivos. Lo que escribió se queda en el grupo. Si es su único grupo, recibirá uno nuevo y vacío llamado «Personal». Si aún tiene un enlace de invitación, podrá volver a unirse con él desde otra cuenta, así que revoca también esos enlaces.",
+    "Perderá el acceso al instante, en todos sus dispositivos. Lo que escribió se queda en el grupo. Si es su único grupo, recibirá uno nuevo y vacío llamado «Personal». Si aún tiene un enlace de invitación, podrá volver a unirse con él desde otra cuenta de usuario, así que revoca también esos enlaces.",
   "GroupMembers.loadFailed": "No se pudieron cargar los miembros",
   "GroupMembers.roleFailed": "No se pudo cambiar el rol",
   "GroupMembers.removeFailed": "No se pudo quitar al miembro",
@@ -468,7 +468,7 @@ export default {
   "GroupPicker.new": "Nuevo grupo",
   "GroupPicker.sheetHeading": "Grupo",
   "GroupTransfer.explanation":
-    "Esa persona pasa a ser propietaria y tú, administrador. Solo el propietario puede eliminar el grupo, gestionar su plan o volver a transferirlo. Antes de eliminar tu cuenta, transfiere todos los grupos que compartes con otras personas.",
+    "Esa persona pasa a ser propietaria y tú, administrador. Solo el propietario puede eliminar el grupo, gestionar su plan o volver a transferirlo. Antes de eliminar tu cuenta de usuario, transfiere todos los grupos que compartes con otras personas.",
   "GroupTransfer.newOwner": "Nuevo propietario",
   "GroupTransfer.typeName": "Escribe «{name}» para confirmar",
   "GroupTransfer.password": "Tu contraseña",
@@ -704,11 +704,11 @@ export default {
   "NotificationsScreen.reminderFirstNote":
     "No pierdas la nota que acabas de escribir. Por ahora solo está en este navegador. Añade un método de inicio de sesión para abrirla en cualquier dispositivo.",
   "NotificationsScreen.reminderThirdVisit":
-    "¿Quieres usar esta cuenta en tus otros dispositivos? Ahora mismo solo este navegador puede abrirla. Añade un método de inicio de sesión para usarla donde quieras.",
+    "¿Quieres usar esta cuenta de usuario en tus otros dispositivos? Ahora mismo solo este navegador puede abrirla. Añade un método de inicio de sesión para usarla donde quieras.",
   "NotificationsScreen.reminderInvite":
     "Añade un método de inicio de sesión para invitar a personas: quienes reciban la invitación verán quién los invitó. Después, invítalos desde los ajustes del grupo.",
   "NotificationsScreen.reminderKeep":
-    "Añade un método de inicio de sesión para conservar tu cuenta.",
+    "Añade un método de inicio de sesión para conservar tu cuenta de usuario.",
   "NotificationsScreen.exportReady": "Tus datos están listos. Descárgalos desde tu perfil.",
   "NotificationsScreen.exportReadyUntil":
     "Tus datos están listos. Descárgalos desde tu perfil antes del {date}.",
@@ -739,9 +739,13 @@ export default {
   "OnboardingCard.notificationsTitle": "Activa las notificaciones",
   "OnboardingCard.notificationsText": "Entérate de los cambios, incluso con la app cerrada.",
   "OnboardingCard.notificationsAction": "Activar notificaciones",
+  "OnboardingCard.currencyTitle": "Elige tu moneda principal",
+  "OnboardingCard.currencyText":
+    "Todos los totales se muestran en esta moneda. Hasta que elijas otra, es el euro.",
+  "OnboardingCard.currencyAction": "Elegir moneda",
   "OnboardingCard.twoFactorTitle": "Configura la verificación en dos pasos",
   "OnboardingCard.twoFactorText":
-    "Una app de autenticación protege tu cuenta, aunque se filtre tu contraseña.",
+    "Una app de autenticación protege tu cuenta de usuario, aunque se filtre tu contraseña.",
   "OnboardingCard.twoFactorAction": "Configurar verificación",
   "OnboardingCard.tourNotesTitle": "Notas",
   "OnboardingCard.tourNotesText":
@@ -753,16 +757,16 @@ export default {
   "OnboardingCard.tourNotificationsText": "Lo que pasó mientras no estabas, como una invitación.",
   "OnboardingCard.tourProfileTitle": "Perfil",
   "OnboardingCard.tourProfileText":
-    "Tu cuenta: tu nombre, tu contraseña, la verificación en dos pasos y los dispositivos, el tema y «Cerrar sesión».",
+    "Tu cuenta de usuario: tu nombre, tu contraseña, la verificación en dos pasos y los dispositivos, el tema y «Cerrar sesión».",
   "OnboardingCard.goTo": "Ir a {place}",
   "OnboardingCard.goToHighlighted": "Ir al control resaltado",
   "OnboardingCard.title": "Primeros pasos",
   "OnboardingCard.tourOffer": "¿Primera vez aquí? Haz un recorrido rápido.",
   "OnboardingCard.tourStart": "Hacer el recorrido",
   "OnboardingCard.tourSkip": "Saltar el recorrido",
-  "OnboardingCard.keep": "Conserva tu cuenta",
+  "OnboardingCard.keep": "Conserva tu cuenta de usuario",
   "OnboardingCard.keepText":
-    "Añade un método de inicio de sesión para abrir esta cuenta en cualquier dispositivo.",
+    "Añade un método de inicio de sesión para abrir esta cuenta de usuario en cualquier dispositivo.",
   "OverviewScreen.last7Days": "Últimos 7 días",
   "OverviewScreen.last30Days": "Últimos 30 días",
   "OverviewScreen.last90Days": "Últimos 90 días",
@@ -845,7 +849,7 @@ export default {
   "PlanRefusalNotice.noPlanTitle": "{group} no tiene un plan de pago",
   "PlanRefusalNotice.noPlanTitleUnnamed": "Este grupo no tiene un plan de pago",
   "PlanRefusalNotice.noPlanText": "Elige un plan para empezar a añadir contenido.",
-  "GuestProfile.accountType": "Tipo de cuenta",
+  "GuestProfile.accountType": "Tipo de cuenta de usuario",
   "GuestProfile.guestAccount": "Cuenta de invitado. Solo este navegador puede abrirla.",
   "GuestProfile.methods": "Métodos de inicio de sesión",
   "GuestProfile.noMethods": "Todavía no hay métodos de inicio de sesión",
@@ -865,60 +869,61 @@ export default {
   "GuestProfile.pushText": "Añade uno y luego actívalas aquí.",
   "GuestProfile.apiTokenTitle": "Los tokens de API necesitan un método de inicio de sesión",
   "GuestProfile.apiTokenText":
-    "Un token abre esta cuenta desde fuera del navegador. Primero añade un método de inicio de sesión.",
+    "Un token abre esta cuenta de usuario desde fuera del navegador. Primero añade un método de inicio de sesión.",
   "GuestProfile.uploadTitle": "Para importar hace falta un método de inicio de sesión",
-  "GuestProfile.uploadText": "Primero añade uno a tu cuenta y luego importa el archivo.",
+  "GuestProfile.uploadText": "Primero añade uno a tu cuenta de usuario y luego importa el archivo.",
   "GuestProfile.billingTitle": "Los planes de pago necesitan un método de inicio de sesión",
   "GuestProfile.billingText":
-    "Los planes se cobran a una cuenta en la que siempre puedas volver a iniciar sesión. Primero añade un método de inicio de sesión.",
+    "Los planes se cobran a una cuenta de usuario en la que siempre puedas volver a iniciar sesión. Primero añade un método de inicio de sesión.",
   "GuestProfile.telegramTitle": "Telegram necesita un método de inicio de sesión",
   "GuestProfile.telegramText":
     "Un chat vinculado actúa en tu nombre desde fuera del navegador. Primero añade un método de inicio de sesión.",
   "GuestProfile.otherTitle": "Para esto hace falta un método de inicio de sesión",
-  "GuestProfile.otherText": "Primero añade uno a tu cuenta y luego vuelve a intentarlo.",
+  "GuestProfile.otherText": "Primero añade uno a tu cuenta de usuario y luego vuelve a intentarlo.",
   "GuestProfile.notNow": "Ahora no",
-  "GuestScreens.keep": "Conserva tu cuenta",
+  "GuestScreens.keep": "Conserva tu cuenta de usuario",
   "GuestScreens.createAccount": "Crear una cuenta",
   "GuestScreens.createInstead": "Mejor crear una cuenta",
   "GuestScreens.tryTitle": "Prueba la app",
   "GuestScreens.opening": "Abriendo la app…",
-  "GuestScreens.rateLimited": "Demasiadas cuentas nuevas desde tu red",
+  "GuestScreens.rateLimited": "Demasiadas cuentas de usuario nuevas desde tu red",
   "GuestScreens.failed": "No se pudo abrir la app",
   "GuestScreens.failedText": "Revisa tu conexión y vuelve a intentarlo.",
   "GuestScreens.tryAgain": "Reintentar",
   "GuestScreens.signedIn": "Ya iniciaste sesión",
   "GuestScreens.signedInText":
-    "Tu cuenta está abierta en este navegador. Cierra sesión primero para probar la app con una cuenta de invitado.",
+    "Tu cuenta de usuario está abierta en este navegador. Cierra sesión primero para probar la app con una cuenta de invitado.",
   "GuestScreens.openApp": "Abrir la app",
   "GuestScreens.off": "Crea una cuenta para empezar",
-  "GuestScreens.offText": "Aquí no se puede probar la app sin una cuenta.",
+  "GuestScreens.offText": "Aquí no se puede probar la app sin crear una cuenta.",
   "GuestScreens.terms":
     "Al continuar, aceptas los <terms>términos</terms> y el <privacy>aviso de privacidad</privacy>.",
   "GuestScreens.tryNow": "Pruébala ahora",
   "GuestScreens.tryLine":
-    "No necesitas cuenta. Más tarde, añade un método de inicio de sesión para conservar tu trabajo.",
-  "GuestScreens.noAccount": "¿Todavía no tienes cuenta?",
-  "GuestScreens.tryWithout": "Pruébala sin cuenta",
-  "GuestScreens.tryFromSignIn": "Tendrás una cuenta nueva y vacía en este navegador.",
-  "GuestScreens.tryFromSignInDemo": "Tendrás una cuenta nueva con datos de ejemplo para explorar.",
+    "No hace falta crear una cuenta. Más tarde, añade un método de inicio de sesión para conservar tu trabajo.",
+  "GuestScreens.noAccount": "¿Todavía no tienes cuenta de usuario?",
+  "GuestScreens.tryWithout": "Pruébala sin crear una cuenta",
+  "GuestScreens.tryFromSignIn": "Tendrás una cuenta de usuario nueva y vacía en este navegador.",
+  "GuestScreens.tryFromSignInDemo":
+    "Tendrás una cuenta de usuario nueva con datos de ejemplo para explorar.",
   "GuestScreens.demoWipe":
-    "Estás usando una cuenta de invitado en una demo pública. Todo se reinicia cada noche a las {time}, aunque añadas un método de inicio de sesión. Añade uno de todos modos para ver cómo funciona conservar una cuenta.",
+    "Estás usando una cuenta de invitado en una demo pública. Todo se reinicia cada noche a las {time}, aunque añadas un método de inicio de sesión. Añade uno de todos modos para ver cómo funciona conservar una cuenta de usuario.",
   "GuestScreens.banner":
-    "Esta cuenta solo existe en este navegador. Si se borran los datos del navegador, se pierde. Añade un método de inicio de sesión para conservarla.",
+    "Esta cuenta de usuario solo existe en este navegador. Si se borran los datos del navegador, se pierde. Añade un método de inicio de sesión para conservarla.",
   "GuestScreens.hide": "Ocultar este mensaje",
   "GuestScreens.keptPasskey":
-    "Ya puedes iniciar sesión con una llave de acceso en cualquier dispositivo. Tu cuenta sigue igual.",
+    "Ya puedes iniciar sesión con una llave de acceso en cualquier dispositivo. Tu cuenta de usuario sigue igual.",
   "GuestScreens.keptEmail":
-    "Ya puedes iniciar sesión con tu correo electrónico en cualquier dispositivo. Tu cuenta sigue igual.",
+    "Ya puedes iniciar sesión con tu correo electrónico en cualquier dispositivo. Tu cuenta de usuario sigue igual.",
   "GuestScreens.keptProvider":
-    "Ya puedes iniciar sesión con {provider} en cualquier dispositivo. Tu cuenta sigue igual.",
+    "Ya puedes iniciar sesión con {provider} en cualquier dispositivo. Tu cuenta de usuario sigue igual.",
   "GuestScreens.added": "Método de inicio de sesión añadido",
   "GuestScreens.done": "Listo",
-  "GuestScreens.isKept": "Tu cuenta está guardada",
+  "GuestScreens.isKept": "Tu cuenta de usuario está guardada",
   "GuestScreens.isKeptText":
     "Tiene un método de inicio de sesión, así que puedes abrirla en cualquier dispositivo.",
   "GuestScreens.keepText":
-    "Añade un método de inicio de sesión y podrás abrir esta cuenta en cualquier dispositivo. Tus notas y grupos siguen igual.",
+    "Añade un método de inicio de sesión y podrás abrir esta cuenta de usuario en cualquier dispositivo. Tus notas y grupos siguen igual.",
   "GuestScreens.ways": "Formas de iniciar sesión",
   "GuestScreens.openingProvider": "Abriendo {provider}…",
   "GuestScreens.addPasskey": "Añadir una llave de acceso",
@@ -930,20 +935,20 @@ export default {
     "other": "Al menos {count} caracteres.",
   },
   "GuestScreens.saving": "Guardando…",
-  "GuestScreens.takenProvider": "{provider} ya está vinculado a otra cuenta.",
-  "GuestScreens.takenAddress": "Ese correo ya tiene una cuenta.",
-  "GuestScreens.takenEmail": "<email>{email}</email> ya tiene una cuenta.",
+  "GuestScreens.takenProvider": "{provider} ya está vinculado a otra cuenta de usuario.",
+  "GuestScreens.takenAddress": "Ese correo ya tiene una cuenta de usuario.",
+  "GuestScreens.takenEmail": "<email>{email}</email> ya tiene una cuenta de usuario.",
   "GuestScreens.takenRest":
     "Tu cuenta de invitado no cambió. Elige qué hacer con lo que creaste en la cuenta de invitado.",
   "GuestScreens.moveOne":
-    "Inicia sesión en esa cuenta y mueve allí <name>{name}</name>. Después se eliminará la cuenta de invitado.",
+    "Inicia sesión en esa cuenta de usuario y mueve allí <name>{name}</name>. Después se eliminará la cuenta de invitado.",
   "GuestScreens.moveMany": {
     "one":
-      "Inicia sesión en esa cuenta y mueve allí {count} grupo de esta cuenta de invitado. Después se eliminará la cuenta de invitado.",
+      "Inicia sesión en esa cuenta de usuario y mueve allí {count} grupo de esta cuenta de invitado. Después se eliminará la cuenta de invitado.",
     "many":
-      "Inicia sesión en esa cuenta y mueve allí {count} grupos de esta cuenta de invitado. Después se eliminará la cuenta de invitado.",
+      "Inicia sesión en esa cuenta de usuario y mueve allí {count} grupos de esta cuenta de invitado. Después se eliminará la cuenta de invitado.",
     "other":
-      "Inicia sesión en esa cuenta y mueve allí {count} grupos de esta cuenta de invitado. Después se eliminará la cuenta de invitado.",
+      "Inicia sesión en esa cuenta de usuario y mueve allí {count} grupos de esta cuenta de invitado. Después se eliminará la cuenta de invitado.",
   },
   "GuestScreens.checking": "Comprobando…",
   "GuestScreens.loading": "Cargando…",
@@ -952,15 +957,15 @@ export default {
   "GuestScreens.move": "Cambiar y mover mis grupos",
   "GuestScreens.delete": "Cambiar y borrar los datos de invitado",
   "GuestScreens.deleteHint":
-    "Inicia sesión en esa cuenta y elimina esta cuenta de invitado con todo su contenido.",
+    "Inicia sesión en esa cuenta de usuario y elimina esta cuenta de invitado con todo su contenido.",
   "GuestScreens.keepGuest": "Conservar la cuenta de invitado",
   "GuestScreens.keepGuestHint": "No cambia nada. Puedes añadir otro método de inicio de sesión.",
-  "GuestScreens.linked": "Ya está vinculado a otra cuenta",
+  "GuestScreens.linked": "Ya está vinculado a otra cuenta de usuario",
   "GuestScreens.legend": "Qué pasa con esta cuenta de invitado",
   "GuestScreens.choose": "Elige qué hacer con lo que creaste en la cuenta de invitado.",
   "GuestScreens.passwordOf": "La contraseña de {email}.",
-  "GuestScreens.passwordOfThat": "La contraseña de esa cuenta.",
-  "GuestScreens.otp": "Código de la app de autenticación de esa cuenta",
+  "GuestScreens.passwordOfThat": "La contraseña de esa cuenta de usuario.",
+  "GuestScreens.otp": "Código de la app de autenticación de esa cuenta de usuario",
   "GuestScreens.sixDigits": "Seis dígitos.",
   "GuestScreens.deleteAndSwitch": "Eliminar y cambiar",
   "GuestScreens.notes": {
@@ -976,29 +981,30 @@ export default {
   "GuestScreens.confirmEmail":
     "Se eliminarán sus {notes} y {groups}, y se iniciará sesión en <email>{email}</email>. No se puede deshacer.",
   "GuestScreens.confirmAccount":
-    "Se eliminarán sus {notes} y {groups}, y se iniciará sesión en esa cuenta. No se puede deshacer.",
+    "Se eliminarán sus {notes} y {groups}, y se iniciará sesión en esa cuenta de usuario. No se puede deshacer.",
   "GuestScreens.signOutTitle": "¿Cerrar sesión en una cuenta de invitado?",
   "GuestScreens.signOutAnyway": "Cerrar sesión igualmente",
   "GuestScreens.signOutText":
-    "Esta cuenta no tiene ningún método de inicio de sesión, así que no podrás volver a entrar. Perderás todo lo que contiene.",
+    "Esta cuenta de usuario no tiene ningún método de inicio de sesión, así que no podrás volver a entrar. Perderás todo lo que contiene.",
   "GuestScreens.offline": "Estás sin conexión. Conéctate y vuelve a intentarlo.",
   "GuestScreens.providerFailed":
-    "{provider} no terminó. Tu cuenta no cambió. Vuelve a intentarlo o elige otro método.",
+    "{provider} no terminó. Tu cuenta de usuario no cambió. Vuelve a intentarlo o elige otro método.",
   "GuestScreens.noPasskey":
     "No se añadió ninguna llave de acceso. Tu cuenta sigue siendo de invitado.",
   "GuestScreens.didNotWork": "No funcionó. Vuelve a intentarlo.",
   "OAuthNotice.failed": "No se pudo iniciar sesión. Vuelve a intentarlo.",
   "OAuthNotice.linked": "Vinculado. Ya puedes iniciar sesión con él.",
   "OAuthNotice.linkExists": "Ya estaba vinculado. Puedes iniciar sesión con él como siempre.",
-  "OAuthNotice.linkTaken": "No se vinculó: esa cuenta ya está vinculada a otra cuenta de aquí.",
+  "OAuthNotice.linkTaken":
+    "No se vinculó: esa cuenta ya está vinculada a otra cuenta de usuario aquí.",
   "OAuthNotice.busy": "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
   "OAuthNotice.kept":
     "Método de inicio de sesión añadido. Ya puedes usarlo para iniciar sesión en cualquier dispositivo.",
-  "OAuthNotice.guestTaken": "Ese método de inicio de sesión pertenece a otra cuenta.",
+  "OAuthNotice.guestTaken": "Ese método de inicio de sesión pertenece a otra cuenta de usuario.",
   "PasswordResetScreen.forgotFailed": "No se pudo enviar el código",
   "PasswordResetScreen.resetFailed": "No se pudo cambiar la contraseña",
   "PasswordResetScreen.sent":
-    "Si hay una cuenta con <email>{email}</email>, te enviamos un código.",
+    "Si hay una cuenta de usuario con <email>{email}</email>, te enviamos un código.",
   "PasswordResetScreen.forgotDescription": {
     "one":
       "Escribe el correo con el que te registraste. Te enviaremos un código para elegir una contraseña nueva. Caduca en {count} minuto.",
@@ -1426,10 +1432,10 @@ export default {
     "No se pudo añadir este dispositivo. Permite las notificaciones de este sitio en tu navegador y vuelve a intentarlo.",
   "ProfileScreen.pushRemoveFailed":
     "No se pudo quitar este dispositivo. Revisa tu conexión y vuelve a intentarlo.",
-  "ProfileScreen.account": "Cuenta",
+  "ProfileScreen.account": "Cuenta de usuario",
   "ProfileScreen.accountText": "Tu foto, tu nombre, tu correo y una copia de tus datos.",
   "ProfileScreen.security": "Acceso y seguridad",
-  "ProfileScreen.securityText": "Cómo inicias sesión y dónde está abierta tu cuenta.",
+  "ProfileScreen.securityText": "Cómo inicias sesión y dónde está abierta tu cuenta de usuario.",
   "ProfileScreen.region": "Idioma y región",
   "ProfileScreen.regionText": "Tu idioma y cómo se ven las fechas, las horas y los números.",
   "ProfileScreen.appearance": "Apariencia",
@@ -1439,8 +1445,8 @@ export default {
   "ProfileScreen.apiTokens": "Tokens de API",
   "ProfileScreen.apiTokensText":
     "Deja que un script u otro servicio use uno de tus grupos sin tu contraseña.",
-  "ProfileScreen.dangerZone": "Eliminar cuenta",
-  "ProfileScreen.dangerZoneText": "Elimina tu cuenta y todo lo que solo tú puedes ver.",
+  "ProfileScreen.dangerZone": "Eliminar cuenta de usuario",
+  "ProfileScreen.dangerZoneText": "Elimina tu cuenta de usuario y todo lo que solo tú puedes ver.",
   "ProfileScreen.codeTitle": "Escribe tu código de un solo uso",
   "ProfileScreen.codeText": "Escribe el código de tu app de autenticación para abrir tu perfil.",
   "ProfileScreen.signInTitle": "Inicia sesión para ver tu perfil",
@@ -1477,7 +1483,7 @@ export default {
   "ProfileSecurity.setText":
     "Añade una contraseña para iniciar sesión también con tu correo electrónico.",
   "ProfileSecurity.setNeedsEmail":
-    "Para iniciar sesión con contraseña necesitas un correo electrónico, y esta cuenta todavía no tiene ninguno. Añádelo primero y luego vuelve aquí para establecer tu contraseña.",
+    "Para iniciar sesión con contraseña necesitas un correo electrónico, y esta cuenta de usuario todavía no tiene ninguno. Añádelo primero y luego vuelve aquí para establecer tu contraseña.",
   "ProfileSecurity.setNeedsCode":
     "Para iniciar sesión con contraseña necesitas tu correo electrónico. Primero confirma <email>{email}</email> con el código que te enviamos a esa dirección y luego vuelve aquí para establecer tu contraseña.",
   "ProfileSecurity.addEmail": "Añadir correo electrónico",
@@ -1523,7 +1529,7 @@ export default {
   "ProfileTelegram.unlinkText":
     "Las notificaciones dejarán de llegar a Telegram y {bot} ya no podrá actuar en tu nombre allí. Para volver a vincularlo, necesitarás un código nuevo.",
   "ProfileTelegram.open":
-    "Abre el chat con <strong>{bot}</strong>, pulsa «Iniciar» y luego {button}. Esta ventana se cerrará cuando tu cuenta esté vinculada.",
+    "Abre el chat con <strong>{bot}</strong>, pulsa «Iniciar» y luego {button}. Esta ventana se cerrará cuando tu cuenta de usuario esté vinculada.",
   "ProfileTelegram.openButton": "Abrir Telegram",
   "ProfileTelegram.elsewhere": "¿Tienes Telegram en otro dispositivo? Envía este mensaje a {bot}:",
   "ProfileTelegram.message": "Mensaje para enviar",
@@ -1537,7 +1543,7 @@ export default {
   "ProfileView.codeMissing": "Escribe el código de tu app de autenticación",
   "ProfileView.telegramLinked": "Telegram vinculado",
   "ProfileView.telegramLinkedBody": "Ahora tus notificaciones llegan a Telegram.",
-  "ProfileView.switched": "Iniciaste sesión en tu cuenta",
+  "ProfileView.switched": "Iniciaste sesión en tu cuenta de usuario",
   "ProfileView.switchedMoved": {
     "one": "Se movió {count} grupo desde tu cuenta de invitado.",
     "many": "Se movieron {count} grupos desde tu cuenta de invitado.",
@@ -1565,7 +1571,7 @@ export default {
   "ProfileView.passwordSet": "Contraseña establecida",
   "ProfileView.passwordSetBody":
     "Ahora también puedes iniciar sesión con tu correo electrónico y esta contraseña.",
-  "ProfileView.accountDeleted": "Cuenta eliminada",
+  "ProfileView.accountDeleted": "Cuenta de usuario eliminada",
   "ProfileView.accountDeletedBody":
     "Se eliminará para siempre el {day}. Inicia sesión antes de esa fecha si quieres conservarla.",
   "ProfileView.guestDeleted": "Cuenta de invitado eliminada",
@@ -1580,18 +1586,18 @@ export default {
     "Iniciaste sesión con {methods} hace un momento, así que no necesitas contraseña.",
   "ProviderProof.needed": {
     "one":
-      "Esta cuenta no tiene contraseña para confirmarlo. Vuelve a iniciar sesión con {methods} y regresa aquí en {count} minuto como máximo.",
+      "Esta cuenta de usuario no tiene contraseña para confirmarlo. Vuelve a iniciar sesión con {methods} y regresa aquí en {count} minuto como máximo.",
     "many":
-      "Esta cuenta no tiene contraseña para confirmarlo. Vuelve a iniciar sesión con {methods} y regresa aquí en {count} minutos como máximo.",
+      "Esta cuenta de usuario no tiene contraseña para confirmarlo. Vuelve a iniciar sesión con {methods} y regresa aquí en {count} minutos como máximo.",
     "other":
-      "Esta cuenta no tiene contraseña para confirmarlo. Vuelve a iniciar sesión con {methods} y regresa aquí en {count} minutos como máximo.",
+      "Esta cuenta de usuario no tiene contraseña para confirmarlo. Vuelve a iniciar sesión con {methods} y regresa aquí en {count} minutos como máximo.",
   },
   "ProviderProof.passkeyAgain": "Volver a iniciar sesión con una llave de acceso",
   "ProviderProof.providerAgain": "Volver a iniciar sesión con {provider}",
   "SignInCodeScreen.sendFailed": "No se pudo enviar el código. Inténtalo de nuevo en un momento.",
   "SignInCodeScreen.title": "Inicia sesión con un código por correo",
   "SignInCodeScreen.description":
-    "Te enviaremos un código por correo para que lo escribas aquí. ¿Aún no tienes cuenta con ese correo? El código la crea.",
+    "Te enviaremos un código por correo para que lo escribas aquí. ¿Aún no tienes cuenta de usuario con ese correo? El código la crea.",
   "SignInCodeScreen.ratherPassword":
     "¿Prefieres una contraseña? <link>Volver a iniciar sesión</link>",
   "SignInCodeScreen.submit": "Enviarme un código",
@@ -1601,7 +1607,7 @@ export default {
   "CodeStep.sent": "Enviamos un código a <email>{email}</email>.",
   "CodeStep.invalid": "El código tiene 8 caracteres. Revisa si falta alguno.",
   "SignInCodeScreen.guest":
-    "Estás usando la app como invitado. Al iniciar sesión, lo que creaste aquí se guarda con este correo. Si ese correo ya tiene una cuenta, te preguntaremos primero.",
+    "Estás usando la app como invitado. Al iniciar sesión, lo que creaste aquí se guarda con este correo. Si ese correo ya tiene una cuenta de usuario, te preguntaremos primero.",
   "CodeStep.deadTitle": "Este código ya no funciona",
   "CodeStep.dead": {
     "one":
@@ -1633,7 +1639,7 @@ export default {
   "SignInMethods.passkeyAsks":
     "Una llave de acceso es otra forma de iniciar sesión, así que primero te pedimos tu contraseña.",
   "SignInMethods.linkAsks":
-    "Una cuenta vinculada es otra forma de iniciar sesión, así que primero te pedimos tu contraseña.",
+    "Vincular una cuenta de otro servicio te da otra forma de iniciar sesión, así que primero te pedimos tu contraseña.",
   "SignInMethods.opening": "Abriendo…",
   "SignInMethods.continueTo": "Continuar a {provider}",
   "SignInMethods.removeTitle": "¿Quitar «{name}»?",
@@ -1660,7 +1666,8 @@ export default {
   "SignInMethods.onlyLinked":
     "Es tu único método de inicio de sesión, así que no puedes desvincularlo.",
   "SignInMethods.passkeyNotSaved": "No se pudo guardar la llave de acceso. Vuelve a intentarlo.",
-  "SignInMethods.passkeyOnDevice": "Este dispositivo ya tiene una llave de acceso para tu cuenta.",
+  "SignInMethods.passkeyOnDevice":
+    "Este dispositivo ya tiene una llave de acceso para tu cuenta de usuario.",
   "SignUpCodeScreen.checkFailed": "No se pudo comprobar el código",
   "SignUpCodeScreen.offline": "Estás sin conexión. Conéctate y vuelve a intentarlo.",
   "SignUpCodeScreen.title": "Revisa tu bandeja de entrada",
@@ -1669,11 +1676,11 @@ export default {
   "SignUpCodeScreen.checking": "Comprobando…",
   "SignUpCodeScreen.resend": "Enviar un código nuevo",
   "SignUpCodeScreen.resendFailed": "No se pudo enviar un código nuevo",
-  "SignUpCodeScreen.existsTitle": "Ya tienes una cuenta",
+  "SignUpCodeScreen.existsTitle": "Ya tienes una cuenta de usuario",
   "SignUpCodeScreen.exists":
-    "<email>{email}</email> ya tiene una cuenta aquí. No se creó nada nuevo.",
+    "<email>{email}</email> ya tiene una cuenta de usuario aquí. No se creó nada nuevo.",
   "SignUpCodeScreen.existsWith":
-    "<email>{email}</email> ya tiene una cuenta aquí que inicia sesión con {providers}. No se creó nada nuevo.",
+    "<email>{email}</email> ya tiene una cuenta de usuario aquí que inicia sesión con {providers}. No se creó nada nuevo.",
   "SignUpCodeScreen.signInInstead": "Iniciar sesión",
   "SignUpCodeScreen.expiredTitle": "Este registro caducó",
   "SignUpCodeScreen.expired": {
@@ -1691,7 +1698,7 @@ export default {
     "No se puede conectar con el servidor. Se muestra la lista guardada en este dispositivo: {time}. Faltan los dispositivos que iniciaron o cerraron sesión después.",
   "SignedInDevices.title": "Dispositivos con sesión iniciada",
   "SignedInDevices.description":
-    "Dónde está abierta tu cuenta. Cierra la sesión en cualquier dispositivo que no reconozcas.",
+    "Dónde está abierta tu cuenta de usuario. Cierra la sesión en cualquier dispositivo que no reconozcas.",
   "SignedInDevices.loading": "Cargando tus dispositivos…",
   "SignedInDevices.signOutDevice": "Cerrar sesión<device> en {device}</device>",
   "SignedInDevices.signingOut": "Cerrando sesión…",
@@ -1732,7 +1739,7 @@ export default {
   "Search.untitled": "Nota sin título",
   "Search.current": "Actual",
   "Search.inGroup": "En {group}",
-  "Search.keep": "Conserva tu cuenta",
+  "Search.keep": "Conserva tu cuenta de usuario",
   "Search.keepDetail":
     "Regístrate, crea una cuenta o guarda esta cuenta de invitado con un método de inicio de sesión",
   "Search.newNote": "Nueva nota",
@@ -1843,18 +1850,18 @@ export default {
   "TelegramNotification.open": "Abrir",
   "TelegramBot.linkButton": "Vincular",
   "TelegramBot.confirmNameAddress":
-    "¿Vincular este Telegram a la cuenta de {name} en {app} ({address})? Pulsa «{button}» solo si es tu propia cuenta. Si no lo pediste, ignora este mensaje.",
+    "¿Vincular este Telegram a la cuenta de usuario de {name} en {app} ({address})? Pulsa «{button}» solo si es la tuya. Si no lo pediste, ignora este mensaje.",
   "TelegramBot.confirmName":
-    "¿Vincular este Telegram a la cuenta de {name} en {app}? Pulsa «{button}» solo si es tu propia cuenta. Si no lo pediste, ignora este mensaje.",
+    "¿Vincular este Telegram a la cuenta de usuario de {name} en {app}? Pulsa «{button}» solo si es la tuya. Si no lo pediste, ignora este mensaje.",
   "TelegramBot.confirmAddress":
-    "¿Vincular este Telegram a una cuenta en {app} ({address})? Pulsa «{button}» solo si es tu propia cuenta. Si no lo pediste, ignora este mensaje.",
+    "¿Vincular este Telegram a una cuenta de usuario en {app} ({address})? Pulsa «{button}» solo si es la tuya. Si no lo pediste, ignora este mensaje.",
   "TelegramBot.confirmAnonymous":
-    "¿Vincular este Telegram a una cuenta en {app} sin nombre ni correo? Pulsa «{button}» solo si es tu propia cuenta. Si no lo pediste, ignora este mensaje.",
+    "¿Vincular este Telegram a una cuenta de usuario en {app} sin nombre ni correo? Pulsa «{button}» solo si es la tuya. Si no lo pediste, ignora este mensaje.",
   "TelegramBot.linked":
-    "Listo: este chat está vinculado a tu cuenta. Ahora tus notificaciones llegarán aquí. Envía /help para ver lo que puedo hacer.",
-  "TelegramBot.already": "Esta cuenta de Telegram ya está vinculada a tu cuenta.",
+    "Listo: este chat está vinculado a tu cuenta de usuario. Ahora tus notificaciones llegarán aquí. Envía /help para ver lo que puedo hacer.",
+  "TelegramBot.already": "Esta cuenta de Telegram ya está vinculada a tu cuenta de usuario.",
   "TelegramBot.taken":
-    "Esta cuenta de Telegram está vinculada a otra cuenta. Envía primero /unlink y luego otra vez el código.",
+    "Esta cuenta de Telegram está vinculada a otra cuenta de usuario. Envía primero /unlink y luego otra vez el código.",
   "TelegramBot.invalid": {
     "one":
       "Ese código no funciona. Puede que esté mal escrito, que ya se haya usado o que tenga más de {count} minuto. Genera uno nuevo en la app.",
@@ -1874,13 +1881,15 @@ export default {
   "TelegramBot.privateOnly": "Envíamelo en un chat privado.",
   "TelegramBot.codeSpent":
     "Ese código se envió donde otros pueden leerlo, así que ya no funciona. Genera uno nuevo en la app y envíamelo en un chat privado.",
-  "TelegramBot.unlinked": "Desvinculado. Este chat ya no recibirá notificaciones de tu cuenta.",
-  "TelegramBot.notLinked": "Esta cuenta de Telegram no está vinculada a ninguna cuenta.",
+  "TelegramBot.unlinked":
+    "Desvinculado. Este chat ya no recibirá notificaciones de tu cuenta de usuario.",
+  "TelegramBot.notLinked": "Esta cuenta de Telegram no está vinculada a ninguna cuenta de usuario.",
   "TelegramBot.howToLink":
-    "Para vincular tu cuenta, abre {url}, elige «{action}» y envíame el código que aparece.",
-  "TelegramBot.hello": "¡Hola! Tu cuenta está vinculada. Envía /help para ver lo que puedo hacer.",
+    "Para vincular tu cuenta de usuario, abre {url}, elige «{action}» y envíame el código que aparece.",
+  "TelegramBot.hello":
+    "¡Hola! Tu cuenta de usuario está vinculada. Envía /help para ver lo que puedo hacer.",
   "TelegramBot.helloName":
-    "¡Hola, {name}! Tu cuenta está vinculada. Envía /help para ver lo que puedo hacer.",
+    "¡Hola, {name}! Tu cuenta de usuario está vinculada. Envía /help para ver lo que puedo hacer.",
   "UndoToast.title": "Nota eliminada",
   "UndoToast.deleted": "Se eliminó «{title}».",
   "UndoToast.deletedUntitled": "Se eliminó la nota.",
@@ -1965,33 +1974,33 @@ export default {
     "Su plan está cancelado, pero sigue activo hasta el {day}. Espera a que termine.",
   "AccountDelete.planEndingPeriod":
     "Su plan está cancelado, pero sigue activo hasta el final del periodo. Espera a que termine.",
-  "AccountDelete.title": "Eliminar mi cuenta",
+  "AccountDelete.title": "Eliminar mi cuenta de usuario",
   "AccountDelete.summary": {
     "one":
-      "Tu cuenta y los grupos que solo usas tú se eliminan para siempre {count} día después de que lo pidas. Inicia sesión antes si quieres conservarlos.",
+      "Tu cuenta de usuario y los grupos que solo usas tú se eliminan para siempre {count} día después de que lo pidas. Inicia sesión antes si quieres conservarlos.",
     "many":
-      "Tu cuenta y los grupos que solo usas tú se eliminan para siempre {count} días después de que lo pidas. Inicia sesión antes si quieres conservarlos.",
+      "Tu cuenta de usuario y los grupos que solo usas tú se eliminan para siempre {count} días después de que lo pidas. Inicia sesión antes si quieres conservarlos.",
     "other":
-      "Tu cuenta y los grupos que solo usas tú se eliminan para siempre {count} días después de que lo pidas. Inicia sesión antes si quieres conservarlos.",
+      "Tu cuenta de usuario y los grupos que solo usas tú se eliminan para siempre {count} días después de que lo pidas. Inicia sesión antes si quieres conservarlos.",
   },
   "AccountDelete.copyFirst": "¿Quieres una copia antes? <link>Descarga tus datos</link>.",
-  "AccountDelete.deleteHidden": "Eliminar<hidden> mi cuenta</hidden>",
+  "AccountDelete.deleteHidden": "Eliminar<hidden> mi cuenta de usuario</hidden>",
   "AccountDelete.checking": "Revisando tus grupos…",
   "AccountDelete.explain": {
     "one":
-      "Se cerrará tu sesión en todos los dispositivos al instante. Tu cuenta y los grupos que solo usas tú se eliminarán para siempre en {count} día. Inicia sesión antes para restaurar tu cuenta. Las notas que escribiste en grupos de otras personas se quedan allí, firmadas como «Usuario eliminado».",
+      "Se cerrará tu sesión en todos los dispositivos al instante. Tu cuenta de usuario y los grupos que solo usas tú se eliminarán para siempre en {count} día. Inicia sesión antes para restaurar tu cuenta de usuario. Las notas que escribiste en grupos de otras personas se quedan allí, firmadas como «Usuario eliminado».",
     "many":
-      "Se cerrará tu sesión en todos los dispositivos al instante. Tu cuenta y los grupos que solo usas tú se eliminarán para siempre en {count} días. Inicia sesión antes para restaurar tu cuenta. Las notas que escribiste en grupos de otras personas se quedan allí, firmadas como «Usuario eliminado».",
+      "Se cerrará tu sesión en todos los dispositivos al instante. Tu cuenta de usuario y los grupos que solo usas tú se eliminarán para siempre en {count} días. Inicia sesión antes para restaurar tu cuenta de usuario. Las notas que escribiste en grupos de otras personas se quedan allí, firmadas como «Usuario eliminado».",
     "other":
-      "Se cerrará tu sesión en todos los dispositivos al instante. Tu cuenta y los grupos que solo usas tú se eliminarán para siempre en {count} días. Inicia sesión antes para restaurar tu cuenta. Las notas que escribiste en grupos de otras personas se quedan allí, firmadas como «Usuario eliminado».",
+      "Se cerrará tu sesión en todos los dispositivos al instante. Tu cuenta de usuario y los grupos que solo usas tú se eliminarán para siempre en {count} días. Inicia sesión antes para restaurar tu cuenta de usuario. Las notas que escribiste en grupos de otras personas se quedan allí, firmadas como «Usuario eliminado».",
   },
   "AccountDelete.deleting": "Eliminando…",
   "AccountDelete.blocked":
     "Tienes grupos que otras personas todavía usan o pagan. Resuelve cada uno primero y luego vuelve.",
   "AuthScreen.demoNote":
-    "Esta es una demo pública que se reinicia cada noche. Las cuentas nuevas traen datos de ejemplo para explorar.",
+    "Esta es una demo pública que se reinicia cada noche. Las cuentas de usuario nuevas traen datos de ejemplo para explorar.",
   "AuthScreen.demoGuestNote":
-    "Esta es una demo pública que se reinicia cada noche. Todas las cuentas nuevas, de invitado o no, traen datos de ejemplo para explorar.",
+    "Esta es una demo pública que se reinicia cada noche. Todas las cuentas de usuario nuevas, de invitado o no, traen datos de ejemplo para explorar.",
   "AuthScreen.tryFirst": "Prueba la app primero o regístrate con tu correo electrónico.",
   "AuthScreen.invitedTitle": "Te invitaron a un grupo",
   "AuthScreen.invitedSignIn": "Inicia sesión para ver la invitación y unirte.",
@@ -2021,14 +2030,14 @@ export default {
   "AuthScreen.emailSignUpCode": "Enviarme un código para registrarme",
   "AuthScreen.lastProvider":
     "La última vez iniciaste sesión con {provider}<email> ({email})</email>.",
-  "AuthScreen.forget": "¿No eres tú? Usa otra cuenta",
+  "AuthScreen.forget": "¿No eres tú? Usa otra cuenta de usuario",
   "AuthScreen.openProfile": "Abrir tu perfil",
   "AuthScreen.noCodeTitle": "No necesitas código",
   "AuthScreen.noCodeText": "Este inicio de sesión no necesita código.",
   "AuthScreen.signedInTitle": "Ya iniciaste sesión",
   "AuthScreen.signedInText": "No hay nada que hacer aquí.",
   "AuthScreen.newHere": "¿Primera vez aquí? <link>Crea una cuenta</link>",
-  "AuthScreen.haveAccount": "¿Ya tienes una cuenta? <link>Inicia sesión</link>",
+  "AuthScreen.haveAccount": "¿Ya tienes una cuenta de usuario? <link>Inicia sesión</link>",
   "AuthScreen.lostDevice": "¿Perdiste tu dispositivo? <link>Volver a iniciar sesión</link>",
   "AuthScreen.sending": "Enviando…",
   "AuthScreen.orCreate": "o crea una cuenta",
@@ -2047,14 +2056,14 @@ export default {
     "Esta solicitud caducó a los diez minutos o ya la respondiste. No se creó ninguna cuenta.",
   "ConfirmSignUpScreen.backToSignIn": "Volver a iniciar sesión",
   "ConfirmSignUpScreen.unknown":
-    "Esta cuenta de {provider} no está vinculada a ninguna cuenta de aquí.",
+    "Esta cuenta de {provider} no está vinculada a ninguna cuenta de usuario aquí.",
   "ConfirmSignUpScreen.unknownColon":
-    "Esta cuenta de {provider} no está vinculada a ninguna cuenta de aquí:",
+    "Esta cuenta de {provider} no está vinculada a ninguna cuenta de usuario aquí:",
   "ConfirmSignUpScreen.goBack":
-    "¿Ya tienes una cuenta? Vuelve atrás, inicia sesión como siempre y luego vincula {provider} desde tu perfil. Todavía no se creó nada.",
+    "¿Ya tienes una cuenta de usuario? Vuelve atrás, inicia sesión como siempre y luego vincula {provider} desde tu perfil. Todavía no se creó nada.",
   "ConfirmSignUpScreen.unconfirmed":
-    "<strong>Ya hay una cuenta aquí con este correo, pero nunca se confirmó.</strong> Si creas una cuenta nueva, esa quedará bloqueada: su contraseña dejará de funcionar y se cerrará la sesión en sus dispositivos. Para conservarla, vuelve atrás, inicia sesión con su contraseña y confirma el correo con el código que te enviaremos.",
-  "ConfirmSignUpScreen.back": "Ya tengo una cuenta. Volver a iniciar sesión",
+    "<strong>Ya hay una cuenta de usuario aquí con este correo, pero nunca se confirmó.</strong> Si creas una cuenta nueva, esa quedará bloqueada: su contraseña dejará de funcionar y se cerrará la sesión en sus dispositivos. Para conservarla, vuelve atrás, inicia sesión con su contraseña y confirma el correo con el código que te enviaremos.",
+  "ConfirmSignUpScreen.back": "Ya tengo una cuenta de usuario. Volver a iniciar sesión",
   "ConfirmSignUpScreen.creating": "Creando tu cuenta…",
   "ConfirmSignUpScreen.create": "Crear una cuenta nueva",
   "EmailScreen.verifyFailed": "No se pudo comprobar el código",
@@ -2180,4 +2189,128 @@ export default {
   "Search.benchmarkDetail": "Medir cómo rinde un grupo grande en este dispositivo",
   "Shortcuts.runBenchmark": "Ejecutar el benchmark",
   "Shortcuts.copyResults": "Copiar los resultados",
+  "AccountEditor.amountDecimals": {
+    "one": "{currency} admite como máximo {count} decimal.",
+    "many": "{currency} admite como máximo {count} de decimales.",
+    "other": "{currency} admite como máximo {count} decimales.",
+  },
+  "AccountEditor.amountInvalid": "Escribe un importe, como 12.34.",
+  "AccountEditor.amountNoDecimals": "{currency} no tiene céntimos: escribe un importe entero.",
+  "AccountEditor.amountTooLarge": "El importe es demasiado grande.",
+  "AccountEditor.amountCleared":
+    "{amount} no se puede expresar en {currency}, así que vaciamos el saldo inicial. Escríbelo de nuevo.",
+  "AccountEditor.back": "Volver a las cuentas",
+  "AccountEditor.balance": "Saldo",
+  "AccountEditor.cancel": "Cancelar",
+  "AccountEditor.chooseCurrencyFirst": "Elige primero una moneda.",
+  "AccountEditor.create": "Crear cuenta",
+  "AccountEditor.creating": "Creando…",
+  "AccountEditor.currency": "Moneda",
+  "AccountEditor.discard": "Descartar",
+  "AccountEditor.kind": "Tipo",
+  "AccountEditor.liabilityHint": "Escribe una deuda en negativo, como −1200.",
+  "AccountEditor.loading": "Cargando la cuenta…",
+  "AccountEditor.name": "Nombre",
+  "AccountEditor.namePlaceholder": "Cuenta corriente",
+  "AccountEditor.new": "Nueva cuenta",
+  "AccountEditor.notFound": "No se encontró la cuenta",
+  "AccountEditor.notFoundHint": "Puede que se haya eliminado o que pertenezca a otro hogar.",
+  "AccountEditor.offline":
+    "Puedes ver las cuentas, pero los cambios esperan a que vuelvas a estar en línea.",
+  "AccountEditor.offlineTitle": "Estás sin conexión",
+  "AccountEditor.save": "Guardar cuenta",
+  "AccountEditor.saving": "Guardando…",
+  "AccountEditor.startingBalance": "Saldo inicial",
+  "AccountEditor.startingBalanceHint": "Lo que tenía la cuenta cuando empezaste a registrarla.",
+  "AccountEditor.title": "Cuenta",
+  "AccountKinds.asset": "Activo",
+  "AccountKinds.bank": "Banco",
+  "AccountKinds.card": "Tarjeta",
+  "AccountKinds.cash": "Efectivo",
+  "AccountKinds.liability": "Deuda",
+  "AccountKinds.savings": "Ahorros",
+  "AccountMessages.change": "No se pudo cambiar la cuenta.",
+  "AccountMessages.conflict": "Otra persona cambió esta cuenta. Ahora ves sus cambios.",
+  "AccountMessages.create": "No se pudo crear la cuenta.",
+  "AccountMessages.currencyRequired": "Elige la moneda de la cuenta.",
+  "AccountMessages.gone": "Esta cuenta ya no existe.",
+  "AccountMessages.limit":
+    "Un hogar puede tener como máximo {max} cuentas. Archiva o elimina una primero.",
+  "AccountMessages.load": "No se pudieron cargar las cuentas.",
+  "AccountMessages.nameRequired": "Ponle un nombre a la cuenta.",
+  "AccountMessages.save": "No se pudo guardar la cuenta.",
+  "Accounts.actions": "Acciones de {name}",
+  "Accounts.add": "Añadir una cuenta",
+  "Accounts.allArchived": "Todas las cuentas están archivadas. Muestra las archivadas para verlas.",
+  "Accounts.archive": "Archivar",
+  "Accounts.archivedBadge": "Archivada",
+  "AccountsTotal.title": "Total",
+  "AccountsTotal.about": "aprox. {amount}",
+  "AccountsTotal.rates": "Con los tipos de cambio del {date}",
+  "AccountsTotal.leftOut": {
+    "one": "No incluye {count} cuenta: aún no hay tipo de cambio para {currencies}.",
+    "many": "No incluye {count} cuentas: aún no hay tipo de cambio para {currencies}.",
+    "other": "No incluye {count} cuentas: aún no hay tipo de cambio para {currencies}.",
+  },
+  "AccountsTotal.tooLarge": "El total es demasiado grande para mostrarlo.",
+  "Accounts.back": "Volver a las cuentas",
+  "Accounts.clearDefault": "Quitar como predeterminada",
+  "Accounts.defaultBadge": "Predeterminada",
+  "Accounts.delete": "Eliminar",
+  "Accounts.edit": "Editar cuenta",
+  "Accounts.empty": "Añade tu primera cuenta",
+  "Accounts.emptyHint":
+    "Una cuenta es donde está el dinero: una cartera, una cuenta bancaria, una tarjeta. Cada una tiene su moneda.",
+  "Accounts.emptyViewer": "Aún no hay cuentas",
+  "Accounts.hideArchived": "Ocultar cuentas archivadas",
+  "Accounts.loading": "Cargando cuentas…",
+  "Accounts.makeDefault": "Hacer predeterminada",
+  "Accounts.readOnly": "Puedes ver las cuentas, pero solo los editores pueden cambiarlas.",
+  "Accounts.restore": "Restaurar",
+  "Accounts.restoreNamed": "Restaurar {name}",
+  "Accounts.showArchived": "Mostrar cuentas archivadas",
+  "Accounts.showDeleted": "Mostrar cuentas eliminadas",
+  "Accounts.title": "Cuentas",
+  "Accounts.trashEmpty": "No hay cuentas eliminadas",
+  "Accounts.trashHint": "Las cuentas eliminadas se borran para siempre al cabo de {days} días.",
+  "Accounts.trashTitle": "Cuentas eliminadas",
+  "Accounts.unarchive": "Desarchivar",
+  "AccountsView.archived":
+    "{name} está archivada. Muestra las cuentas archivadas para volver a verla.",
+  "AccountsView.archivedTitle": "Cuenta archivada",
+  "AccountsView.deleted": "{name} se eliminó.",
+  "AccountsView.deletedTitle": "Cuenta eliminada",
+  "AccountsView.discard": "Los cambios en {name} no están guardados.",
+  "AccountsView.discardLeave": "Descartar",
+  "AccountsView.discardNew": "Esta cuenta aún no se ha creado.",
+  "AccountsView.discardStay": "Seguir editando",
+  "AccountsView.discardTitle": "¿Descartar los cambios?",
+  "AccountsView.saved": "{name} se guardó.",
+  "AccountsView.savedTitle": "Cuenta guardada",
+  "AccountsView.unarchived": "{name} vuelve a estar activa.",
+  "AccountsView.undo": "Deshacer",
+  "Frame.accounts": "Cuentas",
+  "GroupActivity.accountArchived": "<who>{who}</who> archivó la cuenta «<value>{name}</value>»",
+  "GroupActivity.accountChanged": "<who>{who}</who> cambió la cuenta «<value>{name}</value>»",
+  "GroupActivity.accountChangedUnnamed": "<who>{who}</who> cambió una cuenta",
+  "GroupActivity.accountCreated": "<who>{who}</who> añadió la cuenta «<value>{name}</value>»",
+  "GroupActivity.accountDefaultCleared":
+    "<who>{who}</who> quitó «<value>{name}</value>» como cuenta predeterminada",
+  "GroupActivity.accountDefaultSet":
+    "<who>{who}</who> hizo de «<value>{name}</value>» la cuenta predeterminada",
+  "GroupActivity.accountDeleted": "<who>{who}</who> eliminó la cuenta «<value>{name}</value>»",
+  "GroupActivity.accountRenamed":
+    "<who>{who}</who> cambió el nombre de la cuenta «<value>{from}</value>» a «<value>{name}</value>»",
+  "GroupActivity.accountRestored": "<who>{who}</who> restauró la cuenta «<value>{name}</value>»",
+  "GroupActivity.accountUnarchived":
+    "<who>{who}</who> desarchivó la cuenta «<value>{name}</value>»",
+  "GroupImport.accounts": {
+    "one": "{count} cuenta",
+    "many": "{count} de cuentas",
+    "other": "{count} cuentas",
+  },
+  "OnboardingCard.accountAction": "Añadir una cuenta",
+  "OnboardingCard.accountText":
+    "Una cartera, una cuenta bancaria o una tarjeta, cada una en su moneda.",
+  "OnboardingCard.accountTitle": "Añade tu primera cuenta",
 } satisfies Catalog

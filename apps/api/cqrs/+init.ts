@@ -155,7 +155,33 @@ import {
   TagListQuery,
   TagUpdateCommand,
 } from "@domain/tags"
+import {
+  AccountArchiveCommand,
+  AccountCreateCommand,
+  AccountDeleteCommand,
+  AccountGetQuery,
+  AccountListQuery,
+  AccountRestoreCommand,
+  AccountSetDefaultCommand,
+  AccountTotalQuery,
+  AccountUpdateCommand,
+} from "@domain/accounts"
+import { accountCreateHandler } from "@api/cqrs/command-handlers/account-create.ts"
+import { accountUpdateHandler } from "@api/cqrs/command-handlers/account-update.ts"
+import { accountArchiveHandler } from "@api/cqrs/command-handlers/account-archive.ts"
+import { accountSetDefaultHandler } from "@api/cqrs/command-handlers/account-set-default.ts"
+import { accountDeleteHandler } from "@api/cqrs/command-handlers/account-delete.ts"
+import { accountRestoreHandler } from "@api/cqrs/command-handlers/account-restore.ts"
+import { accountListHandler } from "@api/cqrs/query-handlers/account-list.ts"
+import { accountGetHandler } from "@api/cqrs/query-handlers/account-get.ts"
+import { accountTotalHandler } from "@api/cqrs/query-handlers/account-total.ts"
 import { tagCreateHandler } from "@api/cqrs/command-handlers/tag-create.ts"
+import { HouseholdSettingsQuery, HouseholdUpdateSettingsCommand } from "@domain/money"
+import {
+  createHouseholdSettingsHandler,
+  createHouseholdUpdateSettingsHandler,
+} from "../features/household/handlers.ts"
+import { householdDependencies } from "./household-dependencies.ts"
 import { tagUpdateHandler } from "@api/cqrs/command-handlers/tag-update.ts"
 import { tagDeleteHandler } from "@api/cqrs/command-handlers/tag-delete.ts"
 import { tagListHandler } from "@api/cqrs/query-handlers/tag-list.ts"
@@ -288,6 +314,16 @@ commandBus.register(PictureCancelCommand, createPictureCancelHandler(pictureDepe
 commandBus.register(PictureRemoveCommand, createPictureRemoveHandler(pictureDependencies))
 commandBus.register(TagUpdateCommand, tagUpdateHandler)
 commandBus.register(TagDeleteCommand, tagDeleteHandler)
+commandBus.register(AccountCreateCommand, accountCreateHandler)
+commandBus.register(AccountUpdateCommand, accountUpdateHandler)
+commandBus.register(AccountArchiveCommand, accountArchiveHandler)
+commandBus.register(AccountSetDefaultCommand, accountSetDefaultHandler)
+commandBus.register(AccountDeleteCommand, accountDeleteHandler)
+commandBus.register(AccountRestoreCommand, accountRestoreHandler)
+commandBus.register(
+  HouseholdUpdateSettingsCommand,
+  createHouseholdUpdateSettingsHandler(householdDependencies),
+)
 commandBus.register(BillingCheckoutCommand, billingCheckoutHandler)
 commandBus.register(BillingPortalCommand, billingPortalHandler)
 queryBus.register(UserProfileGetQuery, userProfileGetHandler)
@@ -316,6 +352,10 @@ queryBus.register(TagListQuery, tagListHandler)
 queryBus.register(AttachmentListQuery, createAttachmentListHandler(attachmentDependencies))
 queryBus.register(AttachmentDownloadQuery, createAttachmentDownloadHandler(attachmentDependencies))
 queryBus.register(TagGetQuery, tagGetHandler)
+queryBus.register(AccountListQuery, accountListHandler)
+queryBus.register(AccountGetQuery, accountGetHandler)
+queryBus.register(AccountTotalQuery, accountTotalHandler)
+queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)
 queryBus.register(NotificationListQuery, notificationListHandler)

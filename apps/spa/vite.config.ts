@@ -15,6 +15,7 @@ import {
 } from "@spy4x/preact-theme/vite"
 import { nginxAddHeaders, securityHeaderList } from "@spy4x/server/http/security-headers"
 import { PROVIDER_AVATAR_ORIGINS } from "@domain/identity"
+import { PRODUCT_NAME } from "@ui/brand.ts"
 
 const SW_ENTRY = fromFileUrl(new URL("./src/sw.ts", import.meta.url))
 const BUILT_PAGE = fromFileUrl(new URL("./dist/index.html", import.meta.url))
@@ -81,8 +82,8 @@ export default defineConfig({
     webManifest({
       writeTextFile: Deno.writeTextFile,
       manifest: {
-        name: `Financy`,
-        short_name: `Financy`,
+        name: PRODUCT_NAME,
+        short_name: PRODUCT_NAME,
         // The light palette's canvas, as index.html's light theme-color: a manifest holds one.
         theme_color: `#f3f4f6`,
         background_color: `#f3f4f6`,
@@ -158,10 +159,10 @@ export default defineConfig({
   optimizeDeps: {
     // These come in through the Deno plugin's resolver, which the dev server's dependency scan
     // does not follow: tailwind-merge (through the JSR package @spy4x/preact-cn) and
-    // arktype (through @spy4x/validation and its siblings). Found late, each triggers a re-bundle
-    // that leaves a page that loaded meanwhile blank ("Outdated Optimize Dep"), so they are named
-    // up front.
-    include: ["tailwind-merge", "arktype"],
+    // arktype (through @spy4x/validation and its siblings) and preact-render-to-string (through
+    // the @spy4x/preact-* packages). Found late, each triggers a re-bundle that leaves a page that
+    // loaded meanwhile blank ("Outdated Optimize Dep"), so they are named up front.
+    include: ["tailwind-merge", "arktype", "preact-render-to-string"],
   },
   server: {
     host: "0.0.0.0",

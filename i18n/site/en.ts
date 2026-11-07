@@ -124,7 +124,7 @@ export default {
     "A free, open-source finance tracker for a person or a family, in any mix of currencies. Self-host it under AGPL‑3.0; a paid cloud follows. Being rebuilt.",
   "HomeProof.tests": "test files in the apps and libraries, all run in CI",
   "HomeProof.licence": "licence: free to self-host",
-  "HomeStatus.signIn": "Sign-in with email, passkeys and two-factor authentication",
+  "HomeStatus.signIn": "Sign‑in with email, passkeys and two‑factor authentication",
   "HomeStatus.groups":
     "Shared households: invite people and give each a role, from viewer to owner",
   "HomeStatus.export": "Export a household to a file, and import it again",
@@ -182,7 +182,7 @@ export default {
   "PricingWays.runUnit": "at your host's price",
   "PricingWays.runAction": "Read the deploy guide",
   "PricingWays.runText":
-    "Financy runs on one Linux server you rent or own. An email provider and Google or GitHub sign-in are optional, and each bills you directly.",
+    "Financy runs on one Linux server you rent or own. It needs an email provider to send the sign-up and sign-in codes; Google or GitHub sign-in is optional. Each bills you directly.",
   "DemoPlans.eyebrow": "Billing, working",
   "DemoPlans.title": "The demo's plans: an example of the billing you get",
   "DemoPlans.noticeTitle": "These are not Seed's prices",
@@ -211,10 +211,21 @@ export default {
   "FeatureTierSettled.eyebrow": "Works today",
   "FeatureTierSettled.title": "The ground your household's money will sit on",
   "FeatureTierSettled.lead":
-    "These parts work and are tested in CI. The money itself, accounts in any currency and their transactions, is next.",
+    "These parts work and are tested in CI. Accounts in any currency are here; their transactions come next.",
   "FeatureTierSettled.status":
     "Google and GitHub sign-in need the server's own keys, so a fresh self-hosted copy starts with email sign-in.",
-  "FeatureSignIn.nav": "Accounts and sign-in",
+  "FeatureAccounts.nav": "Accounts",
+  "FeatureAccounts.title": "Every account in its own currency",
+  "FeatureAccounts.lead":
+    "Cash, bank accounts, cards, savings, assets and debts, each in its own currency, grouped by kind, with one default. Everyone in the household sees a change at once.",
+  "FeatureAccounts.fact1":
+    "The server works each balance out when it is read and never stores it, so it cannot drift",
+  "FeatureAccounts.fact2":
+    "Amounts are whole numbers in the currency's smallest unit: a yen has none, a dinar has three",
+  "FeatureAccounts.fact3":
+    "A viewer reads the accounts; only an editor or above changes them, checked on the server",
+  "FeatureAccounts.code": "Read the accounts domain",
+  "FeatureSignIn.nav": "Sign-in and security",
   "FeatureSignIn.title": "Sign-in, done",
   "FeatureSignIn.lead":
     "Sign up with an email and password, and confirm it with a code. Reset a forgotten password, continue with Google or GitHub, use a passkey, or get a sign-in code by email. An authenticator app adds two-factor authentication (2FA), and you can see every device you're signed in on and sign the others out.",
@@ -283,14 +294,14 @@ export default {
   "FeaturesFaq.nativeQuestion": "Is there a phone app?",
   "FeaturesFaq.nativeAnswer":
     "Not in a store yet. Today the web app installs from the browser on phones and computers and opens with no network.",
-  "Features.title": "Financy features: households, sync, offline, self-hosting",
+  "Features.title": "Financy features: accounts, households, sync, offline",
   "Features.description":
-    "What Financy does today: households with roles, live updates, an offline app, export, nine languages and self-hosting. Accounts and budgets come next.",
+    "Financy today: accounts in any currency, households with roles, live sync, an offline app, export, nine languages and self-hosting. Transactions come next.",
   "FeaturesHero.title": "What Financy does today, and what comes next",
   "FeaturesHero.lead":
-    "Financy is being rebuilt. What works today is the ground a household's money will sit on: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
+    "Financy is being rebuilt. What works today: accounts in any currency, and the ground under them: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
   "FeaturesHero.note":
-    "Accounts, transactions and budgets are not built yet. <status>See where the rebuild stands</status>.",
+    "Transactions and budgets are not built yet. <status>See where the rebuild stands</status>.",
   "FeaturesFaq.title": "Can Financy do that?",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "For developers",
@@ -551,7 +562,7 @@ export default {
     "Budgets, bank statement import and the paid cloud come later: <plan>see the whole plan</plan>.",
   "HomeWho.keeperTitle": "The money keeper",
   "HomeWho.keeperText":
-    "Salary in one currency, rent in another, savings in a third: one place that adds them up.",
+    "Salary in one currency, rent in another, savings in a third: one total at the ECB's rates, with their date on it.",
   "HomeWho.partnerTitle": "The partner",
   "HomeWho.partnerText":
     "Shares the household's money with their own login, and adds what they spend in seconds.",
@@ -567,10 +578,13 @@ export default {
   "HomeWays.cloudText": "Not open yet. The same code, run for you, as a paid plan.",
   "HomeFaq.useQuestion": "Can I use Financy today?",
   "HomeFaq.useAnswer":
-    "Not yet. Sign-in, households and sync work; accounts and transactions are being built now.",
+    "Not yet. Sign-in, households, sync and accounts in any currency work; transactions are being built now.",
   "HomeFaq.currencyQuestion": "Which currencies will it handle?",
   "HomeFaq.currencyAnswer":
-    "Any mix, crypto included; each transaction keeps its original amount next to the converted one. Planned, not built yet.",
+    "Financy will handle any mix of currencies, crypto included. Each transaction keeps its original amount next to the converted one, and totals show in the household's main currency. For a currency the ECB doesn't cover, such as crypto, you enter the rate on the transaction. Being built now.",
+  "HomeFaq.ratesQuestion": "Where do the exchange rates come from?",
+  "HomeFaq.ratesAnswer":
+    "From the European Central Bank, fetched each working day through Frankfurter, a free public service. Every converted total shows the date of the rates it used. A currency with no rate is named and left out of the total, never counted as 1. Being built now.",
   "HomeFaq.bankQuestion": "Does Financy connect to my bank?",
   "HomeFaq.bankAnswer": "No. Bank statement import is planned for the first version.",
   "HomeFaq.stopsQuestion": "What happens if Financy stops?",

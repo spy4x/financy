@@ -16,7 +16,7 @@ import { REALTIME_ERROR_CODES, type RealtimeErrorCode } from "@spy4x/realtime"
 import { fieldErrorsSchema } from "@spy4x/validation"
 import type { ApiTokenErrorCode } from "@domain/api-tokens"
 import type { BillingErrorCode, PlanErrorCode } from "@domain/billing"
-import type { BlogErrorCode } from "@domain/blog"
+import type { BlogErrorCode, BlogSharingErrorCode } from "@domain/blog"
 import type { CatalogErrorCode } from "@domain/catalog"
 import type { ContactLinkErrorCode } from "@domain/contact-links"
 import type { GroupErrorCode, InvitationErrorCode } from "@domain/groups"
@@ -25,6 +25,7 @@ import type { AttachmentErrorCode, NoteErrorCode } from "@domain/notes"
 import type { NotificationErrorCode } from "@domain/notifications"
 import type { SubscriberTokenRefusal } from "@domain/subscribers"
 import type { TagErrorCode } from "@domain/tags"
+import type { AccountErrorCode } from "@domain/accounts"
 
 /** The closed list of error codes, the same on every transport. */
 export const ERROR_CODES = REALTIME_ERROR_CODES
@@ -69,6 +70,7 @@ export type ErrorReason =
   | ApiTokenErrorCode
   | BillingErrorCode
   | BlogErrorCode
+  | BlogSharingErrorCode
   | CatalogErrorCode
   | ContactLinkErrorCode
   | GroupErrorCode
@@ -80,6 +82,7 @@ export type ErrorReason =
   | PlanErrorCode
   | SubscriberTokenRefusal
   | TagErrorCode
+  | AccountErrorCode
 
 /** The arktype type of every error body the API sends. Nothing else may ride in it. */
 export const apiErrorBodySchema = type({

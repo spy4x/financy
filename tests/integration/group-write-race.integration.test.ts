@@ -3,8 +3,10 @@ import { expect } from "@std/expect"
 import postgres from "postgres"
 import { GroupRole } from "@domain/groups"
 import { NoteError } from "@domain/notes"
+import { AccountError, AccountKind } from "@domain/accounts"
 import { lockActorRole, recordAccessChange } from "@server/groups/group-change-log.ts"
 import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.ts"
+import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { team, withSchema } from "./group-team.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
@@ -95,6 +97,52 @@ for (const change of ["removal", "demotion"] as const) {
           SELECT title, deleted_at IS NOT NULL AS deleted FROM notes WHERE id = ${id}
         `
         expect(rows).toEqual(write === "create" ? [] : [{ title: "First", deleted: false }])
+      })
+    })
+  }
+}
+
+const ACCOUNT_WRITES = ["create", "update", "archive", "default", "delete"] as const
+
+for (const change of ["removal", "demotion"] as const) {
+  for (const write of ACCOUNT_WRITES) {
+    Deno.test(`account ${write}: refused when a ${change} commits while the write waits`, async () => {
+      await withSchema(async (sql) => {
+        const { groupId, owner, editor } = await team(sql)
+        const accounts = new PostgresAccountRepository(sql)
+        const id = uuidV7()
+        const fields = {
+          name: "Wallet",
+          kind: AccountKind.CASH,
+          currency: "EUR",
+          startingBalance: 0,
+        }
+        if (write !== "create") await accounts.create({ groupId, id, ...fields }, editor)
+
+        const held = await holdMemberChange(sql, groupId, owner, editor, change)
+        const at = { groupId, id, expectedVersion: 1 }
+        const writing = write === "create"
+          ? accounts.create({ groupId, id, ...fields }, editor)
+          : write === "update"
+          ? accounts.update({ ...at, ...fields, name: "Late" }, editor)
+          : write === "archive"
+          ? accounts.archive({ ...at, archived: true }, editor)
+          : write === "default"
+          ? accounts.setDefault({ ...at, isDefault: true }, editor)
+          : accounts.delete(at, editor)
+        const outcome = writing.then(() => null, (error) => error)
+
+        expect(await stillWaiting(outcome)).toBe(true)
+        held.release()
+        await held.committed
+
+        const error = await outcome
+        expect(error).toBeInstanceOf(AccountError)
+        expect((error as AccountError).code).toBe(EXPECTED_CODE[change])
+        const rows = await sql`
+          SELECT name, version FROM accounts WHERE id = ${id}
+        `
+        expect(rows).toEqual(write === "create" ? [] : [{ name: "Wallet", version: 1 }])
       })
     })
   }

@@ -5,6 +5,7 @@
  * @module
  */
 
+import { accountsModule } from "./accounts/module.tsx"
 import { apiTokensModule } from "./api-tokens/module.tsx"
 import { auditModule } from "./audit/module.tsx"
 import { billingModule } from "./billing/module.tsx"
@@ -15,6 +16,7 @@ import { dashboardModule } from "./dashboard/module.tsx"
 import { groupsModule } from "./groups/module.tsx"
 import { jobsModule } from "./jobs/module.tsx"
 import { newsletterModule } from "./newsletter/module.tsx"
+import { ratesModule } from "./rates/module.tsx"
 import { statsModule } from "./stats/module.tsx"
 import { systemModule } from "./system/module.tsx"
 import type { AdminModule, AdminPersonTab } from "./types.ts"
@@ -25,6 +27,7 @@ export const ADMIN_MODULES: readonly AdminModule[] = [
   statsModule,
   usersModule,
   groupsModule,
+  accountsModule,
   billingModule,
   newsletterModule,
   blogModule,
@@ -32,6 +35,7 @@ export const ADMIN_MODULES: readonly AdminModule[] = [
   catalogModule,
   auditModule,
   jobsModule,
+  ratesModule,
   systemModule,
   apiTokensModule,
 ]

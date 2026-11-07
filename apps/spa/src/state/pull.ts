@@ -11,6 +11,8 @@ export interface PullDependencies {
   notes: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The open group's tags, which the notes name; read with the notes. */
   tags?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
+  /** The open household's accounts. */
+  accounts?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The members of the group whose settings are open. */
   members: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The inbox: its unread count, and its list while the page is open. */
@@ -46,6 +48,7 @@ export function createPull(dependencies: PullDependencies) {
     groups,
     notes,
     tags,
+    accounts,
     members,
     notifications,
     onboarding,
@@ -69,6 +72,7 @@ export function createPull(dependencies: PullDependencies) {
     const openGroup = notes.groupId.value
     const membersGroup = members.groupId.value
     const tagsGroup = tags?.groupId.value ?? null
+    const accountsGroup = accounts?.groupId.value ?? null
     // A group hint is not about the inbox or the preferences; a start-up or a reconnect may have
     // missed one.
     if (!gap) {
@@ -81,6 +85,7 @@ export function createPull(dependencies: PullDependencies) {
     await Promise.all([
       due(openGroup) ? notes.refresh() : undefined,
       due(tagsGroup) ? tags?.refresh() : undefined,
+      due(accountsGroup) ? accounts?.refresh() : undefined,
       due(membersGroup) ? members.refresh() : undefined,
     ])
   }
@@ -105,11 +110,12 @@ export interface ChangeCheckDependencies extends PullDependencies {
  * reads moves the sequence again, so the next check reads the notes once more and never skips it.
  */
 export function createChangeCheck(dependencies: ChangeCheckDependencies) {
-  const { groups, notes, tags, members } = dependencies
+  const { groups, notes, tags, accounts, members } = dependencies
   const pull = createPull(dependencies)
   const stores = [
     ["notes", notes],
     ...(tags ? [["tags", tags] as const] : []),
+    ...(accounts ? [["accounts", accounts] as const] : []),
     ["members", members],
   ] as const
   /** The group and the sequence each list was last read at. */

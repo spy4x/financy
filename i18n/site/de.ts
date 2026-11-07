@@ -134,11 +134,11 @@ export default {
     "Kostenloses Open-Source-Haushaltsbuch für dich oder deine Familie, in beliebig vielen Währungen. Selbst hosten unter AGPL‑3.0; eine bezahlte Cloud folgt. Wird gerade neu gebaut.",
   "HomeProof.tests": "Testdateien in den Apps und Bibliotheken, alle laufen in der CI",
   "HomeProof.licence": "Lizenz: kostenlos selbst zu hosten",
-  "HomeStatus.signIn": "Anmeldung per E-Mail, mit Passkeys und Zwei-Faktor-Schutz",
+  "HomeStatus.signIn": "Anmeldung per E‑Mail, mit Passkeys und Zwei‑Faktor‑Schutz",
   "HomeStatus.groups":
     "Gemeinsame Haushalte: Leute einladen und jedem eine Rolle geben, von Betrachter bis Inhaber",
   "HomeStatus.export": "Einen Haushalt in eine Datei exportieren und wieder importieren",
-  "HomeStatus.realtime": "Live-Updates auf jedem Gerät und eine App, die auch offline startet",
+  "HomeStatus.realtime": "Live‑Updates auf jedem Gerät und eine App, die auch offline startet",
   "HomeStatus.languages": "Die App und diese Website in neun Sprachen",
   "HomeFaq.freeQuestion": "Ist Financy kostenlos?",
   "HomeFaq.freeAnswer":
@@ -185,7 +185,7 @@ export default {
   "PricingWays.lead":
     "Der Code ist unter AGPL‑3.0 kostenlos, ohne Lizenzschlüssel und ohne zurückgehaltene Funktionen.",
   "PricingWays.useTitle": "Financy selbst hosten",
-  "PricingWays.useUnit": "AGPL‑3.0-Lizenz, kein Konto",
+  "PricingWays.useUnit": "AGPL‑3.0-Lizenz, kein Benutzerkonto",
   "PricingWays.useText":
     "Der ganze Quellcode unter AGPL‑3.0, jede Funktion, jedes Update, für dich und deinen Haushalt.",
   "PricingWays.runTitle": "Im Produktivbetrieb laufen lassen",
@@ -193,7 +193,7 @@ export default {
   "PricingWays.runUnit": "zum Preis deines Hosters",
   "PricingWays.runAction": "Deploy-Anleitung lesen",
   "PricingWays.runText":
-    "Financy läuft auf einem Linux-Server, den du mietest oder besitzt. Ein E-Mail-Anbieter und die Anmeldung mit Google oder GitHub sind optional und rechnen jeweils direkt mit dir ab.",
+    "Financy läuft auf einem Linux-Server, den du mietest oder besitzt. Dazu brauchst du einen E-Mail-Anbieter, der die Codes für Registrierung und Anmeldung verschickt; die Anmeldung mit Google oder GitHub ist optional. Jeder Anbieter rechnet direkt mit dir ab.",
   "DemoPlans.eyebrow": "Abrechnung, die funktioniert",
   "DemoPlans.title": "Die Tarife der Demo: ein Beispiel für die Abrechnung, die du bekommst",
   "DemoPlans.noticeTitle": "Das sind nicht die Preise von Seed",
@@ -221,11 +221,9 @@ export default {
   "DemoPlan.proRoles": "Mitglieder zu Bearbeitern oder Admins machen",
   "FeatureTierSettled.eyebrow": "Funktioniert heute",
   "FeatureTierSettled.title": "Das Fundament für das Geld deines Haushalts",
-  "FeatureTierSettled.lead":
-    "Diese Teile funktionieren und werden in der CI getestet. Als Nächstes kommt das Geld selbst: Konten in jeder Währung und ihre Buchungen.",
   "FeatureTierSettled.status":
     "Die Anmeldung mit Google und GitHub braucht eigene Schlüssel für den Server, deshalb bietet eine frische Installation zunächst nur die Anmeldung per E-Mail.",
-  "FeatureSignIn.nav": "Konten und Anmeldung",
+  "FeatureSignIn.nav": "Anmeldung und Sicherheit",
   "FeatureSignIn.title": "Anmeldung, erledigt",
   "FeatureSignIn.lead":
     "Du registrierst dich mit E-Mail-Adresse und Passwort und bestätigst die Adresse mit einem Code. Ein vergessenes Passwort setzt du zurück; anmelden kannst du dich mit Google oder GitHub, mit einem Passkey oder mit einem Code per E-Mail. Eine Authenticator-App ergänzt den Zwei-Faktor-Schutz (2FA), und du siehst jedes Gerät, auf dem du angemeldet bist, und kannst die anderen abmelden.",
@@ -296,14 +294,7 @@ export default {
   "FeaturesFaq.nativeQuestion": "Gibt es eine App fürs Handy?",
   "FeaturesFaq.nativeAnswer":
     "Noch nicht in den App-Stores. Die Web-App lässt sich schon heute aus dem Browser auf Handy und Computer installieren und startet auch ohne Netz.",
-  "Features.title": "Financy-Funktionen: Haushalte, Sync, offline, selbst hosten",
-  "Features.description":
-    "Was Financy heute kann: Haushalte mit Rollen, Live-Updates auf jedem Gerät, eine App, die offline funktioniert, Export, neun Sprachen und Selbsthosting. Konten und Budgets kommen als Nächstes.",
   "FeaturesHero.title": "Was Financy heute kann, und was als Nächstes kommt",
-  "FeaturesHero.lead":
-    "Financy wird neu gebaut. Was heute funktioniert, ist das Fundament für das Geld eines Haushalts: Anmeldung, gemeinsamer Zugang mit Rollen, Live-Updates, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt auf seinen Code.",
-  "FeaturesHero.note":
-    "Konten, Buchungen und Budgets sind noch nicht gebaut. <status>Zum aktuellen Stand des Neubaus</status>.",
   "FeaturesFaq.title": "Kann Financy das?",
   "FeatureSection.issue": "Issue #{number}",
   "FeatureSection.forDevelopers": "Für Entwickler",
@@ -314,7 +305,7 @@ export default {
   "Loops.realtimeTitle":
     "Eine im linken Fenster gespeicherte Notiz erscheint binnen einer Sekunde im rechten Fenster, ohne Neuladen.",
   "Loops.realtimeCaption":
-    "Zwei Fenster, ein Konto. Speichere in einem, und das andere aktualisiert sich von selbst.",
+    "Zwei Fenster, ein Benutzerkonto. Speichere in einem, und das andere aktualisiert sich von selbst.",
   "Loops.offlineName": "Offline bearbeiten",
   "Loops.offlineTitle":
     "Die App geht offline, eine Notiz wird bearbeitet, und nach der Wiederverbindung fragt die Konfliktauswahl, welche Version bleibt.",
@@ -444,7 +435,7 @@ export default {
   "FeaturePageSignIn.how1":
     "Die API prüft jede Anmeldung selbst und antwortet mit einem signierten Sitzungs-Cookie. Ein Passkey nutzt das eingebaute WebAuthn des Browsers: Der Server speichert nur seinen öffentlichen Schlüssel, und jede Anmelde-Challenge gilt nur einmal. Ein Anmeldecode per E-Mail meldet an oder registriert, gilt nur einmal, 10 Minuten lang und nur im Browser, der ihn angefordert hat, und wird nur als Hash gespeichert.",
   "FeaturePageSignIn.how2":
-    "Eine Authenticator-App ergänzt die Anmeldung um einen zweiten Faktor. Das Profil listet jeden Zugang zum Konto und jedes angemeldete Gerät auf; wer einen Zugang ändert, muss sich ausweisen, und es geht eine E-Mail raus. Besucher können auch mit einem Gastkonto starten und später eine Anmeldemethode hinzufügen.",
+    "Eine Authenticator-App ergänzt die Anmeldung um einen zweiten Faktor. Das Profil listet jeden Zugang zum Benutzerkonto und jedes angemeldete Gerät auf; wer einen Zugang ändert, muss sich ausweisen, und es geht eine E-Mail raus. Besucher können auch mit einem Gastkonto starten und später eine Anmeldemethode hinzufügen.",
   "FeaturePageSignIn.authServiceQuestion": "Brauche ich einen Auth-Dienst?",
   "FeaturePageSignIn.authServiceAnswer":
     "Nein. Die eigene API von Seed prüft Passwörter, Passkeys, Anmeldecodes und die Antworten von Google und GitHub auf deinem Server, deshalb fallen keine Kosten pro Nutzer an.",
@@ -464,16 +455,16 @@ export default {
     "Gruppen mit Rollen vom Betrachter bis zum Inhaber, Einladungen, Übertragung, Aktivitätsprotokoll und einer Mandantenprüfung für alles. MIT, kostenlos.",
   "FeaturePageGroups.h1": "Gruppen und Rollen für dein SaaS, ohne Multi-Tenancy selbst zu bauen",
   "FeaturePageGroups.answer":
-    "Seed gibt jedem Konto bei der Registrierung eine persönliche Gruppe, und Leute legen gemeinsame Gruppen an, laden andere ein und geben ihnen Rollen vom Betrachter bis zum Inhaber. Die Gruppe ist die einzige Mandantengrenze, also durchläuft eine neue Funktion dieselbe Prüfung, sobald sie das Notizen-Aggregat kopiert.",
+    "Seed gibt jedem Benutzerkonto bei der Registrierung eine persönliche Gruppe, und Leute legen gemeinsame Gruppen an, laden andere ein und geben ihnen Rollen vom Betrachter bis zum Inhaber. Die Gruppe ist die einzige Mandantengrenze, also durchläuft eine neue Funktion dieselbe Prüfung, sobald sie das Notizen-Aggregat kopiert.",
   "FeaturePageGroups.summary":
     "Gruppen mit Rollen vom Betrachter bis zum Inhaber, Einladungen und Aktivitätsprotokoll.",
   "FeaturePageGroups.how1":
     "Jede Zeile gemeinsamer Daten gehört zu einer Gruppe, und die API prüft die Rolle der Person in dieser Gruppe, bevor sie liest oder schreibt. Ein Betrachter liest, ein Bearbeiter ändert auch die Daten der Gruppe, und ein Admin und der Inhaber verwalten zusätzlich Mitglieder und lesen das Aktivitätsprotokoll.",
   "FeaturePageGroups.how2":
-    "Der Inhaber überträgt die Gruppe in einem Schritt, und eine gelöschte Gruppe lässt sich innerhalb von 30 Tagen wiederherstellen. Einladen kann nur ein Konto mit bestätigter E-Mail-Adresse.",
-  "FeaturePageGroups.personalGroupQuestion": "Bekommt jedes Konto eine Gruppe?",
+    "Der Inhaber überträgt die Gruppe in einem Schritt, und eine gelöschte Gruppe lässt sich innerhalb von 30 Tagen wiederherstellen. Einladen kann nur ein Benutzerkonto mit bestätigter E-Mail-Adresse.",
+  "FeaturePageGroups.personalGroupQuestion": "Bekommt jedes Benutzerkonto eine Gruppe?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Ja. Jedes Konto bekommt bei der Registrierung eine persönliche Gruppe; persönliche und gemeinsame Gruppen durchlaufen dieselbe Prüfung.",
+    "Ja. Jedes Benutzerkonto bekommt bei der Registrierung eine persönliche Gruppe; persönliche und gemeinsame Gruppen durchlaufen dieselbe Prüfung.",
   "FeaturePageGroups.viewerQuestion": "Kann ein Betrachter die Daten einer Gruppe ändern?",
   "FeaturePageGroups.viewerAnswer":
     "Nein. Ein Betrachter liest die Daten der Gruppe; ändern können sie ein Bearbeiter, ein Admin oder der Inhaber.",
@@ -571,7 +562,7 @@ export default {
     "Budgets, der Import von Kontoauszügen und die kostenpflichtige Cloud kommen später: <plan>den ganzen Plan ansehen</plan>.",
   "HomeWho.keeperTitle": "Wer das Geld verwaltet",
   "HomeWho.keeperText":
-    "Gehalt in einer Währung, Miete in einer anderen, Erspartes in einer dritten: ein Ort, der alles zusammenrechnet.",
+    "Gehalt in einer Währung, Miete in einer anderen, Erspartes in einer dritten: eine Summe zu den Kursen der EZB, mit deren Datum.",
   "HomeWho.partnerTitle": "Der Partner oder die Partnerin",
   "HomeWho.partnerText":
     "Teilt das Geld des Haushalts mit eigenem Login und trägt Ausgaben in Sekunden ein.",
@@ -587,15 +578,38 @@ export default {
   "HomeWays.cloudText":
     "Noch nicht gestartet. Derselbe Code, für dich betrieben, als bezahlter Tarif.",
   "HomeFaq.useQuestion": "Kann ich Financy heute schon nutzen?",
-  "HomeFaq.useAnswer":
-    "Noch nicht. Anmeldung, Haushalte und Synchronisierung funktionieren; Konten und Buchungen werden gerade gebaut.",
   "HomeFaq.currencyQuestion": "Welche Währungen wird Financy unterstützen?",
   "HomeFaq.currencyAnswer":
-    "Beliebige, auch Kryptowährungen; jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten. Geplant, aber noch nicht gebaut.",
+    "Financy wird mit jeder Mischung von Währungen umgehen, auch mit Kryptowährungen. Jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten, und Summen erscheinen in der Hauptwährung des Haushalts. Für eine Währung, die die EZB nicht abdeckt, etwa Krypto, trägst du den Kurs direkt in der Buchung ein. Wird gerade gebaut.",
+  "HomeFaq.ratesQuestion": "Woher kommen die Wechselkurse?",
+  "HomeFaq.ratesAnswer":
+    "Von der Europäischen Zentralbank, an jedem Werktag über Frankfurter abgerufen, einen kostenlosen öffentlichen Dienst. Jede umgerechnete Summe zeigt das Datum der Kurse, mit denen sie gerechnet wurde. Eine Währung ohne Kurs wird genannt und aus der Summe herausgelassen, nie mit 1 gerechnet. Wird gerade gebaut.",
   "HomeFaq.bankQuestion": "Verbindet sich Financy mit meiner Bank?",
   "HomeFaq.bankAnswer": "Nein. Der Import von Kontoauszügen ist für die erste Version geplant.",
   "HomeFaq.stopsQuestion": "Was passiert, wenn Financy eingestellt wird?",
   "HomeFaq.stopsAnswer":
     "Der Code steht unter AGPL‑3.0 auf GitHub, also kann ihn jeder weiter betreiben, und du kannst deine Daten jederzeit exportieren.",
   "SiteFooter.aboutHint": "(öffnet antonshubin.com)",
+  "FeatureAccounts.code": "Code der Konten lesen",
+  "FeatureAccounts.fact1":
+    "Der Server berechnet den Kontostand bei jedem Lesen und speichert ihn nirgends, deshalb weicht er nie ab",
+  "FeatureAccounts.fact2":
+    "Beträge sind ganze Zahlen in der kleinsten Einheit der Währung: Der Yen hat keine, der Dinar drei Nachkommastellen",
+  "FeatureAccounts.fact3":
+    "Ein Betrachter sieht die Konten; ändern können sie nur Bearbeiter und höher, und der Server prüft das",
+  "FeatureAccounts.lead":
+    "Bargeld, Bankkonten, Karten, Ersparnisse, Vermögenswerte und Schulden, jedes in seiner eigenen Währung, nach Art gruppiert und mit einem Standardkonto. Der ganze Haushalt sieht jede Änderung sofort.",
+  "FeatureAccounts.nav": "Konten",
+  "FeatureAccounts.title": "Jedes Konto in seiner eigenen Währung",
+  "FeatureTierSettled.lead":
+    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung sind da; Buchungen darauf kommen als Nächstes.",
+  "Features.description":
+    "Financy heute: Konten in jeder Währung, Haushalte mit Rollen, Sync, Offline-App, Export, neun Sprachen und dein eigener Server. Als Nächstes: Buchungen.",
+  "Features.title": "Financy-Funktionen: Konten, Haushalte, Sync, offline",
+  "FeaturesHero.lead":
+    "Financy wird von Grund auf neu gebaut. Was heute funktioniert: Konten in jeder Währung und das Fundament darunter: Anmeldung, Teilen mit Rollen, Änderungen in Echtzeit, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt den Code dahinter.",
+  "FeaturesHero.note":
+    "Buchungen und Budgets gibt es noch nicht. <status>Sieh nach, wie weit der Neubau ist</status>.",
+  "HomeFaq.useAnswer":
+    "Noch nicht. Anmeldung, Haushalte, Synchronisierung und Konten in jeder Währung funktionieren; Buchungen werden gerade gebaut.",
 } satisfies Catalog

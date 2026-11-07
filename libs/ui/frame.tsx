@@ -2,6 +2,7 @@ import type { ComponentChildren, JSX } from "preact"
 import { useRef } from "preact/hooks"
 import { canViewActivity } from "@domain/groups"
 import {
+  IconBank,
   IconChartPie,
   IconClock,
   IconDocumentText,
@@ -20,8 +21,10 @@ import { Button } from "@spy4x/preact-ui/button"
 import { Link } from "@spy4x/preact-ui/link"
 import { LanguageButton } from "@spy4x/preact-ui/language-picker"
 import type { AccountMenuLanguage } from "@spy4x/preact-system/account-menu"
+import { PRODUCT_NAME } from "./brand.ts"
 import { GroupPicker, type GroupPickerData, GroupSheet } from "./group-picker.tsx"
 import {
+  ACCOUNT_PATHS,
   GROUP_PATHS,
   type Navigate,
   NOTE_PATHS,
@@ -36,8 +39,9 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAppText } from "./i18n.ts"
 
 /**
- * The daily destinations, in the order the rail and the phone tab bar show them. Four at most, so
- * the phone bar keeps its last slot for the Account sheet. Activity belongs to the selected group and
+ * The daily destinations, in the order the rail and the phone tab bar show them. The rail shows
+ * them all; the phone bar shows the first four and moves the rest into the Account sheet behind its
+ * last slot, so the order puts the destinations used most first. Activity belongs to the selected group and
  * shows only while there is one whose log the person may read. Profile and Tags are in the account
  * menu; Tags is in Notes' "More actions" too. Labels come from `t`, the app's translator.
  */
@@ -52,6 +56,7 @@ export function navItems(
       href: OVERVIEW_PATHS.root,
       Icon: IconChartPie,
     },
+    { key: "accounts", label: t.t("Frame.accounts"), href: ACCOUNT_PATHS.list, Icon: IconBank },
     { key: "notes", label: t.t("Frame.notes"), href: NOTE_PATHS.list, Icon: IconDocumentText },
     ...(activityGroupId === null ? [] : [{
       key: "activity",
@@ -282,7 +287,7 @@ function Brand({ navigate }: { navigate?: Navigate }): JSX.Element {
       navigate={navigate}
       class="flex shrink-0 items-center gap-2 rounded-md"
     >
-      <BrandMark Icon={IconWallet} name="Financy" />
+      <BrandMark Icon={IconWallet} name={PRODUCT_NAME} />
     </Link>
   )
 }

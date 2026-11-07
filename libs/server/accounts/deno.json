@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "check": "deno check postgres-account-repository.ts account-movable.ts account-portable.ts purge-deleted-accounts.ts admin-accounts.ts"
+  }
+}

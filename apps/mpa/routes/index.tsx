@@ -43,13 +43,13 @@ export function homeHead(t: Translator<string>): { title: string; description: s
 }
 
 /** The day the home page's content last changed: the sitemap's `lastmod`. Change it with it. */
-export const HOME_UPDATED = `2026-11-04`
+export const HOME_UPDATED = `2026-11-06`
 
 /**
  * The day the rebuild's status (the hero's line and the "Where the rebuild stands" card) was last
  * checked against the issues. Change it whenever an item moves.
  */
-export const STATUS_UPDATED = `2026-11-04`
+export const STATUS_UPDATED = `2026-11-06`
 
 /** The home page's head in English, for the page list and `llms.txt`. */
 export const HOME_HEAD = homeHead(siteEnglishText())
@@ -68,6 +68,7 @@ const PROOF = [
 
 /** What works today, by catalog key. */
 const WORKS_TODAY = [
+  `HomeStatus.accounts`,
   `HomeStatus.signIn`,
   `HomeStatus.groups`,
   `HomeStatus.realtime`,
@@ -78,7 +79,6 @@ const WORKS_TODAY = [
 
 /** What is being built now, each with the issue that tracks it. */
 const BUILDING_NOW = [
-  { key: `HomeStatus.accounts`, issue: 94 },
   { key: `HomeStatus.transactions`, issue: 96 },
   { key: `HomeStatus.transfers`, issue: 97 },
   { key: `HomeStatus.month`, issue: 99 },
@@ -96,6 +96,7 @@ const FAQ = [
   { id: `faq-use`, question: `HomeFaq.useQuestion`, answer: `HomeFaq.useAnswer` },
   { id: `faq-free`, question: `HomeFaq.freeQuestion`, answer: `HomeFaq.freeAnswer` },
   { id: `faq-currencies`, question: `HomeFaq.currencyQuestion`, answer: `HomeFaq.currencyAnswer` },
+  { id: `faq-rates`, question: `HomeFaq.ratesQuestion`, answer: `HomeFaq.ratesAnswer` },
   { id: `faq-bank`, question: `HomeFaq.bankQuestion`, answer: `HomeFaq.bankAnswer` },
   { id: `faq-stops`, question: `HomeFaq.stopsQuestion`, answer: `HomeFaq.stopsAnswer` },
 ] as const
@@ -364,6 +365,8 @@ function Newsletter(): JSX.Element {
           </div>
           <p id="home-email-hint" class="text-sm text-muted">{t.t(`HomeNewsletter.hint`)}</p>
         </form>
+        {/* Every "Get notified" link leads here: arriving puts the cursor in the email field. */}
+        <script defer src="/field-focus.js" data-hash="newsletter" data-field="home-email" />
       </div>
     </Band>
   )

@@ -2,7 +2,13 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import type postgres from "postgres"
 import { ONE_DAY_IN_MILLISECONDS } from "@spy4x/platform/universal/time-constants"
-import { BLOG_CROSSPOST_JOB, BLOG_INDEXNOW_JOB, BLOG_PUBLISH_JOB } from "@domain/blog"
+import {
+  BLOG_CROSSPOST_JOB,
+  BLOG_INDEXNOW_JOB,
+  BLOG_POST_JOBS,
+  BLOG_PUBLISH_JOB,
+  BLOG_SHARE_RESULTS_JOB,
+} from "@domain/blog"
 import { BILLING_NOTICE_JOBS } from "../billing/billing-notices.ts"
 import { SEAT_SYNC_JOB } from "../billing/seat-sync.ts"
 import {
@@ -17,6 +23,7 @@ import {
   DATA_EXPORT_MAIL_JOB,
 } from "./data-export.ts"
 import { EMAIL_CODE_MAIL_JOB } from "./email-code-mail.ts"
+import { RATES_FETCH_JOB } from "./exchange-rates.ts"
 import { OUTBOX_CLEANUP_JOB } from "./jobs.ts"
 import { PASSWORD_RESET_MAIL_JOB } from "./password-reset-mail.ts"
 import { SIGN_IN_METHOD_MAIL_JOB } from "./sign-in-method-mail.ts"
@@ -60,6 +67,9 @@ const QUEUED_KINDS = [
   BLOG_PUBLISH_JOB,
   BLOG_INDEXNOW_JOB,
   BLOG_CROSSPOST_JOB,
+  RATES_FETCH_JOB,
+  BLOG_SHARE_RESULTS_JOB,
+  ...Object.values(BLOG_POST_JOBS),
 ]
 
 const noop = () => async () => {}
@@ -81,11 +91,16 @@ describe(`job registry`, () => {
     }
   })
 
-  it(`repeats only the nightly cleanup, every day at 03:00 UTC`, () => {
+  it(`repeats the nightly cleanup at 03:00 UTC, the exchange rates at 16:00 UTC and the sharing results hourly`, () => {
     expect(repeatSchedules(JOBS)).toEqual({
       repeatEveryMs: {},
-      repeatCron: { [OUTBOX_CLEANUP_JOB]: `0 3 * * *` },
+      repeatCron: {
+        [OUTBOX_CLEANUP_JOB]: `0 3 * * *`,
+        [RATES_FETCH_JOB]: `0 16 * * *`,
+        [BLOG_SHARE_RESULTS_JOB]: `17 * * * *`,
+      },
     })
+    expect(describeRepeat({ cron: `17 * * * *` })).toBe(`Every hour at minute 17`)
   })
 
   it(`names a kind by its label, and an unknown kind by itself`, () => {

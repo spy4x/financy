@@ -185,6 +185,35 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       ORDER BY created_at, id`,
   },
   {
+    // The finance accounts the person created, in households they still belong to. The starting
+    // balance is in the currency's smallest unit, as decimal text, as every BIGINT crosses.
+    name: `finance_accounts`,
+    columns: [
+      `id`,
+      `groupId`,
+      `name`,
+      `kind`,
+      `currency`,
+      `startingBalance`,
+      `isDefault`,
+      `archivedAt`,
+      `createdAt`,
+      `updatedAt`,
+      `deletedAt`,
+    ],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, name,
+        CASE kind
+          WHEN 1 THEN 'cash' WHEN 2 THEN 'bank' WHEN 3 THEN 'card' WHEN 4 THEN 'savings'
+          WHEN 5 THEN 'asset' ELSE 'liability'
+        END AS kind,
+        currency, starting_balance::text AS starting_balance, is_default, archived_at,
+        created_at, updated_at, deleted_at
+      FROM accounts
+      WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
     // What the person did in their groups, by kind and id. `details` and the person acted on are
     // left out: they can name other people.
     name: `group_activity`,

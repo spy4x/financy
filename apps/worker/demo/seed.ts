@@ -13,6 +13,7 @@ import type { SubscribersSetup } from "@server/subscribers/subscribers.ts"
 import type { AppDbBase } from "../../api/services/db-base.ts"
 import type { ServerFiles } from "@server/files/files.ts"
 import { attachmentObjectKey } from "@domain/notes"
+import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { sampleFile } from "./sample-files.ts"
 import { createSignIn } from "../../api/services/sign-in.ts"
 import {
@@ -20,6 +21,7 @@ import {
   type FakeGroup,
   type FakeMember,
   fakePeople,
+  fakeRates,
   fakeWorkspace,
   withStandIns,
 } from "./fake-data.ts"
@@ -132,6 +134,10 @@ export async function seedDemo(
   if (options.subscribers) await writeNewsletter(sql, data, options.subscribers, at)
   // The shop's sample items, for a product that turns the catalog on (docs/catalog.md).
   await seedSampleCatalog(sql, at(0))
+  // A few days of recorded rates, so a demo household converts before the daily job runs.
+  await new PostgresRateRepository(sql).insert(fakeRates(now), now, (rate, problem) => {
+    throw new Error(`the demo's rate ${rate.base}/${rate.quote} is refused: ${problem}`)
+  })
   if (admin) {
     await writeOperator(sql, admin.id, admin.created, data, userIds, subscriptions, at)
     await writeDevelopmentBackup(sql, at)
@@ -220,7 +226,7 @@ export async function createAdmin(
 }
 
 /**
- * Groups, their members, tags, notes, promotions and pending invitations, each at its time. `idOf`
+ * Groups, their members, tags, accounts, notes, promotions and pending invitations, each at its time. `idOf`
  * answers `null` for someone without an account: such a member is left out, a row they wrote goes
  * to a stand-in ({@link withStandIns}), and a group with such an owner is skipped. Answers each group's id,
  * or `null` for a skipped one.
@@ -259,11 +265,15 @@ async function seedGroups(
     `
     // An imported group's log starts with the import, as a real one does.
     if (group.imported) {
-      const items = { notes: group.notes.length, tags: group.tags.length }
+      const items = {
+        accounts: group.accounts.length,
+        notes: group.notes.length,
+        tags: group.tags.length,
+      }
       await sql`UPDATE groups SET imported_at = ${created} WHERE id = ${groupId}`
       await sql`
         UPDATE audit_events SET event_kind = ${GROUP_FILE_EVENTS.imported},
-          details = ${sql.json({ ...items, count: items.notes + items.tags })}
+          details = ${sql.json({ ...items, count: items.accounts + items.notes + items.tags })}
         WHERE group_id = ${groupId} AND event_kind = ${GROUP_CREATED}
       `
     }
@@ -314,6 +324,21 @@ async function seedGroups(
       await sql`UPDATE tags SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
       await dateAudit(sql, id, when)
       tagIds.set(tag.name, id)
+    }
+    for (const [index, account] of content.accounts.entries()) {
+      const id = uuidV7()
+      const when = at(account.createdAgo)
+      const author = writer(account.author)
+      const { name, kind, currency, startingBalance } = account
+      await db.account.create({ id, groupId, name, kind, currency, startingBalance }, author)
+      if (index === 0) {
+        await db.account.setDefault(
+          { id, groupId, expectedVersion: 1, isDefault: true },
+          author,
+        )
+      }
+      await sql`UPDATE accounts SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
+      await dateAudit(sql, id, when)
     }
     for (const note of content.notes) {
       const id = uuidV7()

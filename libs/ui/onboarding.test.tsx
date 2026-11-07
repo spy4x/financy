@@ -67,11 +67,13 @@ afterEach(async () => {
 })
 
 const NONE: OnboardingSteps = {
+  accountCreated: false,
   emailVerified: false,
   noteCreated: false,
   memberInvited: false,
   notificationsOn: false,
   twoFactorOn: false,
+  currencyChosen: false,
 }
 
 /** What the card called, in order. */
@@ -148,35 +150,43 @@ async function press(name: string): Promise<void> {
 const stepLines = () => all(`[data-e2e=onboarding] li`).map((item) => item.textContent ?? "")
 
 describe("first-steps card", () => {
-  it("lists the five steps, all to do for a new account, and offers the first one as its action", async () => {
+  it("lists the six steps, all to do for a new account, and offers the first account as its action", async () => {
     await mount()
 
     const lines = stepLines()
-    expect(lines.length).toBe(5)
+    expect(lines.length).toBe(6)
     expect(lines.every((line) => line.includes("To do: "))).toBe(true)
-    expect(lines[0]).toContain("Verify your email")
-    expect(lines[1]).toContain("Write your first note")
-    expect(lines[2]).toContain("Invite someone to your group")
-    expect(lines[3]).toContain("Turn on notifications")
-    expect(lines[4]).toContain("Set up two-factor sign-in")
-    expect(control("Verify email").getAttribute("href")).toBe("/profile/account?verify")
+    expect(lines[0]).toContain("Add your first account")
+    expect(lines[1]).toContain("Verify your email")
+    expect(lines[2]).toContain("Write your first note")
+    expect(lines[3]).toContain("Invite someone to your group")
+    expect(lines[4]).toContain("Turn on notifications")
+    expect(lines[5]).toContain("Set up two-factor sign-in")
+    expect(control("Add account").getAttribute("href")).toBe("/accounts/new")
   })
 
   it("draws its action as a secondary button, so the page header keeps the one filled button", async () => {
     await mount()
 
-    expect(control("Verify email").className).not.toMatch(/\bbg-accent-900\b/)
+    expect(control("Add account").className).not.toMatch(/\bbg-accent-900\b/)
   })
 
   it("ticks a step when its fact arrives and moves the action to the next open step", async () => {
-    const { update } = await mount({ steps: { ...NONE, emailVerified: true } })
+    const { update } = await mount({ steps: { ...NONE, accountCreated: true } })
     expect(stepLines()[0]).toContain("Done: ")
     expect(stepLines()[1]).toContain("To do: ")
-    expect(control("Write a note").getAttribute("href")).toBe("/notes/new")
+    expect(control("Verify email").getAttribute("href")).toBe("/profile/account?verify")
 
-    await update({ steps: { ...NONE, emailVerified: true, noteCreated: true } })
+    await update({ steps: { ...NONE, accountCreated: true, emailVerified: true } })
 
     expect(stepLines()[1]).toContain("Done: ")
+    expect(control("Write a note").getAttribute("href")).toBe("/notes/new")
+
+    await update({
+      steps: { ...NONE, accountCreated: true, emailVerified: true, noteCreated: true },
+    })
+
+    expect(stepLines()[2]).toContain("Done: ")
     expect(control("Invite someone").getAttribute("href")).toBe("/groups/g-1/members")
   })
 
@@ -186,6 +196,7 @@ describe("first-steps card", () => {
     const { update } = await mount()
     for (
       const [fact, label] of [
+        ["accountCreated", "Add account"],
         ["emailVerified", "Verify email"],
         ["noteCreated", "Write a note"],
         ["memberInvited", "Invite someone"],
@@ -199,6 +210,7 @@ describe("first-steps card", () => {
     }
 
     expect(hrefs).toEqual([
+      "/accounts/new",
       "/profile/account?verify",
       "/notes/new",
       "/groups/g-1/members",
@@ -207,8 +219,33 @@ describe("first-steps card", () => {
     ])
   })
 
+  it("offers an admin of the selected group the main currency step, opening its dialog", async () => {
+    const before = { ...NONE, accountCreated: true, emailVerified: true, noteCreated: true }
+    const { update } = await mount({ canChooseCurrency: true, steps: before })
+    expect(control("Choose currency").getAttribute("href")).toBe("/groups/g-1?currency=choose")
+    expect(stepLines().length).toBe(7)
+    // It comes right after the first note.
+    expect(stepLines()[3]).toContain("main currency")
+
+    await update({ steps: { ...before, currencyChosen: true } })
+    expect(all("a").some((link) => link.textContent?.trim() === "Choose currency")).toBe(false)
+  })
+
+  it("leaves the main currency step out for a person who cannot change it", async () => {
+    await mount({
+      canChooseCurrency: false,
+      steps: { ...NONE, accountCreated: true, emailVerified: true, noteCreated: true },
+    })
+    expect(control("Invite someone")).toBeDefined()
+    expect(all("a").some((link) => link.textContent?.trim() === "Choose currency")).toBe(false)
+    expect(stepLines().length).toBe(6)
+  })
+
   it("sends the invitation step to the groups page for a person with no selected group", async () => {
-    await mount({ groupId: null, steps: { ...NONE, emailVerified: true, noteCreated: true } })
+    await mount({
+      groupId: null,
+      steps: { ...NONE, accountCreated: true, emailVerified: true, noteCreated: true },
+    })
 
     expect(control("Invite someone").getAttribute("href")).toBe("/groups")
   })
@@ -216,9 +253,9 @@ describe("first-steps card", () => {
   it("opens a step's page through the app's router", async () => {
     const { calls } = await mount()
 
-    await press("Verify email")
+    await press("Add account")
 
-    expect(calls.routed).toEqual(["/profile/account?verify"])
+    expect(calls.routed).toEqual(["/accounts/new"])
   })
 
   it("calls the app when Dismiss is pressed, and keeps the card until the app removes it", async () => {
@@ -228,17 +265,19 @@ describe("first-steps card", () => {
     await press("Dismiss")
 
     expect(calls.log).toEqual(["dismiss"])
-    expect(stepLines().length).toBe(5)
+    expect(stepLines().length).toBe(6)
   })
 
   it("offers Finish only once every step is done, and it closes the card like Dismiss", async () => {
     const { calls } = await mount({
       steps: {
+        accountCreated: true,
         emailVerified: true,
         noteCreated: true,
         memberInvited: true,
         notificationsOn: true,
         twoFactorOn: true,
+        currencyChosen: true,
       },
     })
     expect(all("a").length).toBe(0)
@@ -276,7 +315,7 @@ describe("first-steps tour", () => {
     await mount({ tourOffered: false })
 
     expect(all("[data-e2e=onboarding-tour-offer]").length).toBe(0)
-    expect(stepLines().length).toBe(5)
+    expect(stepLines().length).toBe(6)
   })
 
   it("ends on Skip the tour and moves focus to the card's heading when the offer leaves", async () => {

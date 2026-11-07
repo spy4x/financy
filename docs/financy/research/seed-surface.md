@@ -157,7 +157,7 @@ Eleven packages, one PR each. Two of the brief's items are folded in because the
 files as a bigger package: `llms.txt` goes with the site copy (package 2), and the analytics events
 go with the pages that send them (1, 2, 7) and the Umami ids with the deploy (9). Every package that
 edits English in `i18n/` also carries the eight translations, each by its own agent with a
-back-translation check, and Russian goes to the owner (`i18n/TRANSLATING.md`, rules 5 and 6):
+back-translation check, Russian included (`i18n/TRANSLATING.md`, rules 5 and 6):
 `deno task check` fails on a stale translation, so they cannot be split off.
 
 Order: 1 → (2, 5, 6 in parallel) → 7 → (3, 4, 11 in parallel) → 9 → (8, 10).

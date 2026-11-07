@@ -15,7 +15,7 @@ import { LoadingSkeleton } from "@spy4x/preact-ui/loading-skeleton"
 import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
 import { Timeline, type TimelineTone } from "@spy4x/preact-ui/timeline"
 import { ToggleChips } from "@spy4x/preact-ui/toggle-chips"
-import { BLOG_AUDIT_KINDS } from "@domain/blog"
+import { BLOG_AUDIT_KINDS, BLOG_SHARING_AUDIT_KINDS } from "@domain/blog"
 import { CONTACT_LINK_AUDIT_KINDS } from "@domain/contact-links"
 import { CATALOG_AUDIT_KINDS } from "@domain/catalog"
 import { ACTIVITY_KINDS } from "@domain/groups"
@@ -94,6 +94,14 @@ const ACTIVITY_LABELS: Record<string, string> = {
   "tag.created": `AdminAuditEvent.tagCreated`,
   "tag.updated": `AdminAuditEvent.tagUpdated`,
   "tag.deleted": `AdminAuditEvent.tagDeleted`,
+  "account.created": `AdminAuditEvent.financeAccountCreated`,
+  "account.updated": `AdminAuditEvent.financeAccountUpdated`,
+  "account.archived": `AdminAuditEvent.financeAccountArchived`,
+  "account.unarchived": `AdminAuditEvent.financeAccountUnarchived`,
+  "account.default_set": `AdminAuditEvent.financeAccountDefaultSet`,
+  "account.default_cleared": `AdminAuditEvent.financeAccountDefaultCleared`,
+  "account.deleted": `AdminAuditEvent.financeAccountDeleted`,
+  "account.restored": `AdminAuditEvent.financeAccountRestored`,
   [ADMIN_JOB_RETRIED_KIND]: `AdminAuditEvent.jobRetried`,
   [ADMIN_JOB_RUN_NOW_KIND]: `AdminAuditEvent.jobRunNow`,
   [ADMIN_JOB_CANCELLED_KIND]: `AdminAuditEvent.jobCancelled`,
@@ -108,6 +116,13 @@ const ACTIVITY_LABELS: Record<string, string> = {
   [BLOG_AUDIT_KINDS.unpublished]: `AdminAuditEvent.blogUnpublished`,
   [BLOG_AUDIT_KINDS.urlChanged]: `AdminAuditEvent.blogUrlChanged`,
   [BLOG_AUDIT_KINDS.deleted]: `AdminAuditEvent.blogDeleted`,
+  [BLOG_SHARING_AUDIT_KINDS.channelCreated]: `AdminAuditEvent.blogChannelCreated`,
+  [BLOG_SHARING_AUDIT_KINDS.channelUpdated]: `AdminAuditEvent.blogChannelUpdated`,
+  [BLOG_SHARING_AUDIT_KINDS.channelArchived]: `AdminAuditEvent.blogChannelArchived`,
+  [BLOG_SHARING_AUDIT_KINDS.channelRestored]: `AdminAuditEvent.blogChannelRestored`,
+  [BLOG_SHARING_AUDIT_KINDS.channelDeleted]: `AdminAuditEvent.blogChannelDeleted`,
+  [BLOG_SHARING_AUDIT_KINDS.shareChanged]: `AdminAuditEvent.blogShareChanged`,
+  [BLOG_SHARING_AUDIT_KINDS.resultsEntered]: `AdminAuditEvent.blogShareResultsEntered`,
   [CONTACT_LINK_AUDIT_KINDS.created]: `AdminAuditEvent.contactLinkCreated`,
   [CONTACT_LINK_AUDIT_KINDS.updated]: `AdminAuditEvent.contactLinkUpdated`,
   [CONTACT_LINK_AUDIT_KINDS.deleted]: `AdminAuditEvent.contactLinkDeleted`,

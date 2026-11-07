@@ -10,6 +10,8 @@ import { createPreferencesOperations } from "../features/preferences/operations.
 import { createProfileOperations } from "../features/profile/operations.ts"
 import { createPushOperations } from "../features/push/operations.ts"
 import { createTagOperations } from "../features/tags/operations.ts"
+import { createAccountOperations } from "../features/accounts/operations.ts"
+import { createHouseholdOperations } from "../features/household/operations.ts"
 import { createAttachmentOperations } from "../features/notes/attachments.ts"
 import { createPictureOperations } from "../features/profile/picture.ts"
 import { createNoteOperations } from "../features/notes/operations.ts"
@@ -124,6 +126,21 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
     delete: (command) => commandBus.execute(command),
     list: (query) => queryBus.execute(query),
     get: (query) => queryBus.execute(query),
+  }),
+  ...createAccountOperations({
+    create: (command) => commandBus.execute(command),
+    update: (command) => commandBus.execute(command),
+    archive: (command) => commandBus.execute(command),
+    setDefault: (command) => commandBus.execute(command),
+    delete: (command) => commandBus.execute(command),
+    restore: (command) => commandBus.execute(command),
+    list: (query) => queryBus.execute(query),
+    get: (query) => queryBus.execute(query),
+    total: (query) => queryBus.execute(query),
+  }),
+  ...createHouseholdOperations({
+    updateSettings: (command) => commandBus.execute(command),
+    settings: (query) => queryBus.execute(query),
   }),
 })
 

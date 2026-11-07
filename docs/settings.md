@@ -28,6 +28,16 @@ default, never a value to keep for a secret.
 | `MPA_UMAMI_WEBSITE_ID` | The website's id in that Umami. It is public.                                                                | empty              | [Analytics](analytics.md)                      |
 | `INDEXNOW_KEY`         | The website's IndexNow key, 8 to 128 letters, digits and dashes. Public. Empty turns IndexNow off.           | empty              | [Blog](blog.md#indexnow)                       |
 | `DEVTO_API_KEY`        | A Dev.to API key, read by the worker. Secret. Set, it copies each live post to Dev.to once. Empty turns it off. | empty              | [Blog](blog.md#the-devto-cross-post)           |
+| `MASTODON_ACCESS_TOKEN` | A Mastodon access token (`write:statuses`), read by the worker. Secret. Empty keeps Mastodon manual. | empty | [Blog](blog.md#automatic-posts) |
+| `MASTODON_INSTANCE_URL` | The `https` address of the token's Mastodon server; the token is sent only there. Empty keeps Mastodon manual. | empty | [Blog](blog.md#automatic-posts) |
+| `BLUESKY_IDENTIFIER` | The Bluesky handle the worker posts as. Set it with the app password. | empty | [Blog](blog.md#automatic-posts) |
+| `BLUESKY_APP_PASSWORD` | A Bluesky app password, read by the worker. Secret. Empty keeps Bluesky manual. | empty | [Blog](blog.md#automatic-posts) |
+| `BLUESKY_SERVICE` | Another Bluesky server than `https://bsky.social`. | empty | [Blog](blog.md#automatic-posts) |
+| `HASHNODE_TOKEN` | A Hashnode personal access token, read by the worker. Secret. Empty keeps Hashnode manual. | empty | [Blog](blog.md#automatic-posts) |
+| `HASHNODE_PUBLICATION_ID` | The Hashnode publication the worker publishes to. | empty | [Blog](blog.md#automatic-posts) |
+| `LINKEDIN_ACCESS_TOKEN` | From `deno task linkedin:sign-in`, read by the worker. Secret. Empty keeps LinkedIn manual. | empty | [Blog](blog.md#linkedin) |
+| `LINKEDIN_MEMBER_ID` | From `deno task linkedin:sign-in`: the profile the worker posts on. | empty | [Blog](blog.md#linkedin) |
+| `LINKEDIN_TOKEN_EXPIRES_AT` | From `deno task linkedin:sign-in`: when the sign-in runs out (ISO 8601). The admin warns 14 days before. | empty | [Blog](blog.md#linkedin) |
 | `ADMIN_DOMAIN`         | The admin app's host, with the `admin` profile. Empty turns the operator area off.                           | `admin.localhost`  | [The three apps](apps.md#deploy-the-admin-app) |
 
 | Profile           | What it starts                                                                   | Guide                                   |
@@ -243,6 +253,14 @@ routes answer 404. Register `https://<DOMAIN>/api/auth/google/callback`, or `/gi
 | `TELEGRAM_WEBHOOK_SECRET` | Production: the secret Telegram sends to `https://<DOMAIN>/api/webhooks/telegram`. `openssl rand -hex 32`. | [Telegram](telegram.md) |
 | `TELEGRAM_POLLING`        | `true` or `false` overrides the default: polling with `ENV=dev`, the webhook in production.                | [Telegram](telegram.md) |
 | `TELEGRAM_API_URL`        | A local Bot API server. Empty: `https://api.telegram.org`.                                                 | [Telegram](telegram.md) |
+
+## Exchange rates
+
+| Variable                     | What it does                                                                                                                      | Guide                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `RATES_FRANKFURTER_URL`      | A self-hosted Frankfurter. Empty: `https://api.frankfurter.dev`. The ECB's rates need no key.                                     | [Exchange rates](financy/exchange-rates.md)      |
+| `RATES_FALLBACK_KEY`         | The exchangerate-api.com key of the paid fallback, worker only. Empty turns the fallback off.                                     | [Exchange rates](financy/exchange-rates.md)      |
+| `RATES_FALLBACK_MONTHLY_CAP` | Required with the key: the most fallback calls in one calendar month, `0` to `1000000`. The worker refuses to start without it; `GET /api/admin/rates` returns the calls against it.   | [Exchange rates](financy/exchange-rates.md)      |
 
 ## Error tracking and the SPA's modules
 

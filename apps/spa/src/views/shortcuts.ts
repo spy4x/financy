@@ -1,4 +1,5 @@
 import {
+  ACCOUNT_PATHS,
   GROUP_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
@@ -46,6 +47,7 @@ export function spaShortcutRows(ports: SpaShortcutPorts): ShortcutRow[] {
     { keys: "mod+z", description: `Shortcuts.undo`, group: general },
     close,
     go("g o", `Frame.overview`, OVERVIEW_PATHS.root),
+    go("g f", `Frame.accounts`, ACCOUNT_PATHS.list),
     go("g n", `Frame.notes`, NOTE_PATHS.list),
     go("g t", `Frame.tags`, TAG_PATHS.list),
     ...(ports.activityGroupId === null

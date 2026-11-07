@@ -67,6 +67,7 @@ const FILE_INPUT_ID = "group-import-file"
 function counted(t: Translator<string>, part: GroupFilePart): string {
   if (part.kind === `notes`) return t.t(`GroupImport.notes`, { count: part.count })
   if (part.kind === `tags`) return t.t(`GroupImport.tags`, { count: part.count })
+  if (part.kind === `accounts`) return t.t(`GroupImport.accounts`, { count: part.count })
   return `${part.count} ${part.count === 1 ? part.one : part.other}`
 }
 

@@ -6,11 +6,13 @@ import { createOnboardingStore } from "./onboarding.ts"
 
 const fresh: OnboardingStatus = {
   steps: {
+    accountCreated: false,
     emailVerified: false,
     noteCreated: false,
     memberInvited: false,
     notificationsOn: false,
     twoFactorOn: false,
+    currencyChosen: false,
   },
   dismissed: false,
   tourSeen: false,
@@ -19,11 +21,13 @@ const fresh: OnboardingStatus = {
 const allDone: OnboardingStatus = {
   ...fresh,
   steps: {
+    accountCreated: false,
     emailVerified: true,
     noteCreated: true,
     memberInvited: true,
     notificationsOn: true,
     twoFactorOn: true,
+    currencyChosen: true,
   },
 }
 

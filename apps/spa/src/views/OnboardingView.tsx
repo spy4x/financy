@@ -6,6 +6,8 @@ import { onboardingStore } from "../state/onboarding.ts"
 import { selectionStore } from "../state/selection.ts"
 import { isGuestSession } from "../state/guest.ts"
 import { demoMode } from "../state/demo.ts"
+import { groupsStore } from "../state/groups.ts"
+import { canRename } from "@domain/groups"
 
 /**
  * The first-steps card above the notes list, where a new account lands. It reads the steps each
@@ -27,12 +29,15 @@ export function OnboardingView({ store = onboardingStore }: { store?: typeof onb
   const status = store.status.value
   if (!status || !store.visible.value) return null
   const error = store.error.value
+  const groupId = selectionStore.groupId.value
+  const role = groupsStore.groups.value.find((group) => group.id === groupId)?.role
   return (
     <OnboardingCard
       steps={demoMode.value ? { ...status.steps, memberInvited: true } : status.steps}
-      groupId={selectionStore.groupId.value}
+      groupId={groupId}
       navigate={navigate}
       guest={isGuestSession()}
+      canChooseCurrency={role !== undefined && canRename(role)}
       onDismiss={() => {
         // The card hides at once, before the server answers, so focus moves now.
         void store.dismiss()

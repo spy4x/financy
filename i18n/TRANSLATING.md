@@ -1,9 +1,9 @@
 # Translating
 
-Every word Seed's own screens show lives in a catalog: `i18n/<namespace>/<language>.ts`, with
+Every word Financy's screens show lives in a catalog: `i18n/<namespace>/<language>.ts`, with
 `en.ts` as the source. Each catalog is a TypeScript module, `export default { … } satisfies
 Catalog`, with its keys and messages in double quotes. The components of preact-components bring
-their own catalogs; this folder holds only Seed's words.
+their own catalogs; this folder holds only Financy's words.
 
 | Namespace | What it holds                                                   | Loaded by      |
 | --------- | --------------------------------------------------------------- | -------------- |
@@ -61,9 +61,9 @@ like a machine made it, so:
 5. A translation is done by an agent or person whose only task is that language, never as a side
    task of a code change. A change that adds or edits English leaves the other languages to that
    pass.
-6. A second reader checks every new translation: the owner for Russian, and for the other
-   languages a separate agent that translates it back to English and compares the meaning with
-   the source.
+6. A second reader checks every new translation, Russian included: a separate agent that
+   translates it back to English and compares the meaning with the source. Never ask the owner to
+   read a translation; the owner reports one that reads badly.
 
 ## Glossary
 
@@ -72,7 +72,8 @@ sentence needs another grammatical form of it.
 
 | English                 | ru                        | es                          | de                       | pt-BR                             | ar                        | zh-CN           | ja                              | fr                        |
 | ----------------------- | ------------------------- | --------------------------- | ------------------------ | --------------------------------- | ------------------------- | --------------- | ------------------------------- | ------------------------- |
-| account                 | аккаунт                   | cuenta                      | Konto                    | conta                             | حساب                      | 账号            | アカウント                      | compte                    |
+| account (sign-in)       | аккаунт                   | cuenta de usuario           | Benutzerkonto            | conta de usuário                  | حساب المستخدم             | 账号            | アカウント                      | compte utilisateur        |
+| account (money)         | счёт                      | cuenta                      | Konto                    | conta                             | حساب                      | 账户            | 口座                            | compte                    |
 | sign in                 | войти / вход              | iniciar sesión              | anmelden / Anmeldung     | entrar                            | تسجيل الدخول              | 登录            | ログイン                        | se connecter / connexion  |
 | sign out                | выйти                     | cerrar sesión               | abmelden                 | sair                              | تسجيل الخروج              | 退出登录        | ログアウト                      | se déconnecter            |
 | sign up                 | зарегистрироваться        | registrarse                 | registrieren             | criar conta                       | إنشاء حساب                | 注册            | 新規登録                        | créer un compte           |
@@ -132,6 +133,12 @@ sentence needs another grammatical form of it.
 | sign-in method          | способ входа              | método de inicio de sesión  | Anmeldemethode           | forma de entrar                   | طريقة تسجيل الدخول        | 登录方式        | ログイン方法                    | méthode de connexion      |
 | trash                   | корзина                   | papelera                    | Papierkorb               | lixeira                           | سلة المهملات              | 回收站          | ゴミ箱                          | corbeille                 |
 
+"Account" means two things in Financy: the account a person signs in to, and a money account (cash,
+a card, savings). Where one word would serve both, as in de, es, fr, pt-BR and ar, the sign-in sense
+always takes the longer term, so "Delete my account" can never be read as deleting a money account.
+A compound that already says whose account it is (de Gastkonto, es cuenta de invitado) stays as it
+is.
+
 ## Voice
 
 Short, plain and friendly, as a person would say it, in the voice the components use:
@@ -158,7 +165,7 @@ The operator area (`admin`) speaks of the person whose account it shows in the t
 
 ## Terms kept in English
 
-- The product's name (Seed), brand names, and file formats.
+- The product's name (Financy), brand names, and file formats.
 - Key names on the keyboard: Enter, Tab, Esc, Shift, Ctrl, Alt, Command.
 - Offsets such as `GMT+2`.
 

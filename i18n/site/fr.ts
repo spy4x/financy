@@ -133,7 +133,7 @@ export default {
   "HomeProof.tests":
     "fichiers de tests dans les applications et les bibliothèques, tous exécutés en CI",
   "HomeProof.licence": "licence : gratuit en auto-hébergement",
-  "HomeStatus.signIn": "Connexion par e-mail, clés d’accès et double authentification",
+  "HomeStatus.signIn": "Connexion par e‑mail, clés d’accès et double authentification",
   "HomeStatus.groups":
     "Des foyers partagés : invitez des personnes et donnez à chacune un rôle, de lecteur à propriétaire",
   "HomeStatus.export": "Exporter un foyer dans un fichier, et le réimporter",
@@ -186,7 +186,7 @@ export default {
   "PricingWays.lead":
     "Le code est gratuit sous AGPL‑3.0, sans clé de licence et sans fonctionnalité réservée.",
   "PricingWays.useTitle": "Héberger Financy vous-même",
-  "PricingWays.useUnit": "licence AGPL‑3.0, sans compte",
+  "PricingWays.useUnit": "licence AGPL‑3.0, sans inscription",
   "PricingWays.useText":
     "Tout le code source sous AGPL‑3.0, avec toutes les fonctionnalités et toutes les mises à jour, pour vous et votre foyer.",
   "PricingWays.runTitle": "Le faire tourner en production",
@@ -194,7 +194,7 @@ export default {
   "PricingWays.runUnit": "au prix de votre hébergeur",
   "PricingWays.runAction": "Lire le guide de déploiement",
   "PricingWays.runText":
-    "Financy tourne sur un serveur Linux, loué ou à vous. Un fournisseur d’e-mail et la connexion avec Google ou GitHub sont facultatifs, et chacun vous facture directement.",
+    "Financy tourne sur un serveur Linux, loué ou à vous. Il lui faut un fournisseur d’e-mail pour envoyer les codes d’inscription et de connexion ; la connexion avec Google ou GitHub est facultative. Chacun vous facture directement.",
   "DemoPlans.eyebrow": "La facturation, en action",
   "DemoPlans.title": "Les forfaits de la démo : un exemple de la facturation que vous obtenez",
   "DemoPlans.noticeTitle": "Ce ne sont pas les prix de Seed",
@@ -223,11 +223,9 @@ export default {
   "DemoPlan.proRoles": "Promouvoir des membres au rôle d’éditeur ou d’administrateur",
   "FeatureTierSettled.eyebrow": "Fonctionne aujourd’hui",
   "FeatureTierSettled.title": "Le socle sur lequel reposera l’argent de votre foyer",
-  "FeatureTierSettled.lead":
-    "Ces briques fonctionnent déjà et sont testées en CI. Prochaine étape : l’argent lui-même, avec des comptes dans toutes les devises et leurs opérations.",
   "FeatureTierSettled.status":
     "La connexion avec Google et GitHub demande des clés propres au serveur ; une nouvelle installation commence donc avec la seule connexion par e-mail.",
-  "FeatureSignIn.nav": "Comptes et connexion",
+  "FeatureSignIn.nav": "Connexion et sécurité",
   "FeatureSignIn.title": "La connexion, c’est réglé",
   "FeatureSignIn.lead":
     "Vous créez un compte avec une adresse e-mail et un mot de passe, puis confirmez l’adresse avec un code. Vous pouvez réinitialiser un mot de passe oublié, continuer avec Google ou GitHub, vous connecter avec une clé d’accès ou avec un code reçu par e-mail. Une app d’authentification ajoute la double authentification (2FA), et vous voyez tous les appareils connectés et pouvez déconnecter les autres.",
@@ -302,17 +300,9 @@ export default {
   "FeaturesFaq.nativeQuestion": "Y a-t-il une app mobile ?",
   "FeaturesFaq.nativeAnswer":
     "Pas encore dans un store. Aujourd’hui, l’app web s’installe depuis le navigateur sur téléphone et ordinateur, et s’ouvre hors ligne.",
-  "Features.title":
-    "Fonctionnalités de Financy : foyers, synchronisation, hors ligne, auto-hébergement",
-  "Features.description":
-    "Ce que Financy fait aujourd’hui : des foyers avec des rôles, des mises à jour instantanées sur chaque appareil, une app hors ligne, l’export, neuf langues et l’auto-hébergement. Les comptes et les budgets arrivent ensuite.",
   "FeaturesHero.title": "Ce que Financy fait aujourd’hui, et ce qui vient ensuite",
-  "FeaturesHero.lead":
-    "Financy est en reconstruction. Ce qui marche aujourd’hui, c’est le socle sur lequel reposera l’argent d’un foyer : connexion, accès partagé avec des rôles, mises à jour instantanées, une app hors ligne, l’export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
-  "FeaturesHero.note":
-    "Les comptes, les opérations et les budgets ne sont pas encore construits. <status>Voir où en est la reconstruction</status>.",
   "FeaturesFaq.title": "Financy sait-il faire ça ?",
-  "FeatureSection.issue": "issue n° {number}",
+  "FeatureSection.issue": "ticket n° {number}",
   "FeatureSection.forDevelopers": "Pour les développeurs",
   "FeatureVisuals.deployCaption":
     "Version abrégée : la sortie de rsync et de Compose entre les étapes est omise.",
@@ -321,7 +311,7 @@ export default {
   "Loops.realtimeTitle":
     "Une note enregistrée dans la fenêtre de gauche apparaît dans celle de droite en moins d’une seconde, sans rechargement.",
   "Loops.realtimeCaption":
-    "Deux fenêtres, un compte. Enregistrez dans l’une, l’autre se met à jour d’elle-même.",
+    "Deux fenêtres, un même compte utilisateur. Enregistrez dans l’une, l’autre se met à jour d’elle-même.",
   "Loops.offlineName": "Modification hors ligne",
   "Loops.offlineTitle":
     "L’application passe hors ligne, une note est modifiée, et à la reconnexion le choix de conflit demande quelle version garder.",
@@ -455,7 +445,7 @@ export default {
   "FeaturePageSignIn.how1":
     "L’API vérifie elle-même chaque connexion et répond avec un cookie de session signé. Une clé d’accès utilise le WebAuthn du navigateur : le serveur ne garde que sa clé publique, et chaque défi de connexion ne sert qu’une fois. Un code de connexion envoyé par e-mail connecte ou crée le compte, ne sert qu’une fois, reste valable 10 minutes, uniquement dans le navigateur qui l’a demandé, et n’est stocké que sous forme de hachage.",
   "FeaturePageSignIn.how2":
-    "Une application d’authentification ajoute la double authentification. Le profil liste chaque méthode de connexion au compte et chaque appareil connecté, et changer une méthode de connexion demande une preuve et envoie un e-mail. Un visiteur peut aussi commencer dans un compte invité et ajouter une méthode de connexion plus tard.",
+    "Une application d’authentification ajoute la double authentification. Le profil liste chaque méthode de connexion au compte utilisateur et chaque appareil connecté, et changer une méthode de connexion demande une preuve et envoie un e-mail. Un visiteur peut aussi commencer dans un compte invité et ajouter une méthode de connexion plus tard.",
   "FeaturePageSignIn.authServiceQuestion": "Ai-je besoin d’un service d’authentification ?",
   "FeaturePageSignIn.authServiceAnswer":
     "Non. La propre API de Seed vérifie les mots de passe, les clés d’accès, les codes de connexion et les réponses de Google et de GitHub, sur votre serveur : rien n’est facturé par utilisateur.",
@@ -475,16 +465,16 @@ export default {
     "Groupes et rôles de lecteur à propriétaire, invitations, transfert de propriété, journal d’activité, un seul contrôle multi-tenant. Gratuit, licence MIT.",
   "FeaturePageGroups.h1": "Groupes et rôles pour votre SaaS, sans développer le multi-tenant",
   "FeaturePageGroups.answer":
-    "Seed donne à chaque compte un groupe personnel à l’inscription, et les utilisateurs créent des groupes partagés, invitent d’autres personnes et leur attribuent un rôle, de lecteur à propriétaire. Le groupe est l’unique frontière entre locataires : une fonctionnalité que vous ajoutez passe la même vérification dès qu’elle copie l’agrégat des notes.",
+    "Seed donne à chaque compte utilisateur un groupe personnel à l’inscription, et les utilisateurs créent des groupes partagés, invitent d’autres personnes et leur attribuent un rôle, de lecteur à propriétaire. Le groupe est l’unique frontière entre locataires : une fonctionnalité que vous ajoutez passe la même vérification dès qu’elle copie l’agrégat des notes.",
   "FeaturePageGroups.summary":
     "Groupes avec rôles de lecteur à propriétaire, invitations et journal d’activité.",
   "FeaturePageGroups.how1":
     "Chaque ligne de données partagées appartient à un groupe, et l’API vérifie le rôle de la personne dans ce groupe avant toute lecture ou écriture. Un lecteur lit, un éditeur modifie aussi les données du groupe, et un administrateur et le propriétaire gèrent en plus les membres et lisent le journal d’activité.",
   "FeaturePageGroups.how2":
-    "Le propriétaire transfère la propriété en une étape, et un groupe supprimé peut être restauré pendant 30 jours. Seul un compte dont l’adresse e-mail est confirmée peut inviter.",
-  "FeaturePageGroups.personalGroupQuestion": "Chaque compte a-t-il un groupe ?",
+    "Le propriétaire transfère la propriété en une étape, et un groupe supprimé peut être restauré pendant 30 jours. Seul un compte utilisateur dont l’adresse e-mail est confirmée peut inviter.",
+  "FeaturePageGroups.personalGroupQuestion": "Chaque compte utilisateur a-t-il un groupe ?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Oui. Chaque compte reçoit un groupe personnel à l’inscription ; un groupe personnel et un groupe partagé passent la même vérification.",
+    "Oui. Chaque compte utilisateur reçoit un groupe personnel à l’inscription ; un groupe personnel et un groupe partagé passent la même vérification.",
   "FeaturePageGroups.viewerQuestion": "Un lecteur peut-il modifier les données d’un groupe ?",
   "FeaturePageGroups.viewerAnswer":
     "Non. Un lecteur lit les données du groupe ; un éditeur, un administrateur ou le propriétaire peut les modifier.",
@@ -585,7 +575,7 @@ export default {
     "Les budgets, l’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
   "HomeWho.keeperTitle": "Celui ou celle qui tient les comptes",
   "HomeWho.keeperText":
-    "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul endroit qui fait le total.",
+    "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul total aux taux de la BCE, avec leur date.",
   "HomeWho.partnerTitle": "Le conjoint ou la conjointe",
   "HomeWho.partnerText":
     "Partage l’argent du foyer avec son propre identifiant, et note ses dépenses en quelques secondes.",
@@ -600,15 +590,38 @@ export default {
   "HomeWays.cloudTitle": "Le cloud",
   "HomeWays.cloudText": "Pas encore ouvert. Le même code, sans serveur à gérer, en offre payante.",
   "HomeFaq.useQuestion": "Puis-je utiliser Financy aujourd’hui ?",
-  "HomeFaq.useAnswer":
-    "Pas encore. La connexion, les foyers et la synchronisation fonctionnent ; les comptes et les opérations sont en cours.",
   "HomeFaq.currencyQuestion": "Quelles devises gérera-t-il ?",
   "HomeFaq.currencyAnswer":
-    "Toutes, cryptomonnaies comprises ; chaque opération garde son montant d’origine à côté du montant converti. Prévu, mais pas encore construit.",
+    "Financy gérera n’importe quel mélange de devises, cryptomonnaies comprises. Chaque opération garde son montant d’origine à côté du montant converti, et les totaux s’affichent dans la devise principale du foyer. Pour une devise que la BCE ne couvre pas, comme une cryptomonnaie, vous saisissez le taux directement sur l’opération. En cours de construction.",
+  "HomeFaq.ratesQuestion": "D’où viennent les taux de change ?",
+  "HomeFaq.ratesAnswer":
+    "De la Banque centrale européenne, récupérés chaque jour ouvré via Frankfurter, un service public et gratuit. Chaque total converti affiche la date des taux utilisés. Une devise sans taux est signalée et laissée hors du total, jamais comptée à 1. En cours de construction.",
   "HomeFaq.bankQuestion": "Financy se connecte-t-il à ma banque ?",
   "HomeFaq.bankAnswer": "Non. L’import de relevés bancaires est prévu pour la première version.",
   "HomeFaq.stopsQuestion": "Que se passe-t-il si Financy est abandonné ?",
   "HomeFaq.stopsAnswer":
     "Le code est sous AGPL‑3.0 sur GitHub, donc n’importe qui peut continuer à le faire tourner, et vous pouvez exporter vos données à tout moment.",
   "SiteFooter.aboutHint": "(ouvre antonshubin.com)",
+  "FeatureAccounts.code": "Lire le code source des comptes",
+  "FeatureAccounts.fact1":
+    "Le serveur calcule chaque solde à la lecture et ne le stocke jamais, donc il ne peut pas dériver",
+  "FeatureAccounts.fact2":
+    "Les montants sont des entiers dans la plus petite unité de la devise : le yen n’en a pas, le dinar en a trois",
+  "FeatureAccounts.fact3":
+    "Un lecteur voit les comptes ; seuls les éditeurs et au-dessus les modifient, et le serveur le vérifie",
+  "FeatureAccounts.lead":
+    "Espèces, comptes bancaires, cartes, épargne, actifs et dettes, chacun dans sa devise, regroupés par type, avec un compte par défaut. Tout le foyer voit chaque modification aussitôt.",
+  "FeatureAccounts.nav": "Comptes",
+  "FeatureAccounts.title": "Chaque compte dans sa propre devise",
+  "FeatureTierSettled.lead":
+    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises sont là ; leurs opérations viennent ensuite.",
+  "Features.description":
+    "Financy aujourd’hui : comptes en toute devise, foyers avec rôles, synchro, appli hors ligne, export, neuf langues et votre serveur. Ensuite : les opérations.",
+  "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
+  "FeaturesHero.lead":
+    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
+  "FeaturesHero.note":
+    "Les opérations et les budgets ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
+  "HomeFaq.useAnswer":
+    "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
 } satisfies Catalog

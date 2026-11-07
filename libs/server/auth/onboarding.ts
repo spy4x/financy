@@ -9,6 +9,7 @@
 
 import type postgres from "postgres"
 import { PASSWORD_METHOD } from "@spy4x/server/auth/password"
+import { GroupRole } from "@domain/groups"
 import {
   type OnboardingMark,
   type OnboardingStatus,
@@ -17,11 +18,13 @@ import {
 } from "@domain/identity"
 
 interface OnboardingRow extends postgres.Row {
+  accountCreated: boolean
   emailVerified: boolean
   noteCreated: boolean
   memberInvited: boolean
   notificationsOn: boolean
   twoFactorOn: boolean
+  currencyChosen: boolean
   dismissed: boolean
   tourSeen: boolean
 }
@@ -32,6 +35,8 @@ interface OnboardingRow extends postgres.Row {
  *
  * Each step is a fact another feature already keeps, so nothing has to remember to tick it:
  *
+ * - an account: the person added one to a household. None is made for a new person, so any account
+ *   they created counts, one in the trash too;
  * - the address: the password key, or the key of a sign-up by code, carries an address that a code
  *   proved;
  * - a note: the person created one. The welcome note of a new account
@@ -40,7 +45,11 @@ interface OnboardingRow extends postgres.Row {
  *   note does not untick the step;
  * - an invitation: the person made one, whatever became of it;
  * - notifications: one of their browsers is registered for push;
- * - two-factor: an authenticator app is set up.
+ * - two-factor: an authenticator app is set up;
+ * - the main currency: someone chose it for a live group the person is an admin or the owner
+ *   of (`household_settings` with `chosen_at` set). It is the household's setting, so a co-admin's
+ *   choice counts, and it stays chosen when that co-admin's account is deleted; the default euro,
+ *   which every group starts with, does not. A deleted group's choice does not count.
  */
 export async function readOnboarding(
   sql: postgres.Sql,
@@ -48,6 +57,9 @@ export async function readOnboarding(
 ): Promise<OnboardingStatus | null> {
   const [row] = await sql<OnboardingRow[]>`
     SELECT
+      EXISTS (
+        SELECT 1 FROM accounts WHERE accounts.created_by_user_id = users.id
+      ) AS "accountCreated",
       EXISTS (
         SELECT 1 FROM auth_keys
         WHERE auth_keys.user_id = users.id
@@ -73,6 +85,15 @@ export async function readOnboarding(
           AND user_push_tokens.deleted_at IS NULL
       ) AS "notificationsOn",
       users.mfa = ${UserMFAStatus.CONFIGURED} AS "twoFactorOn",
+      EXISTS (
+        SELECT 1 FROM household_settings
+        INNER JOIN group_members ON group_members.group_id = household_settings.group_id
+        INNER JOIN groups ON groups.id = household_settings.group_id
+        WHERE group_members.user_id = users.id
+          AND group_members.role >= ${GroupRole.ADMIN}
+          AND groups.deleted_at IS NULL
+          AND household_settings.chosen_at IS NOT NULL
+      ) AS "currencyChosen",
       users.onboarding_dismissed_at IS NOT NULL AS "dismissed",
       users.onboarding_tour_seen_at IS NOT NULL AS "tourSeen"
     FROM users

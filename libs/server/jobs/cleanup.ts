@@ -6,6 +6,7 @@ import { cleanUpAttachments } from "../notes/attachment-cleanup.ts"
 import { queueSeatDrift } from "../billing/seat-sync.ts"
 import { purgeDeadInvitations } from "../groups/purge-dead-invitations.ts"
 import { purgeDeletedNotes } from "../notes/purge-deleted-notes.ts"
+import { purgeDeletedAccounts } from "../accounts/purge-deleted-accounts.ts"
 import { purgeDeletedGroups } from "../groups/purge-deleted-groups.ts"
 import { purgeNotifications } from "../notifications/purge-notifications.ts"
 import { purgeOldAuditEvents } from "../groups/purge-audit-events.ts"
@@ -85,6 +86,12 @@ export function cleanupSteps(
     ["purge deleted notes", async () => {
       const notes = await purgeDeletedNotes(sql)
       if (notes.removed > 0) console.log(`Removed ${notes.removed} deleted note(s) for good`)
+    }],
+    ["purge deleted finance accounts", async () => {
+      const accounts = await purgeDeletedAccounts(sql)
+      if (accounts.removed > 0) {
+        console.log(`Removed ${accounts.removed} deleted finance account(s) for good`)
+      }
     }],
     // After the purges above, so the files of notes and groups they removed go tonight.
     ["clean up note attachments", async () => {
