@@ -77,7 +77,10 @@ test.describe("first steps", () => {
       await signUpInBrowser(page, email)
 
       await expect(card(page).getByRole("heading", { name: "Get started" })).toBeVisible()
-      await expect(card(page).getByRole("listitem")).toHaveCount(5)
+      // The owner of the new household also gets the main currency step.
+      await expect(card(page).getByRole("listitem")).toHaveCount(7)
+      await expect(step(page, "Add your first account")).toContainText("To do:")
+      await expect(step(page, "Choose your main currency")).toContainText("To do:")
       await expect(step(page, "Write your first note")).toContainText("To do:")
 
       // The worker gives the new account a welcome note. It is not the person's own.
