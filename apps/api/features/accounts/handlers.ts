@@ -9,11 +9,15 @@ import {
   type AccountRepository,
   AccountRestoreCommand,
   AccountSetDefaultCommand,
+  AccountTotalQuery,
   AccountUpdateCommand,
   assertCanReadAccounts,
   assertCanWriteAccounts,
+  householdTotal,
 } from "@domain/accounts"
+import type { HouseholdSettings, RateLookup } from "@domain/money"
 import type { GroupRoleLookup } from "@domain/notes"
+import type { ExchangeRate } from "@spy4x/platform/universal/money"
 
 /** What every account handler needs: the accounts, and the actor's role in the household. */
 export interface AccountHandlerDependencies {
@@ -155,5 +159,39 @@ export function createAccountGetHandler(
     const account = await accounts.get(data.groupId, data.id)
     if (!account) throw new AccountError("ACCOUNT_NOT_FOUND", "Account not found")
     return { account }
+  }
+}
+
+/** What the total needs besides the accounts: the base currency, the rates and today's date. */
+export interface AccountTotalDependencies extends AccountHandlerDependencies {
+  settings: { get(groupId: string): Promise<HouseholdSettings> }
+  /** The rate on `date` or the latest earlier one, from any source (`PostgresRateRepository`). */
+  rates: { lookup(base: string, quote: string, date: string): Promise<RateLookup> }
+  /** Today, `YYYY-MM-DD` in UTC: the day the rates are looked up for. */
+  today(): string
+}
+
+/**
+ * `account.total`: every member reads the household's total in its base currency. Each currency
+ * other than the base is looked up once, at the latest rate on or before today; the conversion and
+ * the sum are `householdTotal`'s. Deleted accounts are not in the list, archived ones are.
+ */
+export function createAccountTotalHandler(
+  { accounts, groups, settings, rates, today }: AccountTotalDependencies,
+): QueryHandler<AccountTotalQuery> {
+  return async ({ data }) => {
+    assertCanReadAccounts(await groups.roleOf(data.groupId, data.actor.userId))
+    const [listed, { baseCurrency }] = await Promise.all([
+      accounts.list(data.groupId, false),
+      settings.get(data.groupId),
+    ])
+    const date = today()
+    const foreign = [...new Set(listed.map((account) => account.currency))]
+      .filter((code) => code !== baseCurrency)
+    const found = await Promise.all(foreign.map(async (code) => {
+      const lookup = await rates.lookup(code, baseCurrency, date)
+      return [code, lookup.found ? lookup.rate : null] as [string, ExchangeRate | null]
+    }))
+    return { total: householdTotal(listed, baseCurrency, new Map(found)) }
   }
 }

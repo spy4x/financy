@@ -2005,6 +2005,13 @@ export default {
     "すべての口座がアーカイブされています。アーカイブ済みを表示すると見られます。",
   "Accounts.archive": "アーカイブ",
   "Accounts.archivedBadge": "アーカイブ済み",
+  "AccountsTotal.title": "Total",
+  "AccountsTotal.about": "about {amount}",
+  "AccountsTotal.rates": "At the exchange rates of {date}",
+  "AccountsTotal.leftOut": {
+    "other": "Leaves out {count} accounts: no exchange rate for {currencies} yet.",
+  },
+  "AccountsTotal.tooLarge": "The total is too large to show.",
   "Accounts.back": "口座一覧に戻る",
   "Accounts.clearDefault": "メインから外す",
   "Accounts.defaultBadge": "メイン",

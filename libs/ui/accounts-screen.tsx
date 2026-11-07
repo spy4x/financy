@@ -8,7 +8,7 @@ import { Stack } from "@spy4x/preact-ui/layout"
 import { MoneyDisplay } from "@spy4x/preact-ui/money-display"
 import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
 import { IconEllipsisVertical, IconPlus } from "@spy4x/preact-icons"
-import { ACCOUNT_KINDS, ACCOUNT_RESTORE_DAYS } from "@domain/accounts"
+import { ACCOUNT_KINDS, ACCOUNT_RESTORE_DAYS, type HouseholdTotal } from "@domain/accounts"
 import {
   ListCard,
   ListEmpty,
@@ -17,6 +17,7 @@ import {
   type NotesGroup,
 } from "./notes-screen.tsx"
 import { type AccountRow, KindIcon, kindName } from "./account-parts.tsx"
+import { AccountsTotal } from "./accounts-total.tsx"
 import { ACCOUNT_PATHS, type Navigate } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 import { type Message, messageText } from "./message.ts"
@@ -39,6 +40,11 @@ export interface AccountsScreenProps {
   accounts: readonly AccountRow[]
   /** The accounts in the trash while they are shown, else `null`. */
   deleted: readonly AccountRow[] | null
+  /**
+   * The household's total in its base currency: `null` while it is read, `undefined` for no card
+   * (its read failed with nothing to show). A household with no accounts never shows the card.
+   */
+  total?: HouseholdTotal | null
   showArchived: boolean
   onShowArchived?: (show: boolean) => void
   onShowDeleted?: (show: boolean) => void
@@ -112,6 +118,9 @@ export function AccountsScreen(props: AccountsScreenProps): JSX.Element {
           </p>
         )}
         <ErrorState message={messageText(t, props.listError)} />
+        {!trash && props.total !== undefined && (props.accounts.length > 0 || props.loading) && (
+          <AccountsTotal total={props.total} />
+        )}
         {trash
           ? <Trash {...props} rows={props.deleted!} canWrite={canWrite} />
           : <Live {...props} canWrite={canWrite} />}

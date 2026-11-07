@@ -182,6 +182,71 @@ test.describe("accounts", () => {
     }
   })
 
+  test("the household total follows a new account, a currency with no rate and a change of the main currency in a viewer's open tab", async ({ browser, request }) => {
+    const owner = "e2e_accounts_total_owner@example.com"
+    const viewer = "e2e_accounts_total_viewer@example.com"
+    const baseURL = test.info().project.use.baseURL
+    for (const email of [owner, viewer]) await cleanup(request, email)
+    const ownerContext = await browser.newContext({ baseURL })
+    const viewerContext = await browser.newContext({ baseURL })
+    try {
+      for (const email of [owner, viewer]) await signUp(request, email)
+      const ownerPage = await ownerContext.newPage()
+      await signInOnline(ownerPage, owner)
+      const groupId = await household(ownerPage, request, "Total team", viewer)
+
+      const viewerPage = await viewerContext.newPage()
+      let viewerLoads = 0
+      viewerPage.on("load", () => viewerLoads++)
+      await signInOnline(viewerPage, viewer)
+      await openAccounts(viewerPage, "Total team")
+      const loadsBefore = viewerLoads
+      // No accounts, no card.
+      await expect(viewerPage.locator("[data-e2e=accounts-total]")).toHaveCount(0)
+      const amount = viewerPage.locator("[data-e2e=accounts-total-amount]")
+      const leftOut = viewerPage.locator("[data-e2e=accounts-total-left-out]")
+
+      // An account in the main currency (the euro by default): the total is exact.
+      await openAccounts(ownerPage, "Total team")
+      await createAccount(ownerPage, { name: "Wallet", currency: "EUR", balance: "25.50" })
+      await expect(amount).toHaveText("€25.50", { timeout: 5_000 })
+      await expect(viewerPage.locator("[data-e2e=accounts-total-rates]")).toHaveCount(0)
+
+      // The test stack stores no rate for the lari: the account is left out and named.
+      await createAccount(ownerPage, { name: "Lari", currency: "GEL", balance: "100" })
+      await expect(leftOut).toHaveText("Leaves out 1 account: no exchange rate for GEL yet.", {
+        timeout: 5_000,
+      })
+      await expect(amount).toHaveText("€25.50")
+
+      // The owner makes the lari the main currency: now the euros have no rate.
+      const members =
+        await (await ownerPage.request.get(`${apiBase}/api/groups/${groupId}/members`))
+          .json()
+      const ownerId: number = members.members.find((m: { email?: string }) => m.email === owner)
+        .userId
+      const changed = await ownerPage.request.post(
+        `${apiBase}/api/call/household.updateSettings`,
+        {
+          headers: { ...headers, "x-realtime-user": String(ownerId), "idempotency-key": uuidV7() },
+          data: { groupId, baseCurrency: "GEL", version: 0 },
+        },
+      )
+      expect(changed.ok(), await changed.text()).toBe(true)
+      await expect(leftOut).toHaveText("Leaves out 1 account: no exchange rate for EUR yet.", {
+        timeout: 5_000,
+      })
+      await expect(amount).toContainText("100.00")
+      await expect(amount).not.toContainText("about")
+
+      expect(viewerLoads).toBe(loadsBefore)
+    } finally {
+      await ownerContext.close()
+      await viewerContext.close()
+      for (const email of [owner, viewer]) await cleanup(request, email)
+    }
+  })
+
   test("500 yen, 12.34 dollars and 1.234 dinars typed in the editor are stored in each currency's smallest unit and shown back exactly", async ({ browser, request }) => {
     const user = "e2e_accounts_units@example.com"
     await cleanup(request, user)

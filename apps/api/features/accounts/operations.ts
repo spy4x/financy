@@ -14,9 +14,12 @@ import {
   accountRestorePayloadSchema,
   AccountSetDefaultCommand,
   accountSetDefaultPayloadSchema,
+  accountTotalPayloadSchema,
+  AccountTotalQuery,
   AccountUpdateCommand,
   accountUpdatePayloadSchema,
   type AccountWriteResult,
+  type HouseholdTotal,
   type ListedAccount,
   parseAccountRequest,
 } from "@domain/accounts"
@@ -33,6 +36,7 @@ export interface AccountOperationDependencies {
   restore(command: AccountRestoreCommand): Promise<{ account: Account }>
   get(query: AccountGetQuery): Promise<{ account: ListedAccount }>
   list(query: AccountListQuery): Promise<{ accounts: ListedAccount[] }>
+  total(query: AccountTotalQuery): Promise<{ total: HouseholdTotal }>
 }
 
 /**
@@ -110,6 +114,13 @@ export function createAccountOperations(
       handle: async ({ actor, payload }) => {
         const input = parseAccountRequest(accountListPayloadSchema, payload)
         return await dependencies.list(new AccountListQuery({ actor, ...input }))
+      },
+    },
+    "account.total": {
+      kind: "query",
+      handle: async ({ actor, payload }) => {
+        const input = parseAccountRequest(accountTotalPayloadSchema, payload)
+        return await dependencies.total(new AccountTotalQuery({ actor, ...input }))
       },
     },
   }

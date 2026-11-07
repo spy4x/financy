@@ -163,6 +163,7 @@ import {
   AccountListQuery,
   AccountRestoreCommand,
   AccountSetDefaultCommand,
+  AccountTotalQuery,
   AccountUpdateCommand,
 } from "@domain/accounts"
 import { accountCreateHandler } from "@api/cqrs/command-handlers/account-create.ts"
@@ -173,6 +174,7 @@ import { accountDeleteHandler } from "@api/cqrs/command-handlers/account-delete.
 import { accountRestoreHandler } from "@api/cqrs/command-handlers/account-restore.ts"
 import { accountListHandler } from "@api/cqrs/query-handlers/account-list.ts"
 import { accountGetHandler } from "@api/cqrs/query-handlers/account-get.ts"
+import { accountTotalHandler } from "@api/cqrs/query-handlers/account-total.ts"
 import { tagCreateHandler } from "@api/cqrs/command-handlers/tag-create.ts"
 import { HouseholdSettingsQuery, HouseholdUpdateSettingsCommand } from "@domain/money"
 import {
@@ -352,6 +354,7 @@ queryBus.register(AttachmentDownloadQuery, createAttachmentDownloadHandler(attac
 queryBus.register(TagGetQuery, tagGetHandler)
 queryBus.register(AccountListQuery, accountListHandler)
 queryBus.register(AccountGetQuery, accountGetHandler)
+queryBus.register(AccountTotalQuery, accountTotalHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)

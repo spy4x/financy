@@ -1,6 +1,7 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { GroupRole } from "@domain/groups"
+import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
   ACCOUNT_MAX_PER_GROUP,
   ACCOUNT_NAME_MAX_LENGTH,
@@ -11,6 +12,7 @@ import {
   assertAccountRoom,
   assertCanReadAccounts,
   assertCanWriteAccounts,
+  householdTotal,
   parseAccountExportEntry,
   parseAccountRequest,
 } from "./+lib.ts"
@@ -155,5 +157,147 @@ describe("an account in an export file", () => {
     )
     expect(accountExportProblems(many)[0].issue.code).toBe("tooManyAccounts")
     expect(accountExportProblems(many.slice(1))).toEqual([])
+  })
+})
+
+describe("the household total in its base currency", () => {
+  /** An ECB rate: one euro buys `rate` of `quote` on `date`. */
+  const eur = (quote: string, rate: string, date = "2026-11-06"): ExchangeRate => ({
+    base: "EUR",
+    quote,
+    rate,
+    date,
+    source: "frankfurter:ECB",
+  })
+  const rates = new Map([
+    ["JPY", eur("JPY", "160")],
+    ["USD", eur("USD", "1.08", "2026-11-05")],
+    ["BHD", eur("BHD", "0.4")],
+  ])
+
+  it("converts yen, dollars and dinars into euros by their own decimals and names the oldest rate date", () => {
+    const total = householdTotal(
+      [
+        // ¥10,000 / 160 = €62.50 exactly.
+        { currency: "JPY", balance: 10_000 },
+        // $123.45 / 1.08 = €114.30555…, so 11,431 cents.
+        { currency: "USD", balance: 12_345 },
+        // 1.234 BHD / 0.4 = €3.085, half a cent, so 309 cents.
+        { currency: "BHD", balance: 1_234 },
+      ],
+      "EUR",
+      rates,
+    )
+
+    expect(total).toEqual({
+      amount: 6_250 + 11_431 + 309,
+      currency: "EUR",
+      rateDate: "2026-11-05",
+      leftOut: [],
+      tooLarge: false,
+    })
+  })
+
+  it("rounds each account to the cent before adding, half away from zero", () => {
+    const halfCent = new Map([["USD", eur("USD", "2")]])
+
+    // Each 1-cent account is half a euro cent: each rounds up to 1, so 2, where rounding the sum
+    // of the exact amounts would give 1.
+    expect(
+      householdTotal(
+        [{ currency: "USD", balance: 1 }, { currency: "USD", balance: 1 }],
+        "EUR",
+        halfCent,
+      ).amount,
+    ).toBe(2)
+    // A liability's minus half a cent rounds away from zero too.
+    expect(householdTotal([{ currency: "USD", balance: -1 }], "EUR", halfCent).amount).toBe(-1)
+  })
+
+  it("lowers the total by a liability's negative balance", () => {
+    const total = householdTotal(
+      [
+        { currency: "EUR", balance: 100_000 },
+        { currency: "JPY", balance: -3_200_000 },
+      ],
+      "EUR",
+      rates,
+    )
+
+    expect(total.amount).toBe(100_000 - 2_000_000)
+  })
+
+  it("leaves out a currency with no rate and counts its accounts, never at 0 or 1", () => {
+    const total = householdTotal(
+      [
+        { currency: "EUR", balance: 5_000 },
+        { currency: "GEL", balance: 1_000 },
+        { currency: "GEL", balance: 2_000 },
+        { currency: "AMD", balance: 9_000 },
+      ],
+      "EUR",
+      new Map([["AMD", null]]),
+    )
+
+    expect(total).toEqual({
+      amount: 5_000,
+      currency: "EUR",
+      rateDate: null,
+      leftOut: [{ currency: "AMD", accounts: 1 }, { currency: "GEL", accounts: 2 }],
+      tooLarge: false,
+    })
+  })
+
+  it("gives no number when no account could be converted", () => {
+    const total = householdTotal([{ currency: "GEL", balance: 1_000 }], "EUR", new Map())
+
+    expect(total.amount).toBeNull()
+    expect(total.tooLarge).toBe(false)
+    expect(total.leftOut).toEqual([{ currency: "GEL", accounts: 1 }])
+  })
+
+  it("is exact with no rate date when every account is in the base currency", () => {
+    const total = householdTotal(
+      [
+        { currency: "EUR", balance: 12_345 },
+        { currency: "EUR", balance: -45 },
+      ],
+      "EUR",
+      rates,
+    )
+
+    expect(total).toEqual({
+      amount: 12_300,
+      currency: "EUR",
+      rateDate: null,
+      leftOut: [],
+      tooLarge: false,
+    })
+  })
+
+  it("gives no number for a sum past the safe integer bound, instead of a rounded one", () => {
+    const total = householdTotal(
+      [
+        { currency: "EUR", balance: Number.MAX_SAFE_INTEGER },
+        { currency: "EUR", balance: 1 },
+      ],
+      "EUR",
+      rates,
+    )
+
+    expect(total.amount).toBeNull()
+    expect(total.tooLarge).toBe(true)
+  })
+
+  it("gives no number when one account's conversion is past the safe bound", () => {
+    // The largest dollar amount at a rate that makes it 100 times larger in euros.
+    const total = householdTotal(
+      [{ currency: "USD", balance: Number.MAX_SAFE_INTEGER }, { currency: "EUR", balance: 1 }],
+      "EUR",
+      new Map([["USD", eur("USD", "0.01")]]),
+    )
+
+    expect(total.amount).toBeNull()
+    expect(total.tooLarge).toBe(true)
   })
 })

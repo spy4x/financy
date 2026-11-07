@@ -8,7 +8,13 @@ import {
   type GroupRole,
   plainEntryProblem,
 } from "@domain/groups"
-import { currencyCode } from "@spy4x/platform/universal/money"
+import {
+  convertMoney,
+  currencyCode,
+  type ExchangeRate,
+  type Money,
+  sumMoney,
+} from "@spy4x/platform/universal/money"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
@@ -388,6 +394,85 @@ export class AccountGetQuery implements Query<AccountGetPayload, { account: List
   constructor(public data: AccountGetPayload) {}
 }
 // #endregion Commands and queries
+
+// #region Household total
+/** The `account.total` payload: the household whose total is asked for. */
+export const accountTotalPayloadSchema = type({ ...groupIdField, "+": "reject" })
+
+/** A currency the total left out for lack of a rate, with how many accounts hold it. */
+export interface LeftOutCurrency {
+  currency: string
+  accounts: number
+}
+
+/**
+ * The household's total: every live account, archived ones included, converted to the base
+ * currency and summed. `amount` is in the base currency's smallest unit. It is `null` when no
+ * account could be converted, and when the sum is past `Number.MAX_SAFE_INTEGER` (`tooLarge`):
+ * a number that large could no longer be exact, so none is shown rather than a rounded one.
+ */
+export interface HouseholdTotal {
+  amount: number | null
+  currency: string
+  /** The oldest rate date the total used, `YYYY-MM-DD`; `null` when no account needed a rate. */
+  rateDate: string | null
+  /** The currencies with no rate, by code, each with its account count. */
+  leftOut: LeftOutCurrency[]
+  tooLarge: boolean
+}
+
+export interface AccountTotalPayload {
+  actor: Actor
+  groupId: string
+}
+
+export class AccountTotalQuery implements Query<AccountTotalPayload, { total: HouseholdTotal }> {
+  __resultType?: { total: HouseholdTotal }
+  constructor(public data: AccountTotalPayload) {}
+}
+
+/**
+ * Sums `accounts` in `currency`. Each balance is converted with its currency's rate in `rates` and
+ * rounded once to the base currency's smallest unit, half away from zero (`convertMoney`); then the
+ * integers are added. An account whose currency has no rate (missing from `rates`, or `null`) is
+ * left out and named, never counted as 0 or at a rate of 1. A conversion past the safe bound makes
+ * the whole total `tooLarge`, as a sum past it does.
+ */
+export function householdTotal(
+  accounts: readonly { currency: string; balance: number }[],
+  currency: string,
+  rates: ReadonlyMap<string, ExchangeRate | null>,
+): HouseholdTotal {
+  const converted: Money[] = []
+  const leftOut = new Map<string, number>()
+  let rateDate: string | null = null
+  let tooLarge = false
+  for (const account of accounts) {
+    const rate = account.currency === currency ? null : rates.get(account.currency) ?? null
+    const result = convertMoney(account.balance, account.currency, currency, rate)
+    if (result.ok) {
+      converted.push({ amount: result.value, currency })
+      if (rate && (rateDate === null || rate.date < rateDate)) rateDate = rate.date
+    } else if (result.error === `unsafe`) {
+      tooLarge = true
+    } else {
+      leftOut.set(account.currency, (leftOut.get(account.currency) ?? 0) + 1)
+    }
+  }
+  const sum = sumMoney(converted, currency)
+  if (!sum.ok) tooLarge = true
+  return {
+    amount: tooLarge || !sum.ok || converted.length === 0 ? null : sum.value,
+    currency,
+    rateDate,
+    leftOut: [...leftOut].sort(([a], [b]) => a.localeCompare(b)).map(([code, count]) => ({
+      currency: code,
+      accounts: count,
+    })),
+    tooLarge,
+  }
+}
+// #endregion Household total
 
 // #region Ports
 interface AccountInputBase {
