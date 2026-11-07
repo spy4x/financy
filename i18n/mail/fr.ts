@@ -8,7 +8,7 @@ export default {
   "Mail.dontShare": "Ne partagez pas ce code. {host} ne vous le demandera jamais.",
   "PasswordResetMail.subject": "Votre code pour réinitialiser votre mot de passe",
   "PasswordResetMail.asked":
-    "Quelqu’un a demandé à réinitialiser le mot de passe de votre compte sur {host}. Saisissez ce code dans l’onglet où vous l’avez demandé :",
+    "Quelqu’un a demandé à réinitialiser le mot de passe de votre compte utilisateur sur {host}. Saisissez ce code dans l’onglet où vous l’avez demandé :",
   "PasswordResetMail.valid": {
     "one":
       "Il ne sert qu’une fois et reste valable {count} minute. Son utilisation vous déconnecte de tous vos appareils.",
@@ -21,7 +21,7 @@ export default {
     "Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail. Votre mot de passe ne changera pas.",
   "PasswordResetNoticeMail.subject": "Réinitialisez votre mot de passe",
   "PasswordResetNoticeMail.asked":
-    "L’équipe de {host} vous envoie cet e-mail pour que vous puissiez choisir un nouveau mot de passe pour votre compte.",
+    "L’équipe de {host} vous envoie cet e-mail pour que vous puissiez choisir un nouveau mot de passe pour votre compte utilisateur.",
   "PasswordResetNoticeMail.how":
     "Ouvrez la page ci-dessous et saisissez cette adresse e-mail. Nous vous y enverrons un code, et vous choisirez le nouveau mot de passe.",
   "PasswordResetNoticeMail.button": "Réinitialiser le mot de passe",
@@ -32,11 +32,11 @@ export default {
     "Quelqu’un a demandé à se connecter à {host} avec cette adresse e-mail le {when}. Saisissez ce code dans l’onglet où vous l’avez demandé :",
   "SignInCodeMail.valid": {
     "one":
-      "Il ne sert qu’une fois et reste valable {count} minute. Si aucun compte n’utilise encore cette adresse e-mail, il en crée un.",
+      "Il ne sert qu’une fois et reste valable {count} minute. Si aucun compte utilisateur n’utilise encore cette adresse e-mail, il en crée un.",
     "many":
-      "Il ne sert qu’une fois et reste valable {count} minutes. Si aucun compte n’utilise encore cette adresse e-mail, il en crée un.",
+      "Il ne sert qu’une fois et reste valable {count} minutes. Si aucun compte utilisateur n’utilise encore cette adresse e-mail, il en crée un.",
     "other":
-      "Il ne sert qu’une fois et reste valable {count} minutes. Si aucun compte n’utilise encore cette adresse e-mail, il en crée un.",
+      "Il ne sert qu’une fois et reste valable {count} minutes. Si aucun compte utilisateur n’utilise encore cette adresse e-mail, il en crée un.",
   },
   "SignInCodeMail.ignore":
     "Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail. Personne ne peut se connecter sans le code.",
@@ -61,49 +61,51 @@ export default {
   },
   "InvitationMail.button": "Ouvrir l’invitation",
   "InvitationMail.account":
-    "L’invitation est liée à cette adresse e-mail : acceptez-la depuis le compte qui utilise cette adresse.",
+    "L’invitation est liée à cette adresse e-mail : acceptez-la depuis le compte utilisateur qui utilise cette adresse.",
   "InvitationMail.ignore":
     "Si vous ne souhaitez pas rejoindre le groupe, ignorez simplement cet e-mail.",
-  "AccountDeletionMail.subject": "Votre compte sera supprimé le {date}",
+  "AccountDeletionMail.subject": "Votre compte utilisateur sera supprimé le {date}",
   "AccountDeletionMail.asked":
-    "Comme vous l’avez demandé, votre compte sur {host} sera définitivement supprimé le <strong>{date}</strong>.",
+    "Comme vous l’avez demandé, votre compte utilisateur sur {host} sera définitivement supprimé le <strong>{date}</strong>.",
   "AccountDeletionMail.keep":
-    "Vous avez changé d’avis ? Connectez-vous avant cette date pour conserver votre compte.",
+    "Vous avez changé d’avis ? Connectez-vous avant cette date pour conserver votre compte utilisateur.",
   "AccountDeletionMail.notYou":
-    "Si vous n’êtes pas à l’origine de cette demande, connectez-vous dès maintenant pour conserver votre compte, puis changez votre mot de passe.",
-  "AccountRestoredMail.subject": "Votre compte ne sera pas supprimé",
+    "Si vous n’êtes pas à l’origine de cette demande, connectez-vous dès maintenant pour conserver votre compte utilisateur, puis changez votre mot de passe.",
+  "AccountRestoredMail.subject": "Votre compte utilisateur ne sera pas supprimé",
   "AccountRestoredMail.restored":
-    "Quelqu’un s’est connecté à votre compte sur {host} : il ne sera donc finalement pas supprimé.",
+    "Quelqu’un s’est connecté à votre compte utilisateur sur {host} : il ne sera donc finalement pas supprimé.",
   "AccountRestoredMail.notYou":
-    "Si ce n’était pas vous, connectez-vous, changez votre mot de passe et supprimez à nouveau votre compte.",
+    "Si ce n’était pas vous, connectez-vous, changez votre mot de passe et supprimez à nouveau votre compte utilisateur.",
   "DataExportReadyMail.subject": "Vos données sont prêtes",
   "DataExportReadyMail.ready":
     "Téléchargez-les depuis votre profil jusqu’au <strong>{date}</strong>.",
   "DataExportReadyMail.notYou":
     "Si vous n’êtes pas à l’origine de cette demande, changez votre mot de passe et déconnectez-vous de vos autres appareils.",
-  "SignInMethodMail.passkeyAddedSubject": "Une clé d’accès a été ajoutée à votre compte",
+  "SignInMethodMail.passkeyAddedSubject":
+    "Une clé d’accès a été ajoutée à votre compte utilisateur",
   "SignInMethodMail.passkeyAdded":
-    "Une clé d’accès a été ajoutée à votre compte sur {host} le {when}. Elle permet désormais de vous connecter.",
+    "Une clé d’accès a été ajoutée à votre compte utilisateur sur {host} le {when}. Elle permet désormais de vous connecter.",
   "SignInMethodMail.passkeyAddedNotYou":
     "Si ce n’était pas vous, retirez la clé d’accès dans votre profil et changez votre mot de passe.",
-  "SignInMethodMail.passkeyRemovedSubject": "Une clé d’accès a été retirée de votre compte",
+  "SignInMethodMail.passkeyRemovedSubject":
+    "Une clé d’accès a été retirée de votre compte utilisateur",
   "SignInMethodMail.passkeyRemoved":
-    "Une clé d’accès a été retirée de votre compte sur {host} le {when}. Elle ne permet plus de vous connecter.",
+    "Une clé d’accès a été retirée de votre compte utilisateur sur {host} le {when}. Elle ne permet plus de vous connecter.",
   "SignInMethodMail.passkeyRemovedNotYou":
     "Si ce n’était pas vous, connectez-vous, changez votre mot de passe et ajoutez à nouveau votre clé d’accès.",
-  "SignInMethodMail.linkedSubject": "{provider} a été associé à votre compte",
+  "SignInMethodMail.linkedSubject": "{provider} a été associé à votre compte utilisateur",
   "SignInMethodMail.linked":
-    "{provider} a été associé à votre compte sur {host} le {when}. Vous pouvez désormais l’utiliser pour vous connecter.",
+    "{provider} a été associé à votre compte utilisateur sur {host} le {when}. Vous pouvez désormais l’utiliser pour vous connecter.",
   "SignInMethodMail.linkedNotYou":
     "Si ce n’était pas vous, dissociez {provider} dans votre profil et changez votre mot de passe.",
-  "SignInMethodMail.unlinkedSubject": "{provider} a été dissocié de votre compte",
+  "SignInMethodMail.unlinkedSubject": "{provider} a été dissocié de votre compte utilisateur",
   "SignInMethodMail.unlinked":
-    "{provider} a été dissocié de votre compte sur {host} le {when}. Vous ne pouvez plus l’utiliser pour vous connecter.",
+    "{provider} a été dissocié de votre compte utilisateur sur {host} le {when}. Vous ne pouvez plus l’utiliser pour vous connecter.",
   "SignInMethodMail.unlinkedNotYou":
     "Si ce n’était pas vous, connectez-vous, changez votre mot de passe et associez à nouveau {provider}.",
   "ApiTokenMail.subject": "Un nouveau jeton d’API a été créé",
   "ApiTokenMail.created":
-    "Un jeton d’API nommé « {name} » a été créé pour votre compte sur {host}.",
+    "Un jeton d’API nommé « {name} » a été créé pour votre compte utilisateur sur {host}.",
   "ApiTokenMail.readUntil": "Il peut lire le groupe « {group} » et expire le {date}.",
   "ApiTokenMail.readForever": "Il peut lire le groupe « {group} » et n’expire jamais.",
   "ApiTokenMail.writeUntil": "Il peut lire et modifier le groupe « {group} » et expire le {date}.",

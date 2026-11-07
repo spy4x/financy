@@ -8,7 +8,7 @@ export default {
   "Mail.dontShare": "Gib diesen Code an niemanden weiter. {host} wird dich nie danach fragen.",
   "PasswordResetMail.subject": "Dein Code zum Zurücksetzen deines Passworts",
   "PasswordResetMail.asked":
-    "Jemand möchte das Passwort deines Kontos bei {host} zurücksetzen. Gib diesen Code in dem Tab ein, in dem du ihn angefordert hast:",
+    "Jemand möchte das Passwort deines Benutzerkontos bei {host} zurücksetzen. Gib diesen Code in dem Tab ein, in dem du ihn angefordert hast:",
   "PasswordResetMail.valid": {
     "one":
       "Der Code gilt nur einmal und {count} Minute lang. Sobald du ihn eingibst, wirst du auf allen Geräten abgemeldet.",
@@ -19,7 +19,7 @@ export default {
     "Warst du das nicht? Dann ignoriere diese E-Mail einfach. Dein Passwort bleibt, wie es ist.",
   "PasswordResetNoticeMail.subject": "Setze dein Passwort zurück",
   "PasswordResetNoticeMail.asked":
-    "Das Team hinter {host} schickt dir diese E-Mail, damit du ein neues Passwort für dein Konto festlegen kannst.",
+    "Das Team hinter {host} schickt dir diese E-Mail, damit du ein neues Passwort für dein Benutzerkonto festlegen kannst.",
   "PasswordResetNoticeMail.how":
     "Öffne die Seite unten und gib diese E-Mail-Adresse ein. Wir schicken dir dort einen Code, und du legst das neue Passwort fest.",
   "PasswordResetNoticeMail.button": "Passwort zurücksetzen",
@@ -30,9 +30,9 @@ export default {
     "Jemand wollte sich am {when} mit dieser E-Mail-Adresse bei {host} anmelden. Gib diesen Code in dem Tab ein, in dem du ihn angefordert hast:",
   "SignInCodeMail.valid": {
     "one":
-      "Der Code gilt nur einmal und {count} Minute lang. Gibt es mit dieser E-Mail-Adresse noch kein Konto, legt er eins an.",
+      "Der Code gilt nur einmal und {count} Minute lang. Gibt es mit dieser E-Mail-Adresse noch kein Benutzerkonto, legt er eins an.",
     "other":
-      "Der Code gilt nur einmal und {count} Minuten lang. Gibt es mit dieser E-Mail-Adresse noch kein Konto, legt er eins an.",
+      "Der Code gilt nur einmal und {count} Minuten lang. Gibt es mit dieser E-Mail-Adresse noch kein Benutzerkonto, legt er eins an.",
   },
   "SignInCodeMail.ignore":
     "Warst du das nicht? Dann ignoriere diese E-Mail einfach. Ohne den Code kann sich niemand anmelden.",
@@ -55,47 +55,49 @@ export default {
   },
   "InvitationMail.button": "Einladung öffnen",
   "InvitationMail.account":
-    "Die Einladung gilt für diese E-Mail-Adresse. Nimm sie also mit dem Konto an, das zu dieser Adresse gehört.",
+    "Die Einladung gilt für diese E-Mail-Adresse. Nimm sie also mit dem Benutzerkonto an, das zu dieser Adresse gehört.",
   "InvitationMail.ignore": "Wenn du nicht beitreten möchtest, ignoriere diese E-Mail einfach.",
-  "AccountDeletionMail.subject": "Dein Konto wird am {date} gelöscht",
+  "AccountDeletionMail.subject": "Dein Benutzerkonto wird am {date} gelöscht",
   "AccountDeletionMail.asked":
-    "Wie gewünscht wird dein Konto bei {host} am <strong>{date}</strong> endgültig gelöscht.",
+    "Wie gewünscht wird dein Benutzerkonto bei {host} am <strong>{date}</strong> endgültig gelöscht.",
   "AccountDeletionMail.keep":
-    "Doch anders überlegt? Melde dich bis dahin an, dann bleibt dein Konto bestehen.",
+    "Doch anders überlegt? Melde dich bis dahin an, dann bleibt dein Benutzerkonto bestehen.",
   "AccountDeletionMail.notYou":
-    "Warst du das nicht? Dann melde dich jetzt an, um dein Konto zu behalten, und ändere danach dein Passwort.",
-  "AccountRestoredMail.subject": "Dein Konto wird nicht gelöscht",
+    "Warst du das nicht? Dann melde dich jetzt an, um dein Benutzerkonto zu behalten, und ändere danach dein Passwort.",
+  "AccountRestoredMail.subject": "Dein Benutzerkonto wird nicht gelöscht",
   "AccountRestoredMail.restored":
-    "Jemand hat sich bei deinem Konto auf {host} angemeldet, deshalb wird es nun doch nicht gelöscht.",
+    "Jemand hat sich bei deinem Benutzerkonto auf {host} angemeldet, deshalb wird es nun doch nicht gelöscht.",
   "AccountRestoredMail.notYou":
-    "Warst du das nicht? Dann melde dich an, ändere dein Passwort und lösche dein Konto noch einmal.",
+    "Warst du das nicht? Dann melde dich an, ändere dein Passwort und lösche dein Benutzerkonto noch einmal.",
   "DataExportReadyMail.subject": "Deine Daten sind bereit",
   "DataExportReadyMail.ready":
     "Du kannst sie bis zum <strong>{date}</strong> in deinem Profil herunterladen.",
   "DataExportReadyMail.notYou":
     "Warst du das nicht? Dann ändere dein Passwort und melde dich auf deinen anderen Geräten ab.",
-  "SignInMethodMail.passkeyAddedSubject": "Neuer Passkey für dein Konto",
+  "SignInMethodMail.passkeyAddedSubject": "Neuer Passkey für dein Benutzerkonto",
   "SignInMethodMail.passkeyAdded":
-    "Am {when} wurde deinem Konto bei {host} ein Passkey hinzugefügt. Ab jetzt kann man sich damit anmelden.",
+    "Am {when} wurde deinem Benutzerkonto bei {host} ein Passkey hinzugefügt. Ab jetzt kann man sich damit anmelden.",
   "SignInMethodMail.passkeyAddedNotYou":
     "Warst du das nicht? Dann entferne den Passkey in deinem Profil und ändere dein Passwort.",
-  "SignInMethodMail.passkeyRemovedSubject": "Ein Passkey wurde aus deinem Konto entfernt",
+  "SignInMethodMail.passkeyRemovedSubject": "Ein Passkey wurde aus deinem Benutzerkonto entfernt",
   "SignInMethodMail.passkeyRemoved":
-    "Am {when} wurde ein Passkey aus deinem Konto bei {host} entfernt. Mit ihm kann man sich nicht mehr anmelden.",
+    "Am {when} wurde ein Passkey aus deinem Benutzerkonto bei {host} entfernt. Mit ihm kann man sich nicht mehr anmelden.",
   "SignInMethodMail.passkeyRemovedNotYou":
     "Warst du das nicht? Dann melde dich an, ändere dein Passwort und füge deinen Passkey wieder hinzu.",
-  "SignInMethodMail.linkedSubject": "{provider} ist jetzt mit deinem Konto verknüpft",
+  "SignInMethodMail.linkedSubject": "{provider} ist jetzt mit deinem Benutzerkonto verknüpft",
   "SignInMethodMail.linked":
-    "Am {when} wurde {provider} mit deinem Konto bei {host} verknüpft. Du kannst dich jetzt darüber anmelden.",
+    "Am {when} wurde {provider} mit deinem Benutzerkonto bei {host} verknüpft. Du kannst dich jetzt darüber anmelden.",
   "SignInMethodMail.linkedNotYou":
     "Warst du das nicht? Dann trenne {provider} in deinem Profil und ändere dein Passwort.",
-  "SignInMethodMail.unlinkedSubject": "{provider} ist nicht mehr mit deinem Konto verknüpft",
+  "SignInMethodMail.unlinkedSubject":
+    "{provider} ist nicht mehr mit deinem Benutzerkonto verknüpft",
   "SignInMethodMail.unlinked":
-    "Am {when} wurde {provider} von deinem Konto bei {host} getrennt. Du kannst dich nicht mehr darüber anmelden.",
+    "Am {when} wurde {provider} von deinem Benutzerkonto bei {host} getrennt. Du kannst dich nicht mehr darüber anmelden.",
   "SignInMethodMail.unlinkedNotYou":
     "Warst du das nicht? Dann melde dich an, ändere dein Passwort und verknüpfe {provider} wieder.",
   "ApiTokenMail.subject": "Neues API-Token erstellt",
-  "ApiTokenMail.created": "Für dein Konto bei {host} wurde ein API-Token namens „{name}“ erstellt.",
+  "ApiTokenMail.created":
+    "Für dein Benutzerkonto bei {host} wurde ein API-Token namens „{name}“ erstellt.",
   "ApiTokenMail.readUntil": "Es kann die Gruppe „{group}“ lesen und läuft am {date} ab.",
   "ApiTokenMail.readForever": "Es kann die Gruppe „{group}“ lesen und läuft nie ab.",
   "ApiTokenMail.writeUntil":

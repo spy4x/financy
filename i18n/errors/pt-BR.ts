@@ -144,7 +144,7 @@ export default {
   "Reason.INVITATION_REVOKED": "Este convite foi cancelado ou recusado.",
   "Reason.INVITATION_USED_UP": "Este convite já foi usado o máximo de vezes. Peça um novo.",
   "Reason.INVITATION_WRONG_ACCOUNT":
-    "Este convite é para outro e-mail. Entre com a conta que usa esse endereço.",
+    "Este convite é para outro e-mail. Entre com a conta de usuário que usa esse endereço.",
   "Reason.ITEM_NOT_FOUND": "Este item não existe mais.",
   "Reason.LAST_GROUP": "Você precisa ter pelo menos um grupo. Crie outro antes.",
   "Reason.LAST_OWNER": "Um grupo precisa de um dono. Passe a posse para outro membro antes.",
@@ -209,7 +209,7 @@ export default {
   "Reason.UPLOAD_BUDGET": "Você chegou ao limite de envios por hora. Tente de novo mais tarde.",
   "Reason.UPLOAD_NOT_FOUND": "Este envio não existe mais.",
   "Reason.UTM_SOURCE_TAKEN": "Outro canal já usa esta etiqueta de origem.",
-  "Reason.USER_NOT_ACTIVE": "Esta conta não está ativa.",
+  "Reason.USER_NOT_ACTIVE": "Esta conta de usuário não está ativa.",
   "Reason.VERSION_CONFLICT": "Outra pessoa alterou isto. Recarregue para ver as mudanças.",
   "Reason.expired": "Este link expirou.",
   "Reason.invalid": "Este link não é válido.",
