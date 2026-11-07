@@ -120,4 +120,18 @@ describe("accounts under Financy's plans", () => {
     await expect(handler(createCommand())).rejects.toThrow("without the entitlement gate")
     expect((await accounts.list(groupId)).length).toBe(0)
   })
+
+  it("fails closed when a restore reaches its handler without the entitlement gate", async () => {
+    const accounts = new MemoryAccountRepository()
+    const id = uuidV7()
+    await accounts.create({ groupId, id, ...fields, allowance: null }, OWNER)
+    await accounts.delete({ groupId, id, expectedVersion: 1 }, OWNER)
+    const handler = createAccountRestoreHandler({
+      accounts,
+      groups: { roleOf: () => Promise.resolve(GroupRole.OWNER) },
+    })
+    await expect(handler(new AccountRestoreCommand({ actor, groupId, id })))
+      .rejects.toThrow("without the entitlement gate")
+    expect(await accounts.list(groupId)).toEqual([])
+  })
 })

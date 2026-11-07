@@ -35,6 +35,18 @@ function refused(code: string) {
   return new RealtimeRequestError("conflict", "Refused", { code })
 }
 
+/** The refusal a household without a paid plan gets for a new account. */
+const NO_PLAN = {
+  code: "PLAN_LIMIT_REACHED",
+  entitlement: "maxAccounts",
+  limit: 0,
+  canUpgrade: true,
+}
+
+function planRefused() {
+  return new RealtimeRequestError("forbidden", "No plan", NO_PLAN)
+}
+
 /** A store over fake calls that records each one; `live` and `trash` are what the server holds. */
 function harness(overrides: Partial<AccountsDependencies> = {}) {
   const calls: { name: string; input: unknown }[] = []
@@ -221,6 +233,29 @@ describe("accounts store", () => {
     }])
     expect(archived?.archivedAt).not.toBe(null)
     expect(archived?.balance).toBe(700)
+  })
+
+  it("shows the plan's refusal, not an error, when a household without a plan adds an account", async () => {
+    const { store } = harness({ create: () => Promise.reject(planRefused()) })
+    await store.open(groupId)
+    store.startCreate()
+    store.change({ name: "One more", kind: AccountKind.BANK, currency: "EUR", startingBalance: 0 })
+
+    await store.save()
+
+    expect(store.formErrors.value.plan).toEqual(NO_PLAN)
+    expect(store.formErrors.value.form).toBeNull()
+  })
+
+  it("shows the plan's refusal, not an error, when a household without a plan restores an account", async () => {
+    const { store } = harness({ restore: () => Promise.reject(planRefused()) })
+    await store.open(groupId)
+    await store.remove("a")
+
+    await store.restore("a")
+
+    expect(store.listPlan.value).toEqual(NO_PLAN)
+    expect(store.listError.value).toBeNull()
   })
 
   it("takes a deleted account out of the list, lists it in the trash, and Undo brings it back", async () => {
