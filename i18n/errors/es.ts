@@ -146,7 +146,7 @@ export default {
   "Reason.INVITATION_REVOKED": "Esta invitación se canceló o se rechazó.",
   "Reason.INVITATION_USED_UP": "Esta invitación ya no tiene usos disponibles. Pide una nueva.",
   "Reason.INVITATION_WRONG_ACCOUNT":
-    "Esta invitación es para otro correo electrónico. Inicia sesión con la cuenta que lo usa.",
+    "Esta invitación es para otro correo electrónico. Inicia sesión con la cuenta de usuario que lo usa.",
   "Reason.ITEM_NOT_FOUND": "Este artículo ya no existe.",
   "Reason.LAST_GROUP": "Necesitas al menos un grupo. Crea otro primero.",
   "Reason.LAST_OWNER":
@@ -214,7 +214,7 @@ export default {
   "Reason.UPLOAD_BUDGET": "Llegaste al límite de subidas por hora. Vuelve a intentarlo más tarde.",
   "Reason.UPLOAD_NOT_FOUND": "Esta subida ya no existe.",
   "Reason.UTM_SOURCE_TAKEN": "Otro canal ya usa esta etiqueta de origen.",
-  "Reason.USER_NOT_ACTIVE": "Esta cuenta no está activa.",
+  "Reason.USER_NOT_ACTIVE": "Esta cuenta de usuario no está activa.",
   "Reason.VERSION_CONFLICT": "Otra persona cambió esto. Recarga para ver sus cambios.",
   "Reason.expired": "Este enlace caducó.",
   "Reason.invalid": "Este enlace no es válido.",

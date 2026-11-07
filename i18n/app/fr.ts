@@ -380,7 +380,7 @@ export default {
   "GroupInvitations.role": "Rôle",
   "GroupInvitations.email": "Adresse e-mail (facultatif)",
   "GroupInvitations.emailHint":
-    "Seul le compte qui a confirmé cette adresse e-mail peut accepter cette invitation, qui ne laisse entrer qu’une seule personne.",
+    "Seul le compte utilisateur qui a confirmé cette adresse e-mail peut accepter cette invitation, qui ne laisse entrer qu’une seule personne.",
   "GroupInvitations.sendEmail": "Envoyer le lien à cette adresse",
   "GroupInvitations.days": "Expire après (jours)",
   "GroupInvitations.uses": "Nombre de personnes pouvant rejoindre",
@@ -426,7 +426,7 @@ export default {
   "GroupInvitations.acceptNamed": "Accepter l’invitation à {name}",
   "GroupInvitations.verifyEmail": "Vérifier l’adresse e-mail",
   "GroupInvitations.notForYou":
-    "Cette invitation a été envoyée à une autre adresse e-mail. Si c’est la vôtre, confirmez-la d’abord dans votre <link>profil</link>, ou connectez-vous avec le compte qui l’utilise.",
+    "Cette invitation a été envoyée à une autre adresse e-mail. Si c’est la vôtre, confirmez-la d’abord dans votre <link>profil</link>, ou connectez-vous avec le compte utilisateur qui l’utilise.",
   "GroupInvitations.somethingWrong": "Un problème est survenu. Réessayez.",
   "GroupInvitations.unreachable": "Impossible de joindre le serveur. Réessayez.",
   "GroupMembers.unnamed": "Membre sans nom",
@@ -451,7 +451,7 @@ export default {
   "GroupMembers.removeConfirm": "Retirer le membre",
   "GroupMembers.cancel": "Annuler",
   "GroupMembers.removeConfirmation":
-    "Cette personne perdra l’accès immédiatement, sur tous ses appareils. Ce qu’elle a écrit reste dans le groupe. Si c’était son seul groupe, elle reçoit un nouveau groupe vide nommé « Personnel ». Si elle possède encore un lien d’invitation, elle peut revenir avec un autre compte : révoquez donc aussi ces liens.",
+    "Cette personne perdra l’accès immédiatement, sur tous ses appareils. Ce qu’elle a écrit reste dans le groupe. Si c’était son seul groupe, elle reçoit un nouveau groupe vide nommé « Personnel ». Si elle possède encore un lien d’invitation, elle peut revenir avec un autre compte utilisateur : révoquez donc aussi ces liens.",
   "GroupMembers.loadFailed": "Impossible de charger les membres",
   "GroupMembers.roleFailed": "Impossible de modifier le rôle",
   "GroupMembers.removeFailed": "Impossible de retirer le membre",
@@ -488,7 +488,7 @@ export default {
   "GroupPicker.new": "Nouveau groupe",
   "GroupPicker.sheetHeading": "Groupe",
   "GroupTransfer.explanation":
-    "Cette personne devient propriétaire et vous devenez administrateur. Seul le propriétaire peut supprimer le groupe, gérer son forfait ou le transférer à nouveau. Avant de pouvoir supprimer votre compte, transférez chaque groupe que vous partagez avec d’autres personnes.",
+    "Cette personne devient propriétaire et vous devenez administrateur. Seul le propriétaire peut supprimer le groupe, gérer son forfait ou le transférer à nouveau. Avant de pouvoir supprimer votre compte utilisateur, transférez chaque groupe que vous partagez avec d’autres personnes.",
   "GroupTransfer.newOwner": "Nouveau propriétaire",
   "GroupTransfer.typeName": "Saisissez « {name} » pour confirmer",
   "GroupTransfer.password": "Votre mot de passe",
@@ -728,10 +728,11 @@ export default {
   "NotificationsScreen.reminderFirstNote":
     "Gardez la note que vous venez d’écrire. Pour l’instant, elle n’existe que dans ce navigateur. Ajoutez une méthode de connexion pour l’ouvrir sur n’importe quel appareil.",
   "NotificationsScreen.reminderThirdVisit":
-    "Envie de retrouver ce compte sur vos autres appareils ? Pour l’instant, seul ce navigateur peut l’ouvrir. Ajoutez une méthode de connexion pour l’utiliser partout.",
+    "Envie de retrouver ce compte utilisateur sur vos autres appareils ? Pour l’instant, seul ce navigateur peut l’ouvrir. Ajoutez une méthode de connexion pour l’utiliser partout.",
   "NotificationsScreen.reminderInvite":
     "Ajoutez une méthode de connexion pour inviter des personnes : elles voient qui les a invitées. Invitez-les ensuite depuis les paramètres du groupe.",
-  "NotificationsScreen.reminderKeep": "Ajoutez une méthode de connexion pour garder votre compte.",
+  "NotificationsScreen.reminderKeep":
+    "Ajoutez une méthode de connexion pour garder votre compte utilisateur.",
   "NotificationsScreen.exportReady":
     "Vos données sont prêtes. Téléchargez-les depuis votre profil.",
   "NotificationsScreen.exportReadyUntil":
@@ -772,7 +773,7 @@ export default {
   "OnboardingCard.currencyAction": "Choisir la devise",
   "OnboardingCard.twoFactorTitle": "Configurez la double authentification",
   "OnboardingCard.twoFactorText":
-    "Une application d’authentification protège votre compte, même si votre mot de passe fuite.",
+    "Une application d’authentification protège votre compte utilisateur, même si votre mot de passe fuite.",
   "OnboardingCard.twoFactorAction": "Configurer",
   "OnboardingCard.tourNotesTitle": "Notes",
   "OnboardingCard.tourNotesText":
@@ -785,16 +786,16 @@ export default {
     "Ce qui s’est passé pendant votre absence, comme une invitation.",
   "OnboardingCard.tourProfileTitle": "Profil",
   "OnboardingCard.tourProfileText":
-    "Votre compte : votre nom, votre mot de passe, la double authentification et vos appareils, le thème et la déconnexion.",
+    "Votre compte utilisateur : votre nom, votre mot de passe, la double authentification et vos appareils, le thème et la déconnexion.",
   "OnboardingCard.goTo": "Aller à {place}",
   "OnboardingCard.goToHighlighted": "Aller à l’élément mis en évidence",
   "OnboardingCard.title": "Bien démarrer",
   "OnboardingCard.tourOffer": "Nouveau ici ? Faites une visite rapide.",
   "OnboardingCard.tourStart": "Faire la visite",
   "OnboardingCard.tourSkip": "Passer la visite",
-  "OnboardingCard.keep": "Gardez votre compte",
+  "OnboardingCard.keep": "Gardez votre compte utilisateur",
   "OnboardingCard.keepText":
-    "Ajoutez une méthode de connexion pour ouvrir ce compte sur n’importe quel appareil.",
+    "Ajoutez une méthode de connexion pour ouvrir ce compte utilisateur sur n’importe quel appareil.",
   "OverviewScreen.last7Days": "7 derniers jours",
   "OverviewScreen.last30Days": "30 derniers jours",
   "OverviewScreen.last90Days": "90 derniers jours",
@@ -877,7 +878,7 @@ export default {
   "PlanRefusalNotice.noPlanTitle": "{group} n’a pas de forfait payant",
   "PlanRefusalNotice.noPlanTitleUnnamed": "Ce groupe n’a pas de forfait payant",
   "PlanRefusalNotice.noPlanText": "Choisissez un forfait pour commencer à ajouter du contenu.",
-  "GuestProfile.accountType": "Type de compte",
+  "GuestProfile.accountType": "Type de compte utilisateur",
   "GuestProfile.guestAccount": "Compte invité. Seul ce navigateur peut l’ouvrir.",
   "GuestProfile.methods": "Méthodes de connexion",
   "GuestProfile.noMethods": "Aucune méthode de connexion pour l’instant",
@@ -897,61 +898,63 @@ export default {
   "GuestProfile.pushText": "Ajoutez-en une, puis activez-les ici.",
   "GuestProfile.apiTokenTitle": "Les jetons d’API nécessitent une méthode de connexion",
   "GuestProfile.apiTokenText":
-    "Un jeton ouvre ce compte depuis l’extérieur du navigateur. Ajoutez d’abord une méthode de connexion.",
+    "Un jeton ouvre ce compte utilisateur depuis l’extérieur du navigateur. Ajoutez d’abord une méthode de connexion.",
   "GuestProfile.uploadTitle": "L’importation nécessite une méthode de connexion",
-  "GuestProfile.uploadText": "Ajoutez-en d’abord une à votre compte, puis importez le fichier.",
+  "GuestProfile.uploadText":
+    "Ajoutez-en d’abord une à votre compte utilisateur, puis importez le fichier.",
   "GuestProfile.billingTitle": "Les forfaits payants nécessitent une méthode de connexion",
   "GuestProfile.billingText":
-    "Les forfaits sont facturés à un compte auquel vous pouvez toujours vous reconnecter. Ajoutez d’abord une méthode de connexion.",
+    "Les forfaits sont facturés à un compte utilisateur auquel vous pouvez toujours vous reconnecter. Ajoutez d’abord une méthode de connexion.",
   "GuestProfile.telegramTitle": "Telegram nécessite une méthode de connexion",
   "GuestProfile.telegramText":
     "Une conversation associée agit en votre nom depuis l’extérieur du navigateur. Ajoutez d’abord une méthode de connexion.",
   "GuestProfile.otherTitle": "Cette action nécessite une méthode de connexion",
-  "GuestProfile.otherText": "Ajoutez-en d’abord une à votre compte, puis réessayez.",
+  "GuestProfile.otherText": "Ajoutez-en d’abord une à votre compte utilisateur, puis réessayez.",
   "GuestProfile.notNow": "Pas maintenant",
-  "GuestScreens.keep": "Gardez votre compte",
+  "GuestScreens.keep": "Gardez votre compte utilisateur",
   "GuestScreens.createAccount": "Créer un compte",
   "GuestScreens.createInstead": "Créer plutôt un compte",
   "GuestScreens.tryTitle": "Essayer l’application",
   "GuestScreens.opening": "Ouverture de l’application…",
-  "GuestScreens.rateLimited": "Trop de nouveaux comptes depuis votre réseau",
+  "GuestScreens.rateLimited": "Trop de nouveaux comptes utilisateurs depuis votre réseau",
   "GuestScreens.failed": "Impossible d’ouvrir l’application",
   "GuestScreens.failedText": "Vérifiez votre connexion et réessayez.",
   "GuestScreens.tryAgain": "Réessayer",
   "GuestScreens.signedIn": "Vous êtes déjà connecté",
   "GuestScreens.signedInText":
-    "Votre compte est ouvert dans ce navigateur. Déconnectez-vous d’abord pour essayer l’application en tant qu’invité.",
+    "Votre compte utilisateur est ouvert dans ce navigateur. Déconnectez-vous d’abord pour essayer l’application en tant qu’invité.",
   "GuestScreens.openApp": "Ouvrir l’application",
   "GuestScreens.off": "Créez un compte pour commencer",
-  "GuestScreens.offText": "Il n’est pas possible d’essayer l’application sans compte ici.",
+  "GuestScreens.offText": "Ici, il n’est pas possible d’essayer l’application sans vous inscrire.",
   "GuestScreens.terms":
     "En continuant, vous acceptez les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy>.",
   "GuestScreens.tryNow": "Essayer maintenant",
   "GuestScreens.tryLine":
-    "Aucun compte nécessaire. Ajoutez une méthode de connexion plus tard pour garder votre travail.",
-  "GuestScreens.noAccount": "Pas encore de compte ?",
-  "GuestScreens.tryWithout": "Essayer sans compte",
-  "GuestScreens.tryFromSignIn": "Vous obtiendrez un nouveau compte vide dans ce navigateur.",
+    "Pas besoin de vous inscrire. Ajoutez une méthode de connexion plus tard pour garder votre travail.",
+  "GuestScreens.noAccount": "Pas encore inscrit ?",
+  "GuestScreens.tryWithout": "Essayer sans inscription",
+  "GuestScreens.tryFromSignIn":
+    "Vous obtiendrez un nouveau compte utilisateur vide dans ce navigateur.",
   "GuestScreens.tryFromSignInDemo":
-    "Vous obtiendrez un nouveau compte avec des données d’exemple pour tester.",
+    "Vous obtiendrez un nouveau compte utilisateur avec des données d’exemple pour tester.",
   "GuestScreens.demoWipe":
-    "Vous utilisez un compte invité sur une démo publique. Tout est réinitialisé chaque nuit à {time}, même avec une méthode de connexion. Ajoutez-en une quand même pour voir comment fonctionne la conservation d’un compte.",
+    "Vous utilisez un compte invité sur une démo publique. Tout est réinitialisé chaque nuit à {time}, même avec une méthode de connexion. Ajoutez-en une quand même pour voir comment fonctionne la conservation d’un compte utilisateur.",
   "GuestScreens.banner":
-    "Ce compte n’existe que dans ce navigateur. Si les données du navigateur sont effacées, il disparaît. Ajoutez une méthode de connexion pour le garder.",
+    "Ce compte utilisateur n’existe que dans ce navigateur. Si les données du navigateur sont effacées, il disparaît. Ajoutez une méthode de connexion pour le garder.",
   "GuestScreens.hide": "Masquer ce message",
   "GuestScreens.keptPasskey":
-    "Vous pouvez maintenant vous connecter avec une clé d’accès sur n’importe quel appareil. Rien n’a changé dans votre compte.",
+    "Vous pouvez maintenant vous connecter avec une clé d’accès sur n’importe quel appareil. Rien n’a changé dans votre compte utilisateur.",
   "GuestScreens.keptEmail":
-    "Vous pouvez maintenant vous connecter avec votre adresse e-mail sur n’importe quel appareil. Rien n’a changé dans votre compte.",
+    "Vous pouvez maintenant vous connecter avec votre adresse e-mail sur n’importe quel appareil. Rien n’a changé dans votre compte utilisateur.",
   "GuestScreens.keptProvider":
-    "Vous pouvez maintenant vous connecter avec {provider} sur n’importe quel appareil. Rien n’a changé dans votre compte.",
+    "Vous pouvez maintenant vous connecter avec {provider} sur n’importe quel appareil. Rien n’a changé dans votre compte utilisateur.",
   "GuestScreens.added": "Méthode de connexion ajoutée",
   "GuestScreens.done": "Terminé",
-  "GuestScreens.isKept": "Votre compte est enregistré",
+  "GuestScreens.isKept": "Votre compte utilisateur est enregistré",
   "GuestScreens.isKeptText":
     "Il a une méthode de connexion : vous pouvez l’ouvrir sur n’importe quel appareil.",
   "GuestScreens.keepText":
-    "Ajoutez une méthode de connexion pour ouvrir ce compte sur n’importe quel appareil. Vos notes et vos groupes restent tels quels.",
+    "Ajoutez une méthode de connexion pour ouvrir ce compte utilisateur sur n’importe quel appareil. Vos notes et vos groupes restent tels quels.",
   "GuestScreens.ways": "Méthodes de connexion",
   "GuestScreens.openingProvider": "Ouverture de {provider}…",
   "GuestScreens.addPasskey": "Ajouter une clé d’accès",
@@ -963,41 +966,41 @@ export default {
     "other": "Au moins {count} caractères.",
   },
   "GuestScreens.saving": "Enregistrement…",
-  "GuestScreens.takenProvider": "{provider} est déjà associé à un autre compte.",
-  "GuestScreens.takenAddress": "Un compte existe déjà avec cette adresse e-mail.",
-  "GuestScreens.takenEmail": "Un compte existe déjà avec <email>{email}</email>.",
+  "GuestScreens.takenProvider": "{provider} est déjà associé à un autre compte utilisateur.",
+  "GuestScreens.takenAddress": "Un compte utilisateur existe déjà avec cette adresse e-mail.",
+  "GuestScreens.takenEmail": "Un compte utilisateur existe déjà avec <email>{email}</email>.",
   "GuestScreens.takenRest":
     "Votre compte invité n’a pas été modifié. Choisissez quoi faire de ce que vous avez créé en tant qu’invité.",
   "GuestScreens.moveOne":
-    "Connectez-vous à ce compte et déplacez-y <name>{name}</name>. Le compte invité sera ensuite supprimé.",
+    "Connectez-vous à ce compte utilisateur et déplacez-y <name>{name}</name>. Le compte invité sera ensuite supprimé.",
   "GuestScreens.moveMany": {
     "one":
-      "Connectez-vous à ce compte et déplacez-y {count} groupe de ce compte invité. Le compte invité sera ensuite supprimé.",
+      "Connectez-vous à ce compte utilisateur et déplacez-y {count} groupe de ce compte invité. Le compte invité sera ensuite supprimé.",
     "many":
-      "Connectez-vous à ce compte et déplacez-y {count} groupes de ce compte invité. Le compte invité sera ensuite supprimé.",
+      "Connectez-vous à ce compte utilisateur et déplacez-y {count} groupes de ce compte invité. Le compte invité sera ensuite supprimé.",
     "other":
-      "Connectez-vous à ce compte et déplacez-y {count} groupes de ce compte invité. Le compte invité sera ensuite supprimé.",
+      "Connectez-vous à ce compte utilisateur et déplacez-y {count} groupes de ce compte invité. Le compte invité sera ensuite supprimé.",
   },
   "GuestScreens.checking": "Vérification…",
   "GuestScreens.loading": "Chargement…",
   "GuestScreens.nothing": "Rien à choisir ici",
   "GuestScreens.nothingText":
     "Ce choix a expiré ou a déjà été fait. Votre compte invité n’a pas été modifié.",
-  "GuestScreens.move": "Changer de compte et déplacer mes groupes",
-  "GuestScreens.delete": "Changer de compte et supprimer les données invité",
+  "GuestScreens.move": "Changer de compte utilisateur et déplacer mes groupes",
+  "GuestScreens.delete": "Changer de compte utilisateur et supprimer les données invité",
   "GuestScreens.deleteHint":
-    "Connectez-vous à ce compte et supprimez ce compte invité avec tout son contenu.",
+    "Connectez-vous à ce compte utilisateur et supprimez ce compte invité avec tout son contenu.",
   "GuestScreens.keepGuest": "Garder le compte invité",
   "GuestScreens.keepGuestHint":
     "Rien ne change. Vous pouvez ajouter une autre méthode de connexion.",
-  "GuestScreens.linked": "Déjà associé à un autre compte",
+  "GuestScreens.linked": "Déjà associé à un autre compte utilisateur",
   "GuestScreens.legend": "Que faire de ce compte invité",
   "GuestScreens.choose": "Choisissez quoi faire de ce que vous avez créé en tant qu’invité.",
   "GuestScreens.passwordOf": "Le mot de passe de {email}.",
-  "GuestScreens.passwordOfThat": "Le mot de passe de ce compte.",
-  "GuestScreens.otp": "Code de l’application d’authentification de ce compte",
+  "GuestScreens.passwordOfThat": "Le mot de passe de ce compte utilisateur.",
+  "GuestScreens.otp": "Code de l’application d’authentification de ce compte utilisateur",
   "GuestScreens.sixDigits": "Six chiffres.",
-  "GuestScreens.deleteAndSwitch": "Supprimer et changer de compte",
+  "GuestScreens.deleteAndSwitch": "Supprimer et changer de compte utilisateur",
   "GuestScreens.notes": {
     "one": "{count} note",
     "many": "{count} notes",
@@ -1011,30 +1014,31 @@ export default {
   "GuestScreens.confirmEmail":
     "Cette action supprime ses {notes} et ses {groups}, puis vous connecte à <email>{email}</email>. Elle est irréversible.",
   "GuestScreens.confirmAccount":
-    "Cette action supprime ses {notes} et ses {groups}, puis vous connecte à ce compte. Elle est irréversible.",
+    "Cette action supprime ses {notes} et ses {groups}, puis vous connecte à ce compte utilisateur. Elle est irréversible.",
   "GuestScreens.signOutTitle": "Se déconnecter d’un compte invité ?",
   "GuestScreens.signOutAnyway": "Se déconnecter quand même",
   "GuestScreens.signOutText":
-    "Ce compte n’a aucune méthode de connexion : vous ne pourrez pas vous reconnecter. Vous perdrez tout son contenu.",
+    "Ce compte utilisateur n’a aucune méthode de connexion : vous ne pourrez pas vous reconnecter. Vous perdrez tout son contenu.",
   "GuestScreens.offline": "Vous êtes hors ligne. Connectez-vous à Internet et réessayez.",
   "GuestScreens.providerFailed":
-    "{provider} n’a pas abouti. Votre compte n’a pas été modifié. Réessayez ou choisissez une autre méthode.",
+    "{provider} n’a pas abouti. Votre compte utilisateur n’a pas été modifié. Réessayez ou choisissez une autre méthode.",
   "GuestScreens.noPasskey":
-    "Aucune clé d’accès n’a été ajoutée. Votre compte reste un compte invité.",
+    "Aucune clé d’accès n’a été ajoutée. Vous utilisez toujours un compte invité.",
   "GuestScreens.didNotWork": "Cela n’a pas fonctionné. Réessayez.",
   "OAuthNotice.failed": "Cette connexion n’a pas fonctionné. Réessayez.",
   "OAuthNotice.linked": "Associé. Vous pouvez maintenant l’utiliser pour vous connecter.",
   "OAuthNotice.linkExists":
     "Déjà associé. Vous pouvez l’utiliser pour vous connecter, comme avant.",
-  "OAuthNotice.linkTaken": "Non associé : ce compte est déjà associé à un autre compte ici.",
+  "OAuthNotice.linkTaken":
+    "Non associé : ce compte externe est déjà associé à un autre compte utilisateur ici.",
   "OAuthNotice.busy": "Trop de tentatives. Patientez une minute, puis réessayez.",
   "OAuthNotice.kept":
     "Méthode de connexion ajoutée. Vous pouvez maintenant l’utiliser sur n’importe quel appareil.",
-  "OAuthNotice.guestTaken": "Cette méthode de connexion appartient à un autre compte.",
+  "OAuthNotice.guestTaken": "Cette méthode de connexion appartient à un autre compte utilisateur.",
   "PasswordResetScreen.forgotFailed": "Impossible d’envoyer le code",
   "PasswordResetScreen.resetFailed": "Impossible de changer le mot de passe",
   "PasswordResetScreen.sent":
-    "Si un compte utilise <email>{email}</email>, nous avons envoyé un code à cette adresse.",
+    "Si <email>{email}</email> correspond à un compte utilisateur, nous y avons envoyé un code.",
   "PasswordResetScreen.forgotDescription": {
     "one":
       "Saisissez l’adresse e-mail utilisée lors de votre inscription. Nous vous enverrons un code pour choisir un nouveau mot de passe. Il reste valable {count} minute.",
@@ -1477,11 +1481,12 @@ export default {
     "Impossible d’ajouter cet appareil. Autorisez les notifications pour ce site dans votre navigateur, puis réessayez.",
   "ProfileScreen.pushRemoveFailed":
     "Impossible de retirer cet appareil. Vérifiez votre connexion et réessayez.",
-  "ProfileScreen.account": "Compte",
+  "ProfileScreen.account": "Compte utilisateur",
   "ProfileScreen.accountText":
     "Votre photo, votre nom, votre adresse e-mail et une copie de vos données.",
   "ProfileScreen.security": "Connexion et sécurité",
-  "ProfileScreen.securityText": "Comment vous vous connectez, et où votre compte est connecté.",
+  "ProfileScreen.securityText":
+    "Comment vous vous connectez, et où votre compte utilisateur est connecté.",
   "ProfileScreen.region": "Langue et région",
   "ProfileScreen.regionText": "Votre langue, et l’affichage des dates, des heures et des nombres.",
   "ProfileScreen.appearance": "Apparence",
@@ -1492,8 +1497,9 @@ export default {
   "ProfileScreen.apiTokens": "Jetons d’API",
   "ProfileScreen.apiTokensText":
     "Permettez à un script ou à un autre service d’utiliser l’un de vos groupes sans votre mot de passe.",
-  "ProfileScreen.dangerZone": "Supprimer le compte",
-  "ProfileScreen.dangerZoneText": "Supprimez votre compte et tout ce que vous seul pouvez voir.",
+  "ProfileScreen.dangerZone": "Supprimer le compte utilisateur",
+  "ProfileScreen.dangerZoneText":
+    "Supprimez votre compte utilisateur et tout ce que vous seul pouvez voir.",
   "ProfileScreen.codeTitle": "Saisissez votre code à usage unique",
   "ProfileScreen.codeText":
     "Saisissez le code de votre application d’authentification pour ouvrir votre profil.",
@@ -1531,7 +1537,7 @@ export default {
   "ProfileSecurity.setText":
     "Ajoutez un mot de passe pour pouvoir aussi vous connecter avec votre adresse e-mail.",
   "ProfileSecurity.setNeedsEmail":
-    "Vous vous connectez avec un mot de passe et votre adresse e-mail, et ce compte n’a pas encore d’adresse e-mail. Ajoutez-en d’abord une, puis revenez ici pour définir un mot de passe.",
+    "Vous vous connectez avec un mot de passe et votre adresse e-mail, et ce compte utilisateur n’a pas encore d’adresse e-mail. Ajoutez-en d’abord une, puis revenez ici pour définir un mot de passe.",
   "ProfileSecurity.setNeedsCode":
     "Vous vous connectez avec un mot de passe et votre adresse e-mail. Confirmez d’abord <email>{email}</email> avec le code que nous y avons envoyé, puis revenez ici pour définir un mot de passe.",
   "ProfileSecurity.addEmail": "Ajouter une adresse e-mail",
@@ -1577,7 +1583,7 @@ export default {
   "ProfileTelegram.unlinkText":
     "Les notifications ne seront plus envoyées sur Telegram, et {bot} ne pourra plus agir en votre nom. Pour l’associer à nouveau, il vous faudra un nouveau code.",
   "ProfileTelegram.open":
-    "Ouvrez la conversation avec <strong>{bot}</strong> et appuyez sur Démarrer, puis sur {button}. Cette fenêtre se ferme dès que votre compte est associé.",
+    "Ouvrez la conversation avec <strong>{bot}</strong> et appuyez sur Démarrer, puis sur {button}. Cette fenêtre se ferme dès que votre compte utilisateur est associé.",
   "ProfileTelegram.openButton": "Ouvrir Telegram",
   "ProfileTelegram.elsewhere": "Telegram sur un autre appareil ? Envoyez ce message à {bot} :",
   "ProfileTelegram.message": "Message à envoyer",
@@ -1591,7 +1597,7 @@ export default {
   "ProfileView.codeMissing": "Saisissez le code de votre application d’authentification",
   "ProfileView.telegramLinked": "Telegram associé",
   "ProfileView.telegramLinkedBody": "Vos notifications arrivent désormais sur Telegram.",
-  "ProfileView.switched": "Connecté à votre compte",
+  "ProfileView.switched": "Connecté à votre compte utilisateur",
   "ProfileView.switchedMoved": {
     "one": "{count} groupe déplacé depuis votre compte invité.",
     "many": "{count} groupes déplacés depuis votre compte invité.",
@@ -1620,7 +1626,7 @@ export default {
   "ProfileView.passwordSet": "Mot de passe défini",
   "ProfileView.passwordSetBody":
     "Vous pouvez désormais aussi vous connecter avec votre adresse e-mail et ce mot de passe.",
-  "ProfileView.accountDeleted": "Compte supprimé",
+  "ProfileView.accountDeleted": "Compte utilisateur supprimé",
   "ProfileView.accountDeletedBody":
     "Il sera supprimé définitivement le {day}. Connectez-vous avant cette date pour le conserver.",
   "ProfileView.guestDeleted": "Compte invité supprimé",
@@ -1635,18 +1641,18 @@ export default {
     "Vous vous êtes connecté avec {methods} il y a un instant : vous n’avez donc pas besoin de mot de passe.",
   "ProviderProof.needed": {
     "one":
-      "Ce compte n’a pas de mot de passe pour confirmer cette action. Reconnectez-vous avec {methods}, puis revenez ici dans un délai de {count} minute.",
+      "Ce compte utilisateur n’a pas de mot de passe pour confirmer cette action. Reconnectez-vous avec {methods}, puis revenez ici dans un délai de {count} minute.",
     "many":
-      "Ce compte n’a pas de mot de passe pour confirmer cette action. Reconnectez-vous avec {methods}, puis revenez ici dans un délai de {count} minutes.",
+      "Ce compte utilisateur n’a pas de mot de passe pour confirmer cette action. Reconnectez-vous avec {methods}, puis revenez ici dans un délai de {count} minutes.",
     "other":
-      "Ce compte n’a pas de mot de passe pour confirmer cette action. Reconnectez-vous avec {methods}, puis revenez ici dans un délai de {count} minutes.",
+      "Ce compte utilisateur n’a pas de mot de passe pour confirmer cette action. Reconnectez-vous avec {methods}, puis revenez ici dans un délai de {count} minutes.",
   },
   "ProviderProof.passkeyAgain": "Se reconnecter avec une clé d’accès",
   "ProviderProof.providerAgain": "Se reconnecter avec {provider}",
   "SignInCodeScreen.sendFailed": "Impossible d’envoyer le code. Réessayez dans un instant.",
   "SignInCodeScreen.title": "Se connecter avec un code par e-mail",
   "SignInCodeScreen.description":
-    "Nous vous envoyons par e-mail un code à saisir ici. Pas encore de compte avec cette adresse ? Le code en crée un.",
+    "Nous vous envoyons par e-mail un code à saisir ici. Pas encore de compte utilisateur avec cette adresse ? Le code en crée un.",
   "SignInCodeScreen.ratherPassword":
     "Vous préférez un mot de passe ? <link>Retour à la connexion</link>",
   "SignInCodeScreen.submit": "Recevoir un code",
@@ -1656,7 +1662,7 @@ export default {
   "CodeStep.sent": "Nous avons envoyé un code à <email>{email}</email>.",
   "CodeStep.invalid": "Le code compte 8 caractères. Vérifiez qu’il n’en manque pas un.",
   "SignInCodeScreen.guest":
-    "Vous utilisez l’app en tant qu’invité. Si vous vous connectez, ce que vous avez créé ici sera enregistré sous cette adresse. Si elle a déjà un compte, nous vous demanderons d’abord votre accord.",
+    "Vous utilisez l’app en tant qu’invité. Si vous vous connectez, ce que vous avez créé ici sera enregistré sous cette adresse. Si elle a déjà un compte utilisateur, nous vous demanderons d’abord votre accord.",
   "CodeStep.deadTitle": "Ce code ne fonctionne plus",
   "CodeStep.dead": {
     "one":
@@ -1688,7 +1694,7 @@ export default {
   "SignInMethods.passkeyAsks":
     "Une clé d’accès est une autre façon de vous connecter : nous vous demandons donc d’abord votre mot de passe.",
   "SignInMethods.linkAsks":
-    "Un compte associé est une autre façon de vous connecter : nous vous demandons donc d’abord votre mot de passe.",
+    "Associer un compte externe ajoute une façon de vous connecter : nous vous demandons donc d’abord votre mot de passe.",
   "SignInMethods.opening": "Ouverture…",
   "SignInMethods.continueTo": "Continuer vers {provider}",
   "SignInMethods.removeTitle": "Retirer « {name} » ?",
@@ -1715,7 +1721,8 @@ export default {
   "SignInMethods.onlyLinked":
     "C’est votre seule méthode de connexion : vous ne pouvez donc pas la dissocier.",
   "SignInMethods.passkeyNotSaved": "Impossible d’enregistrer la clé d’accès. Réessayez.",
-  "SignInMethods.passkeyOnDevice": "Cet appareil possède déjà une clé d’accès pour votre compte.",
+  "SignInMethods.passkeyOnDevice":
+    "Cet appareil possède déjà une clé d’accès pour votre compte utilisateur.",
   "SignUpCodeScreen.checkFailed": "Impossible de vérifier le code",
   "SignUpCodeScreen.offline": "Vous êtes hors ligne. Connectez-vous à Internet et réessayez.",
   "SignUpCodeScreen.title": "Consultez votre boîte de réception",
@@ -1724,11 +1731,11 @@ export default {
   "SignUpCodeScreen.checking": "Vérification…",
   "SignUpCodeScreen.resend": "Envoyer un nouveau code",
   "SignUpCodeScreen.resendFailed": "Impossible d’envoyer un nouveau code",
-  "SignUpCodeScreen.existsTitle": "Vous avez déjà un compte",
+  "SignUpCodeScreen.existsTitle": "Vous avez déjà un compte utilisateur",
   "SignUpCodeScreen.exists":
-    "Un compte existe déjà ici avec <email>{email}</email>. Aucun nouveau compte n’a été créé.",
+    "Un compte utilisateur existe déjà ici avec <email>{email}</email>. Rien de nouveau n’a été créé.",
   "SignUpCodeScreen.existsWith":
-    "Un compte existe déjà ici avec <email>{email}</email>, et il se connecte avec {providers}. Aucun nouveau compte n’a été créé.",
+    "Un compte utilisateur existe déjà ici avec <email>{email}</email>, et il se connecte avec {providers}. Rien de nouveau n’a été créé.",
   "SignUpCodeScreen.signInInstead": "Se connecter plutôt",
   "SignUpCodeScreen.expiredTitle": "Cette inscription a expiré",
   "SignUpCodeScreen.expired": {
@@ -1746,7 +1753,7 @@ export default {
     "Impossible de joindre le serveur. Voici la liste enregistrée sur cet appareil : {time}. Les appareils connectés ou déconnectés depuis n’y figurent pas.",
   "SignedInDevices.title": "Appareils connectés",
   "SignedInDevices.description":
-    "Les appareils où votre compte est connecté. Déconnectez ceux que vous ne reconnaissez pas.",
+    "Les appareils où votre compte utilisateur est connecté. Déconnectez ceux que vous ne reconnaissez pas.",
   "SignedInDevices.loading": "Chargement de vos appareils…",
   "SignedInDevices.signOutDevice": "Déconnecter<device> {device}</device>",
   "SignedInDevices.signingOut": "Déconnexion…",
@@ -1786,7 +1793,7 @@ export default {
   "Search.untitled": "Note sans titre",
   "Search.current": "Actuel",
   "Search.inGroup": "Dans {group}",
-  "Search.keep": "Gardez votre compte",
+  "Search.keep": "Gardez votre compte utilisateur",
   "Search.keepDetail":
     "Créer un compte, s’inscrire ou enregistrer ce compte invité avec une méthode de connexion",
   "Search.newNote": "Nouvelle note",
@@ -1899,18 +1906,18 @@ export default {
   "TelegramNotification.open": "Ouvrir",
   "TelegramBot.linkButton": "Associer",
   "TelegramBot.confirmNameAddress":
-    "Associer ce compte Telegram au compte de {name} sur {app} ({address}) ? Appuyez sur « {button} » uniquement s’il s’agit de votre propre compte. Si vous n’avez rien demandé, ignorez ce message.",
+    "Associer ce compte Telegram au compte utilisateur de {name} sur {app} ({address}) ? Appuyez sur « {button} » uniquement si c’est le vôtre. Si vous n’avez rien demandé, ignorez ce message.",
   "TelegramBot.confirmName":
-    "Associer ce compte Telegram au compte de {name} sur {app} ? Appuyez sur « {button} » uniquement s’il s’agit de votre propre compte. Si vous n’avez rien demandé, ignorez ce message.",
+    "Associer ce compte Telegram au compte utilisateur de {name} sur {app} ? Appuyez sur « {button} » uniquement si c’est le vôtre. Si vous n’avez rien demandé, ignorez ce message.",
   "TelegramBot.confirmAddress":
-    "Associer ce compte Telegram à un compte sur {app} ({address}) ? Appuyez sur « {button} » uniquement s’il s’agit de votre propre compte. Si vous n’avez rien demandé, ignorez ce message.",
+    "Associer ce compte Telegram à un compte utilisateur sur {app} ({address}) ? Appuyez sur « {button} » uniquement si c’est le vôtre. Si vous n’avez rien demandé, ignorez ce message.",
   "TelegramBot.confirmAnonymous":
-    "Associer ce compte Telegram à un compte sur {app} sans nom ni adresse e-mail ? Appuyez sur « {button} » uniquement s’il s’agit de votre propre compte. Si vous n’avez rien demandé, ignorez ce message.",
+    "Associer ce compte Telegram à un compte utilisateur sur {app} sans nom ni adresse e-mail ? Appuyez sur « {button} » uniquement si c’est le vôtre. Si vous n’avez rien demandé, ignorez ce message.",
   "TelegramBot.linked":
-    "C’est fait : cette conversation est associée à votre compte. Vos notifications arrivent désormais ici. Envoyez /help pour voir ce que je sais faire.",
-  "TelegramBot.already": "Ce compte Telegram est déjà associé à votre compte.",
+    "C’est fait : cette conversation est associée à votre compte utilisateur. Vos notifications arrivent désormais ici. Envoyez /help pour voir ce que je sais faire.",
+  "TelegramBot.already": "Ce compte Telegram est déjà associé à votre compte utilisateur.",
   "TelegramBot.taken":
-    "Ce compte Telegram est associé à un autre compte. Envoyez d’abord /unlink, puis renvoyez le code.",
+    "Ce compte Telegram est associé à un autre compte utilisateur. Envoyez d’abord /unlink, puis renvoyez le code.",
   "TelegramBot.invalid": {
     "one":
       "Ce code ne fonctionne pas. Il contient peut-être une faute de frappe, a déjà été utilisé ou date de plus de {count} minute. Créez-en un nouveau dans l’application.",
@@ -1931,14 +1938,14 @@ export default {
   "TelegramBot.codeSpent":
     "Ce code a été envoyé là où d’autres peuvent le lire : il ne fonctionne donc plus. Créez-en un nouveau dans l’application et envoyez-le-moi dans une conversation privée.",
   "TelegramBot.unlinked":
-    "Dissocié. Cette conversation ne recevra plus de notifications de votre compte.",
-  "TelegramBot.notLinked": "Ce compte Telegram n’est associé à aucun compte.",
+    "Dissocié. Cette conversation ne recevra plus de notifications de votre compte utilisateur.",
+  "TelegramBot.notLinked": "Ce compte Telegram n’est associé à aucun compte utilisateur.",
   "TelegramBot.howToLink":
-    "Pour associer votre compte, ouvrez {url}, choisissez « {action} » et envoyez-moi le code affiché.",
+    "Pour associer votre compte utilisateur, ouvrez {url}, choisissez « {action} » et envoyez-moi le code affiché.",
   "TelegramBot.hello":
-    "Bonjour ! Votre compte est associé. Envoyez /help pour voir ce que je sais faire.",
+    "Bonjour ! Votre compte utilisateur est associé. Envoyez /help pour voir ce que je sais faire.",
   "TelegramBot.helloName":
-    "Bonjour {name} ! Votre compte est associé. Envoyez /help pour voir ce que je sais faire.",
+    "Bonjour {name} ! Votre compte utilisateur est associé. Envoyez /help pour voir ce que je sais faire.",
   "UndoToast.title": "Note supprimée",
   "UndoToast.deleted": "« {title} » a été supprimée.",
   "UndoToast.deletedUntitled": "La note a été supprimée.",
@@ -2023,34 +2030,34 @@ export default {
     "Son forfait est résilié mais reste actif jusqu’au {day}. Attendez qu’il prenne fin.",
   "AccountDelete.planEndingPeriod":
     "Son forfait est résilié mais reste actif jusqu’à la fin de la période. Attendez qu’il prenne fin.",
-  "AccountDelete.title": "Supprimer mon compte",
+  "AccountDelete.title": "Supprimer mon compte utilisateur",
   "AccountDelete.summary": {
     "one":
-      "Votre compte et les groupes que vous êtes seul à utiliser sont supprimés définitivement {count} jour après votre demande. Connectez-vous avant pour les conserver.",
+      "Votre compte utilisateur et les groupes que vous êtes seul à utiliser sont supprimés définitivement {count} jour après votre demande. Connectez-vous avant pour les conserver.",
     "many":
-      "Votre compte et les groupes que vous êtes seul à utiliser sont supprimés définitivement {count} jours après votre demande. Connectez-vous avant pour les conserver.",
+      "Votre compte utilisateur et les groupes que vous êtes seul à utiliser sont supprimés définitivement {count} jours après votre demande. Connectez-vous avant pour les conserver.",
     "other":
-      "Votre compte et les groupes que vous êtes seul à utiliser sont supprimés définitivement {count} jours après votre demande. Connectez-vous avant pour les conserver.",
+      "Votre compte utilisateur et les groupes que vous êtes seul à utiliser sont supprimés définitivement {count} jours après votre demande. Connectez-vous avant pour les conserver.",
   },
   "AccountDelete.copyFirst":
     "Vous voulez d’abord une copie ? <link>Téléchargez vos données</link>.",
-  "AccountDelete.deleteHidden": "Supprimer<hidden> mon compte</hidden>",
+  "AccountDelete.deleteHidden": "Supprimer<hidden> mon compte utilisateur</hidden>",
   "AccountDelete.checking": "Vérification de vos groupes…",
   "AccountDelete.explain": {
     "one":
-      "Vous serez déconnecté immédiatement sur tous vos appareils. Votre compte et les groupes que vous êtes seul à utiliser seront supprimés définitivement dans {count} jour. Connectez-vous avant pour restaurer votre compte. Les notes que vous avez écrites dans les groupes d’autres personnes y restent, attribuées à « Utilisateur supprimé ».",
+      "Vous serez déconnecté immédiatement sur tous vos appareils. Votre compte utilisateur et les groupes que vous êtes seul à utiliser seront supprimés définitivement dans {count} jour. Connectez-vous avant pour restaurer votre compte utilisateur. Les notes que vous avez écrites dans les groupes d’autres personnes y restent, attribuées à « Utilisateur supprimé ».",
     "many":
-      "Vous serez déconnecté immédiatement sur tous vos appareils. Votre compte et les groupes que vous êtes seul à utiliser seront supprimés définitivement dans {count} jours. Connectez-vous avant pour restaurer votre compte. Les notes que vous avez écrites dans les groupes d’autres personnes y restent, attribuées à « Utilisateur supprimé ».",
+      "Vous serez déconnecté immédiatement sur tous vos appareils. Votre compte utilisateur et les groupes que vous êtes seul à utiliser seront supprimés définitivement dans {count} jours. Connectez-vous avant pour restaurer votre compte utilisateur. Les notes que vous avez écrites dans les groupes d’autres personnes y restent, attribuées à « Utilisateur supprimé ».",
     "other":
-      "Vous serez déconnecté immédiatement sur tous vos appareils. Votre compte et les groupes que vous êtes seul à utiliser seront supprimés définitivement dans {count} jours. Connectez-vous avant pour restaurer votre compte. Les notes que vous avez écrites dans les groupes d’autres personnes y restent, attribuées à « Utilisateur supprimé ».",
+      "Vous serez déconnecté immédiatement sur tous vos appareils. Votre compte utilisateur et les groupes que vous êtes seul à utiliser seront supprimés définitivement dans {count} jours. Connectez-vous avant pour restaurer votre compte utilisateur. Les notes que vous avez écrites dans les groupes d’autres personnes y restent, attribuées à « Utilisateur supprimé ».",
   },
   "AccountDelete.deleting": "Suppression…",
   "AccountDelete.blocked":
     "Vous êtes propriétaire de groupes que d’autres personnes utilisent ou paient encore. Réglez d’abord la situation de chacun, puis revenez.",
   "AuthScreen.demoNote":
-    "Ceci est une démo publique réinitialisée chaque nuit. Les nouveaux comptes contiennent des données d’exemple à explorer.",
+    "Ceci est une démo publique réinitialisée chaque nuit. Les nouveaux comptes utilisateurs contiennent des données d’exemple à explorer.",
   "AuthScreen.demoGuestNote":
-    "Ceci est une démo publique réinitialisée chaque nuit. Chaque nouveau compte, invité ou non, contient des données d’exemple à explorer.",
+    "Ceci est une démo publique réinitialisée chaque nuit. Chaque nouveau compte utilisateur, invité ou non, contient des données d’exemple à explorer.",
   "AuthScreen.tryFirst":
     "Essayez d’abord l’application, ou créez un compte avec votre adresse e-mail.",
   "AuthScreen.invitedTitle": "Vous êtes invité dans un groupe",
@@ -2082,14 +2089,14 @@ export default {
   "AuthScreen.emailSignUpCode": "Recevoir un code d’inscription par e-mail",
   "AuthScreen.lastProvider":
     "La dernière fois, vous vous êtes connecté avec {provider}<email> ({email})</email>.",
-  "AuthScreen.forget": "Ce n’est pas vous ? Utilisez un autre compte",
+  "AuthScreen.forget": "Ce n’est pas vous ? Utilisez un autre compte utilisateur",
   "AuthScreen.openProfile": "Ouvrir votre profil",
   "AuthScreen.noCodeTitle": "Aucun code nécessaire",
   "AuthScreen.noCodeText": "Cette connexion ne nécessite pas de code.",
   "AuthScreen.signedInTitle": "Vous êtes connecté",
   "AuthScreen.signedInText": "Rien à faire ici.",
   "AuthScreen.newHere": "Nouveau ici ? <link>Créer un compte</link>",
-  "AuthScreen.haveAccount": "Vous avez déjà un compte ? <link>Se connecter</link>",
+  "AuthScreen.haveAccount": "Déjà inscrit ? <link>Se connecter</link>",
   "AuthScreen.lostDevice": "Appareil perdu ? <link>Retour à la connexion</link>",
   "AuthScreen.sending": "Envoi…",
   "AuthScreen.orCreate": "ou créez un compte",
@@ -2107,13 +2114,15 @@ export default {
   "ConfirmSignUpScreen.gone":
     "Cette demande a expiré au bout de dix minutes, ou vous y avez déjà répondu. Aucun compte n’a été créé.",
   "ConfirmSignUpScreen.backToSignIn": "Retour à la connexion",
-  "ConfirmSignUpScreen.unknown": "Ce compte {provider} n’est associé à aucun compte ici.",
-  "ConfirmSignUpScreen.unknownColon": "Ce compte {provider} n’est associé à aucun compte ici :",
+  "ConfirmSignUpScreen.unknown":
+    "Ce compte {provider} n’est associé à aucun compte utilisateur ici.",
+  "ConfirmSignUpScreen.unknownColon":
+    "Ce compte {provider} n’est associé à aucun compte utilisateur ici :",
   "ConfirmSignUpScreen.goBack":
-    "Vous avez déjà un compte ? Revenez en arrière et connectez-vous comme d’habitude, puis associez {provider} dans votre profil. Rien n’a encore été créé.",
+    "Déjà inscrit ? Revenez en arrière et connectez-vous comme d’habitude, puis associez {provider} dans votre profil. Rien n’a encore été créé.",
   "ConfirmSignUpScreen.unconfirmed":
-    "<strong>Un compte ici utilise déjà cette adresse e-mail, mais ne l’a jamais confirmée.</strong> Créer un nouveau compte verrouille celui-ci : son mot de passe cesse de fonctionner et ses appareils sont déconnectés. Pour le garder, revenez en arrière, connectez-vous avec son mot de passe et confirmez l’adresse e-mail avec le code que nous vous enverrons.",
-  "ConfirmSignUpScreen.back": "J’ai déjà un compte. Retour à la connexion",
+    "<strong>Cette adresse e-mail appartient déjà à un compte utilisateur ici, qui ne l’a jamais confirmée.</strong> Créer un nouveau compte verrouille celui-ci : son mot de passe cesse de fonctionner et ses appareils sont déconnectés. Pour le garder, revenez en arrière, connectez-vous avec son mot de passe et confirmez l’adresse e-mail avec le code que nous vous enverrons.",
+  "ConfirmSignUpScreen.back": "Je suis déjà inscrit. Retour à la connexion",
   "ConfirmSignUpScreen.creating": "Création de votre compte…",
   "ConfirmSignUpScreen.create": "Créer un nouveau compte",
   "EmailScreen.verifyFailed": "Impossible de vérifier le code",

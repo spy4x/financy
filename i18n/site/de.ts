@@ -185,7 +185,7 @@ export default {
   "PricingWays.lead":
     "Der Code ist unter AGPL‑3.0 kostenlos, ohne Lizenzschlüssel und ohne zurückgehaltene Funktionen.",
   "PricingWays.useTitle": "Financy selbst hosten",
-  "PricingWays.useUnit": "AGPL‑3.0-Lizenz, kein Konto",
+  "PricingWays.useUnit": "AGPL‑3.0-Lizenz, kein Benutzerkonto",
   "PricingWays.useText":
     "Der ganze Quellcode unter AGPL‑3.0, jede Funktion, jedes Update, für dich und deinen Haushalt.",
   "PricingWays.runTitle": "Im Produktivbetrieb laufen lassen",
@@ -223,7 +223,7 @@ export default {
   "FeatureTierSettled.title": "Das Fundament für das Geld deines Haushalts",
   "FeatureTierSettled.status":
     "Die Anmeldung mit Google und GitHub braucht eigene Schlüssel für den Server, deshalb bietet eine frische Installation zunächst nur die Anmeldung per E-Mail.",
-  "FeatureSignIn.nav": "Konten und Anmeldung",
+  "FeatureSignIn.nav": "Benutzerkonten und Anmeldung",
   "FeatureSignIn.title": "Anmeldung, erledigt",
   "FeatureSignIn.lead":
     "Du registrierst dich mit E-Mail-Adresse und Passwort und bestätigst die Adresse mit einem Code. Ein vergessenes Passwort setzt du zurück; anmelden kannst du dich mit Google oder GitHub, mit einem Passkey oder mit einem Code per E-Mail. Eine Authenticator-App ergänzt den Zwei-Faktor-Schutz (2FA), und du siehst jedes Gerät, auf dem du angemeldet bist, und kannst die anderen abmelden.",
@@ -305,7 +305,7 @@ export default {
   "Loops.realtimeTitle":
     "Eine im linken Fenster gespeicherte Notiz erscheint binnen einer Sekunde im rechten Fenster, ohne Neuladen.",
   "Loops.realtimeCaption":
-    "Zwei Fenster, ein Konto. Speichere in einem, und das andere aktualisiert sich von selbst.",
+    "Zwei Fenster, ein Benutzerkonto. Speichere in einem, und das andere aktualisiert sich von selbst.",
   "Loops.offlineName": "Offline bearbeiten",
   "Loops.offlineTitle":
     "Die App geht offline, eine Notiz wird bearbeitet, und nach der Wiederverbindung fragt die Konfliktauswahl, welche Version bleibt.",
@@ -435,7 +435,7 @@ export default {
   "FeaturePageSignIn.how1":
     "Die API prüft jede Anmeldung selbst und antwortet mit einem signierten Sitzungs-Cookie. Ein Passkey nutzt das eingebaute WebAuthn des Browsers: Der Server speichert nur seinen öffentlichen Schlüssel, und jede Anmelde-Challenge gilt nur einmal. Ein Anmeldecode per E-Mail meldet an oder registriert, gilt nur einmal, 10 Minuten lang und nur im Browser, der ihn angefordert hat, und wird nur als Hash gespeichert.",
   "FeaturePageSignIn.how2":
-    "Eine Authenticator-App ergänzt die Anmeldung um einen zweiten Faktor. Das Profil listet jeden Zugang zum Konto und jedes angemeldete Gerät auf; wer einen Zugang ändert, muss sich ausweisen, und es geht eine E-Mail raus. Besucher können auch mit einem Gastkonto starten und später eine Anmeldemethode hinzufügen.",
+    "Eine Authenticator-App ergänzt die Anmeldung um einen zweiten Faktor. Das Profil listet jeden Zugang zum Benutzerkonto und jedes angemeldete Gerät auf; wer einen Zugang ändert, muss sich ausweisen, und es geht eine E-Mail raus. Besucher können auch mit einem Gastkonto starten und später eine Anmeldemethode hinzufügen.",
   "FeaturePageSignIn.authServiceQuestion": "Brauche ich einen Auth-Dienst?",
   "FeaturePageSignIn.authServiceAnswer":
     "Nein. Die eigene API von Seed prüft Passwörter, Passkeys, Anmeldecodes und die Antworten von Google und GitHub auf deinem Server, deshalb fallen keine Kosten pro Nutzer an.",
@@ -455,16 +455,16 @@ export default {
     "Gruppen mit Rollen vom Betrachter bis zum Inhaber, Einladungen, Übertragung, Aktivitätsprotokoll und einer Mandantenprüfung für alles. MIT, kostenlos.",
   "FeaturePageGroups.h1": "Gruppen und Rollen für dein SaaS, ohne Multi-Tenancy selbst zu bauen",
   "FeaturePageGroups.answer":
-    "Seed gibt jedem Konto bei der Registrierung eine persönliche Gruppe, und Leute legen gemeinsame Gruppen an, laden andere ein und geben ihnen Rollen vom Betrachter bis zum Inhaber. Die Gruppe ist die einzige Mandantengrenze, also durchläuft eine neue Funktion dieselbe Prüfung, sobald sie das Notizen-Aggregat kopiert.",
+    "Seed gibt jedem Benutzerkonto bei der Registrierung eine persönliche Gruppe, und Leute legen gemeinsame Gruppen an, laden andere ein und geben ihnen Rollen vom Betrachter bis zum Inhaber. Die Gruppe ist die einzige Mandantengrenze, also durchläuft eine neue Funktion dieselbe Prüfung, sobald sie das Notizen-Aggregat kopiert.",
   "FeaturePageGroups.summary":
     "Gruppen mit Rollen vom Betrachter bis zum Inhaber, Einladungen und Aktivitätsprotokoll.",
   "FeaturePageGroups.how1":
     "Jede Zeile gemeinsamer Daten gehört zu einer Gruppe, und die API prüft die Rolle der Person in dieser Gruppe, bevor sie liest oder schreibt. Ein Betrachter liest, ein Bearbeiter ändert auch die Daten der Gruppe, und ein Admin und der Inhaber verwalten zusätzlich Mitglieder und lesen das Aktivitätsprotokoll.",
   "FeaturePageGroups.how2":
-    "Der Inhaber überträgt die Gruppe in einem Schritt, und eine gelöschte Gruppe lässt sich innerhalb von 30 Tagen wiederherstellen. Einladen kann nur ein Konto mit bestätigter E-Mail-Adresse.",
-  "FeaturePageGroups.personalGroupQuestion": "Bekommt jedes Konto eine Gruppe?",
+    "Der Inhaber überträgt die Gruppe in einem Schritt, und eine gelöschte Gruppe lässt sich innerhalb von 30 Tagen wiederherstellen. Einladen kann nur ein Benutzerkonto mit bestätigter E-Mail-Adresse.",
+  "FeaturePageGroups.personalGroupQuestion": "Bekommt jedes Benutzerkonto eine Gruppe?",
   "FeaturePageGroups.personalGroupAnswer":
-    "Ja. Jedes Konto bekommt bei der Registrierung eine persönliche Gruppe; persönliche und gemeinsame Gruppen durchlaufen dieselbe Prüfung.",
+    "Ja. Jedes Benutzerkonto bekommt bei der Registrierung eine persönliche Gruppe; persönliche und gemeinsame Gruppen durchlaufen dieselbe Prüfung.",
   "FeaturePageGroups.viewerQuestion": "Kann ein Betrachter die Daten einer Gruppe ändern?",
   "FeaturePageGroups.viewerAnswer":
     "Nein. Ein Betrachter liest die Daten der Gruppe; ändern können sie ein Bearbeiter, ein Admin oder der Inhaber.",
