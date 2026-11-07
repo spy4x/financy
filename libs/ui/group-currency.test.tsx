@@ -146,7 +146,8 @@ describe("GroupCurrencySection", () => {
   it("opens the dialog with the field focused and the saved currency chosen", async () => {
     await draw({ dialogOpen: true })
     const input = find<HTMLInputElement>("[data-e2e=group-currency-field] input")
-    expect(document.activeElement).toBe(input)
+    // Compared as a flag: a diff of two DOM nodes runs out of memory.
+    expect(document.activeElement === input).toBe(true)
     // Focus opens the list, with the saved currency as its selected row.
     expect(find("[role=option][aria-selected=true]").textContent).toMatch(/^EUR/)
     expect(find("[data-e2e=group-currency-use]").textContent).toBe("Use \u2068Euro\u2069")
@@ -198,6 +199,6 @@ describe("GroupCurrencySection", () => {
   it("hands focus back to Change when the dialog closes", async () => {
     const calls = await draw({ dialogOpen: true })
     await draw({ dialogOpen: false }, calls)
-    expect(document.activeElement).toBe(find("[data-e2e=group-currency-change]"))
+    expect(document.activeElement?.getAttribute("data-e2e")).toBe("group-currency-change")
   })
 })
