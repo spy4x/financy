@@ -58,14 +58,14 @@ test.describe("exporting and importing a group", () => {
       await expect(page).toHaveURL("/groups/import")
       await page.locator("input[type=file]").setInputFiles(file)
       await expect(page.locator("[data-e2e=group-import-heading]")).toHaveText(
-        "Contains: 3 notes, 0 tags, settings.",
+        "Contains: 0 household settings, 0 accounts, 3 notes, 0 tags, settings.",
       )
       await expect(page.locator("[data-e2e=group-import-name]")).toHaveValue("Family")
       await page.locator("[data-e2e=group-import-name]").fill("Family copy")
       await page.locator("[data-e2e=group-import-submit]").click()
 
       await expect(page.locator("[data-e2e=group-imported]")).toContainText(
-        `Imported 3 notes and 0 tags into "Family copy".`,
+        `Imported 0 household settings, 0 accounts, 3 notes, and 0 tags into "Family copy".`,
       )
       await expect(page).toHaveURL(/\/groups\/[0-9a-f-]{36}$/)
       await expect(page.locator("[data-e2e=group-general-name]")).toHaveText("Family copy")
