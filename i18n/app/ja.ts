@@ -1958,6 +1958,8 @@ export default {
   "AccountEditor.amountInvalid": "金額を入力してください（例：12.34）。",
   "AccountEditor.amountNoDecimals": "{currency} には小数がありません。整数で入力してください。",
   "AccountEditor.amountTooLarge": "金額が大きすぎます。",
+  "AccountEditor.amountCleared":
+    "{amount} は {currency} では表せないため、開始残高を空にしました。もう一度入力してください。",
   "AccountEditor.back": "口座一覧に戻る",
   "AccountEditor.balance": "残高",
   "AccountEditor.cancel": "キャンセル",

@@ -1789,6 +1789,7 @@ export default {
   "AccountEditor.amountInvalid": "请输入金额，例如 12.34。",
   "AccountEditor.amountNoDecimals": "{currency} 没有小数单位：请输入整数金额。",
   "AccountEditor.amountTooLarge": "金额太大。",
+  "AccountEditor.amountCleared": "{amount} 无法用 {currency} 表示，已清空初始余额。请重新输入。",
   "AccountEditor.back": "返回账户",
   "AccountEditor.balance": "余额",
   "AccountEditor.cancel": "取消",

@@ -2172,6 +2172,8 @@ export default {
   "AccountEditor.amountInvalid": "Digite um valor, como 12,34.",
   "AccountEditor.amountNoDecimals": "{currency} não tem centavos: digite um valor inteiro.",
   "AccountEditor.amountTooLarge": "Esse valor é grande demais.",
+  "AccountEditor.amountCleared":
+    "{amount} não cabe em {currency}, então o saldo inicial foi apagado. Digite de novo.",
   "AccountEditor.back": "Voltar às contas",
   "AccountEditor.balance": "Saldo",
   "AccountEditor.cancel": "Cancelar",

@@ -10,6 +10,7 @@ AccountDelete.planEndingPeriod	a2f29dcef829c0cf
 AccountDelete.subscription	bc78a3973fc23003
 AccountDelete.summary	62f9ae87d6a24752
 AccountDelete.title	21d5294717e25f75
+AccountEditor.amountCleared	28f0370af318b029
 AccountEditor.amountDecimals	bce284f88d2c6006
 AccountEditor.amountInvalid	3a63124a1fa23f19
 AccountEditor.amountNoDecimals	9be50560f6d026c3
