@@ -129,8 +129,8 @@ export default define.page(function Terms({ state }) {
       <p>
         Forgot to cancel before a renewal? If you have not used Financy since the renewal, ask
         within 14 days of the charge and I refund it in full and cancel the plan. If you have used
-        it since the renewal, which means you signed in or wrote to the Financy bot on Telegram, ask
-        within 5 days of the charge and I still refund it in full.
+        it since the renewal, which means you opened the app or wrote to the Financy bot on
+        Telegram, ask within 5 days of the charge and I still refund it in full.
       </p>
       <p>
         Your rights under the consumer law of the country you live in come on top of these, and

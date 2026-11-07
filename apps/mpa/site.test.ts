@@ -904,6 +904,7 @@ describe("the public website", () => {
     expect(html).toContain(`NeatSoft&#39;s own machines in Singapore and Vietnam`)
     expect(html).toContain(`the EU has not recognised Singapore`)
     expect(html).toContain(`a contact that EU residents and regulators can write to`)
+    expect(html).toContain(`>the GitHub issue about it</a> or write to`)
     expect(html).toContain(`Financy has none yet. It will name one once 10 households in the EU`)
     expect(html).toContain(`The server&#39;s own disk is not encrypted`)
     expect(html).not.toMatch(/encrypted[^.]*(on (the server&#39;s )?disk|at rest)/)
@@ -920,7 +921,7 @@ describe("the public website", () => {
     const { html } = await page("/terms")
 
     expect(html).toContain(`If you have not used Financy since the renewal, ask within 14 days`)
-    expect(html).toContain(`which means you signed in or wrote to the Financy bot`)
+    expect(html).toContain(`which means you opened the app or wrote to the Financy bot`)
     expect(html).toContain(`ask within 5 days of the charge and I still refund it in full.`)
     expect(html).toContain(`<h2 id="law">Law and courts</h2>`)
     expect(html).toContain(`follow the law of Singapore`)
