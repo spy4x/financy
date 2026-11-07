@@ -2301,9 +2301,9 @@ export default {
   "AccountsTotal.about": "environ {amount}",
   "AccountsTotal.rates": "Aux taux de change du {date}",
   "AccountsTotal.leftOut": {
-    "one": "{count} compte non inclus : pas encore de taux de change pour {currencies}.",
-    "many": "{count} comptes non inclus : pas encore de taux de change pour {currencies}.",
-    "other": "{count} comptes non inclus : pas encore de taux de change pour {currencies}.",
+    "one": "{count} compte non inclus : pas encore de taux de change pour {currencies}.",
+    "many": "{count} comptes non inclus : pas encore de taux de change pour {currencies}.",
+    "other": "{count} comptes non inclus : pas encore de taux de change pour {currencies}.",
   },
   "AccountsTotal.tooLarge": "Le total est trop élevé pour être affiché.",
   "Accounts.back": "Retour aux comptes",
