@@ -2200,4 +2200,39 @@ export default {
   "AdminRates.title": "Wechselkurse",
   "AdminRates.subtitle":
     "Die Kurse, die der Server jeden Tag abgerufen hat, nach Quelle, und was die kostenpflichtige Ersatzquelle diesen Monat verbraucht hat.",
+  "AdminRates.loading": "Kurse werden geladen",
+  "AdminRates.lastFetch": "Letzter Abruf",
+  "AdminRates.sourceEcb": "EZB, über Frankfurter",
+  "AdminRates.sourceFallback": "{provider} (kostenpflichtige Ersatzquelle)",
+  "AdminRates.utc": "{time} UTC",
+  "AdminRates.fetch": {
+    "one": "{time} · {count} Kurs",
+    "other": "{time} · {count} Kurse",
+  },
+  "AdminRates.jobFailed":
+    "Der letzte Abruf ist um {time} fehlgeschlagen. Die Details stehen unter Jobs.",
+  "AdminRates.missingTitle": "Heute kein Kurs",
+  "AdminRates.missingText":
+    "Für diese Währungen gibt es keinen Kurs für den {date}. Summen, die sie enthalten, lassen sie weg und sagen das.",
+  "AdminRates.missingNone": "Jede verwendete Währung hat einen Kurs für den {date}.",
+  "AdminRates.fallbackTitle": "Kostenpflichtige Ersatzquelle",
+  "AdminRates.fallbackUsage": "{used} von {cap} Abfragen diesen Monat",
+  "AdminRates.fallbackHint":
+    "Sie wird nur für Währungen gefragt, die die EZB nicht hat, und stoppt am Limit. Der Zähler beginnt am {date} neu.",
+  "AdminRates.fallbackCapped":
+    "Das Monatslimit ist erreicht. Bis zum {date} gibt es keine Abfragen mehr. Bis dahin fehlt der Kurs für Währungen, die die EZB nicht hat.",
+  "AdminRates.fallbackOffTitle": "Ersatzquelle ist aus",
+  "AdminRates.fallbackOffText":
+    "Es ist kein Schlüssel gesetzt, also werden nur EZB-Kurse verwendet. Wie du sie einschaltest, steht in der Anleitung zu Wechselkursen.",
+  "AdminRates.daysTitle": "Kurse nach Tag",
+  "AdminRates.day": "Tag",
+  "AdminRates.source": "Quelle",
+  "AdminRates.currencies": "Währungen",
+  "AdminRates.fetchedAt": "Abgerufen um",
+  "AdminRates.weekend": "Keine EZB-Kurse (Wochenende oder Feiertag)",
+  "AdminRates.emptyTitle": "Noch keine Kurse",
+  "AdminRates.emptyText":
+    "Der tägliche Job ruft sie um 16:00 UTC ab. Um sie jetzt abzurufen, starte „Exchange rates“ unter Jobs.",
+  "AdminRates.loadError":
+    "Die Kurse konnten nicht geladen werden. Prüf deine Verbindung und versuch es noch einmal.",
 } satisfies Catalog
