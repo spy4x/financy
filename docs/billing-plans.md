@@ -10,10 +10,14 @@ This page shows how to change a plan, add one, or add a new limit that a plan se
 
 The catalog is `PLANS` in `libs/domain/billing/+lib.ts`:
 
-| Plan id | Name | Price                    | Yearly price | Trial   | Stripe price       |
-| ------- | ---- | ------------------------ | ------------ | ------- | ------------------ |
-| `free`  | Free | 0                        | none         | none    | none               |
-| `pro`   | Pro  | €9.00 per member a month | none         | 14 days | `STRIPE_PRICE_PRO` |
+| Plan id | Name      | Price                       | Yearly price | Trial | Stripe price                                  |
+| ------- | --------- | --------------------------- | ------------ | ----- | --------------------------------------------- |
+| `free`  | Free      | 0                           | none         | none  | none                                          |
+| `pro`   | Household | $4.00 per household a month | $40.00       | none  | `STRIPE_PRICE_PRO`, `STRIPE_PRICE_PRO_YEARLY` |
+
+Financy is paid from sign-up: the free plan allows nothing, so a new owner is sent to checkout, and
+a household whose subscription ended can read, edit and export what it has but add nothing.
+Household refunds the first payment within 30 days (`refundDays`).
 
 A plan with a `yearlyAmount` is sold a year at a time too
 ([yearly price](billing.md#sell-a-yearly-price)).
@@ -57,8 +61,12 @@ the development provider maps its prices to `pro`. To rename the paid plan, chan
 
 ## Per-member pricing
 
-Pro is billed per member (`perSeat` on the plan). The subscription's quantity is the group's member
-count, the owner included. That is the same count `maxMembers` caps. A pending invitation reserves
+Financy's Household plan is not billed per member (`perSeat: false`): one price covers up to six
+members, so checkout asks for one seat and nothing below runs. The rest of this section is how
+Seed bills a plan that sets `perSeat`.
+
+A per-member plan sets `perSeat`. The subscription's quantity is the group's member count, the
+owner included. That is the same count `maxMembers` caps. A pending invitation reserves
 no seat; accepting it does.
 
 - **Checkout** asks Stripe for one seat per member at that moment.
@@ -87,13 +95,14 @@ Accepting it still adds a seat.
 A plan's `entitlements` hold feature flags and numeric limits. No handler names a plan: a command
 says what it needs, and the plan answers.
 
-| Key              | Free    | Pro    | Checked when                                                 |
-| ---------------- | ------- | ------ | ------------------------------------------------------------ |
-| `memberRoles`    | no      | yes    | A member is promoted (`GroupMemberRoleCommand`)              |
-| `maxNotes`       | 10      | no cap | A note is created, or notes move into the group              |
-| `maxMembers`     | 3       | 50     | An invitation is created or accepted                         |
-| `maxAttachments` | 100     | no cap | A note attachment is signed or confirmed: files of all notes |
-| `storageBytes`   | 200 MiB | 10 GiB | The same: the bytes of those files                           |
+| Key              | Free | Household | Checked when                                                 |
+| ---------------- | ---- | --------- | ------------------------------------------------------------ |
+| `memberRoles`    | no   | yes       | A member is promoted (`GroupMemberRoleCommand`)              |
+| `maxNotes`       | 0    | no cap    | A note is created, or notes move into the group              |
+| `maxMembers`     | 1    | 6         | An invitation is created or accepted                         |
+| `maxAttachments` | 0    | no cap    | A note attachment is signed or confirmed: files of all notes |
+| `storageBytes`   | 0    | 10 GiB    | The same: the bytes of those files                           |
+| `maxAccounts`    | 0    | no cap    | An account is created or restored, or imported with a file   |
 
 A limit of `null` means no cap. Each plan also has `attachments` rules for one file and one note
 (`maxFileBytes` 2 MiB, `maxPerNote` 10 on both plans). They are not sold by a plan, so they hold

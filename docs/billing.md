@@ -64,7 +64,9 @@ Test mode moves no money. Test keys start with `sk_test_`, and test cards such a
 `4242 4242 4242 4242` always pay.
 
 1. In the Stripe dashboard, switch to test mode.
-2. Create a product "Pro" with a monthly price of €9.00. Copy its price id into `STRIPE_PRICE_PRO`.
+2. Create a product "Household" with a monthly price of $4.00 and a yearly price of $40.00, both in
+   US dollars. Copy the monthly price id into `STRIPE_PRICE_PRO` and the yearly one into
+   `STRIPE_PRICE_PRO_YEARLY`.
 3. Copy the test secret key into `STRIPE_SECRET_KEY`.
 4. Forward webhooks to the local API:
 
