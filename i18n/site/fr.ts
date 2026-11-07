@@ -225,7 +225,7 @@ export default {
   "FeatureTierSettled.title": "Le socle sur lequel reposera l’argent de votre foyer",
   "FeatureTierSettled.status":
     "La connexion avec Google et GitHub demande des clés propres au serveur ; une nouvelle installation commence donc avec la seule connexion par e-mail.",
-  "FeatureSignIn.nav": "Inscription et connexion",
+  "FeatureSignIn.nav": "Connexion et sécurité",
   "FeatureSignIn.title": "La connexion, c’est réglé",
   "FeatureSignIn.lead":
     "Vous créez un compte avec une adresse e-mail et un mot de passe, puis confirmez l’adresse avec un code. Vous pouvez réinitialiser un mot de passe oublié, continuer avec Google ou GitHub, vous connecter avec une clé d’accès ou avec un code reçu par e-mail. Une app d’authentification ajoute la double authentification (2FA), et vous voyez tous les appareils connectés et pouvez déconnecter les autres.",

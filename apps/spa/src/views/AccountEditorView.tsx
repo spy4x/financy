@@ -76,15 +76,17 @@ export function AccountEditorView({ accountId = null }: { accountId?: string | n
           const created = accountId === null
           const result = await store.save()
           if (!result) return
-          const name = isolate(result.name)
+          // A created account shows itself: the editor turns into its page, so a toast would only
+          // repeat what the screen already says. A saved edit stays on the same page, so it gets one.
+          if (created) {
+            navigate(ACCOUNT_PATHS.account(result.id), { replace: true })
+            return
+          }
           toasts.success({
-            title: created ? t.t(`AccountsView.createdTitle`) : t.t(`AccountsView.savedTitle`),
-            body: created
-              ? t.t(`AccountsView.created`, { name })
-              : t.t(`AccountsView.saved`, { name }),
-            dataE2E: created ? "account-created" : "account-saved",
+            title: t.t(`AccountsView.savedTitle`),
+            body: t.t(`AccountsView.saved`, { name: isolate(result.name) }),
+            dataE2E: "account-saved",
           })
-          if (created) navigate(ACCOUNT_PATHS.account(result.id), { replace: true })
         }}
         onRevert={() => store.revert()}
         recentCurrencies={store.currencies.value}

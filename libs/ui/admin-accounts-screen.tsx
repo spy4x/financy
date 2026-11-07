@@ -44,11 +44,16 @@ export function AdminAccountsScreen(props: AdminAccountsScreenProps): JSX.Elemen
   const { overview, error } = props
   return (
     <Stack>
-      <PageHeader
-        title={t.t(`AdminAccounts.title`)}
-        subtitle={t.t(`AdminAccounts.subtitle`)}
-        titleDataE2E="admin-accounts-title"
-      />
+      {
+        /* The intro explains what the page leaves out, a sentence too long for the library's
+          one-line subtitle, which truncates on a phone: it wraps in its own paragraph instead. */
+      }
+      <div class="flex min-w-0 flex-col gap-1">
+        <PageHeader title={t.t(`AdminAccounts.title`)} titleDataE2E="admin-accounts-title" />
+        <p dir="auto" class="text-sm text-muted break-words" data-e2e="admin-accounts-intro">
+          {t.t(`AdminAccounts.subtitle`)}
+        </p>
+      </div>
       {overview === null
         ? error
           ? (

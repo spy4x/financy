@@ -262,9 +262,9 @@ function Trash(props: Listed & { rows: readonly AccountRow[] }): JSX.Element {
 }
 
 /**
- * One account: its kind's icon, its name (a link to the editor for an editor), the badges, the
- * currency code and the balance. At 390 px the code drops under the name so the balance never
- * truncates.
+ * One account: its kind's icon, its name (a link to the editor for an editor), the currency code
+ * with the badges, and the balance. At 390 px the code and the badges drop to a meta line under
+ * the name, which wraps to two lines, so neither the name nor the balance is cut to one word.
  */
 function Row(
   { account, canWrite, navigate, children }: Listed & {
@@ -282,24 +282,41 @@ function Row(
       data-e2e={`account-${account.id}`}
     >
       <KindIcon kind={account.kind} />
+      {
+        /* The name stands alone and wraps to two lines; the badges sit on the meta line with the
+          currency, so a badge never squeezes the name down to its first word on a phone. */
+      }
       <div class="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-        <div class="flex min-w-0 items-center gap-2">
-          {canWrite
-            ? (
-              <Link
-                href={ACCOUNT_PATHS.account(account.id)}
-                navigate={navigate}
-                class={`min-w-0 truncate rounded-sm font-medium focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-focus ${muted}`}
-                data-e2e="account-name"
-              >
-                <bdi>{account.name}</bdi>
-              </Link>
-            )
-            : (
-              <span class={`min-w-0 truncate font-medium ${muted}`} data-e2e="account-name">
-                <bdi>{account.name}</bdi>
-              </span>
-            )}
+        {canWrite
+          ? (
+            <Link
+              href={ACCOUNT_PATHS.account(account.id)}
+              navigate={navigate}
+              class={`min-w-0 line-clamp-2 break-words rounded-sm font-medium focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-focus ${muted}`}
+              data-e2e="account-name"
+            >
+              <bdi>{account.name}</bdi>
+            </Link>
+          )
+          : (
+            <span
+              class={`min-w-0 line-clamp-2 break-words font-medium ${muted}`}
+              data-e2e="account-name"
+            >
+              <bdi>{account.name}</bdi>
+            </span>
+          )}
+        <div
+          class="flex flex-wrap items-center gap-2 sm:ms-auto sm:shrink-0"
+          data-e2e="account-meta"
+        >
+          <span
+            class="text-sm text-muted sm:order-last"
+            translate={false}
+            data-e2e="account-currency"
+          >
+            {account.currency}
+          </span>
           {account.isDefault && (
             <Badge text={t.t(`Accounts.defaultBadge`)} color="blue" type="outline" />
           )}
@@ -307,9 +324,6 @@ function Row(
             <Badge text={t.t(`Accounts.archivedBadge`)} color="gray" type="outline" />
           )}
         </div>
-        <span class="text-sm text-muted sm:ms-auto" translate={false} data-e2e="account-currency">
-          {account.currency}
-        </span>
       </div>
       <span class="shrink-0 text-end font-medium" data-e2e="account-balance">
         <MoneyDisplay amount={account.balance} currency={account.currency} tone="negative" />

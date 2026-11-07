@@ -221,7 +221,7 @@ export default {
   "FeatureTierSettled.title": "La base donde vivirá el dinero de tu hogar",
   "FeatureTierSettled.status":
     "El inicio de sesión con Google y GitHub necesita claves propias del servidor, así que una instalación nueva empieza solo con el inicio de sesión por correo.",
-  "FeatureSignIn.nav": "Cuentas de usuario e inicio de sesión",
+  "FeatureSignIn.nav": "Inicio de sesión y seguridad",
   "FeatureSignIn.title": "Inicio de sesión, resuelto",
   "FeatureSignIn.lead":
     "Te registras con correo y contraseña y confirmas el correo con un código. Puedes restablecer una contraseña olvidada, continuar con Google o GitHub, entrar con una llave de acceso o pedir un código por correo. Una app de autenticación añade la verificación en dos pasos (2FA), y ves todos los dispositivos con sesión abierta y puedes cerrar la sesión en los demás.",

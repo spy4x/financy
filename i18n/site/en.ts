@@ -225,7 +225,7 @@ export default {
   "FeatureAccounts.fact3":
     "A viewer reads the accounts; only an editor or above changes them, checked on the server",
   "FeatureAccounts.code": "Read the accounts domain",
-  "FeatureSignIn.nav": "Accounts and sign-in",
+  "FeatureSignIn.nav": "Sign-in and security",
   "FeatureSignIn.title": "Sign-in, done",
   "FeatureSignIn.lead":
     "Sign up with an email and password, and confirm it with a code. Reset a forgotten password, continue with Google or GitHub, use a passkey, or get a sign-in code by email. An authenticator app adds two-factor authentication (2FA), and you can see every device you're signed in on and sign the others out.",

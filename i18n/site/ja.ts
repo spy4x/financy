@@ -217,7 +217,7 @@ export default {
   "FeatureTierSettled.title": "世帯のお金を載せる土台",
   "FeatureTierSettled.status":
     "Google と GitHub でのログインにはサーバー独自のキーが必要なため、新しくセルフホストした環境では、まずメールでのログインだけが使えます。",
-  "FeatureSignIn.nav": "アカウントとログイン",
+  "FeatureSignIn.nav": "ログインとセキュリティ",
   "FeatureSignIn.title": "ログインは完成済み",
   "FeatureSignIn.lead":
     "メールアドレスとパスワードで新規登録し、コードでメールアドレスを確認します。忘れたパスワードのリセット、Google や GitHub での続行、パスキーやメールで届くログインコードでのログインもできます。認証アプリで2段階認証（2FA）を追加でき、ログイン中のすべての端末を確認して、ほかの端末からログアウトできます。",

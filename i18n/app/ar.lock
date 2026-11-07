@@ -86,11 +86,6 @@ AccountsTotal.title	c9b3c38247f744e1
 AccountsTotal.tooLarge	bb03151be452e544
 AccountsView.archived	9e55c6b4420de8a6
 AccountsView.archivedTitle	4fecdfb6719ef35e
-AccountsView.created	18389b3c55481892
-AccountsView.createdTitle	f63879fd691e40d3
-AccountsView.defaultCleared	2b704fe1f062950d
-AccountsView.defaultSet	45b04c93853749f3
-AccountsView.defaultTitle	2bac024b34547558
 AccountsView.deleted	b9197fdd64efdd01
 AccountsView.deletedTitle	5d670c14e5b19647
 AccountsView.discard	72f60c46f7f409ec
@@ -98,8 +93,6 @@ AccountsView.discardLeave	eb1a70e39274bb76
 AccountsView.discardNew	c19a82dbeb8a66e8
 AccountsView.discardStay	e76fd2add01005ae
 AccountsView.discardTitle	3b13192b9d88d1c6
-AccountsView.restored	82a8e221a15c4839
-AccountsView.restoredTitle	b613d08fca4f8b32
 AccountsView.saved	aa161efb60a1218c
 AccountsView.savedTitle	adc241b77958d420
 AccountsView.unarchived	008599ad03ca7642
