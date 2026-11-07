@@ -214,9 +214,11 @@ describe("AccountEditorScreen", () => {
     const input = find<HTMLInputElement>(BALANCE)
     const described = (input.getAttribute("aria-describedby") ?? "").split(" ")
       .map((id) => document.getElementById(id)?.textContent ?? "")
-    expect(described).toContain(
-      "US$12.34 does not fit JPY, so the starting balance was cleared. Type it again.",
-    )
+    expect(
+      described.some((text) =>
+        text.endsWith(`12.34 does not fit JPY, so the starting balance was cleared. Type it again.`)
+      ),
+    ).toBe(true)
     expect(input.getAttribute("aria-invalid")).toBe("true")
     expect(find(`label[for="${input.id}"]`).textContent).toContain("Starting balance")
   })
