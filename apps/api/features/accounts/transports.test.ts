@@ -48,7 +48,7 @@ import {
 import { createAccountOperations } from "./operations.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { checkedError } from "../../_testing/api-error.ts"
-import { TEST_PLANS } from "../../../../libs/domain/billing/test-plans.ts"
+import { TEST_PLANS, testUsage } from "../../../../libs/domain/billing/test-plans.ts"
 
 /**
  * Accounts over every transport, as the API wires them: one pair of buses, the gates and the real
@@ -87,11 +87,7 @@ function stack() {
     plans: TEST_PLANS,
     planOf: () => Promise.resolve(FREE_PLAN_ID),
     roleOf: (group, user) => groups.roleOf(group, user),
-    usage: {
-      maxNotes: () => Promise.resolve(0),
-      maxMembers: () => Promise.reject(new Error("not part of this test")),
-      maxAccounts: () => Promise.resolve(0),
-    },
+    usage: testUsage({ maxAccounts: () => Promise.resolve(0) }),
   }, ENTITLEMENT_NEEDS))
   commands.register(AccountCreateCommand, createAccountCreateHandler(dependencies))
   commands.register(AccountUpdateCommand, createAccountUpdateHandler(dependencies))

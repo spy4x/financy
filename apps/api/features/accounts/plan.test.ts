@@ -15,6 +15,7 @@ import {
 } from "@domain/accounts"
 import { createEntitlementGate } from "../../cqrs/entitlement-gate.ts"
 import { ENTITLEMENT_NEEDS } from "../../cqrs/entitlement-needs.ts"
+import { testUsage } from "../../../../libs/domain/billing/test-plans.ts"
 import { MemoryAccountRepository } from "../../_testing/memory-accounts.ts"
 import {
   createAccountArchiveHandler,
@@ -46,11 +47,9 @@ function stack(plan: string, billingEnabled = true) {
     plans: PLANS,
     planOf: () => Promise.resolve(plan),
     roleOf: () => Promise.resolve(GroupRole.OWNER),
-    usage: {
-      maxNotes: () => Promise.reject(new Error("not part of this test")),
-      maxMembers: () => Promise.reject(new Error("not part of this test")),
+    usage: testUsage({
       maxAccounts: (group) => accounts.list(group).then((listed) => listed.length),
-    },
+    }),
   }, ENTITLEMENT_NEEDS))
   commands.register(AccountCreateCommand, createAccountCreateHandler(dependencies))
   commands.register(AccountUpdateCommand, createAccountUpdateHandler(dependencies))

@@ -37,6 +37,7 @@ import {
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { team, withSchema } from "./group-team.ts"
 import { expectVersion7Ids } from "./ids.ts"
+import { testUsage } from "../../libs/domain/billing/test-plans.ts"
 
 /**
  * Accounts against a real Postgres built from schema.sql, through the handlers the API puts on
@@ -65,11 +66,7 @@ function buses(sql: postgres.Sql) {
     billingEnabled: false,
     planOf: () => Promise.reject(new Error("billing is off")),
     roleOf,
-    usage: {
-      maxNotes: () => Promise.reject(new Error("billing is off")),
-      maxMembers: () => Promise.reject(new Error("billing is off")),
-      maxAccounts: () => Promise.reject(new Error("billing is off")),
-    },
+    usage: testUsage(),
   }, ENTITLEMENT_NEEDS))
   commands.register(AccountCreateCommand, createAccountCreateHandler(dependencies))
   commands.register(AccountUpdateCommand, createAccountUpdateHandler(dependencies))
