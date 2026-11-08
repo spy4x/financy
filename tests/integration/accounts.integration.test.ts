@@ -19,6 +19,8 @@ import {
 } from "@domain/accounts"
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
+import { PostgresGroupPorter } from "@server/groups/postgres-group-porter.ts"
+import { PORTABLE_AGGREGATES } from "../../apps/api/services/db-base.ts"
 import { purgeDeletedAccounts } from "@server/accounts/purge-deleted-accounts.ts"
 import { readAdminAccounts } from "@server/accounts/admin-accounts.ts"
 import { createSessionGate } from "../../apps/api/cqrs/session-gate.ts"
@@ -343,6 +345,33 @@ Deno.test("accounts against Postgres", async (t) => {
       `
       expect(count).toBe(1)
     })
+
+    await t.step(
+      "an imported household file counts its accounts against the new household's plan, refused whole past the cap",
+      async () => {
+        const { groupId, owner } = await team(sql)
+        await create(owner, groupId, { name: "Bank" })
+        await create(owner, groupId, { name: "Cash" })
+        const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+        let text = ""
+        for await (const piece of (await porter.exportGroup(groupId, owner)).chunks) text += piece
+        const file = JSON.parse(text)
+        const groupCount = async () =>
+          (await sql<{ count: number }[]>`SELECT count(*)::int AS count FROM groups`)[0].count
+        const before = await groupCount()
+
+        expect(
+          await refusal(porter.importGroup({ file, name: null }, owner, { maxAccounts: 1 })),
+        ).toMatchObject({ code: "PLAN_LIMIT_REACHED", entitlement: "maxAccounts", limit: 1 })
+        expect(await groupCount()).toBe(before)
+
+        const { group } = await porter.importGroup({ file, name: null }, owner, { maxAccounts: 2 })
+        const [{ count }] = await sql<{ count: number }[]>`
+          SELECT count(*)::int AS count FROM accounts WHERE group_id = ${group.id}
+        `
+        expect(count).toBe(2)
+      },
+    )
 
     await t.step(
       "a retried create is answered with the first account and stores one row",
