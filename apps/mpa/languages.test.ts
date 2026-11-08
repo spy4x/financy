@@ -219,6 +219,9 @@ describe("a page's head in each language", () => {
     expect(html).toContain(
       `<title>Financy-Preise: Cloud 4\u00a0$ im Monat, selbst hosten gratis</title>`,
     )
+    expect(html).toContain(
+      `<meta name="description" content="Die Financy-Cloud kostet 4 $ im Monat oder 40 $ im Jahr pro Haushalt`,
+    )
     expect(html).not.toContain(`Financy pricing`)
   })
 
