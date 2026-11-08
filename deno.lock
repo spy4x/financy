@@ -22,6 +22,7 @@
     "jsr:@spy4x/platform@1.116.0": "1.116.0",
     "jsr:@spy4x/platform@^1.116.0": "1.118.0",
     "jsr:@spy4x/platform@^1.117.0": "1.118.0",
+    "jsr:@spy4x/platform@^1.91.0": "1.118.0",
     "jsr:@spy4x/preact-charts@14.3.0": "14.3.0",
     "jsr:@spy4x/preact-cn@^14.3.0": "14.3.0",
     "jsr:@spy4x/preact-icons@14.3.0": "14.3.0",
@@ -35,12 +36,13 @@
     "jsr:@spy4x/preact-ui@14.3.0": "14.3.0",
     "jsr:@spy4x/preact-ui@^14.3.0": "14.3.0",
     "jsr:@spy4x/realtime@1.116.0": "1.116.0",
+    "jsr:@spy4x/realtime@1.91.0": "1.91.0",
     "jsr:@spy4x/server@1.116.0": "1.116.0",
     "jsr:@spy4x/time@1.116.0": "1.116.0",
-    "jsr:@spy4x/time@^1.116.0": "1.116.0",
+    "jsr:@spy4x/time@^1.116.0": "1.118.0",
     "jsr:@spy4x/time@^1.118.0": "1.118.0",
     "jsr:@spy4x/validation@1.116.0": "1.116.0",
-    "jsr:@spy4x/validation@^1.116.0": "1.116.0",
+    "jsr:@spy4x/validation@^1.116.0": "1.118.0",
     "jsr:@spy4x/validation@^1.118.0": "1.118.0",
     "jsr:@std/assert@^1.0.14": "1.0.19",
     "jsr:@std/assert@^1.0.15": "1.0.19",
@@ -346,6 +348,13 @@
         "npm:@preact/signals@^2.5.1",
         "npm:preact-render-to-string",
         "npm:preact@^10.29.8"
+      ]
+    },
+    "@spy4x/realtime@1.91.0": {
+      "integrity": "e66453ecac43c011c8d7fae9611a263f2c59306dcda7eb952e6ffbe63bb5d5c4",
+      "dependencies": [
+        "jsr:@spy4x/platform@^1.91.0",
+        "npm:arktype"
       ]
     },
     "@spy4x/realtime@1.116.0": {
