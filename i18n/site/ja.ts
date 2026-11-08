@@ -158,61 +158,68 @@ export default {
   "HomeNewsletter.hint": "最初にメールで確認していただきます。",
   "HomeFaq.eyebrow": "よくある質問",
   "HomeFaq.title": "始める前に",
-  "Pricing.title": "Financy の料金：セルフホストは無料、クラウドは今後",
-  "Pricing.description":
-    "Financy は AGPL‑3.0 で無料でセルフホストできます。動かす費用は、ホスティング会社の料金での Linux サーバー1台分です。有料クラウドはまだ公開していません。",
   "Pricing.crumb": "料金",
-  "Pricing.saving":
-    "{plan} は月額 {monthly}、または年額 {yearly} です。月払いより {saving} お得です。",
-  "PricingFaq.paidQuestion": "有料版は出ますか？",
-  "PricingFaq.paidAnswer":
-    "はい。サーバーを運用したくない人のための有料クラウドです。同じコードで動き、料金は公開前にこのページに載せます。",
-  "PricingFaq.serverQuestion": "サーバー代はいくらですか？",
-  "PricingFaq.serverAnswer":
-    "Docker が動く Linux マシン1台に、ホスティング会社が請求する額です。Financy 自体にユーザーごとの料金はありません。",
-  "PricingFaq.oweQuestion": "コードを変更できますか？",
-  "PricingFaq.oweAnswer":
-    "はい。AGPL‑3.0 では変更して動かせます。変更版をネットワーク越しにほかの人へ提供する場合は、そのソースコードを同じライセンスで公開する必要があります。",
   "PricingHero.eyebrow": "料金",
-  "PricingHero.title": "Financy のセルフホストは無料です。運用にかかる費用はこちら。",
-  "PricingHero.lead":
-    "Financy は無料のオープンソース家計簿（AGPL‑3.0）です。セルフホストなら、払うのは動かすサーバー代だけです。有料クラウドはまだ公開していません。",
   "PricingFaq.title": "料金について",
-  "PricingWays.eyebrow": "かかる費用",
-  "PricingWays.title": "Financy をセルフホストする費用",
-  "PricingWays.lead":
-    "コードは AGPL‑3.0 で無料です。ライセンスキーも、有料に回した機能もありません。",
-  "PricingWays.useTitle": "Financy をセルフホスト",
-  "PricingWays.useUnit": "AGPL‑3.0 ライセンス、アカウント不要",
-  "PricingWays.useText":
-    "AGPL‑3.0 のソースコード一式。すべての機能とすべての更新を、あなたとご家族に。",
-  "PricingWays.runTitle": "本番環境で運用する",
-  "PricingWays.runPrice": "サーバー1台",
-  "PricingWays.runUnit": "ホスティング会社の料金",
-  "PricingWays.runAction": "デプロイガイドを読む",
-  "PricingWays.runText":
-    "Financy は、借りたサーバーでも自前のサーバーでも、Linux サーバー1台で動きます。新規登録とログインのコードを送るために、メール配信サービスが必要です。Google・GitHub でのログインは任意です。料金はそれぞれのサービスから直接請求されます。",
-  "DemoPlans.eyebrow": "動く課金機能",
-  "DemoPlans.title": "デモのプラン：手に入る課金機能の一例",
-  "DemoPlans.noticeTitle": "これはSeedの料金ではありません",
-  "DemoPlans.notice":
-    "これはデモアプリのプランで、プランカタログから読み込んでいます。チェックアウト、無料トライアル、メンバー単位の課金を試せます。デモはゲストアカウントで始まり、チェックアウトの前にログイン方法の追加を求められます。あなたのプロダクトのプランは、<code>libs/domain/billing</code>の1ファイルで設定します。",
-  "DemoPlans.choose": "デモで試す",
-  "DemoPlans.chooseName": "デモで試す：{name}",
-  "DemoPlans.recommended": "おすすめ",
-  "DemoPlans.member": "メンバー",
-  "DemoPlans.trial": { "other": "最初の{count}日間は無料" },
-  "DemoPlans.start": "デモでは無料プランから始まり、グループの請求ページでプランを変更できます。",
-  "DemoPlan.freeDescription": "まずは試してみたい方に。",
-  "DemoPlan.freeNotes": "メモは10件まで",
-  "DemoPlan.freeMembers": "メンバーは3人まで",
-  "DemoPlan.freeFiles": "ファイル100個、合計200 MBまで",
-  "DemoPlan.proDescription": "グループで本格的に使う方に。",
-  "DemoPlan.proBilled": "オーナーを含むメンバー単位で請求",
-  "DemoPlan.proNotes": "メモは無制限",
-  "DemoPlan.proFiles": "ファイル数は無制限、合計10 GBまで",
-  "DemoPlan.proMembers": "メンバーは50人まで",
-  "DemoPlan.proRoles": "メンバーを編集者や管理者に昇格",
+  "Pricing.title": "Financy の料金：クラウドは月 {monthly}、セルフホストは無料",
+  "Pricing.description":
+    "Financy のクラウドは1世帯あたり月 {monthly} または年 {yearly}。最大 {members} 人で使え、{days} 日間の返金保証付きです。セルフホストは AGPL‑3.0 で無料です。",
+  "PricingHero.title": "世帯まるごと月 {monthly}",
+  "PricingHero.lead":
+    "年払いなら {yearly}。最大 {members} 人まで使え、パートナーを招待しても料金は変わりません。セルフホストは AGPL‑3.0 で無料です。",
+  "PricingHousehold.description": "運用はおまかせのクラウド版",
+  "PricingHousehold.price": "月 {monthly}",
+  "PricingHousehold.yearly": { "other": "年払いなら {yearly}（{count}か月分お得）" },
+  "PricingHousehold.members": "最大 {members} 人、一人ひとりに自分のアカウント",
+  "PricingHousehold.partner": "パートナーを招待しても追加料金なし",
+  "PricingHousehold.devices": "すべてのデバイスにすぐ反映、オフラインでも閲覧可能",
+  "PricingHousehold.export": "世帯のデータをいつでもファイルに書き出せます",
+  "PricingHousehold.noServer": "サーバーの管理は不要",
+  "PricingHousehold.action": "アカウントを作成",
+  "PricingHousehold.payment":
+    "お支払いは新規登録時に、Stripe 経由のカード決済で。{days} 日間の返金保証付きです。",
+  "PricingHousehold.currency":
+    "価格は米ドルです。必要な地域では、決済時に付加価値税が加算されます。",
+  "PricingSelfHost.name": "セルフホスト",
+  "PricingSelfHost.description": "AGPL‑3.0、ご自身のサーバーで",
+  "PricingSelfHost.price": "無料",
+  "PricingSelfHost.sameCode": "クラウド版と同じコード",
+  "PricingSelfHost.noLimit": "メンバー数の上限なし",
+  "PricingSelfHost.server": "Linux サーバー1台と Docker Compose で動作",
+  "PricingSelfHost.data": "データはご自身のサーバーから出ません",
+  "PricingSelfHost.github": "GitHub でコードを見る",
+  "PricingSelfHost.deploy": "デプロイガイドを読む",
+  "PricingPromise.membersTitle": "最大 {members} 人のメンバー",
+  "PricingPromise.membersText": "パートナーを招待しても追加料金はかかりません。",
+  "PricingPromise.refundTitle": "{days} 日間の返金保証",
+  "PricingPromise.refundText":
+    "初回のお支払いから {days} 日以内に {email} までご連絡いただければ、全額返金します。",
+  "PricingPromise.keepTitle": "支払いをやめても、データはそのまま",
+  "PricingPromise.keepText":
+    "閲覧・編集・書き出しはこれまでどおりできます。できなくなるのは新しい記録の追加だけです。",
+  "PricingPromise.moveTitle": "ご自身のサーバーへ移行",
+  "PricingPromise.moveText": "世帯のデータを書き出して、ご自身のサーバーで取り込めます。",
+  "PricingFaq.trialQuestion": "無料トライアルはありますか？",
+  "PricingFaq.trialAnswer":
+    "ありません。アカウント作成時にお支払いいただきます。Financy が合わなかった場合は、初回のお支払いから {days} 日以内に {email} までご連絡いただければ全額返金します。まったく費用をかけたくない場合は、無料でセルフホストできます。",
+  "PricingFaq.partnerQuestion": "パートナーを招待すると料金は上がりますか？",
+  "PricingFaq.partnerAnswer":
+    "上がりません。料金は1人ごとではなく1世帯ごとです。最大 {members} 人で1つのプランを共有でき、一人ひとりに自分のアカウントがあります。",
+  "PricingFaq.stopQuestion": "支払いをやめるとどうなりますか？",
+  "PricingFaq.stopAnswer":
+    "データは残ります。世帯の全員がこれまでどおり開いて、編集し、書き出せます。新しく追加するときだけ、再びプランが必要です。",
+  "PricingFaq.moveQuestion": "クラウドから自分のサーバーに移行できますか？",
+  "PricingFaq.moveAnswer":
+    "できます。世帯のオーナーがデータをファイルに書き出し、そのファイルをご自身のサーバーで新しい世帯として取り込みます。",
+  "PricingFaq.selfQuestion": "セルフホスト版に足りない機能はありますか？",
+  "PricingFaq.selfAnswer":
+    "ありません。同じコードで、メンバー数の上限もありません。サーバーとそのアップデートはご自身で管理していただきます。",
+  "PricingFaq.cancelQuestion": "いつでも解約できますか？",
+  "PricingFaq.cancelAnswer":
+    "できます。世帯の「請求」タブから解約できます。プランはお支払い済みの期間の終わりまで有効です。",
+  "PricingFaq.taxQuestion": "支払い通貨と税金はどうなりますか？",
+  "PricingFaq.taxAnswer":
+    "お支払いは米ドルです。法律で必要な地域では、決済時に付加価値税や売上税が加算され、お支払い前に合計金額を確認できます。",
   "FeatureTierSettled.eyebrow": "今できること",
   "FeatureTierSettled.title": "世帯のお金を載せる土台",
   "FeatureTierSettled.status":

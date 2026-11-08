@@ -154,67 +154,72 @@ export default {
   "HomeNewsletter.hint": "Сначала нужно будет подтвердить подписку по почте.",
   "HomeFaq.eyebrow": "Вопросы",
   "HomeFaq.title": "Прежде чем начать",
-  "Pricing.title": "Цены Financy: бесплатно на своём сервере, облако позже",
-  "Pricing.description":
-    "Financy бесплатен на своём сервере по AGPL‑3.0. Вы платите только за один Linux-сервер по цене вашего хостинга. Платное облако пока не открыто.",
   "Pricing.crumb": "Цены",
-  "Pricing.saving":
-    "{plan} стоит {monthly} в месяц или {yearly} в год: на {saving} меньше, чем при оплате помесячно.",
-  "PricingFaq.paidQuestion": "Будет ли платная версия?",
-  "PricingFaq.paidAnswer":
-    "Да: платное облако для тех, кто не хочет держать свой сервер. В нём работает тот же код, а цена появится на этой странице до запуска.",
-  "PricingFaq.serverQuestion": "Сколько стоит сервер?",
-  "PricingFaq.serverAnswer":
-    "Столько, сколько ваш хостинг берёт за одну Linux-машину с Docker. Сам Financy не берёт плату за пользователей.",
-  "PricingFaq.oweQuestion": "Можно ли менять код?",
-  "PricingFaq.oweAnswer":
-    "Да. AGPL‑3.0 разрешает менять код и запускать его. Если вы даёте другим пользоваться изменённой версией по сети, её код нужно открыть под той же лицензией.",
   "PricingHero.eyebrow": "Цены",
-  "PricingHero.title": "Financy бесплатен на своём сервере. Вот сколько стоит его содержать.",
-  "PricingHero.lead":
-    "Financy — бесплатный учёт финансов с открытым кодом (AGPL‑3.0). На своём сервере вы платите только за сам сервер. Платное облако пока не открыто.",
   "PricingFaq.title": "О цене",
-  "PricingWays.eyebrow": "За что вы платите",
-  "PricingWays.title": "Сколько стоит держать Financy на своём сервере",
-  "PricingWays.lead":
-    "Код бесплатен по AGPL‑3.0: без лицензионного ключа, и ничего не спрятано за оплатой.",
-  "PricingWays.useTitle": "Financy на своём сервере",
-  "PricingWays.useUnit": "лицензия AGPL‑3.0, без аккаунта",
-  "PricingWays.useText":
-    "Весь исходный код по AGPL‑3.0, все возможности и обновления — для вас и вашей семьи.",
-  "PricingWays.runTitle": "Запустите в продакшене",
-  "PricingWays.runPrice": "Один сервер",
-  "PricingWays.runUnit": "по цене вашего хостинга",
-  "PricingWays.runAction": "Читать инструкцию по деплою",
-  "PricingWays.runText":
-    "Financy работает на одном Linux-сервере, арендованном или своём. Нужен почтовый сервис: через него приходят коды для регистрации и входа. Вход через Google или GitHub — по желанию. Каждый сервис выставляет счёт вам напрямую.",
-  "DemoPlans.eyebrow": "Оплата в деле",
-  "DemoPlans.title": "Тарифы демо: пример оплаты, которую вы получаете",
-  "DemoPlans.noticeTitle": "Это не цены Seed",
-  "DemoPlans.notice":
-    "Это тарифы демо-приложения из его каталога тарифов: на них можно попробовать оформление подписки, пробный период и оплату за участника. В демо вы начинаете в гостевом аккаунте, а перед оплатой нужно будет добавить способ входа. Свои тарифы ваш продукт задаёт в одном файле, <code>libs/domain/billing</code>.",
-  "DemoPlans.choose": "Попробовать в демо",
-  "DemoPlans.chooseName": "Попробовать в демо: {name}",
-  "DemoPlans.recommended": "Рекомендуем",
-  "DemoPlans.member": "участник",
-  "DemoPlans.trial": {
-    "one": "Первый {count} день бесплатно",
-    "few": "Первые {count} дня бесплатно",
-    "many": "Первые {count} дней бесплатно",
-    "other": "Первые {count} дня бесплатно",
+  "Pricing.title": "Цены Financy: облако за {monthly} в месяц, свой сервер бесплатно",
+  "Pricing.description":
+    "Облако Financy стоит {monthly} в месяц или {yearly} в год за семью до {members} человек, с гарантией возврата денег {days} дней. На своём сервере — бесплатно по AGPL‑3.0.",
+  "PricingHero.title": "{monthly} в месяц за всю семью",
+  "PricingHero.lead":
+    "Или {yearly} в год. До {members} человек в семье, и приглашение партнёра цену не меняет. На своём сервере Financy бесплатен по AGPL‑3.0.",
+  "PricingHousehold.description": "Облако, за которым следим мы",
+  "PricingHousehold.price": "{monthly} в месяц",
+  "PricingHousehold.yearly": {
+    "one": "или {yearly} в год — {count} месяц в подарок",
+    "few": "или {yearly} в год — {count} месяца в подарок",
+    "many": "или {yearly} в год — {count} месяцев в подарок",
+    "other": "или {yearly} в год — {count} месяца в подарок",
   },
-  "DemoPlans.start":
-    "В демо вы начинаете на бесплатном тарифе, а сменить его можно на странице оплаты вашей группы.",
-  "DemoPlan.freeDescription": "Чтобы попробовать.",
-  "DemoPlan.freeNotes": "До 10 заметок",
-  "DemoPlan.freeMembers": "До 3 участников",
-  "DemoPlan.freeFiles": "100 файлов, всего 200 МБ",
-  "DemoPlan.proDescription": "Для группы, которая на него полагается.",
-  "DemoPlan.proBilled": "Оплата за каждого участника, включая владельца",
-  "DemoPlan.proNotes": "Сколько угодно заметок",
-  "DemoPlan.proFiles": "Сколько угодно файлов, всего 10 ГБ",
-  "DemoPlan.proMembers": "До 50 участников",
-  "DemoPlan.proRoles": "Роли редактора и админа для участников",
+  "PricingHousehold.members": "До {members} человек, у каждого свой аккаунт",
+  "PricingHousehold.partner": "Пригласить партнёра — без доплаты",
+  "PricingHousehold.devices": "Данные обновляются на всех устройствах и открываются без сети",
+  "PricingHousehold.export": "Выгрузка данных семьи в файл в любой момент",
+  "PricingHousehold.noServer": "Никакого сервера, за которым нужно следить",
+  "PricingHousehold.action": "Создать аккаунт",
+  "PricingHousehold.payment":
+    "Оплата при регистрации, картой через Stripe. Передумаете в течение {days} дней — вернём деньги.",
+  "PricingHousehold.currency": "Цены в долларах США. Где положено, НДС добавляется при оплате.",
+  "PricingSelfHost.name": "Свой сервер",
+  "PricingSelfHost.description": "AGPL‑3.0, на вашем сервере",
+  "PricingSelfHost.price": "Бесплатно",
+  "PricingSelfHost.sameCode": "Тот же код, что и в облаке",
+  "PricingSelfHost.noLimit": "Сколько угодно участников",
+  "PricingSelfHost.server": "Работает на одном Linux-сервере с Docker Compose",
+  "PricingSelfHost.data": "Данные не покидают ваш сервер",
+  "PricingSelfHost.github": "Открыть код на GitHub",
+  "PricingSelfHost.deploy": "Читать инструкцию по развёртыванию",
+  "PricingPromise.membersTitle": "До {members} участников",
+  "PricingPromise.membersText": "Партнёр присоединяется без доплаты.",
+  "PricingPromise.refundTitle": "{days} дней на возврат денег",
+  "PricingPromise.refundText":
+    "Напишите на {email} в течение {days} дней после первого платежа, и мы вернём всю сумму.",
+  "PricingPromise.keepTitle": "Перестали платить — данные с вами",
+  "PricingPromise.keepText":
+    "Их можно читать, править и выгружать; нельзя только добавлять новые записи.",
+  "PricingPromise.moveTitle": "Переезд на свой сервер",
+  "PricingPromise.moveText": "Выгрузите данные семьи в файл и импортируйте их на своём сервере.",
+  "PricingFaq.trialQuestion": "Есть ли бесплатный пробный период?",
+  "PricingFaq.trialAnswer":
+    "Нет. Вы платите, когда создаёте аккаунт. Если Financy вам не подойдёт, напишите на {email} в течение {days} дней после первого платежа, и мы вернём всю сумму. А если не хотите платить совсем, установите Financy на свой сервер бесплатно.",
+  "PricingFaq.partnerQuestion": "Пригласить партнёра стоит дороже?",
+  "PricingFaq.partnerAnswer":
+    "Нет. Цена — за семью, а не за человека. До {members} человек пользуются одним тарифом, у каждого свой аккаунт.",
+  "PricingFaq.stopQuestion": "Что будет, если перестать платить?",
+  "PricingFaq.stopAnswer":
+    "Данные останутся. Все в семье по-прежнему смогут открывать, править и выгружать их. Тариф снова понадобится, только чтобы добавлять новое.",
+  "PricingFaq.moveQuestion": "Можно ли переехать из облака на свой сервер?",
+  "PricingFaq.moveAnswer":
+    "Да. Владелец семьи выгружает её в файл, а вы импортируете этот файл на своём сервере как новую семью.",
+  "PricingFaq.selfQuestion": "В версии для своего сервера чего-то не хватает?",
+  "PricingFaq.selfAnswer":
+    "Нет. Это тот же код, и число участников не ограничено. Сервер и его обновления вы ведёте сами.",
+  "PricingFaq.cancelQuestion": "Можно ли отменить подписку в любой момент?",
+  "PricingFaq.cancelAnswer":
+    "Да, на вкладке «Оплата» в настройках семьи. Тариф действует до конца оплаченного периода.",
+  "PricingFaq.taxQuestion": "В какой валюте платить и как с налогами?",
+  "PricingFaq.taxAnswer":
+    "Вы платите в долларах США. Где этого требует закон, при оплате добавляется НДС или налог с продаж, и итоговую сумму вы видите до оплаты.",
   "FeatureTierSettled.eyebrow": "Работает сегодня",
   "FeatureTierSettled.title": "Фундамент для денег вашей семьи",
   "FeatureTierSettled.status":

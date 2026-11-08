@@ -157,66 +157,72 @@ export default {
   "HomeNewsletter.hint": "Antes, você confirma por e-mail.",
   "HomeFaq.eyebrow": "Perguntas",
   "HomeFaq.title": "Antes de começar",
-  "Pricing.title": "Preços do Financy: grátis para hospedar, nuvem depois",
-  "Pricing.description":
-    "O Financy é grátis para hospedar você mesmo, sob AGPL‑3.0. Para rodar, basta um servidor Linux pelo preço do seu provedor. A nuvem paga ainda não abriu.",
   "Pricing.crumb": "Preços",
-  "Pricing.saving":
-    "{plan} custa {monthly} por mês ou {yearly} por ano: {saving} a menos do que pagando todo mês.",
-  "PricingFaq.paidQuestion": "Vai ter uma versão paga?",
-  "PricingFaq.paidAnswer":
-    "Sim: uma nuvem paga, para quem não quer manter um servidor. Ela roda o mesmo código, e o preço estará nesta página antes do lançamento.",
-  "PricingFaq.serverQuestion": "Quanto custa um servidor?",
-  "PricingFaq.serverAnswer":
-    "O que seu provedor cobra por uma máquina Linux com Docker. O Financy não tem taxa por usuário.",
-  "PricingFaq.oweQuestion": "Posso mudar o código?",
-  "PricingFaq.oweAnswer":
-    "Sim. A AGPL‑3.0 deixa você mudar e rodar o código. Se oferecer sua versão modificada a outras pessoas por uma rede, você precisa compartilhar o código dela sob a mesma licença.",
   "PricingHero.eyebrow": "Preços",
-  "PricingHero.title": "Hospedar o Financy é grátis. Veja quanto custa mantê-lo rodando.",
-  "PricingHero.lead":
-    "O Financy é um controle financeiro grátis e de código aberto (AGPL‑3.0). Hospedando você mesmo, você paga só pelo servidor onde ele roda. A nuvem paga ainda não abriu.",
   "PricingFaq.title": "Sobre o preço",
-  "PricingWays.eyebrow": "O que você paga",
-  "PricingWays.title": "Quanto custa hospedar o Financy",
-  "PricingWays.lead":
-    "O código é grátis sob AGPL‑3.0, sem chave de licença e sem nenhum recurso reservado.",
-  "PricingWays.useTitle": "Hospede o Financy você mesmo",
-  "PricingWays.useUnit": "licença AGPL‑3.0, sem cadastro",
-  "PricingWays.useText":
-    "Todo o código-fonte sob AGPL‑3.0, com todos os recursos e atualizações, para você e sua família.",
-  "PricingWays.runTitle": "Coloque em produção",
-  "PricingWays.runPrice": "Um servidor",
-  "PricingWays.runUnit": "pelo preço do seu provedor",
-  "PricingWays.runAction": "Ler o guia de deploy",
-  "PricingWays.runText":
-    "O Financy roda num servidor Linux, alugado ou seu. Ele precisa de um provedor de e-mail para mandar os códigos para criar conta e entrar; entrar com Google ou GitHub é opcional. Cada um cobra você diretamente.",
-  "DemoPlans.eyebrow": "Cobrança funcionando",
-  "DemoPlans.title": "Os planos da demo: um exemplo da cobrança que você recebe pronta",
-  "DemoPlans.noticeTitle": "Estes não são preços do Seed",
-  "DemoPlans.notice":
-    "Estes são os planos do app de demo, lidos do catálogo de planos dele, para você testar o checkout, o período de teste e a cobrança por membro. A demo começa numa conta de visitante; para fazer o checkout, você precisa antes adicionar uma forma de entrar. Seu produto define os próprios planos num só arquivo, <code>libs/domain/billing</code>.",
-  "DemoPlans.choose": "Testar na demo",
-  "DemoPlans.chooseName": "Testar na demo: {name}",
-  "DemoPlans.recommended": "Recomendado",
-  "DemoPlans.member": "membro",
-  "DemoPlans.trial": {
-    "one": "O primeiro {count} dia grátis",
-    "many": "Os primeiros {count} dias grátis",
-    "other": "Os primeiros {count} dias grátis",
+  "Pricing.title": "Preços do Financy: nuvem por {monthly} ao mês, auto-hospedado grátis",
+  "Pricing.description":
+    "A nuvem do Financy custa {monthly} por mês ou {yearly} por ano por família, até {members} pessoas, com garantia de reembolso de {days} dias. Hospedar você mesmo é grátis (AGPL‑3.0).",
+  "PricingHero.title": "{monthly} por mês para a família toda",
+  "PricingHero.lead":
+    "Ou {yearly} por ano, para até {members} pessoas, e convidar seu parceiro ou parceira nunca custa mais. Hospedar no seu próprio servidor é grátis com AGPL‑3.0.",
+  "PricingHousehold.description": "A nuvem, e a gente cuida de tudo",
+  "PricingHousehold.price": "{monthly} por mês",
+  "PricingHousehold.yearly": {
+    "one": "ou {yearly} por ano, {count} mês grátis",
+    "many": "ou {yearly} por ano, {count} de meses grátis",
+    "other": "ou {yearly} por ano, {count} meses grátis",
   },
-  "DemoPlans.start":
-    "Na demo, você começa no plano Gratuito e troca de plano na página de cobrança do seu grupo.",
-  "DemoPlan.freeDescription": "Para experimentar.",
-  "DemoPlan.freeNotes": "Até 10 notas",
-  "DemoPlan.freeMembers": "Até 3 membros",
-  "DemoPlan.freeFiles": "100 arquivos, 200 MB no total",
-  "DemoPlan.proDescription": "Para um grupo que depende dele.",
-  "DemoPlan.proBilled": "Cobrado por membro, incluindo o dono",
-  "DemoPlan.proNotes": "Notas ilimitadas",
-  "DemoPlan.proFiles": "Arquivos ilimitados, 10 GB no total",
-  "DemoPlan.proMembers": "Até 50 membros",
-  "DemoPlan.proRoles": "Promova membros a editor ou administrador",
+  "PricingHousehold.members": "Até {members} pessoas, cada uma com sua conta de usuário",
+  "PricingHousehold.partner": "Convidar quem divide a casa com você nunca custa mais",
+  "PricingHousehold.devices": "Atualizado em todos os dispositivos, e dá para ler offline",
+  "PricingHousehold.export": "Exporte sua família para um arquivo quando quiser",
+  "PricingHousehold.noServer": "Nenhum servidor para manter",
+  "PricingHousehold.action": "Criar conta",
+  "PricingHousehold.payment":
+    "Você paga ao criar a conta, com cartão pelo Stripe. Garantia de reembolso de {days} dias.",
+  "PricingHousehold.currency":
+    "Preços em dólares americanos. Onde se aplica, o imposto é somado no pagamento.",
+  "PricingSelfHost.name": "Auto-hospedado",
+  "PricingSelfHost.description": "AGPL‑3.0, no seu próprio servidor",
+  "PricingSelfHost.price": "Grátis",
+  "PricingSelfHost.sameCode": "O mesmo código da nuvem",
+  "PricingSelfHost.noLimit": "Sem limite de membros",
+  "PricingSelfHost.server": "Roda em um servidor Linux com Docker Compose",
+  "PricingSelfHost.data": "Seus dados ficam no seu servidor",
+  "PricingSelfHost.github": "Ver o código no GitHub",
+  "PricingSelfHost.deploy": "Ler o guia de implantação",
+  "PricingPromise.membersTitle": "Até {members} membros",
+  "PricingPromise.membersText": "Convidar quem divide a casa com você não custa nada a mais.",
+  "PricingPromise.refundTitle": "Garantia de reembolso de {days} dias",
+  "PricingPromise.refundText":
+    "Mande um e-mail para {email} em até {days} dias depois do primeiro pagamento e devolvemos tudo.",
+  "PricingPromise.keepTitle": "Parou de pagar, os dados continuam seus",
+  "PricingPromise.keepText":
+    "Você pode ler, editar e exportar; só não dá mais para adicionar lançamentos novos.",
+  "PricingPromise.moveTitle": "Mude para o seu próprio servidor",
+  "PricingPromise.moveText": "Exporte sua família e importe no seu próprio servidor.",
+  "PricingFaq.trialQuestion": "Tem teste grátis?",
+  "PricingFaq.trialAnswer":
+    "Não. Você paga ao criar a conta. Se o Financy não for para você, mande um e-mail para {email} em até {days} dias depois desse primeiro pagamento e devolvemos tudo. Se preferir não pagar nada, hospede você mesmo de graça.",
+  "PricingFaq.partnerQuestion": "Convidar meu parceiro ou parceira custa mais?",
+  "PricingFaq.partnerAnswer":
+    "Não. O preço é por família, não por pessoa. Até {members} pessoas dividem um plano, cada uma com sua conta de usuário.",
+  "PricingFaq.stopQuestion": "O que acontece se eu parar de pagar?",
+  "PricingFaq.stopAnswer":
+    "Seus dados ficam. Todo mundo da família continua podendo abrir, editar e exportar. Só para adicionar algo novo é preciso voltar a ter o plano.",
+  "PricingFaq.moveQuestion": "Posso sair da nuvem e ir para o meu próprio servidor?",
+  "PricingFaq.moveAnswer":
+    "Sim. O dono da família exporta tudo para um arquivo, e você importa esse arquivo no seu servidor como uma família nova.",
+  "PricingFaq.selfQuestion": "Falta alguma coisa na versão auto-hospedada?",
+  "PricingFaq.selfAnswer":
+    "Não. É o mesmo código, sem limite de membros. O servidor e as atualizações ficam por sua conta.",
+  "PricingFaq.cancelQuestion": "Posso cancelar quando quiser?",
+  "PricingFaq.cancelAnswer":
+    "Sim, na aba “Cobrança” da sua família. O plano continua até o fim do período que você pagou.",
+  "PricingFaq.taxQuestion": "Em que moeda eu pago, e como ficam os impostos?",
+  "PricingFaq.taxAnswer":
+    "Você paga em dólares americanos. Onde a lei exige, o imposto sobre valor agregado ou sobre vendas é somado no pagamento, e você vê o total antes de pagar.",
   "FeatureTierSettled.eyebrow": "Funciona hoje",
   "FeatureTierSettled.title": "A base onde vai ficar o dinheiro da sua família",
   "FeatureTierSettled.status":

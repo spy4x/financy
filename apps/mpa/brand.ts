@@ -12,6 +12,9 @@ export const SITE_ICON = IconWallet
  */
 export const REPOSITORY_URL = `https://github.com/spy4x/financy`
 
+/** Where a person writes to the people behind the product, such as for a refund. */
+export const CONTACT_EMAIL = `hi@financy.dev`
+
 /** The author's own site: the person behind the product in JSON-LD and the "who builds it" links. */
 export const AUTHOR_URL = `https://antonshubin.com`
 

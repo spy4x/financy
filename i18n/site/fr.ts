@@ -160,67 +160,72 @@ export default {
   "HomeNewsletter.hint": "Vous confirmerez d’abord par e-mail.",
   "HomeFaq.eyebrow": "Questions",
   "HomeFaq.title": "Avant de commencer",
-  "Pricing.title": "Tarifs de Financy : gratuit en auto-hébergement, cloud plus tard",
-  "Pricing.description":
-    "Financy est gratuit en auto-hébergement sous AGPL‑3.0. Il suffit d’un serveur Linux, au prix de votre hébergeur. Le cloud payant n’est pas encore ouvert.",
   "Pricing.crumb": "Tarifs",
-  "Pricing.saving":
-    "{plan} coûte {monthly} par mois ou {yearly} par an : {saving} de moins qu’en payant chaque mois.",
-  "PricingFaq.paidQuestion": "Y aura-t-il une version payante ?",
-  "PricingFaq.paidAnswer":
-    "Oui : un cloud payant, pour ceux qui ne veulent pas gérer de serveur. Il fait tourner le même code, et son prix sera sur cette page avant son ouverture.",
-  "PricingFaq.serverQuestion": "Combien coûte un serveur ?",
-  "PricingFaq.serverAnswer":
-    "Ce que votre hébergeur facture pour une machine Linux avec Docker. Financy lui-même ne facture rien par utilisateur.",
-  "PricingFaq.oweQuestion": "Puis-je modifier le code ?",
-  "PricingFaq.oweAnswer":
-    "Oui. L’AGPL‑3.0 vous permet de le modifier et de le faire tourner. Si vous proposez votre version modifiée à d’autres via un réseau, vous devez en partager le code sous la même licence.",
   "PricingHero.eyebrow": "Tarifs",
-  "PricingHero.title":
-    "Héberger Financy vous-même est gratuit. Voici ce que coûte son fonctionnement.",
-  "PricingHero.lead":
-    "Financy est un outil gratuit et open source (AGPL‑3.0) pour suivre vos finances. En auto-hébergement, vous ne payez que le serveur qui le fait tourner. Le cloud payant n’est pas encore ouvert.",
   "PricingFaq.title": "À propos du prix",
-  "PricingWays.eyebrow": "Ce que vous payez",
-  "PricingWays.title": "Ce que coûte l’auto-hébergement de Financy",
-  "PricingWays.lead":
-    "Le code est gratuit sous AGPL‑3.0, sans clé de licence et sans fonctionnalité réservée.",
-  "PricingWays.useTitle": "Héberger Financy vous-même",
-  "PricingWays.useUnit": "licence AGPL‑3.0, sans inscription",
-  "PricingWays.useText":
-    "Tout le code source sous AGPL‑3.0, avec toutes les fonctionnalités et toutes les mises à jour, pour vous et votre foyer.",
-  "PricingWays.runTitle": "Le faire tourner en production",
-  "PricingWays.runPrice": "Un serveur",
-  "PricingWays.runUnit": "au prix de votre hébergeur",
-  "PricingWays.runAction": "Lire le guide de déploiement",
-  "PricingWays.runText":
-    "Financy tourne sur un serveur Linux, loué ou à vous. Il lui faut un fournisseur d’e-mail pour envoyer les codes d’inscription et de connexion ; la connexion avec Google ou GitHub est facultative. Chacun vous facture directement.",
-  "DemoPlans.eyebrow": "La facturation, en action",
-  "DemoPlans.title": "Les forfaits de la démo : un exemple de la facturation que vous obtenez",
-  "DemoPlans.noticeTitle": "Ce ne sont pas les prix de Seed",
-  "DemoPlans.notice":
-    "Ce sont les forfaits de l’application de démo, lus depuis son catalogue de forfaits, pour que vous puissiez essayer le paiement, les périodes d’essai et la facturation par membre. La démo vous ouvre un compte invité ; le paiement vous demande d’abord d’ajouter une méthode de connexion. Votre produit définit ses propres forfaits dans un seul fichier, <code>libs/domain/billing</code>.",
-  "DemoPlans.choose": "Essayer dans la démo",
-  "DemoPlans.chooseName": "Essayer dans la démo : {name}",
-  "DemoPlans.recommended": "Recommandé",
-  "DemoPlans.member": "membre",
-  "DemoPlans.trial": {
-    "one": "{count} jour offert",
-    "many": "Les {count} premiers jours offerts",
-    "other": "Les {count} premiers jours offerts",
+  "Pricing.title": "Tarifs Financy : cloud à {monthly} par mois, auto-hébergé gratuit",
+  "Pricing.description":
+    "Le cloud Financy coûte {monthly} par mois ou {yearly} par an par foyer, jusqu’à {members} personnes, satisfait ou remboursé {days} jours. L’auto-hébergement est gratuit (AGPL‑3.0).",
+  "PricingHero.title": "{monthly} par mois pour tout votre foyer",
+  "PricingHero.lead":
+    "Ou {yearly} par an, jusqu’à {members} personnes, et inviter votre conjoint ne coûte jamais plus. L’auto-hébergement est gratuit sous AGPL‑3.0.",
+  "PricingHousehold.description": "Le cloud, on s’occupe de tout",
+  "PricingHousehold.price": "{monthly} par mois",
+  "PricingHousehold.yearly": {
+    "one": "ou {yearly} par an, soit {count} mois offert",
+    "many": "ou {yearly} par an, soit {count} de mois offerts",
+    "other": "ou {yearly} par an, soit {count} mois offerts",
   },
-  "DemoPlans.start":
-    "Dans la démo, vous démarrez avec le forfait Gratuit et changez de forfait sur la page de facturation de votre groupe.",
-  "DemoPlan.freeDescription": "Pour faire des essais.",
-  "DemoPlan.freeNotes": "Jusqu’à 10 notes",
-  "DemoPlan.freeMembers": "Jusqu’à 3 membres",
-  "DemoPlan.freeFiles": "100 fichiers, 200 Mo au total",
-  "DemoPlan.proDescription": "Pour un groupe qui en dépend.",
-  "DemoPlan.proBilled": "Facturé par membre, propriétaire compris",
-  "DemoPlan.proNotes": "Notes illimitées",
-  "DemoPlan.proFiles": "Fichiers illimités, 10 Go au total",
-  "DemoPlan.proMembers": "Jusqu’à 50 membres",
-  "DemoPlan.proRoles": "Promouvoir des membres au rôle d’éditeur ou d’administrateur",
+  "PricingHousehold.members": "Jusqu’à {members} personnes, chacune avec son compte utilisateur",
+  "PricingHousehold.partner": "Inviter votre conjoint ne coûte jamais plus",
+  "PricingHousehold.devices": "À jour sur tous vos appareils, et lisible hors ligne",
+  "PricingHousehold.export": "Exportez votre foyer dans un fichier à tout moment",
+  "PricingHousehold.noServer": "Aucun serveur à entretenir",
+  "PricingHousehold.action": "Créer un compte",
+  "PricingHousehold.payment":
+    "Vous payez à l’inscription, par carte via Stripe. Satisfait ou remboursé pendant {days} jours.",
+  "PricingHousehold.currency":
+    "Prix en dollars américains. La TVA s’ajoute au paiement si elle s’applique.",
+  "PricingSelfHost.name": "Auto-hébergé",
+  "PricingSelfHost.description": "AGPL‑3.0, sur votre propre serveur",
+  "PricingSelfHost.price": "Gratuit",
+  "PricingSelfHost.sameCode": "Le même code que le cloud",
+  "PricingSelfHost.noLimit": "Aucune limite de membres",
+  "PricingSelfHost.server": "Tourne sur un seul serveur Linux avec Docker Compose",
+  "PricingSelfHost.data": "Vos données restent sur votre serveur",
+  "PricingSelfHost.github": "Voir le code sur GitHub",
+  "PricingSelfHost.deploy": "Lire le guide de déploiement",
+  "PricingPromise.membersTitle": "Jusqu’à {members} membres",
+  "PricingPromise.membersText": "Inviter votre conjoint ne coûte rien de plus.",
+  "PricingPromise.refundTitle": "Satisfait ou remboursé {days} jours",
+  "PricingPromise.refundText":
+    "Écrivez à {email} dans les {days} jours suivant votre premier paiement pour être remboursé en totalité.",
+  "PricingPromise.keepTitle": "Vous arrêtez de payer, vous gardez vos données",
+  "PricingPromise.keepText":
+    "Vous pouvez les lire, les modifier et les exporter ; seul l’ajout de nouvelles entrées s’arrête.",
+  "PricingPromise.moveTitle": "Passez sur votre propre serveur",
+  "PricingPromise.moveText": "Exportez votre foyer et importez-le sur votre propre serveur.",
+  "PricingFaq.trialQuestion": "Y a-t-il un essai gratuit ?",
+  "PricingFaq.trialAnswer":
+    "Non. Vous payez en créant votre compte. Si Financy ne vous convient pas, écrivez à {email} dans les {days} jours suivant ce premier paiement pour être remboursé en totalité. Si vous préférez ne rien payer du tout, hébergez-le vous-même gratuitement.",
+  "PricingFaq.partnerQuestion": "Inviter mon conjoint coûte-t-il plus cher ?",
+  "PricingFaq.partnerAnswer":
+    "Non. Le prix est par foyer, pas par personne. Jusqu’à {members} personnes partagent un forfait, chacune avec son compte utilisateur.",
+  "PricingFaq.stopQuestion": "Que se passe-t-il si j’arrête de payer ?",
+  "PricingFaq.stopAnswer":
+    "Vos données restent. Tout le foyer peut toujours les ouvrir, les modifier et les exporter. Seul l’ajout de nouveautés demande de reprendre le forfait.",
+  "PricingFaq.moveQuestion": "Puis-je passer du cloud à mon propre serveur ?",
+  "PricingFaq.moveAnswer":
+    "Oui. Le propriétaire du foyer l’exporte dans un fichier, et vous importez ce fichier sur votre serveur comme un nouveau foyer.",
+  "PricingFaq.selfQuestion": "Manque-t-il quelque chose à la version auto-hébergée ?",
+  "PricingFaq.selfAnswer":
+    "Non. C’est le même code, sans limite de membres. Vous gérez vous-même le serveur et ses mises à jour.",
+  "PricingFaq.cancelQuestion": "Puis-je résilier à tout moment ?",
+  "PricingFaq.cancelAnswer":
+    "Oui, dans l’onglet « Facturation » de votre foyer. Le forfait reste actif jusqu’à la fin de la période payée.",
+  "PricingFaq.taxQuestion": "Dans quelle devise je paie, et qu’en est-il des taxes ?",
+  "PricingFaq.taxAnswer":
+    "Vous payez en dollars américains. Là où la loi l’exige, la TVA ou une taxe sur les ventes s’ajoute au paiement, et vous voyez le total avant de payer.",
   "FeatureTierSettled.eyebrow": "Fonctionne aujourd’hui",
   "FeatureTierSettled.title": "Le socle sur lequel reposera l’argent de votre foyer",
   "FeatureTierSettled.status":

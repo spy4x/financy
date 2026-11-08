@@ -216,8 +216,18 @@ describe("a page's head in each language", () => {
   it("translates the title and description", async () => {
     const { html } = await get(pages, `/de/pricing`)
 
-    expect(html).toContain(`<title>Financy-Preise: kostenlos selbst hosten, Cloud später</title>`)
-    expect(html).not.toContain(`Financy pricing: free to self-host, cloud later`)
+    expect(html).toContain(
+      `<title>Financy-Preise: Cloud 4\u00a0$ im Monat, selbst hosten gratis</title>`,
+    )
+    expect(html).not.toContain(`Financy pricing`)
+  })
+
+  it("writes the prices as the page's language writes US dollars", async () => {
+    const { html } = await get(pages, `/es/pricing`)
+    const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]+>/g, ``).trim()
+
+    expect(h1).toBe(`4 US$ al mes para todo tu hogar`)
+    expect(html).toContain(`o 40 US$ al año: 2 meses gratis`)
   })
 
   it("keeps a legal page English at a translated address, says so, and names no alternates", async () => {
