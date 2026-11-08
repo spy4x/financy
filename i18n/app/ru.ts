@@ -585,7 +585,6 @@ export default {
   "InvitationNew.discardLeave": "Не сохранять",
   "InvitationNew.discardStay": "Продолжить редактирование",
   "GroupBillingPanel.planFree": "Бесплатный",
-  "GroupBillingPanel.planPro": "Pro",
   "GroupBillingPanel.paymentFailed": {
     "one":
       "Платёж не прошёл. Чтобы сохранить тариф {plan}, обновите карту кнопкой «Сменить карту» в течение {count} дня — до {date}.",

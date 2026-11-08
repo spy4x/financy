@@ -40,7 +40,7 @@ import {
   UNLIMITED,
   yearlySavingOf,
 } from "./+lib.ts"
-import { TEST_FREE_PLAN, TEST_PLANS, TEST_PRO_PLAN } from "./test-plans.ts"
+import { TEST_FREE_PLAN, TEST_PLANS, TEST_PRO_PLAN, testLimits } from "./test-plans.ts"
 import { type } from "arktype"
 
 /** {@link effectivePlanIdOf} on the test catalog. */
@@ -558,7 +558,7 @@ describe("billing domain", () => {
         ...free,
         entitlements: {
           ...free.entitlements,
-          limits: { maxMembers: 1, maxNotes: 0, maxAttachments: 0, storageBytes: 0, ...limits },
+          limits: testLimits(0, { maxMembers: 1, ...limits }),
         },
       },
       pro,
@@ -577,6 +577,18 @@ describe("billing domain", () => {
       expect(freePlanAllowsNothing(nothing({ maxMembers: 2 }))).toBe(false)
       expect(freePlanAllowsNothing(nothing({ maxMembers: null }))).toBe(false)
       expect(freePlanAllowsNothing([pro])).toBe(false)
+    })
+
+    it("is not noticed when a limit key the product added is above 0 on the free plan", () => {
+      // A product's own key, such as Financy's accounts, is not in Seed's `LimitKey`.
+      const withProductKey = (cap: number | null): Plan[] => {
+        const [free] = nothing()
+        const limits = { ...free.entitlements.limits, maxAccounts: cap }
+        return [{ ...free, entitlements: { ...free.entitlements, limits } }, pro]
+      }
+      expect(freePlanAllowsNothing(withProductKey(0))).toBe(true)
+      expect(freePlanAllowsNothing(withProductKey(1))).toBe(false)
+      expect(freePlanAllowsNothing(withProductKey(null))).toBe(false)
     })
 
     it("sends only the owner of a group that never had a subscription to choose a plan", () => {

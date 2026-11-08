@@ -30,7 +30,12 @@ import {
   type GroupBillingPanelProps,
   SeatPriceConfirm,
 } from "./billing-screen.tsx"
-import { TEST_FREE_PLAN, TEST_PLANS, TEST_PRO_PLAN } from "../domain/billing/test-plans.ts"
+import {
+  TEST_FREE_PLAN,
+  TEST_PLANS,
+  TEST_PRO_PLAN,
+  testLimits,
+} from "../domain/billing/test-plans.ts"
 
 const NOW = new Date("2026-10-21T12:00:00Z")
 
@@ -178,7 +183,7 @@ const PAID_FROM_SIGN_UP: Plan[] = [
     ...TEST_FREE_PLAN,
     entitlements: {
       ...TEST_FREE_PLAN.entitlements,
-      limits: { maxMembers: 1, maxNotes: 0, maxAttachments: 0, storageBytes: 0 },
+      limits: testLimits(0, { maxMembers: 1 }),
     },
   },
   FLAT_PRO,
@@ -507,6 +512,17 @@ describe("GroupBillingPanel", () => {
     expect(has("[data-e2e=billing-checkout]")).toBe(false)
   })
 
+  it("names the paid plan as the product's catalog names it, not Pro", async () => {
+    const household = { ...TEST_PRO_PLAN, name: "Household" }
+    await mount(panel(FREE_OWNER, { plan: household }))
+    expect(find("[data-e2e=billing-fine-print]").textContent).toBe(
+      "Billed monthly per member. Cancel anytime and keep Household until the period ends.",
+    )
+    await mount(panel(ENDING_OWNER, { plan: household }))
+    expect(find("[data-e2e=billing-plan-name]").textContent).toBe("Household")
+    expect(text()).not.toContain("Pro")
+  })
+
   it("tells the owner of a cancelled plan when Pro ends and renews it in Stripe, with no Cancel plan", async () => {
     const app = calls()
     await mount(panel(ENDING_OWNER, app.props))
@@ -665,8 +681,9 @@ describe("GroupBillingPanel", () => {
       </I18nContext.Provider>,
     )
 
-    // Data: the group's and the owner's names, money and dates.
-    expect(englishLeft(document.body, ["Team", "Maya Chen", "October", "November"])).toEqual([])
+    // Data: the group's and the owner's names, the paid plan's brand name, money and dates.
+    expect(englishLeft(document.body, ["Team", "Maya Chen", "Pro", "October", "November"]))
+      .toEqual([])
     // The render reached every state: each one's pseudo-text is on the page.
     const page = document.body.textContent ?? ""
     for (
