@@ -107,9 +107,9 @@ feature; a feature it does not list needs the owner first.
 ## No release and no deploy yet
 
 Until the deploy issue ([#88](https://github.com/spy4x/financy/issues/88)) merges, nothing is
-tagged and nothing is deployed: the tree still carries Seed's site, prices and author, and a
-deploy would put them on financy.dev. The global rule to release after a green gate starts to
-apply here then.
+tagged and nothing is deployed: that issue sets up the hosts, the server and the first release,
+and none of them exist yet. The global rule to release after a green gate starts to apply here
+then.
 
 ## Money and finance data
 
