@@ -202,6 +202,7 @@ describe("AdminRatesScreen", () => {
     const link = find<HTMLAnchorElement>("[data-e2e=admin-rates-failed] a")
     expect(link.getAttribute("href")).toBe("/jobs?state=failed")
     expect(link.textContent).toBe("Open Jobs")
+    expect(link.classList.contains("min-h-11")).toBe(true)
   })
 
   it("links Open Jobs in the header to the Jobs page as a text link", async () => {
@@ -210,6 +211,7 @@ describe("AdminRatesScreen", () => {
     expect(link.getAttribute("href")).toBe("/jobs")
     expect(link.textContent).toBe("Open Jobs")
     expect(link.classList.contains("pc-link")).toBe(true)
+    expect(link.classList.contains("min-h-11")).toBe(true)
   })
 
   it("keeps the last reading on screen when a later read fails, and says so", async () => {

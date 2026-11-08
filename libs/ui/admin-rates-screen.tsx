@@ -84,7 +84,7 @@ export function AdminRatesScreen(props: AdminRatesScreenProps): JSX.Element {
           <Link
             href={ADMIN_JOB_PATHS.list}
             navigate={props.navigate}
-            class="pc-link text-sm font-medium"
+            class="pc-link inline-flex min-h-11 items-center text-sm font-medium sm:min-h-9"
             data-e2e="admin-rates-jobs"
           >
             {t.t(`AdminSystem.openJobs`)}
@@ -135,7 +135,7 @@ function RatesBody(
             <Link
               href={ADMIN_JOB_PATHS.failed}
               navigate={navigate}
-              class="pc-link text-sm font-medium"
+              class="pc-link inline-flex min-h-11 items-center text-sm font-medium sm:min-h-9"
               data-e2e="admin-rates-failed-jobs"
             >
               {t.t(`AdminSystem.openJobs`)}
