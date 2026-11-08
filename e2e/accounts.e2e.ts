@@ -3,7 +3,7 @@ import { expect, test } from "./fixtures/stack.ts"
 import { signIn } from "./fixtures/app.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { openAccounts } from "./fixtures/groups.ts"
-import { signUpWithCode } from "./fixtures/sign-up.ts"
+import { payForGroup, signUpWithCode } from "./fixtures/sign-up.ts"
 
 const apiBase = "http://app.localhost"
 const headers = { origin: apiBase, "sec-fetch-site": "same-origin" }
@@ -40,7 +40,10 @@ async function signInOnline(page: Page, email: string): Promise<void> {
   await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 }
 
-/** Creates a household as the page's user; `viewer`, when given, joins it as a viewer. */
+/**
+ * Creates a household as the page's user, on the paid plan when the free plan allows nothing;
+ * `viewer`, when given, joins it as a viewer.
+ */
 async function household(
   owner: Page,
   request: APIRequestContext,
@@ -53,6 +56,7 @@ async function household(
     data: { id: groupId, name },
   })
   expect(created.status(), await created.text()).toBe(201)
+  await payForGroup(owner.request, apiBase, groupId)
   if (viewer) {
     const added = await request.post(`${apiBase}/api/test/add-member`, {
       data: { login: viewer, groupId, role: VIEWER },
