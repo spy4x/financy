@@ -1756,7 +1756,7 @@ export default {
   "AdminSystem.queueHint": {
     "other": "当有任务等待超过 {count} 分钟或有任务失败时发出警告。",
   },
-  "AdminSystem.openJobs": "未完成任务",
+  "AdminSystem.openJobs": "打开任务",
   "AdminSystem.dueNow": "待运行",
   "AdminSystem.oldest": "· 最早的创建于<when></when>",
   "AdminSystem.running": "运行中",
