@@ -83,7 +83,10 @@ export interface AccountFormErrors {
   name: Message | null
   currency: Message | null
   form: Message | null
-  /** The household's plan refused the new account: it has no paid plan. */
+  /**
+   * The household's plan refused the new account: it has no paid plan, or it has reached its
+   * plan's account cap.
+   */
   plan: PlanRefusal | null
 }
 
