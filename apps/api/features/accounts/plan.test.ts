@@ -37,14 +37,18 @@ const groupId = uuidV7()
 const actor = { userId: OWNER, userMfa: UserMFAStatus.NOT_CONFIGURED } as never
 const fields = { name: "Bank", kind: AccountKind.BANK, currency: "USD", startingBalance: 0 }
 
-function stack(plan: string, billingEnabled = true) {
+function stack(
+  plan: string,
+  billingEnabled = true,
+  plans = PLANS,
+  accounts = new MemoryAccountRepository(),
+) {
   const groups = { roleOf: () => Promise.resolve(GroupRole.OWNER) }
-  const accounts = new MemoryAccountRepository()
   const dependencies = { accounts, groups }
   const commands = new CommandBus()
   commands.use(createEntitlementGate({
     billingEnabled,
-    plans: PLANS,
+    plans,
     planOf: () => Promise.resolve(plan),
     roleOf: () => Promise.resolve(GroupRole.OWNER),
     usage: testUsage({
@@ -108,6 +112,38 @@ describe("accounts under Financy's plans", () => {
     const s = stack(FREE_PLAN_ID, false)
     for (let count = 0; count < 3; count++) await s.commands.execute(createCommand())
     expect((await s.accounts.list(groupId)).length).toBe(3)
+  })
+
+  it("passes the plan's account cap on to the repository on create and restore", async () => {
+    /** Each `allowance` the handlers hand the repository. */
+    const seen: (number | null)[] = []
+    class Recording extends MemoryAccountRepository {
+      override create(...args: Parameters<MemoryAccountRepository["create"]>) {
+        seen.push(args[0].allowance)
+        return super.create(...args)
+      }
+      override restore(...args: Parameters<MemoryAccountRepository["restore"]>) {
+        seen.push(args[0].allowance)
+        return super.restore(...args)
+      }
+    }
+    const capped = PLANS.map((plan) => {
+      if (plan.id !== PRO_PLAN_ID) return plan
+      const { entitlements } = plan
+      return {
+        ...plan,
+        entitlements: { ...entitlements, limits: { ...entitlements.limits, maxAccounts: 5 } },
+      }
+    })
+    const s = stack(PRO_PLAN_ID, true, capped, new Recording())
+    const id = await s.existing()
+    await s.accounts.delete({ groupId, id, expectedVersion: 1 }, OWNER)
+    seen.length = 0
+
+    await s.commands.execute(createCommand())
+    await s.commands.execute(new AccountRestoreCommand({ actor, groupId, id }))
+
+    expect(seen).toEqual([5, 5])
   })
 
   it("fails closed when a create reaches its handler without the entitlement gate", async () => {
