@@ -61,8 +61,8 @@ export const OG_IMAGES: Record<OgImageKey, { headline: string; line: string }> =
     line: `Households · live updates · offline · nine languages`,
   },
   pricing: {
-    headline: `Self-host for free, or wait for the cloud.`,
-    line: `Financy · AGPL-3.0 · the cloud is not open yet`,
+    headline: `$4 a month for your whole household.`,
+    line: `Financy · or self-host free · AGPL-3.0`,
   },
   subscribe: {
     headline: `What shipped in Financy, briefly.`,
