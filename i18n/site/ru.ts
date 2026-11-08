@@ -159,7 +159,7 @@ export default {
   "PricingFaq.title": "О цене",
   "Pricing.title": "Цены Financy: облако за {monthly} в месяц, свой сервер бесплатно",
   "Pricing.description":
-    "Облако Financy стоит {monthly} в месяц или {yearly} в год за семью до {members} человек, с гарантией возврата денег {days} дней. На своём сервере — бесплатно по AGPL‑3.0.",
+    "Облако Financy стоит {monthly} в месяц или {yearly} в год за семью до {members} человек, а в течение {days} дней можно вернуть деньги. На своём сервере — бесплатно по AGPL‑3.0.",
   "PricingHero.title": "{monthly} в месяц за всю семью",
   "PricingHero.lead":
     "Или {yearly} в год. До {members} человек в семье, и приглашение партнёра цену не меняет. На своём сервере Financy бесплатен по AGPL‑3.0.",

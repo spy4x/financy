@@ -191,7 +191,7 @@ export default {
   "PricingPromise.refundTitle": "ضمان استرداد المبلغ خلال {days} يومًا",
   "PricingPromise.refundText":
     "راسلنا على {email} خلال {days} يومًا من دفعتك الأولى لاسترداد المبلغ كاملًا.",
-  "PricingPromise.keepTitle": "توقّف عن الدفع واحتفظ ببياناتك",
+  "PricingPromise.keepTitle": "إن توقّفت عن الدفع، تبقى بياناتك لك",
   "PricingPromise.keepText": "يمكنك قراءتها وتعديلها وتصديرها؛ لا يتوقف إلا إضافة إدخالات جديدة.",
   "PricingPromise.moveTitle": "انتقل إلى خادمك الخاص",
   "PricingPromise.moveText": "صدّر بيانات أسرتك واستوردها على خادمك الخاص.",

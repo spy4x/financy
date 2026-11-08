@@ -176,7 +176,7 @@ export default {
   "PricingHousehold.members": "Até {members} pessoas, cada uma com sua conta de usuário",
   "PricingHousehold.partner": "Convidar quem divide a casa com você nunca custa mais",
   "PricingHousehold.devices": "Atualizado em todos os dispositivos, e dá para ler offline",
-  "PricingHousehold.export": "Exporte sua família para um arquivo quando quiser",
+  "PricingHousehold.export": "Exporte os dados da família para um arquivo quando quiser",
   "PricingHousehold.noServer": "Nenhum servidor para manter",
   "PricingHousehold.action": "Criar conta",
   "PricingHousehold.payment":
@@ -201,7 +201,7 @@ export default {
   "PricingPromise.keepText":
     "Você pode ler, editar e exportar; só não dá mais para adicionar lançamentos novos.",
   "PricingPromise.moveTitle": "Mude para o seu próprio servidor",
-  "PricingPromise.moveText": "Exporte sua família e importe no seu próprio servidor.",
+  "PricingPromise.moveText": "Exporte os dados da família e importe no seu próprio servidor.",
   "PricingFaq.trialQuestion": "Tem teste grátis?",
   "PricingFaq.trialAnswer":
     "Não. Você paga ao criar a conta. Se o Financy não for para você, mande um e-mail para {email} em até {days} dias depois desse primeiro pagamento e devolvemos tudo. Se preferir não pagar nada, hospede você mesmo de graça.",

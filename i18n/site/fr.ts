@@ -165,10 +165,10 @@ export default {
   "PricingFaq.title": "À propos du prix",
   "Pricing.title": "Tarifs Financy : cloud à {monthly} par mois, auto-hébergé gratuit",
   "Pricing.description":
-    "Le cloud Financy coûte {monthly} par mois ou {yearly} par an par foyer, jusqu’à {members} personnes, satisfait ou remboursé {days} jours. L’auto-hébergement est gratuit (AGPL‑3.0).",
+    "Le cloud Financy coûte {monthly} par mois ou {yearly} par an par foyer, jusqu’à {members} personnes, avec une garantie satisfait ou remboursé de {days} jours. L’auto-hébergement est gratuit (AGPL‑3.0).",
   "PricingHero.title": "{monthly} par mois pour tout votre foyer",
   "PricingHero.lead":
-    "Ou {yearly} par an, jusqu’à {members} personnes, et inviter votre conjoint ne coûte jamais plus. L’auto-hébergement est gratuit sous AGPL‑3.0.",
+    "Ou {yearly} par an, jusqu’à {members} personnes, et inviter votre conjoint ne coûte jamais plus cher. L’auto-hébergement est gratuit sous AGPL‑3.0.",
   "PricingHousehold.description": "Le cloud, on s’occupe de tout",
   "PricingHousehold.price": "{monthly} par mois",
   "PricingHousehold.yearly": {
@@ -177,7 +177,7 @@ export default {
     "other": "ou {yearly} par an, soit {count} mois offerts",
   },
   "PricingHousehold.members": "Jusqu’à {members} personnes, chacune avec son compte utilisateur",
-  "PricingHousehold.partner": "Inviter votre conjoint ne coûte jamais plus",
+  "PricingHousehold.partner": "Inviter votre conjoint ne coûte jamais plus cher",
   "PricingHousehold.devices": "À jour sur tous vos appareils, et lisible hors ligne",
   "PricingHousehold.export": "Exportez votre foyer dans un fichier à tout moment",
   "PricingHousehold.noServer": "Aucun serveur à entretenir",
