@@ -1822,7 +1822,7 @@ export default {
     "Cette adresse ne mène à aucune page de l’administration. Vérifiez qu’elle ne contient pas de faute de frappe, ou repartez du tableau de bord.",
   "AdminNotFound.toDashboard": "Aller au tableau de bord",
   "AdminNav.dashboard": "Accueil",
-  "AdminNav.rates": "Taux",
+  "AdminNav.rates": "Taux de change",
   "AdminNav.stats": "Stats",
   "AdminNav.system": "Système",
   "AdminNav.users": "Utilisateurs",

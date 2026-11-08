@@ -1735,7 +1735,7 @@ export default {
   "AdminNav.contactLinks": "Contact links",
   "AdminNav.newsletter": "Newsletter",
   "AdminNav.jobs": "Jobs",
-  "AdminNav.rates": "Rates",
+  "AdminNav.rates": "Exchange rates",
   "AdminNav.apiTokens": "API tokens",
   "AdminNav.catalog": "Catalog",
   "AdminNewsletter.doneRemove": "{email} no longer gets the newsletter.",

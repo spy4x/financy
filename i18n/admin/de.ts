@@ -1759,7 +1759,7 @@ export default {
     "Unter dieser Adresse gibt es keine Admin-Seite. Prüfe sie auf Tippfehler oder starte im Dashboard.",
   "AdminNotFound.toDashboard": "Zum Dashboard",
   "AdminNav.dashboard": "Dashboard",
-  "AdminNav.rates": "Kurse",
+  "AdminNav.rates": "Wechselkurse",
   "AdminNav.stats": "Statistik",
   "AdminNav.system": "System",
   "AdminNav.users": "Personen",

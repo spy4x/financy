@@ -1855,7 +1855,7 @@ export default {
     "По этому адресу нет страницы админки. Проверьте, нет ли в нём опечатки, или начните со сводки.",
   "AdminNotFound.toDashboard": "Перейти к сводке",
   "AdminNav.dashboard": "Сводка",
-  "AdminNav.rates": "Курсы",
+  "AdminNav.rates": "Курсы валют",
   "AdminNav.stats": "Статистика",
   "AdminNav.system": "Система",
   "AdminNav.users": "Люди",

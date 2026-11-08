@@ -1798,7 +1798,7 @@ export default {
     "Este endereço não leva a nenhuma página do admin. Confira se há algum erro de digitação ou comece pelo painel.",
   "AdminNotFound.toDashboard": "Ir para o painel",
   "AdminNav.dashboard": "Painel",
-  "AdminNav.rates": "Câmbio",
+  "AdminNav.rates": "Taxas de câmbio",
   "AdminNav.stats": "Estatísticas",
   "AdminNav.system": "Sistema",
   "AdminNav.users": "Usuários",
