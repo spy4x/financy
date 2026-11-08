@@ -156,7 +156,8 @@ function softwareOffers(): unknown[] {
     name: `Self-hosted`,
     description: `Free to run on your own server under AGPL-3.0.`,
     price: 0,
-    priceCurrency: `USD`,
+    // Self-hosting is priced in the currency the paid plans are sold in, so every offer agrees.
+    priceCurrency: PAID_PLANS[0].currency,
   }, ...paid]
 }
 
