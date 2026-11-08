@@ -148,8 +148,8 @@ export async function saveCurrencyAndAnnounce(
 /**
  * The "Money" section of a group's General tab, wired to the household settings store. The
  * address `?currency=choose` (the first step's link) opens the dialog once the settings are read,
- * for a person who may change them, then leaves the address without it, so a reload does not open
- * it again.
+ * for a person who may change them. Once the read answers, read or failed, the address drops it,
+ * so a reload does not open the dialog again.
  */
 export function GroupCurrency(
   { groupId, group, household = householdSettingsStore }: {
@@ -169,15 +169,16 @@ export function GroupCurrency(
     void household.open(groupId)
     return () => household.reset()
   }, [groupId])
+  const loadError = ours ? household.loadError.value : null
   useEffect(() => {
-    if (!asked || view === null) return
-    if (canChange) household.openDialog()
+    if (!asked || (view === null && loadError === null)) return
+    if (view !== null && canChange) household.openDialog()
     navigate(GROUP_PATHS.settings(groupId), { replace: true })
-  }, [asked, view !== null, canChange])
+  }, [asked, view !== null, loadError !== null, canChange])
   return (
     <GroupCurrencySection
       view={view}
-      loadError={ours ? household.loadError.value : null}
+      loadError={loadError}
       canChange={canChange}
       offline={!network.online.value}
       dialogOpen={ours && household.dialog.value !== null}

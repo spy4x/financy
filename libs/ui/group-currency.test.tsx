@@ -127,6 +127,12 @@ describe("GroupCurrencySection", () => {
     expect(find("[data-e2e=group-currency-read-only]").textContent).toContain("admin")
   })
 
+  it("draws no dialog for an editor or viewer, even when the dialog is asked open", async () => {
+    await draw({ canChange: false, dialogOpen: true })
+    expect(has("[data-e2e=group-currency-field]")).toBe(false)
+    expect(has("dialog")).toBe(false)
+  })
+
   it("disables Change offline and says why, linked to the button", async () => {
     await draw({ offline: true })
     const change = find<HTMLButtonElement>("[data-e2e=group-currency-change]")
