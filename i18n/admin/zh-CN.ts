@@ -1983,7 +1983,7 @@ export default {
   "AdminRates.fetch": {
     "other": "{time} · {count} 个汇率",
   },
-  "AdminRates.jobFailed": "上次获取在 {time} 失败。详情见“任务”。",
+  "AdminRates.jobFailed": "上次获取在 {time} 失败。",
   "AdminRates.missingTitle": "今天无汇率",
   "AdminRates.missingText": "以下货币没有 {date} 的汇率。包含它们的合计会将其排除，并注明。",
   "AdminRates.missingNone": "所有在用货币都有 {date} 的汇率。",
@@ -2000,7 +2000,8 @@ export default {
   "AdminRates.source": "来源",
   "AdminRates.currencies": "货币数",
   "AdminRates.fetchedAt": "获取时间",
-  "AdminRates.weekend": "无欧洲央行汇率（周末或节假日）",
+  "AdminRates.weekend": "周末无欧洲央行汇率",
+  "AdminRates.noFetch": "未获取到汇率",
   "AdminRates.emptyTitle": "还没有汇率",
   "AdminRates.emptyText":
     "每日任务会在 UTC 16:00 获取汇率。要立即获取，请在“任务”中运行“Exchange rates”。",

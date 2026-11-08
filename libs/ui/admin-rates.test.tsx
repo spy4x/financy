@@ -157,16 +157,59 @@ describe("AdminRatesScreen", () => {
     const weekend = rows.filter((row) => row.querySelector("[data-weekend]"))
     expect(weekend.length).toBe(2)
     for (const row of weekend) {
-      expect(row.textContent).toContain("No ECB rates (weekend or holiday)")
+      expect(row.textContent).toContain("No ECB rates on weekends")
     }
     expect(rows[0].textContent).toContain("Thu")
   })
 
-  it("points to Jobs with a danger notice when the last run failed", async () => {
+  it("shows a weekday with no rows as missing, in the warning style, not as a weekend", async () => {
+    await draw({
+      snapshot: {
+        ...SNAPSHOT,
+        days: SNAPSHOT.days.map((day) => day.date === "2026-11-10" ? { ...day, rows: [] } : day),
+      },
+    })
+    const rows = [...document.querySelectorAll("[data-e2e=admin-rates-days] tbody tr")]
+    const tuesday = rows.find((row) => row.textContent?.includes("Tuesday"))!
+    expect(tuesday.querySelector("[data-weekend]")).toBe(null)
+    expect(tuesday.querySelector("[data-missing]")).not.toBe(null)
+    expect(tuesday.textContent).toContain("No rates fetched")
+    expect(tuesday.textContent).not.toContain("weekend")
+    expect(tuesday.querySelector(".text-warning")).not.toBe(null)
+    expect(rows.filter((row) => row.querySelector("[data-weekend]")).length).toBe(2)
+  })
+
+  it("shows a Saturday with no rows as a weekend, not as missing", async () => {
+    await draw()
+    const rows = [...document.querySelectorAll("[data-e2e=admin-rates-days] tbody tr")]
+    const saturday = rows.find((row) => row.textContent?.includes("Saturday"))!
+    expect(saturday.querySelector("[data-weekend]")).not.toBe(null)
+    expect(saturday.querySelector("[data-missing]")).toBe(null)
+    expect(saturday.querySelector(".text-warning")).toBe(null)
+    expect(has("[data-missing]")).toBe(false)
+  })
+
+  it("shows no danger notice after a run that worked", async () => {
+    await draw()
+    expect(has("[data-e2e=admin-rates-failed]")).toBe(false)
+  })
+
+  it("says when the last run failed, with a link to the failed jobs", async () => {
     await draw({
       snapshot: { ...SNAPSHOT, lastRun: { at: "2026-11-12T16:02:00.000Z", failed: true } },
     })
-    expect(text("[data-e2e=admin-rates-failed]")).toContain("The details are in Jobs")
+    expect(text("[data-e2e=admin-rates-failed]")).toContain("The last fetch failed at")
+    const link = find<HTMLAnchorElement>("[data-e2e=admin-rates-failed] a")
+    expect(link.getAttribute("href")).toBe("/jobs?state=failed")
+    expect(link.textContent).toBe("Open Jobs")
+  })
+
+  it("links Open Jobs in the header to the Jobs page as a text link", async () => {
+    await draw()
+    const link = find<HTMLAnchorElement>("a[data-e2e=admin-rates-jobs]")
+    expect(link.getAttribute("href")).toBe("/jobs")
+    expect(link.textContent).toBe("Open Jobs")
+    expect(link.classList.contains("pc-link")).toBe(true)
   })
 
   it("keeps the last reading on screen when a later read fails, and says so", async () => {

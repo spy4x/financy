@@ -2429,7 +2429,7 @@ export default {
     "many": "{time} · {count} سعرًا",
     "other": "{time} · {count} سعر",
   },
-  "AdminRates.jobFailed": "فشل آخر جلب في {time}. التفاصيل في المهام.",
+  "AdminRates.jobFailed": "فشل آخر جلب في {time}.",
   "AdminRates.missingTitle": "لا سعر اليوم",
   "AdminRates.missingText":
     "لا يوجد سعر لهذه العملات في {date}. المجاميع التي تتضمنها تستبعدها وتشير إلى ذلك.",
@@ -2448,7 +2448,8 @@ export default {
   "AdminRates.source": "المصدر",
   "AdminRates.currencies": "العملات",
   "AdminRates.fetchedAt": "وقت الجلب",
-  "AdminRates.weekend": "لا أسعار من البنك المركزي الأوروبي (عطلة نهاية الأسبوع أو عطلة رسمية)",
+  "AdminRates.weekend": "لا أسعار من البنك المركزي الأوروبي في عطلة نهاية الأسبوع",
+  "AdminRates.noFetch": "لم تُجلب أي أسعار",
   "AdminRates.emptyTitle": "لا أسعار بعد",
   "AdminRates.emptyText":
     "تجلبها المهمة اليومية في 16:00 UTC. لجلبها الآن، شغّل «Exchange rates» في المهام.",

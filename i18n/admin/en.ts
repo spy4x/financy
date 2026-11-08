@@ -2135,7 +2135,7 @@ export default {
     "one": "{time} · {count} rate",
     "other": "{time} · {count} rates",
   },
-  "AdminRates.jobFailed": "The last fetch failed at {time}. The details are in Jobs.",
+  "AdminRates.jobFailed": "The last fetch failed at {time}.",
   "AdminRates.missingTitle": "No rate today",
   "AdminRates.missingText":
     "These currencies have no rate for {date}. Totals that include them leave them out and say so.",
@@ -2154,7 +2154,8 @@ export default {
   "AdminRates.source": "Source",
   "AdminRates.currencies": "Currencies",
   "AdminRates.fetchedAt": "Fetched at",
-  "AdminRates.weekend": "No ECB rates (weekend or holiday)",
+  "AdminRates.weekend": "No ECB rates on weekends",
+  "AdminRates.noFetch": "No rates fetched",
   "AdminRates.emptyTitle": "No rates yet",
   "AdminRates.emptyText":
     'The daily job fetches them at 16:00 UTC. To fetch them now, run "Exchange rates" in Jobs.',

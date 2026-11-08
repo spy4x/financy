@@ -2263,7 +2263,7 @@ export default {
     "many": "{time} · {count} cotações",
     "other": "{time} · {count} cotações",
   },
-  "AdminRates.jobFailed": "A última busca falhou às {time}. Os detalhes estão em Tarefas.",
+  "AdminRates.jobFailed": "A última busca falhou às {time}.",
   "AdminRates.missingTitle": "Sem cotação hoje",
   "AdminRates.missingText":
     "Estas moedas não têm cotação para {date}. Os totais que as incluem as deixam de fora e avisam.",
@@ -2282,7 +2282,8 @@ export default {
   "AdminRates.source": "Fonte",
   "AdminRates.currencies": "Moedas",
   "AdminRates.fetchedAt": "Buscado às",
-  "AdminRates.weekend": "Sem cotações do BCE (fim de semana ou feriado)",
+  "AdminRates.weekend": "Sem cotações do BCE nos fins de semana",
+  "AdminRates.noFetch": "Nenhuma cotação obtida",
   "AdminRates.emptyTitle": "Ainda não há cotações",
   "AdminRates.emptyText":
     "A tarefa diária busca as cotações às 16:00 UTC. Para buscar agora, execute “Exchange rates” em Tarefas.",

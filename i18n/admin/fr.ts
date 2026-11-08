@@ -2289,8 +2289,7 @@ export default {
     "many": "{time} · {count} taux",
     "other": "{time} · {count} taux",
   },
-  "AdminRates.jobFailed":
-    "La dernière récupération a échoué à {time}. Les détails sont dans Tâches.",
+  "AdminRates.jobFailed": "La dernière récupération a échoué à {time}.",
   "AdminRates.missingTitle": "Pas de taux aujourd’hui",
   "AdminRates.missingText":
     "Ces devises n’ont pas de taux pour le {date}. Les totaux qui les incluent les laissent de côté et le signalent.",
@@ -2309,7 +2308,8 @@ export default {
   "AdminRates.source": "Source",
   "AdminRates.currencies": "Devises",
   "AdminRates.fetchedAt": "Récupéré à",
-  "AdminRates.weekend": "Pas de taux BCE (week-end ou jour férié)",
+  "AdminRates.weekend": "Pas de taux BCE le week-end",
+  "AdminRates.noFetch": "Aucun taux récupéré",
   "AdminRates.emptyTitle": "Pas encore de taux",
   "AdminRates.emptyText":
     "La tâche quotidienne les récupère à 16 h 00 UTC. Pour les récupérer maintenant, lancez « Exchange rates » dans Tâches.",
