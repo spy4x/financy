@@ -28,3 +28,6 @@ apps/mpa/static/video/admin-panel-poster-1920.webp
 e2e/mpa/admin.mpa.ts
 e2e/mpa/compare.mpa.ts
 e2e/mpa/mvp.mpa.ts
+apps/mpa/components/pricing-ways.tsx
+apps/mpa/components/pricing-demo-plans.tsx
+apps/mpa/components/pricing-demo-plans.test.tsx
