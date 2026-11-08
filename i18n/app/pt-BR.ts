@@ -814,6 +814,8 @@ export default {
   "PlanRefusalNotice.filesTitleUnnamed": "Este grupo atingiu o limite de arquivos",
   "PlanRefusalNotice.storageTitle": "{group} usou todo o espaço disponível",
   "PlanRefusalNotice.storageTitleUnnamed": "Este grupo usou todo o espaço disponível",
+  "PlanRefusalNotice.accountsTitle": "{group} atingiu o limite de contas",
+  "PlanRefusalNotice.accountsTitleUnnamed": "Este grupo atingiu o limite de contas",
   "PlanRefusalNotice.notesText": {
     "one":
       "O plano dele permite até {count} nota. As notas existentes continuam disponíveis para ler e editar.",
@@ -821,6 +823,14 @@ export default {
       "O plano dele permite até {count} de notas. As notas existentes continuam disponíveis para ler e editar.",
     "other":
       "O plano dele permite até {count} notas. As notas existentes continuam disponíveis para ler e editar.",
+  },
+  "PlanRefusalNotice.accountsText": {
+    "one":
+      "O plano dele permite até {count} conta. As contas existentes continuam disponíveis para ler e editar.",
+    "many":
+      "O plano dele permite até {count} de contas. As contas existentes continuam disponíveis para ler e editar.",
+    "other":
+      "O plano dele permite até {count} contas. As contas existentes continuam disponíveis para ler e editar.",
   },
   "PlanRefusalNotice.membersText": {
     "one": "O plano dele permite até {count} membro.",

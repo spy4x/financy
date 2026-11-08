@@ -777,9 +777,16 @@ export default {
   "PlanRefusalNotice.filesTitleUnnamed": "This group has reached its file limit",
   "PlanRefusalNotice.storageTitle": "{group} has used all its storage",
   "PlanRefusalNotice.storageTitleUnnamed": "This group has used all its storage",
+  "PlanRefusalNotice.accountsTitle": "{group} has reached its account limit",
+  "PlanRefusalNotice.accountsTitleUnnamed": "This group has reached its account limit",
   "PlanRefusalNotice.notesText": {
     "one": "Its plan allows up to {count} note. Existing notes stay readable and editable.",
     "other": "Its plan allows up to {count} notes. Existing notes stay readable and editable.",
+  },
+  "PlanRefusalNotice.accountsText": {
+    "one": "Its plan allows up to {count} account. Existing accounts stay readable and editable.",
+    "other":
+      "Its plan allows up to {count} accounts. Existing accounts stay readable and editable.",
   },
   "PlanRefusalNotice.membersText": {
     "one": "Its plan allows up to {count} member.",

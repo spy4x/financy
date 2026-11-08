@@ -717,9 +717,15 @@ export default {
   "PlanRefusalNotice.filesTitleUnnamed": "このグループはファイルの上限に達しました",
   "PlanRefusalNotice.storageTitle": "{group}はストレージを使い切りました",
   "PlanRefusalNotice.storageTitleUnnamed": "このグループはストレージを使い切りました",
+  "PlanRefusalNotice.accountsTitle": "{group}は口座の上限に達しました",
+  "PlanRefusalNotice.accountsTitleUnnamed": "このグループは口座の上限に達しました",
   "PlanRefusalNotice.notesText": {
     "other":
       "このプランで保存できるメモは{count}件までです。既存のメモはこれまでどおり閲覧・編集できます。",
+  },
+  "PlanRefusalNotice.accountsText": {
+    "other":
+      "このプランで登録できる口座は{count}件までです。既存の口座はこれまでどおり閲覧・編集できます。",
   },
   "PlanRefusalNotice.membersText": {
     "other": "このプランのメンバーは{count}人までです。",

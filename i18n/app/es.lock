@@ -1188,6 +1188,9 @@ PasswordResetScreen.send	8e54425be4b3b7ae
 PasswordResetScreen.sent	225b7ba3d7bef4ea
 PasswordResetScreen.signIn	bfd402b2f6f38125
 PasswordResetScreen.tookTooLong	289c3c83398240fb
+PlanRefusalNotice.accountsText	7ba65810d0d61975
+PlanRefusalNotice.accountsTitle	dba1c54d013ec60f
+PlanRefusalNotice.accountsTitleUnnamed	2f6667ebb37e09ed
 PlanRefusalNotice.askOwner	dbd4d76b2b8a597d
 PlanRefusalNotice.filesText	abec41dd2685fe20
 PlanRefusalNotice.filesTitle	d33ba18572fe2c89

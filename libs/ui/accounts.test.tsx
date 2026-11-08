@@ -471,4 +471,22 @@ describe("AccountsScreen", () => {
     })
     expect(restored).toEqual([loan.id])
   })
+
+  it("names the account limit when a plan caps accounts, and asks for a plan when the cap is 0", async () => {
+    const refusal = {
+      code: "PLAN_LIMIT_REACHED" as const,
+      entitlement: "maxAccounts" as const,
+      limit: 2,
+      canUpgrade: true,
+    }
+    await mount(<AccountsScreen {...listDefaults} listPlan={refusal} />)
+    const notice = find("[data-e2e=plan-refusal]")
+    expect(notice.textContent).toContain("This group has reached its account limit")
+    expect(notice.textContent).toContain("Its plan allows up to 2 accounts.")
+
+    await mount(<AccountsScreen {...listDefaults} listPlan={{ ...refusal, limit: 0 }} />)
+    expect(document.querySelectorAll("[data-e2e=plan-refusal]")[1].textContent).toContain(
+      "This group has no paid plan",
+    )
+  })
 })

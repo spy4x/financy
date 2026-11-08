@@ -819,6 +819,8 @@ export default {
   "PlanRefusalNotice.filesTitleUnnamed": "Este grupo llegó a su límite de archivos",
   "PlanRefusalNotice.storageTitle": "{group} agotó su espacio de almacenamiento",
   "PlanRefusalNotice.storageTitleUnnamed": "Este grupo agotó su espacio de almacenamiento",
+  "PlanRefusalNotice.accountsTitle": "{group} llegó a su límite de cuentas",
+  "PlanRefusalNotice.accountsTitleUnnamed": "Este grupo llegó a su límite de cuentas",
   "PlanRefusalNotice.notesText": {
     "one":
       "Su plan admite como máximo {count} nota. Las notas que ya existen se pueden seguir leyendo y editando.",
@@ -826,6 +828,14 @@ export default {
       "Su plan admite como máximo {count} notas. Las notas que ya existen se pueden seguir leyendo y editando.",
     "other":
       "Su plan admite como máximo {count} notas. Las notas que ya existen se pueden seguir leyendo y editando.",
+  },
+  "PlanRefusalNotice.accountsText": {
+    "one":
+      "Su plan admite como máximo {count} cuenta. Las cuentas que ya existen se pueden seguir leyendo y editando.",
+    "many":
+      "Su plan admite como máximo {count} cuentas. Las cuentas que ya existen se pueden seguir leyendo y editando.",
+    "other":
+      "Su plan admite como máximo {count} cuentas. Las cuentas que ya existen se pueden seguir leyendo y editando.",
   },
   "PlanRefusalNotice.membersText": {
     "one": "Su plan admite como máximo {count} miembro.",
