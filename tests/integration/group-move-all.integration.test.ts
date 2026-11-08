@@ -396,6 +396,35 @@ Deno.test("moving all of a group's data", async (t) => {
       },
     )
 
+    await t.step(
+      "refuses whole when the source's accounts would take the target over its plan's maxAccounts",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to, ids, notes } = await seed(sql, ["a"])
+        await insertAccount(sql, to, "Theirs", editor)
+        const moving = [
+          await insertAccount(sql, from, "Main", editor),
+          await insertAccount(sql, from, "Savings", editor, { archived: true }),
+        ]
+        const input = { fromGroupId: from, toGroupId: to }
+
+        const over = await refusal(app.moveAll(input, editor, { maxNotes: null, maxAccounts: 2 }))
+
+        expect(over).toMatchObject({
+          code: "PLAN_LIMIT_REACHED",
+          entitlement: "maxAccounts",
+          limit: 2,
+        })
+        expect((await accountsOf(sql, from)).map((account) => account.id)).toEqual(moving)
+        expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
+
+        const fits = await app.moveAll(input, editor, { maxNotes: null, maxAccounts: 3 })
+
+        expect(fits.counts).toMatchObject({ accounts: 2 })
+        expect(await accountsOf(sql, from)).toEqual([])
+      },
+    )
+
     await t.step("two moves in opposite directions both finish, none deadlocks", async () => {
       const { editor, from, to, notes } = await seed(sql, ["a"])
       await notes.create(
