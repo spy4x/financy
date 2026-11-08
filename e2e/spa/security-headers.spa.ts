@@ -1,6 +1,5 @@
 import { type APIResponse, expect, test } from "@playwright/test"
 import { gotoApp, signIn } from "../fixtures/app.ts"
-import { BILLING_WEBHOOK_PATH, proWebhook } from "../fixtures/billing.ts"
 import { refusalSource, watchCspViolations } from "../fixtures/csp.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { signUpWithCode } from "../fixtures/sign-up.ts"
@@ -153,9 +152,6 @@ test("a signed-in walk through the app meets no refusal under the content securi
     // Every screen of the signed-in app, as the dev stack's warm-up visits them.
     const selected = await page.request.get("/api/groups/selected")
     const { groupId } = await selected.json()
-    // A new household is on Free, which adds nothing: the paid plan lets it add the note.
-    const paid = await request.post(BILLING_WEBHOOK_PATH, await proWebhook(groupId))
-    expect(paid.status(), await paid.text()).toBe(200)
     const noteId = uuidV7()
     const note = await page.request.post(`/api/groups/${groupId}/notes`, {
       headers,

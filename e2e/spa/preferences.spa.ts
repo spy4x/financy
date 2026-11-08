@@ -1,6 +1,5 @@
 import { expect, type Page, test } from "@playwright/test"
 import { gotoApp, openProfile, signIn } from "../fixtures/app.ts"
-import { BILLING_WEBHOOK_PATH, proWebhook } from "../fixtures/billing.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { signUpWithCode } from "../fixtures/sign-up.ts"
 
@@ -38,9 +37,6 @@ test("a region format and clock saved on the profile write the dates of the buil
     await signIn(page, email, password)
     const selected = await page.request.get("/api/groups/selected")
     const { groupId } = await selected.json()
-    // A new household is on Free, which adds nothing: the paid plan lets it add the note.
-    const paid = await request.post(BILLING_WEBHOOK_PATH, await proWebhook(groupId))
-    expect(paid.status(), await paid.text()).toBe(200)
     const noteId = uuidV7()
     const note = await page.request.post(`/api/groups/${groupId}/notes`, {
       headers,
