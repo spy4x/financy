@@ -12,7 +12,7 @@ import { NoteCreateCommand } from "@domain/notes"
 import { UserMFAStatus } from "@domain/identity"
 import { createEntitlementGate, type EntitlementGateDependencies } from "./entitlement-gate.ts"
 import { ENTITLEMENT_NEEDS } from "./entitlement-needs.ts"
-import { TEST_FREE_PLAN, TEST_PLANS } from "../../../libs/domain/billing/test-plans.ts"
+import { TEST_FREE_PLAN, TEST_PLANS, testUsage } from "../../../libs/domain/billing/test-plans.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
 const groupId = "7b6d8d6c-1af5-4f04-8ae4-b1ee5d111002"
@@ -37,11 +37,10 @@ function bus(overrides: Partial<EntitlementGateDependencies> = {}, notes = 0, me
     billingEnabled: true,
     planOf: () => Promise.resolve(FREE_PLAN_ID),
     roleOf: (_group, userId) => Promise.resolve(ROLES[userId] ?? null),
-    usage: {
+    usage: testUsage({
       maxNotes: () => Promise.resolve(notes),
       maxMembers: () => Promise.resolve(members),
-      maxAccounts: () => Promise.reject(new Error("not part of this test")),
-    },
+    }),
     plans: TEST_PLANS,
     ...overrides,
   }, ENTITLEMENT_NEEDS))
