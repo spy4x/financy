@@ -542,7 +542,6 @@ export default {
   "InvitationNew.discardLeave": "Änderungen verwerfen",
   "InvitationNew.discardStay": "Weiter bearbeiten",
   "GroupBillingPanel.planFree": "Free",
-  "GroupBillingPanel.planPro": "Pro",
   "GroupBillingPanel.paymentFailed": {
     "one":
       "Eine Zahlung ist fehlgeschlagen. Damit du {plan} behältst, aktualisiere deine Karte über „Karte ändern“ innerhalb von {count} Tag, bis zum {date}.",

@@ -26,7 +26,7 @@ import {
   createNoteUpdateHandler,
 } from "../../apps/api/features/notes/handlers.ts"
 import { team, withSchema } from "./group-team.ts"
-import { TEST_FREE_PLAN, TEST_PLANS } from "../../libs/domain/billing/test-plans.ts"
+import { TEST_FREE_PLAN, TEST_PLANS, testUsage } from "../../libs/domain/billing/test-plans.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
 /**
@@ -54,10 +54,7 @@ function noteBus(sql: postgres.Sql, usage?: EntitlementGateDependencies["usage"]
       effectivePlanId(await billing.get(groupId), new Date(), DEFAULT_GRACE_DAYS, TEST_PLANS),
     plans: TEST_PLANS,
     roleOf: groups.roleOf,
-    usage: usage ?? {
-      maxNotes: (groupId) => notes.count(groupId),
-      maxMembers: () => Promise.reject(new Error("not part of this test")),
-    },
+    usage: usage ?? testUsage({ maxNotes: (groupId) => notes.count(groupId) }),
   }, ENTITLEMENT_NEEDS))
   bus.register(NoteCreateCommand, createNoteCreateHandler({ notes, groups }))
   bus.register(NoteUpdateCommand, createNoteUpdateHandler({ notes, groups }))
@@ -117,15 +114,17 @@ Deno.test("the free plan's note cap on Postgres", async (t) => {
         let arrived = 0
         let bothCounted!: () => void
         const counted = new Promise<void>((resolve) => bothCounted = resolve)
-        const { bus, notes } = noteBus(sql, {
-          maxNotes: async (id) => {
-            const used = await seed.notes.count(id)
-            if (++arrived === 2) bothCounted()
-            await counted
-            return used
-          },
-          maxMembers: () => Promise.reject(new Error("not part of this test")),
-        })
+        const { bus, notes } = noteBus(
+          sql,
+          testUsage({
+            maxNotes: async (id) => {
+              const used = await seed.notes.count(id)
+              if (++arrived === 2) bothCounted()
+              await counted
+              return used
+            },
+          }),
+        )
 
         const outcomes = await Promise.allSettled([
           bus.execute(createNote(groupId, owner, "Owner's")),

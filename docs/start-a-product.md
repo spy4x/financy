@@ -62,6 +62,7 @@ The paths below are under `apps/mpa/` unless they say otherwise. `[[lang]]/` sta
 | Set     | The licence line of `llms.txt`         | "Source code" in `routes/llms.txt.ts`                    |
 | Replace | The privacy policy and terms           | `[[lang]]/privacy.tsx`, `[[lang]]/terms.tsx`             |
 | Set     | Name, icon and repository              | `SITE_NAME`, `SITE_ICON`, `REPOSITORY_URL` in `brand.ts` |
+| Set     | The product's name in the translators' guide | "Seed" in `i18n/TRANSLATING.md`: its opening lines and "Terms kept in English" |
 | Replace | The newsletter's voice                 | Four keys in `i18n/site/` (below)                        |
 | Replace | Open Graph images                      | `static/og/`, drawn by `screenshots/og.html`             |
 | Replace | Browser frames titled `app.seedsaas.com/…` | `routes/index.tsx`, `features-data.tsx`, `components/features-visuals.tsx` |
@@ -89,6 +90,9 @@ shared ones. Delete those of pages the product deleted, and point the rest at th
   slugs from `features-data.tsx`;
 - `/docs/api`, `/docs/get-started` and `/docs/capacity`: guides listed in the product's
   `PUBLISHED_DOCS`.
+
+A pull request measures only `QUICK_PATHS` in `lighthouse/quick.ts` (the home page, `/pricing`,
+the fixture blog post and `/docs`); each must stay in `lighthouserc.json`, or the check fails.
 
 **Keep `/changelog` and `/docs`.** They read the product's own history and guides. In
 `changelog-overrides.ts`, set `CHANGELOG_START` to the full hash of the commit that copied Seed
