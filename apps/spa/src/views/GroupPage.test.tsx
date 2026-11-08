@@ -80,13 +80,16 @@ const unchosen = {
 
 /**
  * Opens the General tab at `/groups/:groupId?currency=choose` for a member with `role`, once the
- * settings are read. Resolves on whether the dialog is open and the addresses it went through.
+ * settings are read (or the read fails). Resolves on whether the dialog is open and the addresses it went through.
  */
-async function chooseCurrency(role: GroupRole) {
+async function chooseCurrency(
+  role: GroupRole,
+  read: () => Promise<unknown> = () => Promise.resolve(unchosen),
+) {
   // The location hook carries its own search hook, which the router takes.
   const location = memoryLocation({ path: `/groups/${groupId}?currency=choose`, record: true })
   const household = createHouseholdSettingsStore({
-    read: () => Promise.resolve(unchosen),
+    read,
     update: () => Promise.reject(new Error("unused")),
   })
   const group = {
@@ -122,6 +125,15 @@ describe("GroupCurrency", () => {
 
   it("opens no dialog for a viewer from ?currency=choose, and still drops the query", async () => {
     const { dialog, history } = await chooseCurrency(GroupRole.VIEWER)
+    expect(dialog).toBe(false)
+    expect(history.at(-1)).toBe(`/groups/${groupId}`)
+  })
+
+  it("drops ?currency=choose with no dialog when the settings could not be read", async () => {
+    const { dialog, history } = await chooseCurrency(
+      GroupRole.ADMIN,
+      () => Promise.reject(new Error("offline")),
+    )
     expect(dialog).toBe(false)
     expect(history.at(-1)).toBe(`/groups/${groupId}`)
   })

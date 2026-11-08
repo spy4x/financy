@@ -1,5 +1,4 @@
 import type { ComponentChildren, JSX } from "preact"
-import { IconClock } from "@spy4x/preact-icons"
 import { Button } from "@spy4x/preact-ui/button"
 import { Card, CardBody, CardHeader } from "@spy4x/preact-ui/card"
 import { DataTable, type DataTableColumn } from "@spy4x/preact-ui/data-table"
@@ -7,9 +6,10 @@ import { EmptyState } from "@spy4x/preact-ui/empty-state"
 import { ErrorState } from "@spy4x/preact-ui/error-state"
 import { FactList } from "@spy4x/preact-ui/fact-list"
 import { Stack } from "@spy4x/preact-ui/layout"
+import { Link } from "@spy4x/preact-ui/link"
 import { LoadingSkeleton } from "@spy4x/preact-ui/loading-skeleton"
 import { Notice } from "@spy4x/preact-ui/notice"
-import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
+import { PageHeader } from "@spy4x/preact-ui/page-header"
 import { UsageMeter } from "@spy4x/preact-ui/usage-meter"
 import { useFormat } from "@spy4x/preact-ui/format"
 import type { Translator } from "@spy4x/platform/universal/i18n"
@@ -29,7 +29,7 @@ export interface AdminRatesScreenProps {
   navigate?: Navigate
 }
 
-/** One line of the table: a source's fetch on a day, or a day with none (a weekend, a holiday). */
+/** One line of the table: a source's fetch on a day, or a day with none. */
 interface DayRow {
   key: string
   date: string
@@ -69,7 +69,7 @@ function useRateDates(): RateDates {
 /**
  * The Exchange rates page: the last fetch of each source, the main currencies in use with no rate
  * for the latest rate day, the paid fallback's calls this month, and the last 7 days. It names no
- * household and counts none. A failed last run is a danger notice that points to Jobs.
+ * household and counts none. A failed last run is a danger notice that links to the failed jobs.
  */
 export function AdminRatesScreen(props: AdminRatesScreenProps): JSX.Element {
   const { snapshot, error } = props
@@ -81,13 +81,14 @@ export function AdminRatesScreen(props: AdminRatesScreenProps): JSX.Element {
         subtitle={t.t(`AdminRates.subtitle`)}
         titleDataE2E="admin-rates-title"
         action={
-          <PageAction
-            label={t.t(`AdminSystem.openJobs`)}
-            Icon={IconClock}
+          <Link
             href={ADMIN_JOB_PATHS.list}
             navigate={props.navigate}
-            dataE2E="admin-rates-jobs"
-          />
+            class="pc-link inline-flex min-h-11 items-center text-sm font-medium sm:min-h-9"
+            data-e2e="admin-rates-jobs"
+          >
+            {t.t(`AdminSystem.openJobs`)}
+          </Link>
         }
       />
       {snapshot === null
@@ -112,14 +113,16 @@ export function AdminRatesScreen(props: AdminRatesScreenProps): JSX.Element {
         : (
           <>
             <ErrorState message={error} dataE2E="admin-rates-error" />
-            <RatesBody snapshot={snapshot} />
+            <RatesBody snapshot={snapshot} navigate={props.navigate} />
           </>
         )}
     </Stack>
   )
 }
 
-function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element {
+function RatesBody(
+  { snapshot, navigate }: { snapshot: AdminRatesSnapshot; navigate?: Navigate },
+): JSX.Element {
   const t = useAdminText()
   const dates = useRateDates()
   const { lastRun, fetches, missing, fallback } = snapshot
@@ -127,7 +130,17 @@ function RatesBody({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element 
     ? (
       <div data-e2e="admin-rates-failed">
         <Notice tone="danger">
-          {t.t(`AdminRates.jobFailed`, { time: dates.at(lastRun.at) })}
+          <span class="flex flex-col items-start gap-1">
+            <span>{t.t(`AdminRates.jobFailed`, { time: dates.at(lastRun.at) })}</span>
+            <Link
+              href={ADMIN_JOB_PATHS.failed}
+              navigate={navigate}
+              class="pc-link inline-flex min-h-11 items-center text-sm font-medium sm:min-h-9"
+              data-e2e="admin-rates-failed-jobs"
+            >
+              {t.t(`AdminSystem.openJobs`)}
+            </Link>
+          </span>
         </Notice>
       </div>
     )
@@ -247,9 +260,17 @@ const TABLE_CLASS = [
   `max-sm:[&_:is(th,td):nth-child(n+2)]:hidden`,
 ].join(` `)
 
+/** A rate day (`YYYY-MM-DD`, read as UTC) is a Saturday or a Sunday, when the ECB publishes none. */
+function isWeekend(date: string): boolean {
+  const day = new Date(`${date}T00:00:00Z`).getUTCDay()
+  return day === 0 || day === 6
+}
+
 /**
- * The last 7 days, newest first: one row per source that fetched that day. A day with none is a
- * muted row that says so, since the ECB publishes nothing on weekends and holidays.
+ * The last 7 days, newest first: one row per source that fetched that day. A Saturday or Sunday
+ * with none is a muted row (`data-weekend`), since the ECB publishes nothing then. Any other day
+ * with none is a warning row (`data-missing`): a run failed or skipped it, or it was an ECB
+ * holiday, which the page does not tell apart.
  */
 function RatesByDay({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element {
   const t = useAdminText()
@@ -266,18 +287,29 @@ function RatesByDay({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element
       }))
   )
   const muted = (text: string) => <span class="text-sm text-muted">{text}</span>
+  /** What a day with no rows says: a weekend is expected, a weekday is worth a look. */
+  const none = (date: string) =>
+    isWeekend(date)
+      ? { text: t.t(`AdminRates.weekend`), class: `text-muted` }
+      : { text: t.t(`AdminRates.noFetch`), class: `text-warning` }
   const columns: DataTableColumn<DayRow, never>[] = [
     {
       id: `day`,
       header: t.t(`AdminRates.day`),
       render: (row) => (
-        <div class="flex min-w-0 flex-col gap-1" data-weekend={row.source === null || undefined}>
+        <div
+          class="flex min-w-0 flex-col gap-1"
+          data-weekend={(row.source === null && isWeekend(row.date)) || undefined}
+          data-missing={(row.source === null && !isWeekend(row.date)) || undefined}
+        >
           <span class={row.source === null ? `text-sm text-muted` : `text-sm font-medium`}>
             {dates.day(row.date)}
           </span>
-          <span class="text-xs text-muted sm:hidden">
+          <span
+            class={`text-xs sm:hidden ${row.source === null ? none(row.date).class : `text-muted`}`}
+          >
             {row.source === null
-              ? t.t(`AdminRates.weekend`)
+              ? none(row.date).text
               : `${sourceName(t, row.source)} · ${
                 t.t(`AdminRates.fetch`, { time: dates.at(row.fetchedAt!), count: row.currencies })
               }`}
@@ -290,7 +322,7 @@ function RatesByDay({ snapshot }: { snapshot: AdminRatesSnapshot }): JSX.Element
       header: t.t(`AdminRates.source`),
       render: (row) =>
         row.source === null
-          ? muted(t.t(`AdminRates.weekend`))
+          ? <span class={`text-sm ${none(row.date).class}`}>{none(row.date).text}</span>
           : <span class="text-sm">{sourceName(t, row.source)}</span>,
     },
     {

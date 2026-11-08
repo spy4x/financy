@@ -2272,7 +2272,7 @@ export default {
     "many": "{time} · {count} tipos",
     "other": "{time} · {count} tipos",
   },
-  "AdminRates.jobFailed": "La última obtención falló a las {time}. Los detalles están en Tareas.",
+  "AdminRates.jobFailed": "La última obtención falló a las {time}.",
   "AdminRates.missingTitle": "Sin tipo hoy",
   "AdminRates.missingText":
     "Estas monedas no tienen tipo para el {date}. Los totales que las incluyen las dejan fuera y lo indican.",
@@ -2291,7 +2291,8 @@ export default {
   "AdminRates.source": "Fuente",
   "AdminRates.currencies": "Monedas",
   "AdminRates.fetchedAt": "Obtenido a las",
-  "AdminRates.weekend": "Sin tipos del BCE (fin de semana o festivo)",
+  "AdminRates.weekend": "Sin tipos del BCE los fines de semana",
+  "AdminRates.noFetch": "No se obtuvieron tipos",
   "AdminRates.emptyTitle": "Aún no hay tipos",
   "AdminRates.emptyText":
     "La tarea diaria los obtiene a las 16:00 UTC. Para obtenerlos ahora, ejecuta «Exchange rates» en Tareas.",

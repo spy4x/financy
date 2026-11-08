@@ -2068,7 +2068,7 @@ export default {
   "AdminRates.fetch": {
     "other": "{time} · {count}件",
   },
-  "AdminRates.jobFailed": "前回の取得は{time}に失敗しました。詳細はジョブで確認できます。",
+  "AdminRates.jobFailed": "前回の取得は{time}に失敗しました。",
   "AdminRates.missingTitle": "今日のレートなし",
   "AdminRates.missingText":
     "次の通貨には{date}のレートがありません。これらを含む合計では除外され、その旨が表示されます。",
@@ -2087,7 +2087,8 @@ export default {
   "AdminRates.source": "取得元",
   "AdminRates.currencies": "通貨数",
   "AdminRates.fetchedAt": "取得日時",
-  "AdminRates.weekend": "ECBのレートなし（週末または祝日）",
+  "AdminRates.weekend": "週末はECBのレートなし",
+  "AdminRates.noFetch": "レートを取得できていません",
   "AdminRates.emptyTitle": "まだレートがありません",
   "AdminRates.emptyText":
     "毎日のジョブが16:00 UTCに取得します。今すぐ取得するには、ジョブで「Exchange rates」を実行してください。",

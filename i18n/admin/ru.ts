@@ -1855,7 +1855,7 @@ export default {
     "По этому адресу нет страницы админки. Проверьте, нет ли в нём опечатки, или начните со сводки.",
   "AdminNotFound.toDashboard": "Перейти к сводке",
   "AdminNav.dashboard": "Сводка",
-  "AdminNav.rates": "Курсы",
+  "AdminNav.rates": "Курсы валют",
   "AdminNav.stats": "Статистика",
   "AdminNav.system": "Система",
   "AdminNav.users": "Люди",
@@ -2338,8 +2338,7 @@ export default {
     "many": "{time} · {count} курсов",
     "other": "{time} · {count} курса",
   },
-  "AdminRates.jobFailed":
-    "Последнее получение не удалось в {time}. Подробности — в разделе «Задачи».",
+  "AdminRates.jobFailed": "Последняя загрузка не удалась в {time}.",
   "AdminRates.missingTitle": "Нет курса на сегодня",
   "AdminRates.missingText":
     "У этих валют нет курса на {date}. Итоги с ними считаются без них, и об этом сказано.",
@@ -2358,7 +2357,8 @@ export default {
   "AdminRates.source": "Источник",
   "AdminRates.currencies": "Валюты",
   "AdminRates.fetchedAt": "Получены",
-  "AdminRates.weekend": "Нет курсов ЕЦБ (выходной или праздник)",
+  "AdminRates.weekend": "Нет курсов ЕЦБ в выходные",
+  "AdminRates.noFetch": "Курсы не загружены",
   "AdminRates.emptyTitle": "Курсов пока нет",
   "AdminRates.emptyText":
     "Ежедневная задача получает их в 16:00 UTC. Чтобы получить их сейчас, запустите «Exchange rates» в разделе «Задачи».",

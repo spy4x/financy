@@ -1759,7 +1759,7 @@ export default {
     "Unter dieser Adresse gibt es keine Admin-Seite. Prüfe sie auf Tippfehler oder starte im Dashboard.",
   "AdminNotFound.toDashboard": "Zum Dashboard",
   "AdminNav.dashboard": "Dashboard",
-  "AdminNav.rates": "Kurse",
+  "AdminNav.rates": "Wechselkurse",
   "AdminNav.stats": "Statistik",
   "AdminNav.system": "System",
   "AdminNav.users": "Personen",
@@ -2208,8 +2208,7 @@ export default {
     "one": "{time} · {count} Kurs",
     "other": "{time} · {count} Kurse",
   },
-  "AdminRates.jobFailed":
-    "Der letzte Abruf ist um {time} fehlgeschlagen. Die Details stehen unter Jobs.",
+  "AdminRates.jobFailed": "Der letzte Abruf ist um {time} fehlgeschlagen.",
   "AdminRates.missingTitle": "Heute kein Kurs",
   "AdminRates.missingText":
     "Für diese Währungen gibt es keinen Kurs für den {date}. Summen, die sie enthalten, lassen sie weg und sagen das.",
@@ -2228,7 +2227,8 @@ export default {
   "AdminRates.source": "Quelle",
   "AdminRates.currencies": "Währungen",
   "AdminRates.fetchedAt": "Abgerufen um",
-  "AdminRates.weekend": "Keine EZB-Kurse (Wochenende oder Feiertag)",
+  "AdminRates.weekend": "Keine EZB-Kurse am Wochenende",
+  "AdminRates.noFetch": "Keine Kurse abgerufen",
   "AdminRates.emptyTitle": "Noch keine Kurse",
   "AdminRates.emptyText":
     "Der tägliche Job ruft sie um 16:00 UTC ab. Um sie jetzt abzurufen, starte „Exchange rates“ unter Jobs.",
