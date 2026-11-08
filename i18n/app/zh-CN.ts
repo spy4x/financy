@@ -207,6 +207,20 @@ export default {
   "GroupEditor.timeZoneInvalid": "无法识别这个时区。请从列表中另选一个。",
   "GroupEditor.timeZoneChangedElsewhere":
     "你编辑时，其他人把它改成了{zone}。保存以使用你的选择，或点击“放弃”。",
+  "GroupCurrency.section": "资金",
+  "GroupCurrency.label": "主货币",
+  "GroupCurrency.hint": "群组里每个人看到的合计都以这种货币显示。每笔金额仍保留自己的货币。",
+  "GroupCurrency.change": "更改<hidden>主货币</hidden>",
+  "GroupCurrency.changeNote": "更改不会改动任何金额。每笔金额保留原来的货币，只有合计会重新换算。",
+  "GroupCurrency.noRate": "此处无每日汇率",
+  "GroupCurrency.use": "使用{name}",
+  "GroupCurrency.saved": "合计现在以{name}（{code}）显示。",
+  "GroupCurrency.readOnly": "只有管理员和所有者可以更改主货币。",
+  "GroupCurrency.offline": "需要联网才能更改主货币。",
+  "GroupCurrency.failed": "无法保存主货币，请重试。",
+  "GroupCurrency.changedElsewhere":
+    "你选择时，其他人把它改成了{code}。使用你的选择，或点击“取消”。",
+  "GroupCurrency.loadFailed": "无法加载主货币。请检查网络连接后重试。",
   "GroupEditor.nameRequired": "请输入名称。",
   "GroupEditor.nameInvalid": "最多 100 个字符，不能包含换行或隐藏字符。",
   "GroupEditor.descriptionTooLong": {

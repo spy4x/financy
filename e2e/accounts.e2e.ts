@@ -219,20 +219,19 @@ test.describe("accounts", () => {
       })
       await expect(amount).toHaveText("€25.50")
 
-      // The owner makes the lari the main currency: now the euros have no rate.
-      const members =
-        await (await ownerPage.request.get(`${apiBase}/api/groups/${groupId}/members`))
-          .json()
-      const ownerId: number = members.members.find((m: { email?: string }) => m.email === owner)
-        .userId
-      const changed = await ownerPage.request.post(
-        `${apiBase}/api/call/household.updateSettings`,
-        {
-          headers: { ...headers, "x-realtime-user": String(ownerId), "idempotency-key": uuidV7() },
-          data: { groupId, baseCurrency: "GEL", version: 0 },
-        },
-      )
-      expect(changed.ok(), await changed.text()).toBe(true)
+      // The owner makes the lari the main currency from the checklist's link: now the euros have
+      // no rate. The dialog opens with the field focused, and marks the lari as having no rate.
+      await ownerPage.goto(`/groups/${groupId}?currency=choose`)
+      const field = ownerPage.locator("[data-e2e=group-currency-field] input")
+      await expect(field).toBeFocused()
+      await expect(ownerPage).toHaveURL(new RegExp(`/groups/${groupId}$`))
+      await field.fill("GEL")
+      await expect(ownerPage.getByRole("option").first()).toContainText("No daily rate here")
+      await field.press("Enter")
+      await ownerPage.locator("[data-e2e=group-currency-use]").click()
+      await expect(ownerPage.locator("[data-e2e=group-currency-saved]")).toBeVisible()
+      await expect(ownerPage.locator("[data-e2e=group-currency-value]")).toContainText("GEL")
+      await expect(ownerPage.locator("[data-e2e=group-currency-change]")).toBeFocused()
       await expect(leftOut).toHaveText("Leaves out 1 account: no exchange rate for EUR yet.", {
         timeout: 5_000,
       })

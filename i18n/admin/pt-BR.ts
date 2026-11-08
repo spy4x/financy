@@ -2254,4 +2254,38 @@ export default {
   "AdminRates.title": "Taxas de câmbio",
   "AdminRates.subtitle":
     "As taxas que o servidor buscou a cada dia, por fonte, e quanto a fonte reserva paga já usou este mês.",
+  "AdminRates.loading": "Carregando as cotações",
+  "AdminRates.lastFetch": "Última busca",
+  "AdminRates.sourceEcb": "BCE, via Frankfurter",
+  "AdminRates.sourceFallback": "{provider} (reserva paga)",
+  "AdminRates.fetch": {
+    "one": "{time} · {count} cotação",
+    "many": "{time} · {count} cotações",
+    "other": "{time} · {count} cotações",
+  },
+  "AdminRates.jobFailed": "A última busca falhou às {time}. Os detalhes estão em Tarefas.",
+  "AdminRates.missingTitle": "Sem cotação hoje",
+  "AdminRates.missingText":
+    "Estas moedas não têm cotação para {date}. Os totais que as incluem as deixam de fora e avisam.",
+  "AdminRates.missingNone": "Todas as moedas em uso têm cotação para {date}.",
+  "AdminRates.fallbackTitle": "Reserva paga",
+  "AdminRates.fallbackCalls": "Consultas este mês",
+  "AdminRates.fallbackHint":
+    "Ela só é consultada para moedas que o BCE não tem e para no limite. A contagem recomeça em {date}.",
+  "AdminRates.fallbackCapped":
+    "O limite mensal foi atingido. Não haverá mais consultas até {date}. Até lá, as moedas que o BCE não tem aparecem sem cotação.",
+  "AdminRates.fallbackOffTitle": "Reserva desativada",
+  "AdminRates.fallbackOffText":
+    "Nenhuma chave está definida, então só as cotações do BCE são usadas. O guia de cotações explica como ativá-la.",
+  "AdminRates.daysTitle": "Cotações por dia",
+  "AdminRates.day": "Dia",
+  "AdminRates.source": "Fonte",
+  "AdminRates.currencies": "Moedas",
+  "AdminRates.fetchedAt": "Buscado às",
+  "AdminRates.weekend": "Sem cotações do BCE (fim de semana ou feriado)",
+  "AdminRates.emptyTitle": "Ainda não há cotações",
+  "AdminRates.emptyText":
+    "A tarefa diária busca as cotações às 16:00 UTC. Para buscar agora, execute “Exchange rates” em Tarefas.",
+  "AdminRates.loadError":
+    "Não foi possível carregar as cotações. Verifique sua conexão e tente de novo.",
 } satisfies Catalog

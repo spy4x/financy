@@ -2263,4 +2263,38 @@ export default {
   "AdminRates.title": "Tipos de cambio",
   "AdminRates.subtitle":
     "Los tipos que el servidor obtuvo cada día, por fuente, y lo que lleva gastado este mes la fuente de respaldo de pago.",
+  "AdminRates.loading": "Cargando los tipos",
+  "AdminRates.lastFetch": "Última obtención",
+  "AdminRates.sourceEcb": "BCE, a través de Frankfurter",
+  "AdminRates.sourceFallback": "{provider} (respaldo de pago)",
+  "AdminRates.fetch": {
+    "one": "{time} · {count} tipo",
+    "many": "{time} · {count} tipos",
+    "other": "{time} · {count} tipos",
+  },
+  "AdminRates.jobFailed": "La última obtención falló a las {time}. Los detalles están en Tareas.",
+  "AdminRates.missingTitle": "Sin tipo hoy",
+  "AdminRates.missingText":
+    "Estas monedas no tienen tipo para el {date}. Los totales que las incluyen las dejan fuera y lo indican.",
+  "AdminRates.missingNone": "Todas las monedas en uso tienen tipo para el {date}.",
+  "AdminRates.fallbackTitle": "Respaldo de pago",
+  "AdminRates.fallbackCalls": "Consultas este mes",
+  "AdminRates.fallbackHint":
+    "Solo se consulta para monedas que el BCE no tiene, y se detiene al llegar al límite. El contador se reinicia el {date}.",
+  "AdminRates.fallbackCapped":
+    "Se alcanzó el límite mensual. No habrá más consultas hasta el {date}. Hasta entonces, las monedas que el BCE no tiene aparecen sin tipo.",
+  "AdminRates.fallbackOffTitle": "El respaldo está desactivado",
+  "AdminRates.fallbackOffText":
+    "No hay ninguna clave configurada, así que solo se usan los tipos del BCE. La guía de tipos de cambio explica cómo activarlo.",
+  "AdminRates.daysTitle": "Tipos por día",
+  "AdminRates.day": "Día",
+  "AdminRates.source": "Fuente",
+  "AdminRates.currencies": "Monedas",
+  "AdminRates.fetchedAt": "Obtenido a las",
+  "AdminRates.weekend": "Sin tipos del BCE (fin de semana o festivo)",
+  "AdminRates.emptyTitle": "Aún no hay tipos",
+  "AdminRates.emptyText":
+    "La tarea diaria los obtiene a las 16:00 UTC. Para obtenerlos ahora, ejecuta «Exchange rates» en Tareas.",
+  "AdminRates.loadError":
+    "No se pudieron cargar los tipos. Revisa tu conexión e inténtalo de nuevo.",
 } satisfies Catalog

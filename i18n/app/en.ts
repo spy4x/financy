@@ -257,6 +257,23 @@ export default {
   "GroupEditor.timeZoneInvalid": "We don't know this time zone. Pick another from the list.",
   "GroupEditor.timeZoneChangedElsewhere":
     "Someone else changed this to {zone} while you were editing. Save to use yours, or Discard.",
+  "GroupCurrency.section": "Money",
+  "GroupCurrency.label": "Main currency",
+  "GroupCurrency.hint":
+    "Totals are shown in this currency, for everyone in the group. Each amount keeps its own currency.",
+  "GroupCurrency.change": "Change<hidden> main currency</hidden>",
+  "GroupCurrency.changeNote":
+    "Changing it changes no amounts. Each amount stays in its own currency; only the totals are converted again.",
+  "GroupCurrency.noRate": "No daily rate here",
+  "GroupCurrency.use": "Use {name}",
+  "GroupCurrency.saved": "Totals now show in {name} ({code}).",
+  "GroupCurrency.readOnly": "Only admins and the owner can change the main currency.",
+  "GroupCurrency.offline": "You need a connection to change the main currency.",
+  "GroupCurrency.failed": "Couldn't save the main currency. Try again.",
+  "GroupCurrency.changedElsewhere":
+    "Someone else changed this to {code} while you were choosing. Use yours, or Cancel.",
+  "GroupCurrency.loadFailed":
+    "Couldn't load the main currency. Check your connection and try again.",
   "GroupEditor.nameRequired": "Enter a name.",
   "GroupEditor.nameInvalid":
     "Use at most 100 characters, with no line breaks or hidden characters.",

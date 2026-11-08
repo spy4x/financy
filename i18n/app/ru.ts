@@ -286,6 +286,23 @@ export default {
   "GroupEditor.timeZoneInvalid": "Такого часового пояса мы не знаем. Выберите другой из списка.",
   "GroupEditor.timeZoneChangedElsewhere":
     "Пока вы редактировали, кто-то другой выбрал {zone}. Сохраните, чтобы оставить свой вариант, или нажмите «Отменить».",
+  "GroupCurrency.section": "Деньги",
+  "GroupCurrency.label": "Основная валюта",
+  "GroupCurrency.hint":
+    "Итоги показываются в этой валюте, для всех в группе. Каждая сумма остаётся в своей валюте.",
+  "GroupCurrency.change": "Изменить<hidden> основную валюту</hidden>",
+  "GroupCurrency.changeNote":
+    "Суммы при этом не меняются: каждая остаётся в своей валюте, заново пересчитываются только итоги.",
+  "GroupCurrency.noRate": "Нет ежедневного курса",
+  "GroupCurrency.use": "Выбрать: {name}",
+  "GroupCurrency.saved": "Основная валюта теперь — {name} ({code}).",
+  "GroupCurrency.readOnly": "Менять основную валюту могут только администраторы и владелец.",
+  "GroupCurrency.offline": "Чтобы изменить основную валюту, нужно подключение к интернету.",
+  "GroupCurrency.failed": "Не удалось сохранить основную валюту. Попробуйте ещё раз.",
+  "GroupCurrency.changedElsewhere":
+    "Пока вы выбирали, кто-то другой сменил её на {code}. Оставьте свой вариант или нажмите «Отмена».",
+  "GroupCurrency.loadFailed":
+    "Не удалось загрузить основную валюту. Проверьте подключение и попробуйте ещё раз.",
   "GroupEditor.nameRequired": "Введите название.",
   "GroupEditor.nameInvalid": "Не больше 100 символов, без переносов строк и скрытых символов.",
   "GroupEditor.descriptionTooLong": {

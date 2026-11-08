@@ -2280,4 +2280,38 @@ export default {
   "AdminRates.title": "Taux de change",
   "AdminRates.subtitle":
     "Les taux que le serveur a récupérés chaque jour, par source, et ce que la source de secours payante a consommé ce mois-ci.",
+  "AdminRates.loading": "Chargement des taux",
+  "AdminRates.lastFetch": "Dernière récupération",
+  "AdminRates.sourceEcb": "BCE, via Frankfurter",
+  "AdminRates.sourceFallback": "{provider} (secours payant)",
+  "AdminRates.fetch": {
+    "one": "{time} · {count} taux",
+    "many": "{time} · {count} taux",
+    "other": "{time} · {count} taux",
+  },
+  "AdminRates.jobFailed":
+    "La dernière récupération a échoué à {time}. Les détails sont dans Tâches.",
+  "AdminRates.missingTitle": "Pas de taux aujourd’hui",
+  "AdminRates.missingText":
+    "Ces devises n’ont pas de taux pour le {date}. Les totaux qui les incluent les laissent de côté et le signalent.",
+  "AdminRates.missingNone": "Chaque devise utilisée a un taux pour le {date}.",
+  "AdminRates.fallbackTitle": "Secours payant",
+  "AdminRates.fallbackCalls": "Appels ce mois-ci",
+  "AdminRates.fallbackHint":
+    "Il n’est sollicité que pour les devises que la BCE ne couvre pas, et s’arrête au plafond. Le compteur repart le {date}.",
+  "AdminRates.fallbackCapped":
+    "Le plafond mensuel est atteint. Plus aucun appel avant le {date}. D’ici là, les devises que la BCE ne couvre pas apparaissent sans taux.",
+  "AdminRates.fallbackOffTitle": "Le secours est désactivé",
+  "AdminRates.fallbackOffText":
+    "Aucune clé n’est définie, donc seuls les taux de la BCE sont utilisés. Le guide des taux de change explique comment l’activer.",
+  "AdminRates.daysTitle": "Taux par jour",
+  "AdminRates.day": "Jour",
+  "AdminRates.source": "Source",
+  "AdminRates.currencies": "Devises",
+  "AdminRates.fetchedAt": "Récupéré à",
+  "AdminRates.weekend": "Pas de taux BCE (week-end ou jour férié)",
+  "AdminRates.emptyTitle": "Pas encore de taux",
+  "AdminRates.emptyText":
+    "La tâche quotidienne les récupère à 16 h 00 UTC. Pour les récupérer maintenant, lancez « Exchange rates » dans Tâches.",
+  "AdminRates.loadError": "Impossible de charger les taux. Vérifiez votre connexion et réessayez.",
 } satisfies Catalog
