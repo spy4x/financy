@@ -24,8 +24,8 @@ function shift(date: string, days: number): string {
  *
  * Open requests that overlap or touch the new days become one, so a hundred old transactions
  * imported at once leave one request. Two calls side by side take turns on an advisory lock.
- * #100 (import) calls this with the oldest date it imported. The job that fills a request waits
- * for a Frankfurter range call in ts-libs (the PR body of #93 names it).
+ * #100 (import) calls this with the oldest date it imported. The hourly `rates.backfill` job
+ * fills each request from the ECB and then deletes it (libs/server/jobs/exchange-rates.ts).
  */
 export async function requestBackfillBefore(
   sql: postgres.Sql,
@@ -69,4 +69,9 @@ export async function openBackfillRequests(sql: postgres.Sql): Promise<RateBackf
     SELECT id, to_char(from_date, 'YYYY-MM-DD') AS from_date, to_char(to_date, 'YYYY-MM-DD') AS to_date
     FROM rate_backfill_requests ORDER BY from_date
   `
+}
+
+/** Deletes the open request `id`. An id gone already (merged into a newer one) deletes nothing. */
+export async function closeBackfillRequest(sql: postgres.Sql, id: string): Promise<void> {
+  await sql`DELETE FROM rate_backfill_requests WHERE id = ${id}`
 }

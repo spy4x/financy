@@ -3,11 +3,18 @@ import { expect } from "@std/expect"
 import type postgres from "postgres"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import { RATE_SOURCES } from "@domain/money"
-import { ratesFetchJob, type RatesJobDeps } from "@server/jobs/exchange-rates.ts"
+import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import type { ExchangeRateSource, RatesResult } from "@spy4x/integrations/exchange-rates"
+import {
+  ecbQuotes,
+  ratesBackfillJob,
+  ratesFetchJob,
+  type RatesJobDeps,
+} from "@server/jobs/exchange-rates.ts"
 import type { JobHandler } from "@server/jobs/jobs.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { openBackfillRequests, requestBackfillBefore } from "@server/money/rate-backfill.ts"
-import { readRatesSetup } from "@server/money/rates-setup.ts"
+import { type RatesSetup, readRatesSetup } from "@server/money/rates-setup.ts"
 import { team, withSchema } from "./group-team.ts"
 import saturdayEcb from "../../libs/server/money/fixtures/frankfurter-saturday-ecb.json" with {
   type: "json",
@@ -22,7 +29,8 @@ import paidHistory from "../../libs/server/money/fixtures/exchangerate-api-histo
 /**
  * Exchange rates against a real Postgres built from schema.sql: the lookup's latest-earlier rule
  * and cross rate, the daily job on recorded replies through a fake fetch, the refusal of bad
- * rates, the paid fallback's cap, and the merging of backfill requests. Needs "DB_HOST",
+ * rates, the paid fallback's cap, the merging of backfill requests and the job that fills them
+ * from a fake range source. Needs "DB_HOST",
  * "DB_USER", "DB_PASS" and "DB_NAME" (recipe in docs/handoff.md); it fails when they are missing.
  */
 
@@ -378,6 +386,158 @@ Deno.test("backfill requests: a request that ends the day before an open one joi
     await requestBackfillBefore(sql, `2025-06-01`)
     expect(await openBackfillRequests(sql)).toEqual([
       { id: expect.any(String), fromDate: `2025-06-01`, toDate: `2026-10-29` },
+    ])
+  })
+})
+
+/** A range call's answer: the rates found, none missing. */
+function found(rates: ExchangeRate[]): RatesResult {
+  return { success: true, output: { rates, missing: [] }, error: null }
+}
+
+/**
+ * Rate sources that never touch the network: the ECB answers each range call with `answer`, and
+ * the paid fallback answers nothing. Both record every call.
+ */
+function fakeSources(answer: (from: string, to: string) => RatesResult | Promise<RatesResult>) {
+  const ranges: { from: string; to: string; base: string; quotes: readonly string[] }[] = []
+  const paidCalls: string[] = []
+  const unused = () => Promise.reject(new Error(`daily must not be called`))
+  const paid: ExchangeRateSource = {
+    id: RATE_SOURCES.fallback,
+    daily: (date) => {
+      paidCalls.push(date)
+      return unused()
+    },
+  }
+  const setup: RatesSetup = {
+    ecb: {
+      id: RATE_SOURCES.ecb,
+      daily: unused,
+      timeSeries: (from, to, base, quotes) => {
+        ranges.push({ from, to, base, quotes })
+        return Promise.resolve(answer(from, to))
+      },
+    },
+    fallback: { source: paid, monthlyCap: 100 },
+  }
+  return { setup, ranges, paidCalls }
+}
+
+/** One run of the backfill job. */
+async function backfillOnce(sql: postgres.Sql, setup: RatesSetup): Promise<void> {
+  await ratesBackfillJob({ sql, setup, log: () => {} })({} as Parameters<JobHandler>[0])
+}
+
+/** The stored rates, by day and quote. */
+async function storedRates(sql: postgres.Sql): Promise<string[]> {
+  const rows = await sql<{ line: string }[]>`
+    SELECT to_char(rate_date, 'YYYY-MM-DD') || ' ' || quote || ' ' || rate AS line
+    FROM exchange_rates ORDER BY rate_date, quote
+  `
+  return rows.map((row) => row.line)
+}
+
+const PAST_DAYS = [
+  rate(`USD`, `1.1000`, `2026-10-26`),
+  rate(`USD`, `1.1050`, `2026-10-27`),
+  rate(`USD`, `1.1100`, `2026-10-28`),
+  rate(`USD`, `1.1150`, `2026-10-29`),
+]
+
+Deno.test("rates.backfill: fills a request with the ECB's range and deletes the filled request", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
+    await requestBackfillBefore(sql, `2026-10-26`)
+    const fake = fakeSources(() => found(PAST_DAYS))
+    await backfillOnce(sql, fake.setup)
+
+    expect(fake.ranges).toEqual([
+      { from: `2026-10-26`, to: `2026-10-29`, base: `EUR`, quotes: ecbQuotes() },
+    ])
+    expect(await storedRates(sql)).toEqual([
+      `2026-10-26 USD 1.1000`,
+      `2026-10-27 USD 1.1050`,
+      `2026-10-28 USD 1.1100`,
+      `2026-10-29 USD 1.1150`,
+      `2026-10-30 USD 1.1172`,
+    ])
+    expect(await openBackfillRequests(sql)).toEqual([])
+  })
+})
+
+Deno.test("rates.backfill: a failed range call throws and leaves the request open", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
+    const request = await requestBackfillBefore(sql, `2026-10-26`)
+    const fake = fakeSources(() => ({
+      success: false,
+      output: null,
+      error: { source: RATE_SOURCES.ecb, code: `unavailable`, message: `Frankfurter is down` },
+    }))
+    await expect(backfillOnce(sql, fake.setup)).rejects.toThrow(
+      `frankfurter:ECB answered unavailable`,
+    )
+    expect(await openBackfillRequests(sql)).toEqual([request])
+    expect(await rowCount(sql)).toBe(1)
+  })
+})
+
+Deno.test("rates.backfill: a rerun over the same days stores nothing twice and changes no rate", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
+    await requestBackfillBefore(sql, `2026-10-26`)
+    await backfillOnce(sql, fakeSources(() => found(PAST_DAYS)).setup)
+    const first = await storedRates(sql)
+
+    // The same days asked again, as if the request had been made twice.
+    await sql`
+      INSERT INTO rate_backfill_requests (id, from_date, to_date)
+      VALUES (${uuidV7()}, '2026-10-26', '2026-10-29')
+    `
+    const changed = PAST_DAYS.map((past) => ({ ...past, rate: `9.9999` }))
+    await backfillOnce(sql, fakeSources(() => found(changed)).setup)
+    expect(await storedRates(sql)).toEqual(first)
+    expect(await openBackfillRequests(sql)).toEqual([])
+  })
+})
+
+Deno.test("rates.backfill: with no open request, no source is called", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
+    const fake = fakeSources(() => found(PAST_DAYS))
+    await backfillOnce(sql, fake.setup)
+    expect(fake.ranges).toEqual([])
+    expect(fake.paidCalls).toEqual([])
+  })
+})
+
+Deno.test("rates.backfill: never asks the paid fallback, even for quotes the ECB lacks", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
+    await requestBackfillBefore(sql, `2026-10-26`)
+    const fake = fakeSources(() => ({
+      success: true,
+      output: { rates: PAST_DAYS, missing: [`VND`, `AED`] },
+      error: null,
+    }))
+    await backfillOnce(sql, fake.setup)
+    expect(fake.ranges.length).toBe(1)
+    expect(fake.paidCalls).toEqual([])
+  })
+})
+
+Deno.test("rates.backfill: a request merged while its days are fetched stays open under its new id", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [rate(`USD`, `1.1172`, `2026-10-30`)])
+    await requestBackfillBefore(sql, `2026-10-26`)
+    const fake = fakeSources(async () => {
+      await requestBackfillBefore(sql, `2026-10-01`)
+      return found(PAST_DAYS)
+    })
+    await backfillOnce(sql, fake.setup)
+    expect(await openBackfillRequests(sql)).toEqual([
+      { id: expect.any(String), fromDate: `2026-10-01`, toDate: `2026-10-29` },
     ])
   })
 })

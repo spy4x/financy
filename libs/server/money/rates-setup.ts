@@ -2,6 +2,7 @@ import {
   createExchangeRateApiRates,
   createFrankfurterRates,
   type ExchangeRateSource,
+  type FrankfurterSource,
 } from "@spy4x/integrations/exchange-rates"
 
 /** The paid fallback: its source and the most calls it may get in one calendar month. */
@@ -12,10 +13,11 @@ export interface RatesFallback {
 
 /**
  * Where the rate jobs fetch from: the ECB through Frankfurter, always, and the paid fallback only
- * when its key is set (docs/financy/exchange-rates.md).
+ * when its key is set (docs/financy/exchange-rates.md). `ecb` also answers for a range of days,
+ * which the backfill job asks for.
  */
 export interface RatesSetup {
-  ecb: ExchangeRateSource
+  ecb: FrankfurterSource
   fallback: RatesFallback | null
 }
 
@@ -61,7 +63,7 @@ export function readRatesSetup(
   fetch?: typeof globalThis.fetch,
 ): RatesSetup {
   const baseUrl = env.get(RATES_ENV.frankfurterUrl)?.trim() || undefined
-  let ecb: ExchangeRateSource
+  let ecb: FrankfurterSource
   try {
     ecb = createFrankfurterRates({ providers: [`ECB`], baseUrl, fetch })
   } catch {
