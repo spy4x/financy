@@ -172,9 +172,8 @@ export function Changelog(
           )}
           <p class="text-sm text-muted text-pretty">
             {SITE_NAME}{" "}
-            is built by one developer, Anton Shubin, who uses it for his own products and client
-            work. It is MIT-licensed: your copy is yours, and a product takes later changes as a
-            patch (<a href={href(`/docs/products`)} class={LINK}>Building a product on Seed</a>).
+            is built in public by one developer, Anton Shubin. It is free and open source under the
+            AGPL-3.0 licence, so you can host it yourself.
           </p>
           <p class="text-sm">
             Subscribe:{" "}

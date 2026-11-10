@@ -5,7 +5,7 @@
  *
  * `deno task changelog` reads it, so a change here needs a new run.
  */
-export const CHANGELOG_START: string | null = null
+export const CHANGELOG_START: string | null = `3d267c6fde8fa39ae020bcebe94aed0c223e2a53`
 
 /**
  * Better words for the changelog (`/changelog`), by pull request number. A commit subject is
@@ -14,7 +14,4 @@ export const CHANGELOG_START: string | null = null
  *
  * The page applies these when it renders, so a change here needs no new `deno task changelog`.
  */
-export const CHANGELOG_OVERRIDES: Readonly<Record<number, string | null>> = {
-  581: `A benchmark page measures how one large group performs on the device it runs on.`,
-  627: `Seed's own blog posts load from Markdown files in the demo.`,
-}
+export const CHANGELOG_OVERRIDES: Readonly<Record<number, string | null>> = {}
