@@ -35,14 +35,19 @@ decimal above zero is refused and logged by its pair, day and source.
 
 A server stores rates from the day it first ran. An import with older dates asks for the missing
 days (`requestBackfillBefore`); requests that overlap become one, and nothing before 1999-01-04,
-the ECB's first day, is asked for. The job that fills a request is waiting for a Frankfurter
-range call in ts-libs, so for now the requests wait in `rate_backfill_requests`.
+the ECB's first day, is asked for. The requests wait in `rate_backfill_requests`.
+
+The worker's `rates.backfill` job (**Past exchange rates** in Jobs) runs every hour at minute 41.
+It takes the open requests oldest first and asks Frankfurter for each one's ECB rates in one range
+call. It stores them, skipping any rate stored already, and deletes the request in the same
+transaction. A failed call is retried, and the request stays open until a call succeeds. The paid
+fallback is never asked for past days, so a backfill costs nothing.
 
 ## Checking it
 
 `GET /api/admin/rates` returns the latest fetch of each source, the rates per day, and the
 fallback's calls this month against its cap. The admin panel's **Exchange rates** screen that
 shows them comes later, with a child issue of #93. The **Jobs** page shows each run of
-`rates.fetch`; a failed ECB call is retried there.
+`rates.fetch` and `rates.backfill`; a failed ECB call is retried there.
 
 Settings: [settings.md](../settings.md), "Exchange rates".
