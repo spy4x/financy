@@ -1,23 +1,41 @@
 import type { JSX } from "preact"
+import { useEffect } from "preact/hooks"
 import { IconDollar } from "@spy4x/preact-icons"
-import { AdminComingSoon } from "@ui/admin-frame.tsx"
+import { AdminRatesScreen } from "@ui/admin-rates-screen.tsx"
 import { useAdminText } from "@ui/i18n.ts"
-import type { AdminModule } from "../types.ts"
+import type { AdminContext, AdminModule } from "../types.ts"
+import { createRatesState, type RatesState } from "./state.ts"
 
 /** Where the Exchange rates page lives. */
 export const ADMIN_RATES_PATH = `/rates`
 
-/**
- * The Exchange rates page, a placeholder until its screen is built: the screen needs
- * `UsageMeter`, which comes with `@spy4x/preact-ui` 14 (the PR body of #93 says why).
- */
-function RatesView(): JSX.Element {
+/** One rates state per signed-in session. */
+const states = new WeakMap<AdminContext, RatesState>()
+
+function ratesState(context: AdminContext): RatesState {
+  let state = states.get(context)
+  if (!state) {
+    state = createRatesState(context.request)
+    states.set(context, state)
+  }
+  return state
+}
+
+/** The Exchange rates page, read each time it opens and on "Try again". */
+function RatesView({ context }: { context: AdminContext }): JSX.Element {
   const t = useAdminText()
+  const state = ratesState(context)
+  useEffect(() => {
+    state.refresh()
+  }, [state])
+  const read = state.read.value
   return (
-    <AdminComingSoon
-      title={t.t(`AdminRates.title`)}
-      description={t.t(`AdminRates.subtitle`)}
-      Icon={IconDollar}
+    <AdminRatesScreen
+      snapshot={read.snapshot}
+      error={read.failed ? t.t(`AdminRates.loadError`) : null}
+      pending={read.pending}
+      onRetry={() => state.refresh()}
+      navigate={context.navigate}
     />
   )
 }

@@ -1,13 +1,16 @@
 import { useEffect } from "preact/hooks"
-import { useLocation } from "wouter-preact"
+import { useLocation, useSearch } from "wouter-preact"
 import { createOnlineStatus } from "@spy4x/preact-signals/online"
 import { GroupEditorScreen, GroupTab, groupTabOf } from "@ui/group-editor-screen.tsx"
 import { memberLabel } from "@ui/group-members.tsx"
 import { useAppText } from "@ui/i18n.ts"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { PendingInvitations } from "@ui/group-invitations.tsx"
+import { GroupCurrencySection } from "@ui/group-currency.tsx"
+import { CHOOSE_CURRENCY_QUERY } from "@ui/onboarding-card.tsx"
+import { currencyOptions } from "@spy4x/platform/universal/money-core"
 import { GroupTransferForm } from "@ui/group-transfer.tsx"
-import { canManageInvitations, GroupRole } from "@domain/groups"
+import { canManageInvitations, canRename, GroupRole } from "@domain/groups"
 import type { GroupRow } from "@ui/groups-screen.tsx"
 import { moveTargetsOf } from "@ui/notes-screen.tsx"
 import { GROUP_PATHS, SCREEN_PATHS } from "@ui/progressive.tsx"
@@ -18,6 +21,7 @@ import { selectionStore } from "../state/selection.ts"
 import { billingStore } from "../state/billing.ts"
 import { invitationsStore } from "../state/invitations.ts"
 import { groupExportStore } from "../state/group-files.ts"
+import { type HouseholdSettingsStore, householdSettingsStore } from "../state/household-settings.ts"
 import { GroupBillingView } from "./BillingViews.tsx"
 import { GroupActivityView } from "./GroupActivityView.tsx"
 import { toasts } from "../state/toasts.ts"
@@ -115,6 +119,75 @@ export function GroupTransfer(
       error={ours ? team.transferError.value : null}
       onTransfer={() => void transferAndRefresh(team, groupsStore)}
       onCancel={onClose}
+    />
+  )
+}
+
+/**
+ * Saves the main currency chosen in the dialog and, when it worked, says so in a toast. Resolves
+ * to whether it saved.
+ */
+export async function saveCurrencyAndAnnounce(
+  household: Pick<HouseholdSettingsStore, "save">,
+  chosen: string,
+  notices: Pick<typeof toasts, "success">,
+  t: Translator<string>,
+): Promise<boolean> {
+  const saved = await household.save(chosen)
+  if (!saved) return false
+  const code = saved.baseCurrency
+  const name = currencyOptions(t.language, []).find((option) => option.code === code)?.name ?? code
+  notices.success({
+    title: t.t(`GroupCurrency.label`),
+    body: t.t(`GroupCurrency.saved`, { name: isolate(name), code }),
+    dataE2E: "group-currency-saved",
+  })
+  return true
+}
+
+/**
+ * The "Money" section of a group's General tab, wired to the household settings store. The
+ * address `?currency=choose` (the first step's link) opens the dialog once the settings are read,
+ * for a person who may change them. Once the read answers, read or failed, the address drops it,
+ * so a reload does not open the dialog again.
+ */
+export function GroupCurrency(
+  { groupId, group, household = householdSettingsStore }: {
+    groupId: string
+    group: GroupRow
+    /** The store to read and save through; tests pass one over a fake server. */
+    household?: HouseholdSettingsStore
+  },
+) {
+  const [, navigate] = useLocation()
+  const t = useAppText()
+  const asked = useSearch().split(`&`).includes(CHOOSE_CURRENCY_QUERY)
+  const canChange = canRename(group.role)
+  const ours = household.groupId.value === groupId
+  const view = ours ? household.view.value : null
+  useEffect(() => {
+    void household.open(groupId)
+    return () => household.reset()
+  }, [groupId])
+  const loadError = ours ? household.loadError.value : null
+  useEffect(() => {
+    if (!asked || (view === null && loadError === null)) return
+    if (view !== null && canChange) household.openDialog()
+    navigate(GROUP_PATHS.settings(groupId), { replace: true })
+  }, [asked, view !== null, loadError !== null, canChange])
+  return (
+    <GroupCurrencySection
+      view={view}
+      loadError={loadError}
+      canChange={canChange}
+      offline={!network.online.value}
+      dialogOpen={ours && household.dialog.value !== null}
+      onOpen={() => household.openDialog()}
+      onClose={() => household.closeDialog()}
+      onSave={(code) => void saveCurrencyAndAnnounce(household, code, toasts, t)}
+      saving={household.saving.value}
+      error={household.saveError.value}
+      changedElsewhere={household.changedElsewhere.value}
     />
   )
 }
@@ -309,6 +382,7 @@ function ExistingGroup({ groupId, tab }: { groupId: string; tab: GroupTab }) {
         />
       )}
       activity={<GroupActivityView groupId={groupId} />}
+      settings={group && <GroupCurrency groupId={groupId} group={group} />}
       pendingInvitations={group && (
         <PendingInvitations
           actorRole={group.role}

@@ -2061,4 +2061,36 @@ export default {
   "AdminRates.title": "為替レート",
   "AdminRates.subtitle":
     "サーバーが毎日取得したレートを取得元ごとに表示し、有料の予備ソースが今月どれだけ使われたかも示します。",
+  "AdminRates.loading": "レートを読み込み中",
+  "AdminRates.lastFetch": "前回の取得",
+  "AdminRates.sourceEcb": "ECB（Frankfurter経由）",
+  "AdminRates.sourceFallback": "{provider}（有料の予備ソース）",
+  "AdminRates.fetch": {
+    "other": "{time} · {count}件",
+  },
+  "AdminRates.jobFailed": "前回の取得は{time}に失敗しました。",
+  "AdminRates.missingTitle": "今日のレートなし",
+  "AdminRates.missingText":
+    "次の通貨には{date}のレートがありません。これらを含む合計では除外され、その旨が表示されます。",
+  "AdminRates.missingNone": "使用中のすべての通貨に{date}のレートがあります。",
+  "AdminRates.fallbackTitle": "有料の予備ソース",
+  "AdminRates.fallbackCalls": "今月の呼び出し回数",
+  "AdminRates.fallbackHint":
+    "ECBにない通貨のときだけ使われ、上限で止まります。カウントは{date}にリセットされます。",
+  "AdminRates.fallbackCapped":
+    "今月の上限に達しました。{date}まで呼び出しはありません。それまでECBにない通貨はレートなしと表示されます。",
+  "AdminRates.fallbackOffTitle": "予備ソースはオフです",
+  "AdminRates.fallbackOffText":
+    "キーが設定されていないため、ECBのレートだけを使います。オンにする方法は為替レートのガイドにあります。",
+  "AdminRates.daysTitle": "日別のレート",
+  "AdminRates.day": "日付",
+  "AdminRates.source": "取得元",
+  "AdminRates.currencies": "通貨数",
+  "AdminRates.fetchedAt": "取得日時",
+  "AdminRates.weekend": "週末はECBのレートなし",
+  "AdminRates.noFetch": "レートを取得できていません",
+  "AdminRates.emptyTitle": "まだレートがありません",
+  "AdminRates.emptyText":
+    "毎日のジョブが16:00 UTCに取得します。今すぐ取得するには、ジョブで「Exchange rates」を実行してください。",
+  "AdminRates.loadError": "レートを読み込めませんでした。接続を確認して、もう一度お試しください。",
 } satisfies Catalog

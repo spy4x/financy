@@ -1756,7 +1756,7 @@ export default {
   "AdminSystem.queueHint": {
     "other": "当有任务等待超过 {count} 分钟或有任务失败时发出警告。",
   },
-  "AdminSystem.openJobs": "未完成任务",
+  "AdminSystem.openJobs": "打开任务",
   "AdminSystem.dueNow": "待运行",
   "AdminSystem.oldest": "· 最早的创建于<when></when>",
   "AdminSystem.running": "运行中",
@@ -1976,4 +1976,34 @@ export default {
   "AdminNav.accounts": "账户",
   "AdminRates.title": "汇率",
   "AdminRates.subtitle": "服务器每天按来源获取的汇率，以及付费备用来源本月的用量。",
+  "AdminRates.loading": "正在加载汇率",
+  "AdminRates.lastFetch": "上次获取",
+  "AdminRates.sourceEcb": "欧洲央行（经 Frankfurter）",
+  "AdminRates.sourceFallback": "{provider}（付费备用来源）",
+  "AdminRates.fetch": {
+    "other": "{time} · {count} 个汇率",
+  },
+  "AdminRates.jobFailed": "上次获取在 {time} 失败。",
+  "AdminRates.missingTitle": "今天无汇率",
+  "AdminRates.missingText": "以下货币没有 {date} 的汇率。包含它们的合计会将其排除，并注明。",
+  "AdminRates.missingNone": "所有在用货币都有 {date} 的汇率。",
+  "AdminRates.fallbackTitle": "付费备用来源",
+  "AdminRates.fallbackCalls": "本月调用次数",
+  "AdminRates.fallbackHint":
+    "只在欧洲央行缺少某种货币时才调用，达到上限后停止。计数将于 {date} 重新开始。",
+  "AdminRates.fallbackCapped":
+    "已达到本月上限。{date} 之前不再调用。在此之前，欧洲央行缺少的货币将显示为无汇率。",
+  "AdminRates.fallbackOffTitle": "备用来源已关闭",
+  "AdminRates.fallbackOffText": "未设置密钥，因此只使用欧洲央行的汇率。汇率指南介绍了如何开启。",
+  "AdminRates.daysTitle": "每日汇率",
+  "AdminRates.day": "日期",
+  "AdminRates.source": "来源",
+  "AdminRates.currencies": "货币数",
+  "AdminRates.fetchedAt": "获取时间",
+  "AdminRates.weekend": "周末无欧洲央行汇率",
+  "AdminRates.noFetch": "未获取到汇率",
+  "AdminRates.emptyTitle": "还没有汇率",
+  "AdminRates.emptyText":
+    "每日任务会在 UTC 16:00 获取汇率。要立即获取，请在“任务”中运行“Exchange rates”。",
+  "AdminRates.loadError": "无法加载汇率。请检查网络连接后重试。",
 } satisfies Catalog

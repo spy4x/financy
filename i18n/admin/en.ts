@@ -1735,7 +1735,7 @@ export default {
   "AdminNav.contactLinks": "Contact links",
   "AdminNav.newsletter": "Newsletter",
   "AdminNav.jobs": "Jobs",
-  "AdminNav.rates": "Rates",
+  "AdminNav.rates": "Exchange rates",
   "AdminNav.apiTokens": "API tokens",
   "AdminNav.catalog": "Catalog",
   "AdminNewsletter.doneRemove": "{email} no longer gets the newsletter.",
@@ -2127,4 +2127,37 @@ export default {
   "AdminRates.title": "Exchange rates",
   "AdminRates.subtitle":
     "Rates the server fetched each day, by source, and what the paid fallback has used this month.",
+  "AdminRates.loading": "Loading the rates",
+  "AdminRates.lastFetch": "Last fetch",
+  "AdminRates.sourceEcb": "ECB, through Frankfurter",
+  "AdminRates.sourceFallback": "{provider} (paid fallback)",
+  "AdminRates.fetch": {
+    "one": "{time} · {count} rate",
+    "other": "{time} · {count} rates",
+  },
+  "AdminRates.jobFailed": "The last fetch failed at {time}.",
+  "AdminRates.missingTitle": "No rate today",
+  "AdminRates.missingText":
+    "These currencies have no rate for {date}. Totals that include them leave them out and say so.",
+  "AdminRates.missingNone": "Every currency in use has a rate for {date}.",
+  "AdminRates.fallbackTitle": "Paid fallback",
+  "AdminRates.fallbackCalls": "Calls this month",
+  "AdminRates.fallbackHint":
+    "It's asked only for currencies the ECB lacks, and stops at the cap. The count starts again on {date}.",
+  "AdminRates.fallbackCapped":
+    "The monthly cap is reached. No more calls until {date}. Until then, currencies the ECB lacks show as rate missing.",
+  "AdminRates.fallbackOffTitle": "Fallback is off",
+  "AdminRates.fallbackOffText":
+    "No key is set, so only ECB rates are used. The exchange rates guide says how to turn it on.",
+  "AdminRates.daysTitle": "Rates by day",
+  "AdminRates.day": "Day",
+  "AdminRates.source": "Source",
+  "AdminRates.currencies": "Currencies",
+  "AdminRates.fetchedAt": "Fetched at",
+  "AdminRates.weekend": "No ECB rates on weekends",
+  "AdminRates.noFetch": "No rates fetched",
+  "AdminRates.emptyTitle": "No rates yet",
+  "AdminRates.emptyText":
+    'The daily job fetches them at 16:00 UTC. To fetch them now, run "Exchange rates" in Jobs.',
+  "AdminRates.loadError": "Couldn't load the rates. Check your connection and try again.",
 } satisfies Catalog

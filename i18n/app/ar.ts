@@ -305,6 +305,21 @@ export default {
   "GroupEditor.timeZoneInvalid": "لا نعرف هذه المنطقة الزمنية. اختر منطقة أخرى من القائمة.",
   "GroupEditor.timeZoneChangedElsewhere":
     "غيّرها شخص آخر إلى {zone} أثناء تعديلك. احفظ لتستخدم اختيارك، أو اختر «تجاهل».",
+  "GroupCurrency.section": "المال",
+  "GroupCurrency.label": "العملة الرئيسية",
+  "GroupCurrency.hint": "تظهر المجاميع بهذه العملة لكل من في المجموعة. ويحتفظ كل مبلغ بعملته.",
+  "GroupCurrency.change": "تغيير<hidden> العملة الرئيسية</hidden>",
+  "GroupCurrency.changeNote":
+    "تغييرها لا يغيّر أي مبلغ. يبقى كل مبلغ بعملته، ويُعاد تحويل المجاميع فقط.",
+  "GroupCurrency.noRate": "لا يوجد سعر يومي هنا",
+  "GroupCurrency.use": "استخدام {name}",
+  "GroupCurrency.saved": "تظهر المجاميع الآن بـ{name} ({code}).",
+  "GroupCurrency.readOnly": "لا يمكن تغيير العملة الرئيسية إلا للمسؤولين والمالك.",
+  "GroupCurrency.offline": "تحتاج إلى اتصال لتغيير العملة الرئيسية.",
+  "GroupCurrency.failed": "تعذّر حفظ العملة الرئيسية. حاول مرة أخرى.",
+  "GroupCurrency.changedElsewhere":
+    "غيّرها شخص آخر إلى {code} أثناء اختيارك. استخدم اختيارك، أو اختر «إلغاء».",
+  "GroupCurrency.loadFailed": "تعذّر تحميل العملة الرئيسية. تحقّق من اتصالك وحاول مرة أخرى.",
   "GroupEditor.nameRequired": "أدخل اسمًا.",
   "GroupEditor.nameInvalid": "استخدم 100 حرف كحدّ أقصى، دون أسطر جديدة أو أحرف مخفية.",
   "GroupEditor.descriptionTooLong": {

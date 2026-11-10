@@ -233,6 +233,23 @@ export default {
     "このタイムゾーンは使えません。リストから別のものを選んでください。",
   "GroupEditor.timeZoneChangedElsewhere":
     "編集中に、ほかの人がこれを{zone}に変更しました。自分の選択を使うには保存を、やめるには「破棄」を押してください。",
+  "GroupCurrency.section": "お金",
+  "GroupCurrency.label": "メイン通貨",
+  "GroupCurrency.hint":
+    "グループ全員の合計がこの通貨で表示されます。各金額はそれぞれの通貨のままです。",
+  "GroupCurrency.change": "<hidden>メイン通貨を</hidden>変更",
+  "GroupCurrency.changeNote":
+    "変更しても金額は変わりません。各金額は元の通貨のままで、合計だけが換算し直されます。",
+  "GroupCurrency.noRate": "日次レートなし",
+  "GroupCurrency.use": "{name}にする",
+  "GroupCurrency.saved": "合計は{name}（{code}）で表示されるようになりました。",
+  "GroupCurrency.readOnly": "メイン通貨を変更できるのは管理者とオーナーだけです。",
+  "GroupCurrency.offline": "メイン通貨を変更するにはインターネット接続が必要です。",
+  "GroupCurrency.failed": "メイン通貨を保存できませんでした。もう一度お試しください。",
+  "GroupCurrency.changedElsewhere":
+    "選んでいる間に、ほかの人がこれを{code}に変更しました。自分の選択を使うか、「キャンセル」を押してください。",
+  "GroupCurrency.loadFailed":
+    "メイン通貨を読み込めませんでした。接続を確認して、もう一度お試しください。",
   "GroupEditor.nameRequired": "名前を入力してください。",
   "GroupEditor.nameInvalid": "改行や不可視文字を含めず、100文字以内で入力してください。",
   "GroupEditor.descriptionTooLong": {

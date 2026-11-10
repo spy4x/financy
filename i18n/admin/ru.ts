@@ -1855,7 +1855,7 @@ export default {
     "По этому адресу нет страницы админки. Проверьте, нет ли в нём опечатки, или начните со сводки.",
   "AdminNotFound.toDashboard": "Перейти к сводке",
   "AdminNav.dashboard": "Сводка",
-  "AdminNav.rates": "Курсы",
+  "AdminNav.rates": "Курсы валют",
   "AdminNav.stats": "Статистика",
   "AdminNav.system": "Система",
   "AdminNav.users": "Люди",
@@ -2328,4 +2328,39 @@ export default {
   "AdminRates.title": "Курсы валют",
   "AdminRates.subtitle":
     "Курсы, которые сервер получал каждый день, по источникам, и сколько платный резервный источник израсходовал в этом месяце.",
+  "AdminRates.loading": "Загружаем курсы",
+  "AdminRates.lastFetch": "Последнее получение",
+  "AdminRates.sourceEcb": "ЕЦБ через Frankfurter",
+  "AdminRates.sourceFallback": "{provider} (платный резервный источник)",
+  "AdminRates.fetch": {
+    "one": "{time} · {count} курс",
+    "few": "{time} · {count} курса",
+    "many": "{time} · {count} курсов",
+    "other": "{time} · {count} курса",
+  },
+  "AdminRates.jobFailed": "Последняя загрузка не удалась в {time}.",
+  "AdminRates.missingTitle": "Нет курса на сегодня",
+  "AdminRates.missingText":
+    "У этих валют нет курса на {date}. Итоги с ними считаются без них, и об этом сказано.",
+  "AdminRates.missingNone": "У всех используемых валют есть курс на {date}.",
+  "AdminRates.fallbackTitle": "Платный резервный источник",
+  "AdminRates.fallbackCalls": "Запросы в этом месяце",
+  "AdminRates.fallbackHint":
+    "К нему обращаются только за валютами, которых нет у ЕЦБ, и останавливаются на лимите. Счётчик обнулится {date}.",
+  "AdminRates.fallbackCapped":
+    "Месячный лимит исчерпан. Новых запросов не будет до {date}. До тех пор у валют, которых нет у ЕЦБ, курс будет отсутствовать.",
+  "AdminRates.fallbackOffTitle": "Резервный источник выключен",
+  "AdminRates.fallbackOffText":
+    "Ключ не задан, поэтому используются только курсы ЕЦБ. Как его включить, написано в руководстве по курсам валют.",
+  "AdminRates.daysTitle": "Курсы по дням",
+  "AdminRates.day": "День",
+  "AdminRates.source": "Источник",
+  "AdminRates.currencies": "Валюты",
+  "AdminRates.fetchedAt": "Получены",
+  "AdminRates.weekend": "Нет курсов ЕЦБ в выходные",
+  "AdminRates.noFetch": "Курсы не загружены",
+  "AdminRates.emptyTitle": "Курсов пока нет",
+  "AdminRates.emptyText":
+    "Ежедневная задача получает их в 16:00 UTC. Чтобы получить их сейчас, запустите «Exchange rates» в разделе «Задачи».",
+  "AdminRates.loadError": "Не удалось загрузить курсы. Проверьте подключение и попробуйте ещё раз.",
 } satisfies Catalog

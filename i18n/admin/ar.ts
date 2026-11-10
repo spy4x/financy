@@ -2417,4 +2417,41 @@ export default {
   "AdminRates.title": "أسعار الصرف",
   "AdminRates.subtitle":
     "الأسعار التي جلبها الخادم كل يوم، حسب المصدر، وما استهلكه المصدر الاحتياطي المدفوع هذا الشهر.",
+  "AdminRates.loading": "جارٍ تحميل الأسعار",
+  "AdminRates.lastFetch": "آخر جلب",
+  "AdminRates.sourceEcb": "البنك المركزي الأوروبي، عبر Frankfurter",
+  "AdminRates.sourceFallback": "{provider} (المصدر الاحتياطي المدفوع)",
+  "AdminRates.fetch": {
+    "zero": "{time} · {count} سعر",
+    "one": "{time} · سعر واحد",
+    "two": "{time} · سعران",
+    "few": "{time} · {count} أسعار",
+    "many": "{time} · {count} سعرًا",
+    "other": "{time} · {count} سعر",
+  },
+  "AdminRates.jobFailed": "فشل آخر جلب في {time}.",
+  "AdminRates.missingTitle": "لا سعر اليوم",
+  "AdminRates.missingText":
+    "لا يوجد سعر لهذه العملات في {date}. المجاميع التي تتضمنها تستبعدها وتشير إلى ذلك.",
+  "AdminRates.missingNone": "لكل عملة مستخدمة سعر في {date}.",
+  "AdminRates.fallbackTitle": "المصدر الاحتياطي المدفوع",
+  "AdminRates.fallbackCalls": "الطلبات هذا الشهر",
+  "AdminRates.fallbackHint":
+    "لا يُطلب إلا للعملات التي لا يغطيها البنك المركزي الأوروبي، ويتوقف عند الحد. يبدأ العدّ من جديد في {date}.",
+  "AdminRates.fallbackCapped":
+    "بلغت الحد الشهري. لا طلبات أخرى حتى {date}. وحتى ذلك الحين تظهر العملات التي لا يغطيها البنك المركزي الأوروبي بلا سعر.",
+  "AdminRates.fallbackOffTitle": "المصدر الاحتياطي متوقف",
+  "AdminRates.fallbackOffText":
+    "لم يُضبط أي مفتاح، لذا تُستخدم أسعار البنك المركزي الأوروبي فقط. يشرح دليل أسعار الصرف كيفية تشغيله.",
+  "AdminRates.daysTitle": "الأسعار حسب اليوم",
+  "AdminRates.day": "اليوم",
+  "AdminRates.source": "المصدر",
+  "AdminRates.currencies": "العملات",
+  "AdminRates.fetchedAt": "وقت الجلب",
+  "AdminRates.weekend": "لا أسعار من البنك المركزي الأوروبي في عطلة نهاية الأسبوع",
+  "AdminRates.noFetch": "لم تُجلب أي أسعار",
+  "AdminRates.emptyTitle": "لا أسعار بعد",
+  "AdminRates.emptyText":
+    "تجلبها المهمة اليومية في 16:00 UTC. لجلبها الآن، شغّل «Exchange rates» في المهام.",
+  "AdminRates.loadError": "تعذّر تحميل الأسعار. تحقّق من اتصالك وحاول مرة أخرى.",
 } satisfies Catalog

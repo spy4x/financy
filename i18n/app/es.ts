@@ -270,6 +270,24 @@ export default {
   "GroupEditor.timeZoneInvalid": "No conocemos esta zona horaria. Elige otra de la lista.",
   "GroupEditor.timeZoneChangedElsewhere":
     "Alguien cambió esto a {zone} mientras editabas. Guarda para usar la tuya o pulsa Descartar.",
+  "GroupCurrency.section": "Dinero",
+  "GroupCurrency.label": "Moneda principal",
+  "GroupCurrency.hint":
+    "Los totales se muestran en esta moneda para todos en el grupo. Cada importe conserva su propia moneda.",
+  "GroupCurrency.change": "Cambiar<hidden> la moneda principal</hidden>",
+  "GroupCurrency.changeNote":
+    "Cambiarla no modifica ningún importe. Cada uno sigue en su moneda; solo se vuelven a convertir los totales.",
+  "GroupCurrency.noRate": "Sin tipo de cambio diario aquí",
+  "GroupCurrency.use": "Usar {name}",
+  "GroupCurrency.saved": "Ahora los totales se muestran en {name} ({code}).",
+  "GroupCurrency.readOnly":
+    "Solo los administradores y el propietario pueden cambiar la moneda principal.",
+  "GroupCurrency.offline": "Necesitas conexión para cambiar la moneda principal.",
+  "GroupCurrency.failed": "No se pudo guardar la moneda principal. Inténtalo de nuevo.",
+  "GroupCurrency.changedElsewhere":
+    "Alguien cambió esto a {code} mientras elegías. Usa la tuya o pulsa Cancelar.",
+  "GroupCurrency.loadFailed":
+    "No se pudo cargar la moneda principal. Revisa tu conexión e inténtalo de nuevo.",
   "GroupEditor.nameRequired": "Escribe un nombre.",
   "GroupEditor.nameInvalid":
     "Usa como máximo 100 caracteres, sin saltos de línea ni caracteres ocultos.",
