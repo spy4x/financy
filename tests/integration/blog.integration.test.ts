@@ -55,6 +55,10 @@ import type { EmailSender } from "@spy4x/email/sender"
 import { blogBodyLength } from "@server/blog/render.ts"
 import { createAdminBlog } from "../../apps/api/routes/admin/blog.ts"
 import { applyMigrations } from "./migrations.ts"
+import { fromFileUrl } from "@std/path"
+
+/** The post files the Lighthouse run serves, the only post files Financy keeps. */
+const FIXTURE_POSTS_DIR = fromFileUrl(new URL(`../../apps/mpa/lighthouse/posts/`, import.meta.url))
 
 /**
  * The blog (#395) against a real Postgres with every migration applied: the admin writes and
@@ -1144,23 +1148,25 @@ Deno.test(`blog: Seed's post files load only in demo mode, and loading twice wri
       expect(posts).toBe(0)
     })
 
-    const files = await readSeedPosts(denoFileSystem)
+    // Financy keeps no post files, so the load reads the Lighthouse run's fixture folder.
+    const demo = { demo: true, fs: denoFileSystem, dir: FIXTURE_POSTS_DIR }
+    const files = await readSeedPosts(denoFileSystem, FIXTURE_POSTS_DIR)
     await t.step(`demo on loads every file, with its author and no account`, async () => {
-      expect(await loadDemoBlogPosts(sql, { demo: true, fs: denoFileSystem })).toBe(files.length)
-      const welcome = await bySlug(sql, `welcome-to-the-seed-blog`)
-      expect(welcome).toMatchObject({
+      expect(files.length).toBeGreaterThan(0)
+      expect(await loadDemoBlogPosts(sql, demo)).toBe(files.length)
+      const [file] = files
+      expect(await bySlug(sql, file.fields.slug)).toMatchObject({
         status: `published`,
-        authorName: `Anton Shubin`,
-        authorUrl: `https://antonshubin.com/about`,
+        authorName: file.author,
       })
       expect((await listPublicPosts(sql, null)).map((post) => post.slug)).toContain(
-        `welcome-to-the-seed-blog`,
+        file.fields.slug,
       )
     })
 
     await t.step(`a second load writes nothing`, async () => {
       const before = await sql`SELECT * FROM blog_posts ORDER BY id`
-      expect(await loadDemoBlogPosts(sql, { demo: true, fs: denoFileSystem })).toBe(0)
+      expect(await loadDemoBlogPosts(sql, demo)).toBe(0)
       expect(await sql`SELECT * FROM blog_posts ORDER BY id`).toEqual(before)
     })
   })

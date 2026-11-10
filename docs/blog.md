@@ -15,7 +15,7 @@ Operators write posts in the admin app; the public website shows the published o
 | `libs/domain/blog/sharing.ts`, `libs/server/blog/postgres-sharing-repository.ts` | Sharing channels, each post's checklist and its results ([below](#sharing-channels)). |
 | `libs/server/blog/blog-share-results-job.ts` | The hourly `blog.share-results` job, which reads each posted copy's numbers ([below](#sharing-results)). |
 | `libs/server/blog/social-texts.ts`         | The LinkedIn, Telegram and X texts of a post, printed by `deno task blog:social` ([below](#channel-texts)). |
-| `apps/mpa/blog-covers.ts`, `apps/mpa/screenshots/blog-og.ts` | Covers as the pages draw them, and the link-preview cards of Seed's own posts ([below](#covers-and-link-previews)). |
+| `apps/mpa/blog-covers.ts`                  | Covers as the pages draw them, and the link-preview cards of post files ([below](#covers-and-link-previews)). |
 | `libs/server/blog/blog-indexnow-job.ts`    | The `blog.indexnow` job, which tells search engines about a post ([below](#indexnow)). |
 | `libs/server/blog/render.ts`               | Markdown to safe HTML and the reading time. The only place a body is rendered.        |
 | `libs/domain/blog/figures.ts`              | The check of a figure tag against the figures that exist, and the figures' ids.       |
@@ -316,17 +316,15 @@ the title. Nothing is posted for you.
 A post's cover shows at the top of the post, at its real size, and beside it in the blog's list
 and in "Read next": the first row of `/blog` loads at once, the others lazily.
 
-- **Seed's own posts** keep their covers as WebP files in `libs/server/blog/seed-posts/covers/`
-  (`<slug>.webp` at 1600 px and `<slug>-640.webp`), served at `/blog/covers/<file>`; a translation
-  shares its original's. How to make one: that folder's `README.md`.
+- **A post file** keeps its cover as WebP files in `libs/server/blog/seed-posts/covers/`
+  (`<slug>.webp` at 1600 px, `<slug>-960.webp` and `<slug>-640.webp`), served at
+  `/blog/covers/<file>`; a translation shares its original's. Financy keeps no post file, so the
+  only cover there is the Lighthouse fixture post's.
 - **A post written in the admin** names an `https://` picture as its cover.
-- **The link preview.** Each of Seed's own posts has a card, 1200×630: "Seed blog", the title and
-  the reading time on the left, the cover on the right, one per language. `deno task og:blog` in
-  `apps/mpa` draws them into `libs/server/blog/seed-posts/og/`, and the website serves them at
-  `/blog/og/<slug>.jpg` as the post's `og:image`. They are files made beforehand, so no address of
-  the website draws text it was sent. Run it again after a post's title, cover or length changes;
-  `apps/mpa/og-cards.test.ts` fails while a post has no card. A post written in the admin shares its
-  cover, or the site's own image without one.
+- **The link preview.** A post file's card, 1200×630, would be `<slug>.jpg` in
+  `libs/server/blog/seed-posts/og/`, served at `/blog/og/<slug>.jpg` as the post's `og:image`.
+  Financy deleted Seed's cards and the script that drew them, so the folder is empty. A post
+  written in the admin shares its cover, or the site's own image without one.
 
 Both kinds of file are cached for a month and then checked against their ETag.
 

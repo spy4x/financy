@@ -31,3 +31,10 @@ e2e/mpa/mvp.mpa.ts
 apps/mpa/components/pricing-ways.tsx
 apps/mpa/components/pricing-demo-plans.tsx
 apps/mpa/components/pricing-demo-plans.test.tsx
+apps/mpa/changelog-overrides.ts
+libs/server/blog/seed-posts/*.md
+libs/server/blog/seed-posts/covers/*
+libs/server/blog/seed-posts/og/*
+apps/mpa/screenshots/blog-og.ts
+apps/mpa/screenshots/blog-og.html
+apps/mpa/feature-posts.test.ts

@@ -4,8 +4,6 @@ import { type } from "arktype"
 import { renderToString } from "preact-render-to-string"
 import { TEST_PRO_PLAN } from "../../libs/domain/billing/test-plans.ts"
 import { renderBlogBody } from "@server/blog/render.ts"
-import { readSeedPosts } from "@server/blog/seed-posts.ts"
-import { denoFileSystem } from "@spy4x/platform/server/deno-fs"
 import {
   feedHtml,
   figureRegistry,
@@ -14,7 +12,7 @@ import {
   readFigureFolder,
   resolveBody,
 } from "./post-figures.tsx"
-import { figureCatalog, siteTranslator } from "./languages.ts"
+import { figureCatalog, SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import { PRO_MAX_MEMBERS, PRO_PRICE } from "./islands/post/CostCalculator.tsx"
 import HostingCost, {
   fallback as hostingFallback,
@@ -123,27 +121,33 @@ describe(`feedHtml`, () => {
   })
 })
 
-describe(`Seed's own posts`, () => {
-  it(`hold at least one figure, every one draws, and each root is figure[data-live]`, async () => {
-    const figures = await postFigures()
-    let drawn = 0
-    for (const { fields } of await readSeedPosts(denoFileSystem)) {
-      const body = renderBlogBody(fields.bodyMd)
-      const { parts, problems } = resolveBody(body.segments, body.headings, figures)
+/** One tag of each figure in islands/post, as a post's body holds it. */
+const FIGURE_TAGS = [
+  `<CostCalculator members={4} />`,
+  `<HostingCost server="cx23" developers={1} />`,
+  `<OfflineSyncDemo />`,
+]
 
-      expect({ file: fields.slug, problems: [...body.problems, ...problems] })
-        .toEqual({ file: fields.slug, problems: [] })
-      for (const part of parts) {
+describe(`a post's figures`, () => {
+  it(`draw in every site language, each root figure[data-live]`, async () => {
+    const figures = await postFigures()
+    expect(FIGURE_TAGS.map((tag) => tag.slice(1).split(/[ />]/)[0]).sort())
+      .toEqual([...figures.keys()].sort())
+    const body = renderBlogBody(`Intro.\n\n${FIGURE_TAGS.join(`\n\n`)}\n`)
+    const { parts, problems } = resolveBody(body.segments, body.headings, figures)
+    expect([...body.problems, ...problems]).toEqual([])
+    const shown = parts.filter((part) => part.kind === `figure`)
+    expect(shown).toHaveLength(FIGURE_TAGS.length)
+    for (const language of SITE_LANGUAGES) {
+      for (const part of shown) {
         if (part.kind !== `figure`) continue
         const Island = part.figure.default
         const html = renderToString(
-          <Island {...islandProps(part, fields.language, figureCatalog(fields.language))} />,
+          <Island {...islandProps(part, language, figureCatalog(language))} />,
         )
         expect(html).toMatch(new RegExp(`^<figure id="${part.id}"[^>]* data-live="false"`))
-        drawn++
       }
     }
-    expect(drawn).toBeGreaterThan(0)
   })
 })
 

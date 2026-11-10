@@ -32,7 +32,7 @@ const TIMING_SENSITIVE = [
 
 /**
  * libs/ui's interaction tests load happy-dom, whose WebSocket package reads the two WS_* variables;
- * the blog's tests read Seed's own posts.
+ * the blog's tests read its post-file folder, which Financy keeps empty.
  */
 const APP_FLAGS = [
   `--allow-env=WS_NO_BUFFER_UTIL,WS_NO_UTF_8_VALIDATE`,

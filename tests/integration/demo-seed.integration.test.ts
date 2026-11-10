@@ -36,6 +36,7 @@ import {
 import { KEPT_TABLES, wipeDatabase } from "../../apps/worker/demo/wipe.ts"
 import { readSeedPosts, upsertSeedPosts } from "@server/blog/seed-posts.ts"
 import { denoFileSystem } from "@spy4x/platform/server/deno-fs"
+import { fromFileUrl } from "@std/path"
 import { SAMPLE_CONTACT_LINKS, seedSampleContactLinks } from "@server/contact-links/sample-links.ts"
 import { SAMPLE_CHANNELS, seedSampleSharing } from "@server/blog/sample-sharing.ts"
 import { isDemoSeeded, resetDemo } from "../../apps/worker/demo/run.ts"
@@ -530,8 +531,12 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     await sql`INSERT INTO backup_status (target, succeeded_at) VALUES ('database', now())`
     const [{ before }] = await sql<{ before: number }[]>`SELECT max(id) AS before FROM users`
-    // The website's real posts, loaded from their files.
-    const seedPosts = await readSeedPosts(denoFileSystem)
+    // Posts loaded from files: Financy keeps none, so the Lighthouse run's fixture post.
+    const seedPosts = await readSeedPosts(
+      denoFileSystem,
+      fromFileUrl(new URL(`../../apps/mpa/lighthouse/posts/`, import.meta.url)),
+    )
+    expect(seedPosts.length).toBeGreaterThan(0)
     await upsertSeedPosts(sql, seedPosts)
     // A live post moved with "Change URL": its old address is the website's too (#418).
     await sql`

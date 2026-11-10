@@ -1,10 +1,7 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { App } from "@spy4x/preact-server"
-import { denoFileSystem } from "@spy4x/platform/server/deno-fs"
-import { readSeedPosts } from "@server/blog/seed-posts.ts"
-import { CARDS, handler } from "./routes/blog/og/[file].ts"
-import { ogCard } from "./blog-covers.ts"
+import { handler } from "./routes/blog/og/[file].ts"
 import type { State } from "./utils.ts"
 
 const info = {
@@ -15,30 +12,11 @@ const info = {
 const serve = new App<State>().get("/blog/og/:file", handler.GET!).handler()
 const get = (name: string) => serve(new Request(`https://www.example.com/blog/og/${name}`), info)
 
-describe("the link-preview cards of Seed's posts (#733)", () => {
-  it("has a card for every Seed post, at the address its page shares", async () => {
-    const posts = await readSeedPosts(denoFileSystem)
-    // A test that finds no post proves nothing.
-    expect(posts.length).toBeGreaterThan(0)
-    const missing = posts.filter(({ fields, coverFile }) => {
-      const card = ogCard({ slug: fields.slug, coverFile })
-      return card === null || !CARDS.names.has(card.src.replace(`/blog/og/`, ``))
-    }).map(({ file }) => file)
-    expect(missing).toEqual([])
-  })
-
-  it("serves a card as JPEG with a month in caches and an ETag", async () => {
-    const response = await get(`welcome-to-the-seed-blog.jpg`)
-    expect(response.status).toBe(200)
-    expect(response.headers.get(`content-type`)).toBe(`image/jpeg`)
-    expect(response.headers.get(`cache-control`)).toBe(`public, max-age=2592000, must-revalidate`)
-    expect(response.headers.get(`etag`)).toBeTruthy()
-    await response.body?.cancel()
-  })
-
+// Financy's posts are written in the admin app and have no card file, so the folder holds none.
+describe("the blog's link-preview card files (#733)", () => {
   it("answers 404 for a name it does not hold, and for one that climbs out of the folder", async () => {
     for (
-      const name of [`no-such-post.jpg`, `welcome-to-the-seed-blog.png`, `..%2FREADME.md`]
+      const name of [`no-such-post.jpg`, `README.jpg`, `..%2FREADME.md`, `..%2F..%2Fseed-posts.ts`]
     ) {
       const response = await get(name)
       expect(response.status).toBe(404)
