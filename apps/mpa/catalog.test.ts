@@ -252,7 +252,7 @@ describe("a category page", () => {
       { "@type": `ListItem`, position: 1, url: `${site}/jackets/zip-jacket` },
     ])
     expect(node(body, `BreadcrumbList`)?.itemListElement).toEqual([
-      { "@type": `ListItem`, position: 1, name: `Seed`, item: `${site}/` },
+      { "@type": `ListItem`, position: 1, name: `Financy`, item: `${site}/` },
       { "@type": `ListItem`, position: 2, name: `Catalog`, item: `${site}/catalog` },
       { "@type": `ListItem`, position: 3, name: `Jackets`, item: `${site}/catalog/jackets` },
     ])
@@ -288,8 +288,8 @@ describe("an item page", () => {
     expect(content).toContain(`fill="#7a5230"`)
     expect(content).toContain(`href="?colour=${BROWN}#options"`)
     expect(content).toContain(`id="options"`)
-    expect(body).toContain(`<title>Brown zip jacket · Seed</title>`)
-    expect(body).toContain(`<meta property="og:title" content="Brown zip jacket · Seed"`)
+    expect(body).toContain(`<title>Brown zip jacket · Financy</title>`)
+    expect(body).toContain(`<meta property="og:title" content="Brown zip jacket · Financy"`)
     expect(text).toContain(`A warm jacket with a zip. Lined.`)
     expect(text).toContain(`Material Wool Care Dry clean only`)
     expect(text).not.toContain(`Fit`)
@@ -315,7 +315,7 @@ describe("an item page", () => {
       })
     }
     expect(node(body, `BreadcrumbList`)?.itemListElement).toEqual([
-      { "@type": `ListItem`, position: 1, name: `Seed`, item: `${site}/` },
+      { "@type": `ListItem`, position: 1, name: `Financy`, item: `${site}/` },
       { "@type": `ListItem`, position: 2, name: `Catalog`, item: `${site}/catalog` },
       { "@type": `ListItem`, position: 3, name: `Jackets`, item: `${site}/catalog/jackets` },
       {
@@ -429,7 +429,7 @@ describe("the catalog switched off", () => {
     expect((await get(`/jackets/zip-jacket`)).status).toBe(404)
     expect((await get(`/catalog/photos/${COVER_ID}/960.webp`)).status).toBe(404)
     const map = (await get(`/sitemap.xml`)).body
-    expect(map).toContain(`<loc>${site}/pricing</loc>`)
+    expect(map).toContain(`<loc>${site}/privacy</loc>`)
     expect(map).not.toContain(`<loc>${site}/catalog`)
     expect(map).not.toContain(`zip-jacket`)
     expect((await get(`/llms.txt`)).body).not.toContain(`Catalog`)
@@ -535,7 +535,6 @@ describe("the website's routes", () => {
     const expected: Record<string, string> = {
       "/blog/some-post": `./routes/[[lang]]/blog/[slug].tsx`,
       "/docs/catalog": `./routes/[[lang]]/docs/[slug].tsx`,
-      "/features/admin": `./routes/features/admin.ts`,
       "/features/realtime": `./routes/[[lang]]/features/[slug].tsx`,
       "/de/pricing": `./routes/[[lang]]/pricing.tsx`,
       "/de/blog": `./routes/[[lang]]/blog/index.tsx`,
