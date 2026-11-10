@@ -625,4 +625,18 @@ export default {
     "Los movimientos y los presupuestos aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
   "HomeFaq.useAnswer":
     "Todavía no. El inicio de sesión, los hogares, la sincronización y las cuentas en cualquier moneda funcionan; los movimientos están en marcha.",
+  "Catalog.title": "Catálogo",
+  "Catalog.intro": "Todo lo que vendemos, con precios, tallas y colores.",
+  "Catalog.categories": "Categorías",
+  "Catalog.all": "Todo",
+  "Catalog.empty": "Aún no hay nada a la venta",
+  "Catalog.emptyLead": "Los nuevos artículos aparecerán aquí en cuanto estén listos.",
+  "Catalog.categoryIntro": "{category}: precios, tallas y colores.",
+  "CatalogItem.intro": "{item}: precio, tallas y colores.",
+  "CatalogItem.photos": "Fotos",
+  "CatalogItem.material": "Material",
+  "CatalogItem.fit": "Corte",
+  "CatalogItem.care": "Cuidados",
+  "CatalogItem.inStock": "{choice}: disponible",
+  "CatalogItem.soldOut": "{choice}: agotado",
 } satisfies Catalog

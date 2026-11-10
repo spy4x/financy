@@ -76,6 +76,7 @@ export function createOutboxProcessor(
   shareResults: JobDeps["shareResults"] = null,
   autoPost: JobDeps["autoPost"] = undefined,
   rates: JobDeps["rates"] = null,
+  notes: JobDeps["notes"] = undefined,
 ): OutboxProcessor {
   const notifier = new GroupChangeNotifier(sql)
   const deps: JobDeps = {
@@ -93,6 +94,7 @@ export function createOutboxProcessor(
     crosspost,
     shareResults,
     autoPost,
+    notes,
     fetch: fetcher,
     rates,
   }

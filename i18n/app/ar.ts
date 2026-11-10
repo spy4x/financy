@@ -2473,4 +2473,13 @@ export default {
   "OnboardingCard.accountAction": "إضافة حساب",
   "OnboardingCard.accountText": "محفظتك أو حسابك البنكي أو بطاقتك، كلٌّ بعملته.",
   "OnboardingCard.accountTitle": "أضف حسابك الأول",
+  "NoteSpreadsheet.id": "المعرّف",
+  "NoteSpreadsheet.title": "العنوان",
+  "NoteSpreadsheet.text": "النص",
+  "NoteSpreadsheet.tagIds": "معرّفات الوسوم",
+  "NoteSpreadsheet.created": "تاريخ الإنشاء",
+  "NoteSpreadsheet.updated": "آخر تعديل",
+  "GroupSpreadsheets.readme":
+    "بيانات المجموعة في جداول بيانات: ملف CSV لكل نوع من العناصر، بترميز UTF-8 مع صف للعناوين. التواريخ والأوقات بتنسيق ISO 8601 وبتوقيت UTC. لنقل المجموعة إلى تطبيق آخر، نزّل ملف JSON بدلًا من ذلك: فهو الملف الوحيد الذي يمكن استيراده.",
+  "GroupSpreadsheets.notSpreadsheets": "غير متاح كجدول بيانات (موجود في ملف JSON):",
 } satisfies Catalog

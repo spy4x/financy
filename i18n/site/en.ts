@@ -596,4 +596,18 @@ export default {
   "HomeFaq.stopsAnswer":
     "The code is AGPL‑3.0 on GitHub, so anyone can keep running it, and you can export your data at any time.",
   "SiteFooter.aboutHint": "(opens antonshubin.com)",
+  "Catalog.title": "Catalog",
+  "Catalog.intro": "Everything for sale, with prices, sizes and colours.",
+  "Catalog.categories": "Categories",
+  "Catalog.all": "All",
+  "Catalog.empty": "Nothing for sale yet",
+  "Catalog.emptyLead": "New items appear here as soon as they are ready.",
+  "Catalog.categoryIntro": "{category}: prices, sizes and colours.",
+  "CatalogItem.intro": "{item}: price, sizes and colours.",
+  "CatalogItem.photos": "Photos",
+  "CatalogItem.material": "Material",
+  "CatalogItem.fit": "Fit",
+  "CatalogItem.care": "Care",
+  "CatalogItem.inStock": "{choice}: in stock",
+  "CatalogItem.soldOut": "{choice}: sold out",
 } satisfies Catalog

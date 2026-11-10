@@ -608,4 +608,18 @@ export default {
     "Операций и бюджетов пока нет. <status>Посмотрите, на каком этапе пересборка</status>.",
   "HomeFaq.useAnswer":
     "Пока нет. Вход, семьи, синхронизация и счета в любой валюте работают; операции сейчас в работе.",
+  "Catalog.title": "Каталог",
+  "Catalog.intro": "Всё, что есть в продаже: цены, размеры и цвета.",
+  "Catalog.categories": "Категории",
+  "Catalog.all": "Все",
+  "Catalog.empty": "Пока ничего нет в продаже",
+  "Catalog.emptyLead": "Новые товары появятся здесь, как только будут готовы.",
+  "Catalog.categoryIntro": "{category}: цены, размеры и цвета.",
+  "CatalogItem.intro": "{item}: цена, размеры и цвета.",
+  "CatalogItem.photos": "Фото",
+  "CatalogItem.material": "Материал",
+  "CatalogItem.fit": "Посадка",
+  "CatalogItem.care": "Уход",
+  "CatalogItem.inStock": "{choice}: в наличии",
+  "CatalogItem.soldOut": "{choice}: нет в наличии",
 } satisfies Catalog

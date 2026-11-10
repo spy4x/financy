@@ -67,7 +67,7 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .appWrapper(view(AppWrapper))
     .layout("*", view(Layout))
     .route("/", { component: view(Home) })
-    .route("/features", { component: view(Features) })
+    .route("{/:lang}?/features", { component: view(Features) })
     .get("{/:lang}?/features/:slug", featurePage.GET!)
     .route("/pricing", { component: view(Pricing) })
     .route("/privacy", { component: view(Privacy) })
@@ -1183,5 +1183,17 @@ describe("the public website", () => {
 
     expect(html).toContain("This website keeps no visitor statistics, and neither does the app.")
     expect(html).not.toContain("Umami")
+  })
+})
+
+describe("a demo on its own host (DEMO_ORIGIN)", () => {
+  const demo = "https://demo.example.com"
+
+  it("tells the analytics script the demo's origin, so a click on a try link counts as try-demo", async () => {
+    const app = siteWith(() => true, { ...config, demoOrigin: demo, analytics: UMAMI })
+    const { html } = await page("/", app)
+    expect(html.match(/<script[^>]*src="\/analytics\.js"[^>]*>/)?.[0]).toContain(
+      `data-demo-origin="${demo}"`,
+    )
   })
 })

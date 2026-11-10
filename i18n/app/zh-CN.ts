@@ -1909,4 +1909,13 @@ export default {
   "OnboardingCard.accountAction": "添加账户",
   "OnboardingCard.accountText": "钱包、银行账户或银行卡，各用自己的币种。",
   "OnboardingCard.accountTitle": "添加你的第一个账户",
+  "NoteSpreadsheet.id": "ID",
+  "NoteSpreadsheet.title": "标题",
+  "NoteSpreadsheet.text": "正文",
+  "NoteSpreadsheet.tagIds": "标签 ID",
+  "NoteSpreadsheet.created": "创建时间",
+  "NoteSpreadsheet.updated": "最后修改",
+  "GroupSpreadsheets.readme":
+    "此群组的数据，以电子表格形式提供：每类条目一个 CSV 文件，UTF-8 编码，首行为表头。日期和时间采用 ISO 8601 格式（UTC）。如需将群组迁移到其他应用，请改为下载 JSON 文件：只有 JSON 文件可以导入。",
+  "GroupSpreadsheets.notSpreadsheets": "以下内容没有电子表格（可在 JSON 文件中找到）：",
 } satisfies Catalog

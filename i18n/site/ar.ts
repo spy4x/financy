@@ -595,4 +595,18 @@ export default {
     "المعاملات والميزانيات لم تُبنَ بعد. <status>اطّلع على مرحلة إعادة البناء</status>.",
   "HomeFaq.useAnswer":
     "ليس بعد. تسجيل الدخول والأُسر والمزامنة والحسابات بأي عملة تعمل، والمعاملات قيد البناء الآن.",
+  "Catalog.title": "الكتالوج",
+  "Catalog.intro": "كل ما نبيعه، مع الأسعار والمقاسات والألوان.",
+  "Catalog.categories": "الفئات",
+  "Catalog.all": "الكل",
+  "Catalog.empty": "لا يوجد شيء للبيع بعد",
+  "Catalog.emptyLead": "ستظهر المنتجات الجديدة هنا فور جاهزيتها.",
+  "Catalog.categoryIntro": "{category}: الأسعار والمقاسات والألوان.",
+  "CatalogItem.intro": "{item}: السعر والمقاسات والألوان.",
+  "CatalogItem.photos": "الصور",
+  "CatalogItem.material": "الخامة",
+  "CatalogItem.fit": "القَصّة",
+  "CatalogItem.care": "العناية",
+  "CatalogItem.inStock": "{choice}: متوفر",
+  "CatalogItem.soldOut": "{choice}: نفد من المخزون",
 } satisfies Catalog
