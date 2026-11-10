@@ -27,9 +27,9 @@ import { define } from "../../utils.ts"
 
 /** The changelog's title and description, for its head, the sitemap and `llms.txt`. */
 export const CHANGELOG_HEAD = {
-  title: `Seed changelog: what changed, month by month`,
+  title: `${SITE_NAME} changelog: what changed, month by month`,
   description:
-    `Every feature and fix merged into Seed, newest first, each linked to its pull request. Seed is built in public and changes most weeks.`,
+    `Every feature and fix merged into ${SITE_NAME}, newest first, each linked to its pull request. ${SITE_NAME} is built in public and changes most weeks.`,
 }
 
 /** The title of the monthly post a month links to once it is live. */
@@ -173,7 +173,7 @@ export function Changelog(
           <p class="text-sm text-muted text-pretty">
             {SITE_NAME}{" "}
             is built in public by one developer, Anton Shubin. It is free and open source under the
-            AGPL-3.0 licence, so you can host it yourself.
+            <span class="whitespace-nowrap">AGPL-3.0</span> licence, so you can host it yourself.
           </p>
           <p class="text-sm">
             Subscribe:{" "}
