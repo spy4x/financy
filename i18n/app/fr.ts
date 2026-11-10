@@ -865,6 +865,8 @@ export default {
   "PlanRefusalNotice.filesTitleUnnamed": "Ce groupe a atteint sa limite de fichiers",
   "PlanRefusalNotice.storageTitle": "{group} a utilisé tout son espace de stockage",
   "PlanRefusalNotice.storageTitleUnnamed": "Ce groupe a utilisé tout son espace de stockage",
+  "PlanRefusalNotice.accountsTitle": "{group} a atteint sa limite de comptes",
+  "PlanRefusalNotice.accountsTitleUnnamed": "Ce groupe a atteint sa limite de comptes",
   "PlanRefusalNotice.notesText": {
     "one":
       "Son forfait autorise jusqu’à {count} note. Les notes existantes restent lisibles et modifiables.",
@@ -872,6 +874,14 @@ export default {
       "Son forfait autorise jusqu’à {count} notes. Les notes existantes restent lisibles et modifiables.",
     "other":
       "Son forfait autorise jusqu’à {count} notes. Les notes existantes restent lisibles et modifiables.",
+  },
+  "PlanRefusalNotice.accountsText": {
+    "one":
+      "Son forfait autorise jusqu’à {count} compte. Les comptes existants restent lisibles et modifiables.",
+    "many":
+      "Son forfait autorise jusqu’à {count} comptes. Les comptes existants restent lisibles et modifiables.",
+    "other":
+      "Son forfait autorise jusqu’à {count} comptes. Les comptes existants restent lisibles et modifiables.",
   },
   "PlanRefusalNotice.membersText": {
     "one": "Son forfait autorise jusqu’à {count} membre.",

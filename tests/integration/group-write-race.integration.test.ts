@@ -117,12 +117,14 @@ for (const change of ["removal", "demotion"] as const) {
           currency: "EUR",
           startingBalance: 0,
         }
-        if (write !== "create") await accounts.create({ groupId, id, ...fields }, editor)
+        if (write !== "create") {
+          await accounts.create({ groupId, id, ...fields, allowance: null }, editor)
+        }
 
         const held = await holdMemberChange(sql, groupId, owner, editor, change)
         const at = { groupId, id, expectedVersion: 1 }
         const writing = write === "create"
-          ? accounts.create({ groupId, id, ...fields }, editor)
+          ? accounts.create({ groupId, id, ...fields, allowance: null }, editor)
           : write === "update"
           ? accounts.update({ ...at, ...fields, name: "Late" }, editor)
           : write === "archive"

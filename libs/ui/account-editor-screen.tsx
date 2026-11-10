@@ -25,6 +25,8 @@ import { FORM_WIDTH, useWaited } from "./tag-editor-screen.tsx"
 import { ACCOUNT_PATHS, type Navigate, ScreenForm } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 import { type Message, messageText } from "./message.ts"
+import { PlanRefusalNotice } from "./plan-refusal.tsx"
+import type { PlanRefusal } from "@domain/billing"
 
 /** What the account's fields show: what the person typed, or the account as saved. */
 export interface AccountFormValue {
@@ -59,6 +61,8 @@ export interface AccountFormErrors {
   name: Message | null
   currency: Message | null
   form: Message | null
+  /** The household's plan refused the new account; shown with a way to the plan. */
+  plan?: PlanRefusal | null
 }
 
 export interface AccountEditorScreenProps {
@@ -322,7 +326,9 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
               </div>
             </Stack>
           </fieldset>
-          <ErrorState message={messageText(t, errors.form)} />
+          {errors.plan
+            ? <PlanRefusalNotice groupId={group.id} refusal={errors.plan} navigate={navigate} />
+            : <ErrorState message={messageText(t, errors.form)} />}
           {showFooter && (
             <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               {account

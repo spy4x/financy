@@ -150,64 +150,69 @@ export default {
   "HomeNewsletter.hint": "You'll confirm by email first.",
   "HomeFaq.eyebrow": "Questions",
   "HomeFaq.title": "Before you start",
-  "Pricing.title": "Financy pricing: free to self-host, cloud later",
-  "Pricing.description":
-    "Financy is free to self-host under AGPL‑3.0. Running it costs one Linux server at your host's price. The paid cloud is not open yet.",
   "Pricing.crumb": "Pricing",
-  "Pricing.saving":
-    "{plan} costs {monthly} a month or {yearly} a year: {saving} less than paying monthly.",
-  "PricingFaq.paidQuestion": "Will there be a paid version?",
-  "PricingFaq.paidAnswer":
-    "Yes: a paid cloud, for people who do not want to run a server. It runs the same code, and its price will be on this page before it opens.",
-  "PricingFaq.serverQuestion": "What does a server cost?",
-  "PricingFaq.serverAnswer":
-    "Whatever your host charges for one Linux machine with Docker. Financy has no per-user fees of its own.",
-  "PricingFaq.oweQuestion": "Can I change the code?",
-  "PricingFaq.oweAnswer":
-    "Yes. AGPL‑3.0 lets you change it and run it. If you offer your changed version to others over a network, you share its source under the same licence.",
   "PricingHero.eyebrow": "Pricing",
-  "PricingHero.title": "Financy is free to self-host. Here is what it costs to run.",
-  "PricingHero.lead":
-    "Financy is a free, open-source (AGPL‑3.0) finance tracker. Self-hosted, you pay only for the server it runs on. The paid cloud is not open yet.",
   "PricingFaq.title": "About the price",
-  "PricingWays.eyebrow": "What you pay",
-  "PricingWays.title": "What self-hosting Financy costs",
-  "PricingWays.lead": "The code is free under AGPL‑3.0, with no licence key and nothing held back.",
-  "PricingWays.useTitle": "Self-host Financy",
-  "PricingWays.useUnit": "AGPL‑3.0 licence, no account",
-  "PricingWays.useText":
-    "The full source under AGPL‑3.0, every feature, every update, for you and your household.",
-  "PricingWays.runTitle": "Run it in production",
-  "PricingWays.runPrice": "One server",
-  "PricingWays.runUnit": "at your host's price",
-  "PricingWays.runAction": "Read the deploy guide",
-  "PricingWays.runText":
-    "Financy runs on one Linux server you rent or own. It needs an email provider to send the sign-up and sign-in codes; Google or GitHub sign-in is optional. Each bills you directly.",
-  "DemoPlans.eyebrow": "Billing, working",
-  "DemoPlans.title": "The demo's plans: an example of the billing you get",
-  "DemoPlans.noticeTitle": "These are not Seed's prices",
-  "DemoPlans.notice":
-    "These are the demo app's plans, read from its plan catalog, so you can try checkout, trials and per-member billing. The demo starts you in a guest account; checkout asks you to add a sign-in method first. Your product sets its own plans in one file, <code>libs/domain/billing</code>.",
-  "DemoPlans.choose": "Try in the demo",
-  "DemoPlans.chooseName": "Try in the demo: {name}",
-  "DemoPlans.recommended": "Recommended",
-  "DemoPlans.member": "member",
-  "DemoPlans.trial": {
-    "one": "The first {count} day free",
-    "other": "The first {count} days free",
+  "Pricing.title": "Financy pricing: cloud {monthly} a month, self-hosting free",
+  "Pricing.description":
+    "The Financy cloud costs {monthly} a month or {yearly} a year per household, up to {members} members, with a {days}-day money-back guarantee. Self-hosting is free under AGPL‑3.0.",
+  "PricingHero.title": "{monthly} a month for your whole household",
+  "PricingHero.lead":
+    "Or {yearly} a year, for up to {members} people, and inviting your partner never costs more. Self-hosting is free under AGPL‑3.0.",
+  "PricingHousehold.description": "The cloud, run for you",
+  "PricingHousehold.price": "{monthly} a month",
+  "PricingHousehold.yearly": {
+    "one": "or {yearly} a year, {count} month free",
+    "other": "or {yearly} a year, {count} months free",
   },
-  "DemoPlans.start":
-    "In the demo you start on Free and change the plan on your group's billing page.",
-  "DemoPlan.freeDescription": "For trying things out.",
-  "DemoPlan.freeNotes": "Up to 10 notes",
-  "DemoPlan.freeMembers": "Up to 3 members",
-  "DemoPlan.freeFiles": "100 files, 200 MB in all",
-  "DemoPlan.proDescription": "For a group that relies on it.",
-  "DemoPlan.proBilled": "Billed per member, the owner included",
-  "DemoPlan.proNotes": "Unlimited notes",
-  "DemoPlan.proFiles": "Unlimited files, 10 GB in all",
-  "DemoPlan.proMembers": "Up to 50 members",
-  "DemoPlan.proRoles": "Promote members to editor or admin",
+  "PricingHousehold.members": "Up to {members} people, each with their own login",
+  "PricingHousehold.partner": "Inviting your partner never costs more",
+  "PricingHousehold.devices": "Live on every device, and readable offline",
+  "PricingHousehold.export": "Export your household to a file at any time",
+  "PricingHousehold.noServer": "No server to look after",
+  "PricingHousehold.action": "Create an account",
+  "PricingHousehold.payment":
+    "You pay when you sign up, by card through Stripe. {days}-day money-back guarantee.",
+  "PricingHousehold.currency": "Prices in US dollars. VAT is added at checkout where it applies.",
+  "PricingSelfHost.name": "Self-host",
+  "PricingSelfHost.description": "AGPL‑3.0, on your own server",
+  "PricingSelfHost.price": "Free",
+  "PricingSelfHost.sameCode": "The same code as the cloud",
+  "PricingSelfHost.noLimit": "No limit on members",
+  "PricingSelfHost.server": "Runs on one Linux server with Docker Compose",
+  "PricingSelfHost.data": "Your data stays on your server",
+  "PricingSelfHost.github": "Read the code on GitHub",
+  "PricingSelfHost.deploy": "Read the deploy guide",
+  "PricingPromise.membersTitle": "Up to {members} members",
+  "PricingPromise.membersText": "Inviting your partner costs nothing more.",
+  "PricingPromise.refundTitle": "{days}-day money-back guarantee",
+  "PricingPromise.refundText":
+    "Email {email} within {days} days of your first payment for a full refund.",
+  "PricingPromise.keepTitle": "Stop paying, keep your data",
+  "PricingPromise.keepText": "Read, edit and export it; only adding new entries stops.",
+  "PricingPromise.moveTitle": "Move to your own server",
+  "PricingPromise.moveText": "Export your household and import it on your own server.",
+  "PricingFaq.trialQuestion": "Is there a free trial?",
+  "PricingFaq.trialAnswer":
+    "No. You pay when you create an account. If Financy is not right for you, email {email} within {days} days of that first payment for a full refund. If you would rather not pay at all, self-host it for free.",
+  "PricingFaq.partnerQuestion": "Does inviting my partner cost more?",
+  "PricingFaq.partnerAnswer":
+    "No. The price is per household, not per person. Up to {members} people share one plan, each with their own login.",
+  "PricingFaq.stopQuestion": "What happens if I stop paying?",
+  "PricingFaq.stopAnswer":
+    "Your data stays. Everyone in the household can still open it, edit it and export it. Only adding anything new needs the plan again.",
+  "PricingFaq.moveQuestion": "Can I move from the cloud to my own server?",
+  "PricingFaq.moveAnswer":
+    "Yes. The household's owner exports it to a file, and you import that file on your server as a new household.",
+  "PricingFaq.selfQuestion": "Is the self-hosted version missing anything?",
+  "PricingFaq.selfAnswer":
+    "No. It is the same code with no limit on members. You run the server and its updates yourself.",
+  "PricingFaq.cancelQuestion": "Can I cancel at any time?",
+  "PricingFaq.cancelAnswer":
+    "Yes, in your household's Billing settings. The plan runs until the end of the period you paid for.",
+  "PricingFaq.taxQuestion": "Which currency do I pay in, and what about tax?",
+  "PricingFaq.taxAnswer":
+    "You pay in US dollars. Where the law requires it, VAT or sales tax is added at checkout, and you see the total before you pay.",
   "FeatureTierSettled.eyebrow": "Works today",
   "FeatureTierSettled.title": "The ground your household's money will sit on",
   "FeatureTierSettled.lead":

@@ -19,9 +19,13 @@ import {
 } from "@domain/accounts"
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
+import { PostgresGroupPorter } from "@server/groups/postgres-group-porter.ts"
+import { PORTABLE_AGGREGATES } from "../../apps/api/services/db-base.ts"
 import { purgeDeletedAccounts } from "@server/accounts/purge-deleted-accounts.ts"
 import { readAdminAccounts } from "@server/accounts/admin-accounts.ts"
 import { createSessionGate } from "../../apps/api/cqrs/session-gate.ts"
+import { createEntitlementGate } from "../../apps/api/cqrs/entitlement-gate.ts"
+import { ENTITLEMENT_NEEDS } from "../../apps/api/cqrs/entitlement-needs.ts"
 import {
   createAccountArchiveHandler,
   createAccountCreateHandler,
@@ -35,6 +39,7 @@ import {
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { team, withSchema } from "./group-team.ts"
 import { expectVersion7Ids } from "./ids.ts"
+import { testUsage } from "../../libs/domain/billing/test-plans.ts"
 
 /**
  * Accounts against a real Postgres built from schema.sql, through the handlers the API puts on
@@ -57,6 +62,14 @@ function buses(sql: postgres.Sql) {
   const dependencies = { accounts: new PostgresAccountRepository(sql), groups: { roleOf } }
   const commands = new CommandBus()
   commands.use(createSessionGate([]))
+  // As the API wires it, with billing off: these steps are about accounts. The plan's re-count
+  // under the household lock has its own step below.
+  commands.use(createEntitlementGate({
+    billingEnabled: false,
+    planOf: () => Promise.reject(new Error("billing is off")),
+    roleOf,
+    usage: testUsage(),
+  }, ENTITLEMENT_NEEDS))
   commands.register(AccountCreateCommand, createAccountCreateHandler(dependencies))
   commands.register(AccountUpdateCommand, createAccountUpdateHandler(dependencies))
   commands.register(AccountArchiveCommand, createAccountArchiveHandler(dependencies))
@@ -67,7 +80,7 @@ function buses(sql: postgres.Sql) {
   queries.use(createSessionGate([]))
   queries.register(AccountListQuery, createAccountListHandler(dependencies))
   queries.register(AccountGetQuery, createAccountGetHandler(dependencies))
-  return { commands, queries }
+  return { commands, queries, accounts: dependencies.accounts }
 }
 
 const fields = { name: "Main account", kind: AccountKind.BANK, currency: "USD", startingBalance: 0 }
@@ -311,6 +324,54 @@ Deno.test("accounts against Postgres", async (t) => {
       `
       expect(count).toBe(ACCOUNT_MAX_PER_GROUP)
     })
+
+    await t.step("the plan's cap holds when two creates race for its last place", async () => {
+      const { groupId, owner, editor } = await team(sql)
+      const { accounts } = buses(sql)
+      // The gate counted 0 for both, so each arrives with room for one: only the count under the
+      // household lock sees the other.
+      const write = (userId: number) =>
+        accounts.create({ groupId, id: uuidV7(), ...fields, allowance: 1 }, userId)
+
+      const outcomes = await Promise.allSettled([write(owner), write(editor)])
+
+      expect(outcomes.map((outcome) => outcome.status).sort()).toEqual(["fulfilled", "rejected"])
+      const rejected = outcomes.find((outcome) => outcome.status === "rejected")
+      expect((rejected as PromiseRejectedResult).reason).toMatchObject({
+        code: "PLAN_LIMIT_REACHED",
+      })
+      const [{ count }] = await sql<{ count: number }[]>`
+        SELECT count(*)::int AS count FROM accounts WHERE group_id = ${groupId}
+      `
+      expect(count).toBe(1)
+    })
+
+    await t.step(
+      "an imported household file counts its accounts against the new household's plan, refused whole past the cap",
+      async () => {
+        const { groupId, owner } = await team(sql)
+        await create(owner, groupId, { name: "Bank" })
+        await create(owner, groupId, { name: "Cash" })
+        const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+        let text = ""
+        for await (const piece of (await porter.exportGroup(groupId, owner)).chunks) text += piece
+        const file = JSON.parse(text)
+        const groupCount = async () =>
+          (await sql<{ count: number }[]>`SELECT count(*)::int AS count FROM groups`)[0].count
+        const before = await groupCount()
+
+        expect(
+          await refusal(porter.importGroup({ file, name: null }, owner, { maxAccounts: 1 })),
+        ).toMatchObject({ code: "PLAN_LIMIT_REACHED", entitlement: "maxAccounts", limit: 1 })
+        expect(await groupCount()).toBe(before)
+
+        const { group } = await porter.importGroup({ file, name: null }, owner, { maxAccounts: 2 })
+        const [{ count }] = await sql<{ count: number }[]>`
+          SELECT count(*)::int AS count FROM accounts WHERE group_id = ${group.id}
+        `
+        expect(count).toBe(2)
+      },
+    )
 
     await t.step(
       "a retried create is answered with the first account and stores one row",

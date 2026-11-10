@@ -31,6 +31,7 @@ import { DOC_SLUGS } from "./docs-site.ts"
 import { localePath, pathLanguage, SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import type { MpaConfig } from "./config.ts"
 import type { State } from "./utils.ts"
+import { findPlan, PRO_PLAN_ID } from "@domain/billing"
 
 /** Every address of `pages` the sitemap lists, in its order: each language of a translated page. */
 const everyLanguage = (pages: readonly SitePage[]) =>
@@ -50,6 +51,9 @@ const info = {
   remoteAddr: { transport: "tcp", hostname: "192.0.2.7", port: 4000 },
   completed: Promise.resolve(),
 } as Deno.ServeHandlerInfo<Deno.NetAddr>
+
+/** The plan /pricing sells, read from the catalog the page reads. */
+const HOUSEHOLD = findPlan(PRO_PLAN_ID)!
 
 const neverCalled = () => Promise.reject(new Error("the website called the API"))
 
@@ -261,12 +265,10 @@ describe("the public website", () => {
     }
   })
 
-  it("opens the deploy guide itself from Read the deploy guide on /pricing", async () => {
+  it("opens the website's deploy guide from Read the deploy guide on /pricing", async () => {
     const { html } = await page("/pricing")
 
-    expect(hrefOf(linkNamed(html, "Read the deploy guide"))).toBe(
-      `${REPOSITORY_URL}/blob/main/docs/deploy.md`,
-    )
+    expect(hrefOf(linkNamed(html, "Read the deploy guide"))).toBe("/docs/deploy")
   })
 
   it("starts every page with a link that skips to the main content, then one header, main and footer", async () => {
@@ -337,12 +339,27 @@ describe("the public website", () => {
     })
   }
 
-  it("opens the lead of /pricing with one sentence that says what Financy is", async () => {
+  it("shows the Household plan's prices, member cap and guarantee from the plan catalog on /pricing", async () => {
     const { html } = await page("/pricing")
-    const lead = html.slice(html.indexOf("</h1>")).match(/<p\b[^>]*>([\s\S]*?)<\/p>/)![1]
-      .replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim()
+    const monthly = `$${HOUSEHOLD.amount / 100}`
+    const yearly = `$${HOUSEHOLD.yearlyAmount! / 100}`
+    const months = (HOUSEHOLD.amount * 12 - HOUSEHOLD.yearlyAmount!) / HOUSEHOLD.amount
+    const members = HOUSEHOLD.entitlements.limits.maxMembers
+    const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")
 
-    expect(lead).toMatch(/^Financy is a free, open-source \(AGPL\u20113\.0\) finance tracker\./)
+    expect(html).toContain(
+      `<title>Financy pricing: cloud ${monthly} a month, self-hosting free</title>`,
+    )
+    expect(headingOne(html)).toBe(`${monthly} a month for your whole household`)
+    expect(text).toContain(`Or ${yearly} a year, for up to ${members} people,`)
+    expect(text).toContain(`${monthly} a month or ${yearly} a year, ${months} months free`)
+    expect(text).toContain(`${HOUSEHOLD.refundDays}-day money-back guarantee`)
+    for (const key of ["description", "og:description"]) {
+      expect(metaContent(html, key), key).toContain(
+        `costs ${monthly} a month or ${yearly} a year per household, up to ${members} members, ` +
+          `with a ${HOUSEHOLD.refundDays}-day money-back guarantee.`,
+      )
+    }
   })
 
   it("calls 2FA, groups and per-member billing by one name, the app's, on every page", async () => {
@@ -533,31 +550,49 @@ describe("the public website", () => {
     expect(await response.text()).toContain("prefers-color-scheme")
   })
 
-  it("names no price above $0 in the pricing page's description", async () => {
+  it("links the Household card to the app's sign-up and the Self-host card to GitHub, each named for Umami", async () => {
     const { html } = await page("/pricing")
 
-    for (const key of ["description", "og:description"]) {
-      const description = metaContent(html, key)!
-      expect(description, key).toContain("free")
-      expect(description.match(/\$\s?[\d,.]+/g) ?? [], key).toEqual(
-        description.match(/\$0\b/g) ?? [],
-      )
-    }
+    const signUp = html.match(/<a[^>]*data-e2e="pricing-signup"[^>]*>/)?.[0]
+    expect(hrefOf(signUp)).toBe(`${spa}/sign-up`)
+    expect(signUp).toContain(`data-umami-event="signup"`)
+    expect(signUp).toContain(`data-umami-event-from="pricing"`)
+    const github = html.match(/<a[^>]*data-e2e="pricing-github"[^>]*>/)?.[0]
+    expect(hrefOf(github)).toBe(REPOSITORY_URL)
+    expect(github).toContain(`data-umami-event="github"`)
+    expect(github).toContain(`data-umami-event-from="pricing"`)
   })
 
-  it("offers only self-hosted Financy, at no cost, in the pricing page's structured data", async () => {
+  it("offers self-hosting at no cost and the Household plan monthly and yearly, before tax, in the pricing page's structured data", async () => {
     const graph = jsonLdGraph((await page("/pricing")).html)
+    const paid = (period: string, amount: number) => ({
+      "@type": "Offer",
+      name: `Household, ${period === "P1M" ? "monthly" : "yearly"}`,
+      description: HOUSEHOLD.description,
+      price: amount / 100,
+      priceCurrency: "USD",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: amount / 100,
+        priceCurrency: "USD",
+        billingDuration: period,
+        valueAddedTaxIncluded: false,
+      },
+    })
 
     const software = graph.find((entity) => isType(entity, "SoftwareApplication"))!
-    expect(software.offers).toEqual({
-      "@type": "Offer",
-      name: "Self-hosted",
-      description: "Free to run on your own server under AGPL-3.0.",
-      price: 0,
-      priceCurrency: "USD",
-    })
-    const offers = JSON.stringify(graph).match(/"@type":"Offer"/g)
-    expect(offers).toHaveLength(1)
+    expect(software.offers).toEqual([
+      {
+        "@type": "Offer",
+        name: "Self-hosted",
+        description: "Free to run on your own server under AGPL-3.0.",
+        price: 0,
+        priceCurrency: "USD",
+      },
+      paid("P1M", HOUSEHOLD.amount),
+      paid("P1Y", HOUSEHOLD.yearlyAmount!),
+    ])
+    expect(software).not.toHaveProperty("isAccessibleForFree")
     expect(graph.map((entity) => entity["@type"])).toEqual(
       expect.arrayContaining(["Person", "FAQPage", "BreadcrumbList"]),
     )

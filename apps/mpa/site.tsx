@@ -1,5 +1,6 @@
 import type { ComponentChildren, JSX } from "preact"
 import { Head } from "@spy4x/preact-server"
+import { BillingPeriod, PAID_PLANS, periodsOf, priceOf } from "@domain/billing"
 import type { PublicContactLink } from "@domain/contact-links"
 import type { Language } from "@domain/identity"
 import { DEFAULT_SUBSCRIBER_LIST } from "@domain/subscribers"
@@ -16,6 +17,7 @@ import { SiteFooter, type SiteFooterGroup } from "@spy4x/preact-system/site-foot
 import { SiteHeader } from "@spy4x/preact-system/site-header"
 import { OnThisPage, type OnThisPageLink } from "@spy4x/preact-ui/on-this-page"
 import type { Translator } from "@spy4x/platform/universal/i18n"
+import { currencyDecimals } from "@spy4x/platform/universal/money"
 import { breadcrumbListJsonLd } from "@spy4x/platform/universal/seo"
 import { createFormatters, type Formatters } from "@spy4x/time/format"
 import { FORM_ACTIONS } from "@ui/progressive.tsx"
@@ -59,8 +61,8 @@ export const OG_IMAGES: Record<OgImageKey, { headline: string; line: string }> =
     line: `Households · live updates · offline · nine languages`,
   },
   pricing: {
-    headline: `Self-host for free, or wait for the cloud.`,
-    line: `Financy · AGPL-3.0 · the cloud is not open yet`,
+    headline: `$4 a month for your whole household.`,
+    line: `Financy · or self-host free · AGPL-3.0`,
   },
   subscribe: {
     headline: `What shipped in Financy, briefly.`,
@@ -125,6 +127,41 @@ export function softwareId(origin: string): string {
 }
 
 /**
+ * What Financy costs, as JSON-LD offers: self-hosting at no cost, then each paid plan of the catalog
+ * (`PAID_PLANS`) once per period it is sold for, its price in the currency's main unit, before tax.
+ */
+function softwareOffers(): unknown[] {
+  const paid = PAID_PLANS.flatMap((plan) =>
+    periodsOf(plan).map((period) => {
+      const yearly = period === BillingPeriod.Yearly
+      const price = priceOf(plan, period)! / 10 ** currencyDecimals(plan.currency)
+      return {
+        "@type": `Offer`,
+        name: `${plan.name}, ${yearly ? `yearly` : `monthly`}`,
+        description: plan.description,
+        price,
+        priceCurrency: plan.currency,
+        priceSpecification: {
+          "@type": `UnitPriceSpecification`,
+          price,
+          priceCurrency: plan.currency,
+          billingDuration: yearly ? `P1Y` : `P1M`,
+          valueAddedTaxIncluded: false,
+        },
+      }
+    })
+  )
+  return [{
+    "@type": `Offer`,
+    name: `Self-hosted`,
+    description: `Free to run on your own server under AGPL-3.0.`,
+    price: 0,
+    // Self-hosting is priced in the currency the paid plans are sold in, so every offer agrees.
+    priceCurrency: PAID_PLANS[0].currency,
+  }, ...paid]
+}
+
+/**
  * Financy as one JSON-LD entity: free software and its source code under one id. Every page that
  * describes the product draws this node, so all copies agree; `extra` adds what only that page
  * shows, such as the feature list or the description in the page's language.
@@ -142,16 +179,8 @@ export function softwareJsonLd(origin: string, extra: Record<string, unknown> = 
     codeRepository: REPOSITORY_URL,
     programmingLanguage: `TypeScript`,
     runtimePlatform: [`Deno`, `Node.js`, `Bun`],
-    isAccessibleForFree: true,
     author: { "@id": PERSON_JSON_LD["@id"] },
-    // Only self-hosting is offered so far; the cloud's offer comes with its price.
-    offers: {
-      "@type": `Offer`,
-      name: `Self-hosted`,
-      description: `Free to run on your own server under AGPL-3.0.`,
-      price: 0,
-      priceCurrency: `USD`,
-    },
+    offers: softwareOffers(),
     ...extra,
   }
 }

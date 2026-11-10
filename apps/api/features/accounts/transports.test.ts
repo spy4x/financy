@@ -48,7 +48,7 @@ import {
 import { createAccountOperations } from "./operations.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { checkedError } from "../../_testing/api-error.ts"
-import { TEST_PLANS } from "../../../../libs/domain/billing/test-plans.ts"
+import { TEST_PLANS, testUsage } from "../../../../libs/domain/billing/test-plans.ts"
 
 /**
  * Accounts over every transport, as the API wires them: one pair of buses, the gates and the real
@@ -87,10 +87,7 @@ function stack() {
     plans: TEST_PLANS,
     planOf: () => Promise.resolve(FREE_PLAN_ID),
     roleOf: (group, user) => groups.roleOf(group, user),
-    usage: {
-      maxNotes: () => Promise.resolve(0),
-      maxMembers: () => Promise.reject(new Error("not part of this test")),
-    },
+    usage: testUsage({ maxAccounts: () => Promise.resolve(0) }),
   }, ENTITLEMENT_NEEDS))
   commands.register(AccountCreateCommand, createAccountCreateHandler(dependencies))
   commands.register(AccountUpdateCommand, createAccountUpdateHandler(dependencies))
@@ -226,6 +223,8 @@ const fields = {
   startingBalance: 1234,
 }
 const create = { groupId, id: accountId, ...fields }
+/** The same account, as the repository takes it straight: no plan cap applies. */
+const input = { ...create, allowance: null }
 
 /** Every write an editor can send about the account at version 1. */
 function writes(id = accountId, group = groupId): [string, Record<string, unknown>][] {
@@ -243,7 +242,7 @@ for (const [via, open] of TRANSPORTS) {
   describe(`accounts over ${via}`, () => {
     it("refuses every write of a viewer and changes nothing (R16)", async () => {
       const s = stack()
-      await s.accounts.create(create, OWNER)
+      await s.accounts.create(input, OWNER)
       s.accounts.writes = 0
       const as = open(s, VIEWER)
 
@@ -260,16 +259,16 @@ for (const [via, open] of TRANSPORTS) {
 
     it("lets a viewer list the household's accounts by name, each with its balance", async () => {
       const s = stack()
-      await s.accounts.create(create, OWNER)
+      await s.accounts.create(input, OWNER)
       await s.accounts.create({
-        ...create,
+        ...input,
         id: secondAccountId,
         name: "Cash",
         startingBalance: 500,
         currency: "JPY",
       }, OWNER)
       await s.accounts.create(
-        { ...create, groupId: otherGroupId, id: uuidV7(), name: "Other" },
+        { ...input, groupId: otherGroupId, id: uuidV7(), name: "Other" },
         OWNER,
       )
       const as = open(s, VIEWER)
@@ -288,7 +287,7 @@ for (const [via, open] of TRANSPORTS) {
 
     it("tells a stranger the household does not exist, for reads and writes", async () => {
       const s = stack()
-      await s.accounts.create(create, OWNER)
+      await s.accounts.create(input, OWNER)
       s.accounts.writes = 0
       const as = open(s, STRANGER)
 
@@ -312,8 +311,8 @@ for (const [via, open] of TRANSPORTS) {
     it("lets a viewer read the household total in the base currency, archived accounts in and deleted ones out", async () => {
       const s = stack()
       // $12.34 at 1.25 dollars a euro is €9.872, so 987 cents.
-      await s.accounts.create(create, OWNER)
-      const cash = { ...create, id: secondAccountId, name: "Cash", currency: "EUR" }
+      await s.accounts.create(input, OWNER)
+      const cash = { ...input, id: secondAccountId, name: "Cash", currency: "EUR" }
       await s.accounts.create({ ...cash, startingBalance: 500 }, OWNER)
       const archived = uuidV7()
       await s.accounts.create({ ...cash, id: archived, startingBalance: 1_000 }, OWNER)
@@ -344,8 +343,8 @@ for (const [via, open] of TRANSPORTS) {
 
     it("refuses the total to a removed member and for another household's id, as an unknown household", async () => {
       const s = stack()
-      await s.accounts.create(create, OWNER)
-      await s.accounts.create({ ...create, groupId: otherGroupId, id: uuidV7() }, OWNER)
+      await s.accounts.create(input, OWNER)
+      await s.accounts.create({ ...input, groupId: otherGroupId, id: uuidV7() }, OWNER)
       const viewer = open(s, VIEWER)
       const editor = open(s, EDITOR)
       expect(await editor.query("account.total", { groupId })).toMatchObject({
@@ -395,7 +394,7 @@ for (const [via, open] of TRANSPORTS) {
     it("answers another household's account id as not found, the same as an unknown id (R17)", async () => {
       const s = stack()
       const foreign = uuidV7()
-      await s.accounts.create({ ...create, groupId: otherGroupId, id: foreign }, OWNER)
+      await s.accounts.create({ ...input, groupId: otherGroupId, id: foreign }, OWNER)
       s.accounts.writes = 0
       const as = open(s, OWNER)
 
@@ -478,8 +477,8 @@ for (const [via, open] of TRANSPORTS) {
 
     it("keeps one default: a new default takes the flag, and archiving or deleting it clears it", async () => {
       const s = stack()
-      await s.accounts.create(create, OWNER)
-      await s.accounts.create({ ...create, id: secondAccountId, name: "Wallet" }, OWNER)
+      await s.accounts.create(input, OWNER)
+      await s.accounts.create({ ...input, id: secondAccountId, name: "Wallet" }, OWNER)
       const as = open(s, OWNER)
 
       await as.command("account.setDefault", {
@@ -533,7 +532,7 @@ for (const [via, open] of TRANSPORTS) {
 
     it("deletes an account into the trash and restores it", async () => {
       const s = stack()
-      await s.accounts.create(create, OWNER)
+      await s.accounts.create(input, OWNER)
       const as = open(s, OWNER)
 
       await as.command("account.delete", { groupId, id: accountId, version: 1 })
@@ -555,7 +554,7 @@ for (const [via, open] of TRANSPORTS) {
 
     it("answers a stale edit with a conflict and the current version", async () => {
       const s = stack()
-      await s.accounts.create(create, OWNER)
+      await s.accounts.create(input, OWNER)
       const as = open(s, OWNER)
 
       const answer = await as.command("account.update", { ...create, name: "Late", version: 5 })
@@ -572,7 +571,7 @@ for (const [via, open] of TRANSPORTS) {
     it("refuses the account past the household's cap as a conflict, and keeps it at the cap", async () => {
       const s = stack()
       for (let index = 0; index < ACCOUNT_MAX_PER_GROUP; index++) {
-        await s.accounts.create({ ...create, id: uuidV7(), name: `Account ${index}` }, OWNER)
+        await s.accounts.create({ ...input, id: uuidV7(), name: `Account ${index}` }, OWNER)
       }
       const as = open(s, OWNER)
 
@@ -653,8 +652,8 @@ describe("accounts over the REST list", () => {
 
   it("lists a member's household accounts with their balances, and the trash on request", async () => {
     const s = stack()
-    await s.accounts.create(create, OWNER)
-    await s.accounts.create({ ...create, id: secondAccountId, name: "Old" }, OWNER)
+    await s.accounts.create(input, OWNER)
+    await s.accounts.create({ ...input, id: secondAccountId, name: "Old" }, OWNER)
     await s.accounts.delete({ groupId, id: secondAccountId, expectedVersion: 1 }, OWNER)
 
     const live = await rest(s, VIEWER)(`${groupId}/accounts`)
@@ -667,7 +666,7 @@ describe("accounts over the REST list", () => {
 
   it("answers a stranger as an unknown household, with no account", async () => {
     const s = stack()
-    await s.accounts.create(create, OWNER)
+    await s.accounts.create(input, OWNER)
 
     const response = await rest(s, STRANGER)(`${groupId}/accounts`)
 
@@ -677,7 +676,7 @@ describe("accounts over the REST list", () => {
 
   it("answers 401 and lists nothing when there is no session", async () => {
     const s = stack()
-    await s.accounts.create(create, OWNER)
+    await s.accounts.create(input, OWNER)
 
     const response = await rest(s, null)(`${groupId}/accounts`)
 

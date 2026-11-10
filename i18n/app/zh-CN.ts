@@ -668,8 +668,13 @@ export default {
   "PlanRefusalNotice.filesTitleUnnamed": "这个群组的文件数量已达上限",
   "PlanRefusalNotice.storageTitle": "{group}的存储空间已用完",
   "PlanRefusalNotice.storageTitleUnnamed": "这个群组的存储空间已用完",
+  "PlanRefusalNotice.accountsTitle": "{group}的账户数量已达上限",
+  "PlanRefusalNotice.accountsTitleUnnamed": "这个群组的账户数量已达上限",
   "PlanRefusalNotice.notesText": {
     "other": "当前套餐最多允许 {count} 条笔记。已有的笔记仍可查看和编辑。",
+  },
+  "PlanRefusalNotice.accountsText": {
+    "other": "当前套餐最多允许 {count} 个账户。已有的账户仍可查看和编辑。",
   },
   "PlanRefusalNotice.membersText": {
     "other": "当前套餐最多允许 {count} 位成员。",

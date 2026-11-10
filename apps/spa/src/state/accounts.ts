@@ -3,6 +3,7 @@ import { describeError, RealtimeRequestError } from "@spy4x/realtime"
 import { ReadRefused } from "@spy4x/realtime/read-cache"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { ACCOUNT_MAX_PER_GROUP, ACCOUNT_NAME_MAX_LENGTH, AccountKind } from "@domain/accounts"
+import { type PlanRefusal, readPlanRefusal } from "@domain/billing"
 import type { AccountFormValue } from "@ui/account-editor-screen.tsx"
 import type { Message } from "@ui/message.ts"
 import { apiAsUser } from "./realtime-call.ts"
@@ -82,14 +83,24 @@ export interface AccountFormErrors {
   name: Message | null
   currency: Message | null
   form: Message | null
+  /**
+   * The household's plan refused the new account: it has no paid plan, or it has reached its
+   * plan's account cap.
+   */
+  plan: PlanRefusal | null
 }
 
-const NO_ERRORS: AccountFormErrors = { name: null, currency: null, form: null }
+const NO_ERRORS: AccountFormErrors = { name: null, currency: null, form: null, plan: null }
 const NEW_ACCOUNT: AccountFormValue = {
   name: "",
   kind: AccountKind.BANK,
   currency: null,
   startingBalance: 0,
+}
+
+/** The plan's refusal of a call, or `null` when the plan did not refuse it. */
+function planRefusal(error: unknown): PlanRefusal | null {
+  return error instanceof RealtimeRequestError ? readPlanRefusal(error.details) : null
 }
 
 /** The account code of a refused call (`ACCOUNT_NOT_FOUND`, `VERSION_CONFLICT`...), or `null`. */
@@ -134,6 +145,8 @@ export function createAccountsStore(
   const showArchived = signal(false)
   const loading = signal(false)
   const listError = signal<Message | null>(null)
+  /** The plan's refusal of the last restore from the trash, shown in place of `listError`. */
+  const listPlan = signal<PlanRefusal | null>(null)
   const form = signal<AccountForm | null>(null)
   const formErrors = signal<AccountFormErrors>(NO_ERRORS)
   const saving = signal(false)
@@ -256,9 +269,9 @@ export function createAccountsStore(
     const name = current.name.trim()
     if (!name || current.currency === null) {
       formErrors.value = {
+        ...NO_ERRORS,
         name: name ? null : ACCOUNT_MESSAGES.nameRequired,
         currency: current.currency === null ? ACCOUNT_MESSAGES.currencyRequired : null,
-        form: null,
       }
       return null
     }
@@ -302,10 +315,13 @@ export function createAccountsStore(
         }
       } else if (code === "ACCOUNT_LIMIT_REACHED") {
         formErrors.value = { ...NO_ERRORS, form: LIMIT }
+      } else if (planRefusal(cause)) {
+        formErrors.value = { ...NO_ERRORS, plan: planRefusal(cause) }
       } else {
         const nameError = refusedField(cause, "name")
         const currencyError = refusedField(cause, "currency")
         formErrors.value = {
+          ...NO_ERRORS,
           name: nameError,
           currency: currencyError,
           form: nameError || currencyError ? null : describeError(
@@ -387,12 +403,16 @@ export function createAccountsStore(
     if (!forGroup || pendingId.value) return null
     pendingId.value = id
     listError.value = null
+    listPlan.value = null
     try {
       const { account } = await dependencies.restore({ groupId: forGroup, id })
       if (deleted.value) deleted.value = deleted.value.filter((other) => other.id !== id)
       return keep(account, account.startingBalance)
     } catch (cause) {
-      listError.value = accountCode(cause) === "ACCOUNT_LIMIT_REACHED"
+      listPlan.value = planRefusal(cause)
+      listError.value = listPlan.value
+        ? null
+        : accountCode(cause) === "ACCOUNT_LIMIT_REACHED"
         ? LIMIT
         : describeError(cause, ACCOUNT_MESSAGES.change)
       return null
@@ -409,6 +429,7 @@ export function createAccountsStore(
     deleted.value = null
     loading.value = false
     listError.value = null
+    listPlan.value = null
     // A new account belongs to no household yet; an edited one belongs to the old household.
     if (form.value?.id !== null) form.value = null
     formErrors.value = NO_ERRORS
@@ -425,6 +446,7 @@ export function createAccountsStore(
     currencies,
     loading,
     listError,
+    listPlan,
     form,
     formErrors,
     saving,

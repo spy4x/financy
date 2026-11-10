@@ -815,11 +815,19 @@ export default {
   "PlanRefusalNotice.filesTitleUnnamed": "Diese Gruppe hat das Dateilimit erreicht",
   "PlanRefusalNotice.storageTitle": "Der Speicher von {group} ist voll",
   "PlanRefusalNotice.storageTitleUnnamed": "Der Speicher dieser Gruppe ist voll",
+  "PlanRefusalNotice.accountsTitle": "{group} hat das Kontolimit erreicht",
+  "PlanRefusalNotice.accountsTitleUnnamed": "Diese Gruppe hat das Kontolimit erreicht",
   "PlanRefusalNotice.notesText": {
     "one":
       "Ihr Tarif erlaubt höchstens {count} Notiz. Bestehende Notizen kannst du weiterhin lesen und bearbeiten.",
     "other":
       "Ihr Tarif erlaubt höchstens {count} Notizen. Bestehende Notizen kannst du weiterhin lesen und bearbeiten.",
+  },
+  "PlanRefusalNotice.accountsText": {
+    "one":
+      "Ihr Tarif erlaubt höchstens {count} Konto. Bestehende Konten kannst du weiterhin lesen und bearbeiten.",
+    "other":
+      "Ihr Tarif erlaubt höchstens {count} Konten. Bestehende Konten kannst du weiterhin lesen und bearbeiten.",
   },
   "PlanRefusalNotice.membersText": {
     "one": "Ihr Tarif erlaubt höchstens {count} Mitglied.",

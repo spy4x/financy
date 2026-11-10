@@ -1,5 +1,6 @@
 import type postgres from "postgres"
 import { ACCOUNT_MAX_PER_GROUP, AccountError } from "@domain/accounts"
+import { assertRoomFor } from "@domain/billing"
 import type { MovableAggregate, MoveAllContext } from "@server/groups/movable.ts"
 
 /**
@@ -9,13 +10,17 @@ import type { MovableAggregate, MoveAllContext } from "@server/groups/movable.ts
  * source household.
  *
  * The target keeps its own default: when it has one, the moved accounts arrive without the flag.
- * The target's cap (`ACCOUNT_MAX_PER_GROUP`) is counted after the move, under the lock on the
- * target that an `account.create` there waits for. A move that would pass it is refused whole with
- * `ACCOUNT_LIMIT_REACHED`, and the caller's transaction takes everything back.
+ * The target's caps, Financy's own (`ACCOUNT_MAX_PER_GROUP`) and its plan's `maxAccounts`, are
+ * counted after the move, under the lock on the target that an `account.create` there waits for. A
+ * move that would pass one is refused whole, with `ACCOUNT_LIMIT_REACHED` or the plan's
+ * `PLAN_LIMIT_REACHED`, and the caller's transaction takes everything back.
  */
 export async function moveAllAccountRows(
   transaction: postgres.TransactionSql,
-  context: Pick<MoveAllContext, "fromGroupId" | "toGroupId" | "actorId" | "changeSequence">,
+  context: Pick<
+    MoveAllContext,
+    "fromGroupId" | "toGroupId" | "actorId" | "changeSequence" | "allowances" | "targetRole"
+  >,
 ): Promise<number> {
   const { fromGroupId, toGroupId } = context
   const moved = await transaction`
@@ -42,6 +47,14 @@ export async function moveAllAccountRows(
         `The other household has no room for these accounts: it can hold ${ACCOUNT_MAX_PER_GROUP}`,
       )
     }
+    // Every account in the target counts, so the room left is checked as if the last one moved
+    // alone: `count - 1` must be below the cap.
+    assertRoomFor(
+      "maxAccounts",
+      context.allowances.maxAccounts ?? null,
+      count - 1,
+      context.targetRole,
+    )
   }
   return moved.length
 }
