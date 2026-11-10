@@ -58,7 +58,14 @@ import {
 import { billingNoticeMailJob } from "./billing-notice-mail.ts"
 import { cleanupSteps } from "./cleanup.ts"
 import { EMAIL_CODE_MAIL_JOB, emailCodeMailJob } from "./email-code-mail.ts"
-import { RATES_FETCH_CRON, RATES_FETCH_JOB, ratesFetchJob } from "./exchange-rates.ts"
+import {
+  RATES_BACKFILL_CRON,
+  RATES_BACKFILL_JOB,
+  RATES_FETCH_CRON,
+  RATES_FETCH_JOB,
+  ratesBackfillJob,
+  ratesFetchJob,
+} from "./exchange-rates.ts"
 import type { RatesSetup } from "../money/rates-setup.ts"
 import { type JobHandler, OUTBOX_CLEANUP_JOB } from "./jobs.ts"
 import {
@@ -430,6 +437,14 @@ export const JOBS: readonly JobDefinition[] = [
     label: `Exchange rates`,
     repeat: { cron: RATES_FETCH_CRON },
     handler: ({ sql, mail, rates }) => ratesFetchJob({ sql, setup: rates ?? null, log: mail.log }),
+  }),
+  // Free calls only, and idempotent: a rerun skips the stored rates and finds no request to fill.
+  defineJob({
+    kind: RATES_BACKFILL_JOB,
+    label: `Past exchange rates`,
+    repeat: { cron: RATES_BACKFILL_CRON },
+    handler: ({ sql, mail, rates }) =>
+      ratesBackfillJob({ sql, setup: rates ?? null, log: mail.log }),
   }),
   // Reads only: a run that is repeated or retried stores one more reading, never a second post.
   defineJob({

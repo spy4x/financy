@@ -2,6 +2,7 @@ import type postgres from "postgres"
 import { currencies, type ExchangeRate } from "@spy4x/platform/universal/money"
 import { ECB_BASE } from "@domain/money"
 import { monthOf, PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
+import { closeBackfillRequest, openBackfillRequests } from "@server/money/rate-backfill.ts"
 import type { RatesSetup } from "@server/money/rates-setup.ts"
 import type { JobHandler } from "./jobs.ts"
 
@@ -10,6 +11,12 @@ export const RATES_FETCH_JOB = `rates.fetch`
 
 /** When {@link RATES_FETCH_JOB} runs, in UTC. */
 export const RATES_FETCH_CRON = `0 16 * * *`
+
+/** The hourly job that fills the open requests for past rates. */
+export const RATES_BACKFILL_JOB = `rates.backfill`
+
+/** When {@link RATES_BACKFILL_JOB} runs, in UTC: minute 41, which no other repeating job uses. */
+export const RATES_BACKFILL_CRON = `41 * * * *`
 
 /** What the rate jobs need. */
 export interface RatesJobDeps {
@@ -89,5 +96,40 @@ export function ratesFetchJob(deps: RatesJobDeps): JobHandler {
       return
     }
     await rates.insert(paid.output.rates, at, refuse)
+  }
+}
+
+/**
+ * Fills the open requests for past rates (`rates.backfill`), oldest first, with the ECB's rates
+ * of every day in each, asked of Frankfurter in one range call per request. The paid fallback is
+ * never asked: a backfill spends no paid call. A failed call throws, so the worker retries it,
+ * and its request and the ones after it stay open.
+ *
+ * A filled request's rates are stored and the request deleted in one transaction. Rates stored
+ * already are skipped, so a rerun stores nothing twice. A request that `requestBackfillBefore`
+ * merged into a new one meanwhile is gone under its old id, so deleting that id does nothing, and
+ * the merged request is filled on a later run.
+ */
+export function ratesBackfillJob(deps: RatesJobDeps): JobHandler {
+  return async () => {
+    const { setup } = deps
+    if (!setup) return
+    const requests = await openBackfillRequests(deps.sql)
+    if (requests.length === 0) return
+    const at = deps.now?.() ?? new Date()
+    const refuse = refusal(deps.log)
+    for (const request of requests) {
+      const past = await setup.ecb.timeSeries(
+        request.fromDate,
+        request.toDate,
+        ECB_BASE,
+        ecbQuotes(),
+      )
+      if (!past.success) throw new RatesFetchError(past.error.source, past.error.code)
+      await deps.sql.begin(async (transaction: postgres.TransactionSql) => {
+        await new PostgresRateRepository(transaction).insert(past.output.rates, at, refuse)
+        await closeBackfillRequest(transaction, request.id)
+      })
+    }
   }
 }
