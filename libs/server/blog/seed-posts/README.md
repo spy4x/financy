@@ -2,12 +2,18 @@
 
 <!-- Seed's own site: see docs/start-a-product.md -->
 
-The posts of seedsaas.com's blog. The worker loads them into the blog's database only when
-`DEMO_MODE=true`, at every start (`libs/server/blog/seed-posts.ts`), and `deno task db:seed` loads
-them in development. A product built on Seed deletes the posts here, but keeps this file
-([docs/start-a-product.md](../../../../docs/start-a-product.md)), and writes its posts in the
-admin app. The Lighthouse run reads none of them: it measures a fixture post in the same format
-(`apps/mpa/lighthouse/posts/`).
+This folder held the posts of seedsaas.com's blog. Financy deleted them
+([docs/start-a-product.md](../../../../docs/start-a-product.md)) and writes its own posts in the
+admin app, so it holds no post. `.seed/skip` keeps Seed's later posts, covers and cards out of a
+sync, and `seed-posts.test.ts` fails if a post file comes back.
+
+The worker still loads any post file here into the blog's database when `DEMO_MODE=true`, at every
+start (`libs/server/blog/seed-posts.ts`), and `deno task db:seed` loads them in development; with
+no file, both load nothing. The Lighthouse run measures a fixture post in the same format
+(`apps/mpa/lighthouse/posts/`), whose cover is the one file left in `covers/`. `og/` is empty but
+stays, because the website reads it at start and the MPA image copies it.
+
+The format below is kept for that fixture.
 
 One Markdown file per post and language, named `<slug>.md`. The file is the source: a load
 updates the post to match its file, and an edit made in the admin app to one of these posts is
@@ -45,10 +51,8 @@ post with `newsletter: false` is marked as already mailed, so turning it on late
 `devto: true` copies the post to Dev.to once it is live, when the server has `DEVTO_API_KEY`
 ([docs/blog.md](../../../../docs/blog.md#the-devto-cross-post)); a translation is never copied.
 
-Every original has a cover in `covers/` (how to make one: [covers/README.md](covers/README.md)),
-and every post a link-preview card in `og/`, drawn by `deno task og:blog` in `apps/mpa`. Run it
-again after a title, a cover or the length of a post changes. Once a post is live,
-`deno task blog:social <slug>` prints its LinkedIn, Telegram and X texts.
+Every original has a cover in `covers/`, in three widths: `<name>.webp`, `<name>-960.webp` and
+`<name>-640.webp`.
 
 A body can hold an interactive figure, a tag such as `<CostCalculator members={4} />` on a line
 of its own ([docs/blog.md](../../../../docs/blog.md#interactive-figures)).

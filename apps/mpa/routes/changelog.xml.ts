@@ -1,6 +1,7 @@
 import { rssXml } from "@spy4x/platform/universal/seo"
 import { REPOSITORY_URL } from "../brand.ts"
 import { CHANGELOG, CHANGELOG_FEED_PATH, CHANGELOG_PATH } from "../changelog.ts"
+import { SITE_NAME } from "../site.tsx"
 import { define } from "../utils.ts"
 import { CHANGELOG_HEAD } from "./[[lang]]/changelog.tsx"
 
@@ -18,7 +19,7 @@ export const handler = define.handlers({
     const page = `${origin}${CHANGELOG_PATH}`
     const body = rssXml(
       {
-        title: `Seed changelog`,
+        title: `${SITE_NAME} changelog`,
         link: page,
         description: CHANGELOG_HEAD.description,
         feedUrl: `${origin}${CHANGELOG_FEED_PATH}`,

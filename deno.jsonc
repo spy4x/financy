@@ -175,10 +175,6 @@
       "command": "deno run -R=i18n -W=i18n i18n/stamp.ts",
       "description": "Records which English each translation was made from (i18n/TRANSLATING.md)"
     },
-    "blog:cover": {
-      "command": "deno run -E=OPENAI_API_KEY -N=api.openai.com -R=libs/server/blog/seed-posts/covers -W=libs/server/blog/seed-posts/covers --allow-run=magick libs/server/blog/seed-posts/covers/blog-cover.ts",
-      "description": "Makes a blog post's cover with the OpenAI Images API: <slug> <scene> (libs/server/blog/seed-posts/covers/README.md)"
-    },
     "blog:social": {
       "command": "deno run -R=./libs/server/blog/seed-posts ./infra/scripts/blog-social.ts",
       "description": "Prints the LinkedIn, Telegram and X texts of one of Seed's own posts: <slug> (docs/blog.md)"
@@ -300,7 +296,7 @@
       "description": "Unit tests in parallel; prints failures and one summary line. Paths run only those files; CI=true or --verbose prints everything"
     },
     "test:integration": {
-      "command": "ENV=test deno test --no-prompt -E -N -R=./libs/server/db/migrations,./libs/server/db/schema.sql,./libs/server/blog/seed-posts tests/integration",
+      "command": "ENV=test deno test --no-prompt -E -N -R=./libs/server/db/migrations,./libs/server/db/schema.sql,./apps/mpa/lighthouse/posts tests/integration",
       "description": "Integration tests against your Postgres and Valkey"
     },
     "e2e": {

@@ -27,9 +27,9 @@ import { define } from "../../utils.ts"
 
 /** The changelog's title and description, for its head, the sitemap and `llms.txt`. */
 export const CHANGELOG_HEAD = {
-  title: `Seed changelog: what changed, month by month`,
+  title: `${SITE_NAME} changelog: what changed, month by month`,
   description:
-    `Every feature and fix merged into Seed, newest first, each linked to its pull request. Seed is built in public and changes most weeks.`,
+    `Every feature and fix merged into ${SITE_NAME}, newest first, each linked to its pull request. ${SITE_NAME} is built in public and changes most weeks.`,
 }
 
 /** The title of the monthly post a month links to once it is live. */
@@ -172,9 +172,8 @@ export function Changelog(
           )}
           <p class="text-sm text-muted text-pretty">
             {SITE_NAME}{" "}
-            is built by one developer, Anton Shubin, who uses it for his own products and client
-            work. It is MIT-licensed: your copy is yours, and a product takes later changes as a
-            patch (<a href={href(`/docs/products`)} class={LINK}>Building a product on Seed</a>).
+            is built in public by one developer, Anton Shubin. It is free and open source under the
+            <span class="whitespace-nowrap">AGPL-3.0</span> licence, so you can host it yourself.
           </p>
           <p class="text-sm">
             Subscribe:{" "}

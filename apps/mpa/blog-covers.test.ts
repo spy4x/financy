@@ -3,6 +3,9 @@ import { describe, it } from "@std/testing/bdd"
 import { App } from "@spy4x/preact-server"
 import { COVERS, handler } from "./routes/blog/covers/[file].ts"
 import { coverImage } from "./blog-covers.ts"
+import { denoFileSystem } from "@spy4x/platform/server/deno-fs"
+import { fromFileUrl } from "@std/path"
+import { readSeedPosts } from "@server/blog/seed-posts.ts"
 import type { State } from "./utils.ts"
 
 const info = {
@@ -26,13 +29,17 @@ describe("the blog's cover files (#733)", () => {
     await response.body?.cancel()
   })
 
-  it("serves every width a post's srcset names, the 960 px copy among them", async () => {
-    const coverFile = `welcome-to-the-seed-blog.webp`
+  it("serves every width the Lighthouse fixture post's srcset names, the 960 px copy among them", async () => {
+    // The only file cover left: the post the Lighthouse run measures (lighthouse/posts/).
+    const [{ coverFile }] = await readSeedPosts(
+      denoFileSystem,
+      fromFileUrl(new URL(`./lighthouse/posts/`, import.meta.url)),
+    )
     const srcset = coverImage({ coverFile, coverUrl: null })!.srcset!
     const names = srcset.split(`, `).map((entry) => entry.split(` `)[0].split(`/`).pop()!)
     expect(names).toEqual([
-      `welcome-to-the-seed-blog-640.webp`,
-      `welcome-to-the-seed-blog-960.webp`,
+      coverFile!.replace(`.webp`, `-640.webp`),
+      coverFile!.replace(`.webp`, `-960.webp`),
       coverFile,
     ])
     for (const name of names) {

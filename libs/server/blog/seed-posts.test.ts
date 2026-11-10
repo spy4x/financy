@@ -5,7 +5,6 @@ import { BLOG_INTRO_MAX_LENGTH } from "@domain/blog"
 import {
   parseSeedPost,
   readSeedPosts,
-  SEED_COVERS_DIR,
   SEED_TLDR_MAX,
   SEED_TLDR_MIN,
   SeedPostError,
@@ -49,9 +48,9 @@ function folder(files: [string, string][]) {
 }
 
 describe(`Seed's post files`, () => {
-  it(`every post file in seed-posts/ is valid`, async () => {
-    // Throws, naming the file, on the first one that is not; a product that deleted them has none.
-    await expect(readSeedPosts(denoFileSystem)).resolves.toBeInstanceOf(Array)
+  it(`reads Financy's empty seed-posts/ as no posts, so a Seed sync brought none`, async () => {
+    // Financy writes its posts in the admin app; Seed's files stay out (`.seed/skip`).
+    await expect(readSeedPosts(denoFileSystem)).resolves.toEqual([])
   })
 
   it(`reads the front matter into the blog's fields, with newsletter off by default`, () => {
@@ -86,14 +85,6 @@ describe(`Seed's post files`, () => {
   it(`fails on an author link that is not https, naming the file`, () => {
     expect(() => parseSeedPost(...file(`hello`, [`authorUrl: http://example.com/about`])))
       .toThrow(`hello.md: authorUrl: Enter a full https:// link`)
-  })
-
-  it(`links every post by Anton Shubin to his About page`, async () => {
-    const posts = (await readSeedPosts(denoFileSystem))
-      .filter((post) => post.author === `Anton Shubin`)
-    expect(posts.length).toBeGreaterThan(0)
-    expect(posts.filter((post) => post.fields.authorUrl !== `https://antonshubin.com/about`))
-      .toEqual([])
   })
 
   it(`reads a quoted date as well as an unquoted one`, () => {
@@ -188,18 +179,6 @@ describe(`Seed's post files`, () => {
       { file: `hello.md`, coverFile: `hello.webp`, devto: true },
     ])
     expect(parseSeedPost(...file()).devto).toBe(false)
-  })
-
-  it(`has all three widths of every post's cover in covers/ (#733)`, async () => {
-    const posts = await readSeedPosts(denoFileSystem)
-    const files = new Set((await denoFileSystem.readDir(SEED_COVERS_DIR)).map(({ name }) => name))
-    const missing = posts.filter((post) => post.translationOf === null)
-      .flatMap(({ coverFile }) =>
-        [``, `-960`, `-640`].map((width) => coverFile!.replace(/\.webp$/, `${width}.webp`))
-      )
-      .filter((name) => !files.has(name))
-    expect(posts.length).toBeGreaterThan(0)
-    expect(missing).toEqual([])
   })
 
   it(`fails on a slug that is no slug`, () => {
