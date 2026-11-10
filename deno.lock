@@ -13,6 +13,7 @@
     "jsr:@spy4x/billing@1.116.0": "1.116.0",
     "jsr:@spy4x/email@1.116.0": "1.116.0",
     "jsr:@spy4x/email@^1.116.0": "1.116.0",
+    "jsr:@spy4x/email@^1.123.0": "1.123.0",
     "jsr:@spy4x/integrations@1.123.0": "1.123.0",
     "jsr:@spy4x/integrations@^1.116.0": "1.123.0",
     "jsr:@spy4x/net@1.116.0": "1.116.0",
@@ -210,6 +211,12 @@
         "npm:nodemailer"
       ]
     },
+    "@spy4x/email@1.123.0": {
+      "integrity": "c3ea03a69449c84cdde6ed40a5335438ab1466f75cd4f99f9b71565cac71cff3",
+      "dependencies": [
+        "jsr:@spy4x/time@^1.123.0"
+      ]
+    },
     "@spy4x/integrations@1.123.0": {
       "integrity": "153e1ea5c75b6db66a8082f1057b13783e94e62f7bbbcf10aa3763123e40a9b4",
       "dependencies": [
@@ -250,6 +257,7 @@
       "integrity": "a4127ef47c51cbeef913a96418ffb91d28b1300f885f30c153b23ebe8e477c14",
       "dependencies": [
         "jsr:@hono/hono",
+        "jsr:@spy4x/email@^1.123.0",
         "jsr:@spy4x/net@^1.123.0",
         "jsr:@spy4x/time@^1.123.0",
         "jsr:@spy4x/validation@^1.123.0",
