@@ -122,3 +122,5 @@ then.
   change never rewrites history.
 - Once Financy runs in production, that server holds real people's financial data. Nothing on it
   is disposable: there is no demo carve-out here.
+
+<!-- timing test for homelab#131 -->
