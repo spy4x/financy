@@ -23,6 +23,7 @@ import { createGroupsRoute } from "./routes/groups.ts"
 import { createGroupFilesRoute } from "./routes/group-files.ts"
 import { createGroupFileRateLimits } from "./features/groups/file-rate-limits.ts"
 import { createAccountsRoute } from "./routes/accounts.ts"
+import { createCategoriesRoute } from "./routes/categories.ts"
 import { createImportsRoute } from "./routes/imports.ts"
 import { createApiTokensRoute } from "./routes/api-tokens.ts"
 import { mountNotesRoutes } from "./features/notes/switch.ts"
@@ -370,6 +371,10 @@ app.route(
 app.route(
   "/groups/:groupId/accounts",
   createAccountsRoute({ list: (query) => queryBus.execute(query) }),
+)
+app.route(
+  "/groups/:groupId/categories",
+  createCategoriesRoute({ list: (query) => queryBus.execute(query) }),
 )
 // Before "/groups" too, for the same reason.
 app.route(

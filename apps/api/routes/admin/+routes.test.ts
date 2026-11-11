@@ -28,6 +28,7 @@ import { ADMIN_OUTRANKED, ADMIN_SELF, createAdminUsersRoutes } from "./users.ts"
 import { createAdminStatsRoutes } from "./dashboard.ts"
 import { createAdminWebsiteStatsRoutes } from "./stats.ts"
 import { createAdminAccountsRoutes } from "./accounts.ts"
+import { createAdminCategoriesRoutes } from "./categories.ts"
 import { ADMIN_API_MODULES } from "./registry.ts"
 import { CATALOG_DEFAULT_SETTINGS } from "@domain/catalog"
 import type { AdminRatesSnapshot } from "@domain/money"
@@ -142,6 +143,11 @@ function buildApp(
           limit: passThrough,
           read: () => (calls.push(["accounts"]), Promise.reject(new Error("not used"))),
         })
+      case `categories`:
+        return createAdminCategoriesRoutes({
+          limit: passThrough,
+          read: () => (calls.push(["categories"]), Promise.reject(new Error("not used"))),
+        })
       case `rates`:
         return createAdminRatesRoutes({
           limit: passThrough,
@@ -222,6 +228,7 @@ const ROUTES = [
   })),
   { method: "GET", path: "/admin/website-stats?days=7" },
   { method: "GET", path: "/admin/accounts" },
+  { method: "GET", path: "/admin/categories" },
   { method: "GET", path: "/admin/rates" },
   { method: "GET", path: "/admin/website-stats/items/0199f0a0-0000-7000-8000-000000000001" },
 ]
@@ -325,6 +332,7 @@ describe("operator area routes", () => {
       "users",
       "groups",
       "accounts",
+      "categories",
       "billing",
       "newsletter",
       "blog",

@@ -7,6 +7,7 @@ import {
   invitableRoles,
 } from "@domain/groups"
 import { NoteCreateCommand, NoteMoveCommand, NoteRestoreCommand } from "@domain/notes"
+import { CategoryArchiveCommand, CategoryCreateCommand } from "@domain/categories"
 import { AccountCreateCommand, AccountRestoreCommand } from "@domain/accounts"
 import { type EntitlementNeeds, needsFeature, needsRoom } from "./entitlement-gate.ts"
 
@@ -70,6 +71,21 @@ export const ENTITLEMENT_NEEDS: EntitlementNeeds = new Map([
     "maxAccounts",
     (command) => command.data.groupId,
     (actor) => canMutateNotes(actor),
+  ),
+  // A category added, or brought back from the archive, counts against the household's plan: the
+  // cap counts categories in use, so an unarchive takes a slot (D1). An edit or an archive passes
+  // on every plan.
+  needsRoom(
+    CategoryCreateCommand,
+    "maxCategories",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
+  ),
+  needsRoom(
+    CategoryArchiveCommand,
+    "maxCategories",
+    (command) => command.data.groupId,
+    (actor, command) => canMutateNotes(actor) && !command.data.archived,
   ),
   needsFeature(
     GroupMemberRoleCommand,
