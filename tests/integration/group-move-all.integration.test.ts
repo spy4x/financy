@@ -446,6 +446,26 @@ Deno.test("moving all of a group's data", async (t) => {
       },
     )
 
+    await t.step(
+      "with the notes off, moving a group's data still moves its accounts",
+      async () => {
+        const off = new AppDbBase({ sql, notes: NOTES_OFF }).groupData
+        const { editor, from, to, ids, notes } = await seed(sql, ["a"])
+        const main = await insertAccount(sql, from, "Main", editor)
+
+        const result = await off.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result).toEqual({ moved: 1, counts: { accounts: 1 } })
+        expect(await accountsOf(sql, from)).toEqual([])
+        expect(await accountsOf(sql, to)).toEqual([
+          { id: main, name: "Main", archived: false, isDefault: false, version: 2 },
+        ])
+        // The note itself stays with the source group: only the accounts moved.
+        expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
+        expect(await notes.count(to)).toBe(0)
+      },
+    )
+
     await t.step("two moves in opposite directions both finish, none deadlocks", async () => {
       const { editor, from, to, notes } = await seed(sql, ["a"])
       await notes.create(
