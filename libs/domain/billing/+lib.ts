@@ -43,8 +43,16 @@ export type FeatureKey =
  * - `maxAccounts`: Financy's money accounts in the household that are not deleted, archived ones
  *   included. Financy sells it at 0 or with no cap: a household without a paid plan adds no
  *   account, and keeps reading, editing and exporting the ones it has.
+ * - `maxCategories`: Financy's categories in the household that are in use; archived ones are not
+ *   counted, so archiving one frees its slot. Sold at 0 or with no cap, like `maxAccounts`.
  */
-export type LimitKey = "maxMembers" | "maxNotes" | "maxAttachments" | "storageBytes" | "maxAccounts"
+export type LimitKey =
+  | "maxMembers"
+  | "maxNotes"
+  | "maxAttachments"
+  | "storageBytes"
+  | "maxAccounts"
+  | "maxCategories"
 
 /** What a plan allows: which features it includes, and how much of each count, `null` for no cap. */
 export interface Entitlements {
@@ -61,6 +69,7 @@ export const UNLIMITED: Entitlements = {
     maxAttachments: null,
     storageBytes: null,
     maxAccounts: null,
+    maxCategories: null,
   },
 }
 
@@ -146,6 +155,7 @@ export const PLANS: readonly Plan[] = [
         maxAttachments: 0,
         storageBytes: 0,
         maxAccounts: 0,
+        maxCategories: 0,
       },
     },
     attachments: { maxFileBytes: 2 * 1024 * 1024, maxPerNote: 10 },
@@ -175,6 +185,7 @@ export const PLANS: readonly Plan[] = [
         // Not a cap the plan sells: it keeps one household's files from filling the server.
         storageBytes: 10 * 1024 * 1024 * 1024,
         maxAccounts: null,
+        maxCategories: null,
       },
     },
     attachments: { maxFileBytes: 2 * 1024 * 1024, maxPerNote: 10 },
