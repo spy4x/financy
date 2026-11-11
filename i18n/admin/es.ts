@@ -2319,4 +2319,8 @@ export default {
     "La tarea diaria los obtiene a las 16:00 UTC. Para obtenerlos ahora, ejecuta «Exchange rates» en Tareas.",
   "AdminRates.loadError":
     "No se pudieron cargar los tipos. Revisa tu conexión e inténtalo de nuevo.",
+  "AdminAuditEvent.categoryCreated": "Categoría añadida",
+  "AdminAuditEvent.categoryUpdated": "Categoría cambiada",
+  "AdminAuditEvent.categoryArchived": "Categoría archivada",
+  "AdminAuditEvent.categoryUnarchived": "Categoría desarchivada",
 } satisfies Catalog

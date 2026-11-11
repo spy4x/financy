@@ -2099,4 +2099,143 @@ export default {
   "GroupSpreadsheets.readme":
     "このグループのデータを表計算ファイルにしたものです。項目の種類ごとに1つのCSVファイルがあり、文字コードはUTF-8、1行目は見出しです。日時はISO 8601形式（UTC）です。グループを別のアプリに移すには、代わりにJSONファイルをダウンロードしてください。インポートできるのはJSONファイルだけです。",
   "GroupSpreadsheets.notSpreadsheets": "表計算ファイルにないもの（JSONファイルに含まれます）：",
+  "Frame.categories": "カテゴリ",
+  "Search.newCategory": "新しいカテゴリ",
+  "Search.openCategories": "カテゴリへ移動",
+  "Categories.title": "カテゴリ",
+  "Categories.add": "新しいカテゴリ",
+  "Categories.addFirst": "カテゴリを追加",
+  "Categories.addOne": "追加する",
+  "Categories.addChild": "サブカテゴリを追加",
+  "Categories.edit": "カテゴリを編集",
+  "Categories.actions": "{name}の操作",
+  "Categories.archive": "アーカイブ",
+  "Categories.unarchive": "アーカイブを解除",
+  "Categories.unarchiveParentFirst": "これを戻すには{parent}のアーカイブを解除してください",
+  "Categories.archivedBadge": "アーカイブ済み",
+  "Categories.showArchived": "アーカイブ済みのカテゴリを表示",
+  "Categories.hideArchived": "アーカイブ済みのカテゴリを隠す",
+  "Categories.expenses": "支出",
+  "Categories.income": "収入",
+  "Categories.inParent": "、{parent}内",
+  "Categories.noExpenses": "支出カテゴリはまだありません。",
+  "Categories.noIncome": "収入カテゴリはまだありません。",
+  "Categories.readOnly": "カテゴリは見られますが、変更できるのは編集者だけです。",
+  "Categories.loading": "カテゴリを読み込み中",
+  "Categories.empty": "最初のカテゴリを追加しましょう",
+  "Categories.emptyHint":
+    "カテゴリはお金が動いた理由を表します。食料品、家賃、給与など。それぞれにアイコンと色を付けましょう。",
+  "Categories.emptyViewer": "カテゴリはまだありません",
+  "Categories.allArchived":
+    "すべてのカテゴリがアーカイブ済みです。アーカイブ済みのカテゴリを表示すると見られます。",
+  "Categories.archiveTitle": { "other": "{name}と{count}件のサブカテゴリをアーカイブしますか？" },
+  "Categories.archiveMessage": {
+    "other":
+      "{names}もアーカイブされます。選択肢からは消えますが、過去の取引には残り、合計にも引き続き含まれます。あとでアーカイブを解除できます。",
+  },
+  "Categories.archiveConfirm": { "other": "{count}件のカテゴリをアーカイブ" },
+  "Categories.cancel": "キャンセル",
+  "CategoryParts.expense": "支出",
+  "CategoryParts.income": "収入",
+  "CategoryEditor.title": "カテゴリ",
+  "CategoryEditor.new": "新しいカテゴリ",
+  "CategoryEditor.back": "カテゴリ",
+  "CategoryEditor.loading": "カテゴリを読み込み中",
+  "CategoryEditor.notFound": "カテゴリが見つかりません",
+  "CategoryEditor.notFoundHint": "別の世帯のカテゴリかもしれません。",
+  "CategoryEditor.name": "名前",
+  "CategoryEditor.namePlaceholder": "食料品",
+  "CategoryEditor.kind": "種類",
+  "CategoryEditor.parent": "親カテゴリ",
+  "CategoryEditor.noParent": "親なし：トップレベルのカテゴリ",
+  "CategoryEditor.noParentMatch": "一致するカテゴリはありません。",
+  "CategoryEditor.clearParent": "親カテゴリを外す",
+  "CategoryEditor.topLevel": "なし：トップレベルのカテゴリ",
+  "CategoryEditor.icon": "アイコン",
+  "CategoryEditor.iconSearch": "アイコンを検索",
+  "CategoryEditor.iconEmpty": "「{query}」に一致するアイコンはありません。",
+  "CategoryEditor.iconClear": "検索をクリア",
+  "CategoryEditor.iconCount": { "other": "{count}個のアイコン" },
+  "CategoryEditor.color": "色",
+  "CategoryEditor.summaryTop": "{kind} · トップレベル",
+  "CategoryEditor.summaryChild": "{kind} · {parent}内",
+  "CategoryEditor.kindLockedChild":
+    "サブカテゴリの種類は親と同じです。変更するには親なしを選んでください。",
+  "CategoryEditor.kindLockedParent":
+    "{name}にはサブカテゴリがあるため、種類を変更できません。先にそれらを移動してください。",
+  "CategoryEditor.parentLockedParent":
+    "{name}にはサブカテゴリがあるため、ほかのカテゴリの下に置けません。",
+  "CategoryEditor.noParentExpense": "下に置ける支出カテゴリがまだほかにありません。",
+  "CategoryEditor.noParentIncome": "下に置ける収入カテゴリがまだほかにありません。",
+  "CategoryEditor.offlineTitle": "オフラインです",
+  "CategoryEditor.offline": "カテゴリは見られますが、変更はオンラインに戻るまで待ちます。",
+  "CategoryEditor.create": "カテゴリを作成",
+  "CategoryEditor.creating": "カテゴリを作成中",
+  "CategoryEditor.save": "保存",
+  "CategoryEditor.saving": "保存中",
+  "CategoryEditor.discard": "破棄",
+  "CategoryEditor.cancel": "キャンセル",
+  "CategoriesView.savedTitle": "カテゴリを保存しました",
+  "CategoriesView.saved": "{name}を保存しました。",
+  "CategoriesView.archivedTitle": "カテゴリをアーカイブしました",
+  "CategoriesView.archived": "{name}をアーカイブしました。過去の取引には残ります。",
+  "CategoriesView.archivedWithChildren": {
+    "other": "{name}と{count}件のサブカテゴリをアーカイブしました。過去の取引には残ります。",
+  },
+  "CategoriesView.unarchivedTitle": "カテゴリを再び使えます",
+  "CategoriesView.unarchived": "{name}を再び使えます。",
+  "CategoriesView.unarchivedWithChildren": {
+    "other": "{name}と{count}件のサブカテゴリを再び使えます。",
+  },
+  "CategoriesView.undo": "元に戻す",
+  "CategoriesView.discardTitle": "変更を破棄しますか？",
+  "CategoriesView.discard": "{name}への変更は保存されていません。",
+  "CategoriesView.discardNew": "新しいカテゴリは保存されていません。",
+  "CategoriesView.discardLeave": "破棄",
+  "CategoriesView.discardStay": "編集を続ける",
+  "CategoryMessages.nameRequired": "カテゴリに名前を付けてください。",
+  "CategoryMessages.nameTakenChild": "{parent}には{name}というサブカテゴリがすでにあります。",
+  "CategoryMessages.nameTakenExpense": "{name}という支出カテゴリはすでにあります。",
+  "CategoryMessages.nameTakenIncome": "{name}という収入カテゴリはすでにあります。",
+  "CategoryMessages.conflict":
+    "ほかの人がこのカテゴリを変更しました。いまはその変更が表示されています。",
+  "CategoryMessages.gone": "このカテゴリはもうこの世帯にありません。",
+  "CategoryMessages.parentGone":
+    "その親カテゴリはアーカイブまたは変更されました。別のものを選んでください。",
+  "CategoryMessages.treeChanged":
+    "その間にカテゴリが変わりました。親と種類を確認して、もう一度保存してください。",
+  "CategoryMessages.parentArchived":
+    "親カテゴリがアーカイブ済みです。戻すには親のアーカイブを解除してください。",
+  "CategoryMessages.limit":
+    "1つの世帯に置けるカテゴリは{max}件までです。先に1つアーカイブしてください。",
+  "CategoryMessages.load": "カテゴリを読み込めませんでした。",
+  "CategoryMessages.create": "カテゴリを作成できませんでした。もう一度お試しください。",
+  "CategoryMessages.save": "カテゴリを保存できませんでした。もう一度お試しください。",
+  "CategoryMessages.change": "カテゴリを変更できませんでした。もう一度お試しください。",
+  "GroupActivity.categoryCreated":
+    "<who>{who}</who>がカテゴリ「<value>{name}</value>」を追加しました",
+  "GroupActivity.categoryRenamed":
+    "<who>{who}</who>がカテゴリ「<value>{from}</value>」を「<value>{name}</value>」に名前変更しました",
+  "GroupActivity.categoryChanged":
+    "<who>{who}</who>がカテゴリ「<value>{name}</value>」を変更しました",
+  "GroupActivity.categoryChangedUnnamed": "<who>{who}</who>がカテゴリを変更しました",
+  "GroupActivity.categoryArchived":
+    "<who>{who}</who>がカテゴリ「<value>{name}</value>」をアーカイブしました",
+  "GroupActivity.categoryArchivedWithChildren": {
+    "other":
+      "<who>{who}</who>がカテゴリ「<value>{name}</value>」と{count}件のサブカテゴリをアーカイブしました",
+  },
+  "GroupActivity.categoryUnarchived":
+    "<who>{who}</who>がカテゴリ「<value>{name}</value>」のアーカイブを解除しました",
+  "GroupActivity.categoryUnarchivedWithChildren": {
+    "other":
+      "<who>{who}</who>がカテゴリ「<value>{name}</value>」と{count}件のサブカテゴリのアーカイブを解除しました",
+  },
+  "GroupImport.categories": { "other": "{count}件のカテゴリ" },
+  "PlanRefusalNotice.categoriesTitle": "{group}はカテゴリの上限に達しました",
+  "PlanRefusalNotice.categoriesTitleUnnamed": "このグループはカテゴリの上限に達しました",
+  "PlanRefusalNotice.categoriesText": {
+    "other":
+      "このプランで使えるカテゴリは{count}件までです。既存のカテゴリは引き続き閲覧、編集、アーカイブできます。",
+  },
 } satisfies Catalog

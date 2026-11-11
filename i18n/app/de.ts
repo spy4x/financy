@@ -2291,4 +2291,162 @@ export default {
   "GroupSpreadsheets.readme":
     "Die Daten der Gruppe als Tabellen: eine CSV-Datei pro Art von Einträgen, in UTF-8 mit einer Kopfzeile. Datum und Uhrzeit stehen im Format ISO 8601, in UTC. Um die Gruppe in eine andere App mitzunehmen, lade stattdessen die JSON-Datei herunter: Nur sie lässt sich importieren.",
   "GroupSpreadsheets.notSpreadsheets": "Nicht als Tabelle verfügbar (in der JSON-Datei enthalten):",
+  "Frame.categories": "Kategorien",
+  "Search.newCategory": "Neue Kategorie",
+  "Search.openCategories": "Zu den Kategorien",
+  "Categories.title": "Kategorien",
+  "Categories.add": "Neue Kategorie",
+  "Categories.addFirst": "Kategorie hinzufügen",
+  "Categories.addOne": "Eine hinzufügen",
+  "Categories.addChild": "Unterkategorie hinzufügen",
+  "Categories.edit": "Kategorie bearbeiten",
+  "Categories.actions": "Aktionen für {name}",
+  "Categories.archive": "Archivieren",
+  "Categories.unarchive": "Aus dem Archiv holen",
+  "Categories.unarchiveParentFirst": "Hol {parent} aus dem Archiv, um diese zurückzuholen",
+  "Categories.archivedBadge": "Archiviert",
+  "Categories.showArchived": "Archivierte Kategorien zeigen",
+  "Categories.hideArchived": "Archivierte Kategorien ausblenden",
+  "Categories.expenses": "Ausgaben",
+  "Categories.income": "Einnahmen",
+  "Categories.inParent": ", in {parent}",
+  "Categories.noExpenses": "Noch keine Ausgabenkategorien.",
+  "Categories.noIncome": "Noch keine Einnahmekategorien.",
+  "Categories.readOnly": "Du kannst die Kategorien ansehen, aber nur Bearbeiter können sie ändern.",
+  "Categories.loading": "Kategorien werden geladen",
+  "Categories.empty": "Füge deine erste Kategorie hinzu",
+  "Categories.emptyHint":
+    "Eine Kategorie sagt, wofür Geld floss: Lebensmittel, Miete, Gehalt. Gib jeder ein Symbol und eine Farbe.",
+  "Categories.emptyViewer": "Noch keine Kategorien",
+  "Categories.allArchived":
+    "Alle Kategorien sind archiviert. Zeig die archivierten Kategorien, um sie zu sehen.",
+  "Categories.archiveTitle": {
+    "one": "{name} und {count} Unterkategorie archivieren?",
+    "other": "{name} und {count} Unterkategorien archivieren?",
+  },
+  "Categories.archiveMessage": {
+    "one":
+      "{names} wird mit archiviert. Sie verschwindet aus den Auswahllisten, frühere Buchungen behalten sie, und jede Summe zählt sie weiter. Du kannst sie später zurückholen.",
+    "other":
+      "{names} werden mit archiviert. Sie verschwinden aus den Auswahllisten, frühere Buchungen behalten sie, und jede Summe zählt sie weiter. Du kannst sie später zurückholen.",
+  },
+  "Categories.archiveConfirm": {
+    "one": "{count} Kategorie archivieren",
+    "other": "{count} Kategorien archivieren",
+  },
+  "Categories.cancel": "Abbrechen",
+  "CategoryParts.expense": "Ausgabe",
+  "CategoryParts.income": "Einnahme",
+  "CategoryEditor.title": "Kategorie",
+  "CategoryEditor.new": "Neue Kategorie",
+  "CategoryEditor.back": "Kategorien",
+  "CategoryEditor.loading": "Kategorie wird geladen",
+  "CategoryEditor.notFound": "Kategorie nicht gefunden",
+  "CategoryEditor.notFoundHint": "Sie gehört vielleicht zu einem anderen Haushalt.",
+  "CategoryEditor.name": "Name",
+  "CategoryEditor.namePlaceholder": "Lebensmittel",
+  "CategoryEditor.kind": "Art",
+  "CategoryEditor.parent": "Oberkategorie",
+  "CategoryEditor.noParent": "Keine Oberkategorie: eine Kategorie der obersten Ebene",
+  "CategoryEditor.noParentMatch": "Keine Kategorie passt.",
+  "CategoryEditor.clearParent": "Oberkategorie entfernen",
+  "CategoryEditor.topLevel": "Keine: eine Kategorie der obersten Ebene",
+  "CategoryEditor.icon": "Symbol",
+  "CategoryEditor.iconSearch": "Symbole suchen",
+  "CategoryEditor.iconEmpty": "Kein Symbol passt zu „{query}“.",
+  "CategoryEditor.iconClear": "Suche leeren",
+  "CategoryEditor.iconCount": { "one": "{count} Symbol", "other": "{count} Symbole" },
+  "CategoryEditor.color": "Farbe",
+  "CategoryEditor.summaryTop": "{kind} · oberste Ebene",
+  "CategoryEditor.summaryChild": "{kind} · in {parent}",
+  "CategoryEditor.kindLockedChild":
+    "Eine Unterkategorie hat die Art ihrer Oberkategorie. Wähl keine Oberkategorie, um sie zu ändern.",
+  "CategoryEditor.kindLockedParent":
+    "{name} hat Unterkategorien, darum lässt sich die Art nicht ändern. Verschieb sie zuerst.",
+  "CategoryEditor.parentLockedParent":
+    "{name} hat Unterkategorien, darum kann sie unter keiner anderen Kategorie stehen.",
+  "CategoryEditor.noParentExpense":
+    "Es gibt noch keine andere Ausgabenkategorie, unter die sie passt.",
+  "CategoryEditor.noParentIncome":
+    "Es gibt noch keine andere Einnahmekategorie, unter die sie passt.",
+  "CategoryEditor.offlineTitle": "Du bist offline",
+  "CategoryEditor.offline":
+    "Du kannst deine Kategorien ansehen, aber Änderungen warten, bis du wieder online bist.",
+  "CategoryEditor.create": "Kategorie anlegen",
+  "CategoryEditor.creating": "Kategorie wird angelegt",
+  "CategoryEditor.save": "Speichern",
+  "CategoryEditor.saving": "Wird gespeichert",
+  "CategoryEditor.discard": "Verwerfen",
+  "CategoryEditor.cancel": "Abbrechen",
+  "CategoriesView.savedTitle": "Kategorie gespeichert",
+  "CategoriesView.saved": "{name} ist gespeichert.",
+  "CategoriesView.archivedTitle": "Kategorie archiviert",
+  "CategoriesView.archived": "{name} ist archiviert. Frühere Buchungen behalten sie.",
+  "CategoriesView.archivedWithChildren": {
+    "one": "{name} und {count} Unterkategorie sind archiviert. Frühere Buchungen behalten sie.",
+    "other": "{name} und {count} Unterkategorien sind archiviert. Frühere Buchungen behalten sie.",
+  },
+  "CategoriesView.unarchivedTitle": "Kategorie wieder in Gebrauch",
+  "CategoriesView.unarchived": "{name} ist wieder in Gebrauch.",
+  "CategoriesView.unarchivedWithChildren": {
+    "one": "{name} und {count} Unterkategorie sind wieder in Gebrauch.",
+    "other": "{name} und {count} Unterkategorien sind wieder in Gebrauch.",
+  },
+  "CategoriesView.undo": "Rückgängig",
+  "CategoriesView.discardTitle": "Änderungen verwerfen?",
+  "CategoriesView.discard": "Deine Änderungen an {name} sind nicht gespeichert.",
+  "CategoriesView.discardNew": "Die neue Kategorie ist nicht gespeichert.",
+  "CategoriesView.discardLeave": "Verwerfen",
+  "CategoriesView.discardStay": "Weiter bearbeiten",
+  "CategoryMessages.nameRequired": "Gib der Kategorie einen Namen.",
+  "CategoryMessages.nameTakenChild": "{parent} hat schon eine Unterkategorie namens {name}.",
+  "CategoryMessages.nameTakenExpense": "Es gibt schon eine Ausgabenkategorie namens {name}.",
+  "CategoryMessages.nameTakenIncome": "Es gibt schon eine Einnahmekategorie namens {name}.",
+  "CategoryMessages.conflict":
+    "Jemand anderes hat diese Kategorie geändert. Du siehst jetzt diese Änderung.",
+  "CategoryMessages.gone": "Diese Kategorie ist nicht mehr in diesem Haushalt.",
+  "CategoryMessages.parentGone":
+    "Diese Oberkategorie wurde archiviert oder geändert. Wähl eine andere.",
+  "CategoryMessages.treeChanged":
+    "Die Kategorien haben sich inzwischen geändert. Prüf Oberkategorie und Art und speichere erneut.",
+  "CategoryMessages.parentArchived":
+    "Ihre Oberkategorie ist archiviert. Hol die Oberkategorie aus dem Archiv, um diese zurückzuholen.",
+  "CategoryMessages.limit":
+    "Ein Haushalt kann höchstens {max} Kategorien haben. Archiviere zuerst eine.",
+  "CategoryMessages.load": "Die Kategorien konnten nicht geladen werden.",
+  "CategoryMessages.create": "Die Kategorie konnte nicht angelegt werden. Versuch es noch einmal.",
+  "CategoryMessages.save": "Die Kategorie konnte nicht gespeichert werden. Versuch es noch einmal.",
+  "CategoryMessages.change": "Die Kategorie konnte nicht geändert werden. Versuch es noch einmal.",
+  "GroupActivity.categoryCreated":
+    "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ hinzugefügt",
+  "GroupActivity.categoryRenamed":
+    "<who>{who}</who> hat die Kategorie „<value>{from}</value>“ in „<value>{name}</value>“ umbenannt",
+  "GroupActivity.categoryChanged":
+    "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ geändert",
+  "GroupActivity.categoryChangedUnnamed": "<who>{who}</who> hat eine Kategorie geändert",
+  "GroupActivity.categoryArchived":
+    "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ archiviert",
+  "GroupActivity.categoryArchivedWithChildren": {
+    "one":
+      "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ mit {count} Unterkategorie archiviert",
+    "other":
+      "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ mit {count} Unterkategorien archiviert",
+  },
+  "GroupActivity.categoryUnarchived":
+    "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ aus dem Archiv geholt",
+  "GroupActivity.categoryUnarchivedWithChildren": {
+    "one":
+      "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ mit {count} Unterkategorie aus dem Archiv geholt",
+    "other":
+      "<who>{who}</who> hat die Kategorie „<value>{name}</value>“ mit {count} Unterkategorien aus dem Archiv geholt",
+  },
+  "GroupImport.categories": { "one": "{count} Kategorie", "other": "{count} Kategorien" },
+  "PlanRefusalNotice.categoriesTitle": "{group} hat sein Kategorienlimit erreicht",
+  "PlanRefusalNotice.categoriesTitleUnnamed": "Diese Gruppe hat ihr Kategorienlimit erreicht",
+  "PlanRefusalNotice.categoriesText": {
+    "one":
+      "Ihr Tarif erlaubt bis zu {count} Kategorie in Gebrauch. Bestehende Kategorien lassen sich weiter lesen, bearbeiten und archivieren.",
+    "other":
+      "Ihr Tarif erlaubt bis zu {count} Kategorien in Gebrauch. Bestehende Kategorien lassen sich weiter lesen, bearbeiten und archivieren.",
+  },
 } satisfies Catalog

@@ -2021,4 +2021,8 @@ export default {
   "AdminRates.emptyText":
     "每日任务会在 UTC 16:00 获取汇率。要立即获取，请在“任务”中运行“Exchange rates”。",
   "AdminRates.loadError": "无法加载汇率。请检查网络连接后重试。",
+  "AdminAuditEvent.categoryCreated": "添加了分类",
+  "AdminAuditEvent.categoryUpdated": "更改了分类",
+  "AdminAuditEvent.categoryArchived": "归档了分类",
+  "AdminAuditEvent.categoryUnarchived": "取消归档了分类",
 } satisfies Catalog

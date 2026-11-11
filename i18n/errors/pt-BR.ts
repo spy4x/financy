@@ -236,4 +236,27 @@ export default {
   "Reason.ACCOUNT_LIMIT_REACHED":
     "Esta família não pode ter mais contas. Arquive ou exclua uma primeiro.",
   "Reason.ACCOUNT_NOT_FOUND": "Esta conta não existe mais.",
+  "Reason.CATEGORY_LIMIT_REACHED":
+    "Esta família não pode ter mais categorias. Arquive uma primeiro.",
+  "Reason.CATEGORY_NAME_TAKEN": "Outra categoria ao lado já tem este nome.",
+  "Reason.CATEGORY_PARENT_ARCHIVED":
+    "A categoria principal está arquivada. Desarquive a principal primeiro.",
+  "Reason.CATEGORY_TREE_INVALID":
+    "Uma subcategoria só pode ficar dentro de uma categoria de primeiro nível do mesmo tipo.",
+  "ImportIssue.categoryParentMissing":
+    "A categoria principal não está entre as categorias do arquivo.",
+  "ImportIssue.categoryParentArchived":
+    "Ela está em uso, mas a categoria principal está arquivada.",
+  "ImportIssue.categoryOwnParent": "Ela indica a si mesma como principal.",
+  "ImportIssue.categoryParentNested":
+    "A categoria principal é uma subcategoria. As categorias têm só dois níveis.",
+  "ImportIssue.categoryKindMismatch": "O tipo é diferente do tipo da categoria principal.",
+  "ImportIssue.duplicateCategoryName": "Outra categoria ao lado no arquivo tem este nome.",
+  "ImportIssue.tooManyCategories": {
+    "one": "Ele tem {count} categoria, mas uma família pode ter no máximo {max}.",
+    "many": "Ele tem {count} de categorias, mas uma família pode ter no máximo {max}.",
+    "other": "Ele tem {count} categorias, mas uma família pode ter no máximo {max}.",
+  },
+  "ImportPlace.categories": "Categorias",
+  "ImportPlace.categoriesEntry": "Categoria {index}",
 } satisfies Catalog

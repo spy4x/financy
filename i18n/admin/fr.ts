@@ -2335,4 +2335,8 @@ export default {
   "AdminRates.emptyText":
     "La tâche quotidienne les récupère à 16 h 00 UTC. Pour les récupérer maintenant, lancez « Exchange rates » dans Tâches.",
   "AdminRates.loadError": "Impossible de charger les taux. Vérifiez votre connexion et réessayez.",
+  "AdminAuditEvent.categoryCreated": "Catégorie ajoutée",
+  "AdminAuditEvent.categoryUpdated": "Catégorie modifiée",
+  "AdminAuditEvent.categoryArchived": "Catégorie archivée",
+  "AdminAuditEvent.categoryUnarchived": "Catégorie désarchivée",
 } satisfies Catalog

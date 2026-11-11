@@ -2108,4 +2108,8 @@ export default {
   "AdminRates.emptyText":
     "毎日のジョブが16:00 UTCに取得します。今すぐ取得するには、ジョブで「Exchange rates」を実行してください。",
   "AdminRates.loadError": "レートを読み込めませんでした。接続を確認して、もう一度お試しください。",
+  "AdminAuditEvent.categoryCreated": "カテゴリを追加",
+  "AdminAuditEvent.categoryUpdated": "カテゴリを変更",
+  "AdminAuditEvent.categoryArchived": "カテゴリをアーカイブ",
+  "AdminAuditEvent.categoryUnarchived": "カテゴリのアーカイブを解除",
 } satisfies Catalog

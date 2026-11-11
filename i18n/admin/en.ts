@@ -2178,4 +2178,8 @@ export default {
   "AdminRates.emptyText":
     'The daily job fetches them at 16:00 UTC. To fetch them now, run "Exchange rates" in Jobs.',
   "AdminRates.loadError": "Couldn't load the rates. Check your connection and try again.",
+  "AdminAuditEvent.categoryCreated": "Category added",
+  "AdminAuditEvent.categoryUpdated": "Category changed",
+  "AdminAuditEvent.categoryArchived": "Category archived",
+  "AdminAuditEvent.categoryUnarchived": "Category unarchived",
 } satisfies Catalog

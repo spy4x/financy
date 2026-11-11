@@ -2252,4 +2252,8 @@ export default {
     "Der tägliche Job ruft sie um 16:00 UTC ab. Um sie jetzt abzurufen, starte „Exchange rates“ unter Jobs.",
   "AdminRates.loadError":
     "Die Kurse konnten nicht geladen werden. Prüf deine Verbindung und versuch es noch einmal.",
+  "AdminAuditEvent.categoryCreated": "Kategorie hinzugefügt",
+  "AdminAuditEvent.categoryUpdated": "Kategorie geändert",
+  "AdminAuditEvent.categoryArchived": "Kategorie archiviert",
+  "AdminAuditEvent.categoryUnarchived": "Kategorie aus dem Archiv geholt",
 } satisfies Catalog

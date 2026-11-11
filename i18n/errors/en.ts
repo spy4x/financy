@@ -229,4 +229,23 @@ export default {
   "Reason.validation": "Some fields need fixing. Check them and try again.",
   "Reason.TRANSLATION_INVALID":
     "This post can't be a translation of that one. Pick an original post in another language, or none.",
+  "Reason.CATEGORY_LIMIT_REACHED":
+    "This household can't have any more categories. Archive one first.",
+  "Reason.CATEGORY_NAME_TAKEN": "Another category beside this one already has this name.",
+  "Reason.CATEGORY_PARENT_ARCHIVED": "Its parent category is archived. Unarchive the parent first.",
+  "Reason.CATEGORY_TREE_INVALID":
+    "A subcategory can sit only under a top-level category of the same kind.",
+  "ImportIssue.categoryParentMissing": "Its parent isn't among the file's categories.",
+  "ImportIssue.categoryParentArchived": "It's in use, but its parent is archived.",
+  "ImportIssue.categoryOwnParent": "It names itself as its parent.",
+  "ImportIssue.categoryParentNested":
+    "Its parent is a subcategory itself. Categories go only two levels deep.",
+  "ImportIssue.categoryKindMismatch": "Its kind differs from its parent's.",
+  "ImportIssue.duplicateCategoryName": "Another category beside it in the file has this name.",
+  "ImportIssue.tooManyCategories": {
+    "one": "It has {count} category, but a household can have at most {max}.",
+    "other": "It has {count} categories, but a household can have at most {max}.",
+  },
+  "ImportPlace.categories": "Categories",
+  "ImportPlace.categoriesEntry": "Category {index}",
 } satisfies Catalog

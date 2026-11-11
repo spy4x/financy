@@ -251,4 +251,25 @@ export default {
   "Reason.ACCOUNT_LIMIT_REACHED":
     "Dieser Haushalt kann keine weiteren Konten haben. Archiviere oder lösche zuerst eins.",
   "Reason.ACCOUNT_NOT_FOUND": "Dieses Konto gibt es nicht mehr.",
+  "Reason.CATEGORY_LIMIT_REACHED":
+    "Dieser Haushalt kann keine weiteren Kategorien haben. Archiviere zuerst eine.",
+  "Reason.CATEGORY_NAME_TAKEN": "Eine andere Kategorie daneben heißt schon so.",
+  "Reason.CATEGORY_PARENT_ARCHIVED":
+    "Ihre Oberkategorie ist archiviert. Hol zuerst die Oberkategorie aus dem Archiv.",
+  "Reason.CATEGORY_TREE_INVALID":
+    "Eine Unterkategorie kann nur unter einer Kategorie der obersten Ebene derselben Art stehen.",
+  "ImportIssue.categoryParentMissing": "Ihre Oberkategorie fehlt unter den Kategorien der Datei.",
+  "ImportIssue.categoryParentArchived":
+    "Sie ist in Gebrauch, aber ihre Oberkategorie ist archiviert.",
+  "ImportIssue.categoryOwnParent": "Sie nennt sich selbst als Oberkategorie.",
+  "ImportIssue.categoryParentNested":
+    "Ihre Oberkategorie ist selbst eine Unterkategorie. Kategorien haben nur zwei Ebenen.",
+  "ImportIssue.categoryKindMismatch": "Ihre Art weicht von der ihrer Oberkategorie ab.",
+  "ImportIssue.duplicateCategoryName": "Eine andere Kategorie daneben in der Datei heißt genauso.",
+  "ImportIssue.tooManyCategories": {
+    "one": "Sie enthält {count} Kategorie, ein Haushalt kann aber höchstens {max} haben.",
+    "other": "Sie enthält {count} Kategorien, ein Haushalt kann aber höchstens {max} haben.",
+  },
+  "ImportPlace.categories": "Kategorien",
+  "ImportPlace.categoriesEntry": "Kategorie {index}",
 } satisfies Catalog

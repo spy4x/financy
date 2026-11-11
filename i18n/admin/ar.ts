@@ -2484,4 +2484,8 @@ export default {
   "AdminRates.emptyText":
     "تجلبها المهمة اليومية في 16:00 UTC. لجلبها الآن، شغّل «Exchange rates» في المهام.",
   "AdminRates.loadError": "تعذّر تحميل الأسعار. تحقّق من اتصالك وحاول مرة أخرى.",
+  "AdminAuditEvent.categoryCreated": "أُضيفت فئة",
+  "AdminAuditEvent.categoryUpdated": "غُيّرت فئة",
+  "AdminAuditEvent.categoryArchived": "أُرشفت فئة",
+  "AdminAuditEvent.categoryUnarchived": "أُلغيت أرشفة فئة",
 } satisfies Catalog

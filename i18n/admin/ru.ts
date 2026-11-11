@@ -2387,4 +2387,8 @@ export default {
   "AdminRates.emptyText":
     "Ежедневная задача получает их в 16:00 UTC. Чтобы получить их сейчас, запустите «Exchange rates» в разделе «Задачи».",
   "AdminRates.loadError": "Не удалось загрузить курсы. Проверьте подключение и попробуйте ещё раз.",
+  "AdminAuditEvent.categoryCreated": "Добавлена категория",
+  "AdminAuditEvent.categoryUpdated": "Изменена категория",
+  "AdminAuditEvent.categoryArchived": "Категория убрана в архив",
+  "AdminAuditEvent.categoryUnarchived": "Категория возвращена из архива",
 } satisfies Catalog

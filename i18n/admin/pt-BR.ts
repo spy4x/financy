@@ -2310,4 +2310,8 @@ export default {
     "A tarefa diária busca as cotações às 16:00 UTC. Para buscar agora, execute “Exchange rates” em Tarefas.",
   "AdminRates.loadError":
     "Não foi possível carregar as cotações. Verifique sua conexão e tente de novo.",
+  "AdminAuditEvent.categoryCreated": "Categoria adicionada",
+  "AdminAuditEvent.categoryUpdated": "Categoria alterada",
+  "AdminAuditEvent.categoryArchived": "Categoria arquivada",
+  "AdminAuditEvent.categoryUnarchived": "Categoria desarquivada",
 } satisfies Catalog

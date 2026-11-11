@@ -251,4 +251,25 @@ export default {
   "Reason.ACCOUNT_LIMIT_REACHED":
     "Ce foyer ne peut plus avoir de nouveaux comptes. Archivez ou supprimez-en un d’abord.",
   "Reason.ACCOUNT_NOT_FOUND": "Ce compte n’existe plus.",
+  "Reason.CATEGORY_LIMIT_REACHED":
+    "Ce foyer ne peut plus avoir de nouvelles catégories. Archivez-en une d’abord.",
+  "Reason.CATEGORY_NAME_TAKEN": "Une autre catégorie à côté porte déjà ce nom.",
+  "Reason.CATEGORY_PARENT_ARCHIVED":
+    "Sa catégorie parente est archivée. Désarchivez d’abord la parente.",
+  "Reason.CATEGORY_TREE_INVALID":
+    "Une sous-catégorie ne peut aller que sous une catégorie de premier niveau du même type.",
+  "ImportIssue.categoryParentMissing": "Sa parente ne figure pas parmi les catégories du fichier.",
+  "ImportIssue.categoryParentArchived": "Elle est utilisée, mais sa parente est archivée.",
+  "ImportIssue.categoryOwnParent": "Elle se désigne comme sa propre parente.",
+  "ImportIssue.categoryParentNested":
+    "Sa parente est elle-même une sous-catégorie. Les catégories n’ont que deux niveaux.",
+  "ImportIssue.categoryKindMismatch": "Son type diffère de celui de sa parente.",
+  "ImportIssue.duplicateCategoryName": "Une autre catégorie à côté dans le fichier porte ce nom.",
+  "ImportIssue.tooManyCategories": {
+    "one": "Il contient {count} catégorie, mais un foyer peut en avoir au plus {max}.",
+    "many": "Il contient {count} de catégories, mais un foyer peut en avoir au plus {max}.",
+    "other": "Il contient {count} catégories, mais un foyer peut en avoir au plus {max}.",
+  },
+  "ImportPlace.categories": "Catégories",
+  "ImportPlace.categoriesEntry": "Catégorie {index}",
 } satisfies Catalog
