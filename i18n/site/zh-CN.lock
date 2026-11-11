@@ -72,6 +72,13 @@ FeatureAccounts.fact3	45c27b45fd1d8f76
 FeatureAccounts.lead	7f3cce6da8e7c4f7
 FeatureAccounts.nav	8a7c8b67fe8bde8b
 FeatureAccounts.title	65065bc2d2936e56
+FeatureCategories.code	df25479187d99a8e
+FeatureCategories.fact1	8d5c97c03b1df9fa
+FeatureCategories.fact2	0d266f2804598db3
+FeatureCategories.fact3	a7534b033268b024
+FeatureCategories.lead	3e3103ff0d2ee597
+FeatureCategories.nav	b8b1d894c6837252
+FeatureCategories.title	2eed8ea2e5f8abd6
 FeatureDeploy.code	d4f494dfcd050dd5
 FeatureDeploy.fact1	1a3ee353341b52f9
 FeatureDeploy.fact2	b0900c3f64658340
@@ -216,7 +223,7 @@ FeatureTeams.lead	be6a1d471c41b318
 FeatureTeams.nav	57114cd7a89d5ee9
 FeatureTeams.title	8725230e88b93cf5
 FeatureTierSettled.eyebrow	07e5472296689ad6
-FeatureTierSettled.lead	c9d2b23e6bb5ca52
+FeatureTierSettled.lead	f167aa4e62aa6dec
 FeatureTierSettled.status	7db962f7e27da422
 FeatureTierSettled.title	7f002a8eb7417f39
 FeatureVisuals.deployCaption	c01bf8eb34fcf120
@@ -265,6 +272,7 @@ HomeProof.tests	bf9ed71c7eba8e03
 HomeQuickStart.terminal	e0926fdac700b094
 HomeStatus.accounts	75da61bc131488f0
 HomeStatus.building	a2064376e7bf7b51
+HomeStatus.categories	43b681a77fa372bb
 HomeStatus.export	c637c325cc85032e
 HomeStatus.groups	3afea2292b2c6f21
 HomeStatus.languages	cde39498d5811739

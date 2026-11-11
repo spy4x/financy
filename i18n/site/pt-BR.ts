@@ -610,8 +610,6 @@ export default {
     "Dinheiro, contas bancárias, cartões, poupança, ativos e dívidas, cada um na própria moeda, agrupados por tipo e com uma conta padrão. Toda a família vê cada mudança na hora.",
   "FeatureAccounts.nav": "Contas",
   "FeatureAccounts.title": "Cada conta na própria moeda",
-  "FeatureTierSettled.lead":
-    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda já estão aqui; os lançamentos nelas vêm a seguir.",
   "Features.description":
     "Financy hoje: contas em qualquer moeda, famílias com funções, sincronização, app offline, exportação, nove idiomas e seu servidor. Depois, lançamentos.",
   "Features.title": "Recursos do Financy: contas, famílias, sincronização",
@@ -635,4 +633,17 @@ export default {
   "CatalogItem.care": "Cuidados",
   "CatalogItem.inStock": "{choice}: em estoque",
   "CatalogItem.soldOut": "{choice}: esgotado",
+  "FeatureCategories.nav": "Categorias",
+  "FeatureCategories.title": "Categorias de um só nível",
+  "FeatureCategories.lead":
+    "Organize despesas e receitas em categorias, cada uma com seu ícone e sua cor. Ponha Mercado e Comer fora dentro de Alimentação. Uma família nova começa com uma lista curta no seu idioma.",
+  "FeatureCategories.fact1":
+    "Uma categoria nunca é excluída: arquivá-la a tira das listas de escolha, e os lançamentos passados a mantêm",
+  "FeatureCategories.fact2":
+    "Uma subcategoria tem o tipo da principal, e uma principal não pode ter principal, conferido no servidor",
+  "FeatureCategories.fact3": "Quem só vê lê as categorias; só um editor ou acima as altera",
+  "FeatureCategories.code": "Ler o código das categorias",
+  "FeatureTierSettled.lead":
+    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda e suas categorias já estão aqui; os lançamentos vêm a seguir.",
+  "HomeStatus.categories": "Categorias com um nível de subcategorias",
 } satisfies Catalog
