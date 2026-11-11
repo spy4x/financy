@@ -27,12 +27,13 @@ import {
   type UserRole,
 } from "@domain/identity"
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
+import { PostgresInvitationRepository } from "@server/groups/postgres-invitation-repository.ts"
 import { PostgresNotificationRepository } from "@server/notifications/postgres-notification-repository.ts"
 import { PostgresGroupActivityRepository } from "@server/groups/postgres-activity-repository.ts"
 import { PostgresGroupDataMover } from "@server/groups/postgres-group-data-mover.ts"
 import { type ChangesAggregate, readGroupChanges } from "@server/groups/group-changes.ts"
 import { noteChanges } from "@server/notes/note-changes.ts"
-import type { NotesSetup } from "@server/notes/setup.ts"
+import { NOTES_ON, type NotesSetup } from "@server/notes/setup.ts"
 import { tagChanges } from "@server/tags/tag-changes.ts"
 import { revokeAllInvitationsOf } from "@server/groups/invitation-revocation.ts"
 import type { MovableAggregate } from "@server/groups/movable.ts"
@@ -215,13 +216,19 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
  */
 export const CHANGES_AGGREGATES: readonly ChangesAggregate[] = [tagChanges, noteChanges]
 
+/** `aggregates` as the notes switch leaves them: with the notes off, without `notesOwn`. */
+function switched<T>(notes: NotesSetup, aggregates: readonly T[], notesOwn: readonly T[]) {
+  return notes.on ? aggregates : aggregates.filter((aggregate) => !notesOwn.includes(aggregate))
+}
+
 /** The aggregates the changes pull reads: with the notes off (`NOTES=false`), not notes or tags. */
 export function changesAggregatesOf(notes: NotesSetup): readonly ChangesAggregate[] {
-  return notes.on
-    ? CHANGES_AGGREGATES
-    : CHANGES_AGGREGATES.filter((aggregate) =>
-      aggregate !== tagChanges && aggregate !== noteChanges
-    )
+  return switched(notes, CHANGES_AGGREGATES, [tagChanges, noteChanges])
+}
+
+/** The aggregates a group's data move moves: with the notes off, not notes or tags. */
+export function movableAggregatesOf(notes: NotesSetup): readonly MovableAggregate[] {
+  return switched(notes, MOVABLE_AGGREGATES, [tagMovable, noteMovable])
 }
 
 /** A cache that stores nothing: every read goes to the database. */
@@ -239,8 +246,11 @@ export interface AppDbBaseOptions {
    * none. Nothing that decides authentication or a role reads it: see `user.findOne`.
    */
   userCache?: RowCache<User>
-  /** The aggregates the changes pull reads (`changesAggregatesOf`). Defaults to every one. */
-  changes?: readonly ChangesAggregate[]
+  /**
+   * The notes switch (`NOTES`). Off, the changes pull and the group data move leave notes and
+   * tags out, and sign-up queues no starter data. Defaults to on.
+   */
+  notes?: NotesSetup
 }
 
 /**
@@ -257,12 +267,12 @@ export class AppDbBase extends DbServiceBase {
    */
   private readonly userCache: RowCache<User>
   /** Not `#private` either, for the same reason. */
-  private readonly changes: readonly ChangesAggregate[]
+  private readonly notes: NotesSetup
 
   constructor(options: AppDbBaseOptions) {
     super({ sql: options.sql })
     this.userCache = options.userCache ?? noCache
-    this.changes = options.changes ?? CHANGES_AGGREGATES
+    this.notes = options.notes ?? NOTES_ON
   }
 
   /**
@@ -272,6 +282,11 @@ export class AppDbBase extends DbServiceBase {
    */
   get group(): PostgresGroupRepository {
     return new PostgresGroupRepository(this.sql)
+  }
+
+  /** Group invitations; here for the sign-up gate (`sign-up-gate.ts`). Built per access, like `group`. */
+  get invitations(): PostgresInvitationRepository {
+    return new PostgresInvitationRepository(this.sql)
   }
 
   /** Revokes every pending invitation a person made. Built per access, like `group`. */
@@ -315,12 +330,13 @@ export class AppDbBase extends DbServiceBase {
 
   /** Moves all of a group's data to another group. Built per access, like `group`. */
   get groupData(): PostgresGroupDataMover {
-    return new PostgresGroupDataMover(this.sql, MOVABLE_AGGREGATES)
+    return new PostgresGroupDataMover(this.sql, movableAggregatesOf(this.notes))
   }
 
   /** Pages of a group's changes for the changes pull. Built per access, like `group`. */
   get groupChanges(): GroupChangesReader {
-    const { sql, changes } = this
+    const { sql } = this
+    const changes = changesAggregatesOf(this.notes)
     return {
       read: (groupId, after) => readGroupChanges(sql, changes, groupId, after),
     }
@@ -506,10 +522,15 @@ export class AppDbBase extends DbServiceBase {
    * access, like `group`: `queue` belongs inside the sign-up's `begin()`.
    */
   get starterData() {
-    const sql = this.sql
+    const { sql, notes } = this
     return {
-      /** Writes the marker row and queues the worker job that creates the welcome note. */
-      queue: (userId: number): Promise<void> => scheduleStarterData(sql, userId),
+      /**
+       * Writes the marker row and queues the worker job that creates the welcome note. With the
+       * notes off it does nothing: the worker does not read `NOTES`.
+       */
+      queue: async (userId: number): Promise<void> => {
+        if (notes.on) await scheduleStarterData(sql, userId)
+      },
     }
   }
 
