@@ -2409,4 +2409,13 @@ export default {
   "OnboardingCard.accountAction": "Добавить счёт",
   "OnboardingCard.accountText": "Кошелёк, банковский счёт или карта — у каждого своя валюта.",
   "OnboardingCard.accountTitle": "Добавьте первый счёт",
+  "NoteSpreadsheet.id": "ID",
+  "NoteSpreadsheet.title": "Заголовок",
+  "NoteSpreadsheet.text": "Текст",
+  "NoteSpreadsheet.tagIds": "ID меток",
+  "NoteSpreadsheet.created": "Создана",
+  "NoteSpreadsheet.updated": "Изменена",
+  "GroupSpreadsheets.readme":
+    "Данные группы в виде таблиц: по одному CSV-файлу на каждый вид записей, в кодировке UTF-8, с заголовками в первой строке. Даты и время указаны в формате ISO 8601, по UTC. Чтобы перенести группу в другое приложение, скачайте JSON-файл: импортировать можно только его.",
+  "GroupSpreadsheets.notSpreadsheets": "Нет в таблицах, но есть в JSON-файле:",
 } satisfies Catalog

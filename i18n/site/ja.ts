@@ -603,4 +603,18 @@ export default {
     "取引と予算はまだできていません。<status>作り直しの進み具合を見る</status>。",
   "HomeFaq.useAnswer":
     "まだです。ログイン、世帯、同期、どの通貨でも使える口座は動いています。取引はいま作っているところです。",
+  "Catalog.title": "カタログ",
+  "Catalog.intro": "販売中のすべての商品を、価格・サイズ・カラーとあわせて掲載しています。",
+  "Catalog.categories": "カテゴリ",
+  "Catalog.all": "すべて",
+  "Catalog.empty": "販売中の商品はまだありません",
+  "Catalog.emptyLead": "新しい商品は準備ができしだい、ここに表示されます。",
+  "Catalog.categoryIntro": "{category}：価格・サイズ・カラー",
+  "CatalogItem.intro": "{item}：価格・サイズ・カラー",
+  "CatalogItem.photos": "写真",
+  "CatalogItem.material": "素材",
+  "CatalogItem.fit": "シルエット",
+  "CatalogItem.care": "お手入れ",
+  "CatalogItem.inStock": "{choice}：在庫あり",
+  "CatalogItem.soldOut": "{choice}：売り切れ",
 } satisfies Catalog

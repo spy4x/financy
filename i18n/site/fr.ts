@@ -629,4 +629,18 @@ export default {
     "Les opérations et les budgets ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
   "HomeFaq.useAnswer":
     "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
+  "Catalog.title": "Catalogue",
+  "Catalog.intro": "Tout ce que nous vendons, avec les prix, les tailles et les couleurs.",
+  "Catalog.categories": "Catégories",
+  "Catalog.all": "Tout",
+  "Catalog.empty": "Rien en vente pour le moment",
+  "Catalog.emptyLead": "Les nouveaux articles apparaissent ici dès qu’ils sont prêts.",
+  "Catalog.categoryIntro": "{category} : prix, tailles et couleurs.",
+  "CatalogItem.intro": "{item} : prix, tailles et couleurs.",
+  "CatalogItem.photos": "Photos",
+  "CatalogItem.material": "Matière",
+  "CatalogItem.fit": "Coupe",
+  "CatalogItem.care": "Entretien",
+  "CatalogItem.inStock": "{choice} : en stock",
+  "CatalogItem.soldOut": "{choice} : épuisé",
 } satisfies Catalog

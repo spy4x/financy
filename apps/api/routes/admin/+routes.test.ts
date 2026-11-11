@@ -134,6 +134,8 @@ function buildApp(
           limit: passThrough,
           read:
             () => (calls.push(["website-stats"]), Promise.resolve({ state: `off`, missing: [] })),
+          readItem:
+            () => (calls.push(["website-item-stats"]), Promise.resolve({ state: `failed` })),
         })
       case `accounts`:
         return createAdminAccountsRoutes({
@@ -221,6 +223,7 @@ const ROUTES = [
   { method: "GET", path: "/admin/website-stats?days=7" },
   { method: "GET", path: "/admin/accounts" },
   { method: "GET", path: "/admin/rates" },
+  { method: "GET", path: "/admin/website-stats/items/0199f0a0-0000-7000-8000-000000000001" },
 ]
 
 function send(

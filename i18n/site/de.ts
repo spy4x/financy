@@ -619,4 +619,18 @@ export default {
     "Buchungen und Budgets gibt es noch nicht. <status>Sieh nach, wie weit der Neubau ist</status>.",
   "HomeFaq.useAnswer":
     "Noch nicht. Anmeldung, Haushalte, Synchronisierung und Konten in jeder Währung funktionieren; Buchungen werden gerade gebaut.",
+  "Catalog.title": "Katalog",
+  "Catalog.intro": "Alles, was wir verkaufen, mit Preisen, Größen und Farben.",
+  "Catalog.categories": "Kategorien",
+  "Catalog.all": "Alle",
+  "Catalog.empty": "Noch nichts im Angebot",
+  "Catalog.emptyLead": "Neue Artikel erscheinen hier, sobald sie bereit sind.",
+  "Catalog.categoryIntro": "{category}: Preise, Größen und Farben.",
+  "CatalogItem.intro": "{item}: Preis, Größen und Farben.",
+  "CatalogItem.photos": "Fotos",
+  "CatalogItem.material": "Material",
+  "CatalogItem.fit": "Passform",
+  "CatalogItem.care": "Pflege",
+  "CatalogItem.inStock": "{choice}: auf Lager",
+  "CatalogItem.soldOut": "{choice}: ausverkauft",
 } satisfies Catalog

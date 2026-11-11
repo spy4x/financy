@@ -277,7 +277,13 @@ export interface SiteFrameProps {
    */
   state: Pick<
     State,
-    "webAppOrigin" | "spaOrigin" | "newsletter" | "blog" | "blogLanguages" | "contactLinks"
+    | "webAppOrigin"
+    | "spaOrigin"
+    | "demoOrigin"
+    | "newsletter"
+    | "blog"
+    | "blogLanguages"
+    | "contactLinks"
   >
   /**
    * The page's path on this website in the default language, such as `/pricing`. The frame puts

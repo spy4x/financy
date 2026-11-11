@@ -16,6 +16,19 @@ server holds real people's data.
 Set `DEMO_MODE=true` in the server's env file (`infra/envs/.env.prod`, which `deno task deploy`
 copies). The worker and the SPA read it (`infra/compose/compose.shared.yml`); the API does not.
 
+## A demo on its own host
+
+A product with real users keeps guests off its production app and runs the demo as a deployment
+of its own, with its own database. The website's try links then go to that demo:
+
+| Deployment | Env file lines                                                                          |
+| ---------- | --------------------------------------------------------------------------------------- |
+| Production | `DEMO_ORIGIN=https://demo.example.com`, `GUEST_MODE=false`, and `DEMO_MODE` left unset |
+| The demo   | `DEMO_MODE=true`, `DOMAIN=demo.example.com`, and its own database                       |
+
+`DEMO_ORIGIN` must be an `https://` origin with no path; anything else stops the website at
+start. Sign-in and sign-up links stay on the production app.
+
 ## What it does
 
 | Part | Where | What |
@@ -51,7 +64,8 @@ or backup for it, so the admin panel shows the demo as it is. Unset, the demo ha
 
 Its Stats page says "Stats are off" and names `UMAMI_API_URL` and `UMAMI_API_TOKEN`: the demo's
 server sets only the website's tracker (`MPA_UMAMI_ORIGIN`, `MPA_UMAMI_WEBSITE_ID`), and the demo
-has no fake Umami to read ([analytics.md](analytics.md#stats-in-the-admin-app)). Stats adds no
+has no fake Umami to read ([analytics.md](analytics.md#stats-in-the-admin-app)). For the same
+reason, an item's "Share links" card says "Turn on stats to see visits per link." Stats adds no
 table, so the wipe and the seed are unchanged.
 
 In development, `deno task db:seed` adds `admin@example.com`, an administrator, so the admin app
@@ -127,6 +141,9 @@ updates the demo in the same PR:
   `billing_*`, `subscriber*`, `user_totp`, `backup_status`); fix it there. The seed dates rows after
   writing them, so it then renumbers the `audit_events` and `auth_audits` rows written since it
   started to follow their times (`orderIdsByTime`), because feeds sort by id.
+- **Imports** (`imports`, `import_records`, [imports.md](imports.md)) are demo data: the wipe
+  empties both, and the seed writes one saved notes import in the first themed group, whose
+  batch is a few of its owner's notes (`fromFile` in `fake-data.ts`, `seedImport` in `seed.ts`).
 - **Data exports** need no change: the wipe empties `data_exports`, the seed writes none (a ready
   row would have no file behind it), and the nightly clean-up deletes the files the wipe left in
   the file store. A new table that holds a person's data adds a section to the export instead

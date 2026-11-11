@@ -621,4 +621,18 @@ export default {
     "Lançamentos e orçamentos ainda não existem. <status>Veja em que ponto está a reconstrução</status>.",
   "HomeFaq.useAnswer":
     "Ainda não. Login, famílias, sincronização e contas em qualquer moeda funcionam; os lançamentos estão sendo feitos agora.",
+  "Catalog.title": "Catálogo",
+  "Catalog.intro": "Tudo o que vendemos, com preços, tamanhos e cores.",
+  "Catalog.categories": "Categorias",
+  "Catalog.all": "Tudo",
+  "Catalog.empty": "Ainda não há nada à venda",
+  "Catalog.emptyLead": "Os novos itens aparecem aqui assim que ficarem prontos.",
+  "Catalog.categoryIntro": "{category}: preços, tamanhos e cores.",
+  "CatalogItem.intro": "{item}: preço, tamanhos e cores.",
+  "CatalogItem.photos": "Fotos",
+  "CatalogItem.material": "Material",
+  "CatalogItem.fit": "Caimento",
+  "CatalogItem.care": "Cuidados",
+  "CatalogItem.inStock": "{choice}: em estoque",
+  "CatalogItem.soldOut": "{choice}: esgotado",
 } satisfies Catalog

@@ -2282,4 +2282,13 @@ export default {
   "OnboardingCard.accountText":
     "Ein Portemonnaie, ein Bankkonto oder eine Karte, jedes in seiner eigenen Währung.",
   "OnboardingCard.accountTitle": "Füge dein erstes Konto hinzu",
+  "NoteSpreadsheet.id": "ID",
+  "NoteSpreadsheet.title": "Titel",
+  "NoteSpreadsheet.text": "Text",
+  "NoteSpreadsheet.tagIds": "Tag-IDs",
+  "NoteSpreadsheet.created": "Erstellt",
+  "NoteSpreadsheet.updated": "Zuletzt geändert",
+  "GroupSpreadsheets.readme":
+    "Die Daten der Gruppe als Tabellen: eine CSV-Datei pro Art von Einträgen, in UTF-8 mit einer Kopfzeile. Datum und Uhrzeit stehen im Format ISO 8601, in UTC. Um die Gruppe in eine andere App mitzunehmen, lade stattdessen die JSON-Datei herunter: Nur sie lässt sich importieren.",
+  "GroupSpreadsheets.notSpreadsheets": "Nicht als Tabelle verfügbar (in der JSON-Datei enthalten):",
 } satisfies Catalog
