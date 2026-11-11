@@ -1,6 +1,10 @@
 import type postgres from "postgres"
 import { effectivePlanId, entitlementsOf, type Plan, PlanError } from "@domain/billing"
 import { NoteError } from "@domain/notes"
+import { CategoryError, STARTER_CATEGORIES, type StarterCategory } from "@domain/categories"
+import { PostgresCategoryRepository } from "../categories/postgres-category-repository.ts"
+import { readMailReader } from "../mail/reader.ts"
+import { translatorFor } from "../mail/mail.ts"
 import { PostgresBillingRepository } from "../billing/postgres-billing-repository.ts"
 import { PostgresNoteRepository } from "../notes/postgres-note-repository.ts"
 import { enqueueJob, type JobHandler } from "./jobs.ts"
@@ -108,7 +112,71 @@ export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): J
         // nothing to seed, and a retry would only meet the same answer.
         if (!(error instanceof NoteError || error instanceof PlanError)) throw error
       }
+      await writeStarterCategories(sql, group.id, request.userId, event.aggregateId)
     }
     await sql`UPDATE starter_data_requests SET done_at = now() WHERE id = ${event.aggregateId}`
   }
+}
+
+/**
+ * The id of the starter category at `index`, derived from the request's id: the request's
+ * timestamp, then a SHA-256 of the request id and the index, shaped as a version 7 UUID. A job that
+ * runs again makes the same ids, so the create finds each category it wrote and adds none.
+ */
+export async function starterCategoryId(requestId: string, index: number): Promise<string> {
+  const digest = new Uint8Array(
+    await crypto.subtle.digest(`SHA-256`, new TextEncoder().encode(`${requestId}:${index}`)),
+  )
+  const hex = Array.from(digest, (byte) => byte.toString(16).padStart(2, `0`)).join(``)
+  const time = requestId.replaceAll(`-`, ``).slice(0, 12)
+  const variant = ((parseInt(hex[15], 16) & 0x3) | 0x8).toString(16)
+  const tail = `7${hex.slice(0, 3)}${variant}${hex.slice(3, 18)}`
+  return `${time.slice(0, 8)}-${time.slice(8)}-${tail.slice(0, 4)}-${tail.slice(4, 8)}-${
+    tail.slice(8, 20)
+  }`
+}
+
+/**
+ * Writes the starter categories into the household, named in the person's language, with the
+ * person as their creator. They are the app's own set, not the person's additions, so no plan cap
+ * applies (`allowance: null`); Financy's own cap still does. A category the household refuses
+ * (the group is gone, the person was removed, a name or an id already taken) is skipped, and its
+ * children with it.
+ */
+async function writeStarterCategories(
+  sql: postgres.Sql,
+  groupId: string,
+  userId: number,
+  requestId: string,
+): Promise<void> {
+  const { language } = await readMailReader(sql, userId)
+  const t = translatorFor(language)
+  const categories = new PostgresCategoryRepository(sql)
+  let index = 0
+  const write = async (category: StarterCategory, parentId: string | null) => {
+    const id = await starterCategoryId(requestId, index++)
+    try {
+      await categories.create(
+        {
+          groupId,
+          id,
+          name: t.t(category.key),
+          kind: category.kind,
+          icon: category.icon,
+          color: category.color,
+          parentId,
+          allowance: null,
+          requestId,
+        },
+        userId,
+      )
+    } catch (error) {
+      if (!(error instanceof CategoryError)) throw error
+      // Its children's ids are still counted, so every later category keeps its id on a rerun.
+      index += category.children?.length ?? 0
+      return
+    }
+    for (const child of category.children ?? []) await write(child, id)
+  }
+  for (const category of STARTER_CATEGORIES) await write(category, null)
 }

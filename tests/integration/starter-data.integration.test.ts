@@ -9,6 +9,7 @@ import {
   WELCOME_NOTE_TITLE,
 } from "@server/jobs/starter-data.ts"
 import { freePlanAllowsNothing } from "@domain/billing"
+import { DEFAULT_PREFERENCES } from "@domain/identity"
 import { JOB_AGGREGATE } from "@server/jobs/jobs.ts"
 import type { OutboxEvent } from "@spy4x/server/outbox"
 import { createPostgresAuthStore } from "@spy4x/server/auth/postgres"
@@ -308,5 +309,74 @@ Deno.test("with the notes on by default, sign-up's queue writes the request and 
       .toHaveLength(1)
     expect(await sql`SELECT 1 FROM outbox_events WHERE aggregate_type = ${JOB_AGGREGATE}`)
       .toHaveLength(1)
+  })
+})
+
+const categoriesOf = (sql: postgres.Sql, groupId: string) =>
+  sql<{ id: string; name: string; kind: number; parentId: string | null }[]>`
+    SELECT id, name, kind, parent_id FROM categories WHERE group_id = ${groupId} ORDER BY id
+  `
+
+Deno.test("a new household gets one starter set of categories, however often the job runs", async (t) => {
+  await withSchema(async (sql) => {
+    const { userId, groupId } = await signedUpPerson(sql)
+    await sql.begin((tx) => scheduleStarterData(tx, userId))
+    const [request] = await sql<{ id: string }[]>`SELECT id FROM starter_data_requests`
+    await createOutboxProcessor(sql, mailOff(sql)).drainOnce()
+    const first = await categoriesOf(sql, groupId)
+
+    await t.step("eleven expense and three income categories, Food holding two", () => {
+      expect(first.filter((category) => category.kind === 1)).toHaveLength(11)
+      expect(first.filter((category) => category.kind === 2)).toHaveLength(3)
+      const food = first.find((category) => category.name === "Food")!
+      expect(
+        first.filter((category) => category.parentId === food.id).map(({ name }) => name).sort(),
+      ).toEqual(["Eating out", "Groceries"])
+      expect(first.filter((category) => category.parentId === null)).toHaveLength(12)
+      expectVersion7Ids(first)
+    })
+
+    await t.step("a forced retry, a lost marker and the outbox row put back add none", async () => {
+      const event = eventOf(request.id)
+      await starterDataJob(sql)(event)
+      await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${request.id}`
+      await starterDataJob(sql)(event)
+      await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${request.id}`
+      await sql`UPDATE outbox_events SET processed_at = NULL, available_at = now()
+        WHERE aggregate_type = ${JOB_AGGREGATE} AND aggregate_id = ${request.id}`
+      await createOutboxProcessor(sql, mailOff(sql)).drainOnce()
+
+      expect(await categoriesOf(sql, groupId)).toEqual(first)
+    })
+
+    await t.step("a rerun after the person renamed one adds no second copy of it", async () => {
+      await sql`UPDATE categories SET name = 'Rent' WHERE group_id = ${groupId} AND name = 'Housing'`
+      await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${request.id}`
+      await starterDataJob(sql)(eventOf(request.id))
+
+      const after = await categoriesOf(sql, groupId)
+      expect(after.map(({ id }) => id)).toEqual(first.map(({ id }) => id))
+    })
+  })
+})
+
+Deno.test("the starter categories are named in the person's language, by the person", async () => {
+  await withSchema(async (sql) => {
+    const { userId, groupId } = await signedUpPerson(sql)
+    await sql`
+      INSERT INTO user_preferences (user_id, value, version)
+      VALUES (${userId}, ${sql.json({ ...DEFAULT_PREFERENCES, language: "de" })}, 1)
+    `
+    const requestId = await requestFor(sql, userId)
+
+    await starterDataJob(sql)(eventOf(requestId))
+
+    const names = (await categoriesOf(sql, groupId)).map(({ name }) => name)
+    expect(names).toContain("Lebensmittel")
+    expect(names).not.toContain("Groceries")
+    const creators = await sql`
+      SELECT DISTINCT created_by_user_id FROM categories WHERE group_id = ${groupId}
+    `
+    expect(creators.map((row) => row.createdByUserId)).toEqual([userId])
   })
 })
