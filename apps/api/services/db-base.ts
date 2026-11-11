@@ -48,6 +48,9 @@ import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { accountMovable } from "@server/accounts/account-movable.ts"
 import { accountPortable } from "@server/accounts/account-portable.ts"
+import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
+import { categoryMovable } from "@server/categories/category-movable.ts"
+import { categoryPortable } from "@server/categories/category-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresAttachmentRepository } from "@server/notes/postgres-attachment-repository.ts"
@@ -196,6 +199,7 @@ export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   tagMovable,
   noteMovable,
   accountMovable,
+  categoryMovable,
 ]
 
 /**
@@ -207,6 +211,7 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   tagPortable,
   notePortable,
   accountPortable,
+  categoryPortable,
   householdPortable,
 ]
 
@@ -365,6 +370,11 @@ export class AppDbBase extends DbServiceBase {
   /** The accounts repository. Built per access, like `note`. */
   get account(): PostgresAccountRepository {
     return new PostgresAccountRepository(this.sql)
+  }
+
+  /** The categories repository. Built per access, like `note`. */
+  get category(): PostgresCategoryRepository {
+    return new PostgresCategoryRepository(this.sql)
   }
 
   /** A household's main currency. Built per access, like `note`. */

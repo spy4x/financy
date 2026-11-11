@@ -648,6 +648,63 @@ export function parentsFirst<C extends { parentId: string | null }>(categories: 
 }
 // #endregion Export file
 
+// #region Starter set
+/** One category of the starter set: its name's `app` catalog key, and how it looks. */
+export interface StarterCategory {
+  key: string
+  kind: CategoryKind
+  icon: CategoryIcon
+  /** One of the colour field's presets, by its value. */
+  color: string
+  children?: readonly StarterCategory[]
+}
+
+// The colour field's presets (`COLOR_PRESETS` in `@spy4x/preact-ui/color-field`), by name.
+const SKY = "#0369a1"
+const ORANGE = "#c2410c"
+const BLUE = "#1d4ed8"
+const AMBER = "#b45309"
+const RED = "#b91c1c"
+const PINK = "#be185d"
+const VIOLET = "#6d28d9"
+const CYAN = "#0e7490"
+const INDIGO = "#4338ca"
+const GREEN = "#15803d"
+const EMERALD = "#047857"
+const GRAY = "#4b5563"
+
+const EXPENSE = CategoryKind.EXPENSE
+const INCOME = CategoryKind.INCOME
+
+/**
+ * The categories a new account's first household starts with, named in the person's language.
+ * Food holds Groceries and Eating out, so the one level of parents is taught by example.
+ */
+export const STARTER_CATEGORIES: readonly StarterCategory[] = [
+  { key: `StarterCategory.housing`, kind: EXPENSE, icon: "house", color: SKY },
+  {
+    key: `StarterCategory.food`,
+    kind: EXPENSE,
+    icon: "utensils",
+    color: ORANGE,
+    children: [
+      { key: `StarterCategory.groceries`, kind: EXPENSE, icon: "shopping-cart", color: ORANGE },
+      { key: `StarterCategory.eatingOut`, kind: EXPENSE, icon: "coffee", color: ORANGE },
+    ],
+  },
+  { key: `StarterCategory.transport`, kind: EXPENSE, icon: "car", color: BLUE },
+  { key: `StarterCategory.utilities`, kind: EXPENSE, icon: "zap", color: AMBER },
+  { key: `StarterCategory.health`, kind: EXPENSE, icon: "heart-pulse", color: RED },
+  { key: `StarterCategory.shopping`, kind: EXPENSE, icon: "shopping-bag", color: PINK },
+  { key: `StarterCategory.entertainment`, kind: EXPENSE, icon: "film", color: VIOLET },
+  { key: `StarterCategory.travel`, kind: EXPENSE, icon: "plane", color: CYAN },
+  { key: `StarterCategory.subscriptions`, kind: EXPENSE, icon: "repeat", color: INDIGO },
+  { key: `StarterCategory.salary`, kind: INCOME, icon: "briefcase", color: GREEN },
+  { key: `StarterCategory.interest`, kind: INCOME, icon: "piggy-bank", color: EMERALD },
+  { key: `StarterCategory.otherIncome`, kind: INCOME, icon: "circle-ellipsis", color: GRAY },
+]
+// #endregion Starter set
+
 // #region Admin
 /** How many households the operator's categories page lists, the ones with the most categories. */
 export const ADMIN_CATEGORIES_HOUSEHOLD_LIMIT = 20
