@@ -49,6 +49,10 @@ export const SPA_ROUTES = {
   // Before the account's page, or "new" would be read as an account's id.
   "/accounts/new": { open: false },
   "/accounts/:accountId": { open: false },
+  "/categories": { open: false },
+  // Before the category's page, or "new" would be read as a category's id.
+  "/categories/new": { open: false },
+  "/categories/:categoryId": { open: false },
   "/tags": { open: false },
   // Before the tag's page, or "new" would be read as a tag's id.
   "/tags/new": { open: false },

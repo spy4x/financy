@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, it } from "@std/testing/bdd"
 import { createMemoryReadCache } from "@spy4x/realtime/testing"
 import { createLocalReads, type LocalReads } from "../modules.ts"
 import { createAccountsStore, onlineAccounts } from "./accounts.ts"
+import { createCategoriesStore, onlineCategories } from "./categories.ts"
 import { activityHttp, createActivityStore } from "./activity.ts"
 import { apiTokensHttp, createApiTokensStore } from "./api-tokens.ts"
 import { apiFetch } from "./api.ts"
@@ -66,6 +67,16 @@ const CASES: Case[] = [
       return { load: () => store.open(groupId), shown: () => store.accounts.value }
     },
     painted: [{ id: "a-1", name: "Cash" }],
+    empty: [],
+  },
+  {
+    name: "the categories of a household",
+    body: { categories: [{ id: "c-1", name: "Food" }] },
+    open(device) {
+      const store = createCategoriesStore(onlineCategories, device)
+      return { load: () => store.open(groupId), shown: () => store.categories.value }
+    },
+    painted: [{ id: "c-1", name: "Food" }],
     empty: [],
   },
   {
