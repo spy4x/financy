@@ -18,6 +18,7 @@ import { AppDbBase } from "../../apps/api/services/db-base.ts"
 import { type AppAuthState, createSignIn } from "../../apps/api/services/sign-in.ts"
 import { EmailChangeOutcome } from "../../apps/api/services/email-change.ts"
 import {
+  DEMO_CATEGORY_COUNT,
   FAKE_COUNTS,
   FAKE_PASSKEYS,
   fakeDemoData,
@@ -130,6 +131,7 @@ interface Counts extends postgres.Row {
   tags: number
   accounts: number
   defaults: number
+  categories: number
   invitations: number
   subscribers: number
   activeSessions: number
@@ -146,6 +148,7 @@ async function count(sql: postgres.Sql): Promise<Counts> {
       (SELECT COUNT(*)::int FROM tags) AS tags,
       (SELECT COUNT(*)::int FROM accounts) AS accounts,
       (SELECT COUNT(*)::int FROM accounts WHERE is_default) AS defaults,
+      (SELECT COUNT(*)::int FROM categories) AS categories,
       (SELECT COUNT(*)::int FROM group_invitations) AS invitations,
       (SELECT COUNT(*)::int FROM subscribers) AS subscribers,
       (SELECT COUNT(*)::int FROM auth_sessions WHERE status = ${SessionStatus.Active})
@@ -329,6 +332,8 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
       data.groups.reduce((sum, group) => sum + group.accounts.length, 0),
     )
     expect(counts.defaults).toBe(data.groups.filter((group) => group.accounts.length > 0).length)
+    // The themed groups' demo categories; a fake person's first group gets no starter set.
+    expect(counts.categories).toBe(data.groups.length * DEMO_CATEGORY_COUNT)
     expect(counts.invitations).toBe(
       data.groups.reduce((sum, group) => sum + group.invitations.length, 0),
     )

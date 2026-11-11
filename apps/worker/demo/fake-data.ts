@@ -4,6 +4,7 @@ import { GroupRole } from "@domain/groups"
 import { RATE_SOURCES } from "@domain/money"
 import type { TagColor } from "@domain/tags"
 import { AccountKind } from "@domain/accounts"
+import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import recordedEcbRates from "../../../libs/server/money/fixtures/frankfurter-saturday-ecb.json" with {
   type: "json",
@@ -114,6 +115,51 @@ export const DEMO_ACCOUNTS: readonly Omit<FakeAccount, "author" | "createdAgo">[
   { name: `Cash in Hanoi`, kind: AccountKind.CASH, currency: `VND`, startingBalance: 1_500_000 },
 ]
 
+/** One category of a demo household, with its children; `archived` ones show under "Show archived". */
+export interface FakeCategory {
+  name: string
+  kind: CategoryKind
+  icon: CategoryIcon
+  color: string
+  archived?: boolean
+  children?: readonly Omit<FakeCategory, "author" | "createdAgo" | "children">[]
+  author: FakeMember
+  createdAgo: number
+}
+
+/**
+ * The categories every demo household starts with: a parent with two children, so the tree shows,
+ * income next to expenses, and one archived category.
+ */
+export const DEMO_CATEGORIES: readonly Omit<FakeCategory, "author" | "createdAgo">[] = [
+  { name: `Housing`, kind: CategoryKind.EXPENSE, icon: "house", color: `#0369a1` },
+  {
+    name: `Food`,
+    kind: CategoryKind.EXPENSE,
+    icon: "utensils",
+    color: `#c2410c`,
+    children: [
+      { name: `Groceries`, kind: CategoryKind.EXPENSE, icon: "shopping-cart", color: `#c2410c` },
+      { name: `Eating out`, kind: CategoryKind.EXPENSE, icon: "coffee", color: `#c2410c` },
+    ],
+  },
+  { name: `Transport`, kind: CategoryKind.EXPENSE, icon: "car", color: `#1d4ed8` },
+  {
+    name: `Gym`,
+    kind: CategoryKind.EXPENSE,
+    icon: "heart-pulse",
+    color: `#b91c1c`,
+    archived: true,
+  },
+  { name: `Salary`, kind: CategoryKind.INCOME, icon: "briefcase", color: `#15803d` },
+]
+
+/** How many categories {@link DEMO_CATEGORIES} makes in one household, children included. */
+export const DEMO_CATEGORY_COUNT = DEMO_CATEGORIES.reduce(
+  (sum, category) => sum + 1 + (category.children?.length ?? 0),
+  0,
+)
+
 export interface FakeGroup {
   name: string
   /** The zone the group's days are cut in: one of {@link DEMO_TIME_ZONES}, by its name. */
@@ -124,6 +170,8 @@ export interface FakeGroup {
   tags: { name: string; color: TagColor; author: FakeMember; createdAgo: number }[]
   /** The household's accounts; the first is its default. */
   accounts: FakeAccount[]
+  /** The household's categories, each with its children. */
+  categories: FakeCategory[]
   notes: FakeNote[]
   /** Pending invitations: tied to an address, or `null` for a link anyone may use. */
   invitations: { email: string | null; role: GroupRole; author: FakeMember; createdAgo: number }[]
@@ -519,6 +567,11 @@ function fakeGroup(
     author: lead,
     createdAgo: Math.max(tagsReady - index - 1, 10),
   }))
+  const categories = DEMO_CATEGORIES.map((category, index) => ({
+    ...category,
+    author: lead,
+    createdAgo: Math.max(tagsReady - index - 1, 10),
+  }))
   const notes = sample(theme.notes, theme.notes.length).map((note): FakeNote => {
     const author = pick(writers)
     const createdAgo = between(Math.min(tagsReady - 1, joinedAgo(author)), 15)
@@ -565,6 +618,7 @@ function fakeGroup(
     members,
     tags,
     accounts,
+    categories,
     notes,
     invitations,
     promotions,
@@ -615,6 +669,10 @@ export function withStandIns(
     ...group,
     tags: group.tags.map((tag) => ({ ...tag, author: as(tag.author, writer) })),
     accounts: group.accounts.map((account) => ({ ...account, author: as(account.author, writer) })),
+    categories: group.categories.map((category) => ({
+      ...category,
+      author: as(category.author, writer),
+    })),
     notes: group.notes.map((note) => ({
       ...note,
       author: as(note.author, writer),
