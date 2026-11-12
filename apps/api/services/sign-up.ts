@@ -386,7 +386,14 @@ export function createSignUpOperations(own: SignInParts): SignUpOperations {
             keyId: signedUp.key.id,
             secondFactor: SecondFactorStatus.NotRequired,
           }, deviceOf(c))
-          const user = await createProfile(c, tx, signedUp.user.id, request.email, firstGroupId)
+          const user = await createProfile(
+            c,
+            tx,
+            signedUp.user.id,
+            request.email,
+            firstGroupId,
+            request.language,
+          )
           await joinInvitedGroup(tx, invitation, user.id)
           await tx.signUpRequest.remove(request.id)
           return { user, ...started }

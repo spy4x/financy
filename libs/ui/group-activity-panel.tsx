@@ -313,6 +313,25 @@ export function activityMessage(
       return name
         ? one(ACCOUNT_SENTENCES[event.kind], { name })
         : one(`GroupActivity.accountChangedUnnamed`)
+    case "category.updated": {
+      const from = text(details.from)
+      if (from && name) return one(`GroupActivity.categoryRenamed`, { from, name })
+      return name
+        ? one(`GroupActivity.categoryChanged`, { name })
+        : one(`GroupActivity.categoryChangedUnnamed`)
+    }
+    case "category.created":
+    case "category.archived":
+    case "category.unarchived": {
+      const children = typeof details.children === "number" && details.children > 0
+        ? details.children
+        : null
+      if (!name) return one(`GroupActivity.categoryChangedUnnamed`)
+      const sentence = CATEGORY_SENTENCES[event.kind]
+      return children
+        ? one(sentence.withChildren, { name, count: children })
+        : one(sentence.alone, { name })
+    }
     default:
       return productKinds.find((product) => product.kind === event.kind)?.message(details) ??
         one(`GroupActivity.unknown`)
@@ -376,6 +395,25 @@ export function ActivitySentence(
       }}
     />
   )
+}
+
+/**
+ * The sentences of each category event that names the category: alone, and for an archive or an
+ * unarchive that took subcategories along.
+ */
+const CATEGORY_SENTENCES: Record<string, { alone: string; withChildren: string }> = {
+  "category.created": {
+    alone: `GroupActivity.categoryCreated`,
+    withChildren: `GroupActivity.categoryCreated`,
+  },
+  "category.archived": {
+    alone: `GroupActivity.categoryArchived`,
+    withChildren: `GroupActivity.categoryArchivedWithChildren`,
+  },
+  "category.unarchived": {
+    alone: `GroupActivity.categoryUnarchived`,
+    withChildren: `GroupActivity.categoryUnarchivedWithChildren`,
+  },
 }
 
 /** The sentence of each account event that names the account. */

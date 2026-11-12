@@ -5,6 +5,7 @@ import { AccessError } from "@domain/identity"
 import { PlanError, type PlanErrorCode, toPlanRefusal } from "@domain/billing"
 import { TagError } from "@domain/tags"
 import { AccountError } from "@domain/accounts"
+import { CategoryError } from "@domain/categories"
 import { IdempotencyError } from "@spy4x/server/idempotency"
 import { APIContext } from "../../_types.ts"
 import { PasswordLockedError, passwordLockedMessage } from "../../services/password-locked.ts"
@@ -23,6 +24,8 @@ export type GroupFeatureErrorCode =
   | "REQUEST_ORIGIN_INVALID"
   | "TAG_LIMIT_REACHED"
   | "ACCOUNT_LIMIT_REACHED"
+  | "CATEGORY_LIMIT_REACHED"
+  | "CATEGORY_NAME_TAKEN"
 
 export class GroupFeatureError extends Error {
   constructor(
@@ -80,6 +83,14 @@ const ERROR_DEFINITIONS: Record<GroupFeatureErrorCode, ErrorDefinition> = {
     status: 409,
     message: "The other group has no room for this group's accounts",
   },
+  CATEGORY_LIMIT_REACHED: {
+    status: 409,
+    message: "The other group has no room for this group's categories",
+  },
+  CATEGORY_NAME_TAKEN: {
+    status: 409,
+    message: "The other group already has a category with the same name",
+  },
   SUBSCRIPTION_RENEWS: {
     status: 409,
     message: "Cancel the group's subscription in the billing portal before transferring it",
@@ -115,6 +126,10 @@ export function groupErrorResponse(c: Context<APIContext>, error: unknown): Resp
     ? error.code
     // And moves the accounts, which may not fit under the other group's cap.
     : error instanceof AccountError && error.code === "ACCOUNT_LIMIT_REACHED"
+    ? error.code
+    // And the categories, which may not fit, or meet a category of the same name there.
+    : error instanceof CategoryError &&
+        (error.code === "CATEGORY_LIMIT_REACHED" || error.code === "CATEGORY_NAME_TAKEN")
     ? error.code
     : "INTERNAL_ERROR"
   const definition = ERROR_DEFINITIONS[code]

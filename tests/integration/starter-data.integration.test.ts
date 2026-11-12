@@ -19,6 +19,14 @@ import { expectVersion7Ids } from "./ids.ts"
 import { TEST_FREE_PLAN, TEST_PLANS, testLimits } from "../../libs/domain/billing/test-plans.ts"
 import { AppDbBase } from "../../apps/api/services/db-base.ts"
 import { NOTES_OFF } from "@server/notes/setup.ts"
+import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
+import { type CategoryIcon, CategoryKind } from "@domain/categories"
+import { Hono } from "hono"
+import type { EmailSender } from "@spy4x/email/sender"
+import type { EmailMessage } from "@spy4x/email/message"
+import { createSignIn } from "../../apps/api/services/sign-in.ts"
+import { SignUpOutcome } from "../../apps/api/services/sign-up.ts"
+import type { APIContext } from "../../apps/api/_types.ts"
 
 /** Runs `body` on a fresh schema built from schema.sql. */
 async function withSchema(body: (sql: postgres.Sql) => Promise<void>): Promise<void> {
@@ -308,5 +316,152 @@ Deno.test("with the notes on by default, sign-up's queue writes the request and 
       .toHaveLength(1)
     expect(await sql`SELECT 1 FROM outbox_events WHERE aggregate_type = ${JOB_AGGREGATE}`)
       .toHaveLength(1)
+  })
+})
+
+const categoriesOf = (sql: postgres.Sql, groupId: string) =>
+  sql<{ id: string; name: string; kind: number; parentId: string | null }[]>`
+    SELECT id, name, kind, parent_id FROM categories WHERE group_id = ${groupId} ORDER BY id
+  `
+
+Deno.test("a new household gets one starter set of categories, however often the job runs", async (t) => {
+  await withSchema(async (sql) => {
+    const { userId, groupId } = await signedUpPerson(sql)
+    await sql.begin((tx) => scheduleStarterData(tx, userId))
+    const [request] = await sql<{ id: string }[]>`SELECT id FROM starter_data_requests`
+    await createOutboxProcessor(sql, mailOff(sql)).drainOnce()
+    const first = await categoriesOf(sql, groupId)
+
+    await t.step("eleven expense and three income categories, Food holding two", () => {
+      expect(first.filter((category) => category.kind === 1)).toHaveLength(11)
+      expect(first.filter((category) => category.kind === 2)).toHaveLength(3)
+      const food = first.find((category) => category.name === "Food")!
+      expect(
+        first.filter((category) => category.parentId === food.id).map(({ name }) => name).sort(),
+      ).toEqual(["Eating out", "Groceries"])
+      expect(first.filter((category) => category.parentId === null)).toHaveLength(12)
+      expectVersion7Ids(first)
+    })
+
+    await t.step("a forced retry, a lost marker and the outbox row put back add none", async () => {
+      const event = eventOf(request.id)
+      await starterDataJob(sql)(event)
+      await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${request.id}`
+      await starterDataJob(sql)(event)
+      await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${request.id}`
+      await sql`UPDATE outbox_events SET processed_at = NULL, available_at = now()
+        WHERE aggregate_type = ${JOB_AGGREGATE} AND aggregate_id = ${request.id}`
+      await createOutboxProcessor(sql, mailOff(sql)).drainOnce()
+
+      expect(await categoriesOf(sql, groupId)).toEqual(first)
+    })
+
+    await t.step("a rerun after the person renamed one adds no second copy of it", async () => {
+      await sql`UPDATE categories SET name = 'Rent' WHERE group_id = ${groupId} AND name = 'Housing'`
+      await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${request.id}`
+      await starterDataJob(sql)(eventOf(request.id))
+
+      const after = await categoriesOf(sql, groupId)
+      expect(after.map(({ id }) => id)).toEqual(first.map(({ id }) => id))
+    })
+  })
+})
+
+Deno.test("a starter category refused on the first run keeps the ids after it, so a later run fills in its tree", async () => {
+  await withSchema(async (sql) => {
+    const { userId, groupId } = await signedUpPerson(sql)
+    // The household already has a Food, so the starter Food and its two children are refused.
+    const own = uuidV7()
+    await new PostgresCategoryRepository(sql).create({
+      groupId,
+      id: own,
+      name: "Food",
+      kind: CategoryKind.EXPENSE,
+      icon: "utensils" as CategoryIcon,
+      color: "#c2410c",
+      parentId: null,
+      allowance: null,
+    }, userId)
+    const requestId = await requestFor(sql, userId)
+    await starterDataJob(sql)(eventOf(requestId))
+    const first = await categoriesOf(sql, groupId)
+    expect(first).toHaveLength(12)
+
+    await sql`UPDATE categories SET name = 'Meals' WHERE id = ${own}`
+    await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${requestId}`
+    await starterDataJob(sql)(eventOf(requestId))
+
+    const after = await categoriesOf(sql, groupId)
+    expect(after).toHaveLength(15)
+    const food = after.find((category) => category.name === "Food")!
+    expect(
+      after.filter((category) => category.parentId === food.id).map(({ name }) => name).sort(),
+    ).toEqual(["Eating out", "Groceries"])
+  })
+})
+
+Deno.test("the starter categories are named in the sign-up page's language, by the person", async () => {
+  await withSchema(async (sql) => {
+    const sent: EmailMessage[] = []
+    const sender = {
+      send(message: EmailMessage) {
+        sent.push(message)
+        return Promise.resolve({ ok: true as const, id: String(sent.length) })
+      },
+    } as unknown as EmailSender
+    const worker = createOutboxProcessor(sql, { ...mailOff(sql), sender })
+    const signIn = createSignIn({
+      db: new AppDbBase({ sql }),
+      pepper: "integration-test-only-pepper-0123456789",
+      cookieSecret: "integration-test-only-cookie-secret-0123456789",
+      secureCookie: false,
+      sessionMinutes: 60,
+      totpIssuer: "example.test",
+    })
+    // The page's two calls, over one cookie jar: the request on a German page, then its code.
+    const app = new Hono<APIContext>()
+    app.use(signIn.auth.parseAuth)
+    app.post(
+      "/request",
+      async (c) =>
+        c.json({ ok: await signIn.requestSignUp(c, "anna@example.com", "Passw0rd!", null, "de") }),
+    )
+    app.post("/verify", async (c) => {
+      const result = await signIn.completeSignUp(c, (await c.req.json()).code)
+      return c.json(
+        result.outcome === SignUpOutcome.Created ? { userId: result.signedIn.user.id } : result,
+      )
+    })
+    let cookie = ""
+    const call = async (path: string, body: unknown = {}) => {
+      const response = await app.request(`http://local${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", cookie },
+        body: JSON.stringify(body),
+      })
+      cookie = response.headers.getSetCookie().map((line) => line.split(";")[0]).join("; ")
+      return await response.json()
+    }
+
+    expect(await call("/request")).toEqual({ ok: true })
+    await worker.drainOnce()
+    const code = sent.findLast((mail) => mail.to === "anna@example.com")!.text!.split("\n\n")[1]
+    const { userId } = await call("/verify", { code: code.trim() })
+    expect(typeof userId).toBe("number")
+    // Nothing saved a language for the person: only the sign-up page named one.
+    expect(await sql`SELECT 1 FROM user_preferences WHERE user_id = ${userId} AND version > 0`)
+      .toHaveLength(0)
+    await worker.drainOnce()
+
+    const [{ groupId }] = await sql<{ groupId: string }[]>`
+      SELECT group_id FROM group_members WHERE user_id = ${userId}
+    `
+    const names = (await categoriesOf(sql, groupId)).map(({ name }) => name)
+    expect(names).toContain("Lebensmittel")
+    expect(names).not.toContain("Groceries")
+    const creators = await sql`
+      SELECT DISTINCT created_by_user_id FROM categories WHERE group_id = ${groupId}
+    `
+    expect(creators.map((row) => row.createdByUserId)).toEqual([userId])
   })
 })

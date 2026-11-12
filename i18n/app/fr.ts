@@ -2414,4 +2414,185 @@ export default {
     "Les données du groupe sous forme de feuilles de calcul : un fichier CSV par type d’élément, en UTF-8 avec une ligne d’en-têtes. Les dates et heures sont au format ISO 8601, en UTC. Pour emporter le groupe dans une autre app, téléchargez plutôt le fichier JSON : c’est le seul qui peut être importé.",
   "GroupSpreadsheets.notSpreadsheets":
     "Non disponible en feuille de calcul (présent dans le fichier JSON) :",
+  "Frame.categories": "Catégories",
+  "Search.newCategory": "Nouvelle catégorie",
+  "Search.openCategories": "Aller aux catégories",
+  "Categories.title": "Catégories",
+  "Categories.add": "Nouvelle catégorie",
+  "Categories.addFirst": "Ajouter une catégorie",
+  "Categories.addOne": "En ajouter une",
+  "Categories.addChild": "Ajouter une sous-catégorie",
+  "Categories.edit": "Modifier la catégorie",
+  "Categories.actions": "Actions pour {name}",
+  "Categories.archive": "Archiver",
+  "Categories.unarchive": "Désarchiver",
+  "Categories.unarchiveParentFirst": "Désarchivez {parent} pour récupérer celle-ci",
+  "Categories.archivedBadge": "Archivée",
+  "Categories.showArchived": "Afficher les catégories archivées",
+  "Categories.hideArchived": "Masquer les catégories archivées",
+  "Categories.expenses": "Dépenses",
+  "Categories.income": "Revenus",
+  "Categories.inParent": ", dans {parent}",
+  "Categories.noExpenses": "Pas encore de catégorie de dépenses.",
+  "Categories.noIncome": "Pas encore de catégorie de revenus.",
+  "Categories.readOnly":
+    "Vous pouvez voir les catégories, mais seuls les éditeurs peuvent les modifier.",
+  "Categories.loading": "Chargement des catégories",
+  "Categories.empty": "Ajoutez votre première catégorie",
+  "Categories.emptyHint":
+    "Une catégorie dit pourquoi l’argent a bougé : courses, loyer, salaire. Donnez à chacune une icône et une couleur.",
+  "Categories.emptyViewer": "Pas encore de catégorie",
+  "Categories.allArchived":
+    "Toutes les catégories sont archivées. Affichez les catégories archivées pour les voir.",
+  "Categories.archiveTitle": {
+    "one": "Archiver {name} et sa {count} sous-catégorie ?",
+    "many": "Archiver {name} et ses {count} sous-catégories ?",
+    "other": "Archiver {name} et ses {count} sous-catégories ?",
+  },
+  "Categories.archiveMessage": {
+    "one":
+      "{names} est archivée aussi. Elle quitte les listes de choix, ses transactions passées la gardent et chaque total la compte encore. Vous pourrez la désarchiver plus tard.",
+    "many":
+      "{names} sont archivées aussi. Elles quittent les listes de choix, leurs transactions passées les gardent et chaque total les compte encore. Vous pourrez les désarchiver plus tard.",
+    "other":
+      "{names} sont archivées aussi. Elles quittent les listes de choix, leurs transactions passées les gardent et chaque total les compte encore. Vous pourrez les désarchiver plus tard.",
+  },
+  "Categories.archiveConfirm": {
+    "one": "Archiver {count} catégorie",
+    "many": "Archiver {count} catégories",
+    "other": "Archiver {count} catégories",
+  },
+  "Categories.cancel": "Annuler",
+  "CategoryParts.expense": "Dépense",
+  "CategoryParts.income": "Revenu",
+  "CategoryEditor.title": "Catégorie",
+  "CategoryEditor.new": "Nouvelle catégorie",
+  "CategoryEditor.back": "Catégories",
+  "CategoryEditor.loading": "Chargement de la catégorie",
+  "CategoryEditor.notFound": "Catégorie introuvable",
+  "CategoryEditor.notFoundHint": "Elle appartient peut-être à un autre foyer.",
+  "CategoryEditor.name": "Nom",
+  "CategoryEditor.namePlaceholder": "Courses",
+  "CategoryEditor.kind": "Type",
+  "CategoryEditor.parent": "Catégorie parente",
+  "CategoryEditor.noParent": "Sans parente : une catégorie de premier niveau",
+  "CategoryEditor.noParentMatch": "Aucune catégorie ne correspond.",
+  "CategoryEditor.clearParent": "Retirer la catégorie parente",
+  "CategoryEditor.topLevel": "Aucune : une catégorie de premier niveau",
+  "CategoryEditor.icon": "Icône",
+  "CategoryEditor.iconSearch": "Rechercher une icône",
+  "CategoryEditor.iconEmpty": "Aucune icône ne correspond à « {query} ».",
+  "CategoryEditor.iconClear": "Effacer la recherche",
+  "CategoryEditor.iconCount": {
+    "one": "{count} icône",
+    "many": "{count} icônes",
+    "other": "{count} icônes",
+  },
+  "CategoryEditor.color": "Couleur",
+  "CategoryEditor.summaryTop": "{kind} · premier niveau",
+  "CategoryEditor.summaryChild": "{kind} · dans {parent}",
+  "CategoryEditor.kindLockedChild":
+    "Une sous-catégorie a le type de sa parente. Retirez la parente pour le changer.",
+  "CategoryEditor.kindLockedParent":
+    "{name} a des sous-catégories, son type ne peut donc pas changer. Déplacez-les d’abord.",
+  "CategoryEditor.parentLockedParent":
+    "{name} a des sous-catégories, elle ne peut donc pas aller sous une autre catégorie.",
+  "CategoryEditor.noParentExpense":
+    "Il n’y a pas encore d’autre catégorie de dépenses où la placer.",
+  "CategoryEditor.noParentIncome": "Il n’y a pas encore d’autre catégorie de revenus où la placer.",
+  "CategoryEditor.offlineTitle": "Vous êtes hors ligne",
+  "CategoryEditor.offline":
+    "Vous pouvez consulter vos catégories, mais les modifications attendent votre retour en ligne.",
+  "CategoryEditor.create": "Créer la catégorie",
+  "CategoryEditor.creating": "Création de la catégorie",
+  "CategoryEditor.save": "Enregistrer",
+  "CategoryEditor.saving": "Enregistrement",
+  "CategoryEditor.discard": "Abandonner",
+  "CategoryEditor.cancel": "Annuler",
+  "CategoriesView.savedTitle": "Catégorie enregistrée",
+  "CategoriesView.saved": "{name} est enregistrée.",
+  "CategoriesView.archivedTitle": "Catégorie archivée",
+  "CategoriesView.archived": "{name} est archivée. Ses transactions passées la gardent.",
+  "CategoriesView.archivedWithChildren": {
+    "one":
+      "{name} et sa {count} sous-catégorie sont archivées. Leurs transactions passées les gardent.",
+    "many":
+      "{name} et ses {count} sous-catégories sont archivées. Leurs transactions passées les gardent.",
+    "other":
+      "{name} et ses {count} sous-catégories sont archivées. Leurs transactions passées les gardent.",
+  },
+  "CategoriesView.unarchivedTitle": "Catégorie de nouveau utilisée",
+  "CategoriesView.unarchived": "{name} est de nouveau utilisée.",
+  "CategoriesView.unarchivedWithChildren": {
+    "one": "{name} et sa {count} sous-catégorie sont de nouveau utilisées.",
+    "many": "{name} et ses {count} sous-catégories sont de nouveau utilisées.",
+    "other": "{name} et ses {count} sous-catégories sont de nouveau utilisées.",
+  },
+  "CategoriesView.undo": "Annuler",
+  "CategoriesView.discardTitle": "Abandonner vos modifications ?",
+  "CategoriesView.discard": "Vos modifications de {name} ne sont pas enregistrées.",
+  "CategoriesView.discardNew": "La nouvelle catégorie n’est pas enregistrée.",
+  "CategoriesView.discardLeave": "Abandonner",
+  "CategoriesView.discardStay": "Continuer la modification",
+  "CategoryMessages.nameRequired": "Donnez un nom à la catégorie.",
+  "CategoryMessages.nameTakenChild": "{parent} a déjà une sous-catégorie nommée {name}.",
+  "CategoryMessages.nameTakenExpense": "Il existe déjà une catégorie de dépenses nommée {name}.",
+  "CategoryMessages.nameTakenIncome": "Il existe déjà une catégorie de revenus nommée {name}.",
+  "CategoryMessages.conflict":
+    "Quelqu’un d’autre a modifié cette catégorie. Vous voyez maintenant sa modification.",
+  "CategoryMessages.gone": "Cette catégorie n’est plus dans ce foyer.",
+  "CategoryMessages.parentGone":
+    "Cette parente a été archivée ou modifiée. Choisissez-en une autre.",
+  "CategoryMessages.treeChanged":
+    "Les catégories ont changé entre-temps. Vérifiez la parente et le type, puis enregistrez de nouveau.",
+  "CategoryMessages.parentArchived":
+    "Sa parente est archivée. Désarchivez la parente pour la récupérer.",
+  "CategoryMessages.limit":
+    "Un foyer peut avoir au plus {max} catégories. Archivez-en une d’abord.",
+  "CategoryMessages.load": "Les catégories n’ont pas pu être chargées.",
+  "CategoryMessages.create": "La catégorie n’a pas pu être créée. Réessayez.",
+  "CategoryMessages.save": "La catégorie n’a pas pu être enregistrée. Réessayez.",
+  "CategoryMessages.change": "La catégorie n’a pas pu être modifiée. Réessayez.",
+  "GroupActivity.categoryCreated":
+    "<who>{who}</who> a ajouté la catégorie « <value>{name}</value> »",
+  "GroupActivity.categoryRenamed":
+    "<who>{who}</who> a renommé la catégorie « <value>{from}</value> » en « <value>{name}</value> »",
+  "GroupActivity.categoryChanged":
+    "<who>{who}</who> a modifié la catégorie « <value>{name}</value> »",
+  "GroupActivity.categoryChangedUnnamed": "<who>{who}</who> a modifié une catégorie",
+  "GroupActivity.categoryArchived":
+    "<who>{who}</who> a archivé la catégorie « <value>{name}</value> »",
+  "GroupActivity.categoryArchivedWithChildren": {
+    "one":
+      "<who>{who}</who> a archivé la catégorie « <value>{name}</value> » avec {count} sous-catégorie",
+    "many":
+      "<who>{who}</who> a archivé la catégorie « <value>{name}</value> » avec {count} sous-catégories",
+    "other":
+      "<who>{who}</who> a archivé la catégorie « <value>{name}</value> » avec {count} sous-catégories",
+  },
+  "GroupActivity.categoryUnarchived":
+    "<who>{who}</who> a désarchivé la catégorie « <value>{name}</value> »",
+  "GroupActivity.categoryUnarchivedWithChildren": {
+    "one":
+      "<who>{who}</who> a désarchivé la catégorie « <value>{name}</value> » avec {count} sous-catégorie",
+    "many":
+      "<who>{who}</who> a désarchivé la catégorie « <value>{name}</value> » avec {count} sous-catégories",
+    "other":
+      "<who>{who}</who> a désarchivé la catégorie « <value>{name}</value> » avec {count} sous-catégories",
+  },
+  "GroupImport.categories": {
+    "one": "{count} catégorie",
+    "many": "{count} catégories",
+    "other": "{count} catégories",
+  },
+  "PlanRefusalNotice.categoriesTitle": "{group} a atteint sa limite de catégories",
+  "PlanRefusalNotice.categoriesTitleUnnamed": "Ce groupe a atteint sa limite de catégories",
+  "PlanRefusalNotice.categoriesText": {
+    "one":
+      "Son forfait autorise jusqu’à {count} catégorie utilisée. Les catégories existantes restent lisibles, modifiables et archivables.",
+    "many":
+      "Son forfait autorise jusqu’à {count} catégories utilisées. Les catégories existantes restent lisibles, modifiables et archivables.",
+    "other":
+      "Son forfait autorise jusqu’à {count} catégories utilisées. Les catégories existantes restent lisibles, modifiables et archivables.",
+  },
 } satisfies Catalog

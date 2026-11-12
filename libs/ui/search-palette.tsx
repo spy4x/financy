@@ -12,6 +12,7 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { type GroupRole } from "@domain/groups"
 import { roleName } from "./groups-screen.tsx"
 import {
+  CATEGORY_PATHS,
   GROUP_PATHS,
   OVERVIEW_PATHS,
   profilePath,
@@ -330,6 +331,18 @@ function actionOptions(
       }]
       : []),
     ...(inGroup ? [page("new-tag", `Search.newTag`, TAG_PATHS.new, inGroup)] : []),
+    ...(inGroup
+      ? [page("new-category", `Search.newCategory`, CATEGORY_PATHS.new, inGroup, [
+        `subcategory`,
+        `категория`,
+      ])]
+      : []),
+    ...(currentGroup
+      ? [page("categories", `Search.openCategories`, CATEGORY_PATHS.list, undefined, [
+        `categories`,
+        `категории`,
+      ])]
+      : []),
     ...(online ? [page("new-group", `Search.newGroup`, GROUP_PATHS.new)] : []),
     ...(currentGroup ? [page("overview", `Search.openOverview`, OVERVIEW_PATHS.root)] : []),
     page("notifications", `Search.openNotifications`, SCREEN_PATHS.notifications),

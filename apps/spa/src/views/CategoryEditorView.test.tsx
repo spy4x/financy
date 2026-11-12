@@ -1,0 +1,222 @@
+/**
+ * The category editor wired to the real stores, in a browser DOM (happy-dom): what a Save shows
+ * afterwards, and what a create link asks the new category to start as. The store's `save` is
+ * replaced for each test so no network is read.
+ */
+import "@preact/signals"
+import { expect } from "@std/expect"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from "@std/testing/bdd"
+import { Window } from "happy-dom"
+import { render } from "preact"
+import { act } from "preact/test-utils"
+import { CategoryKind } from "@domain/categories"
+import { GroupRole } from "@domain/groups"
+import { categoriesStore, type CategoryItem } from "../state/categories.ts"
+import { groupsStore } from "../state/groups.ts"
+import { selectionStore } from "../state/selection.ts"
+import { toasts } from "../state/toasts.ts"
+import { CategoryEditorView, draftFromSearch } from "./CategoryEditorView.tsx"
+
+const window = new Window({ url: "http://app.localhost/categories/new" })
+const NAMES = ["document", "location", "history", "getComputedStyle", "FormData"] as const
+const own = Object.fromEntries(
+  NAMES.map((name) => [name, (globalThis as Record<string, unknown>)[name]]),
+)
+
+beforeAll(() => {
+  // Preact draws into `document`, the router reads `location` and `history`, a dropdown reads the
+  // page's style and the form is read with the DOM's own FormData.
+  Object.assign(globalThis, {
+    document: window.document,
+    location: window.location,
+    history: window.history,
+    getComputedStyle: window.getComputedStyle.bind(window),
+    FormData: window.FormData,
+  })
+})
+
+afterAll(async () => {
+  Object.assign(globalThis, own)
+  await window.happyDOM.close()
+})
+
+const groupId = "019a0000-0000-7000-8000-0000000000e0"
+const food: CategoryItem = {
+  id: "019a0000-0000-7000-8000-0000000000e1",
+  groupId,
+  parentId: null,
+  name: "Food",
+  kind: CategoryKind.EXPENSE,
+  icon: "tag",
+  color: "#16a34a",
+  archivedAt: null,
+  version: 1,
+  changeSequence: "1",
+  createdAt: "2026-11-01T00:00:00.000Z",
+  updatedAt: "2026-11-01T00:00:00.000Z",
+}
+
+const groceries: CategoryItem = {
+  ...food,
+  id: "019a0000-0000-7000-8000-0000000000e2",
+  parentId: food.id,
+  name: "Groceries",
+}
+
+const realSave = categoriesStore.save
+const realArchive = categoriesStore.archive
+const realOpen = categoriesStore.open
+let root: HTMLElement | null = null
+
+beforeEach(() => {
+  groupsStore.groups.value = [{
+    id: groupId,
+    name: "Home",
+    role: GroupRole.OWNER,
+    authorizationRevision: "1",
+    changeSequence: "1",
+    updatedAt: "2026-11-01T00:00:00.000Z",
+  }]
+  groupsStore.loading.value = false
+  selectionStore.groupId.value = groupId
+  // The household is open already, so `open` returns at once and reads nothing.
+  categoriesStore.groupId.value = groupId
+  categoriesStore.categories.value = [food]
+  categoriesStore.save = () => Promise.resolve(food)
+})
+
+afterEach(async () => {
+  if (root) await act(() => render(null, root!))
+  root?.remove()
+  root = null
+  categoriesStore.save = realSave
+  categoriesStore.archive = realArchive
+  categoriesStore.open = realOpen
+  // A new category's draft outlives a reset, which keeps it across a change of household.
+  categoriesStore.closeForm()
+  categoriesStore.reset()
+  groupsStore.reset()
+  selectionStore.groupId.value = null
+  toasts.clear()
+})
+
+async function mount(categoryId: string | null): Promise<void> {
+  root = window.document.createElement("div") as unknown as HTMLElement
+  window.document.body.appendChild(root as never)
+  await act(() => render(<CategoryEditorView categoryId={categoryId} />, root!))
+}
+
+/** Submits the editor's form the way the Save button does. */
+async function save(): Promise<void> {
+  const form = root!.querySelector("form")
+  if (!form) throw new Error("the page shows no form")
+  await act(async () => {
+    form.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }) as never)
+    await Promise.resolve()
+  })
+}
+
+describe("CategoryEditorView", () => {
+  it("shows no toast after creating a category and opens the new category's page instead", async () => {
+    await mount(null)
+    await save()
+
+    expect(window.location.pathname).toBe(`/categories/${food.id}`)
+    expect(toasts.list.value).toEqual([])
+  })
+
+  it("offers no name field on the create page until the list is read, so no typing is lost", async () => {
+    // A read of the list is still in flight, and this test decides when it ends.
+    categoriesStore.open = () => Promise.resolve()
+    categoriesStore.loading.value = true
+    await mount(null)
+    expect(root!.querySelectorAll("[data-e2e=category-name-input]").length).toBe(0)
+
+    await act(() => {
+      categoriesStore.loading.value = false
+    })
+    expect(root!.querySelectorAll("[data-e2e=category-name-input]").length).toBe(1)
+  })
+
+  it("shows a toast after saving an edit, since the page stays the same", async () => {
+    await mount(food.id)
+    // Save sends an edit only once something changed.
+    await act(() =>
+      categoriesStore.change({
+        name: "Groceries",
+        kind: food.kind,
+        parentId: null,
+        icon: food.icon,
+        color: food.color,
+      })
+    )
+    await save()
+
+    expect(toasts.list.value.map((toast) => toast.dataE2E)).toEqual(["category-saved"])
+  })
+})
+
+describe("CategoryEditorView's archive", () => {
+  /** Records each archive the page sends; the store reads no network. */
+  function recordArchives(): [string, boolean][] {
+    const sent: [string, boolean][] = []
+    categoriesStore.archive = (id, archived) => {
+      sent.push([id, archived])
+      return Promise.resolve(null)
+    }
+    return sent
+  }
+
+  async function click(selector: string): Promise<void> {
+    const element = window.document.querySelector(selector) as unknown as HTMLElement | null
+    if (!element) throw new Error(`nothing matches ${selector}`)
+    await act(() => element.click())
+  }
+
+  it("asks before archiving a parent with live subcategories from its page, and archives on confirm", async () => {
+    categoriesStore.categories.value = [food, groceries]
+    const sent = recordArchives()
+    await mount(food.id)
+
+    await click("[data-e2e=category-editor-archive]")
+    const dialog = window.document.querySelector("[data-e2e=category-archive-dialog]")
+    expect(dialog?.textContent).toContain("Groceries")
+    expect(sent).toEqual([])
+
+    await click("[data-e2e=category-archive-confirm]")
+    expect(sent).toEqual([[food.id, true]])
+    expect(window.document.querySelectorAll("[data-e2e=category-archive-dialog]").length).toBe(0)
+  })
+
+  it("archives nothing when the question is cancelled", async () => {
+    categoriesStore.categories.value = [food, groceries]
+    const sent = recordArchives()
+    await mount(food.id)
+
+    await click("[data-e2e=category-editor-archive]")
+    await click("[data-e2e=category-archive-cancel]")
+    expect(sent).toEqual([])
+  })
+
+  it("archives a category with no live subcategories from its page at once, with no question", async () => {
+    const sent = recordArchives()
+    await mount(food.id)
+
+    await click("[data-e2e=category-editor-archive]")
+    expect(window.document.querySelectorAll("[data-e2e=category-archive-dialog]").length).toBe(0)
+    expect(sent).toEqual([[food.id, true]])
+  })
+})
+
+describe("draftFromSearch", () => {
+  it("starts an income subcategory from a link's kind and parent", () => {
+    expect(draftFromSearch(`?kind=income&parent=${food.id}`)).toEqual({
+      kind: CategoryKind.INCOME,
+      parentId: food.id,
+    })
+  })
+
+  it("starts with nothing set when the link names no kind or parent", () => {
+    expect(draftFromSearch(`?kind=other&parent=`)).toEqual({})
+  })
+})

@@ -592,8 +592,6 @@ export default {
     "現金、銀行口座、カード、貯蓄、資産、負債を、それぞれの通貨で。種類ごとにまとめ、メインの口座を1つ決められます。変更は世帯の全員にすぐ届きます。",
   "FeatureAccounts.nav": "口座",
   "FeatureAccounts.title": "口座ごとに、それぞれの通貨で",
-  "FeatureTierSettled.lead":
-    "これらは動いていて、CI でテストされています。どの通貨の口座も使えます。口座の取引は次に来ます。",
   "Features.description":
     "Financy の現在：どの通貨でも使える口座、ロール付きの世帯、リアルタイム同期、オフラインアプリ、エクスポート、9 言語、セルフホスト。次は取引です。",
   "Features.title": "Financy の機能：口座、世帯、同期、オフライン",
@@ -617,4 +615,17 @@ export default {
   "CatalogItem.care": "お手入れ",
   "CatalogItem.inStock": "{choice}：在庫あり",
   "CatalogItem.soldOut": "{choice}：売り切れ",
+  "FeatureCategories.nav": "カテゴリ",
+  "FeatureCategories.title": "1階層だけのカテゴリ",
+  "FeatureCategories.lead":
+    "支出と収入をカテゴリに分けて、それぞれにアイコンと色を付けます。食料品と外食は食費の下に。新しい世帯は、その言語の短いリストから始まります。",
+  "FeatureCategories.fact1":
+    "カテゴリは削除されません。アーカイブすると選択肢から消え、過去の記録には残ります",
+  "FeatureCategories.fact2":
+    "サブカテゴリの種類は親と同じで、親カテゴリに親は持てません。サーバーで確認します",
+  "FeatureCategories.fact3": "閲覧者はカテゴリを読めます。変更できるのは編集者以上だけです",
+  "FeatureCategories.code": "カテゴリのコードを読む",
+  "FeatureTierSettled.lead":
+    "これらは動いていて、CI でテストされています。どの通貨の口座も、そのカテゴリも使えます。取引は次に来ます。",
+  "HomeStatus.categories": "1階層のサブカテゴリを持てるカテゴリ",
 } satisfies Catalog

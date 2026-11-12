@@ -194,6 +194,8 @@ describe("SearchPalette", () => {
       "# Actions",
       "New note | In Home",
       "New tag | In Home",
+      "New category | In Home",
+      "Go to categories",
       "New group",
       "Open overview",
       "Open notifications",
@@ -281,6 +283,7 @@ describe("SearchPalette", () => {
       "# Actions",
       "New note | In Home",
       "New tag | In Home",
+      "New category | In Home",
     ])
   })
 
@@ -349,10 +352,35 @@ describe("SearchPalette", () => {
     await open()
 
     const rows = listed()
-    for (const action of ["New note", "New tag", "New group"]) {
+    for (const action of ["New note", "New tag", "New category", "New group"]) {
       expect(rows.some((row) => row.startsWith(action))).toBe(false)
     }
     expect(rows).toContain("Open notifications")
+  })
+
+  it("finds New category by subcategory and категория, and Go to categories by категории", async () => {
+    const { picked } = await mount()
+    for (
+      const [query, label] of [
+        ["subcategory", "New category"],
+        ["категория", "New category"],
+        ["категории", "Go to categories"],
+      ]
+    ) {
+      await open()
+      await type(query)
+      const row = [...document.querySelectorAll("[role=option]")]
+        .find((candidate) => text(candidate).startsWith(label))
+      expect(row, query).toBeDefined()
+      await act(() => {
+        row!.dispatchEvent(new window.MouseEvent("click", { bubbles: true }) as unknown as Event)
+      })
+    }
+    expect(picked).toEqual([
+      { kind: "page", href: "/categories/new" },
+      { kind: "page", href: "/categories/new" },
+      { kind: "page", href: "/categories" },
+    ])
   })
 
   it("offers a guest Keep your account for the words a person would try, and nobody else", async () => {

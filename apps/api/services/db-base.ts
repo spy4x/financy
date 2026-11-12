@@ -48,6 +48,9 @@ import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { accountMovable } from "@server/accounts/account-movable.ts"
 import { accountPortable } from "@server/accounts/account-portable.ts"
+import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
+import { categoryMovable } from "@server/categories/category-movable.ts"
+import { categoryPortable } from "@server/categories/category-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresAttachmentRepository } from "@server/notes/postgres-attachment-repository.ts"
@@ -196,6 +199,7 @@ export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   tagMovable,
   noteMovable,
   accountMovable,
+  categoryMovable,
 ]
 
 /**
@@ -207,6 +211,7 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   tagPortable,
   notePortable,
   accountPortable,
+  categoryPortable,
   householdPortable,
 ]
 
@@ -367,6 +372,11 @@ export class AppDbBase extends DbServiceBase {
     return new PostgresAccountRepository(this.sql)
   }
 
+  /** The categories repository. Built per access, like `note`. */
+  get category(): PostgresCategoryRepository {
+    return new PostgresCategoryRepository(this.sql)
+  }
+
   /** A household's main currency. Built per access, like `note`. */
   get householdSettings(): PostgresHouseholdSettingsRepository {
     return new PostgresHouseholdSettingsRepository(this.sql)
@@ -525,11 +535,12 @@ export class AppDbBase extends DbServiceBase {
     const { sql, notes } = this
     return {
       /**
-       * Writes the marker row and queues the worker job that creates the welcome note. With the
-       * notes off it does nothing: the worker does not read `NOTES`.
+       * Writes the marker row and queues the worker job that creates the welcome note, with the
+       * sign-up page's `language` for the starter categories. With the notes off it does nothing:
+       * the worker does not read `NOTES`.
        */
-      queue: async (userId: number): Promise<void> => {
-        if (notes.on) await scheduleStarterData(sql, userId)
+      queue: async (userId: number, language: string | null = null): Promise<void> => {
+        if (notes.on) await scheduleStarterData(sql, userId, language)
       },
     }
   }

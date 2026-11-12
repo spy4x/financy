@@ -215,8 +215,6 @@ export default {
     "You pay in US dollars. Where the law requires it, VAT or sales tax is added at checkout, and you see the total before you pay.",
   "FeatureTierSettled.eyebrow": "Works today",
   "FeatureTierSettled.title": "The ground your household's money will sit on",
-  "FeatureTierSettled.lead":
-    "These parts work and are tested in CI. Accounts in any currency are here; their transactions come next.",
   "FeatureTierSettled.status":
     "Google and GitHub sign-in need the server's own keys, so a fresh self-hosted copy starts with email sign-in.",
   "FeatureAccounts.nav": "Accounts",
@@ -610,4 +608,17 @@ export default {
   "CatalogItem.care": "Care",
   "CatalogItem.inStock": "{choice}: in stock",
   "CatalogItem.soldOut": "{choice}: sold out",
+  "FeatureCategories.nav": "Categories",
+  "FeatureCategories.title": "Categories, one level deep",
+  "FeatureCategories.lead":
+    "Sort spending and income into categories, each with an icon and a colour. Put Groceries and Eating out under Food. A new household starts with a short list in its own language.",
+  "FeatureCategories.fact1":
+    "A category is never deleted: archiving hides it from the pickers, and its past entries keep it",
+  "FeatureCategories.fact2":
+    "A subcategory has its parent's kind, and a parent cannot have a parent, checked on the server",
+  "FeatureCategories.fact3": "A viewer reads the categories; only an editor or above changes them",
+  "FeatureCategories.code": "Read the categories domain",
+  "FeatureTierSettled.lead":
+    "These parts work and are tested in CI. Accounts in any currency and their categories are here; transactions come next.",
+  "HomeStatus.categories": "Categories with one level of subcategories",
 } satisfies Catalog

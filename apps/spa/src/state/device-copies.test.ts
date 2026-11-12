@@ -3,6 +3,7 @@ import { RealtimeRequestError } from "@spy4x/realtime"
 import { afterEach, describe, it } from "@std/testing/bdd"
 import { type LocalReads, noLocalReads } from "../modules.ts"
 import { createAccountsStore } from "./accounts.ts"
+import { createCategoriesStore } from "./categories.ts"
 import { createActivityStore } from "./activity.ts"
 import { createApiTokensStore } from "./api-tokens.ts"
 import { createBillingStore } from "./billing.ts"
@@ -114,6 +115,25 @@ const CASES: ListCase[] = [
         newId: () => "unused",
       }, device)
       return { load: () => store.open(groupId), shown: () => store.accounts.value }
+    },
+    expected: (answer) => answer,
+    empty: [],
+  },
+  {
+    name: "the categories of a household",
+    answers: [[{ id: "c-1", name: "Food" }], [{ id: "c-1", name: "Food" }, {
+      id: "c-2",
+      name: "Salary",
+    }]],
+    open(read, device) {
+      const store = createCategoriesStore({
+        fetchList: read as never,
+        create: unused,
+        update: unused,
+        archive: unused,
+        newId: () => "unused",
+      }, device)
+      return { load: () => store.open(groupId), shown: () => store.categories.value }
     },
     expected: (answer) => answer,
     empty: [],

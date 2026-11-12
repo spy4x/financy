@@ -66,13 +66,17 @@ export interface SignInParts {
   restoreIfWaiting(c: Context, userId: number): Promise<boolean>
   guests: GuestOperations
   oauth: OAuthOperations
-  /** The profile, first group, starter data and `SIGNED_UP` audit row of a new auth user. */
+  /**
+   * The profile, first group, starter data and `SIGNED_UP` audit row of a new auth user.
+   * `language` is the sign-up page's, for the starter data.
+   */
   createProfile(
     c: Context,
     tx: AppDbBase,
     authUserId: number,
     email: string | null,
     firstGroupId: string,
+    language?: string | null,
   ): Promise<User>
   /**
    * Throws `SignUpClosedError` unless a new account for `email` may be made: always on an open

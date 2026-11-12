@@ -76,6 +76,17 @@ async function account(sql: postgres.Sql, groupId: string, userId: number, name:
   return id
 }
 
+/** An archived income category named `name` in `groupId`, created by `userId`; answers its id. */
+async function category(sql: postgres.Sql, groupId: string, userId: number, name: string) {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO categories (
+      id, group_id, name, kind, icon, color, archived_at, change_sequence, created_by_user_id
+    ) VALUES (${id}, ${groupId}, ${name}, 2, 'wallet', '#15803d', now(), 1, ${userId})
+  `
+  return id
+}
+
 async function signInRows(sql: postgres.Sql, userId: number, groupId: string) {
   const email = `person-${userId}@example.com`
   await sql`INSERT INTO auth_email_owners (email, user_id) VALUES (${email}, ${userId})`
@@ -172,6 +183,7 @@ Deno.test("data export: leaves out other people's notes, tags and groups, even i
       VALUES (${uuidV7()}, ${groupId}, 'Owner tag', 1, ${owner})
     `
     await account(sql, groupId, owner, `Owner account`)
+    await category(sql, groupId, owner, `Owner category`)
 
     const text = Object.values(unzip(await buildDataExport(sql, editor, new Date()))).join(`\n`)
 
@@ -180,6 +192,7 @@ Deno.test("data export: leaves out other people's notes, tags and groups, even i
     expect(text).not.toContain(`Stranger's note`)
     expect(text).not.toContain(`Owner tag`)
     expect(text).not.toContain(`Owner account`)
+    expect(text).not.toContain(`Owner category`)
     expect(text).not.toContain(strangers.groupId)
   })
 })
@@ -206,6 +219,31 @@ Deno.test("data export: lists the finance accounts the person created, the kind 
     ])
     expect(files[`finance_accounts.csv`].split(`\r\n`)[0]).toBe(
       `\uFEFFid,groupId,name,kind,currency,startingBalance,isDefault,archivedAt,createdAt,updatedAt,deletedAt`,
+    )
+  })
+})
+
+Deno.test("data export: lists the finance categories the person created, archived ones included, the kind as a word", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, editor } = await team(sql)
+    const id = await category(sql, groupId, editor, `Side income`)
+
+    const files = unzip(await buildDataExport(sql, editor, new Date()))
+
+    expect(JSON.parse(files[`data.json`]).sections.finance_categories).toEqual([
+      expect.objectContaining({
+        id,
+        groupId,
+        parentId: null,
+        name: `Side income`,
+        kind: `income`,
+        icon: `wallet`,
+        color: `#15803d`,
+        archivedAt: expect.stringMatching(/^\d{4}-/),
+      }),
+    ])
+    expect(files[`finance_categories.csv`].split(`\r\n`)[0]).toBe(
+      `\uFEFFid,groupId,parentId,name,kind,icon,color,archivedAt,createdAt,updatedAt`,
     )
   })
 })

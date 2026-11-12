@@ -1,5 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test"
 import { type NewGroupPlan, payForGroup } from "./sign-up.ts"
+import { gotoApp } from "./app.ts"
 
 /** Page objects for the group pages: the list, the editor and the way to a group's notes. */
 
@@ -108,4 +109,25 @@ export async function openAccounts(page: Page, name: string): Promise<void> {
   await expect(page.getByRole("heading", { level: 1, name: "Accounts", exact: true }))
     .toBeVisible()
   await expect(page.locator("[data-e2e=accounts-group]")).toHaveText(name)
+}
+
+/**
+ * Opens the categories of the group named `name`: the group becomes the current one, as
+ * `openAccounts` makes it, then the page loads at `/categories` (it sits in the account menu,
+ * not in the main navigation) and waits for the live connection again.
+ */
+export async function openCategories(page: Page, name: string): Promise<void> {
+  await openGroups(page)
+  await openGroup(page, name)
+  if (await page.locator("[data-e2e=group-current]").count() === 0) {
+    await page.locator("[data-e2e=group-menu]").click()
+    await page.getByRole("menuitem", { name: "Switch to this group" }).click()
+    await expect(page.locator("[data-e2e=group-current]")).toBeVisible()
+  }
+  await gotoApp(
+    page,
+    "/categories",
+    page.getByRole("heading", { level: 1, name: "Categories", exact: true }),
+  )
+  await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 }

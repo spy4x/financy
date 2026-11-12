@@ -41,6 +41,11 @@ const REFUSAL_KEYS: Record<
     unnamed: `PlanRefusalNotice.accountsTitleUnnamed`,
     message: `PlanRefusalNotice.accountsText`,
   },
+  maxCategories: {
+    named: `PlanRefusalNotice.categoriesTitle`,
+    unnamed: `PlanRefusalNotice.categoriesTitleUnnamed`,
+    message: `PlanRefusalNotice.categoriesText`,
+  },
   memberRoles: {
     named: `PlanRefusalNotice.rolesTitle`,
     unnamed: `PlanRefusalNotice.rolesTitle`,

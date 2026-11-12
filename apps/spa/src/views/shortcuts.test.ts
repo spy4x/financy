@@ -2,6 +2,7 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import {
   ACCOUNT_PATHS,
+  CATEGORY_PATHS,
   GROUP_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
@@ -37,6 +38,7 @@ describe("SPA keyboard shortcuts", () => {
       "g f",
       "g n",
       "g t",
+      "g c",
       "g a",
       "g g",
       "g i",
@@ -48,6 +50,7 @@ describe("SPA keyboard shortcuts", () => {
       ACCOUNT_PATHS.list,
       NOTE_PATHS.list,
       TAG_PATHS.list,
+      CATEGORY_PATHS.list,
       GROUP_PATHS.activity("0190a000-0000-7000-8000-000000000001"),
       SCREEN_PATHS.groups,
       SCREEN_PATHS.notifications,

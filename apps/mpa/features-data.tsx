@@ -59,6 +59,21 @@ export function tiers({ t, language }: Site): readonly Tier[] {
           code: { label: t.t(`FeatureAccounts.code`), href: source(`libs/domain/accounts/`) },
         },
         {
+          id: `categories`,
+          nav: t.t(`FeatureCategories.nav`),
+          title: t.t(`FeatureCategories.title`),
+          lead: t.t(`FeatureCategories.lead`),
+          facts: [
+            t.t(`FeatureCategories.fact1`),
+            t.t(`FeatureCategories.fact2`),
+            t.t(`FeatureCategories.fact3`),
+          ],
+          code: {
+            label: t.t(`FeatureCategories.code`),
+            href: source(`libs/domain/categories/`),
+          },
+        },
+        {
           id: `sign-in`,
           nav: t.t(`FeatureSignIn.nav`),
           title: t.t(`FeatureSignIn.title`),

@@ -18,6 +18,7 @@ import { ImportStatus } from "@domain/imports"
 import { sampleFile } from "./sample-files.ts"
 import { createSignIn } from "../../api/services/sign-in.ts"
 import {
+  type FakeCategory,
   fakeDemoData,
   type FakeGroup,
   type FakeMember,
@@ -297,13 +298,19 @@ async function seedGroups(
     if (group.imported) {
       const items = {
         accounts: group.accounts.length,
+        categories: group.categories.reduce(
+          (sum, category) => sum + 1 + (category.children?.length ?? 0),
+          0,
+        ),
         notes: group.notes.length,
         tags: group.tags.length,
       }
       await sql`UPDATE groups SET imported_at = ${created} WHERE id = ${groupId}`
       await sql`
         UPDATE audit_events SET event_kind = ${GROUP_FILE_EVENTS.imported},
-          details = ${sql.json({ ...items, count: items.accounts + items.notes + items.tags })}
+          details = ${
+        sql.json({ ...items, count: items.accounts + items.categories + items.notes + items.tags })
+      }
         WHERE group_id = ${groupId} AND event_kind = ${GROUP_CREATED}
       `
     }
@@ -373,6 +380,33 @@ async function seedGroups(
       }
       await sql`UPDATE accounts SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
       await dateAudit(sql, id, when)
+    }
+    for (const category of content.categories) {
+      const when = at(category.createdAgo)
+      const author = writer(category.author)
+      // The demo seeds its households directly: no plan applies to what it writes.
+      const write = async (
+        fields: Omit<FakeCategory, "author" | "createdAgo" | "children">,
+        parentId: string | null,
+      ) => {
+        const id = uuidV7()
+        const { name, kind, icon, color } = fields
+        await db.category.create(
+          { id, groupId, name, kind, icon, color, parentId, allowance: null },
+          author,
+        )
+        if (fields.archived) {
+          await db.category.archive(
+            { id, groupId, expectedVersion: 1, archived: true, allowance: null },
+            author,
+          )
+        }
+        await sql`UPDATE categories SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
+        await dateAudit(sql, id, when)
+        return id
+      }
+      const parentId = await write(category, null)
+      for (const child of category.children ?? []) await write(child, parentId)
     }
     const fromFile: string[] = []
     for (const note of content.notes) {

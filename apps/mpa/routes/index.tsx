@@ -69,6 +69,7 @@ const PROOF = [
 /** What works today, by catalog key. */
 const WORKS_TODAY = [
   `HomeStatus.accounts`,
+  `HomeStatus.categories`,
   `HomeStatus.signIn`,
   `HomeStatus.groups`,
   `HomeStatus.realtime`,

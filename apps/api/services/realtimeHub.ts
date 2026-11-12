@@ -10,6 +10,7 @@ import { createPreferencesOperations } from "../features/preferences/operations.
 import { createProfileOperations } from "../features/profile/operations.ts"
 import { createPushOperations } from "../features/push/operations.ts"
 import { createAccountOperations } from "../features/accounts/operations.ts"
+import { createCategoryOperations } from "../features/categories/operations.ts"
 import { createHouseholdOperations } from "../features/household/operations.ts"
 import { createPictureOperations } from "../features/profile/picture.ts"
 import { createNotesOperations } from "../features/notes/switch.ts"
@@ -105,6 +106,13 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
     list: (query) => queryBus.execute(query),
     get: (query) => queryBus.execute(query),
     total: (query) => queryBus.execute(query),
+  }),
+  ...createCategoryOperations({
+    create: (command) => commandBus.execute(command),
+    update: (command) => commandBus.execute(command),
+    archive: (command) => commandBus.execute(command),
+    list: (query) => queryBus.execute(query),
+    get: (query) => queryBus.execute(query),
   }),
   ...createHouseholdOperations({
     updateSettings: (command) => commandBus.execute(command),

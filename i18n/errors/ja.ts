@@ -232,4 +232,24 @@ export default {
   "Reason.ACCOUNT_LIMIT_REACHED":
     "この世帯にはこれ以上口座を追加できません。先にどれかをアーカイブするか削除してください。",
   "Reason.ACCOUNT_NOT_FOUND": "この口座はもうありません。",
+  "Reason.CATEGORY_LIMIT_REACHED":
+    "この世帯にはこれ以上カテゴリを追加できません。先に1つアーカイブしてください。",
+  "Reason.CATEGORY_NAME_TAKEN": "隣に同じ名前のカテゴリがすでにあります。",
+  "Reason.CATEGORY_PARENT_ARCHIVED":
+    "親カテゴリがアーカイブ済みです。先に親のアーカイブを解除してください。",
+  "Reason.CATEGORY_TREE_INVALID":
+    "サブカテゴリを置けるのは、同じ種類のトップレベルのカテゴリの下だけです。",
+  "ImportIssue.categoryParentMissing": "親カテゴリがファイルのカテゴリの中にありません。",
+  "ImportIssue.categoryParentArchived": "使用中ですが、親カテゴリがアーカイブ済みです。",
+  "ImportIssue.categoryOwnParent": "自分自身を親カテゴリにしています。",
+  "ImportIssue.categoryParentNested": "親カテゴリ自体がサブカテゴリです。カテゴリは2階層までです。",
+  "ImportIssue.categoryHasChildren":
+    "親カテゴリがあり、自身にもサブカテゴリがあります。カテゴリは2階層までです。",
+  "ImportIssue.categoryKindMismatch": "種類が親カテゴリと異なります。",
+  "ImportIssue.duplicateCategoryName": "ファイル内の隣に同じ名前のカテゴリがあります。",
+  "ImportIssue.tooManyCategories": {
+    "other": "カテゴリが {count} 件ありますが、1つの世帯に持てるのは {max} 件までです。",
+  },
+  "ImportPlace.categories": "カテゴリ",
+  "ImportPlace.categoriesEntry": "カテゴリ{index}",
 } satisfies Catalog

@@ -116,6 +116,7 @@ says what it needs, and the plan answers.
 | `maxAttachments` | 0    | no cap    | A note attachment is signed or confirmed: files of all notes |
 | `storageBytes`   | 0    | 10 GiB    | The same: the bytes of those files                           |
 | `maxAccounts`    | 0    | no cap    | An account is created or restored, or imported with a file   |
+| `maxCategories`  | 0    | no cap    | A category is created or unarchived, or imported with a file |
 
 A limit of `null` means no cap. Each plan also has `attachments` rules for one file and one note
 (`maxFileBytes` 2 MiB, `maxPerNote` 10 on both plans). They are not sold by a plan, so they hold

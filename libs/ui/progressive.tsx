@@ -34,7 +34,20 @@ export const NOTE_PATHS = {
   tagged: (tagId: string) => `/notes?tag=${encodeURIComponent(tagId)}`,
 } as const
 
-/** Where the tags pages live. Tags are the SPA's: the website has no session. */
+/** The pages of a household's categories, in the person's selected group. */
+export const CATEGORY_PATHS = {
+  /** Expenses then income, each parent with its subcategories; archived ones on request. */
+  list: "/categories",
+  /** The create page; `?kind=income` or `?parent={id}` sets what the new category starts as. */
+  new: "/categories/new",
+  /** The create page of a subcategory under `parentId`. */
+  newChild: (parentId: string) => `/categories/new?parent=${encodeURIComponent(parentId)}`,
+  /** The create page of an income category. */
+  newIncome: "/categories/new?kind=income",
+  /** One category's editor. */
+  category: (categoryId: string) => `/categories/${categoryId}`,
+} as const
+
 /** The pages of a household's accounts, in the person's selected group. */
 export const ACCOUNT_PATHS = {
   /** The accounts by kind, each with its balance; archived ones behind "Show archived accounts". */
@@ -45,6 +58,7 @@ export const ACCOUNT_PATHS = {
   account: (accountId: string) => `/accounts/${accountId}`,
 } as const
 
+/** Where the tags pages live. Tags are the SPA's: the website has no session. */
 export const TAG_PATHS = {
   /** A group's tags, each a link to its editor, and a delete in each row's menu. */
   list: "/tags",

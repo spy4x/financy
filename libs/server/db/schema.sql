@@ -790,7 +790,11 @@ CREATE TABLE starter_data_requests (
     id UUID PRIMARY KEY,
     user_id INT4 NOT NULL UNIQUE REFERENCES auth_users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    done_at TIMESTAMPTZ
+    done_at TIMESTAMPTZ,
+    -- #95: the sign-up page's language, which names the starter categories while the person has
+    -- saved none.
+    language TEXT,
+    CONSTRAINT starter_data_requests_language_check CHECK (length(language) BETWEEN 2 AND 35)
 );
 
 -- Tags: the second offline-writable aggregate and the parent of notes (docs/aggregates.md,
@@ -1600,6 +1604,40 @@ CREATE INDEX idx_accounts_group_change_sequence ON accounts (group_id, change_se
 CREATE INDEX idx_accounts_deleted_at ON accounts (deleted_at) WHERE deleted_at IS NOT NULL;
 CREATE INDEX idx_accounts_created_by ON accounts (created_by_user_id);
 CREATE INDEX idx_accounts_updated_by ON accounts (updated_by_user_id);
+
+-- Categories (migration 2026_12_16_0005_categories.sql explains each column).
+CREATE TABLE categories (
+    id UUID PRIMARY KEY,
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    parent_id UUID,
+    name VARCHAR(60) NOT NULL,
+    kind INT2 NOT NULL,
+    icon VARCHAR(40) NOT NULL,
+    color CHAR(7) NOT NULL,
+    archived_at TIMESTAMPTZ(3),
+    version INT4 DEFAULT 1 NOT NULL,
+    change_sequence BIGINT NOT NULL,
+    created_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
+    updated_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT categories_group_id_id_key UNIQUE (group_id, id),
+    CONSTRAINT categories_parent_fkey FOREIGN KEY (group_id, parent_id)
+        REFERENCES categories (group_id, id) ON DELETE RESTRICT,
+    CONSTRAINT categories_own_parent_check CHECK (parent_id IS NULL OR parent_id <> id),
+    CONSTRAINT categories_name_check CHECK (length(btrim(name)) BETWEEN 1 AND 60),
+    CONSTRAINT categories_kind_check CHECK (kind BETWEEN 1 AND 2),
+    CONSTRAINT categories_icon_check CHECK (icon ~ '^[a-z0-9-]{1,40}$'),
+    CONSTRAINT categories_color_check CHECK (color ~ '^#[0-9a-f]{6}$'),
+    CONSTRAINT categories_version_check CHECK (version >= 1),
+    CONSTRAINT categories_change_sequence_check CHECK (change_sequence >= 1)
+);
+
+-- The list reads a household's categories through the unique key's group prefix.
+CREATE INDEX idx_categories_parent ON categories (parent_id) WHERE parent_id IS NOT NULL;
+CREATE INDEX idx_categories_group_change_sequence ON categories (group_id, change_sequence);
+CREATE INDEX idx_categories_created_by ON categories (created_by_user_id);
+CREATE INDEX idx_categories_updated_by ON categories (updated_by_user_id);
 -- #696: records brought in from a file (docs/imports.md); see the migration for the columns.
 CREATE TABLE imports (
     id UUID PRIMARY KEY,

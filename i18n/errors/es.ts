@@ -243,4 +243,27 @@ export default {
   "Reason.ACCOUNT_LIMIT_REACHED":
     "Este hogar no puede tener más cuentas. Archiva o elimina una primero.",
   "Reason.ACCOUNT_NOT_FOUND": "Esta cuenta ya no existe.",
+  "Reason.CATEGORY_LIMIT_REACHED": "Este hogar no puede tener más categorías. Archiva una primero.",
+  "Reason.CATEGORY_NAME_TAKEN": "Otra categoría a su lado ya tiene este nombre.",
+  "Reason.CATEGORY_PARENT_ARCHIVED":
+    "Su categoría principal está archivada. Desarchiva primero la principal.",
+  "Reason.CATEGORY_TREE_INVALID":
+    "Una subcategoría solo puede ir dentro de una categoría de primer nivel del mismo tipo.",
+  "ImportIssue.categoryParentMissing":
+    "Su categoría principal no está entre las categorías del archivo.",
+  "ImportIssue.categoryParentArchived": "Está en uso, pero su categoría principal está archivada.",
+  "ImportIssue.categoryOwnParent": "Se indica a sí misma como principal.",
+  "ImportIssue.categoryParentNested":
+    "Su categoría principal es a su vez una subcategoría. Las categorías tienen solo dos niveles.",
+  "ImportIssue.categoryHasChildren":
+    "Tiene una categoría principal y subcategorías propias. Las categorías tienen solo dos niveles.",
+  "ImportIssue.categoryKindMismatch": "Su tipo es distinto del de su categoría principal.",
+  "ImportIssue.duplicateCategoryName": "Otra categoría a su lado en el archivo tiene este nombre.",
+  "ImportIssue.tooManyCategories": {
+    "one": "Contiene {count} categoría y un hogar puede tener como máximo {max}.",
+    "many": "Contiene {count} de categorías y un hogar puede tener como máximo {max}.",
+    "other": "Contiene {count} categorías y un hogar puede tener como máximo {max}.",
+  },
+  "ImportPlace.categories": "Categorías",
+  "ImportPlace.categoriesEntry": "Categoría {index}",
 } satisfies Catalog

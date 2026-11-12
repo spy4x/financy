@@ -250,4 +250,28 @@ export default {
   "Reason.ACCOUNT_LIMIT_REACHED":
     "В этой семье больше нельзя добавить счета. Сначала уберите один в архив или удалите.",
   "Reason.ACCOUNT_NOT_FOUND": "Этого счёта больше нет.",
+  "Reason.CATEGORY_LIMIT_REACHED":
+    "В этой семье больше нельзя добавить категории. Сначала уберите одну в архив.",
+  "Reason.CATEGORY_NAME_TAKEN": "Рядом уже есть категория с таким названием.",
+  "Reason.CATEGORY_PARENT_ARCHIVED":
+    "Её родительская категория в архиве. Сначала верните родителя из архива.",
+  "Reason.CATEGORY_TREE_INVALID":
+    "Подкатегория может быть только внутри категории верхнего уровня того же типа.",
+  "ImportIssue.categoryParentMissing": "Её родителя нет среди категорий файла.",
+  "ImportIssue.categoryParentArchived": "Она в деле, а её родитель в архиве.",
+  "ImportIssue.categoryOwnParent": "Она указана родителем самой себя.",
+  "ImportIssue.categoryParentNested":
+    "Её родитель сам подкатегория. У категорий только два уровня.",
+  "ImportIssue.categoryHasChildren":
+    "У неё есть родитель и свои подкатегории. У категорий только два уровня.",
+  "ImportIssue.categoryKindMismatch": "Её тип отличается от типа родителя.",
+  "ImportIssue.duplicateCategoryName": "Рядом в файле есть другая категория с таким же названием.",
+  "ImportIssue.tooManyCategories": {
+    "one": "В нём {count} категория, а в семье может быть не больше {max}.",
+    "few": "В нём {count} категории, а в семье может быть не больше {max}.",
+    "many": "В нём {count} категорий, а в семье может быть не больше {max}.",
+    "other": "В нём {count} категории, а в семье может быть не больше {max}.",
+  },
+  "ImportPlace.categories": "Категории",
+  "ImportPlace.categoriesEntry": "Категория {index}",
 } satisfies Catalog

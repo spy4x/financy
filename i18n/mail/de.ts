@@ -140,4 +140,18 @@ export default {
   "SubscriberIssue.reason":
     "Du bekommst diese E-Mail, weil du den Newsletter von {host} abonniert hast.",
   "SubscriberIssue.readPost": "Beitrag lesen",
+  "StarterCategory.housing": "Wohnen",
+  "StarterCategory.food": "Essen",
+  "StarterCategory.groceries": "Lebensmittel",
+  "StarterCategory.eatingOut": "Auswärts essen",
+  "StarterCategory.transport": "Mobilität",
+  "StarterCategory.utilities": "Nebenkosten",
+  "StarterCategory.health": "Gesundheit",
+  "StarterCategory.shopping": "Einkäufe",
+  "StarterCategory.entertainment": "Freizeit",
+  "StarterCategory.travel": "Reisen",
+  "StarterCategory.subscriptions": "Abos",
+  "StarterCategory.salary": "Gehalt",
+  "StarterCategory.interest": "Zinsen",
+  "StarterCategory.otherIncome": "Sonstige Einnahmen",
 } satisfies Catalog

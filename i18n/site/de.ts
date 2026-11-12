@@ -608,8 +608,6 @@ export default {
     "Bargeld, Bankkonten, Karten, Ersparnisse, Vermögenswerte und Schulden, jedes in seiner eigenen Währung, nach Art gruppiert und mit einem Standardkonto. Der ganze Haushalt sieht jede Änderung sofort.",
   "FeatureAccounts.nav": "Konten",
   "FeatureAccounts.title": "Jedes Konto in seiner eigenen Währung",
-  "FeatureTierSettled.lead":
-    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung sind da; Buchungen darauf kommen als Nächstes.",
   "Features.description":
     "Financy heute: Konten in jeder Währung, Haushalte mit Rollen, Sync, Offline-App, Export, neun Sprachen und dein eigener Server. Als Nächstes: Buchungen.",
   "Features.title": "Financy-Funktionen: Konten, Haushalte, Sync, offline",
@@ -633,4 +631,18 @@ export default {
   "CatalogItem.care": "Pflege",
   "CatalogItem.inStock": "{choice}: auf Lager",
   "CatalogItem.soldOut": "{choice}: ausverkauft",
+  "FeatureCategories.nav": "Kategorien",
+  "FeatureCategories.title": "Kategorien, eine Ebene tief",
+  "FeatureCategories.lead":
+    "Ordne Ausgaben und Einnahmen in Kategorien, jede mit Symbol und Farbe. Leg Lebensmittel und Auswärts essen unter Essen. Ein neuer Haushalt beginnt mit einer kurzen Liste in seiner Sprache.",
+  "FeatureCategories.fact1":
+    "Eine Kategorie wird nie gelöscht: Archivieren nimmt sie aus den Auswahllisten, und frühere Einträge behalten sie",
+  "FeatureCategories.fact2":
+    "Eine Unterkategorie hat die Art ihrer Oberkategorie, und eine Oberkategorie hat selbst keine, geprüft auf dem Server",
+  "FeatureCategories.fact3":
+    "Ein Betrachter liest die Kategorien; nur ein Bearbeiter oder höher ändert sie",
+  "FeatureCategories.code": "Code der Kategorien lesen",
+  "FeatureTierSettled.lead":
+    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung und ihre Kategorien sind da; Buchungen kommen als Nächstes.",
+  "HomeStatus.categories": "Kategorien mit einer Ebene Unterkategorien",
 } satisfies Catalog

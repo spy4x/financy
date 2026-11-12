@@ -1,5 +1,6 @@
 import {
   ACCOUNT_PATHS,
+  CATEGORY_PATHS,
   GROUP_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
@@ -50,6 +51,7 @@ export function spaShortcutRows(ports: SpaShortcutPorts): ShortcutRow[] {
     go("g f", `Frame.accounts`, ACCOUNT_PATHS.list),
     go("g n", `Frame.notes`, NOTE_PATHS.list),
     go("g t", `Frame.tags`, TAG_PATHS.list),
+    go("g c", `Frame.categories`, CATEGORY_PATHS.list),
     ...(ports.activityGroupId === null
       ? []
       : [go("g a", `Frame.activity`, GROUP_PATHS.activity(ports.activityGroupId))]),
