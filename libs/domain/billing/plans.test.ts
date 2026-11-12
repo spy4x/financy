@@ -87,6 +87,11 @@ describe("Financy's plans", () => {
     expect(free.entitlements.limits.maxTransactions).toBe(0)
   })
 
+  it("sells budgets on the Household plan only", () => {
+    expect(household.entitlements.features.budgets).toBe(true)
+    expect(free.entitlements.features.budgets).toBe(false)
+  })
+
   it("sends a new owner to checkout first, and an invited member not", () => {
     expect(firstScreen(GroupRole.OWNER)).toBe(true)
     expect(firstScreen(GroupRole.EDITOR)).toBe(false)
@@ -98,5 +103,6 @@ describe("Financy's plans", () => {
     expect(UNLIMITED.limits.maxCategories).toBeNull()
     expect(UNLIMITED.limits.maxTransactions).toBeNull()
     expect(UNLIMITED.features.memberRoles).toBe(true)
+    expect(UNLIMITED.features.budgets).toBe(true)
   })
 })
