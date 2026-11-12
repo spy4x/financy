@@ -144,7 +144,13 @@ const defaults: BudgetsScreenProps = {
   now: new Date("2026-11-13T12:00:00Z"),
   timeZone: "UTC",
   onMonth: noop,
-  budgets: { month: "2026-11", from: "2026-11-01", to: "2026-11-30", baseCurrency: "EUR", rows: ROWS },
+  budgets: {
+    month: "2026-11",
+    from: "2026-11-01",
+    to: "2026-11-30",
+    baseCurrency: "EUR",
+    rows: ROWS,
+  },
   categories: CATEGORIES,
   loading: false,
   error: null,
@@ -306,7 +312,10 @@ describe("BudgetsScreen", () => {
     expect(document.body.textContent).toContain("Add an expense category first")
     expect(count("[data-e2e=budgets-add-category]")).toBe(1)
     await act(() => render(null, root!))
-    await mount({ budgets: { ...defaults.budgets!, rows: [] }, group: { ...home, canWrite: false } })
+    await mount({
+      budgets: { ...defaults.budgets!, rows: [] },
+      group: { ...home, canWrite: false },
+    })
     expect(document.body.textContent).toContain("No expense categories yet")
     expect(count("[data-e2e=budgets-add-category]")).toBe(0)
   })

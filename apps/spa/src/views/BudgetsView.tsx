@@ -35,9 +35,7 @@ export function BudgetsView() {
   const timeZone = groupTimeZone(membership ?? {})
   const [now] = useState(() => new Date())
   const thisMonth = currentPeriod(PeriodUnit.Month, { now, timeZone }).from.slice(0, 7)
-  const month = store.groupId.value === groupId && store.month.value
-    ? store.month.value
-    : thisMonth
+  const month = store.groupId.value === groupId && store.month.value ? store.month.value : thisMonth
   useEffect(() => {
     if (!groupId) return
     void store.open(groupId, month)

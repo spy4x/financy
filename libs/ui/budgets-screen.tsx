@@ -470,7 +470,7 @@ function Row(
             <span class="text-xs text-muted" data-e2e="budget-children-sum">
               {t.t(`Budgets.childrenSum`)}
             </span>
-            {button && <span class="-me-3">{button}</span>}
+            {button && <span class="-me-3 ms-auto">{button}</span>}
           </div>
         )}
       </div>

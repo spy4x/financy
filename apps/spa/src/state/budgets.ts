@@ -35,7 +35,6 @@ export const BUDGET_MESSAGES = {
   remove: `BudgetDialog.removeFailed`,
 } as const
 
-
 /** The refusal's code (`VERSION_CONFLICT`, `CATEGORY_ARCHIVED`...) and current version, if any. */
 function refusal(error: unknown): { code: string | null; currentVersion: number | null } {
   if (!(error instanceof RealtimeRequestError)) return { code: null, currentVersion: null }
