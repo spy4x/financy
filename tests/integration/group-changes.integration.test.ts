@@ -413,6 +413,18 @@ Deno.test("entries in the changes pull against Postgres", async (t) => {
       expect(answer.tombstones).toEqual([{ kind: "transactions", id: deleted.id }])
     })
 
+    await t.step("a page counts a deleted entry once, by its tombstone", async () => {
+      // After the cursor: the edit, the delete and the new entry, one sequence each. A page of two
+      // ends after the delete; counting the deleted row as well would end it after the edit.
+      const first = page(
+        await readGroupChanges(sql, CHANGES_AGGREGATES, groupId, cursor, 2),
+      )
+      expect(first.through).toBe(cursor + 2)
+      expect(ids(first.upserts.transactions)).toEqual([edited.id])
+      expect(first.tombstones).toEqual([{ kind: "transactions", id: deleted.id }])
+      expect(first.more).toBe(true)
+    })
+
     await t.step(
       "an entry restored after its delete comes as a row, without its tombstone",
       async () => {
