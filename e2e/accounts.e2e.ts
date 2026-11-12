@@ -305,7 +305,11 @@ test.describe("accounts", () => {
       await page.locator("[data-e2e=account-kind]").selectOption({ label: "Crypto" })
       const currency = page.locator("[data-e2e=account-currency-field] input")
       await currency.fill("Euro")
-      await expect(page.getByRole("option")).toHaveCount(0)
+      // The kind select has options of its own, so only the currency field's are counted.
+      const offered = page.locator("[data-e2e=account-currency-field]").getByRole("option")
+      await expect(offered).toHaveCount(0)
+      await currency.fill("Bitcoin")
+      await expect(offered).toHaveCount(1)
       await fillAccount(page, { name: "Cold wallet", currency: "BTC", balance: "0.5" })
       await saveAndBack(page)
 
