@@ -14,7 +14,7 @@ import type { MovableAggregate, MoveAllContext } from "@server/groups/movable.ts
  * household, and stays restorable there for the rest of its days.
  *
  * Entries, accounts and categories move in separate statements, so this one defers the entries'
- * account and category keys to the move's commit (migration `2026_12_16_0008`) and must run before
+ * account and category keys to the move's commit (migration `2026_12_16_0009`) and must run before
  * the accounts and categories move. The target's plan cap, `maxTransactions`, counts its live
  * entries after the move, under the lock on the target that an entry write there waits for; a
  * move that passes it is refused whole with `PLAN_LIMIT_REACHED`.
