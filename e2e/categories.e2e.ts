@@ -176,4 +176,25 @@ test.describe("categories", () => {
       for (const email of [owner, viewer]) await cleanup(request, email)
     }
   })
+
+  test("a 60-character name leaves the editor without sideways scroll on a 390 px phone", async ({ page, request }) => {
+    const owner = "e2e_categories_long_name@example.com"
+    await cleanup(request, owner)
+    try {
+      await signUp(request, owner)
+      await signInOnline(page, owner)
+      await household(page, request, "Long names")
+      await openCategories(page, "Long names")
+      await page.setViewportSize({ width: 390, height: 800 })
+      await page.locator("[data-e2e=category-new]").click()
+      const name = "W".repeat(60)
+      await page.locator("[data-e2e=category-name-input]").fill(name)
+      // The colour preview repeats the name, cut short to the field's width.
+      await expect(page.locator("[data-e2e=color-field-preview] bdi")).toHaveText(name)
+      expect(await page.evaluate(() => document.documentElement.scrollWidth))
+        .toBeLessThanOrEqual(390)
+    } finally {
+      await cleanup(request, owner)
+    }
+  })
 })

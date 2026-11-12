@@ -355,13 +355,14 @@ function Editor(props: CategoryEditorScreenProps & { group: NotesGroup }): JSX.E
                 <div data-e2e="category-color">
                   <ColorField
                     name="color"
+                    class="min-w-0"
                     legend={t.t(`CategoryEditor.color`)}
                     value={value.color}
                     onChange={(color) => {
                       if (color) onChange?.({ ...value, color })
                     }}
                     preview={() => (
-                      <span class="flex items-center gap-2">
+                      <span class="flex min-w-0 items-center gap-2">
                         <CategoryChip icon={value.icon} color={value.color} />
                         <bdi class="truncate font-medium">{shownName}</bdi>
                       </span>
