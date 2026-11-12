@@ -362,8 +362,8 @@ function Row(
   const muted = category.archived ? "text-muted" : ""
   return (
     <li
-      class={`flex min-h-11 items-center gap-3 px-4 py-1.5 sm:min-h-9 sm:px-6 ${
-        parent ? "ps-15 sm:ps-17" : ""
+      class={`flex min-h-11 items-center gap-3 px-4 py-2 sm:min-h-9 sm:px-6 ${
+        parent ? "ps-16 sm:ps-16" : ""
       }`}
       data-category={category.id}
       data-e2e={`category-${category.id}`}

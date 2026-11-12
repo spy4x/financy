@@ -279,10 +279,10 @@ function Editor(props: CategoryEditorScreenProps & { group: NotesGroup }): JSX.E
                 <fieldset
                   disabled={locks.kind !== null}
                   aria-describedby={locks.kind ? "category-kind-hint" : undefined}
-                  class="flex flex-col gap-1.5"
+                  class="flex flex-col gap-2"
                   data-e2e="category-kind"
                 >
-                  <legend class="mb-1.5 text-sm font-medium">{t.t(`CategoryEditor.kind`)}</legend>
+                  <legend class="mb-2 text-sm font-medium">{t.t(`CategoryEditor.kind`)}</legend>
                   <SegmentedControl
                     ariaLabel={t.t(`CategoryEditor.kind`)}
                     value={String(value.kind)}
