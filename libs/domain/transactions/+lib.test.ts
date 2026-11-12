@@ -568,7 +568,7 @@ describe("an entry in a household's export file", () => {
     ).toThrow("the account amount of an income must be above zero")
   })
 
-  it("refuses an amount past the exact range, a field an entry lacks and a memo a write refuses", () => {
+  it("refuses an amount past the exact range, a field an entry lacks, a memo a write refuses and an impossible date", () => {
     expect(() => parseTransactionExportEntry({ ...entry, amount: -(2 ** 53) })).toThrow()
     expect(() => parseTransactionExportEntry({ ...entry, version: 3 })).toThrow("does not have")
     expect(() => parseTransactionExportEntry({ ...entry, memo: "a\u200bb" })).toThrow(
