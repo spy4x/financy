@@ -15,6 +15,8 @@ const READS = [
   `./libs/server/db/migrations`,
   `./libs/server/db/schema.sql`,
   `./libs/server/blog/seed-posts`,
+  // Financy: the blog and demo integration tests load the Lighthouse fixture posts.
+  `./apps/mpa/lighthouse/posts`,
 ]
 
 /** The `deno test` arguments for the task's arguments: flags pass through, no path → the folder. */

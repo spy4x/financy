@@ -7,7 +7,7 @@ const BASE = [
   `--no-prompt`,
   `-E`,
   `-N`,
-  `-R=./libs/server/db/migrations,./libs/server/db/schema.sql,./libs/server/blog/seed-posts`,
+  `-R=./libs/server/db/migrations,./libs/server/db/schema.sql,./libs/server/blog/seed-posts,./apps/mpa/lighthouse/posts`,
 ]
 const FILE = `tests/integration/notes.integration.test.ts`
 
