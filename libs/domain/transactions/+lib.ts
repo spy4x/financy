@@ -37,6 +37,9 @@ export const TRANSACTION_RESTORE_DAYS = 30
  */
 export const TRANSACTION_AMOUNT_MAX = Number.MAX_SAFE_INTEGER
 
+/** How many deleted entries the deleted list shows at most, the latest deleted first. */
+export const TRANSACTION_DELETED_LIST_MAX = 200
+
 /** The longest period the ledger reads at once, in days: a year, a leap year included. */
 export const LEDGER_MAX_DAYS = 366
 
@@ -191,6 +194,8 @@ export const transactionDeletePayloadSchema = type({
 export const transactionRestorePayloadSchema = type({ ...groupIdField, ...idField, "+": "reject" })
 /** The `transaction.get` payload. */
 export const transactionGetPayloadSchema = type({ ...groupIdField, ...idField, "+": "reject" })
+/** The `transaction.listDeleted` payload: the household whose deleted entries are listed. */
+export const transactionListDeletedPayloadSchema = type({ ...groupIdField, "+": "reject" })
 /** The `transaction.ledger` payload: a period of whole days, both ends included. */
 export const transactionLedgerPayloadSchema = type({
   ...groupIdField,
@@ -496,6 +501,21 @@ export class TransactionGetQuery
   constructor(public data: TransactionGetPayload) {}
 }
 
+export interface TransactionListDeletedPayload {
+  actor: Actor
+  groupId: string
+}
+
+/**
+ * The household's deleted entries that can still be restored, the latest deleted first, at most
+ * {@link TRANSACTION_DELETED_LIST_MAX}.
+ */
+export class TransactionListDeletedQuery
+  implements Query<TransactionListDeletedPayload, { transactions: Transaction[] }> {
+  __resultType?: { transactions: Transaction[] }
+  constructor(public data: TransactionListDeletedPayload) {}
+}
+
 export interface TransactionLedgerPayload {
   actor: Actor
   groupId: string
@@ -707,6 +727,12 @@ export interface TransactionRestoreInput extends TransactionInputBase, Transacti
 export interface TransactionRepository {
   /** A live entry of the group; `null` for a deleted one or another group's. */
   get(groupId: string, id: string): Promise<Transaction | null>
+  /**
+   * The household's deleted entries, the latest deleted first, at most `limit`. The worker purges
+   * an entry {@link TRANSACTION_RESTORE_DAYS} days after its delete, so every one listed can be
+   * restored.
+   */
+  listDeleted(groupId: string, limit: number): Promise<Transaction[]>
   /** How many live entries the household holds: what the plan's `maxTransactions` counts. */
   count(groupId: string): Promise<number>
   /** The household's time zone, the one its days are cut in (R14). */
