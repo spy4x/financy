@@ -266,9 +266,12 @@ test.describe("the app with no network, after one visit online", () => {
         page.locator("[data-e2e=group-general-name]"),
       )
       await page.getByRole("link", { name: "Invite" }).click()
-      // A group the fixtures paid for bills per seat, so the owner accepts the price first.
+      // A plan billed per member asks the owner to accept the price first; a flat plan asks
+      // nothing. The catalog the stack runs decides which, whether the fixtures paid or not.
       const paid = await freePlanAllowsNothing(page.request, apiBase)
-      if (paid) await page.locator("[data-e2e=seat-price-accept]").check()
+      const { billing } = await (await page.request.get(`${apiBase}/api/groups/${groupId}/billing`))
+        .json()
+      if (billing.seatPrice) await page.locator("[data-e2e=seat-price-accept]").check()
       await page.locator("[data-e2e=invitation-create]").click()
       await page.locator("[data-e2e=invitation-done]").click()
       await expect(page).toHaveURL(`/groups/${groupId}/members`)

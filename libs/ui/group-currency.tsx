@@ -131,6 +131,19 @@ export function GroupCurrencySection(props: GroupCurrencySectionProps): JSX.Elem
 }
 
 /**
+ * Marks the dialog's currency input `autofocus`, so `showModal()` focuses it rather than the close
+ * button. A ref, not an effect: the Modal draws its content only once open, and calls
+ * `showModal()` from an effect. Focusing the input from this dialog's own effect lost that race
+ * whenever the section drew again before the frame's effects ran: Preact then runs a parent's
+ * pending effects before its children's, so the focus came first and `showModal()` moved it to
+ * the close button. A ref runs as the input is attached, before any effect.
+ */
+function markAutofocus(wrapper: HTMLDivElement | null): void {
+  const input = wrapper?.querySelector(`input`)
+  if (input) input.autofocus = true
+}
+
+/**
  * The dialog: the currency field, focused, with the current currency chosen; the note that no
  * amount changes; a clash or a refusal; then "Use {name}" and "Cancel". Currencies this server has
  * no daily rate for say so in the list.
@@ -145,12 +158,9 @@ function CurrencyDialog(
   const { view, options, open, saving, error, changedElsewhere } = props
   const t = useAppText()
   const [choice, setChoice] = useState(view.settings.baseCurrency)
-  const field = useRef<HTMLDivElement>(null)
-  // Each opening starts from the saved currency, and the field takes focus, not the close button.
+  // Each opening starts from the saved currency.
   useEffect(() => {
-    if (!open) return
-    setChoice(view.settings.baseCurrency)
-    field.current?.querySelector<HTMLInputElement>(`input`)?.focus()
+    if (open) setChoice(view.settings.baseCurrency)
   }, [open])
   const marked = useMemo(() => {
     const rated = new Set(view.ratedCurrencies)
@@ -181,7 +191,7 @@ function CurrencyDialog(
             hint={t.t(`GroupCurrency.changeNote`)}
           >
             {(wiring) => (
-              <div ref={field} data-e2e="group-currency-field">
+              <div ref={markAutofocus} data-e2e="group-currency-field">
                 <CurrencyField
                   id={wiring.id}
                   aria-describedby={wiring["aria-describedby"]}

@@ -22,6 +22,9 @@ const own = {
   getComputedStyle: globalThis.getComputedStyle,
 }
 
+const dialogs = window.HTMLDialogElement.prototype
+const showModal = dialogs.showModal
+
 beforeAll(() => {
   // EnhancedForm reads a form with the DOM's own FormData; a dialog reads the page's style to
   // lock its scroll.
@@ -31,9 +34,17 @@ beforeAll(() => {
     location: window.location,
     getComputedStyle: window.getComputedStyle.bind(window),
   })
+  // What the browser does on `showModal()`, which happy-dom's skips: focus the control marked
+  // `autofocus`, else the first one that takes focus.
+  dialogs.showModal = function (this: typeof dialogs) {
+    showModal.call(this)
+    const first = this.querySelector(`[autofocus]`) ?? this.querySelector(`button, input`)
+    ;(first as unknown as HTMLElement | null)?.focus()
+  }
 })
 
 afterAll(async () => {
+  dialogs.showModal = showModal
   Object.assign(globalThis, own)
   await window.happyDOM.close()
 })
@@ -70,6 +81,27 @@ interface Calls {
   saved: string[]
 }
 
+/** The section with `props` over an admin's defaults, recording its callbacks in `record`. */
+function section(props: Partial<GroupCurrencySectionProps>, record: Calls) {
+  return (
+    <I18nContext.Provider value={ENGLISH}>
+      <GroupCurrencySection
+        view={VIEW}
+        canChange
+        offline={false}
+        dialogOpen={false}
+        onOpen={() => void record.opened++}
+        onClose={() => void record.closed++}
+        onSave={(code) => void record.saved.push(code)}
+        saving={false}
+        error={null}
+        changedElsewhere={null}
+        {...props}
+      />
+    </I18nContext.Provider>
+  )
+}
+
 /** Draws the section with `props` over an admin's defaults, and records its callbacks. */
 async function draw(props: Partial<GroupCurrencySectionProps> = {}, calls?: Calls) {
   const record = calls ?? { opened: 0, closed: 0, saved: [] }
@@ -77,26 +109,7 @@ async function draw(props: Partial<GroupCurrencySectionProps> = {}, calls?: Call
     root = document.createElement("div")
     document.body.append(root)
   }
-  await act(() =>
-    render(
-      <I18nContext.Provider value={ENGLISH}>
-        <GroupCurrencySection
-          view={VIEW}
-          canChange
-          offline={false}
-          dialogOpen={false}
-          onOpen={() => void record.opened++}
-          onClose={() => void record.closed++}
-          onSave={(code) => void record.saved.push(code)}
-          saving={false}
-          error={null}
-          changedElsewhere={null}
-          {...props}
-        />
-      </I18nContext.Provider>,
-      root!,
-    )
-  )
+  await act(() => render(section(props, record), root!))
   return record
 }
 
@@ -157,6 +170,18 @@ describe("GroupCurrencySection", () => {
     // Focus opens the list, with the saved currency as its selected row.
     expect(find("[role=option][aria-selected=true]").textContent).toMatch(/^EUR/)
     expect(find("[data-e2e=group-currency-use]").textContent).toBe("Use \u2068Euro\u2069")
+  })
+
+  it("focuses the field even when the section draws again before the opening's effects run", async () => {
+    const calls = await draw()
+    // A second draw before the frame's effects run, as when the settings read answers right after
+    // the dialog opened: Preact then runs the dialog's effects before the Modal's own, which is
+    // the one that opens it.
+    render(section({ dialogOpen: true }, calls), root!)
+    render(section({ dialogOpen: true }, calls), root!)
+    await act(() => {})
+    const input = find<HTMLInputElement>("[data-e2e=group-currency-field] input")
+    expect(document.activeElement === input).toBe(true)
   })
 
   it("saves the chosen currency on Use", async () => {
