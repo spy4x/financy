@@ -31,6 +31,20 @@ decimal above zero is refused and logged by its pair, day and source.
 - **No rate is said, never guessed.** Before the oldest stored rate, or for a currency with no
   rate at all, the lookup answers "no rate" with the date asked; no total uses 0 or 1.
 
+## How entries and the ledger use rates
+
+- **An entry stores its account amount once.** An entry in another currency than its account's
+  gets its account amount from the rate of its own date and is marked converted. A person who
+  types both amounts sets a manual rate, and the entry is not marked. An edit that keeps the
+  account, amount, currency and date keeps the stored account amount, so a later rate never
+  rewrites history. No rate for the date refuses the entry with `NO_RATE`.
+- **A balance needs no rate.** It is the starting balance plus the account amounts of the live
+  entries dated on or before the day asked, all in the account's currency.
+- **The ledger converts each entry at its own date's rate.** An entry in the household's main
+  currency counts its own amount; any other counts its account amount, converted into the main
+  currency at the entry's date. A currency with no rate is left out of the totals and named in
+  `leftOut`.
+
 ## Rates before the first day
 
 A server stores rates from the day it first ran. An import with older dates asks for the missing
