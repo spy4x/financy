@@ -2075,6 +2075,9 @@ export default {
     "<who>{who}</who>が口座「<value>{name}</value>」をアーカイブしました",
   "GroupActivity.accountChanged": "<who>{who}</who>が口座「<value>{name}</value>」を変更しました",
   "GroupActivity.accountChangedUnnamed": "<who>{who}</who>が口座を変更しました",
+  "GroupActivity.mainCurrencyChangedFromTo":
+    "<who>{who}</who>がメイン通貨を<value>{from}</value>から<value>{to}</value>に変更しました",
+  "GroupActivity.mainCurrencyChanged": "<who>{who}</who>がメイン通貨を変更しました",
   "GroupActivity.accountCreated": "<who>{who}</who>が口座「<value>{name}</value>」を追加しました",
   "GroupActivity.accountDefaultCleared":
     "<who>{who}</who>が口座「<value>{name}</value>」をメインから外しました",

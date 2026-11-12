@@ -147,6 +147,7 @@ export default {
   "AdminAuditEvent.tagCreated": "Tag added",
   "AdminAuditEvent.tagUpdated": "Tag changed",
   "AdminAuditEvent.tagDeleted": "Tag deleted",
+  "AdminAuditEvent.mainCurrencyChanged": "Main currency changed",
   "AdminAuditEvent.financeAccountCreated": "Finance account added",
   "AdminAuditEvent.financeAccountUpdated": "Finance account changed",
   "AdminAuditEvent.financeAccountArchived": "Finance account archived",

@@ -6,8 +6,9 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { renderToString } from "preact-render-to-string"
 import { activityAuditEvent } from "@domain/identity"
+import { HOUSEHOLD_EVENTS } from "@domain/money"
 import { type ActivityRow, GroupActivityPanel } from "./group-activity-panel.tsx"
-import { auditEventLabel } from "./admin-audit-screen.tsx"
+import { auditEventLabel, eventOptions } from "./admin-audit-screen.tsx"
 import { ADMIN_ENGLISH } from "./i18n-testing.ts"
 
 /** Financy's own activity kinds, with the real catalogs and the real `PRODUCT_ACTIVITY_KINDS`. */
@@ -32,6 +33,18 @@ function sentence(kind: string, details: ActivityRow["details"] = {}): string {
 }
 
 describe("Financy's activity in the group activity panel", () => {
+  it("names who changed the main currency, from what and to what", () => {
+    expect(sentence(HOUSEHOLD_EVENTS.mainCurrencyChanged, { from: `EUR`, to: `USD` })).toBe(
+      `Ada changed the main currency from EUR to USD`,
+    )
+  })
+
+  it("still says the main currency changed when the event kept no currencies", () => {
+    expect(sentence(HOUSEHOLD_EVENTS.mainCurrencyChanged, { to: `USD` })).toBe(
+      `Ada changed the main currency`,
+    )
+  })
+
   it("names the account an account event is about, and the old name of a renamed one", () => {
     expect(sentence(`account.archived`, { name: `Cash` })).toBe(`Ada archived the account “Cash”`)
     expect(sentence(`account.updated`, { name: `Cash`, from: `Wallet` })).toBe(
@@ -48,9 +61,17 @@ describe("Financy's activity in the group activity panel", () => {
 })
 
 describe("Financy's activity in the admin audit log", () => {
-  it("titles an account event with its own label", () => {
+  const event = activityAuditEvent(HOUSEHOLD_EVENTS.mainCurrencyChanged)
+
+  it("titles a main-currency change and an account event with their own labels", () => {
+    expect(auditEventLabel(ADMIN_ENGLISH, event)).toBe(`Main currency changed`)
     expect(auditEventLabel(ADMIN_ENGLISH, activityAuditEvent(`account.default_set`))).toBe(
       `Default finance account set`,
     )
+  })
+
+  it("offers the main-currency change in the event filter", () => {
+    const option = eventOptions(ADMIN_ENGLISH).find((option) => option.value === event)
+    expect(option?.label).toBe(`Group: Main currency changed`)
   })
 })

@@ -486,6 +486,8 @@ GroupActivity.loadMore	ac8991ef01019cf5
 GroupActivity.loadMoreFailed	4284309f162ba18c
 GroupActivity.loading	9c7c7cef26fba8cb
 GroupActivity.loadingMore	ba3bbbe10d8bef66
+GroupActivity.mainCurrencyChanged	d6ed11ba0cbee3f6
+GroupActivity.mainCurrencyChangedFromTo	c2161d12fba72a08
 GroupActivity.memberLeft	93630c7341dc40a8
 GroupActivity.memberRemoved	385ab97ee089028c
 GroupActivity.memberRemovedSomeone	7709ae87f4713061

@@ -2389,6 +2389,9 @@ export default {
   "GroupActivity.accountArchived": "<who>{who}</who> убрал(а) в архив счёт «<value>{name}</value>»",
   "GroupActivity.accountChanged": "<who>{who}</who> изменил(а) счёт «<value>{name}</value>»",
   "GroupActivity.accountChangedUnnamed": "<who>{who}</who> изменил(а) счёт",
+  "GroupActivity.mainCurrencyChangedFromTo":
+    "<who>{who}</who> сменил(а) основную валюту с <value>{from}</value> на <value>{to}</value>",
+  "GroupActivity.mainCurrencyChanged": "<who>{who}</who> сменил(а) основную валюту",
   "GroupActivity.accountCreated": "<who>{who}</who> добавил(а) счёт «<value>{name}</value>»",
   "GroupActivity.accountDefaultCleared":
     "<who>{who}</who> сделал(а) счёт «<value>{name}</value>» не основным",

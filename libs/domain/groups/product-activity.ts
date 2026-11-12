@@ -1,5 +1,6 @@
 /**
- * Financy's own kinds of group activity: its finance accounts and its categories. Financy replaced Seed's empty slot and lists this file in `.seed/skip`, so taking
+ * Financy's own kinds of group activity: the household's main currency, its finance accounts and
+ * its categories. Financy replaced Seed's empty slot and lists this file in `.seed/skip`, so taking
  * Seed's later changes never conflicts here
  * ([Connect a feature to the app](../../../docs/aggregate-extras.md)).
  *
@@ -10,6 +11,13 @@ import type { AuditDetails, ProductActivityKind, ProductActivityMessage } from "
 
 /** The finance things an audit event can point at besides Seed's. */
 export type ProductEntityType = "account" | "category"
+
+/**
+ * The kind `HOUSEHOLD_EVENTS.mainCurrencyChanged` (`@domain/money`) writes. Written out, because
+ * `@domain/money` imports `@domain/groups`, and importing it back would read the constant before
+ * it exists.
+ */
+const MAIN_CURRENCY_CHANGED = `household.main_currency_changed`
 
 function text(value: unknown): string | null {
   return typeof value === "string" && value !== "" ? value : null
@@ -110,6 +118,24 @@ function updatedKind(thing: `account` | `category`, label: string): ProductActiv
 
 /** The kinds the group activity panel, `describeActivity` and the admin audit log know besides Seed's. */
 export const PRODUCT_ACTIVITY_KINDS: readonly ProductActivityKind[] = [
+  {
+    kind: MAIN_CURRENCY_CHANGED,
+    label: `AdminAuditEvent.mainCurrencyChanged`,
+    message: (details): ProductActivityMessage => {
+      const from = text(details.from)
+      const to = text(details.to)
+      return from && to
+        ? { key: `GroupActivity.mainCurrencyChangedFromTo`, values: { from, to } }
+        : { key: `GroupActivity.mainCurrencyChanged`, values: {} }
+    },
+    describe: (who, details) => {
+      const from = text(details.from)
+      const to = text(details.to)
+      return from && to
+        ? `${who} changed the main currency from ${from} to ${to}`
+        : `${who} changed the main currency`
+    },
+  },
   accountKind(
     `account.created`,
     `AdminAuditEvent.financeAccountCreated`,

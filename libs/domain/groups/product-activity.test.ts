@@ -1,5 +1,6 @@
 /// <reference lib="deno.ns" />
 import { expect } from "@std/expect"
+import { HOUSEHOLD_EVENTS } from "@domain/money"
 import { type ActivityEvent, describeActivity, PRODUCT_ACTIVITY_KINDS } from "./+lib.ts"
 
 const ada = { userId: 1, name: "Ada" }
@@ -7,6 +8,19 @@ const ada = { userId: 1, name: "Ada" }
 function say(kind: string, details: ActivityEvent["details"] = {}) {
   return describeActivity({ kind, actor: ada, target: null, details })
 }
+
+Deno.test("product activity: a main-currency change names both currencies", () => {
+  expect(say(HOUSEHOLD_EVENTS.mainCurrencyChanged, { from: "EUR", to: "USD" })).toBe(
+    "Ada changed the main currency from EUR to USD",
+  )
+})
+
+Deno.test("product activity: a main-currency change missing a currency still says what changed", () => {
+  expect(say(HOUSEHOLD_EVENTS.mainCurrencyChanged)).toBe("Ada changed the main currency")
+  expect(say(HOUSEHOLD_EVENTS.mainCurrencyChanged, { from: "EUR" })).toBe(
+    "Ada changed the main currency",
+  )
+})
 
 Deno.test("product activity: an account's changes read as sentences that name the account", () => {
   expect(say("account.created", { name: "Wallet" })).toBe("Ada added the account “Wallet”")

@@ -1896,6 +1896,9 @@ export default {
   "GroupActivity.accountArchived": "<who>{who}</who>归档了账户“<value>{name}</value>”",
   "GroupActivity.accountChanged": "<who>{who}</who>修改了账户“<value>{name}</value>”",
   "GroupActivity.accountChangedUnnamed": "<who>{who}</who>修改了一个账户",
+  "GroupActivity.mainCurrencyChangedFromTo":
+    "<who>{who}</who>将主货币从<value>{from}</value>改为<value>{to}</value>",
+  "GroupActivity.mainCurrencyChanged": "<who>{who}</who>更改了主货币",
   "GroupActivity.accountCreated": "<who>{who}</who>添加了账户“<value>{name}</value>”",
   "GroupActivity.accountDefaultCleared":
     "<who>{who}</who>取消了账户“<value>{name}</value>”的默认设置",

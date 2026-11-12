@@ -2453,6 +2453,9 @@ export default {
   "GroupActivity.accountArchived": "<who>{who}</who> أرشف الحساب «<value>{name}</value>»",
   "GroupActivity.accountChanged": "<who>{who}</who> غيّر الحساب «<value>{name}</value>»",
   "GroupActivity.accountChangedUnnamed": "<who>{who}</who> غيّر حسابًا",
+  "GroupActivity.mainCurrencyChangedFromTo":
+    "<who>{who}</who> غيّر العملة الرئيسية من <value>{from}</value> إلى <value>{to}</value>",
+  "GroupActivity.mainCurrencyChanged": "<who>{who}</who> غيّر العملة الرئيسية",
   "GroupActivity.accountCreated": "<who>{who}</who> أضاف الحساب «<value>{name}</value>»",
   "GroupActivity.accountDefaultCleared":
     "<who>{who}</who> ألغى جعل الحساب «<value>{name}</value>» افتراضيًا",

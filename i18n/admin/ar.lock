@@ -201,6 +201,7 @@ AdminAuditEvent.invitationRevoked	18b8006ca8c8d7b5
 AdminAuditEvent.jobCancelled	fdcccbe29cfd8466
 AdminAuditEvent.jobRetried	c190f3ab9e66fb43
 AdminAuditEvent.jobRunNow	a6e899591c511ced
+AdminAuditEvent.mainCurrencyChanged	c7a4b7333e3e61f3
 AdminAuditEvent.memberLeft	ff4f4dec40474574
 AdminAuditEvent.memberRemoved	5dcec1a428cd55fc
 AdminAuditEvent.memberRoleChanged	ed297e0514122473

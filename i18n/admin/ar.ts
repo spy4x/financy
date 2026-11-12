@@ -2436,6 +2436,7 @@ export default {
   "AdminAccounts.title": "الحسابات",
   "AdminAccounts.topHouseholds": "الأُسر الأكثر حسابات",
   "AdminAuditEvent.financeAccountArchived": "أُرشف حساب مالي",
+  "AdminAuditEvent.mainCurrencyChanged": "غُيّرت العملة الرئيسية",
   "AdminAuditEvent.financeAccountCreated": "أُضيف حساب مالي",
   "AdminAuditEvent.financeAccountDefaultCleared": "أُلغي الحساب المالي الافتراضي",
   "AdminAuditEvent.financeAccountDefaultSet": "عُيّن الحساب المالي الافتراضي",

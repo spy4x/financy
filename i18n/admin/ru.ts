@@ -2341,6 +2341,7 @@ export default {
   "AdminAccounts.title": "Счета",
   "AdminAccounts.topHouseholds": "Семьи с наибольшим числом счетов",
   "AdminAuditEvent.financeAccountArchived": "Счёт убран в архив",
+  "AdminAuditEvent.mainCurrencyChanged": "Изменена основная валюта",
   "AdminAuditEvent.financeAccountCreated": "Добавлен счёт",
   "AdminAuditEvent.financeAccountDefaultCleared": "Счёт больше не основной",
   "AdminAuditEvent.financeAccountDefaultSet": "Выбран основной счёт",

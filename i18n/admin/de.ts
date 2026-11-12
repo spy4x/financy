@@ -2207,6 +2207,7 @@ export default {
   "AdminAccounts.title": "Konten",
   "AdminAccounts.topHouseholds": "Haushalte mit den meisten Konten",
   "AdminAuditEvent.financeAccountArchived": "Konto archiviert",
+  "AdminAuditEvent.mainCurrencyChanged": "Hauptwährung geändert",
   "AdminAuditEvent.financeAccountCreated": "Konto hinzugefügt",
   "AdminAuditEvent.financeAccountDefaultCleared": "Standardkonto entfernt",
   "AdminAuditEvent.financeAccountDefaultSet": "Standardkonto festgelegt",
