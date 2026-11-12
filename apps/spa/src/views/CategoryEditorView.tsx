@@ -73,7 +73,10 @@ export function CategoryEditorView({ categoryId = null }: { categoryId?: string 
     <>
       <CategoryEditorScreen
         group={membership ? { id: membership.id, name: membership.name, canWrite } : null}
-        loading={groupLoading || (categoryId !== null && !category && listLoading)}
+        // A new category's fields wait for its draft: text typed before the draft starts would be
+        // dropped when it does.
+        loading={groupLoading || (categoryId === null && !creating) ||
+          (categoryId !== null && !category && listLoading)}
         notFound={categoryId !== null && !category && !listLoading && !groupLoading}
         category={category ? categoryRow(category) : null}
         categories={store.categories.value.map(categoryRow)}

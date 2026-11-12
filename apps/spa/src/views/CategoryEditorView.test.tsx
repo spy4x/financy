@@ -57,6 +57,7 @@ const food: CategoryItem = {
 }
 
 const realSave = categoriesStore.save
+const realOpen = categoriesStore.open
 let root: HTMLElement | null = null
 
 beforeEach(() => {
@@ -81,6 +82,9 @@ afterEach(async () => {
   root?.remove()
   root = null
   categoriesStore.save = realSave
+  categoriesStore.open = realOpen
+  // A new category's draft outlives a reset, which keeps it across a change of household.
+  categoriesStore.closeForm()
   categoriesStore.reset()
   groupsStore.reset()
   selectionStore.groupId.value = null
@@ -110,6 +114,19 @@ describe("CategoryEditorView", () => {
 
     expect(window.location.pathname).toBe(`/categories/${food.id}`)
     expect(toasts.list.value).toEqual([])
+  })
+
+  it("offers no name field on the create page until the list is read, so no typing is lost", async () => {
+    // A read of the list is still in flight, and this test decides when it ends.
+    categoriesStore.open = () => Promise.resolve()
+    categoriesStore.loading.value = true
+    await mount(null)
+    expect(root!.querySelectorAll("[data-e2e=category-name-input]").length).toBe(0)
+
+    await act(() => {
+      categoriesStore.loading.value = false
+    })
+    expect(root!.querySelectorAll("[data-e2e=category-name-input]").length).toBe(1)
   })
 
   it("shows a toast after saving an edit, since the page stays the same", async () => {
