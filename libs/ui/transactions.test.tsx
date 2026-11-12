@@ -458,7 +458,7 @@ describe("TransactionEditorScreen", () => {
     expect(text(document.querySelector("[data-e2e=transaction-save]"))).toBe("Save transaction")
   })
 
-  it("shows a viewer the entry as text, with no field, Save or menu", async () => {
+  it("shows a viewer the entry as text, its date in words, with no field, Save or menu", async () => {
     await mount(
       <TransactionEditorScreen
         {...editorDefaults}
