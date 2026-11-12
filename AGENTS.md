@@ -116,7 +116,7 @@ then.
 - An amount is an integer in its currency's smallest unit, never a float. That unit differs per
   currency: a yen has none, a dinar has three. A currency's decimals come from ts-libs
   (`@spy4x/platform/universal/money`), never from a table or a constant in Financy. Today that is
-  `currencyDecimals`, which reads the ISO 4217 table that ships in platform 1.116.0 and asks
+  `currencyDecimals`, which reads the ISO 4217 table that ships in platform 1.125.0 and asks
   `Intl` only for a code the table lacks; a crypto currency passes its own `decimals`, at most 8.
 - A transaction keeps its original amount and currency next to the converted one, so a later rate
   change never rewrites history.
