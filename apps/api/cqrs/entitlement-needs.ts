@@ -1,6 +1,7 @@
 import {
   canManageMember,
   canMutateNotes,
+  canRename,
   GroupInvitationCreateCommand,
   GroupMemberRoleCommand,
   GroupMoveAllCommand,
@@ -10,7 +11,12 @@ import { NoteCreateCommand, NoteMoveCommand, NoteRestoreCommand } from "@domain/
 import { CategoryArchiveCommand, CategoryCreateCommand } from "@domain/categories"
 import { AccountCreateCommand, AccountRestoreCommand } from "@domain/accounts"
 import { TransactionCreateCommand, TransactionRestoreCommand } from "@domain/transactions"
-import { BudgetSetCommand } from "@domain/budgets"
+import {
+  BudgetMethod,
+  BudgetMethodSetCommand,
+  BudgetMoveCommand,
+  BudgetSetCommand,
+} from "@domain/budgets"
 import { type EntitlementNeeds, needsFeature, needsRoom } from "./entitlement-gate.ts"
 
 /**
@@ -111,6 +117,21 @@ export const ENTITLEMENT_NEEDS: EntitlementNeeds = new Map([
     "budgets",
     (command) => command.data.groupId,
     (actor, command) => canMutateNotes(actor) && command.data.amount !== null,
+  ),
+  // Envelopes are budgets too: switching to them and moving money need the plan, and switching
+  // back to monthly limits passes on every plan, so a household that stopped paying can leave
+  // envelopes. A role the handler refuses is not judged: it answers 403 before the plan's 402.
+  needsFeature(
+    BudgetMethodSetCommand,
+    "budgets",
+    (command) => command.data.groupId,
+    (actor, command) => canRename(actor) && command.data.method === BudgetMethod.ENVELOPES,
+  ),
+  needsFeature(
+    BudgetMoveCommand,
+    "budgets",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
   ),
   needsFeature(
     GroupMemberRoleCommand,

@@ -1,28 +1,53 @@
 import { type Type, type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
 import type { Actor } from "@domain/identity"
-import { canMutateNotes, canRead, type GroupRole } from "@domain/groups"
+import { canMutateNotes, canRead, canRename, type GroupRole } from "@domain/groups"
 import { CategoryKind } from "@domain/categories"
 import type { EntryRateLookup, Ledger } from "@domain/transactions"
 import { convertMoney, currencyCode } from "@spy4x/platform/universal/money"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
-import { parseIsoDate } from "@spy4x/time/date"
+import { parseIsoDate, shiftMonth } from "@spy4x/time/date"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
 
 /**
  * Budgets: a household's monthly limit on an expense category, copied from the entries aggregate.
  * A row holds one category's amount from one month on; a month's limit is the latest row at or
  * before it, so changing November leaves October as it was. A row with no amount removes the
- * limit from its month on: nothing is deleted. The rows name no budgeting method, so a later
- * envelope method can add rollover on the same rows. Every member reads a household's budgets
- * and an editor or above sets them. `docs/aggregates.md` walks through the files.
+ * limit from its month on: nothing is deleted. Every member reads a household's budgets and an
+ * editor or above sets them. `docs/aggregates.md` walks through the files.
+ *
+ * A household also picks its budgeting method ({@link BudgetMethod}) from a month on, the same
+ * way: an admin or the owner switches it, and the switch starts in the household's current month,
+ * so every past month keeps the method it had. Under envelopes the same rows are each month's
+ * assignment to a category, exactly that month's and never carried forward, money moves between
+ * envelopes ({@link BudgetMove}), and each envelope's balance rolls over
+ * ({@link envelopeMonth}). Balances are computed from the ledger on every read, never stored.
  */
 
 /** The largest limit, in the currency's smallest unit: it crosses JSON as an exact number. */
 export const BUDGET_AMOUNT_MAX = Number.MAX_SAFE_INTEGER
 
 /** The outbox event kind a budget change is recorded under, on the group's change log. */
-export const BUDGET_EVENTS = { set: "budget.set" } as const
+export const BUDGET_EVENTS = {
+  set: "budget.set",
+  methodSet: "budget.method.set",
+  move: "budget.move",
+} as const
+
+/** How a household budgets a month: the numbers are stored, so they never change. */
+export enum BudgetMethod {
+  /** A limit per category, the latest one carried forward; nothing rolls over. The default. */
+  LIMITS = 1,
+  /** Envelopes: money assigned each month, moved between envelopes, its balance rolled over. */
+  ENVELOPES = 2,
+}
+
+/**
+ * The most months an envelope read walks back. A run of envelope months longer than this is read
+ * from this many months before the month asked for, with nothing carried into its first month, so
+ * one read costs at most this many months of the ledger, whatever the household's history.
+ */
+export const ENVELOPE_RUN_MAX_MONTHS = 60
 
 /** How full a month's bar is (R15): the numbers are stable, so a client may keep them. */
 export enum BudgetBand {
@@ -49,6 +74,7 @@ export type BudgetErrorCode =
   | "CATEGORY_ARCHIVED"
   | "CATEGORY_NOT_FOUND"
   | "GROUP_NOT_FOUND"
+  | "ID_ALREADY_EXISTS"
   | "INVALID_REQUEST"
   | "ROLE_INSUFFICIENT"
   | "VERSION_CONFLICT"
@@ -97,6 +123,41 @@ export interface Budget {
   updatedAt: Date
 }
 
+/** A household's budgeting method from one month on, as the API returns it. */
+export interface BudgetMethodSetting {
+  id: string
+  groupId: string
+  /** The month the method starts in, `YYYY-MM`. */
+  month: string
+  method: BudgetMethod
+  /** Starts at 1 and grows by one with every change of this month's row; a switch must name it. */
+  version: number
+  /** The group's change sequence this row was last written at, as a decimal string (BIGINT). */
+  changeSequence: string
+  createdByUserId: number | null
+  updatedByUserId: number | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+/** Money moved from one envelope to another in one month. It is never edited or deleted. */
+export interface BudgetMove {
+  /** Made by the client, so a retried move finds the first one. */
+  id: string
+  groupId: string
+  /** `YYYY-MM`. */
+  month: string
+  fromCategoryId: string
+  toCategoryId: string
+  /** Above zero, in `currency`'s smallest unit. */
+  amount: number
+  /** The household's main currency when the move was made. */
+  currency: string
+  changeSequence: string
+  createdByUserId: number | null
+  createdAt: Date
+}
+
 // #region Request schemas
 /** A calendar month, `YYYY-MM`, from year 1: the day is always the 1st, so no range is taken. */
 export const calendarMonth: Type<string> = type(`string`).narrow((value, ctx) => {
@@ -128,6 +189,32 @@ export const budgetSetPayloadSchema = type({
   "+": "reject",
 })
 
+/**
+ * The `budget.method.set` payload. It names no month: a switch always starts in the household's
+ * current month. `expectedVersion` is `null` when that month has no method row of its own, else
+ * its version, which the month read returns as `methodVersion`.
+ */
+export const budgetMethodSetPayloadSchema = type({
+  ...groupIdField,
+  method: type.enumerated(BudgetMethod.LIMITS, BudgetMethod.ENVELOPES),
+  expectedVersion: type(`number.integer >= 1`).or(`null`),
+  "+": "reject",
+})
+
+/**
+ * The `budget.move` payload: `amount` of the household's main currency, in its smallest unit, from
+ * one envelope to another in `month`. The client makes `id`, so a retry moves nothing twice.
+ */
+export const budgetMovePayloadSchema = type({
+  id: UUID_PATTERN,
+  ...groupIdField,
+  month: calendarMonth,
+  fromCategoryId: UUID_PATTERN,
+  toCategoryId: UUID_PATTERN,
+  amount: type(`1 <= number.integer <= ${BUDGET_AMOUNT_MAX}`),
+  "+": "reject",
+})
+
 /** The `budget.month` payload: no month is the current one in the household's time zone. */
 export const budgetMonthPayloadSchema = type({
   ...groupIdField,
@@ -136,18 +223,28 @@ export const budgetMonthPayloadSchema = type({
 })
 
 /**
- * Validates `value` against `schema`, and refuses a currency sent with no amount: a removed limit
- * has none. Throws `BudgetError("INVALID_REQUEST")`.
+ * Validates `value` against `schema`, refuses a currency sent with no amount (a removed limit has
+ * none) and a move into the envelope it comes from. Throws `BudgetError("INVALID_REQUEST")`.
  */
 export function parseBudgetRequest<S extends Type<object>>(schema: S, value: unknown): S["infer"] {
   const result = schema(value)
   if (result instanceof type.errors) {
     throw new BudgetError("INVALID_REQUEST", result.summary, fieldErrors(result))
   }
-  const parsed = result as S["infer"] & { amount?: number | null; currency?: string }
+  const parsed = result as S["infer"] & {
+    amount?: number | null
+    currency?: string
+    fromCategoryId?: string
+    toCategoryId?: string
+  }
   if (parsed.amount === null && parsed.currency !== undefined) {
     throw new BudgetError("INVALID_REQUEST", "A removed limit has no currency", {
       currency: { code: "forbidden" },
+    })
+  }
+  if (parsed.fromCategoryId !== undefined && parsed.fromCategoryId === parsed.toCategoryId) {
+    throw new BudgetError("INVALID_REQUEST", "A move goes to another envelope", {
+      toCategoryId: { code: "same" },
     })
   }
   return parsed
@@ -170,6 +267,20 @@ export function assertCanWriteBudgets(role: GroupRole | null): void {
   assertCanReadBudgets(role)
   if (!canMutateNotes(role!)) {
     throw new BudgetError("ROLE_INSUFFICIENT", "Only an editor can change budgets")
+  }
+}
+
+/**
+ * Throws unless `role` may switch the household's budgeting method: an admin or the owner, the
+ * rule that changes the main currency (`assertCanChangeHouseholdSettings`).
+ */
+export function assertCanSetBudgetMethod(role: GroupRole | null): void {
+  assertCanReadBudgets(role)
+  if (!canRename(role!)) {
+    throw new BudgetError(
+      "ROLE_INSUFFICIENT",
+      "Only an admin or the owner can change how the household budgets",
+    )
   }
 }
 
@@ -221,6 +332,40 @@ export class BudgetSetCommand implements Command<BudgetSetPayload, { budget: Bud
   constructor(public data: BudgetSetPayload) {}
 }
 
+export interface BudgetMethodSetPayload {
+  actor: Actor
+  groupId: string
+  method: BudgetMethod
+  expectedVersion: number | null
+  requestId?: string
+  idempotencyKey?: string
+}
+
+/** Switches the household's budgeting method from its current month on. */
+export class BudgetMethodSetCommand
+  implements Command<BudgetMethodSetPayload, { method: BudgetMethodSetting }> {
+  __resultType?: { method: BudgetMethodSetting }
+  constructor(public data: BudgetMethodSetPayload) {}
+}
+
+export interface BudgetMovePayload {
+  actor: Actor
+  id: string
+  groupId: string
+  month: string
+  fromCategoryId: string
+  toCategoryId: string
+  amount: number
+  requestId?: string
+  idempotencyKey?: string
+}
+
+/** Moves money from one envelope to another in one month. */
+export class BudgetMoveCommand implements Command<BudgetMovePayload, { move: BudgetMove }> {
+  __resultType?: { move: BudgetMove }
+  constructor(public data: BudgetMovePayload) {}
+}
+
 export interface BudgetMonthPayload {
   actor: Actor
   groupId: string
@@ -265,6 +410,23 @@ export interface BudgetRow {
   percent: number | null
   /** Currencies left out for lack of a rate, in the spending or in a child's limit (R8). */
   leftOut: string[]
+  /** The category's envelope, only in a month the household budgets with envelopes. */
+  envelope?: BudgetEnvelope
+}
+
+/**
+ * One envelope's month, in the household's main currency. A parent's sums its own envelope and its
+ * children's (R13). Each figure is `null` only when a sum in the run is past the safe range.
+ */
+export interface BudgetEnvelope {
+  /** The budget row of exactly this month; none, or one with no amount, is 0. */
+  assigned: number | null
+  movedIn: number | null
+  movedOut: number | null
+  /** Expenses less refunds (R15). */
+  spent: number | null
+  /** What last month left, when above zero, plus assigned and moved in, less moved out and spent. */
+  available: number | null
 }
 
 /** A month of a household's budgets. */
@@ -276,6 +438,20 @@ export interface BudgetMonth {
   baseCurrency: string
   /** Each live expense category, every parent followed by its children. */
   rows: BudgetRow[]
+  /** How the household budgets this month. */
+  method: BudgetMethod
+  /**
+   * The version of the method row that starts in this month, `null` when it has none. Read for the
+   * current month, it is what `budget.method.set` expects.
+   */
+  methodVersion: number | null
+  /**
+   * Under envelopes only: last month's ready to assign, plus this month's income, less what this
+   * month assigned and what last month overspent, in the main currency. `null` past the safe range.
+   */
+  readyToAssign?: number | null
+  /** Under envelopes only: currencies the envelope figures left out for lack of a rate (R8). */
+  envelopeLeftOut?: string[]
 }
 
 /**
@@ -405,7 +581,215 @@ export async function budgetMonth(
       leftOut: [...new Set([...ledger.leftOut, ...leftOut])].sort(),
     }
   })
-  return { month: input.month, from: input.from, to: input.to, baseCurrency, rows }
+  return {
+    month: input.month,
+    from: input.from,
+    to: input.to,
+    baseCurrency,
+    rows,
+    method: BudgetMethod.LIMITS,
+    methodVersion: null,
+  }
+}
+
+/** A method row as the month reads it. */
+export interface BudgetMethodMonth {
+  /** `YYYY-MM`. */
+  month: string
+  method: BudgetMethod
+}
+
+/** The method of `month` (`YYYY-MM`): the latest row at or before it; none is monthly limits. */
+export function budgetMethodAt(rows: readonly BudgetMethodMonth[], month: string): BudgetMethod {
+  return latestAtOrBefore(rows, month)?.method ?? BudgetMethod.LIMITS
+}
+
+/**
+ * The first month (`YYYY-MM`) of the run of envelope months `month` is in, or `null` when `month`
+ * is not an envelope month. The run starts at the latest switch to envelopes after a month of
+ * limits, or at the first switch, and never more than {@link ENVELOPE_RUN_MAX_MONTHS} months back.
+ */
+export function envelopeRunStart(rows: readonly BudgetMethodMonth[], month: string): string | null {
+  const earlier = rows.filter((row) => row.month <= month).sort((a, b) =>
+    a.month < b.month ? 1 : -1
+  )
+  let start: string | null = null
+  for (const row of earlier) {
+    if (row.method !== BudgetMethod.ENVELOPES) break
+    start = row.month
+  }
+  if (start === null) return null
+  const earliest = shiftMonth(`${month}-01`, 1 - ENVELOPE_RUN_MAX_MONTHS).slice(0, 7)
+  return start < earliest ? earliest : start
+}
+
+function latestAtOrBefore<T extends { month: string }>(
+  rows: readonly T[],
+  month: string,
+): T | null {
+  let latest: T | null = null
+  for (const row of rows) {
+    if (row.month <= month && (latest === null || row.month > latest.month)) latest = row
+  }
+  return latest
+}
+
+/** An amount in a currency, assigned to a category in a month (`YYYY-MM`). */
+export interface BudgetAssignment {
+  month: string
+  categoryId: string
+  amount: number
+  currency: string
+}
+
+/** A month's moves into and out of one category in one currency, summed. */
+export interface BudgetMoveTotal {
+  /** `YYYY-MM`. */
+  month: string
+  categoryId: string
+  currency: string
+  movedIn: number
+  movedOut: number
+}
+
+/** One month of an envelope run. */
+export interface EnvelopeRunMonth {
+  /** `YYYY-MM`. */
+  month: string
+  /** The household's ledger of the month in its main currency. */
+  ledger: Ledger
+  /** The day whose rate converts the month's assignments and moves. */
+  rateDate: string
+}
+
+/** The envelopes of the last month of a run. */
+export interface EnvelopeMonth {
+  /** Each listed category's envelope, a parent's with its children's. */
+  envelopes: Map<string, BudgetEnvelope>
+  readyToAssign: number | null
+  leftOut: string[]
+}
+
+interface EnvelopeSums {
+  assigned: bigint
+  movedIn: bigint
+  movedOut: bigint
+  spent: bigint
+  available: bigint
+}
+
+/**
+ * The envelopes of the last month of `months`, a run of envelope months oldest first, computed
+ * from the ledger and never stored. Each envelope is a category's own: a parent's own spending is
+ * its ledger spending less its listed children's. Month by month, an envelope's available is what
+ * it had last month, when above zero, plus what was assigned to it, plus moves in, less moves out,
+ * less its spending. An overspent envelope shows its negative balance in its month, starts the
+ * next one at zero, and the excess comes out of the next month's ready to assign: last month's,
+ * plus income, less everything assigned, less last month's overspending. The run's first month
+ * starts from zero.
+ *
+ * Every figure is in `baseCurrency`. An assignment or a move in another currency is converted at
+ * its month's `rateDate`; one with no rate is left out and its currency named, never counted at a
+ * rate of 1 (R8). A sum past the safe range makes every figure `null`. Integers only.
+ */
+export async function envelopeMonth(
+  input: {
+    baseCurrency: string
+    categories: readonly BudgetCategory[]
+    months: readonly EnvelopeRunMonth[]
+    assignments: readonly BudgetAssignment[]
+    moves: readonly BudgetMoveTotal[]
+  },
+  rate: EntryRateLookup,
+): Promise<EnvelopeMonth> {
+  const { baseCurrency, categories } = input
+  const listed = new Set(categories.map((category) => category.id))
+  const childrenOf = new Map<string, string[]>()
+  for (const category of categories) {
+    if (category.parentId !== null && listed.has(category.parentId)) {
+      childrenOf.set(category.parentId, [...childrenOf.get(category.parentId) ?? [], category.id])
+    }
+  }
+  const leftOut = new Set<string>()
+  let tooLarge = false
+  const toBase = async (amount: number, currency: string, rateDate: string): Promise<bigint> => {
+    if (!Number.isSafeInteger(amount)) {
+      tooLarge = true
+      return 0n
+    }
+    if (currency === baseCurrency) return BigInt(amount)
+    const converted = convertMoney(
+      amount,
+      currency,
+      baseCurrency,
+      await rate(currency, baseCurrency, rateDate),
+    )
+    if (converted.ok) return BigInt(converted.value)
+    if (converted.error === "unsafe") tooLarge = true
+    else leftOut.add(currency)
+    return 0n
+  }
+
+  let readyToAssign = 0n
+  let overspent = 0n
+  let carried = new Map<string, bigint>()
+  let last = new Map<string, EnvelopeSums>()
+  for (const { month, ledger, rateDate } of input.months) {
+    if (ledger.tooLarge || ledger.income === null) tooLarge = true
+    for (const code of ledger.leftOut) leftOut.add(code)
+    const ledgerSpent = new Map(
+      ledger.categories.map((entry) => [entry.categoryId, BigInt(entry.spending)]),
+    )
+    const sums = new Map<string, EnvelopeSums>()
+    for (const id of listed) {
+      const children = childrenOf.get(id) ?? []
+      const spent = children.reduce(
+        (sum, child) => sum - (ledgerSpent.get(child) ?? 0n),
+        ledgerSpent.get(id) ?? 0n,
+      )
+      sums.set(id, { assigned: 0n, movedIn: 0n, movedOut: 0n, spent, available: 0n })
+    }
+    for (const assignment of input.assignments) {
+      const sum = assignment.month === month ? sums.get(assignment.categoryId) : undefined
+      if (sum) sum.assigned += await toBase(assignment.amount, assignment.currency, rateDate)
+    }
+    for (const move of input.moves) {
+      const sum = move.month === month ? sums.get(move.categoryId) : undefined
+      if (!sum) continue
+      sum.movedIn += await toBase(move.movedIn, move.currency, rateDate)
+      sum.movedOut += await toBase(move.movedOut, move.currency, rateDate)
+    }
+    let assigned = 0n
+    let overspentNow = 0n
+    for (const [id, sum] of sums) {
+      sum.available = (carried.get(id) ?? 0n) + sum.assigned + sum.movedIn - sum.movedOut -
+        sum.spent
+      assigned += sum.assigned
+      if (sum.available < 0n) overspentNow -= sum.available
+    }
+    readyToAssign += BigInt(ledger.income ?? 0) - assigned - overspent
+    overspent = overspentNow
+    carried = new Map([...sums].map(([id, sum]) => [id, sum.available > 0n ? sum.available : 0n]))
+    last = sums
+  }
+
+  const safe = (value: bigint): number | null =>
+    tooLarge || value > BigInt(Number.MAX_SAFE_INTEGER) || value < -BigInt(Number.MAX_SAFE_INTEGER)
+      ? null
+      : Number(value)
+  const envelopes = new Map<string, BudgetEnvelope>()
+  for (const id of listed) {
+    const parts = [id, ...childrenOf.get(id) ?? []].flatMap((part) => last.get(part) ?? [])
+    const total = (field: keyof EnvelopeSums) => safe(parts.reduce((sum, p) => sum + p[field], 0n))
+    envelopes.set(id, {
+      assigned: total("assigned"),
+      movedIn: total("movedIn"),
+      movedOut: total("movedOut"),
+      spent: total("spent"),
+      available: total("available"),
+    })
+  }
+  return { envelopes, readyToAssign: safe(readyToAssign), leftOut: [...leftOut].sort() }
 }
 // #endregion Month
 
@@ -421,11 +805,31 @@ export interface BudgetSetInput {
   requestId?: string
 }
 
+export interface BudgetMethodSetInput {
+  groupId: string
+  /** The household's current month, `YYYY-MM`. */
+  month: string
+  method: BudgetMethod
+  expectedVersion: number | null
+  requestId?: string
+}
+
+export interface BudgetMoveInput {
+  id: string
+  groupId: string
+  month: string
+  fromCategoryId: string
+  toCategoryId: string
+  amount: number
+  /** The household's main currency now. */
+  currency: string
+  requestId?: string
+}
+
 /**
- * Where budgets are kept. A set checks the actor's role again on the locked membership row
- * (`lockActorRole`), reads the category inside the household under that lock
- * ({@link assertBudgetCategory}), upserts the month's row at the version named and records one
- * change on the group, in one transaction.
+ * Where budgets are kept. Each write checks the actor's role again on the locked membership row
+ * (`lockActorRole`), checks what it names inside the household under that lock, writes and
+ * records one change on the group, in one transaction.
  */
 export interface BudgetRepository {
   /**
@@ -433,6 +837,23 @@ export interface BudgetRepository {
    * {@link BudgetVersionConflictError}. A new row gets a version 7 id.
    */
   set(input: BudgetSetInput, actorId: number): Promise<Budget>
+  /**
+   * Writes the household's method row for `input.month` at the version named, an admin or the
+   * owner only ({@link assertCanSetBudgetMethod}). Throws {@link BudgetVersionConflictError}.
+   */
+  setMethod(input: BudgetMethodSetInput, actorId: number): Promise<BudgetMethodSetting>
+  /**
+   * Stores a move, an editor or above only. Both categories pass {@link assertBudgetCategory} as a
+   * new amount would. A retry with the same id and fields returns the stored move and records
+   * nothing; the same id with other fields, or another household's, is `ID_ALREADY_EXISTS`.
+   */
+  move(input: BudgetMoveInput, actorId: number): Promise<BudgetMove>
+  /** The household's method rows at or before `month` (`YYYY-MM`), oldest first. */
+  methodsUpTo(groupId: string, month: string): Promise<BudgetMethodSetting[]>
+  /** The budget rows with an amount whose month is from `from` to `to` (`YYYY-MM`), exactly. */
+  assignmentsIn(groupId: string, from: string, to: string): Promise<BudgetAssignment[]>
+  /** The moves from `from` to `to` (`YYYY-MM`), summed per month, category and currency. */
+  moveTotalsIn(groupId: string, from: string, to: string): Promise<BudgetMoveTotal[]>
   /** Each category's latest row at or before `month` (`YYYY-MM`), rows with no amount included. */
   limitsAt(groupId: string, month: string): Promise<Budget[]>
   /** The household's live expense categories, by name. */
