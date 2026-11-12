@@ -39,3 +39,4 @@ apps/mpa/screenshots/blog-og.ts
 apps/mpa/screenshots/blog-og.html
 apps/mpa/feature-posts.test.ts
 libs/domain/groups/product-activity.ts
+libs/server/db/migrations/2026_12_16_0004_audit_file_access_once.sql

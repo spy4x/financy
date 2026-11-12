@@ -293,6 +293,7 @@ app.route(
       siteUrl,
       linkedinExpiresAt: readLinkedinExpiry(processEnv),
       limit: rateLimits.normal,
+      thumbnailLimit: rateLimits.thumbnail,
       resetByAddress: rateLimits.resetByAddress,
       emit,
       now: () => new Date(),
