@@ -279,7 +279,7 @@ describe("BudgetsScreen", () => {
     expect(count("[data-e2e=budgets-future]")).toBe(0)
   })
 
-  it("shows the device's copy with its time and no buttons", async () => {
+  it("says the month on screen is the device's saved copy, and offers no buttons", async () => {
     await mount({ savedAt: Date.UTC(2026, 10, 12, 9, 30) })
     expect(buttons()).toEqual([])
     expect(text("[data-e2e=budgets-saved-copy]")).toContain("Saved copy of November 2026")
