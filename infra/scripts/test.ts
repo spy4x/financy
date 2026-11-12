@@ -92,6 +92,10 @@ export const GROUPS: TestGroup[] = [
     paths: [`tests/dockerfile-base.test.ts`],
   },
   {
+    flags: [`--allow-read=deno.jsonc,deno.lock`],
+    paths: [`tests/dependency-age.test.ts`],
+  },
+  {
     flags: [`--allow-read=.dockerignore,.gitignore,infra/deploy/include.txt`],
     paths: [`tests/dockerignore.test.ts`, `tests/gitignore.test.ts`],
   },
@@ -104,6 +108,7 @@ export const GROUPS: TestGroup[] = [
       `tests/compose-exposure.test.ts`,
       `tests/compose-admin.test.ts`,
       `tests/compose-runtime.test.ts`,
+      `tests/compose-deno-dir.test.ts`,
     ],
   },
   {

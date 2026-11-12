@@ -283,6 +283,11 @@ CREATE INDEX idx_audit_events_actor_created
     ON audit_events (actor_user_id, created_at DESC, id DESC);
 CREATE INDEX idx_audit_events_group_id_desc ON audit_events (group_id, id DESC);
 CREATE INDEX idx_audit_events_created ON audit_events (created_at);
+-- An operator's read of one file under one request id is one row, however often it arrives.
+CREATE UNIQUE INDEX idx_audit_events_file_access_once
+    ON audit_events (event_kind, actor_user_id, group_id, entity_id, (details->>'name'), request_id)
+    WHERE event_kind IN ('operator.file_opened', 'operator.file_downloaded')
+        AND request_id IS NOT NULL;
 
 CREATE TABLE outbox_events (
     id UUID PRIMARY KEY,
@@ -1645,7 +1650,7 @@ CREATE INDEX idx_categories_created_by ON categories (created_by_user_id);
 CREATE INDEX idx_categories_updated_by ON categories (updated_by_user_id);
 
 -- Transactions (migration 2026_12_16_0007_transactions.sql explains each column, and
--- 2026_12_16_0008_transactions_deferrable_keys.sql why both keys are deferrable).
+-- 2026_12_16_0009_transactions_deferrable_keys.sql why both keys are deferrable).
 CREATE TABLE transactions (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
