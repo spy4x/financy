@@ -369,7 +369,7 @@ Deno.test("entries against Postgres", async (t) => {
     )
 
     await t.step(
-      "sums US dollars and yen in euros, each entry at its own date's rate (legacy §4 item 2)",
+      "sums US dollars and yen in euros, each entry at its own date's rate and through its account amount when in another currency (legacy §4 item 2)",
       async () => {
         await rates(sql, "2026-11-20", RATE_SOURCES.ecb, { USD: "1.25", JPY: "125" })
         await rates(sql, "2026-11-21", RATE_SOURCES.ecb, { USD: "2" })
@@ -391,11 +391,18 @@ Deno.test("entries against Postgres", async (t) => {
           amount: 1000,
           date: "2026-11-20",
         })
+        // Yen paid from the dollar account at a manual rate: the ledger counts the 10 dollars.
+        await dollars.entry({
+          currency: "JPY",
+          amount: 1000,
+          accountAmount: 1000,
+          date: "2026-11-21",
+        })
 
         const ledger = await transactions.ledger(dollars.groupId, "EUR", "2026-11-20", "2026-11-21")
 
-        // 10 USD / 1.25 + 10 USD / 2 + 1000 JPY / 125 = 8 + 5 + 8 euros.
-        expect(ledger).toMatchObject({ currency: "EUR", spending: 2100, income: 0, net: -2100 })
+        // 10 USD / 1.25 + 10 USD / 2 + 1000 JPY / 125 + 10 USD / 2 = 8 + 5 + 8 + 5 euros.
+        expect(ledger).toMatchObject({ currency: "EUR", spending: 2600, income: 0, net: -2600 })
         expect(ledger.leftOut).toEqual([])
       },
     )
