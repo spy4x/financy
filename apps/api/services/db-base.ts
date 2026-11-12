@@ -54,6 +54,7 @@ import { PostgresBudgetRepository } from "@server/budgets/postgres-budget-reposi
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
 import { transactionMovable } from "@server/transactions/transaction-movable.ts"
+import { transactionChanges } from "@server/transactions/transaction-changes.ts"
 import { transactionPortable } from "@server/transactions/transaction-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
@@ -227,7 +228,11 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
  * The aggregates a device pulls the changes of, by group (`docs/aggregate-offline.md`, "Take part
  * in the changes pull"). Their `kind`s are the keys of the answer's `upserts`.
  */
-export const CHANGES_AGGREGATES: readonly ChangesAggregate[] = [tagChanges, noteChanges]
+export const CHANGES_AGGREGATES: readonly ChangesAggregate[] = [
+  tagChanges,
+  noteChanges,
+  transactionChanges,
+]
 
 /** `aggregates` as the notes switch leaves them: with the notes off, without `notesOwn`. */
 function switched<T>(notes: NotesSetup, aggregates: readonly T[], notesOwn: readonly T[]) {
