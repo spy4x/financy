@@ -242,7 +242,7 @@ describe("byDay", () => {
 
 describe("categoryGroups", () => {
   it("offers an expense its live expense categories only, by full name", () => {
-    const groups = categoryGroups(TransactionKind.EXPENSE, categories, null)
+    const groups = categoryGroups(TransactionKind.EXPENSE, [...categories].reverse(), null)
     expect(groups.own.map((c) => c.label)).toEqual(["Food", "Food › Coffee", "Travel"])
     expect(groups.refund).toEqual([])
   })
