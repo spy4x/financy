@@ -2598,14 +2598,14 @@ export default {
     "other":
       "Son forfait autorise jusqu’à {count} catégories utilisées. Les catégories existantes restent lisibles, modifiables et archivables.",
   },
-  "PlanRefusalNotice.transactionsTitle": "{group} a atteint sa limite de transactions",
-  "PlanRefusalNotice.transactionsTitleUnnamed": "Ce groupe a atteint sa limite de transactions",
+  "PlanRefusalNotice.transactionsTitle": "{group} a atteint sa limite d’opérations",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "Ce groupe a atteint sa limite d’opérations",
   "PlanRefusalNotice.transactionsText": {
     "one":
-      "Son forfait autorise jusqu’à {count} transaction. Les transactions existantes restent lisibles, modifiables et supprimables.",
+      "Son forfait autorise jusqu’à {count} opération. Les opérations existantes restent lisibles, modifiables et supprimables.",
     "many":
-      "Son forfait autorise jusqu’à {count} transactions. Les transactions existantes restent lisibles, modifiables et supprimables.",
+      "Son forfait autorise jusqu’à {count} opérations. Les opérations existantes restent lisibles, modifiables et supprimables.",
     "other":
-      "Son forfait autorise jusqu’à {count} transactions. Les transactions existantes restent lisibles, modifiables et supprimables.",
+      "Son forfait autorise jusqu’à {count} opérations. Les opérations existantes restent lisibles, modifiables et supprimables.",
   },
 } satisfies Catalog

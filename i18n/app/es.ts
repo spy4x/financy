@@ -2526,14 +2526,14 @@ export default {
     "other":
       "Su plan permite hasta {count} categorías en uso. Las categorías existentes se pueden leer, editar y archivar.",
   },
-  "PlanRefusalNotice.transactionsTitle": "{group} llegó a su límite de transacciones",
-  "PlanRefusalNotice.transactionsTitleUnnamed": "Este grupo llegó a su límite de transacciones",
+  "PlanRefusalNotice.transactionsTitle": "{group} llegó a su límite de movimientos",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "Este grupo llegó a su límite de movimientos",
   "PlanRefusalNotice.transactionsText": {
     "one":
-      "Su plan permite hasta {count} transacción. Las transacciones existentes se pueden leer, editar y eliminar.",
+      "Su plan permite hasta {count} movimiento. Los movimientos existentes se pueden leer, editar y eliminar.",
     "many":
-      "Su plan permite hasta {count} de transacciones. Las transacciones existentes se pueden leer, editar y eliminar.",
+      "Su plan permite hasta {count} de movimientos. Los movimientos existentes se pueden leer, editar y eliminar.",
     "other":
-      "Su plan permite hasta {count} transacciones. Las transacciones existentes se pueden leer, editar y eliminar.",
+      "Su plan permite hasta {count} movimientos. Los movimientos existentes se pueden leer, editar y eliminar.",
   },
 } satisfies Catalog
