@@ -1835,6 +1835,7 @@ export default {
   "AccountKinds.bank": "银行",
   "AccountKinds.card": "卡",
   "AccountKinds.cash": "现金",
+  "AccountKinds.crypto": "加密货币",
   "AccountKinds.liability": "负债",
   "AccountKinds.savings": "储蓄",
   "AccountMessages.change": "无法更改账户。",

@@ -2254,6 +2254,7 @@ export default {
   "AdminAccounts.kindBank": "Banco",
   "AdminAccounts.kindCard": "Cartão",
   "AdminAccounts.kindCash": "Dinheiro",
+  "AdminAccounts.kindCrypto": "Cripto",
   "AdminAccounts.kindLiability": "Dívida",
   "AdminAccounts.kindSavings": "Poupança",
   "AdminAccounts.loading": "Carregando os números",

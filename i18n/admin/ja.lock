@@ -10,6 +10,7 @@ AdminAccounts.kindAsset	80d298c9f240900f
 AdminAccounts.kindBank	676c471bc8dc3d13
 AdminAccounts.kindCard	be3702e3f1af559a
 AdminAccounts.kindCash	e2da108f63008e44
+AdminAccounts.kindCrypto	df12b8f89b61274c
 AdminAccounts.kindLiability	011912d0322ff6ec
 AdminAccounts.kindSavings	ed46218066a733ee
 AdminAccounts.loading	46e41de24147e465

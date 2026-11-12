@@ -1297,6 +1297,7 @@ export default {
     "other": "{count} accounts",
   },
   "AdminAccounts.kindCash": "Cash",
+  "AdminAccounts.kindCrypto": "Crypto",
   "AdminAccounts.kindBank": "Bank",
   "AdminAccounts.kindCard": "Card",
   "AdminAccounts.kindSavings": "Savings",

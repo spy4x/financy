@@ -43,7 +43,11 @@ const groupId = "019a0000-0000-7000-8000-000000000001"
 const overview: AdminAccountsOverview = {
   accounts: 3,
   households: 1,
-  byKind: [{ kind: AccountKind.CASH, accounts: 1 }, { kind: AccountKind.BANK, accounts: 2 }],
+  byKind: [
+    { kind: AccountKind.CASH, accounts: 1 },
+    { kind: AccountKind.BANK, accounts: 2 },
+    { kind: AccountKind.CRYPTO, accounts: 1 },
+  ],
   byCurrency: [{ currency: "EUR", accounts: 2 }, { currency: "VND", accounts: 1 }],
   topHouseholds: [{ groupId, groupName: "Home", accounts: 3, currencies: ["EUR", "VND"] }],
 }
@@ -55,6 +59,7 @@ describe("AdminAccountsScreen", () => {
     expect(text("[data-e2e=admin-accounts-stats]")).toContain("3")
     expect(text("[data-e2e=admin-accounts-kinds]")).toContain("Cash1")
     expect(text("[data-e2e=admin-accounts-kinds]")).toContain("Bank2")
+    expect(text("[data-e2e=admin-accounts-kinds]")).toContain("Crypto1")
     expect(text("[data-e2e=admin-accounts-currencies]")).toContain("EUR2")
     const link = document.querySelector("[data-e2e=admin-accounts-households] a")
     expect(link?.getAttribute("href")).toBe(`/groups/${groupId}`)

@@ -42,6 +42,7 @@ AccountKinds.asset	80d298c9f240900f
 AccountKinds.bank	676c471bc8dc3d13
 AccountKinds.card	be3702e3f1af559a
 AccountKinds.cash	e2da108f63008e44
+AccountKinds.crypto	df12b8f89b61274c
 AccountKinds.liability	011912d0322ff6ec
 AccountKinds.savings	ed46218066a733ee
 AccountMessages.change	05ff58742958f6d6
