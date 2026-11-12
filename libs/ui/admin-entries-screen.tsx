@@ -9,6 +9,7 @@ import { Stack } from "@spy4x/preact-ui/layout"
 import { Link } from "@spy4x/preact-ui/link"
 import { LoadingSkeleton } from "@spy4x/preact-ui/loading-skeleton"
 import { PageHeader } from "@spy4x/preact-ui/page-header"
+import { periodLabel, periodOf, PeriodUnit } from "@spy4x/time/period"
 import type { AdminEntriesOverview } from "@domain/transactions"
 import { ADMIN_GROUP_PATHS } from "./admin-groups-list.tsx"
 import type { Navigate } from "./progressive.tsx"
@@ -77,27 +78,16 @@ export function AdminEntriesScreen(props: AdminEntriesScreenProps): JSX.Element 
   )
 }
 
-/** `2026-11` as midnight UTC on its first day, for `Intl`. */
-function monthStart(month: string): Date {
-  return new Date(`${month}-01T00:00:00Z`)
-}
-
 function Body(
   { overview, navigate }: { overview: AdminEntriesOverview; navigate?: Navigate },
 ): JSX.Element {
   const t = useAdminText()
   const format = useFormat()
   const utc = format.utc()
-  const longMonth = new Intl.DateTimeFormat(format.locale, {
-    month: `long`,
-    year: `numeric`,
-    timeZone: `UTC`,
-  })
-  const shortMonth = new Intl.DateTimeFormat(format.locale, { month: `short`, timeZone: `UTC` })
   const months = overview.months.map((row) => ({
     ...row,
-    long: longMonth.format(monthStart(row.month)),
-    short: shortMonth.format(monthStart(row.month)),
+    long: periodLabel(periodOf(PeriodUnit.Month, `${row.month}-01`), format.locale),
+    short: utc.month(`${row.month}-01`),
   }))
   return (
     <>
