@@ -562,7 +562,7 @@ function ReadOnly(props: Shown): JSX.Element {
       ],
       [
         t.t(`TransactionEditor.amount`),
-        <EntryAmount amount={transaction.amount} currency={transaction.currency} />,
+        <EntryAmount key="amount" amount={transaction.amount} currency={transaction.currency} />,
       ],
       ...(transaction.currency !== transaction.accountCurrency
         ? [[
@@ -572,15 +572,19 @@ function ReadOnly(props: Shown): JSX.Element {
           }),
         ] as [string, ComponentChildren]]
         : []),
-      [t.t(`TransactionEditor.account`), <bdi>{account?.name ?? transaction.accountName}</bdi>],
+      [
+        t.t(`TransactionEditor.account`),
+        <bdi key="account">{account?.name ?? transaction.accountName}</bdi>,
+      ],
       [
         t.t(`TransactionEditor.category`),
-        <bdi>{category ? categoryLabel(category, props.categories) : transaction.categoryName}
+        <bdi key="category">
+          {category ? categoryLabel(category, props.categories) : transaction.categoryName}
         </bdi>,
       ],
       [t.t(`TransactionEditor.date`), dayLabel(value.date, locale)],
       ...(value.memo
-        ? [[t.t(`TransactionEditor.memoLabel`), <bdi>{value.memo}</bdi>]] as [
+        ? [[t.t(`TransactionEditor.memoLabel`), <bdi key="memo">{value.memo}</bdi>]] as [
           string,
           ComponentChildren,
         ][]
