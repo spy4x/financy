@@ -11,6 +11,7 @@ import { createProfileOperations } from "../features/profile/operations.ts"
 import { createPushOperations } from "../features/push/operations.ts"
 import { createAccountOperations } from "../features/accounts/operations.ts"
 import { createCategoryOperations } from "../features/categories/operations.ts"
+import { createTransactionOperations } from "../features/transactions/operations.ts"
 import { createHouseholdOperations } from "../features/household/operations.ts"
 import { createPictureOperations } from "../features/profile/picture.ts"
 import { createNotesOperations } from "../features/notes/switch.ts"
@@ -113,6 +114,14 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
     archive: (command) => commandBus.execute(command),
     list: (query) => queryBus.execute(query),
     get: (query) => queryBus.execute(query),
+  }),
+  ...createTransactionOperations({
+    create: (command) => commandBus.execute(command),
+    update: (command) => commandBus.execute(command),
+    delete: (command) => commandBus.execute(command),
+    restore: (command) => commandBus.execute(command),
+    get: (query) => queryBus.execute(query),
+    ledger: (query) => queryBus.execute(query),
   }),
   ...createHouseholdOperations({
     updateSettings: (command) => commandBus.execute(command),

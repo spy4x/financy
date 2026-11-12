@@ -239,6 +239,14 @@ export default {
     "親カテゴリがアーカイブ済みです。先に親のアーカイブを解除してください。",
   "Reason.CATEGORY_TREE_INVALID":
     "サブカテゴリを置けるのは、同じ種類のトップレベルのカテゴリの下だけです。",
+  "Reason.TRANSACTION_NOT_FOUND": "この取引はもう存在しません。",
+  "Reason.CATEGORY_KIND_MISMATCH":
+    "支出には支出カテゴリーが必要です。別のカテゴリーを選んでください。",
+  "Reason.NO_RATE": "この日付の為替レートはまだありません。口座の通貨での金額も入力してください。",
+  "Reason.CURRENCY_LOCKED": "この口座にはすでに取引があるため、通貨を変更できません。",
+  "Reason.KIND_LOCKED": "このカテゴリーにはすでに取引があるため、支出と収入を切り替えられません。",
+  "Reason.ACCOUNT_HAS_TRANSACTIONS":
+    "この口座には取引があるため、削除できません。代わりにアーカイブしてください。",
   "ImportIssue.categoryParentMissing": "親カテゴリがファイルのカテゴリの中にありません。",
   "ImportIssue.categoryParentArchived": "使用中ですが、親カテゴリがアーカイブ済みです。",
   "ImportIssue.categoryOwnParent": "自分自身を親カテゴリにしています。",

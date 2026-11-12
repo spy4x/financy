@@ -258,6 +258,16 @@ export default {
     "Sa catégorie parente est archivée. Désarchivez d’abord la parente.",
   "Reason.CATEGORY_TREE_INVALID":
     "Une sous-catégorie ne peut aller que sous une catégorie de premier niveau du même type.",
+  "Reason.TRANSACTION_NOT_FOUND": "Cette transaction n’existe plus.",
+  "Reason.CATEGORY_KIND_MISMATCH":
+    "Une dépense a besoin d’une catégorie de dépenses. Choisissez-en une autre.",
+  "Reason.NO_RATE":
+    "Il n’y a pas encore de taux de change pour cette date. Indiquez aussi le montant dans la devise du compte.",
+  "Reason.CURRENCY_LOCKED": "Ce compte a déjà des transactions : sa devise ne peut plus changer.",
+  "Reason.KIND_LOCKED":
+    "Cette catégorie a déjà des transactions : elle ne peut plus passer des dépenses aux revenus, ni l’inverse.",
+  "Reason.ACCOUNT_HAS_TRANSACTIONS":
+    "Ce compte a des transactions : il ne peut pas être supprimé. Archivez-le plutôt.",
   "ImportIssue.categoryParentMissing": "Sa parente ne figure pas parmi les catégories du fichier.",
   "ImportIssue.categoryParentArchived": "Elle est utilisée, mais sa parente est archivée.",
   "ImportIssue.categoryOwnParent": "Elle se désigne comme sa propre parente.",

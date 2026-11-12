@@ -249,6 +249,16 @@ export default {
     "Su categoría principal está archivada. Desarchiva primero la principal.",
   "Reason.CATEGORY_TREE_INVALID":
     "Una subcategoría solo puede ir dentro de una categoría de primer nivel del mismo tipo.",
+  "Reason.TRANSACTION_NOT_FOUND": "Esta transacción ya no existe.",
+  "Reason.CATEGORY_KIND_MISMATCH": "Un gasto necesita una categoría de gastos. Elige otra.",
+  "Reason.NO_RATE":
+    "Todavía no hay tipo de cambio para esta fecha. Indica también el importe en la moneda de la cuenta.",
+  "Reason.CURRENCY_LOCKED":
+    "Esta cuenta ya tiene transacciones, así que su moneda no se puede cambiar.",
+  "Reason.KIND_LOCKED":
+    "Esta categoría ya tiene transacciones, así que no puede pasar de gastos a ingresos ni al revés.",
+  "Reason.ACCOUNT_HAS_TRANSACTIONS":
+    "Esta cuenta tiene transacciones, así que no se puede eliminar. Archívala en su lugar.",
   "ImportIssue.categoryParentMissing":
     "Su categoría principal no está entre las categorías del archivo.",
   "ImportIssue.categoryParentArchived": "Está en uso, pero su categoría principal está archivada.",
