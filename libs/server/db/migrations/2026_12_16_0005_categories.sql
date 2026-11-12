@@ -44,3 +44,9 @@ CREATE INDEX idx_categories_parent ON categories (parent_id) WHERE parent_id IS 
 CREATE INDEX idx_categories_group_change_sequence ON categories (group_id, change_sequence);
 CREATE INDEX idx_categories_created_by ON categories (created_by_user_id);
 CREATE INDEX idx_categories_updated_by ON categories (updated_by_user_id);
+
+-- The language of the page a person signed up on, so the worker names their starter categories in
+-- it while they have saved no language of their own. NULL when the sign-up named none.
+ALTER TABLE starter_data_requests ADD COLUMN language TEXT;
+ALTER TABLE starter_data_requests ADD CONSTRAINT starter_data_requests_language_check
+    CHECK (length(language) BETWEEN 2 AND 35);

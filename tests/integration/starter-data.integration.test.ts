@@ -9,7 +9,6 @@ import {
   WELCOME_NOTE_TITLE,
 } from "@server/jobs/starter-data.ts"
 import { freePlanAllowsNothing } from "@domain/billing"
-import { DEFAULT_PREFERENCES } from "@domain/identity"
 import { JOB_AGGREGATE } from "@server/jobs/jobs.ts"
 import type { OutboxEvent } from "@spy4x/server/outbox"
 import { createPostgresAuthStore } from "@spy4x/server/auth/postgres"
@@ -22,6 +21,12 @@ import { AppDbBase } from "../../apps/api/services/db-base.ts"
 import { NOTES_OFF } from "@server/notes/setup.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
+import { Hono } from "hono"
+import type { EmailSender } from "@spy4x/email/sender"
+import type { EmailMessage } from "@spy4x/email/message"
+import { createSignIn } from "../../apps/api/services/sign-in.ts"
+import { SignUpOutcome } from "../../apps/api/services/sign-up.ts"
+import type { APIContext } from "../../apps/api/_types.ts"
 
 /** Runs `body` on a fresh schema built from schema.sql. */
 async function withSchema(body: (sql: postgres.Sql) => Promise<void>): Promise<void> {
@@ -395,17 +400,62 @@ Deno.test("a starter category refused on the first run keeps the ids after it, s
   })
 })
 
-Deno.test("the starter categories are named in the person's language, by the person", async () => {
+Deno.test("the starter categories are named in the sign-up page's language, by the person", async () => {
   await withSchema(async (sql) => {
-    const { userId, groupId } = await signedUpPerson(sql)
-    await sql`
-      INSERT INTO user_preferences (user_id, value, version)
-      VALUES (${userId}, ${sql.json({ ...DEFAULT_PREFERENCES, language: "de" })}, 1)
+    const sent: EmailMessage[] = []
+    const sender = {
+      send(message: EmailMessage) {
+        sent.push(message)
+        return Promise.resolve({ ok: true as const, id: String(sent.length) })
+      },
+    } as unknown as EmailSender
+    const worker = createOutboxProcessor(sql, { ...mailOff(sql), sender })
+    const signIn = createSignIn({
+      db: new AppDbBase({ sql }),
+      pepper: "integration-test-only-pepper-0123456789",
+      cookieSecret: "integration-test-only-cookie-secret-0123456789",
+      secureCookie: false,
+      sessionMinutes: 60,
+      totpIssuer: "example.test",
+    })
+    // The page's two calls, over one cookie jar: the request on a German page, then its code.
+    const app = new Hono<APIContext>()
+    app.use(signIn.auth.parseAuth)
+    app.post(
+      "/request",
+      async (c) =>
+        c.json({ ok: await signIn.requestSignUp(c, "anna@example.com", "Passw0rd!", null, "de") }),
+    )
+    app.post("/verify", async (c) => {
+      const result = await signIn.completeSignUp(c, (await c.req.json()).code)
+      return c.json(
+        result.outcome === SignUpOutcome.Created ? { userId: result.signedIn.user.id } : result,
+      )
+    })
+    let cookie = ""
+    const call = async (path: string, body: unknown = {}) => {
+      const response = await app.request(`http://local${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", cookie },
+        body: JSON.stringify(body),
+      })
+      cookie = response.headers.getSetCookie().map((line) => line.split(";")[0]).join("; ")
+      return await response.json()
+    }
+
+    expect(await call("/request")).toEqual({ ok: true })
+    await worker.drainOnce()
+    const code = sent.findLast((mail) => mail.to === "anna@example.com")!.text!.split("\n\n")[1]
+    const { userId } = await call("/verify", { code: code.trim() })
+    expect(typeof userId).toBe("number")
+    // Nothing saved a language for the person: only the sign-up page named one.
+    expect(await sql`SELECT 1 FROM user_preferences WHERE user_id = ${userId} AND version > 0`)
+      .toHaveLength(0)
+    await worker.drainOnce()
+
+    const [{ groupId }] = await sql<{ groupId: string }[]>`
+      SELECT group_id FROM group_members WHERE user_id = ${userId}
     `
-    const requestId = await requestFor(sql, userId)
-
-    await starterDataJob(sql)(eventOf(requestId))
-
     const names = (await categoriesOf(sql, groupId)).map(({ name }) => name)
     expect(names).toContain("Lebensmittel")
     expect(names).not.toContain("Groceries")

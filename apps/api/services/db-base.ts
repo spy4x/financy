@@ -535,11 +535,12 @@ export class AppDbBase extends DbServiceBase {
     const { sql, notes } = this
     return {
       /**
-       * Writes the marker row and queues the worker job that creates the welcome note. With the
-       * notes off it does nothing: the worker does not read `NOTES`.
+       * Writes the marker row and queues the worker job that creates the welcome note, with the
+       * sign-up page's `language` for the starter categories. With the notes off it does nothing:
+       * the worker does not read `NOTES`.
        */
-      queue: async (userId: number): Promise<void> => {
-        if (notes.on) await scheduleStarterData(sql, userId)
+      queue: async (userId: number, language: string | null = null): Promise<void> => {
+        if (notes.on) await scheduleStarterData(sql, userId, language)
       },
     }
   }

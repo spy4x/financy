@@ -2,6 +2,7 @@ import type postgres from "postgres"
 import { effectivePlanId, entitlementsOf, type Plan, PlanError } from "@domain/billing"
 import { NoteError } from "@domain/notes"
 import { CategoryError, STARTER_CATEGORIES, type StarterCategory } from "@domain/categories"
+import { isLanguage } from "@domain/identity"
 import { PostgresCategoryRepository } from "../categories/postgres-category-repository.ts"
 import { readMailReader } from "../mail/reader.ts"
 import { translatorFor } from "../mail/mail.ts"
@@ -28,11 +29,19 @@ export const WELCOME_NOTE_BODY = [
  * Records that a new account is owed its starter data and queues the job that gives it, both in the
  * caller's transaction, the sign-up's own. The job runs in the worker, so a slow or failing job
  * never holds up or undoes a sign-up. The outbox names a job by a UUID, so the job points at this
- * row rather than at the user.
+ * row rather than at the user. `language` is the sign-up page's, kept for the starter categories'
+ * names; only a language the apps offer is kept.
  */
-export async function scheduleStarterData(tx: postgres.Sql, userId: number): Promise<void> {
+export async function scheduleStarterData(
+  tx: postgres.Sql,
+  userId: number,
+  language: string | null = null,
+): Promise<void> {
   const id = uuidV7()
-  await tx`INSERT INTO starter_data_requests (id, user_id) VALUES (${id}, ${userId})`
+  await tx`
+    INSERT INTO starter_data_requests (id, user_id, language)
+    VALUES (${id}, ${userId}, ${isLanguage(language) ? language : null})
+  `
   await enqueueJob(tx, STARTER_DATA_JOB, id, { inMs: 0 })
 }
 
@@ -66,8 +75,8 @@ export interface StarterDataPlan {
 export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): JobHandler {
   const billing = new PostgresBillingRepository(sql)
   return async (event) => {
-    const [request] = await sql<{ userId: number; doneAt: Date | null }[]>`
-      SELECT user_id AS "userId", done_at AS "doneAt"
+    const [request] = await sql<{ userId: number; doneAt: Date | null; language: string | null }[]>`
+      SELECT user_id AS "userId", done_at AS "doneAt", language
       FROM starter_data_requests
       WHERE id = ${event.aggregateId}
     `
@@ -112,7 +121,7 @@ export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): J
         // nothing to seed, and a retry would only meet the same answer.
         if (!(error instanceof NoteError || error instanceof PlanError)) throw error
       }
-      await writeStarterCategories(sql, group.id, request.userId, event.aggregateId)
+      await writeStarterCategories(sql, group.id, request, event.aggregateId)
     }
     await sql`UPDATE starter_data_requests SET done_at = now() WHERE id = ${event.aggregateId}`
   }
@@ -137,7 +146,8 @@ export async function starterCategoryId(requestId: string, index: number): Promi
 }
 
 /**
- * Writes the starter categories into the household, named in the person's language, with the
+ * Writes the starter categories into the household, named in the person's language (the saved
+ * one, else the sign-up page's, as a mail to them would be written), with the
  * person as their creator. They are the app's own set, not the person's additions, so no plan cap
  * applies (`allowance: null`); Financy's own cap still does. A category the household refuses
  * (the group is gone, the person was removed, a name or an id already taken) is skipped, and its
@@ -146,10 +156,10 @@ export async function starterCategoryId(requestId: string, index: number): Promi
 async function writeStarterCategories(
   sql: postgres.Sql,
   groupId: string,
-  userId: number,
+  { userId, language: signUpLanguage }: { userId: number; language: string | null },
   requestId: string,
 ): Promise<void> {
-  const { language } = await readMailReader(sql, userId)
+  const { language } = await readMailReader(sql, userId, signUpLanguage)
   const t = translatorFor(language)
   const categories = new PostgresCategoryRepository(sql)
   let index = 0

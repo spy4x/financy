@@ -790,7 +790,11 @@ CREATE TABLE starter_data_requests (
     id UUID PRIMARY KEY,
     user_id INT4 NOT NULL UNIQUE REFERENCES auth_users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    done_at TIMESTAMPTZ
+    done_at TIMESTAMPTZ,
+    -- #95: the sign-up page's language, which names the starter categories while the person has
+    -- saved none.
+    language TEXT,
+    CONSTRAINT starter_data_requests_language_check CHECK (length(language) BETWEEN 2 AND 35)
 );
 
 -- Tags: the second offline-writable aggregate and the parent of notes (docs/aggregates.md,
