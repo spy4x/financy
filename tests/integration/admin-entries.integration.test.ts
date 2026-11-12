@@ -14,8 +14,9 @@ import { insertUser, withSchema } from "./group-team.ts"
  * `DB_*` (recipe in docs/handoff.md); it fails when they are missing rather than skipping.
  */
 
-const TODAY = `2026-11-13`
-const MONTHS = [`2026-06`, `2026-07`, `2026-08`, `2026-09`, `2026-10`, `2026-11`]
+// Not the day the test runs, and its six months cross a new year.
+const TODAY = `2027-01-13`
+const MONTHS = [`2026-08`, `2026-09`, `2026-10`, `2026-11`, `2026-12`, `2027-01`]
 const MEMO = `SECRET-MEMO-197`
 const AMOUNT = 987654321
 
@@ -68,42 +69,43 @@ Deno.test("the operator's entries read of an empty ledger has six zero months, n
 Deno.test("the operator's entries read counts live entries by month and household, and carries no amount, memo or reference", async () => {
   await withSchema(async (sql) => {
     const home = await household(sql, "Home")
-    await home.entries(`2026-11-05`)
-    await home.entries(`2026-11-20`)
-    await home.entries(`2026-09-01`, 3)
+    await home.entries(`2027-01-05`)
+    await home.entries(`2027-01-10`)
+    await home.entries(`2026-10-01`, 3)
     // Deleted entries count nowhere, not even as the latest day.
-    await home.entries(`2026-11-30`, 2, true)
-    await home.entries(`2026-07-15`, 1, true)
+    await home.entries(`2027-01-12`, 2, true)
+    await home.entries(`2026-09-15`, 1, true)
     // A household whose entries all lie before the six months still shows, with zero months.
     const old = await household(sql, "Old")
-    await old.entries(`2026-01-15`, 4)
-    await old.entries(`2026-11-02`, 1, true)
+    await old.entries(`2026-03-15`, 3)
+    await old.entries(`2026-07-31`)
+    await old.entries(`2027-01-02`, 1, true)
 
     const overview = await readAdminEntries(sql, TODAY)
 
     expect(overview).toEqual({
       entries: 9,
       households: 2,
-      lastEntryDate: `2026-11-20`,
+      lastEntryDate: `2027-01-10`,
       months: MONTHS.map((month) => ({
         month,
-        entries: { "2026-09": 3, "2026-11": 2 }[month] ?? 0,
-        households: month === `2026-09` || month === `2026-11` ? 1 : 0,
+        entries: { "2026-10": 3, "2027-01": 2 }[month] ?? 0,
+        households: month === `2026-10` || month === `2027-01` ? 1 : 0,
       })),
       topHouseholds: [
         {
           groupId: home.groupId,
           groupName: "Home",
           entries: 5,
-          months: [0, 0, 0, 3, 0, 2],
-          lastEntryDate: `2026-11-20`,
+          months: [0, 0, 3, 0, 0, 2],
+          lastEntryDate: `2027-01-10`,
         },
         {
           groupId: old.groupId,
           groupName: "Old",
           entries: 4,
           months: [0, 0, 0, 0, 0, 0],
-          lastEntryDate: `2026-01-15`,
+          lastEntryDate: `2026-07-31`,
         },
       ],
     })
@@ -131,20 +133,23 @@ Deno.test("the operator's entries read counts live entries by month and househol
 Deno.test("the operator's entries read ranks households by entries in the six months, then in total, then by id, and stops at the limit", async () => {
   await withSchema(async (sql) => {
     const three = await household(sql, "Three")
-    await three.entries(`2026-10-01`, 3)
+    await three.entries(`2026-12-01`, 3)
+    // The first day of the six months is in; the day before is not.
     const threeAndOld = await household(sql, "Three and old")
-    await threeAndOld.entries(`2026-06-01`, 3)
-    await threeAndOld.entries(`2026-05-31`, 2)
+    await threeAndOld.entries(`2026-08-01`, 3)
+    await threeAndOld.entries(`2026-07-31`, 2)
     const twins = [await household(sql, "Twin"), await household(sql, "Twin")]
-    for (const twin of twins) await twin.entries(`2026-11-13`, 2)
-    // One more household than fits, each with one entry: the one with the largest id is cut.
+    for (const twin of twins) await twin.entries(`2027-01-13`, 2)
     const ones = []
-    for (let i = 0; i < ADMIN_ENTRIES_HOUSEHOLD_LIMIT - 3; i++) {
+    for (let i = 0; i < ADMIN_ENTRIES_HOUSEHOLD_LIMIT - 4; i++) {
       const one = await household(sql, `One ${i}`)
-      await one.entries(`2026-08-08`)
+      await one.entries(`2026-10-08`)
       ones.push(one.groupId)
     }
     ones.sort()
+    // The one household too many: more entries in total than most, none in the six months.
+    const old = await household(sql, "Old")
+    await old.entries(`2026-01-01`, 4)
     const [lowTwin, highTwin] = twins.map((twin) => twin.groupId).sort()
 
     const { households, topHouseholds } = await readAdminEntries(sql, TODAY)
@@ -155,8 +160,9 @@ Deno.test("the operator's entries read ranks households by entries in the six mo
       three.groupId,
       lowTwin,
       highTwin,
-      ...ones.slice(0, -1),
+      ...ones,
     ])
+    expect(topHouseholds.map((row) => row.groupId)).not.toContain(old.groupId)
     expect(topHouseholds[0]).toMatchObject({ entries: 5, months: [3, 0, 0, 0, 0, 0] })
   })
 })
