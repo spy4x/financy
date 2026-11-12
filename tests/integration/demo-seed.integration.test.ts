@@ -1100,10 +1100,23 @@ Deno.test("with notes off, the demo seed writes every person and group but no no
     // Every starter-data request is closed, so the job writes no welcome note later.
     expect(await sql`SELECT 1 FROM starter_data_requests WHERE done_at IS NULL`).toHaveLength(0)
     // The imported group's import counts nothing it does not hold.
-    const [imported] = await sql<{ details: { notes: number; tags: number; count: number } }[]>`
-      SELECT details FROM audit_events WHERE event_kind = 'group.imported'
+    // Financy's accounts and categories still move with the notes off.
+    const [imported] = await sql<{ groupId: string; details: Record<string, number> }[]>`
+      SELECT group_id, details FROM audit_events WHERE event_kind = 'group.imported'
     `
-    expect(imported.details).toEqual({ notes: 0, tags: 0, count: 0 })
+    const [held] = await sql<{ accounts: number; categories: number }[]>`
+      SELECT
+        (SELECT COUNT(*)::int FROM accounts WHERE group_id = ${imported.groupId}) AS accounts,
+        (SELECT COUNT(*)::int FROM categories WHERE group_id = ${imported.groupId}) AS categories
+    `
+    expect(held.accounts).toBeGreaterThan(0)
+    expect(imported.details).toEqual({
+      notes: 0,
+      tags: 0,
+      accounts: held.accounts,
+      categories: held.categories,
+      count: held.accounts + held.categories,
+    })
   })
 })
 
