@@ -1644,7 +1644,7 @@ CREATE INDEX idx_categories_group_change_sequence ON categories (group_id, chang
 CREATE INDEX idx_categories_created_by ON categories (created_by_user_id);
 CREATE INDEX idx_categories_updated_by ON categories (updated_by_user_id);
 
--- Transactions (migration 2026_12_16_0006_transactions.sql explains each column).
+-- Transactions (migration 2026_12_16_0007_transactions.sql explains each column).
 CREATE TABLE transactions (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
