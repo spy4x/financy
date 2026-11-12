@@ -29,7 +29,12 @@ export const PRO_PLAN_ID = "pro"
  */
 export type FeatureKey =
   /** Give a member another role after they joined. */
-  "memberRoles"
+  | "memberRoles"
+  /**
+   * Financy's monthly category limits: setting an amount needs it; removing a limit and reading
+   * budgets never do, so a household that stopped paying keeps its books in order.
+   */
+  | "budgets"
 
 /**
  * A count a plan caps. A product adds its own keys the same way as {@link FeatureKey}.
@@ -66,7 +71,7 @@ export interface Entitlements {
 
 /** What a deployment that takes no payments allows every group: everything, with no cap. */
 export const UNLIMITED: Entitlements = {
-  features: { memberRoles: true },
+  features: { memberRoles: true, budgets: true },
   limits: {
     maxMembers: null,
     maxNotes: null,
@@ -153,7 +158,7 @@ export const PLANS: readonly Plan[] = [
     description: "A household without a paid plan: read, edit and export, add nothing.",
     features: ["Read, edit and export what the household has", "No new entries"],
     entitlements: {
-      features: { memberRoles: false },
+      features: { memberRoles: false, budgets: false },
       limits: {
         maxMembers: 1,
         maxNotes: 0,
@@ -183,7 +188,7 @@ export const PLANS: readonly Plan[] = [
       "No server to look after",
     ],
     entitlements: {
-      features: { memberRoles: true },
+      features: { memberRoles: true, budgets: true },
       limits: {
         maxMembers: 6,
         maxNotes: null,

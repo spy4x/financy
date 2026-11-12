@@ -285,4 +285,6 @@ export default {
   },
   "ImportPlace.categories": "الفئات",
   "ImportPlace.categoriesEntry": "الفئة {index}",
+  "Reason.BUDGET_INCOME_CATEGORY": "يمكن تحديد ميزانية لفئة مصروفات فقط.",
+  "Reason.CATEGORY_ARCHIVED": "هذه الفئة في الأرشيف. أخرجها من الأرشيف لتحديد ميزانية.",
 } satisfies Catalog

@@ -261,4 +261,6 @@ export default {
   },
   "ImportPlace.categories": "Categories",
   "ImportPlace.categoriesEntry": "Category {index}",
+  "Reason.BUDGET_INCOME_CATEGORY": "Only an expense category can have a budget.",
+  "Reason.CATEGORY_ARCHIVED": "This category is archived. Unarchive it to set a budget.",
 } satisfies Catalog

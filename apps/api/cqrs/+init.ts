@@ -202,6 +202,9 @@ import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction
 import { transactionRestoreHandler } from "@api/cqrs/command-handlers/transaction-restore.ts"
 import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.ts"
 import { transactionLedgerHandler } from "@api/cqrs/query-handlers/transaction-ledger.ts"
+import { BudgetMonthQuery, BudgetSetCommand } from "@domain/budgets"
+import { budgetSetHandler } from "@api/cqrs/command-handlers/budget-set.ts"
+import { budgetMonthHandler } from "@api/cqrs/query-handlers/budget-month.ts"
 import {
   ImportCheckQuery,
   ImportCommitCommand,
@@ -357,6 +360,7 @@ commandBus.register(TransactionCreateCommand, transactionCreateHandler)
 commandBus.register(TransactionUpdateCommand, transactionUpdateHandler)
 commandBus.register(TransactionDeleteCommand, transactionDeleteHandler)
 commandBus.register(TransactionRestoreCommand, transactionRestoreHandler)
+commandBus.register(BudgetSetCommand, budgetSetHandler)
 commandBus.register(
   HouseholdUpdateSettingsCommand,
   createHouseholdUpdateSettingsHandler(householdDependencies),
@@ -391,6 +395,7 @@ queryBus.register(CategoryListQuery, categoryListHandler)
 queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(TransactionGetQuery, transactionGetHandler)
 queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
+queryBus.register(BudgetMonthQuery, budgetMonthHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)

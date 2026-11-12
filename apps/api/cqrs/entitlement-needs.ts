@@ -10,6 +10,7 @@ import { NoteCreateCommand, NoteMoveCommand, NoteRestoreCommand } from "@domain/
 import { CategoryArchiveCommand, CategoryCreateCommand } from "@domain/categories"
 import { AccountCreateCommand, AccountRestoreCommand } from "@domain/accounts"
 import { TransactionCreateCommand, TransactionRestoreCommand } from "@domain/transactions"
+import { BudgetSetCommand } from "@domain/budgets"
 import { type EntitlementNeeds, needsFeature, needsRoom } from "./entitlement-gate.ts"
 
 /**
@@ -101,6 +102,15 @@ export const ENTITLEMENT_NEEDS: EntitlementNeeds = new Map([
     "maxTransactions",
     (command) => command.data.groupId,
     (actor) => canMutateNotes(actor),
+  ),
+  // Setting a limit's amount needs the plan; removing one passes on every plan, so a household
+  // that stopped paying can still take a limit away. A viewer is not judged: the handler answers
+  // 403 before the plan answers 402.
+  needsFeature(
+    BudgetSetCommand,
+    "budgets",
+    (command) => command.data.groupId,
+    (actor, command) => canMutateNotes(actor) && command.data.amount !== null,
   ),
   needsFeature(
     GroupMemberRoleCommand,

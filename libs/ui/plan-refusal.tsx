@@ -7,6 +7,13 @@ import type { FeatureKey, LimitKey, PlanRefusal } from "@domain/billing"
 import { GROUP_PATHS, type Navigate } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 
+/** What a refusal says when the plan allows none of the thing, whatever it is. */
+const NO_PLAN_KEYS = {
+  named: `PlanRefusalNotice.noPlanTitle`,
+  unnamed: `PlanRefusalNotice.noPlanTitleUnnamed`,
+  message: `PlanRefusalNotice.noPlanText`,
+}
+
 /**
  * What a refusal says, per entitlement, by key in the `app` catalog: the title when the group's name
  * is known (`named`) and when it is not (`unnamed`), and what the plan allows. A message with a limit
@@ -56,13 +63,8 @@ const REFUSAL_KEYS: Record<
     unnamed: `PlanRefusalNotice.rolesTitle`,
     message: `PlanRefusalNotice.rolesText`,
   },
-}
-
-/** What a refusal says when the plan allows none of the thing, whatever it is. */
-const NO_PLAN_KEYS = {
-  named: `PlanRefusalNotice.noPlanTitle`,
-  unnamed: `PlanRefusalNotice.noPlanTitleUnnamed`,
-  message: `PlanRefusalNotice.noPlanText`,
+  // Only the paid plan sets a budget, so the refusal asks for a plan, as a cap of 0 does.
+  budgets: NO_PLAN_KEYS,
 }
 
 export interface PlanRefusalNoticeProps {

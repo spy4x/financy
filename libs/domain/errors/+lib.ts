@@ -34,6 +34,7 @@ import type { TagErrorCode } from "@domain/tags"
 import type { AccountErrorCode } from "@domain/accounts"
 import type { CategoryErrorCode } from "@domain/categories"
 import type { TransactionErrorCode } from "@domain/transactions"
+import type { BudgetErrorCode } from "@domain/budgets"
 
 /** The closed list of error codes, the same on every transport. */
 export const ERROR_CODES = REALTIME_ERROR_CODES
@@ -95,6 +96,7 @@ export type ErrorReason =
   | AccountErrorCode
   | CategoryErrorCode
   | TransactionErrorCode
+  | BudgetErrorCode
 
 /** The arktype type of every error body the API sends. Nothing else may ride in it. */
 export const apiErrorBodySchema = type({

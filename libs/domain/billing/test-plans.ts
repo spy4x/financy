@@ -42,7 +42,7 @@ export const TEST_FREE_PLAN: Plan = {
   description: "For trying things out.",
   features: ["Up to 10 notes", "Up to 3 members", "100 files, 200 MB in all"],
   entitlements: {
-    features: { memberRoles: false },
+    features: { memberRoles: false, budgets: false },
     limits: testLimits(null, {
       maxMembers: 3,
       maxNotes: 10,
@@ -71,7 +71,7 @@ export const TEST_PRO_PLAN: Plan = {
     "Promote members to editor or admin",
   ],
   entitlements: {
-    features: { memberRoles: true },
+    features: { memberRoles: true, budgets: true },
     limits: testLimits(null, { maxMembers: 50, storageBytes: 10 * 1024 * 1024 * 1024 }),
   },
   attachments: { maxFileBytes: 2 * 1024 * 1024, maxPerNote: 10 },
