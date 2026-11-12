@@ -2506,4 +2506,14 @@ export default {
     "other":
       "O plano permite até {count} categorias em uso. As categorias existentes continuam legíveis, editáveis e arquiváveis.",
   },
+  "PlanRefusalNotice.transactionsTitle": "{group} atingiu o limite de lançamentos",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "Este grupo atingiu o limite de lançamentos",
+  "PlanRefusalNotice.transactionsText": {
+    "one":
+      "O plano permite até {count} lançamento. Os lançamentos existentes continuam legíveis, editáveis e excluíveis.",
+    "many":
+      "O plano permite até {count} de lançamentos. Os lançamentos existentes continuam legíveis, editáveis e excluíveis.",
+    "other":
+      "O plano permite até {count} lançamentos. Os lançamentos existentes continuam legíveis, editáveis e excluíveis.",
+  },
 } satisfies Catalog

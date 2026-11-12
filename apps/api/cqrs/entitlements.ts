@@ -19,6 +19,7 @@ export const entitlementGate = createEntitlementGate(
       maxMembers: (groupId) => new PostgresInvitationRepository(sql).countMembers(groupId),
       maxAccounts: (groupId) => db.account.count(groupId),
       maxCategories: (groupId) => db.category.count(groupId),
+      maxTransactions: (groupId) => db.transaction.count(groupId),
     },
   },
   ENTITLEMENT_NEEDS,

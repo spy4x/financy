@@ -189,6 +189,20 @@ import { categoryArchiveHandler } from "@api/cqrs/command-handlers/category-arch
 import { categoryListHandler } from "@api/cqrs/query-handlers/category-list.ts"
 import { categoryGetHandler } from "@api/cqrs/query-handlers/category-get.ts"
 import {
+  TransactionCreateCommand,
+  TransactionDeleteCommand,
+  TransactionGetQuery,
+  TransactionLedgerQuery,
+  TransactionRestoreCommand,
+  TransactionUpdateCommand,
+} from "@domain/transactions"
+import { transactionCreateHandler } from "@api/cqrs/command-handlers/transaction-create.ts"
+import { transactionUpdateHandler } from "@api/cqrs/command-handlers/transaction-update.ts"
+import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction-delete.ts"
+import { transactionRestoreHandler } from "@api/cqrs/command-handlers/transaction-restore.ts"
+import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.ts"
+import { transactionLedgerHandler } from "@api/cqrs/query-handlers/transaction-ledger.ts"
+import {
   ImportCheckQuery,
   ImportCommitCommand,
   ImportCreateCommand,
@@ -339,6 +353,10 @@ commandBus.register(AccountRestoreCommand, accountRestoreHandler)
 commandBus.register(CategoryCreateCommand, categoryCreateHandler)
 commandBus.register(CategoryUpdateCommand, categoryUpdateHandler)
 commandBus.register(CategoryArchiveCommand, categoryArchiveHandler)
+commandBus.register(TransactionCreateCommand, transactionCreateHandler)
+commandBus.register(TransactionUpdateCommand, transactionUpdateHandler)
+commandBus.register(TransactionDeleteCommand, transactionDeleteHandler)
+commandBus.register(TransactionRestoreCommand, transactionRestoreHandler)
 commandBus.register(
   HouseholdUpdateSettingsCommand,
   createHouseholdUpdateSettingsHandler(householdDependencies),
@@ -371,6 +389,8 @@ queryBus.register(AccountGetQuery, accountGetHandler)
 queryBus.register(AccountTotalQuery, accountTotalHandler)
 queryBus.register(CategoryListQuery, categoryListHandler)
 queryBus.register(CategoryGetQuery, categoryGetHandler)
+queryBus.register(TransactionGetQuery, transactionGetHandler)
+queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)

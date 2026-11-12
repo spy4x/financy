@@ -86,9 +86,11 @@ export const ACCOUNT_EVENTS = {
 
 export type AccountErrorCode =
   | "ACCOUNT_ARCHIVED"
+  | "ACCOUNT_HAS_TRANSACTIONS"
   | "ACCOUNT_LIMIT_REACHED"
   | "ACCOUNT_NOT_FOUND"
   | "CURRENCY_KIND_MISMATCH"
+  | "CURRENCY_LOCKED"
   | "GROUP_NOT_FOUND"
   | "ID_ALREADY_EXISTS"
   | "INVALID_REQUEST"
@@ -541,10 +543,13 @@ export interface AccountRestoreInput extends AccountInputBase, AccountAllowance 
  * account of another household is `ACCOUNT_NOT_FOUND`, the same as one that does not exist.
  */
 export interface AccountRepository {
-  /** The household's live accounts, archived ones included, by name; with `deleted` the trash. */
-  list(groupId: string, deleted?: boolean): Promise<ListedAccount[]>
-  /** A live account of the group, with its balance; `null` for a deleted one or another group's. */
-  get(groupId: string, id: string): Promise<ListedAccount | null>
+  /**
+   * The household's live accounts, archived ones included, by name; with `deleted` the trash. Each
+   * balance counts the entries dated on or before `on`, by default today in the household's zone.
+   */
+  list(groupId: string, deleted?: boolean, on?: string): Promise<ListedAccount[]>
+  /** A live account of the group, with its balance on `on`; `null` for a deleted or another's. */
+  get(groupId: string, id: string, on?: string): Promise<ListedAccount | null>
   /**
    * Throws `ID_ALREADY_EXISTS` when the id holds a different account, `ACCOUNT_LIMIT_REACHED`
    * when the household is full, and a `PlanError` when its plan's `allowance` is used up. A retry

@@ -74,6 +74,7 @@ export type CategoryErrorCode =
   | "GROUP_NOT_FOUND"
   | "ID_ALREADY_EXISTS"
   | "INVALID_REQUEST"
+  | "KIND_LOCKED"
   | "ROLE_INSUFFICIENT"
   | "VERSION_CONFLICT"
 

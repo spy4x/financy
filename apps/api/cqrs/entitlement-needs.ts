@@ -9,6 +9,7 @@ import {
 import { NoteCreateCommand, NoteMoveCommand, NoteRestoreCommand } from "@domain/notes"
 import { CategoryArchiveCommand, CategoryCreateCommand } from "@domain/categories"
 import { AccountCreateCommand, AccountRestoreCommand } from "@domain/accounts"
+import { TransactionCreateCommand, TransactionRestoreCommand } from "@domain/transactions"
 import { type EntitlementNeeds, needsFeature, needsRoom } from "./entitlement-gate.ts"
 
 /**
@@ -86,6 +87,20 @@ export const ENTITLEMENT_NEEDS: EntitlementNeeds = new Map([
     "maxCategories",
     (command) => command.data.groupId,
     (actor, command) => canMutateNotes(actor) && !command.data.archived,
+  ),
+  // An entry added, or restored from the trash, counts against the household's plan. An edit or a
+  // delete passes on every plan, so a household that stopped paying keeps its books in order.
+  needsRoom(
+    TransactionCreateCommand,
+    "maxTransactions",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
+  ),
+  needsRoom(
+    TransactionRestoreCommand,
+    "maxTransactions",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
   ),
   needsFeature(
     GroupMemberRoleCommand,

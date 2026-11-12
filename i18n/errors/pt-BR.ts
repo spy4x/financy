@@ -245,6 +245,16 @@ export default {
     "A categoria principal está arquivada. Desarquive a principal primeiro.",
   "Reason.CATEGORY_TREE_INVALID":
     "Uma subcategoria só pode ficar dentro de uma categoria de primeiro nível do mesmo tipo.",
+  "Reason.TRANSACTION_NOT_FOUND": "Este lançamento não existe mais.",
+  "Reason.CATEGORY_KIND_MISMATCH":
+    "Uma despesa precisa de uma categoria de despesas. Escolha outra.",
+  "Reason.NO_RATE":
+    "Ainda não há taxa de câmbio para esta data. Informe também o valor na moeda da conta.",
+  "Reason.CURRENCY_LOCKED": "Esta conta já tem lançamentos, então a moeda dela não pode mudar.",
+  "Reason.KIND_LOCKED":
+    "Esta categoria já tem lançamentos, então não pode trocar entre despesas e receitas.",
+  "Reason.ACCOUNT_HAS_TRANSACTIONS":
+    "Esta conta tem lançamentos, então não pode ser excluída. Arquive-a em vez disso.",
   "ImportIssue.categoryParentMissing":
     "A categoria principal não está entre as categorias do arquivo.",
   "ImportIssue.categoryParentArchived":

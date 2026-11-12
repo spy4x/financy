@@ -10,6 +10,7 @@ import {
   type CategoryArchiveResult,
   type CategoryCreateInput,
   CategoryError,
+  type CategoryKind,
   type CategoryNode,
   categoryProblem,
   type CategoryRepository,
@@ -156,6 +157,13 @@ export class PostgresCategoryRepository implements CategoryRepository {
       const repository = new PostgresCategoryRepository(transaction)
       await assertWriterNow(transaction, input.groupId, actorId)
       const current = await repository.lockCurrent(input)
+      // An entry's kind matched its category's when it was written (R12): the kind stays while any
+      // entry, live or in the trash, names the category. The household's lock keeps new ones out.
+      if (current.kind !== input.kind && await repository.hasEntries(input.groupId, input.id)) {
+        throw new CategoryError("KIND_LOCKED", "A category's kind is fixed once it has entries", {
+          kind: { code: "locked" },
+        })
+      }
       const household = await repository.nodes(input.groupId)
       assertNoCategoryProblem(
         categoryProblem(household, { ...input, archived: current.archivedAt !== null }),
@@ -241,9 +249,11 @@ export class PostgresCategoryRepository implements CategoryRepository {
    */
   private async lockCurrent(
     input: { groupId: string; id: string; expectedVersion: number },
-  ): Promise<{ name: string; archivedAt: Date | null }> {
-    const [current] = await this.sql<{ version: number; name: string; archivedAt: Date | null }[]>`
-      SELECT version, name, archived_at FROM categories
+  ): Promise<{ name: string; kind: CategoryKind; archivedAt: Date | null }> {
+    const [current] = await this.sql<
+      { version: number; name: string; kind: CategoryKind; archivedAt: Date | null }[]
+    >`
+      SELECT version, name, kind, archived_at FROM categories
       WHERE id = ${input.id} AND group_id = ${input.groupId}
       FOR UPDATE
     `
@@ -252,6 +262,16 @@ export class PostgresCategoryRepository implements CategoryRepository {
       throw new CategoryVersionConflictError(current.version)
     }
     return current
+  }
+
+  /** Whether any entry of the household, live or in the trash, names the category. */
+  private async hasEntries(groupId: string, id: string): Promise<boolean> {
+    const [{ found }] = await this.sql<{ found: boolean }[]>`
+      SELECT EXISTS (
+        SELECT 1 FROM transactions WHERE group_id = ${groupId} AND category_id = ${id}
+      ) AS found
+    `
+    return found
   }
 
   private async audit(

@@ -237,6 +237,15 @@ export default {
   "Reason.CATEGORY_PARENT_ARCHIVED": "Its parent category is archived. Unarchive the parent first.",
   "Reason.CATEGORY_TREE_INVALID":
     "A subcategory can sit only under a top-level category of the same kind.",
+  "Reason.TRANSACTION_NOT_FOUND": "This transaction no longer exists.",
+  "Reason.CATEGORY_KIND_MISMATCH": "An expense needs an expense category. Pick another one.",
+  "Reason.NO_RATE":
+    "There's no exchange rate for this date yet. Enter the amount in the account's currency too.",
+  "Reason.CURRENCY_LOCKED": "This account already has transactions, so its currency can't change.",
+  "Reason.KIND_LOCKED":
+    "This category already has transactions, so it can't switch between expense and income.",
+  "Reason.ACCOUNT_HAS_TRANSACTIONS":
+    "This account has transactions, so it can't be deleted. Archive it instead.",
   "ImportIssue.categoryParentMissing": "Its parent isn't among the file's categories.",
   "ImportIssue.categoryParentArchived": "It's in use, but its parent is archived.",
   "ImportIssue.categoryOwnParent": "It names itself as its parent.",

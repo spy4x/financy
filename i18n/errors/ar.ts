@@ -262,6 +262,12 @@ export default {
   "Reason.CATEGORY_PARENT_ARCHIVED": "فئتها الأم مؤرشفة. ألغِ أرشفة الفئة الأم أولًا.",
   "Reason.CATEGORY_TREE_INVALID":
     "لا يمكن وضع الفئة الفرعية إلا تحت فئة من المستوى الأعلى من النوع نفسه.",
+  "Reason.TRANSACTION_NOT_FOUND": "هذه المعاملة لم تعد موجودة.",
+  "Reason.CATEGORY_KIND_MISMATCH": "المصروف يحتاج إلى فئة مصروفات. اختر فئة أخرى.",
+  "Reason.NO_RATE": "لا يوجد سعر صرف لهذا التاريخ بعد. أدخل المبلغ بعملة الحساب أيضًا.",
+  "Reason.CURRENCY_LOCKED": "لهذا الحساب معاملات بالفعل، لذلك لا يمكن تغيير عملته.",
+  "Reason.KIND_LOCKED": "لهذه الفئة معاملات بالفعل، لذلك لا يمكن تحويلها بين المصروفات والدخل.",
+  "Reason.ACCOUNT_HAS_TRANSACTIONS": "لهذا الحساب معاملات، لذلك لا يمكن حذفه. أرشفه بدلًا من ذلك.",
   "ImportIssue.categoryParentMissing": "فئتها الأم ليست ضمن فئات الملف.",
   "ImportIssue.categoryParentArchived": "هي قيد الاستخدام، لكن فئتها الأم مؤرشفة.",
   "ImportIssue.categoryOwnParent": "تشير إلى نفسها كفئة أم.",

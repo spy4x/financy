@@ -16,6 +16,7 @@ import { AttachmentError, NoteError, NoteVersionConflictError } from "@domain/no
 import { TagError, TagVersionConflictError } from "@domain/tags"
 import { AccountError, AccountVersionConflictError } from "@domain/accounts"
 import { CategoryError, CategoryVersionConflictError } from "@domain/categories"
+import { TransactionError, TransactionVersionConflictError } from "@domain/transactions"
 import { HouseholdError, HouseholdVersionConflictError } from "@domain/money"
 import { PlanError, toPlanRefusal } from "@domain/billing"
 import { IdempotencyError } from "@spy4x/server/idempotency"
@@ -106,6 +107,15 @@ export function toRequestError(error: unknown): RealtimeRequestError | null {
       ? { code: error.code, currentVersion: error.currentVersion }
       : { code: error.code }
     return new RealtimeRequestError(CATEGORY_ERROR_CODES[error.code], error.message, details, {
+      reason: error.code,
+      fields: error.fields,
+    })
+  }
+  if (error instanceof TransactionError) {
+    const details = error instanceof TransactionVersionConflictError
+      ? { code: error.code, currentVersion: error.currentVersion }
+      : { code: error.code }
+    return new RealtimeRequestError(TRANSACTION_ERROR_CODES[error.code], error.message, details, {
       reason: error.code,
       fields: error.fields,
     })
@@ -256,9 +266,11 @@ const ACCOUNT_ERROR_CODES: Record<
   "bad_request" | "forbidden" | "not_found" | "conflict"
 > = {
   ACCOUNT_ARCHIVED: "conflict",
+  ACCOUNT_HAS_TRANSACTIONS: "conflict",
   ACCOUNT_LIMIT_REACHED: "conflict",
   ACCOUNT_NOT_FOUND: "not_found",
   CURRENCY_KIND_MISMATCH: "bad_request",
+  CURRENCY_LOCKED: "conflict",
   GROUP_NOT_FOUND: "not_found",
   ID_ALREADY_EXISTS: "conflict",
   INVALID_REQUEST: "bad_request",
@@ -278,7 +290,24 @@ const CATEGORY_ERROR_CODES: Record<
   GROUP_NOT_FOUND: "not_found",
   ID_ALREADY_EXISTS: "conflict",
   INVALID_REQUEST: "bad_request",
+  KIND_LOCKED: "conflict",
   ROLE_INSUFFICIENT: "forbidden",
+  VERSION_CONFLICT: "conflict",
+}
+
+const TRANSACTION_ERROR_CODES: Record<
+  TransactionError["code"],
+  "bad_request" | "forbidden" | "not_found" | "conflict"
+> = {
+  ACCOUNT_NOT_FOUND: "not_found",
+  CATEGORY_KIND_MISMATCH: "bad_request",
+  CATEGORY_NOT_FOUND: "not_found",
+  GROUP_NOT_FOUND: "not_found",
+  ID_ALREADY_EXISTS: "conflict",
+  INVALID_REQUEST: "bad_request",
+  NO_RATE: "conflict",
+  ROLE_INSUFFICIENT: "forbidden",
+  TRANSACTION_NOT_FOUND: "not_found",
   VERSION_CONFLICT: "conflict",
 }
 

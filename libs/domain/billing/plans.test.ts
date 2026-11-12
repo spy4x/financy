@@ -68,15 +68,23 @@ describe("Financy's plans", () => {
     expect(() => assertRoomFor("maxMembers", maxMembers, 6, GroupRole.OWNER)).toThrow(PlanError)
   })
 
-  it("puts no cap on notes, files, accounts or categories on the Household plan", () => {
-    const { maxNotes, maxAttachments, maxAccounts, maxCategories } = household.entitlements.limits
-    expect([maxNotes, maxAttachments, maxAccounts, maxCategories]).toEqual([null, null, null, null])
+  it("puts no cap on notes, files, accounts, categories or transactions on the Household plan", () => {
+    const { maxNotes, maxAttachments, maxAccounts, maxCategories, maxTransactions } =
+      household.entitlements.limits
+    expect([maxNotes, maxAttachments, maxAccounts, maxCategories, maxTransactions]).toEqual([
+      null,
+      null,
+      null,
+      null,
+      null,
+    ])
   })
 
   it("lets a household without the plan add nothing", () => {
     expect(freePlanAllowsNothing(PLANS)).toBe(true)
     expect(free.entitlements.limits.maxAccounts).toBe(0)
     expect(free.entitlements.limits.maxCategories).toBe(0)
+    expect(free.entitlements.limits.maxTransactions).toBe(0)
   })
 
   it("sends a new owner to checkout first, and an invited member not", () => {
@@ -88,6 +96,7 @@ describe("Financy's plans", () => {
     expect(entitlementsOf(FREE_PLAN_ID, false, PLANS)).toEqual(UNLIMITED)
     expect(UNLIMITED.limits.maxAccounts).toBeNull()
     expect(UNLIMITED.limits.maxCategories).toBeNull()
+    expect(UNLIMITED.limits.maxTransactions).toBeNull()
     expect(UNLIMITED.features.memberRoles).toBe(true)
   })
 })

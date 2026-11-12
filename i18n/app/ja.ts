@@ -2242,4 +2242,10 @@ export default {
     "other":
       "このプランで使えるカテゴリは{count}件までです。既存のカテゴリは引き続き閲覧、編集、アーカイブできます。",
   },
+  "PlanRefusalNotice.transactionsTitle": "{group}は取引の上限に達しました",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "このグループは取引の上限に達しました",
+  "PlanRefusalNotice.transactionsText": {
+    "other":
+      "このプランで記録できる取引は{count}件までです。既存の取引は引き続き閲覧、編集、削除できます。",
+  },
 } satisfies Catalog

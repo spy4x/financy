@@ -7,6 +7,7 @@ import { queueSeatDrift } from "../billing/seat-sync.ts"
 import { purgeDeadInvitations } from "../groups/purge-dead-invitations.ts"
 import { purgeDeletedNotes } from "../notes/purge-deleted-notes.ts"
 import { purgeDeletedAccounts } from "../accounts/purge-deleted-accounts.ts"
+import { purgeDeletedTransactions } from "../transactions/purge-deleted-transactions.ts"
 import { purgeDeletedGroups } from "../groups/purge-deleted-groups.ts"
 import { purgeNotifications } from "../notifications/purge-notifications.ts"
 import { purgeOldAuditEvents } from "../groups/purge-audit-events.ts"
@@ -91,6 +92,13 @@ export function cleanupSteps(
     ["purge deleted notes", async () => {
       const notes = await purgeDeletedNotes(sql)
       if (notes.removed > 0) console.log(`Removed ${notes.removed} deleted note(s) for good`)
+    }],
+    // Before the accounts: an entry names its account, so the account can go only once it has none.
+    ["purge deleted transactions", async () => {
+      const transactions = await purgeDeletedTransactions(sql)
+      if (transactions.removed > 0) {
+        console.log(`Removed ${transactions.removed} deleted transaction(s) for good`)
+      }
     }],
     ["purge deleted finance accounts", async () => {
       const accounts = await purgeDeletedAccounts(sql)

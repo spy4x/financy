@@ -260,6 +260,17 @@ export default {
     "Ihre Oberkategorie ist archiviert. Hol zuerst die Oberkategorie aus dem Archiv.",
   "Reason.CATEGORY_TREE_INVALID":
     "Eine Unterkategorie kann nur unter einer Kategorie der obersten Ebene derselben Art stehen.",
+  "Reason.TRANSACTION_NOT_FOUND": "Diese Buchung gibt es nicht mehr.",
+  "Reason.CATEGORY_KIND_MISMATCH":
+    "Eine Ausgabe braucht eine Ausgabenkategorie. Wähle eine andere.",
+  "Reason.NO_RATE":
+    "Für dieses Datum gibt es noch keinen Wechselkurs. Gib den Betrag auch in der Währung des Kontos ein.",
+  "Reason.CURRENCY_LOCKED":
+    "Dieses Konto hat schon Buchungen, deshalb lässt sich seine Währung nicht mehr ändern.",
+  "Reason.KIND_LOCKED":
+    "Diese Kategorie hat schon Buchungen, deshalb kann sie nicht zwischen Ausgaben und Einnahmen wechseln.",
+  "Reason.ACCOUNT_HAS_TRANSACTIONS":
+    "Dieses Konto hat Buchungen und lässt sich nicht löschen. Archiviere es stattdessen.",
   "ImportIssue.categoryParentMissing": "Ihre Oberkategorie fehlt unter den Kategorien der Datei.",
   "ImportIssue.categoryParentArchived":
     "Sie ist in Gebrauch, aber ihre Oberkategorie ist archiviert.",
