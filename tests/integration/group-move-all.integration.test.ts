@@ -455,7 +455,7 @@ Deno.test("moving all of a group's data", async (t) => {
 
         const result = await off.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
 
-        expect(result).toEqual({ moved: 1, counts: { accounts: 1 } })
+        expect(result).toEqual({ moved: 1, counts: { accounts: 1, categories: 0 } })
         expect(await accountsOf(sql, from)).toEqual([])
         expect(await accountsOf(sql, to)).toEqual([
           { id: main, name: "Main", archived: false, isDefault: false, version: 2 },
