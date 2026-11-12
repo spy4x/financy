@@ -9,6 +9,8 @@ import { type ChangesRows, deviceCopy } from "./device-copy.ts"
 import { createMemoryChangesCopy } from "./memory-changes.ts"
 import type { NotePayload, NotesCache } from "./notes-cache.ts"
 import type { TagPayload, TagsCache } from "./tags-cache.ts"
+import type { TransactionItem } from "../state/transactions.ts"
+import type { TransactionPayload, TransactionsCache } from "./transactions-cache.ts"
 
 /** What one user has on a device in memory. */
 export interface MemoryDevice {
@@ -22,6 +24,9 @@ export interface MemoryDevice {
   /** The copy's tags, as the layer reads them. */
   tags: TagsCache
   tagsQueue: OutboxStore<TagPayload, TagItem>
+  /** The copy's entries, as the layer reads them. */
+  transactions: TransactionsCache
+  transactionsQueue: OutboxStore<TransactionPayload, TransactionItem>
 }
 
 /**
@@ -50,6 +55,8 @@ export function createMemoryStorage(): OfflineStorage & {
         queue: createMemoryOutboxStore<NotePayload, NoteItem>(),
         tags: views.tags,
         tagsQueue: createMemoryOutboxStore<TagPayload, TagItem>(),
+        transactions: views.transactions,
+        transactionsQueue: createMemoryOutboxStore<TransactionPayload, TransactionItem>(),
       }
       devices.set(userId, device)
     }
@@ -65,6 +72,10 @@ export function createMemoryStorage(): OfflineStorage & {
       [`offline:user:${userId}:changes`, () => device.copy.clear()],
       [`offline:user:${userId}:outbox`, () => emptyQueue(device.queue)],
       [`offline:user:${userId}:tags-outbox`, () => emptyQueue(device.tagsQueue)],
+      [
+        `offline:user:${userId}:transactions-outbox`,
+        () => emptyQueue(device.transactionsQueue),
+      ],
     ]
   }
   const all = () => [...devices].flatMap(([userId, device]) => parts(userId, device))
@@ -78,5 +89,6 @@ export function createMemoryStorage(): OfflineStorage & {
     openCopy: (userId) => of(userId).copy,
     openQueue: (userId) => of(userId).queue,
     openTagsQueue: (userId) => of(userId).tagsQueue,
+    openTransactionsQueue: (userId) => of(userId).transactionsQueue,
   }
 }

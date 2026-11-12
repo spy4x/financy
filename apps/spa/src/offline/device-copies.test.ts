@@ -76,6 +76,7 @@ function browser() {
     openCopy: (userId) => openChangesCopy(userId, indexedDB),
     openQueue: () => createMemoryOutboxStore<NotePayload, NoteItem>(),
     openTagsQueue: () => createMemoryOutboxStore<TagPayload, TagItem>(),
+    openTransactionsQueue: () => createMemoryOutboxStore(),
   }
   /** The user's copy with the pull answered by `answers`, one per pull, in order. */
   const copyOf = (userId: number, answers: unknown[] = []) => {
@@ -170,6 +171,50 @@ describe("the notes and tags a device keeps in IndexedDB", () => {
     expect((await notesOf(7)).map((n) => n.id)).toEqual(["a", "b"])
     expect((await tagsOf(7)).map((t) => t.id)).toEqual(["t"])
     expect(await notesOf(8)).toEqual([])
+  })
+
+  it("keeps a household's transactions, the latest date first, and drops one deleted later", async () => {
+    const { copyOf } = browser()
+    const entry = (id: string, date: string, createdAt: string) => ({
+      id,
+      groupId,
+      accountId: "a-1",
+      categoryId: "c-1",
+      kind: 1,
+      accountAmount: -450,
+      amount: -450,
+      currency: "EUR",
+      converted: false,
+      memo: "",
+      date,
+      version: 1,
+      changeSequence: "1",
+      createdByUserId: 7,
+      updatedByUserId: 7,
+      createdAt,
+      updatedAt: createdAt,
+      deletedAt: null,
+    })
+    const page = (after: number, through: number, rows: unknown[], gone: unknown[] = []) => ({
+      ...(changes(after, through) as object),
+      upserts: { notes: [], tags: [], transactions: rows },
+      tombstones: gone,
+    })
+    const copy = copyOf(7, [
+      page(0, 3, [
+        entry("older", "2026-11-01", "2026-11-01T09:00:00.000Z"),
+        entry("early", "2026-11-12", "2026-11-12T08:00:00.000Z"),
+        entry("late", "2026-11-12", "2026-11-12T18:00:00.000Z"),
+      ]),
+      page(3, 4, [], [{ kind: "transactions", id: "early" }]),
+    ])
+
+    await copy.pull(groupId)
+    expect((await copy.transactions.readTransactions(groupId)).map((row) => row.id))
+      .toEqual(["late", "early", "older"])
+    await copy.pull(groupId)
+    expect((await copy.transactions.readTransactions(groupId)).map((row) => row.id))
+      .toEqual(["late", "older"])
   })
 
   it("asks only for the changes after its cursor, and drops the notes the server sends as gone", async () => {

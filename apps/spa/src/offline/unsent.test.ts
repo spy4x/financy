@@ -6,6 +6,8 @@ import type { SyncRunnerState } from "@spy4x/realtime/sync-runner"
 import type { OfflineLayer } from "./index.ts"
 import type { NoteEntry } from "./notes-cache.ts"
 import type { TagEntry } from "./tags-cache.ts"
+import type { TransactionEntry } from "./transactions-cache.ts"
+import { TransactionKind } from "@domain/transactions"
 import { countUnsent, watchUnsent } from "./unsent.ts"
 
 function noteEntry(entityId: string, status: "pending" | "conflict", groupId = "g-1"): NoteEntry {
@@ -36,6 +38,31 @@ function tagEntry(entityId: string, status: "pending" | "conflict", groupId = "g
   }
 }
 
+function transactionEntry(entityId: string, status: "pending" | "conflict"): TransactionEntry {
+  return {
+    seq: 1,
+    key: `key-${entityId}`,
+    entityId,
+    kind: "create",
+    payload: {
+      groupId: "g-1",
+      accountId: "a-1",
+      categoryId: "c-1",
+      kind: TransactionKind.EXPENSE,
+      amount: 450,
+      currency: "EUR",
+      accountAmount: null,
+      memo: "",
+      date: "2026-11-12",
+      accountCurrency: "EUR",
+    },
+    baseVersion: 0,
+    attempted: false,
+    status,
+    queuedAt: "2026-11-12T08:00:00.000Z",
+  }
+}
+
 const idle: SyncRunnerState = { running: false, lastError: null, failures: 0, nextRetryAt: null }
 
 /** A layer with these queues, whose runner records kicks and reports what the test sets. */
@@ -43,6 +70,7 @@ function layerWith(
   notes: NoteEntry[],
   tags: TagEntry[] = [],
   waiting: WaitingEntry[] = [],
+  transactions: TransactionEntry[] = [],
 ) {
   const entries = signal<readonly NoteEntry[]>(notes)
   const tagEntries = signal<readonly TagEntry[]>(tags)
@@ -52,6 +80,7 @@ function layerWith(
   const layer = {
     entries,
     tagEntries,
+    transactionEntries: signal<readonly TransactionEntry[]>(transactions),
     collections: { waiting: () => waiting },
     runner: {
       getState: () => state,
@@ -74,6 +103,17 @@ describe("countUnsent", () => {
     const { layer } = layerWith([noteEntry("n-1", "pending")], [tagEntry("t-1", "pending")])
 
     expect(countUnsent(layer)).toEqual({ unsent: 2, conflicts: 0, reviewGroupId: null })
+  })
+
+  it("counts queued transaction writes, and a refused one as needing a choice", () => {
+    const pending = transactionEntry("t-1", "pending")
+    const refused = {
+      ...transactionEntry("t-2", "conflict"),
+      payload: { ...pending.payload, groupId: "g-3" },
+    }
+    const { layer } = layerWith([], [], [], [pending, refused])
+
+    expect(countUnsent(layer)).toEqual({ unsent: 2, conflicts: 1, reviewGroupId: "g-3" })
   })
 
   it("counts refused writes and writes held back by a refused parent as needing a choice", () => {

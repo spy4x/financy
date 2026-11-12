@@ -45,6 +45,30 @@ function harness(
 }
 
 describe("the pull after a hint", () => {
+  it("reads the open household's transactions for its hint, and not for another's", async () => {
+    const read: string[] = []
+    const groups = signal<readonly { id: string }[]>([{ id: "home" }, { id: "team" }])
+    const pull = createPull({
+      userId: USER,
+      flushOutbox: () => Promise.resolve(),
+      profile: { refresh: () => Promise.resolve() },
+      selection: { refresh: () => Promise.resolve() },
+      groups: { groups, refresh: () => Promise.resolve() },
+      notes: { groupId: signal(null), refresh: () => Promise.resolve() },
+      transactions: {
+        groupId: signal("team"),
+        refresh: () => Promise.resolve(void read.push("transactions")),
+      },
+      members: { groupId: signal(null), refresh: () => Promise.resolve() },
+      notifications: { refresh: () => Promise.resolve() },
+    })
+
+    await pull({ groupId: "home" })
+    expect(read).toEqual([])
+    await pull({ groupId: "team" })
+    expect(read).toEqual(["transactions"])
+  })
+
   it("never reads the notes of the open group once that group is deleted", async () => {
     const { pull, calls } = harness({ open: "team", groupsAfterRead: ["home"] })
 

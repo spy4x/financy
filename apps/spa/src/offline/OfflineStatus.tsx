@@ -11,6 +11,9 @@ import { type Message, messageText } from "@ui/message.ts"
 import { activeLayer } from "./index.ts"
 import type { NoteEntry } from "./notes-cache.ts"
 import type { TagEntry } from "./tags-cache.ts"
+import type { TransactionEntry } from "./transactions-cache.ts"
+import { formatMoney } from "@spy4x/platform/universal/money-core"
+import { amountDecimals } from "@domain/money"
 import { isolate } from "@spy4x/preact-ui/bdi"
 
 const network = createOnlineStatus()
@@ -23,8 +26,8 @@ export const conflictsToReview = signal<string | null>(null)
 
 /** One conflict, in the words of the aggregate it is about. */
 interface ConflictView {
-  /** `note` or `tag`: the queue it came from, and the first part of its id. */
-  kind: "note" | "tag"
+  /** The queue it came from, and the first part of its id. */
+  kind: "note" | "tag" | "transaction"
   seq: number
   label: string
   reason: "version" | "gone" | "rejected"
@@ -49,7 +52,7 @@ interface ConflictView {
 function theirsUnknown(
   t: Translator<string>,
   reason: ConflictView["reason"] | undefined,
-  gone: `OfflineStatus.noteGone` | `OfflineStatus.tagGone`,
+  gone: `OfflineStatus.noteGone` | `OfflineStatus.tagGone` | `OfflineStatus.transactionGone`,
 ): string {
   return reason === "gone" ? t.t(gone) : t.t(`OfflineStatus.theirsUnknown`)
 }
@@ -72,6 +75,42 @@ function noteView(t: Translator<string>, entry: NoteEntry): ConflictView {
       : theirsUnknown(t, entry.conflict?.reason, `OfflineStatus.noteGone`),
     theirsUnknown: !server && entry.conflict?.reason !== "gone",
     // A server that no longer has the note has nothing to keep mine against.
+    canKeepMine: Boolean(server),
+  }
+}
+
+/** An entry as a line in a conflict: its date, amount and memo. */
+function entryLine(
+  value: { date: string; amount: number; currency: string; memo: string },
+  locale: string,
+): string {
+  const money = formatMoney(Math.abs(value.amount), value.currency, locale, {
+    decimals: amountDecimals(value.currency),
+  })
+  return [value.date, money, value.memo].filter(Boolean).join(" · ")
+}
+
+function transactionView(
+  t: Translator<string>,
+  entry: TransactionEntry,
+  locale: string,
+): ConflictView {
+  const server = entry.conflict?.server
+  return {
+    kind: "transaction",
+    seq: entry.seq!,
+    label: entry.kind === "delete"
+      ? t.t(`OfflineStatus.deletedTransaction`)
+      : t.t(`OfflineStatus.transaction`, { line: isolate(entryLine(entry.payload, locale)) }),
+    reason: entry.conflict?.reason ?? "version",
+    message: entry.conflict?.message ?? null,
+    mine: entry.kind === "delete"
+      ? t.t(`OfflineStatus.youDeletedTransaction`)
+      : entryLine(entry.payload, locale),
+    theirs: server
+      ? entryLine(server, locale)
+      : theirsUnknown(t, entry.conflict?.reason, `OfflineStatus.transactionGone`),
+    theirsUnknown: !server && entry.conflict?.reason !== "gone",
     canKeepMine: Boolean(server),
   }
 }
@@ -203,10 +242,16 @@ export function OfflineStatus(
   if (!layer) return null
   const entries = layer.entries.value.filter((entry) => entry.payload.groupId === groupId)
   const tagEntries = layer.tagEntries.value.filter((entry) => entry.payload.groupId === groupId)
-  const pending = [...entries, ...tagEntries].filter((entry) => entry.status === "pending").length
+  const transactionEntries = layer.transactionEntries.value.filter((entry) =>
+    entry.payload.groupId === groupId
+  )
+  const pending = [...entries, ...tagEntries, ...transactionEntries]
+    .filter((entry) => entry.status === "pending").length
   const conflicts = [
     ...tagEntries.filter((entry) => entry.status === "conflict").map((entry) => tagView(t, entry)),
     ...entries.filter((entry) => entry.status === "conflict").map((entry) => noteView(t, entry)),
+    ...transactionEntries.filter((entry) => entry.status === "conflict")
+      .map((entry) => transactionView(t, entry, t.language)),
   ]
   // Notes that wait for the person's choice about a tag they name.
   const held = layer.collections.waiting().filter((w) => w.onPerson).length
@@ -227,11 +272,18 @@ export function OfflineStatus(
   }))
   const choose = (id: string, choice: "keepMine" | "useTheirs") => {
     const [kind, seq] = id.split(":")
-    const entry = kind === "tag"
-      ? tagEntries.find((candidate) => String(candidate.seq) === seq)
-      : entries.find((candidate) => String(candidate.seq) === seq)
+    const queued = kind === "tag"
+      ? tagEntries
+      : kind === "transaction"
+      ? transactionEntries
+      : entries
+    const entry = queued.find((candidate) => String(candidate.seq) === seq)
     if (!entry) return
-    const outbox = kind === "tag" ? layer.tags.outbox : layer.notes.outbox
+    const outbox = kind === "tag"
+      ? layer.tags.outbox
+      : kind === "transaction"
+      ? layer.transactions.outbox
+      : layer.notes.outbox
     return outbox[choice](entry as never).then(onResolved)
   }
 

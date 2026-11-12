@@ -218,6 +218,7 @@ describe("the saved notes and tags and the answer of the server", () => {
         await layer.changes.replace(other, {
           notes: [{ ...note, id: "n-2", groupId: other }],
           tags: [{ ...tag, id: "t-2", groupId: other }],
+          transactions: [],
         }, 1)
         answer = 200
         await list.read(layer)
