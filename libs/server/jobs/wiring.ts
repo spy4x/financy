@@ -49,7 +49,8 @@ import type { ServerFiles } from "../files/files.ts"
  * `telegram`, a notification also goes to the person's linked Telegram chat; without it,
  * those jobs send nothing. `imageScratch` is where image processing writes its files;
  * without it, those jobs fail and are retried. With `indexNow`, the `blog.indexnow` job tells
- * IndexNow that a post's addresses changed; without it, that job sends nothing. With
+ * IndexNow that a post's addresses changed, and the `catalog.indexnow` job those of an item, named
+ * as `catalogPages` says; without it, those jobs send nothing. With
  * `crosspost`, a live post is cross-posted to Dev.to once; without it, it is skipped.
  * `fetcher` is how `blog.publish` asks the website whether a post is live; tests pass a fake.
  * With `shareResults`, the hourly `blog.share-results` job reads each posted copy's numbers;
@@ -76,6 +77,7 @@ export function createOutboxProcessor(
   shareResults: JobDeps["shareResults"] = null,
   autoPost: JobDeps["autoPost"] = undefined,
   rates: JobDeps["rates"] = null,
+  catalogPages: JobDeps["catalogPages"] = undefined,
   notes: JobDeps["notes"] = undefined,
 ): OutboxProcessor {
   const notifier = new GroupChangeNotifier(sql)
@@ -94,6 +96,7 @@ export function createOutboxProcessor(
     crosspost,
     shareResults,
     autoPost,
+    catalogPages,
     notes,
     fetch: fetcher,
     rates,
