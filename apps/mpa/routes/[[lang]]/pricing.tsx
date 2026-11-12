@@ -12,7 +12,7 @@ import {
 import { PlanCard } from "@spy4x/preact-ui/billing"
 import { FaqList } from "@spy4x/preact-ui/faq-list"
 import { PageHero } from "@spy4x/preact-ui/page-hero"
-import { currencyDecimals } from "@spy4x/platform/universal/money"
+import { formatMoney } from "@spy4x/platform/universal/money"
 import { faqPageJsonLd } from "@spy4x/platform/universal/seo"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { siteEnglishText } from "@ui/site-text.ts"
@@ -46,11 +46,7 @@ const HOUSEHOLD: Plan = findPlan(PRO_PLAN_ID)!
  * and `4 US$` in Spanish.
  */
 export function planPrice(amount: number, currency: string, language: string): string {
-  return new Intl.NumberFormat(language, {
-    style: `currency`,
-    currency,
-    trailingZeroDisplay: `stripIfInteger`,
-  }).format(amount / 10 ** currencyDecimals(currency))
+  return formatMoney(amount, currency, language, { trailingZeroDisplay: `stripIfInteger` })
 }
 
 /** The numbers the page's words name, all from the Household plan, written for `language`. */
