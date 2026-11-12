@@ -53,6 +53,7 @@ import { TEST_PLANS, testUsage } from "../../../../libs/domain/billing/test-plan
 const groupId = uuidV7()
 const otherGroupId = uuidV7()
 const usdAccount = uuidV7()
+const btcAccount = uuidV7()
 const otherAccount = uuidV7()
 const food = uuidV7()
 const salary = uuidV7()
@@ -83,6 +84,7 @@ function stack() {
   const transactions = new MemoryTransactionRepository({
     accounts: new Map([
       [usdAccount, { groupId, currency: "USD" }],
+      [btcAccount, { groupId, currency: "BTC" }],
       [otherAccount, { groupId: otherGroupId, currency: "USD" }],
     ]),
     categories: new Map([
@@ -344,6 +346,51 @@ for (const [via, open] of TRANSPORTS) {
 
       expect(answer).toMatchObject(refused("conflict", "NO_RATE"))
       expect(s.transactions.writes).toBe(0)
+      as.shutdown()
+    })
+
+    it("keeps 0.5 BTC as 50000000 in a crypto account, and answers NO_RATE for a coin with no price", async () => {
+      const s = stack()
+      const as = open(s, EDITOR)
+
+      const inCoin = await as.command(
+        "transaction.create",
+        lunch({ accountId: btcAccount, amount: 50_000_000, currency: "BTC" }),
+      )
+      const noPrice = await as.command(
+        "transaction.create",
+        lunch({ amount: 50_000_000, currency: "BTC" }),
+      )
+      const manual = await as.command(
+        "transaction.create",
+        lunch({ amount: 50_000_000, currency: "BTC", accountAmount: 3_000_000 }),
+      )
+
+      expect(payloadOf(inCoin)).toMatchObject({
+        transaction: { amount: -50_000_000, currency: "BTC", accountAmount: -50_000_000 },
+      })
+      expect(noPrice).toMatchObject(refused("conflict", "NO_RATE"))
+      expect(payloadOf(manual)).toMatchObject({
+        transaction: { amount: -50_000_000, accountAmount: -3_000_000, converted: false },
+      })
+      as.shutdown()
+    })
+
+    it("refuses an edit without its memo or its date, and leaves the entry as it was", async () => {
+      const s = stack()
+      const entry = await existing(s, { memo: "Lunch" })
+      const as = open(s, EDITOR)
+
+      const { date: _date, ...noDate } = { ...lunch({ id: entry.id }), memo: "Lunch", version: 1 }
+      const noMemo = { ...lunch({ id: entry.id }), version: 1 }
+      for (const payload of [noMemo, noDate]) {
+        expect(await as.command("transaction.update", payload)).toMatchObject(
+          refused("bad_request", "INVALID_REQUEST"),
+        )
+      }
+      expect(s.transactions.writes).toBe(0)
+      expect(payloadOf(await as.query("transaction.get", { groupId, id: entry.id })))
+        .toMatchObject({ transaction: { memo: "Lunch", date: "2026-11-05", version: 1 } })
       as.shutdown()
     })
 

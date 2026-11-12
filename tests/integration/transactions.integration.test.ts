@@ -4,7 +4,7 @@ import type postgres from "postgres"
 import { AccountError, AccountKind } from "@domain/accounts"
 import { PlanError } from "@domain/billing"
 import { CategoryError, type CategoryIcon, CategoryKind } from "@domain/categories"
-import { RATE_SOURCES } from "@domain/money"
+import { COINS, RATE_SOURCES } from "@domain/money"
 import { TRANSACTION_RESTORE_DAYS, TransactionError, TransactionKind } from "@domain/transactions"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
@@ -217,6 +217,52 @@ Deno.test("entries against Postgres", async (t) => {
         expect(await codeOf(h.entry({ currency: "GBP" }))).toBe("NO_RATE")
         expect(await codeOf(h.entry({ currency: "JPY", date: "2020-01-01" }))).toBe("NO_RATE")
         expect(await transactions.count(h.groupId)).toBe(0)
+      },
+    )
+
+    await t.step(
+      "stores every listed coin's entry in a crypto account at 8 decimals, and leaves a coin with no price out of the ledger",
+      async () => {
+        const h = await household("USD")
+        for (const coin of COINS) {
+          const wallet = (await accounts.create({
+            groupId: h.groupId,
+            id: uuidV7(),
+            name: `${coin.name} wallet`,
+            kind: AccountKind.CRYPTO,
+            currency: coin.code,
+            startingBalance: 100_000_000,
+            allowance: null,
+          }, h.owner)).account
+          // 0.5 of the coin, in its smallest unit, paid from the wallet in the coin itself.
+          const entry = await h.entry({
+            accountId: wallet.id,
+            amount: 50_000_000,
+            currency: coin.code,
+          })
+          expect(entry).toMatchObject({
+            amount: -50_000_000,
+            currency: coin.code,
+            accountAmount: -50_000_000,
+            converted: false,
+          })
+          expect((await accounts.get(h.groupId, wallet.id))?.balance).toBe(50_000_000)
+        }
+
+        // A coin paid from a dollar account: no price yet, so a rate must be stated.
+        expect(await codeOf(h.entry({ amount: 50_000_000, currency: "BTC" }))).toBe("NO_RATE")
+        const manual = await h.entry({
+          amount: 50_000_000,
+          currency: "BTC",
+          accountAmount: 3_000_000,
+        })
+        expect(manual).toMatchObject({ accountAmount: -3_000_000, converted: false })
+
+        await rates(sql, "2026-11-05", RATE_SOURCES.ecb, { USD: "1.2" })
+        const ledger = await transactions.ledger(h.groupId, "EUR", "2026-11-01", "2026-11-30")
+        // The dollar entry counts (30000.00 USD at 1.2 is 25000.00 EUR); both coins are named.
+        expect(ledger.spending).toBe(2_500_000)
+        expect(ledger.leftOut).toEqual(COINS.map((coin) => coin.code).sort())
       },
     )
 

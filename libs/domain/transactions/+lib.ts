@@ -3,7 +3,8 @@ import type { Command, Query } from "@spy4x/platform/cqrs"
 import type { Actor } from "@domain/identity"
 import { canMutateNotes, canRead, type GroupRole } from "@domain/groups"
 import { CategoryKind } from "@domain/categories"
-import { convertMoney, currencyCode, type ExchangeRate } from "@spy4x/platform/universal/money"
+import { accountCurrencyCode, amountDecimals } from "@domain/money"
+import { convertMoney, type ExchangeRate } from "@spy4x/platform/universal/money"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { parseIsoDate } from "@spy4x/time/date"
@@ -96,7 +97,7 @@ export interface Transaction {
   accountAmount: number
   /** What was paid, in `currency`'s smallest unit, with the same sign as `accountAmount`. */
   amount: number
-  /** The currency paid in, an ISO 4217 code; the account's own when the entry was not converted. */
+  /** The currency paid in, an ISO 4217 code or a listed coin; the account's own if not converted. */
   currency: string
   /**
    * `true` when the server filled `accountAmount` from the rate of the entry's date; `false` when
@@ -135,32 +136,41 @@ const groupIdField = { groupId: UUID_PATTERN } as const
 const idField = { id: UUID_PATTERN } as const
 /**
  * What a person types into an entry: never its sign, group, author or conversion flag (R18).
- * `accountAmount` is stated only for a manual rate; left out, the server converts. `date` left
- * out is today in the household's time zone.
+ * `accountAmount` is stated only for a manual rate; left out, the server converts. The currency is
+ * an ISO 4217 code or a listed coin, as an account's may be.
  */
 const entryFields = {
   accountId: UUID_PATTERN,
   categoryId: UUID_PATTERN,
   kind: `1 <= number.integer <= 2`,
   amount: positiveAmount,
-  currency: currencyCode,
+  currency: accountCurrencyCode,
   "accountAmount?": positiveAmount,
-  "memo?": "string",
-  "date?": calendarDate,
 } as const
 
-/** The `transaction.create` payload: a client-made id, so a retry cannot add a second entry. */
+/**
+ * The `transaction.create` payload: a client-made id, so a retry cannot add a second entry. No
+ * memo is an empty one, and no date is today in the household's time zone.
+ */
 export const transactionCreatePayloadSchema = type({
   ...groupIdField,
   ...idField,
   ...entryFields,
+  "memo?": "string",
+  "date?": calendarDate,
   "+": "reject",
 })
-/** The `transaction.update` payload: every field again, and the version edited. */
+/**
+ * The `transaction.update` payload: every field again, and the version edited. The memo and the
+ * date are required, so an edit that names neither cannot move the entry to today, convert it
+ * again at today's rate or clear its memo.
+ */
 export const transactionUpdatePayloadSchema = type({
   ...groupIdField,
   ...idField,
   ...entryFields,
+  memo: "string",
+  date: calendarDate,
   ...versionField,
   "+": "reject",
 })
@@ -287,6 +297,22 @@ export type EntryRateLookup = (
 ) => Promise<ExchangeRate | null>
 
 /**
+ * `convertMoney` with each side's decimals from `amountDecimals`, so a coin is scaled by its own 8
+ * decimals and not by `Intl`'s guess of 2, which would put 0.5 BTC a million times off.
+ */
+function convertAmount(
+  amount: number,
+  from: string,
+  to: string,
+  rate: ExchangeRate | null,
+): ReturnType<typeof convertMoney> {
+  return convertMoney(amount, from, to, rate, {
+    fromDecimals: amountDecimals(from),
+    toDecimals: amountDecimals(to),
+  })
+}
+
+/**
  * Checks what an entry points at (R12, R17): another household's account or category answers
  * `ACCOUNT_NOT_FOUND` or `CATEGORY_NOT_FOUND`, the same as an id that does not exist. An expense
  * takes an expense category; an income takes an income category, or an expense category as a
@@ -362,7 +388,7 @@ export async function deriveAmounts(
     }
   }
   const rate = await lookupRate(fields.currency, accountCurrency, fields.date)
-  const result = convertMoney(fields.amount, fields.currency, accountCurrency, rate)
+  const result = convertAmount(fields.amount, fields.currency, accountCurrency, rate)
   if (!result.ok && result.error === "unsafe") {
     throw new TransactionError("INVALID_REQUEST", "The converted amount is too large", {
       amount: { code: "tooLarge" },
@@ -419,7 +445,7 @@ export class TransactionCreateCommand
   constructor(public data: TransactionCreatePayload) {}
 }
 
-export interface TransactionUpdatePayload extends TransactionCommandBase, TransactionRequestFields {
+export interface TransactionUpdatePayload extends TransactionCommandBase, TransactionFields {
   /** The version the person edited; an entry at any other version is not changed. */
   version: number
 }
@@ -554,7 +580,7 @@ export async function summarizeLedger(
     if (!category) continue
     const rate = row.currency === currency ? null : await rateOf(row.currency, row.date)
     const result = Number.isSafeInteger(row.amount)
-      ? convertMoney(row.amount, row.currency, currency, rate)
+      ? convertAmount(row.amount, row.currency, currency, rate)
       : { ok: false as const, error: "unsafe" as const }
     if (!result.ok) {
       if (result.error === "unsafe") tooLarge = true

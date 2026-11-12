@@ -153,6 +153,29 @@ describe("parsing a transaction request", () => {
     expect(() => parseTransactionRequest(transactionUpdatePayloadSchema, base)).toThrow("version")
   })
 
+  it("needs the memo and the date on an update, so an edit never falls back to today or no memo", () => {
+    const edit = { ...base, memo: "Lunch", date: "2026-11-05", version: 1 }
+    const { memo: _memo, ...noMemo } = edit
+    const { date: _date, ...noDate } = edit
+
+    expect(parseTransactionRequest(transactionUpdatePayloadSchema, edit).date).toBe("2026-11-05")
+    expect(() => parseTransactionRequest(transactionUpdatePayloadSchema, noMemo)).toThrow("memo")
+    expect(() => parseTransactionRequest(transactionUpdatePayloadSchema, noDate)).toThrow("date")
+  })
+
+  it("takes a listed coin as the currency paid, and refuses a coin that is not listed", () => {
+    for (const currency of ["BTC", "ETH"]) {
+      expect(
+        parseTransactionRequest(transactionCreatePayloadSchema, { ...base, currency }).currency,
+      )
+        .toBe(currency)
+    }
+    for (const currency of ["DOGE", "btc"]) {
+      expect(() => parseTransactionRequest(transactionCreatePayloadSchema, { ...base, currency }))
+        .toThrow("currency")
+    }
+  })
+
   it("takes a ledger period that runs forward and spans at most a leap year", () => {
     const period = (from: string, to: string) =>
       parseTransactionRequest(transactionLedgerPayloadSchema, { groupId, from, to })
@@ -269,6 +292,34 @@ describe("the amounts the server stores (R4, R5, R6)", () => {
   it("answers NO_RATE when no rate reaches the entry's date, never a rate of 1 (R8)", async () => {
     expect(await asyncCodeOf(deriveAmounts(fields({ currency: "JPY" }), "USD", null, noRates)))
       .toBe("NO_RATE")
+  })
+
+  it("scales a coin by its own 8 decimals when it converts, both ways", async () => {
+    // 0.5 BTC (50000000 units) at 60000 USD is 30000.00 USD; 12.34 USD at 0.00002 BTC is
+    // 0.0002468 BTC, 24680 units. With 2 decimals for BTC both would be a million times off.
+    const lookup = lookupFrom({ "BTC:USD:2026-11-05": "60000", "USD:BTC:2026-11-05": "0.00002" })
+
+    expect(
+      await deriveAmounts(fields({ currency: "BTC", amount: 50_000_000 }), "USD", null, lookup),
+    ).toEqual({ accountAmount: -3_000_000, amount: -50_000_000, converted: true })
+    expect(await deriveAmounts(fields({ amount: 1234 }), "BTC", null, lookup)).toEqual({
+      accountAmount: -24_680,
+      amount: -1234,
+      converted: true,
+    })
+  })
+
+  it("answers NO_RATE for a coin with no price, and takes it at a manual rate", async () => {
+    expect(await asyncCodeOf(deriveAmounts(fields({ currency: "BTC" }), "USD", null, noRates)))
+      .toBe("NO_RATE")
+    expect(
+      await deriveAmounts(
+        fields({ currency: "BTC", amount: 50_000_000, accountAmount: 3_000_000 }),
+        "USD",
+        null,
+        noRates,
+      ),
+    ).toEqual({ accountAmount: -3_000_000, amount: -50_000_000, converted: false })
   })
 
   it("refuses a conversion that rounds to nothing or that no longer fits", async () => {
@@ -435,6 +486,22 @@ describe("the ledger summary", () => {
 
     expect(ledger.spending).toBe(1000)
     expect(ledger.leftOut).toEqual(["THB"])
+  })
+
+  it("converts a coin row by its 8 decimals, and names a coin with no price", async () => {
+    // 0.5 BTC at 55000 EUR is 27500.00 EUR; the ETH row has no price and is left out.
+    const ledger = await summarizeLedger(
+      [
+        { categoryId: rent, currency: "BTC", date: "2026-11-02", amount: -50_000_000 },
+        { categoryId: rent, currency: "ETH", date: "2026-11-02", amount: -10_000_000 },
+      ],
+      categories,
+      period,
+      lookupFrom({ "BTC:EUR:2026-11-02": "55000" }),
+    )
+
+    expect(ledger.spending).toBe(2_750_000)
+    expect(ledger.leftOut).toEqual(["ETH"])
   })
 
   it("reports a sum past the exact range as too large instead of a wrong number", async () => {

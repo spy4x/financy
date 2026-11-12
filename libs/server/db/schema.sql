@@ -1677,6 +1677,8 @@ CREATE TABLE transactions (
         CHECK (amount BETWEEN -9007199254740991 AND 9007199254740991),
     CONSTRAINT transactions_account_amount_check
         CHECK (account_amount BETWEEN -9007199254740991 AND 9007199254740991),
+    -- An ISO 4217 code or a listed coin (COINS in libs/domain/money/+lib.ts), all three capitals
+    -- today; the coin step in tests/integration/transactions.integration.test.ts stores each one.
     CONSTRAINT transactions_currency_check CHECK (currency ~ '^[A-Z]{3}$'),
     CONSTRAINT transactions_memo_check CHECK (char_length(memo) <= 500),
     CONSTRAINT transactions_version_check CHECK (version >= 1),

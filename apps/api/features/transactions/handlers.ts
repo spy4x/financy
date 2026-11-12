@@ -48,7 +48,7 @@ function assertGated(
 }
 
 /**
- * The fields a write stores, with the server's defaults: no memo is an empty one, and no date is
+ * The fields a create stores, with the server's defaults: no memo is an empty one, and no date is
  * today in the household's time zone (R14), so a member in Berlin and one in Singapore file a
  * 23:30 expense on the same day.
  */
@@ -101,13 +101,22 @@ export function createTransactionUpdateHandler(
 ): CommandHandler<TransactionUpdateCommand> {
   return async ({ data }) => {
     assertCanWriteTransactions(await dependencies.groups.roleOf(data.groupId, data.actor.userId))
+    // An edit names every field (the schema requires the memo and the date), so nothing it does
+    // not name is filled with a default here.
     const transaction = await dependencies.transactions.update(
       {
         groupId: data.groupId,
         id: data.id,
         expectedVersion: data.version,
         requestId: data.requestId,
-        ...await entryFields(dependencies, data.groupId, data),
+        accountId: data.accountId,
+        categoryId: data.categoryId,
+        kind: data.kind,
+        amount: data.amount,
+        currency: data.currency,
+        ...(data.accountAmount !== undefined && { accountAmount: data.accountAmount }),
+        memo: data.memo,
+        date: data.date,
       },
       data.actor.userId,
     )
