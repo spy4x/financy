@@ -56,7 +56,15 @@ const food: CategoryItem = {
   updatedAt: "2026-11-01T00:00:00.000Z",
 }
 
+const groceries: CategoryItem = {
+  ...food,
+  id: "019a0000-0000-7000-8000-0000000000e2",
+  parentId: food.id,
+  name: "Groceries",
+}
+
 const realSave = categoriesStore.save
+const realArchive = categoriesStore.archive
 const realOpen = categoriesStore.open
 let root: HTMLElement | null = null
 
@@ -82,6 +90,7 @@ afterEach(async () => {
   root?.remove()
   root = null
   categoriesStore.save = realSave
+  categoriesStore.archive = realArchive
   categoriesStore.open = realOpen
   // A new category's draft outlives a reset, which keeps it across a change of household.
   categoriesStore.closeForm()
@@ -144,6 +153,58 @@ describe("CategoryEditorView", () => {
     await save()
 
     expect(toasts.list.value.map((toast) => toast.dataE2E)).toEqual(["category-saved"])
+  })
+})
+
+describe("CategoryEditorView's archive", () => {
+  /** Records each archive the page sends; the store reads no network. */
+  function recordArchives(): [string, boolean][] {
+    const sent: [string, boolean][] = []
+    categoriesStore.archive = (id, archived) => {
+      sent.push([id, archived])
+      return Promise.resolve(null)
+    }
+    return sent
+  }
+
+  async function click(selector: string): Promise<void> {
+    const element = window.document.querySelector(selector) as unknown as HTMLElement | null
+    if (!element) throw new Error(`nothing matches ${selector}`)
+    await act(() => element.click())
+  }
+
+  it("asks before archiving a parent with live subcategories from its page, and archives on confirm", async () => {
+    categoriesStore.categories.value = [food, groceries]
+    const sent = recordArchives()
+    await mount(food.id)
+
+    await click("[data-e2e=category-editor-archive]")
+    const dialog = window.document.querySelector("[data-e2e=category-archive-dialog]")
+    expect(dialog?.textContent).toContain("Groceries")
+    expect(sent).toEqual([])
+
+    await click("[data-e2e=category-archive-confirm]")
+    expect(sent).toEqual([[food.id, true]])
+    expect(window.document.querySelectorAll("[data-e2e=category-archive-dialog]").length).toBe(0)
+  })
+
+  it("archives nothing when the question is cancelled", async () => {
+    categoriesStore.categories.value = [food, groceries]
+    const sent = recordArchives()
+    await mount(food.id)
+
+    await click("[data-e2e=category-editor-archive]")
+    await click("[data-e2e=category-archive-cancel]")
+    expect(sent).toEqual([])
+  })
+
+  it("archives a category with no live subcategories from its page at once, with no question", async () => {
+    const sent = recordArchives()
+    await mount(food.id)
+
+    await click("[data-e2e=category-editor-archive]")
+    expect(window.document.querySelectorAll("[data-e2e=category-archive-dialog]").length).toBe(0)
+    expect(sent).toEqual([[food.id, true]])
   })
 })
 

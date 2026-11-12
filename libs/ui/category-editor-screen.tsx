@@ -1,5 +1,5 @@
 import type { ComponentChildren, JSX } from "preact"
-import { useEffect, useRef } from "preact/hooks"
+import { useEffect, useRef, useState } from "preact/hooks"
 import { Badge } from "@spy4x/preact-ui/badge"
 import { Button } from "@spy4x/preact-ui/button"
 import { ColorField } from "@spy4x/preact-ui/color-field"
@@ -26,7 +26,13 @@ import {
 } from "@domain/categories"
 import type { PlanRefusal } from "@domain/billing"
 import { ListEmpty, NoGroup, type NotesGroup } from "./notes-screen.tsx"
-import { CategoryChip, categoryKindName, type CategoryRow } from "./category-parts.tsx"
+import {
+  CategoryChip,
+  categoryKindName,
+  type CategoryRow,
+  liveChildren,
+} from "./category-parts.tsx"
+import { ArchiveCategoryDialog } from "./categories-screen.tsx"
 import { colorName } from "./tag-parts.tsx"
 import { FORM_WIDTH, useWaited } from "./tag-editor-screen.tsx"
 import { CATEGORY_PATHS, type Navigate, ScreenForm } from "./progressive.tsx"
@@ -153,6 +159,8 @@ function Editor(props: CategoryEditorScreenProps & { group: NotesGroup }): JSX.E
   const t = useAppText()
   const canWrite = group.canWrite
   const name = useRef<HTMLInputElement>(null)
+  // A parent with live subcategories asks before it is archived, as in the list.
+  const [confirming, setConfirming] = useState(false)
   useEffect(() => {
     if (errors.name) name.current?.focus()
   }, [errors.name])
@@ -180,7 +188,10 @@ function Editor(props: CategoryEditorScreenProps & { group: NotesGroup }): JSX.E
         </DropdownItem>
       )}
       <DropdownItem
-        onClick={() => props.onArchive!(!category.archived)}
+        onClick={() =>
+          !category.archived && liveChildren(categories, category.id).length > 0
+            ? setConfirming(true)
+            : props.onArchive!(!category.archived)}
         disabled={props.pending || parentArchived}
         dataE2E="category-editor-archive"
       >
@@ -383,6 +394,17 @@ function Editor(props: CategoryEditorScreenProps & { group: NotesGroup }): JSX.E
             </ScreenForm>
           </div>
         )}
+      {confirming && category && props.onArchive && (
+        <ArchiveCategoryDialog
+          category={category}
+          subcategories={liveChildren(categories, category.id)}
+          onConfirm={() => {
+            setConfirming(false)
+            props.onArchive!(true)
+          }}
+          onCancel={() => setConfirming(false)}
+        />
+      )}
     </Page>
   )
 }

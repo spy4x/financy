@@ -197,4 +197,44 @@ test.describe("categories", () => {
       await cleanup(request, owner)
     }
   })
+
+  test("archiving a parent from its own page asks first, Escape keeps it, and confirming archives its subcategory too", async ({ page, request }) => {
+    const owner = "e2e_categories_editor_archive@example.com"
+    await cleanup(request, owner)
+    try {
+      await signUp(request, owner)
+      await signInOnline(page, owner)
+      const groupId = await household(page, request, "Archive here")
+      await openCategories(page, "Archive here")
+      await page.locator("[data-e2e=category-new]").click()
+      await saveNamed(page, "Food")
+      await menuOf(page, "Food").click()
+      await page.locator("[data-e2e=category-menu-add-child]:visible").click()
+      await saveNamed(page, "Groceries")
+      await page.getByRole("link", { name: "Food", exact: true }).click()
+      await expect(page).toHaveURL(CATEGORY_URL)
+
+      const menu = page.locator("[data-e2e=category-editor-menu]")
+      const dialog = page.locator("[data-e2e=category-archive-dialog]")
+      await menu.click()
+      await page.locator("[data-e2e=category-editor-archive]:visible").click()
+      await expect(dialog).toContainText("Groceries")
+      // Focus starts inside the question, on its close button (the dialog's default).
+      await expect(dialog.getByRole("button", { name: "Close" })).toBeFocused()
+      await page.keyboard.press("Escape")
+      await expect(dialog).toHaveCount(0)
+      await expect(menu).toBeFocused()
+      expect((await serverCategories(page, groupId)).every((c) => c.archivedAt === null))
+        .toBe(true)
+
+      await menu.click()
+      await page.locator("[data-e2e=category-editor-archive]:visible").click()
+      await page.locator("[data-e2e=category-archive-confirm]").click()
+      await expect(page.locator("[data-e2e=category-summary]")).toContainText("Archived")
+      expect((await serverCategories(page, groupId)).every((c) => c.archivedAt !== null))
+        .toBe(true)
+    } finally {
+      await cleanup(request, owner)
+    }
+  })
 })
