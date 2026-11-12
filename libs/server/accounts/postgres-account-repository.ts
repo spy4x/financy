@@ -86,15 +86,16 @@ async function assertWriterNow(
  * write of the same household wait, then count this one.
  *
  * The balance is computed here, in SQL, for one household: the starting balance plus the
- * account's live entries. There are no entries yet; transactions and transfers add their sums to
- * {@link balanceOf}.
+ * account's live entries dated on or before the day asked (R9); transfers will add their sums to
+ * {@link balanceOf}. An account's currency is fixed once an entry names it (R10), and an account
+ * an entry names, live or in the trash, is archived rather than deleted.
  */
 export class PostgresAccountRepository implements AccountRepository {
   constructor(private readonly sql: postgres.Sql) {}
 
-  async list(groupId: string, deleted = false): Promise<ListedAccount[]> {
+  async list(groupId: string, deleted = false, on?: string): Promise<ListedAccount[]> {
     const rows = await this.sql<ListedAccountRow[]>`
-      SELECT ${this.columns()}, ${this.balanceOf()} AS balance
+      SELECT ${this.columns()}, ${this.balanceOf(on)} AS balance
       FROM accounts
       WHERE group_id = ${groupId}
         AND ${deleted ? this.sql`deleted_at IS NOT NULL` : this.sql`deleted_at IS NULL`}
@@ -103,10 +104,10 @@ export class PostgresAccountRepository implements AccountRepository {
     return rows.map(toListedAccount)
   }
 
-  async get(groupId: string, id: string): Promise<ListedAccount | null> {
+  async get(groupId: string, id: string, on?: string): Promise<ListedAccount | null> {
     const row = (
       await this.sql<ListedAccountRow[]>`
-        SELECT ${this.columns()}, ${this.balanceOf()} AS balance
+        SELECT ${this.columns()}, ${this.balanceOf(on)} AS balance
         FROM accounts
         WHERE id = ${id} AND group_id = ${groupId} AND deleted_at IS NULL
       `
@@ -175,6 +176,18 @@ export class PostgresAccountRepository implements AccountRepository {
     return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
       const repository = new PostgresAccountRepository(transaction)
       await assertWriterNow(transaction, input.groupId, actorId)
+      // Under the household's lock no entry can be added in between: a currency change is refused
+      // while any entry, live or in the trash, names the account (R10).
+      const current = await repository.usage(input)
+      if (current?.hasEntries && current.currency !== input.currency) {
+        throw new AccountError(
+          "CURRENCY_LOCKED",
+          "An account's currency is fixed once it has entries",
+          {
+            currency: { code: "locked" },
+          },
+        )
+      }
       const [previous] = await transaction<{ name: string }[]>`
         UPDATE accounts
         SET name = ${input.name},
@@ -277,6 +290,14 @@ export class PostgresAccountRepository implements AccountRepository {
     return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
       const repository = new PostgresAccountRepository(transaction)
       await assertWriterNow(transaction, input.groupId, actorId)
+      // An entry, live or in the trash, keeps its account: the person archives it instead. A purge
+      // could not remove the row anyway while an entry names it.
+      if ((await repository.usage(input))?.hasEntries) {
+        throw new AccountError(
+          "ACCOUNT_HAS_TRANSACTIONS",
+          "The account has entries: archive it instead",
+        )
+      }
       // A deleted account cannot stay the default: the household is then left with none.
       const [row] = await transaction<{ name: string }[]>`
         UPDATE accounts
@@ -317,6 +338,26 @@ export class PostgresAccountRepository implements AccountRepository {
       })
       return await repository.stamp(transaction, input, actorId, ACCOUNT_EVENTS.restored)
     })
+  }
+
+  /**
+   * The live account a write names at the version it was edited at, and whether any entry names
+   * it; `null` otherwise, so the write itself answers not found or a version conflict.
+   */
+  private async usage(
+    input: { groupId: string; id: string; expectedVersion: number },
+  ): Promise<{ currency: string; hasEntries: boolean } | null> {
+    const row = (
+      await this.sql<{ currency: string; hasEntries: boolean }[]>`
+        SELECT accounts.currency, EXISTS (
+          SELECT 1 FROM transactions WHERE transactions.account_id = accounts.id
+        ) AS has_entries
+        FROM accounts
+        WHERE id = ${input.id} AND group_id = ${input.groupId} AND deleted_at IS NULL
+          AND version = ${input.expectedVersion}
+      `
+    )[0]
+    return row ?? null
   }
 
   /** An account of the group, live or deleted. */
@@ -383,10 +424,23 @@ export class PostgresAccountRepository implements AccountRepository {
 
   /**
    * The balance of the `accounts` row in scope, as decimal text: the starting balance plus the
-   * account's live entries. Transactions and transfers add their sums here.
+   * account's live entries dated on or before `on` (`YYYY-MM-DD`), by default today in the
+   * household's time zone (R9, R14). Transfers add their sums here.
    */
-  private balanceOf() {
-    return this.sql`(accounts.starting_balance)::text`
+  private balanceOf(on?: string) {
+    const day = on === undefined
+      ? this.sql`(
+          SELECT (CURRENT_TIMESTAMP AT TIME ZONE groups.time_zone)::date
+          FROM groups WHERE groups.id = accounts.group_id
+        )`
+      : this.sql`${on}::date`
+    return this.sql`(
+      accounts.starting_balance + COALESCE((
+        SELECT sum(transactions.account_amount) FROM transactions
+        WHERE transactions.account_id = accounts.id AND transactions.deleted_at IS NULL
+          AND transactions.date <= ${day}
+      ), 0)
+    )::text`
   }
 
   private columns() {

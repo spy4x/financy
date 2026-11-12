@@ -29,9 +29,14 @@ interface ErrorDefinition {
 
 const ERROR_DEFINITIONS: Record<AccountFeatureErrorCode, ErrorDefinition> = {
   ACCOUNT_ARCHIVED: { status: 409, message: "An archived account cannot be the default" },
+  ACCOUNT_HAS_TRANSACTIONS: {
+    status: 409,
+    message: "The account has entries: archive it instead, or delete its entries first",
+  },
   ACCOUNT_LIMIT_REACHED: { status: 409, message: "The household cannot hold more accounts" },
   ACCOUNT_NOT_FOUND: { status: 404, message: "Account not found" },
   AUTH_REQUIRED: { status: 401, message: "Authentication required" },
+  CURRENCY_LOCKED: { status: 409, message: "The account's currency is fixed once it has entries" },
   GROUP_NOT_FOUND: { status: 404, message: "Group not found" },
   ID_ALREADY_EXISTS: { status: 409, message: "Account id is already in use" },
   INTERNAL_ERROR: { status: 500, message: "Internal server error" },
