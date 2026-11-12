@@ -116,7 +116,42 @@ async function seed(sql: postgres.Sql) {
     { groupId, id: categoryIds[2], archived: true, expectedVersion: 1, allowance: null },
     owner,
   )
-  return { owner, groupId, tagIds: [home, work], noteIds, accountIds, categoryIds }
+  // A converted expense, an income in the account's own currency in an archived category, a refund
+  // (an income in an expense category), and one in the trash.
+  const entryIds = [uuidV7(), uuidV7(), uuidV7(), uuidV7()]
+  const entry = (
+    id: string,
+    accountId: string,
+    categoryId: string,
+    kind: number,
+    amounts: { amount: number; currency: string; accountAmount: number; converted: boolean },
+    memo: string,
+    deleted = false,
+  ) =>
+    sql`
+      INSERT INTO transactions (id, group_id, account_id, category_id, kind, account_amount,
+        amount, currency, converted, memo, date, change_sequence, created_by_user_id,
+        updated_by_user_id, deleted_at)
+      VALUES (${id}, ${groupId}, ${accountId}, ${categoryId}, ${kind}, ${amounts.accountAmount},
+        ${amounts.amount}, ${amounts.currency}, ${amounts.converted}, ${memo}, '2026-11-02', 1,
+        ${owner}, ${owner}, ${deleted ? new Date() : null})
+    `
+  const converted = { amount: -1330, currency: "EUR", accountAmount: -1450, converted: true }
+  await entry(entryIds[0], accountIds[0], categoryIds[1], 1, converted, "Lunch\nwith Sam")
+  await entry(entryIds[1], accountIds[1], categoryIds[2], 2, {
+    amount: 500,
+    currency: "JPY",
+    accountAmount: 500,
+    converted: false,
+  }, "")
+  await entry(entryIds[2], accountIds[0], categoryIds[0], 2, {
+    amount: 250,
+    currency: "USD",
+    accountAmount: 250,
+    converted: false,
+  }, "Refund")
+  await entry(entryIds[3], accountIds[0], categoryIds[0], 1, converted, "Binned", true)
+  return { owner, groupId, tagIds: [home, work], noteIds, accountIds, categoryIds, entryIds }
 }
 
 /** What the owner downloads, through the handler: the file's name, media type and pieces. */
@@ -199,20 +234,39 @@ async function contents(sql: postgres.Sql, groupId: string) {
     FROM categories c LEFT JOIN categories p ON p.id = c.parent_id
     WHERE c.group_id = ${groupId} ORDER BY c.name
   `
+  // Entries by what they name, since their ids and those of their account and category are new.
+  const entries = await sql`
+    SELECT a.name AS account, c.name AS category, e.kind, e.amount::text AS amount, e.currency,
+      e.account_amount::text AS account_amount, e.converted, e.memo,
+      to_char(e.date, 'YYYY-MM-DD') AS date, e.created_at
+    FROM transactions e
+    JOIN accounts a ON a.id = e.account_id AND a.group_id = e.group_id
+    JOIN categories c ON c.id = e.category_id AND c.group_id = e.group_id
+    WHERE e.group_id = ${groupId} AND e.deleted_at IS NULL ORDER BY e.memo
+  `
   return {
     notes: [...notes],
     tags: [...tags],
     accounts: [...accounts],
     categories: [...categories],
+    entries: [...entries],
   }
 }
 
 async function counts(sql: postgres.Sql) {
   const [row] = await sql<
-    { groups: number; notes: number; tags: number; links: number; accounts: number }[]
+    {
+      groups: number
+      notes: number
+      tags: number
+      links: number
+      accounts: number
+      transactions: number
+    }[]
   >`
     SELECT
       (SELECT count(*)::int FROM groups) AS groups,
+      (SELECT count(*)::int FROM transactions) AS transactions,
       (SELECT count(*)::int FROM accounts) AS accounts,
       (SELECT count(*)::int FROM notes) AS notes,
       (SELECT count(*)::int FROM tags) AS tags,
@@ -221,7 +275,7 @@ async function counts(sql: postgres.Sql) {
   return row
 }
 
-Deno.test("an export imported by another person gives the same notes, tags, accounts and category tree under new ids", async () => {
+Deno.test("an export imported by another person gives the same notes, tags, accounts, category tree and entries under new ids", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
     const file = await exportAs(sql, source.groupId, source.owner) as {
@@ -251,6 +305,7 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
         ...PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0] as const),
         ["accounts", 2],
         ["categories", 3],
+        ["transactions", 3],
       ]),
     )
     expect(await contents(sql, copy)).toEqual(await contents(sql, source.groupId))
@@ -307,6 +362,46 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
     `
     expect(crossed).toBe(0)
 
+    // Each live entry keeps both amounts, its currency and its conversion flag as stored, and names
+    // the copy's own account and category; the one in the trash stays behind.
+    expect((await contents(sql, copy)).entries.map(({ createdAt: _, ...entry }) => entry)).toEqual(
+      [
+        {
+          account: "Trip cash",
+          category: "Bonus",
+          kind: 2,
+          amount: "500",
+          currency: "JPY",
+          accountAmount: "500",
+          converted: false,
+          memo: "",
+          date: "2026-11-02",
+        },
+        {
+          account: "Main",
+          category: "Groceries",
+          kind: 1,
+          amount: "-1330",
+          currency: "EUR",
+          accountAmount: "-1450",
+          converted: true,
+          memo: "Lunch\nwith Sam",
+          date: "2026-11-02",
+        },
+        {
+          account: "Main",
+          category: "Food",
+          kind: 2,
+          amount: "250",
+          currency: "USD",
+          accountAmount: "250",
+          converted: false,
+          memo: "Refund",
+          date: "2026-11-02",
+        },
+      ],
+    )
+
     const [group] = await sql<
       { name: string; description: string; color: string; emoji: string; ownerUserId: number }[]
     >`
@@ -330,13 +425,15 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
       SELECT id FROM notes WHERE group_id = ${copy} UNION ALL SELECT id FROM tags WHERE group_id = ${copy}
       UNION ALL SELECT id FROM accounts WHERE group_id = ${copy}
       UNION ALL SELECT id FROM categories WHERE group_id = ${copy}
+      UNION ALL SELECT id FROM transactions WHERE group_id = ${copy}
     `
-    expect(ids).toHaveLength(10)
+    expect(ids).toHaveLength(13)
     const sourceIds = [
       ...source.noteIds,
       ...source.tagIds,
       ...source.accountIds,
       ...source.categoryIds,
+      ...source.entryIds,
     ]
     for (const { id } of ids) {
       expect(sourceIds).not.toContain(id)
@@ -365,7 +462,8 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
           ...Object.fromEntries(PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0])),
           accounts: 2,
           categories: 3,
-          count: 10,
+          transactions: 3,
+          count: 13,
         },
       },
     ])
@@ -570,6 +668,13 @@ Deno.test("a refused file, a file over the plan and a failure halfway write noth
       () => porter.importGroup({ file, name: null }, source.owner, { maxNotes: 2 }),
       PlanError,
     )
+    await expect(
+      porter.importGroup({ file, name: null }, source.owner, {
+        maxNotes: null,
+        maxTransactions: 2,
+      }),
+    ).rejects.toMatchObject({ code: "PLAN_LIMIT_REACHED", entitlement: "maxTransactions" })
+    expect(await counts(sql)).toEqual(before)
     // An aggregate that fails after the group and the tags are written takes them back with it.
     let reached = false
     const failing = portable({
@@ -592,6 +697,86 @@ Deno.test("a refused file, a file over the plan and a failure halfway write noth
       Error,
     )
     expect(reached).toBe(true)
+  })
+})
+
+Deno.test("an import refuses entries that name an account or a category the file lacks, an expense in an income category, or two amounts in one currency that differ, and writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    const [main] = source.accountIds
+    const bonus = source.categoryIds[2]
+    const food = source.categoryIds[0]
+    const expense = {
+      id: uuidV7(),
+      accountId: main,
+      categoryId: food,
+      kind: 1,
+      accountAmount: -100,
+      amount: -100,
+      currency: "USD",
+      converted: false,
+      memo: "",
+      date: "2026-11-03",
+      createdAt: "2026-11-03T10:00:00.000Z",
+      updatedAt: "2026-11-03T10:00:00.000Z",
+    }
+    const entries = [
+      expense,
+      { ...expense, id: uuidV7(), accountId: uuidV7() },
+      { ...expense, id: uuidV7(), categoryId: uuidV7() },
+      { ...expense, id: uuidV7(), categoryId: bonus },
+      { ...expense, id: uuidV7(), accountAmount: -200 },
+      { ...expense, id: uuidV7(), converted: true },
+    ]
+    const broken = { ...file, aggregates: { ...file.aggregates, transactions: entries } }
+    const before = await counts(sql)
+    const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+
+    const refused = await porter.importGroup({ file: broken, name: null }, source.owner, NO_CAP)
+      .then(() => null, (error) => error)
+
+    expect(refused).toBeInstanceOf(GroupImportError)
+    expect((refused as GroupImportError).total).toBe(5)
+    expect(
+      (refused as GroupImportError).problems.map((problem) =>
+        problem.kind === "invalid" && [problem.where, problem.place, problem.issue]
+      ),
+    ).toEqual([
+      [
+        "Entry 2",
+        { part: "transactions", index: 2 },
+        { code: "notFound", field: "accountId" },
+      ],
+      [
+        "Entry 3",
+        { part: "transactions", index: 3 },
+        { code: "notFound", field: "categoryId" },
+      ],
+      [
+        "Entry 4",
+        { part: "transactions", index: 4 },
+        { code: "kindMismatch", field: "categoryId" },
+      ],
+      [
+        "Entry 5",
+        { part: "transactions", index: 5 },
+        { code: "mismatch", field: "accountAmount" },
+      ],
+      [
+        "Entry 6",
+        { part: "transactions", index: 6 },
+        { code: "mismatch", field: "accountAmount" },
+      ],
+    ])
+    expect(await counts(sql)).toEqual(before)
+
+    // The same file without the broken entries imports, the first one with it.
+    const fixed = { ...file, aggregates: { ...file.aggregates, transactions: [expense] } }
+    const result = await porter.importGroup({ file: fixed, name: null }, source.owner, NO_CAP)
+    expect(result.parts.find((part) => part.kind === "transactions")?.count).toBe(1)
   })
 })
 

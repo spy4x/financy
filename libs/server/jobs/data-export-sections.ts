@@ -238,6 +238,37 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       ORDER BY created_at, id`,
   },
   {
+    // The finance entries the person created, in households they still belong to, deleted ones
+    // waiting in the trash included. Both amounts are in their currency's smallest unit, as
+    // decimal text, as every BIGINT crosses: `amount` in `currency`, `accountAmount` in the
+    // account's. The account and the category are ids from the lists above or another member's.
+    name: `finance_entries`,
+    columns: [
+      `id`,
+      `groupId`,
+      `accountId`,
+      `categoryId`,
+      `kind`,
+      `amount`,
+      `currency`,
+      `accountAmount`,
+      `converted`,
+      `memo`,
+      `date`,
+      `createdAt`,
+      `updatedAt`,
+      `deletedAt`,
+    ],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, account_id, category_id,
+        CASE kind WHEN 1 THEN 'expense' ELSE 'income' END AS kind,
+        amount::text AS amount, currency, account_amount::text AS account_amount, converted,
+        memo, to_char(date, 'YYYY-MM-DD') AS date, created_at, updated_at, deleted_at
+      FROM transactions
+      WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
     // What the person did in their groups, by kind and id. `details` and the person acted on are
     // left out: they can name other people.
     name: `group_activity`,

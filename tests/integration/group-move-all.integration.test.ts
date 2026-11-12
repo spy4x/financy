@@ -122,6 +122,39 @@ async function categoriesOf(sql: postgres.Sql, groupId: string) {
   ]
 }
 
+/**
+ * Inserts an expense of 13.30 EUR, converted to 14.50 in the account's USD, into `groupId` on
+ * `accountId` and `categoryId`, created by `userId`, in the trash when `deleted`; answers its id.
+ */
+async function insertEntry(
+  sql: postgres.Sql,
+  groupId: string,
+  refs: { accountId: string; categoryId: string },
+  userId: number,
+  deleted = false,
+): Promise<string> {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO transactions (id, group_id, account_id, category_id, kind, account_amount, amount,
+      currency, converted, memo, date, change_sequence, created_by_user_id, updated_by_user_id,
+      deleted_at)
+    VALUES (${id}, ${groupId}, ${refs.accountId}, ${refs.categoryId}, 1, -1450, -1330, 'EUR', true,
+      'Lunch', '2026-11-02', 1, ${userId}, ${userId}, ${deleted ? new Date() : null})
+  `
+  return id
+}
+
+/** A group's entries by id, deleted ones included. */
+async function entriesOf(sql: postgres.Sql, groupId: string) {
+  return [
+    ...await sql`
+      SELECT id, account_id, category_id, account_amount::text AS account_amount,
+        amount::text AS amount, currency, converted, deleted_at IS NOT NULL AS deleted, version
+      FROM transactions WHERE group_id = ${groupId} ORDER BY id
+    `,
+  ]
+}
+
 /** Inserts a tag named `name` into `groupId`, created by `userId`; answers its id. */
 async function insertTag(
   sql: postgres.Sql,
@@ -339,7 +372,7 @@ Deno.test("moving all of a group's data", async (t) => {
         // Work, Idle and Old changed group; Shared joined the target's "shared".
         expect(result).toEqual({
           moved: 5,
-          counts: { accounts: 0, categories: 0, tags: 4, notes: 1 },
+          counts: { accounts: 0, categories: 0, transactions: 0, tags: 4, notes: 1 },
         })
         expect(await tagsOf(sql, from)).toEqual([])
         expect(await tagsOf(sql, to)).toEqual([
@@ -536,6 +569,84 @@ Deno.test("moving all of a group's data", async (t) => {
     )
 
     await t.step(
+      "the registered aggregates move every entry, deleted ones included, with its account and category and its amounts unchanged",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to } = await seed(sql, [])
+        const refs = {
+          accountId: await insertAccount(sql, from, "Main", editor),
+          categoryId: await insertCategory(sql, from, "Food", editor),
+        }
+        const live = await insertEntry(sql, from, refs, editor)
+        const binned = await insertEntry(sql, from, refs, editor, true)
+
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result).toMatchObject({
+          moved: 4,
+          counts: { transactions: 2, accounts: 1, categories: 1 },
+        })
+        expect(await entriesOf(sql, from)).toEqual([])
+        const moved = {
+          ...refs,
+          accountAmount: "-1450",
+          amount: "-1330",
+          currency: "EUR",
+          converted: true,
+          version: 2,
+        }
+        expect(await entriesOf(sql, to)).toEqual([
+          { id: live, ...moved, deleted: false },
+          { id: binned, ...moved, deleted: true },
+        ])
+      },
+    )
+
+    await t.step(
+      "refuses whole when the source's live entries would take the target over its plan's maxTransactions",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to, ids, notes } = await seed(sql, ["a"])
+        const theirs = {
+          accountId: await insertAccount(sql, to, "Theirs", editor),
+          categoryId: await insertCategory(sql, to, "Theirs", editor),
+        }
+        await insertEntry(sql, to, theirs, editor)
+        const refs = {
+          accountId: await insertAccount(sql, from, "Main", editor),
+          categoryId: await insertCategory(sql, from, "Food", editor),
+        }
+        const moving = [
+          await insertEntry(sql, from, refs, editor),
+          await insertEntry(sql, from, refs, editor),
+          await insertEntry(sql, from, refs, editor, true),
+        ]
+        const input = { fromGroupId: from, toGroupId: to }
+
+        const over = await refusal(
+          app.moveAll(input, editor, { maxNotes: null, maxTransactions: 2 }),
+        )
+
+        expect(over).toMatchObject({
+          code: "PLAN_LIMIT_REACHED",
+          entitlement: "maxTransactions",
+          limit: 2,
+        })
+        expect((await entriesOf(sql, from)).map((entry) => entry.id)).toEqual(moving.sort())
+        expect((await accountsOf(sql, from)).map((account) => account.id)).toEqual([
+          refs.accountId,
+        ])
+        expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
+
+        // The deleted one does not count: three live entries fit a cap of three.
+        const fits = await app.moveAll(input, editor, { maxNotes: null, maxTransactions: 3 })
+
+        expect(fits.counts).toMatchObject({ transactions: 3 })
+        expect(await entriesOf(sql, from)).toEqual([])
+      },
+    )
+
+    await t.step(
       "with the notes off, moving a group's data leaves its notes and tags where they were",
       async () => {
         const off = new AppDbBase({ sql, notes: NOTES_OFF }).groupData
@@ -564,7 +675,10 @@ Deno.test("moving all of a group's data", async (t) => {
 
         const result = await off.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
 
-        expect(result).toEqual({ moved: 1, counts: { accounts: 1, categories: 0 } })
+        expect(result).toEqual({
+          moved: 1,
+          counts: { accounts: 1, categories: 0, transactions: 0 },
+        })
         expect(await accountsOf(sql, from)).toEqual([])
         expect(await accountsOf(sql, to)).toEqual([
           { id: main, name: "Main", archived: false, isDefault: false, version: 2 },

@@ -87,6 +87,27 @@ async function category(sql: postgres.Sql, groupId: string, userId: number, name
   return id
 }
 
+/**
+ * An expense of 5.000 BHD paid as 13.30 USD, entered by `userId` in `groupId` on `accountId` and
+ * `categoryId`, deleted when `deleted`; answers its id.
+ */
+async function entry(
+  sql: postgres.Sql,
+  ids: { groupId: string; userId: number; accountId: string; categoryId: string },
+  memo: string,
+  deleted = false,
+) {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO transactions (
+      id, group_id, account_id, category_id, kind, account_amount, amount, currency, converted,
+      memo, date, change_sequence, created_by_user_id, deleted_at
+    ) VALUES (${id}, ${ids.groupId}, ${ids.accountId}, ${ids.categoryId}, 1, -5000, -1330, 'USD',
+      true, ${memo}, '2026-11-02', 1, ${ids.userId}, ${deleted ? new Date() : null})
+  `
+  return id
+}
+
 async function signInRows(sql: postgres.Sql, userId: number, groupId: string) {
   const email = `person-${userId}@example.com`
   await sql`INSERT INTO auth_email_owners (email, user_id) VALUES (${email}, ${userId})`
@@ -244,6 +265,51 @@ Deno.test("data export: lists the finance categories the person created, archive
     ])
     expect(files[`finance_categories.csv`].split(`\r\n`)[0]).toBe(
       `\uFEFFid,groupId,parentId,name,kind,icon,color,archivedAt,createdAt,updatedAt`,
+    )
+  })
+})
+
+Deno.test("data export: lists the finance entries the person created, deleted ones included, never another member's", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, editor, owner } = await team(sql)
+    const accountId = await account(sql, groupId, owner, `Shared wallet`)
+    // An expense needs an expense category; the helper's is an income one, which takes a refund.
+    const categoryId = uuidV7()
+    await sql`
+      INSERT INTO categories (id, group_id, name, kind, icon, color, change_sequence)
+      VALUES (${categoryId}, ${groupId}, 'Food', 1, 'tag', '#c2410c', 1)
+    `
+    const refs = { groupId, accountId, categoryId }
+    const mine = await entry(sql, { ...refs, userId: editor }, `Editor's lunch`)
+    const binned = await entry(sql, { ...refs, userId: editor }, `Editor's binned`, true)
+    await entry(sql, { ...refs, userId: owner }, `Owner's dinner`)
+
+    const files = unzip(await buildDataExport(sql, editor, new Date()))
+
+    const rows: { id: string }[] = JSON.parse(files[`data.json`]).sections.finance_entries
+    expect(rows.map((row) => row.id).sort()).toEqual([mine, binned].sort())
+    expect(rows.find((row) => row.id === mine)).toEqual({
+      id: mine,
+      groupId,
+      accountId,
+      categoryId,
+      kind: `expense`,
+      amount: `-1330`,
+      currency: `USD`,
+      accountAmount: `-5000`,
+      converted: true,
+      memo: `Editor's lunch`,
+      date: `2026-11-02`,
+      createdAt: expect.stringMatching(/^\d{4}-/),
+      updatedAt: expect.stringMatching(/^\d{4}-/),
+      deletedAt: null,
+    })
+    expect(rows.find((row) => row.id === binned)).toMatchObject({
+      deletedAt: expect.stringMatching(/^\d{4}-/),
+    })
+    expect(Object.values(files).join(`\n`)).not.toContain(`Owner's dinner`)
+    expect(files[`finance_entries.csv`].split(`\r\n`)[0]).toBe(
+      `\uFEFFid,groupId,accountId,categoryId,kind,amount,currency,accountAmount,converted,memo,date,createdAt,updatedAt,deletedAt`,
     )
   })
 })
