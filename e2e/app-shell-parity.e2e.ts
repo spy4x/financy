@@ -212,7 +212,8 @@ test.describe("one frame for the SPA and the admin", () => {
 
       await page.setViewportSize({ width: 1440, height: 900 })
       await signIn(page, email, password)
-      await page.goto("/notes")
+      // The rail cell the switcher is compared with is the current page's, as Notes was before.
+      await page.goto("/transactions")
       await expect(page.locator("[data-e2e=rail-shell-column]")).toBeVisible()
       for (const target of TOUR_TARGETS) await expect(page.locator(target)).toHaveCount(1)
       await expectSwitcherLikeRail(page)
