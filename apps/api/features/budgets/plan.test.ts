@@ -127,7 +127,8 @@ describe("budgets under Financy's plans", () => {
 
   it("switches to envelopes and moves money on the Household plan", async () => {
     const s = stack(PRO_PLAN_ID)
-    await s.commands.execute(switchTo(BudgetMethod.ENVELOPES))
+    const { method } = await s.commands.execute(switchTo(BudgetMethod.ENVELOPES))
+    expect(method).toMatchObject({ method: BudgetMethod.ENVELOPES })
     const { move: moved } = await s.commands.execute(move())
     expect(moved).toMatchObject({ amount: 1000, currency: "USD" })
   })

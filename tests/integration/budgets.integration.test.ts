@@ -751,7 +751,10 @@ Deno.test("budget methods and moves against Postgres", async (t) => {
         const envelope = (month: typeof november, id: string) =>
           month.rows.find((row) => row.categoryId === id)?.envelope
 
-        expect(await budgets.moveTotalsIn(h.groupId, "2026-10", "2026-12")).toEqual(
+        // The steps above moved money in other households in November too: none of it is summed here.
+        const totals = await budgets.moveTotalsIn(h.groupId, "2026-10", "2026-12")
+        expect(totals).toHaveLength(2)
+        expect(totals).toEqual(
           expect.arrayContaining([
             { month: "2026-11", categoryId: h.food, currency: "USD", movedIn: 0, movedOut: 5000 },
             {
