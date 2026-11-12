@@ -434,8 +434,26 @@ describe("the public website", () => {
       html.indexOf(`<section id="sign-in"`),
     )
     expect(html).toContain(`Categories, one level deep`)
-    expect(html).toContain(`Accounts in any currency and their categories are here`)
+    expect(html).toContain(
+      `Accounts in any currency, their categories and monthly budgets are here`,
+    )
     expect((await page("/")).html).toContain(`Categories with one level of subcategories`)
+  })
+
+  it("lists budgets on /features as built, right after categories, and on the home page's Works today, not under Later", async () => {
+    const { html } = await page("/features")
+
+    expect(html.indexOf(`<section id="budgets"`)).toBeGreaterThan(
+      html.indexOf(`<section id="categories"`),
+    )
+    expect(html.indexOf(`<section id="budgets"`)).toBeLessThan(
+      html.indexOf(`<section id="sign-in"`),
+    )
+    expect(html).toContain(`A monthly limit for each category`)
+    expect(html).not.toContain(`Transactions and budgets are not built yet`)
+    const home = (await page("/")).html
+    expect(home).toContain(`A monthly limit for each category`)
+    expect(home).not.toContain(`Budgets, bank statement import`)
   })
 
   it("lists passkeys on /features as built, not under Not built yet", async () => {

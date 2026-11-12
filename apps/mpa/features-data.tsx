@@ -34,8 +34,9 @@ export interface Tier extends Omit<FeatureTierProps, "children"> {
 
 /**
  * What works in Financy today, one tier, each claim checked against the code on 2026-11-06; the
- * "where in the code" link of each section points at it. Accounts are built; transactions and
- * budgets are not yet, so they have no section: #105 rewrites this page as they land.
+ * "where in the code" link of each section points at it. Accounts, categories and budgets are
+ * built; transactions are not in the app yet, so they have no section: #105 rewrites this page as
+ * they land.
  */
 export function tiers({ t, language }: Site): readonly Tier[] {
   return [
@@ -72,6 +73,18 @@ export function tiers({ t, language }: Site): readonly Tier[] {
             label: t.t(`FeatureCategories.code`),
             href: source(`libs/domain/categories/`),
           },
+        },
+        {
+          id: `budgets`,
+          nav: t.t(`FeatureBudgets.nav`),
+          title: t.t(`FeatureBudgets.title`),
+          lead: t.t(`FeatureBudgets.lead`),
+          facts: [
+            t.t(`FeatureBudgets.fact1`),
+            t.t(`FeatureBudgets.fact2`),
+            t.t(`FeatureBudgets.fact3`),
+          ],
+          code: { label: t.t(`FeatureBudgets.code`), href: source(`libs/domain/budgets/`) },
         },
         {
           id: `sign-in`,
