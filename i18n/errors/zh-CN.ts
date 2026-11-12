@@ -231,4 +231,6 @@ export default {
   },
   "ImportPlace.categories": "分类",
   "ImportPlace.categoriesEntry": "分类 {index}",
+  "Reason.BUDGET_INCOME_CATEGORY": "只有支出分类可以设置预算。",
+  "Reason.CATEGORY_ARCHIVED": "这个分类已归档，请先取消归档再设置预算。",
 } satisfies Catalog

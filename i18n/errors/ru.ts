@@ -284,4 +284,6 @@ export default {
   },
   "ImportPlace.categories": "Категории",
   "ImportPlace.categoriesEntry": "Категория {index}",
+  "Reason.BUDGET_INCOME_CATEGORY": "Бюджет можно задать только для категории расходов.",
+  "Reason.CATEGORY_ARCHIVED": "Эта категория в архиве. Верните её из архива, чтобы задать бюджет.",
 } satisfies Catalog

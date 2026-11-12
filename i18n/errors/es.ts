@@ -278,4 +278,6 @@ export default {
   },
   "ImportPlace.categories": "Categorías",
   "ImportPlace.categoriesEntry": "Categoría {index}",
+  "Reason.BUDGET_INCOME_CATEGORY": "Solo una categoría de gastos puede tener presupuesto.",
+  "Reason.CATEGORY_ARCHIVED": "Esta categoría está archivada. Desarchívala para fijar un presupuesto.",
 } satisfies Catalog
