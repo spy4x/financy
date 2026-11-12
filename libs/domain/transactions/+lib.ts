@@ -861,3 +861,53 @@ function messageOfReference(code: TransactionErrorCode): string {
   return `an expense needs an expense category`
 }
 // #endregion Export file
+
+// #region Admin
+/** How many calendar months the operator's entries page counts, the current one last. */
+export const ADMIN_ENTRIES_MONTHS = 6
+
+/** How many households the operator's entries page lists, the busiest in those months. */
+export const ADMIN_ENTRIES_HOUSEHOLD_LIMIT = 20
+
+/** One calendar month of {@link AdminEntriesOverview}, by the entries' own date. */
+export interface AdminEntriesMonth {
+  /** `YYYY-MM`. */
+  month: string
+  entries: number
+  /** Households with at least one entry in the month. */
+  households: number
+}
+
+/** One household of {@link AdminEntriesOverview}: its counts and its last entry's day. */
+export interface AdminEntriesHousehold {
+  groupId: string
+  groupName: string
+  /** Every live entry the household has, whatever its date. */
+  entries: number
+  /** Entries per month, aligned to {@link AdminEntriesOverview.months}. */
+  months: number[]
+  /** `YYYY-MM-DD`, the latest date among its live entries. */
+  lastEntryDate: string
+}
+
+/**
+ * What the operator's entries page shows: counts and dates only. Never an amount, a currency, a
+ * memo, an account, a category or a person: they say what a household spends and on what. Deleted
+ * entries count nowhere.
+ */
+export interface AdminEntriesOverview {
+  /** Live entries across every household. */
+  entries: number
+  /** Households with at least one live entry. */
+  households: number
+  /** `YYYY-MM-DD`, the latest date among live entries, or `null` when there are none. */
+  lastEntryDate: string | null
+  /** The last {@link ADMIN_ENTRIES_MONTHS} calendar months in UTC, oldest first, each present. */
+  months: AdminEntriesMonth[]
+  /**
+   * At most {@link ADMIN_ENTRIES_HOUSEHOLD_LIMIT} households: the most entries in those months
+   * first, then the most entries overall, then by id.
+   */
+  topHouseholds: AdminEntriesHousehold[]
+}
+// #endregion Admin
