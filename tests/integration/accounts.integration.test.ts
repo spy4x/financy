@@ -17,6 +17,7 @@ import {
   AccountSetDefaultCommand,
   AccountUpdateCommand,
 } from "@domain/accounts"
+import { COINS } from "@domain/money"
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { PostgresGroupPorter } from "@server/groups/postgres-group-porter.ts"
@@ -216,6 +217,51 @@ Deno.test("accounts against Postgres", async (t) => {
           await expect(sql`UPDATE accounts SET currency = ${currency} WHERE id = ${account.id}`)
             .rejects.toThrow("accounts_currency_check")
         }
+      },
+    )
+
+    await t.step(
+      "holds every listed coin only on a crypto account, in the handlers and in Postgres, and 0.5 BTC as 50000000 (R2)",
+      async () => {
+        const { groupId, owner, viewer } = await team(sql)
+        const crypto = { kind: AccountKind.CRYPTO, startingBalance: 50_000_000 }
+        const coins = await Promise.all(
+          COINS.map(({ code }) =>
+            create(owner, groupId, { ...crypto, name: code, currency: code })
+          ),
+        )
+        const btc = coins[0].account
+        const [stored] = await sql<{ startingBalance: string }[]>`
+          SELECT starting_balance::text AS starting_balance FROM accounts WHERE id = ${btc.id}
+        `
+        expect([btc.currency, stored.startingBalance]).toEqual(["BTC", "50000000"])
+
+        expect(await refusal(create(owner, groupId, { ...crypto, currency: "USD" })))
+          .toMatchObject({ code: "CURRENCY_KIND_MISMATCH" })
+        expect(await refusal(create(owner, groupId, { currency: "BTC" })))
+          .toMatchObject({ code: "CURRENCY_KIND_MISMATCH" })
+        const write = { actor: actor(owner), groupId, id: btc.id, version: 1 }
+        expect(
+          await refusal(
+            commands.execute(
+              new AccountUpdateCommand({ ...write, ...fields, ...crypto, currency: "EUR" }),
+            ),
+          ),
+        ).toMatchObject({ code: "CURRENCY_KIND_MISMATCH" })
+        expect(await refusal(create(viewer, groupId, { ...crypto, currency: "BTC" })))
+          .toMatchObject({ code: "ROLE_INSUFFICIENT" })
+
+        const bank = (await create(owner, groupId)).account
+        for (const { code } of COINS) {
+          await expect(sql`UPDATE accounts SET currency = ${code} WHERE id = ${bank.id}`)
+            .rejects.toThrow("accounts_currency_check")
+        }
+        await expect(sql`UPDATE accounts SET kind = ${AccountKind.CRYPTO} WHERE id = ${bank.id}`)
+          .rejects.toThrow("accounts_currency_check")
+        await expect(sql`UPDATE accounts SET currency = 'USD' WHERE id = ${btc.id}`)
+          .rejects.toThrow("accounts_currency_check")
+        await expect(sql`UPDATE accounts SET kind = 8 WHERE id = ${btc.id}`)
+          .rejects.toThrow("accounts_kind_check")
       },
     )
 

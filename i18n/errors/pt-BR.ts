@@ -121,6 +121,8 @@ export default {
   "Reason.CATEGORY_REQUIRED":
     "Um item publicado precisa de uma categoria. Escolha uma, ou oculte o item antes.",
   "Reason.CHANNEL_NOT_FOUND": "Este canal não existe mais.",
+  "Reason.CURRENCY_KIND_MISMATCH":
+    "Uma conta cripto guarda uma criptomoeda, e só uma conta cripto pode fazer isso. Escolha uma moeda que combine com o tipo da conta.",
   "Reason.FILE_CONTENT": "O conteúdo deste arquivo não corresponde ao tipo dele.",
   "Reason.FILE_MISSING": "Nenhum arquivo chegou. Escolha um arquivo e tente de novo.",
   "Reason.FILE_TOO_LARGE": "Este arquivo é grande demais.",

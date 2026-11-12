@@ -144,6 +144,8 @@ export default {
   "Reason.CATEGORY_NOT_FOUND": "هذه الفئة لم تعد موجودة. اختر فئة أخرى.",
   "Reason.CATEGORY_REQUIRED": "العنصر المنشور يحتاج إلى فئة. اختر فئة، أو أخفِ العنصر أولًا.",
   "Reason.CHANNEL_NOT_FOUND": "هذه القناة لم تعد موجودة.",
+  "Reason.CURRENCY_KIND_MISMATCH":
+    "حساب العملات المشفّرة يحمل عملة مشفّرة، ولا يحملها حساب غيره. اختر عملة تناسب نوع الحساب.",
   "Reason.FILE_CONTENT": "محتوى هذا الملف لا يطابق نوعه.",
   "Reason.FILE_MISSING": "لم يصلنا أي ملف. اختر ملفًا وحاول مرة أخرى.",
   "Reason.FILE_TOO_LARGE": "هذا الملف كبير جدًا.",

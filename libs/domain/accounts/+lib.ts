@@ -8,9 +8,9 @@ import {
   type GroupRole,
   plainEntryProblem,
 } from "@domain/groups"
+import { accountCurrencyCode, isCoin } from "@domain/money"
 import {
   convertMoney,
-  currencyCode,
   type ExchangeRate,
   type Money,
   sumMoney,
@@ -47,8 +47,9 @@ export const ACCOUNT_AMOUNT_MAX = Number.MAX_SAFE_INTEGER
 
 /**
  * What kind of place an account is. Only a label for the icon and the list's grouping: it changes
- * no maths. A liability's balance is simply negative when money is owed. The numbers are stored, so
- * they never change; crypto comes later, as its own kind.
+ * no maths, except that a crypto account holds a listed coin (`COINS` in `@domain/money`) and only
+ * a crypto account may. A liability's balance is simply negative when money is owed. The numbers
+ * are stored, so they never change.
  */
 export enum AccountKind {
   CASH = 1,
@@ -57,6 +58,7 @@ export enum AccountKind {
   SAVINGS = 4,
   ASSET = 5,
   LIABILITY = 6,
+  CRYPTO = 7,
 }
 
 /** Every kind, in the order the list groups them. */
@@ -67,6 +69,7 @@ export const ACCOUNT_KINDS: readonly AccountKind[] = [
   AccountKind.SAVINGS,
   AccountKind.ASSET,
   AccountKind.LIABILITY,
+  AccountKind.CRYPTO,
 ]
 
 /** The outbox event kinds an account change is recorded under, on the group's change log. */
@@ -85,6 +88,7 @@ export type AccountErrorCode =
   | "ACCOUNT_ARCHIVED"
   | "ACCOUNT_LIMIT_REACHED"
   | "ACCOUNT_NOT_FOUND"
+  | "CURRENCY_KIND_MISMATCH"
   | "GROUP_NOT_FOUND"
   | "ID_ALREADY_EXISTS"
   | "INVALID_REQUEST"
@@ -127,13 +131,28 @@ export function assertAccountRoom(count: number): void {
   }
 }
 
+/**
+ * Throws `CURRENCY_KIND_MISMATCH` unless a crypto account holds a listed coin and every other kind
+ * holds an ISO 4217 currency. The create and update handlers and the import check it; Postgres
+ * checks it again (`accounts_currency_check`).
+ */
+export function assertKindFitsCurrency(kind: AccountKind, currency: string): void {
+  if ((kind === AccountKind.CRYPTO) === isCoin(currency)) return
+  throw new AccountError(
+    "CURRENCY_KIND_MISMATCH",
+    kind === AccountKind.CRYPTO
+      ? `A crypto account must hold a listed coin, not ${currency}`
+      : `Only a crypto account can hold ${currency}`,
+  )
+}
+
 /** One account as the API returns it. */
 export interface Account {
   id: string
   groupId: string
   name: string
   kind: AccountKind
-  /** An ISO 4217 code, never an id. */
+  /** An ISO 4217 code, or a listed coin's code for a crypto account; never an id. */
   currency: string
   /** In the currency's smallest unit: 1234 is 12.34 USD, 500 is 500 JPY, 1234 is 1.234 BHD. */
   startingBalance: number
@@ -168,7 +187,7 @@ const versionField = { version: "number.integer >= 1" } as const
 const accountFields = {
   name: "string",
   kind: kindField,
-  currency: currencyCode,
+  currency: accountCurrencyCode,
   startingBalance: amountField,
 } as const
 const groupIdField = { groupId: UUID_PATTERN } as const
@@ -590,7 +609,9 @@ export function parseAccountExportEntry(entry: unknown): AccountExportEntry {
       fieldErrors(shape),
     )
   }
-  return parseAccountRequest(accountExportEntrySchema, entry) as AccountExportEntry
+  const parsed = parseAccountRequest(accountExportEntrySchema, entry) as AccountExportEntry
+  assertKindFitsCurrency(parsed.kind, parsed.currency)
+  return parsed
 }
 
 /**
