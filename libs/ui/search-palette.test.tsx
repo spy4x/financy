@@ -202,6 +202,7 @@ describe("SearchPalette", () => {
       "New tag | In Home",
       "New category | In Home",
       "Go to categories",
+      "Go to budgets",
       "New group",
       "Open overview",
       "Open notifications",
@@ -364,13 +365,15 @@ describe("SearchPalette", () => {
     expect(rows).toContain("Open notifications")
   })
 
-  it("finds New category by subcategory and категория, and Go to categories by категории", async () => {
+  it("finds New category by subcategory and категория, Go to categories by категории, and Go to budgets by limits and бюджет", async () => {
     const { picked } = await mount()
     for (
       const [query, label] of [
         ["subcategory", "New category"],
         ["категория", "New category"],
         ["категории", "Go to categories"],
+        ["limits", "Go to budgets"],
+        ["бюджет", "Go to budgets"],
       ]
     ) {
       await open()
@@ -386,6 +389,8 @@ describe("SearchPalette", () => {
       { kind: "page", href: "/categories/new" },
       { kind: "page", href: "/categories/new" },
       { kind: "page", href: "/categories" },
+      { kind: "page", href: "/budgets" },
+      { kind: "page", href: "/budgets" },
     ])
   })
 
