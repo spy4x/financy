@@ -47,6 +47,9 @@ export interface BudgetFormView {
   base: BudgetLimit | null
   /** Someone else changed the limit while the dialog was open: it now shows their change. */
   conflict: boolean
+  /** What is wrong with the amount, shown under its field. */
+  amountError: Message | null
+  /** A failure no field owns, such as a save that did not go through. */
   error: Message | null
   /** The household's plan refused the limit. */
   plan: PlanRefusal | null
@@ -503,6 +506,11 @@ function BudgetDialog(
   const t = useAppText()
   const format = useFormat()
   const decimals = amountDecimals(form.currency)
+  const amountError = messageText(t, form.amountError)
+  // A refused amount sends focus back to its field, where the message now sits.
+  useEffect(() => {
+    if (form.amountError) document.getElementById(`budget-amount`)?.focus()
+  }, [form])
   return (
     <Modal
       open
@@ -521,11 +529,13 @@ function BudgetDialog(
               id="budget-amount"
               label={t.t(`BudgetDialog.amount`)}
               hint={t.t(`BudgetDialog.hint`, { month })}
+              error={amountError}
             >
               {(wiring) => (
                 <MoneyInput
                   id={wiring.id}
                   aria-describedby={wiring["aria-describedby"]}
+                  aria-invalid={amountError ? true : undefined}
                   value={form.amount}
                   onChange={actions.onChange}
                   currency={form.currency}

@@ -14,6 +14,8 @@ import {
   type BudgetSetInput,
   createBudgetsStore,
 } from "./budgets.ts"
+import type { LocalReads } from "../modules.ts"
+import { memoryReads } from "./memory-reads.ts"
 
 const groupId = "g-1"
 
@@ -43,7 +45,7 @@ const conflict = (currentVersion: number) =>
  * A store over a fake server: `server` holds each month's rows, `set` records every write and
  * answers with the next version unless `refuse` names an error for the next one.
  */
-function harness(overrides: Partial<BudgetsDependencies> = {}) {
+function harness(overrides: Partial<BudgetsDependencies> = {}, device?: LocalReads) {
   const server = new Map<string, BudgetRow[]>([
     ["2026-11", [row("food", { amount: 50_000, currency: "EUR" }), row("rent", null)]],
     ["2026-10", [row("food", { amount: 30_000, currency: "EUR" }), row("rent", null)]],
@@ -60,7 +62,7 @@ function harness(overrides: Partial<BudgetsDependencies> = {}) {
       return Promise.resolve({ budget: { version: ++version } })
     },
     ...overrides,
-  })
+  }, device)
   return { store, server, writes, refuse: (error: Error) => refusals.push(error) }
 }
 
@@ -72,6 +74,37 @@ describe("budgets store", () => {
     await store.open(groupId, "2026-10")
     expect(store.month.value).toBe("2026-10")
     expect(store.budgets.value?.rows[0].limit?.amount).toBe(30_000)
+  })
+
+  it("drops an older read of the same month that answers after a newer one", async () => {
+    let release!: () => void
+    const held = new Promise<void>((resolve) => release = resolve)
+    let calls = 0
+    const { store } = harness({
+      month: async (_group, at) => {
+        const first = ++calls === 1
+        if (first) await held
+        return month(at, [row("food", { amount: first ? 10_000 : 20_000, currency: "EUR" })])
+      },
+    })
+    const slow = store.open(groupId, "2026-11")
+    await store.refresh()
+    release()
+    await slow
+    expect(store.budgets.value?.rows[0].limit?.amount).toBe(20_000)
+    expect(store.loading.value).toBe(false)
+  })
+
+  it("keeps the device's copy of each month apart: one month's copy never shows under another", async () => {
+    const device = memoryReads(() => 1_000)
+    const online = harness({}, device)
+    await online.store.open(groupId, "2026-11")
+    const offline = harness({ month: () => Promise.reject(new TypeError("offline")) }, device)
+    await offline.store.open(groupId, "2026-10")
+    expect(offline.store.budgets.value).toBeNull()
+    await offline.store.open(groupId, "2026-11")
+    expect(offline.store.budgets.value?.rows[0].limit?.amount).toBe(50_000)
+    expect(offline.store.savedAt.value).toBe(1_000)
   })
 
   it("drops the answer of a month that is no longer on screen", async () => {
@@ -123,8 +156,10 @@ describe("budgets store", () => {
     await store.open(groupId, "2026-11")
     store.startEdit("rent")
     expect(await store.save()).toBe(false)
-    expect(store.form.value?.error).toBe(BUDGET_MESSAGES.required)
+    expect(store.form.value).toMatchObject({ amountError: BUDGET_MESSAGES.required, error: null })
     expect(writes).toEqual([])
+    store.change(1_000)
+    expect(store.form.value?.amountError).toBeNull()
   })
 
   it("saves a limit from the month on screen, then sends the version it answered next time", async () => {
@@ -171,6 +206,46 @@ describe("budgets store", () => {
     expect(await store.save()).toBe(true)
     expect(writes.map((write) => write.expectedVersion)).toEqual([null, 7])
     expect(store.form.value).toBeNull()
+  })
+
+  it("sends nothing more when the read after a conflict fails, and a retry is refused again", async () => {
+    let reads = 0
+    const { store, writes, refuse } = harness({
+      month: (_group, at) =>
+        ++reads === 1
+          ? Promise.resolve(month(at, [row("food", { amount: 50_000, currency: "EUR" })]))
+          : Promise.reject(new TypeError("network")),
+    })
+    await store.open(groupId, "2026-11")
+    store.startEdit("food")
+    store.change(55_000)
+    refuse(conflict(3))
+    expect(await store.save()).toBe(false)
+    expect(writes.map((write) => [write.amount, write.expectedVersion])).toEqual([[55_000, null]])
+    expect(store.form.value).toMatchObject({ amount: 55_000, error: BUDGET_MESSAGES.save })
+    // The version the conflict named was not taken on an unread limit.
+    refuse(conflict(3))
+    await store.save()
+    expect(writes.map((write) => write.expectedVersion)).toEqual([null, null])
+  })
+
+  it("sends nothing more when the read after a conflict comes from the device's copy", async () => {
+    const device = memoryReads()
+    let reads = 0
+    const { store, writes, refuse } = harness({
+      month: (_group, at) =>
+        ++reads === 1
+          ? Promise.resolve(month(at, [row("food", { amount: 50_000, currency: "EUR" })]))
+          : Promise.reject(new TypeError("network")),
+    }, device)
+    await store.open(groupId, "2026-11")
+    store.startEdit("food")
+    store.change(55_000)
+    refuse(conflict(3))
+    expect(await store.save()).toBe(false)
+    expect(store.savedAt.value).not.toBeNull()
+    expect(writes).toHaveLength(1)
+    expect(store.form.value).toMatchObject({ amount: 55_000, error: BUDGET_MESSAGES.save })
   })
 
   it("keeps the dialog open on someone else's limit when it changed meanwhile", async () => {

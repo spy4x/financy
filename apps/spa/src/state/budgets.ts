@@ -55,9 +55,11 @@ function sameLimit(a: BudgetLimit | null, b: BudgetLimit | null): boolean {
  *
  * The month read carries no row versions, so the store remembers the version of each row its own
  * writes answered with, and sends `null` for a row it has not written. When the server says the
- * row moved on, the month is read again: a limit still as the dialog showed it is saved again at
- * the current version without a word, because nobody's change is lost; a limit someone else
- * changed keeps the dialog open on their value.
+ * row moved on, the month is read again. Only when that read came fresh from the server, and the
+ * limit is still the one the dialog opened on, is it saved again at the current version without a
+ * word, because nobody's change is lost; a limit someone else changed keeps the dialog open on
+ * their value. A read that failed or came from the device's copy cannot tell, so nothing is sent
+ * and the dialog says the limit was not saved.
  */
 export function createBudgetsStore(
   dependencies: BudgetsDependencies,
@@ -86,11 +88,15 @@ export function createBudgetsStore(
     return row?.source === BudgetLimitSource.OWN ? row.limit : null
   }
 
-  /** Reads the open month again; an answer for another household or month is dropped. */
-  async function refresh(): Promise<void> {
+  /**
+   * Reads the open month again; an answer for another household or month, or older than a later
+   * read, is dropped. Resolves `true` only when the month on screen now is the server's answer to
+   * this read: `false` when it failed, came from the device's copy, or was dropped.
+   */
+  async function reread(): Promise<boolean> {
     const forGroup = groupId.value
     const forMonth = month.value
-    if (forGroup === null || forMonth === null) return
+    if (forGroup === null || forMonth === null) return false
     const read = ++reads
     const current = () => read === reads && groupId.value === forGroup && month.value === forMonth
     loading.value = true
@@ -105,20 +111,26 @@ export function createBudgetsStore(
           savedAt.value = copy ? copy.savedAt : null
         },
       )
-      if (!current()) return
+      if (!current()) return false
       budgets.value = answer.value
       savedAt.value = answer.fresh ? null : answer.savedAt
       error.value = null
+      return answer.fresh
     } catch (cause) {
-      if (!current()) return
-      error.value = describeError(cause, BUDGET_MESSAGES.load)
+      if (current()) error.value = describeError(cause, BUDGET_MESSAGES.load)
+      return false
     } finally {
       if (read === reads) loading.value = false
     }
   }
 
+  /** Reads the open month again, as {@link reread} does, for callers that need no answer. */
+  async function refresh(): Promise<void> {
+    await reread()
+  }
+
   /** Shows one household's month. The month already open is read again. */
-  function open(nextGroupId: string, nextMonth: string): Promise<void> {
+  async function open(nextGroupId: string, nextMonth: string): Promise<void> {
     if (groupId.value !== nextGroupId) {
       reset()
       groupId.value = nextGroupId
@@ -130,7 +142,7 @@ export function createBudgetsStore(
       error.value = null
       form.value = null
     }
-    return refresh()
+    await refresh()
   }
 
   /** Opens the dialog on a category: its own limit, else empty in the household's base currency. */
@@ -144,13 +156,14 @@ export function createBudgetsStore(
       currency: own?.currency ?? shown.baseCurrency,
       base: own,
       conflict: false,
+      amountError: null,
       error: null,
       plan: null,
     }
   }
 
   function change(amount: number | null): void {
-    if (form.value) form.value = { ...form.value, amount, error: null }
+    if (form.value) form.value = { ...form.value, amount, amountError: null, error: null }
   }
 
   function closeForm(): void {
@@ -167,7 +180,7 @@ export function createBudgetsStore(
     const current = form.value
     if (!forGroup || !forMonth || !current || saving.value) return false
     if (!removal && current.amount === null) {
-      form.value = { ...current, error: BUDGET_MESSAGES.required }
+      form.value = { ...current, amountError: BUDGET_MESSAGES.required }
       return false
     }
     const key = versionKey(forGroup, current.categoryId, forMonth)
@@ -181,7 +194,7 @@ export function createBudgetsStore(
         expectedVersion,
       })
     saving.value = true
-    form.value = { ...current, error: null, plan: null }
+    form.value = { ...current, amountError: null, error: null, plan: null }
     try {
       let answer
       try {
@@ -189,9 +202,14 @@ export function createBudgetsStore(
       } catch (cause) {
         const { code, currentVersion } = refusal(cause)
         if (code !== "VERSION_CONFLICT") throw cause
+        // Unread, the partner's limit is unknown: the version stays as it was, so a retry is
+        // refused again and reads again instead of overwriting them.
+        if (!await reread()) {
+          form.value = { ...current, amountError: null, error: BUDGET_MESSAGES.save, plan: null }
+          return false
+        }
         if (currentVersion !== null) versions.set(key, currentVersion)
         else versions.delete(key)
-        await refresh()
         const latest = ownLimit(current.categoryId)
         if (!sameLimit(latest, current.base)) {
           form.value = {

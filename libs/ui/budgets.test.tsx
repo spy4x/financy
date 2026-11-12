@@ -174,6 +174,7 @@ const form = (over: Partial<BudgetFormView> = {}): BudgetFormView => ({
   currency: "EUR",
   base: eur(35_000),
   conflict: false,
+  amountError: null,
   error: null,
   plan: null,
   ...over,
@@ -361,6 +362,19 @@ describe("BudgetsScreen", () => {
     expect(removed).toBe(0)
     await click("[data-e2e=budget-remove-confirm]")
     expect(removed).toBe(1)
+  })
+
+  it("shows a refused amount under its field, marks the field invalid and focuses it", async () => {
+    await mount({ form: form({ amount: null, amountError: `BudgetDialog.amountRequired` }) })
+    const input = document.getElementById("budget-amount")!
+    const message = document.getElementById("budget-amount-error")!
+    expect(message.textContent).toBe("Type a limit.")
+    expect(input.closest("[data-e2e=budget-amount]")?.contains(message)).toBe(true)
+    expect(input.getAttribute("aria-invalid")).toBe("true")
+    expect(input.getAttribute("aria-describedby")?.split(" ")).toContain("budget-amount-error")
+    expect(input.parentElement?.classList.contains("border-danger")).toBe(true)
+    expect(document.activeElement).toBe(input)
+    expect(count("[data-e2e=budget-dialog] [role=alert]")).toBe(0)
   })
 
   it("says someone else changed the limit while the dialog was open", async () => {
