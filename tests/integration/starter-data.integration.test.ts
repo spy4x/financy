@@ -20,6 +20,8 @@ import { expectVersion7Ids } from "./ids.ts"
 import { TEST_FREE_PLAN, TEST_PLANS, testLimits } from "../../libs/domain/billing/test-plans.ts"
 import { AppDbBase } from "../../apps/api/services/db-base.ts"
 import { NOTES_OFF } from "@server/notes/setup.ts"
+import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
+import { type CategoryIcon, CategoryKind } from "@domain/categories"
 
 /** Runs `body` on a fresh schema built from schema.sql. */
 async function withSchema(body: (sql: postgres.Sql) => Promise<void>): Promise<void> {
@@ -357,6 +359,39 @@ Deno.test("a new household gets one starter set of categories, however often the
       const after = await categoriesOf(sql, groupId)
       expect(after.map(({ id }) => id)).toEqual(first.map(({ id }) => id))
     })
+  })
+})
+
+Deno.test("a starter category refused on the first run keeps the ids after it, so a later run fills in its tree", async () => {
+  await withSchema(async (sql) => {
+    const { userId, groupId } = await signedUpPerson(sql)
+    // The household already has a Food, so the starter Food and its two children are refused.
+    const own = uuidV7()
+    await new PostgresCategoryRepository(sql).create({
+      groupId,
+      id: own,
+      name: "Food",
+      kind: CategoryKind.EXPENSE,
+      icon: "utensils" as CategoryIcon,
+      color: "#c2410c",
+      parentId: null,
+      allowance: null,
+    }, userId)
+    const requestId = await requestFor(sql, userId)
+    await starterDataJob(sql)(eventOf(requestId))
+    const first = await categoriesOf(sql, groupId)
+    expect(first).toHaveLength(12)
+
+    await sql`UPDATE categories SET name = 'Meals' WHERE id = ${own}`
+    await sql`UPDATE starter_data_requests SET done_at = NULL WHERE id = ${requestId}`
+    await starterDataJob(sql)(eventOf(requestId))
+
+    const after = await categoriesOf(sql, groupId)
+    expect(after).toHaveLength(15)
+    const food = after.find((category) => category.name === "Food")!
+    expect(
+      after.filter((category) => category.parentId === food.id).map(({ name }) => name).sort(),
+    ).toEqual(["Eating out", "Groceries"])
   })
 })
 
