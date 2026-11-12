@@ -41,9 +41,9 @@ data.json holds everything in one file. Each CSV file holds one kind of row: the
 section of data.json with its name. Dates and times are ISO 8601 in UTC. CSV files are UTF-8 with a
 header row.
 
-Notes, tags and finance accounts are the ones you created in the groups you belong to. Other
-people's notes and accounts, and their names and addresses, are not here. An amount is a whole
-number in its currency's smallest unit: 1234 in USD is 12.34.
+Notes, tags, finance accounts, categories and entries are the ones you created in the groups you
+belong to. Other people's notes, accounts and entries, and their names and addresses, are not here.
+An amount is a whole number in its currency's smallest unit: 1234 in USD is 12.34.
 `
 
 /** A cell as the export writes it: an ISO 8601 date, a JSON text for an object, or the value. */

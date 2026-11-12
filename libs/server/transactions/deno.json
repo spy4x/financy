@@ -1,5 +1,5 @@
 {
   "tasks": {
-    "check": "deno check postgres-transaction-repository.ts purge-deleted-transactions.ts"
+    "check": "deno check postgres-transaction-repository.ts purge-deleted-transactions.ts transaction-movable.ts transaction-portable.ts"
   }
 }
