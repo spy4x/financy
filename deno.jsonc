@@ -470,7 +470,7 @@
     "@jsr/spy4x__preact-system": "npm:@jsr/spy4x__preact-system@14.3.0",
     // The npm name of `@spy4x/platform` above, for the same reason: every e2e spec takes `uuidV7`
     // from it. It moves with the `@spy4x/*` packages.
-    "@jsr/spy4x__platform": "npm:@jsr/spy4x__platform@1.116.0",
+    "@jsr/spy4x__platform": "npm:@jsr/spy4x__platform@1.125.0",
 
     // shared/types — 2.2.3 matches spy4x/ts-libs and spy4x/preact-components
     // (spy4x/preact-components#121)
