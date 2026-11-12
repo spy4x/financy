@@ -254,6 +254,20 @@ Deno.test("budgets against Postgres", async (t) => {
       },
     )
 
+    await t.step(
+      "a household's hard delete takes its budgets with its categories, but a budgeted category alone cannot go",
+      async () => {
+        const h = await household(sql)
+        await budgets.set(at(h.groupId, h.groceries), h.editor)
+
+        const lone = await refusal(sql`DELETE FROM categories WHERE id = ${h.groceries}`)
+        await sql`DELETE FROM groups WHERE id = ${h.groupId}`
+
+        expect(lone).toMatchObject({ constraint_name: "budgets_category_fkey" })
+        expect(await sql`SELECT id FROM budgets WHERE group_id = ${h.groupId}`).toEqual([])
+      },
+    )
+
     await t.step("lists only the household's live expense categories, by name", async () => {
       const h = await household(sql)
       const old = await h.category("Archived", CategoryKind.EXPENSE)
