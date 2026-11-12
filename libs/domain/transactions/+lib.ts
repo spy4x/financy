@@ -13,7 +13,7 @@ import { accountCurrencyCode, amountDecimals } from "@domain/money"
 import { convertMoney, type ExchangeRate } from "@spy4x/platform/universal/money"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
-import { parseIsoDate } from "@spy4x/time/date"
+import { endOfMonth, parseIsoDate, shiftMonth, startOfMonth } from "@spy4x/time/date"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
 
 /**
@@ -636,6 +636,37 @@ export async function summarizeLedger(
     tooLarge,
   }
 }
+
+/**
+ * Sums `rows` into one {@link Ledger} per calendar month, from the month of `period.from` to the
+ * month of `period.to`, oldest first. Each month reads exactly as {@link summarizeLedger} reads it
+ * alone, so one database read of a run of months serves every month in it.
+ */
+export async function summarizeLedgerMonths(
+  rows: readonly LedgerRow[],
+  categories: readonly LedgerCategory[],
+  period: { currency: string; from: string; to: string },
+  lookupRate: EntryRateLookup,
+): Promise<Ledger[]> {
+  const byMonth = new Map<string, LedgerRow[]>()
+  for (const row of rows) {
+    const month = row.date.slice(0, 7)
+    byMonth.set(month, [...byMonth.get(month) ?? [], row])
+  }
+  const ledgers: Ledger[] = []
+  for (let first = startOfMonth(period.from);; first = shiftMonth(first, 1)) {
+    const last = endOfMonth(first)
+    ledgers.push(
+      await summarizeLedger(
+        byMonth.get(first.slice(0, 7)) ?? [],
+        categories,
+        { currency: period.currency, from: first, to: last },
+        lookupRate,
+      ),
+    )
+    if (last >= period.to) return ledgers
+  }
+}
 // #endregion Ledger
 
 // #region Ports
@@ -694,6 +725,11 @@ export interface TransactionRepository {
   restore(input: TransactionRestoreInput, actorId: number): Promise<Transaction>
   /** The household's {@link Ledger} for `from` to `to`, both included, in `currency`. */
   ledger(groupId: string, currency: string, from: string, to: string): Promise<Ledger>
+  /**
+   * One {@link Ledger} per calendar month from `from` to `to` (the first and the last day of whole
+   * months), in `currency`, from one read: {@link summarizeLedgerMonths}.
+   */
+  ledgerMonths(groupId: string, currency: string, from: string, to: string): Promise<Ledger[]>
 }
 // #endregion Ports
 

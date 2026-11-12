@@ -9,6 +9,7 @@ import {
   type LedgerCategory,
   type LedgerRow,
   summarizeLedger,
+  summarizeLedgerMonths,
   type Transaction,
   TRANSACTION_EVENTS,
   type TransactionCreateInput,
@@ -288,6 +289,32 @@ export class PostgresTransactionRepository implements TransactionRepository {
    * counts what moved in its account, in the account's currency (R4).
    */
   async ledger(groupId: string, currency: string, from: string, to: string): Promise<Ledger> {
+    const { rows, categories } = await this.ledgerRows(groupId, currency, from, to)
+    return await summarizeLedger(rows, categories, { currency, from, to }, this.rate)
+  }
+
+  /**
+   * {@link ledger} for each calendar month from `from` to `to`, from one read of the entries: the
+   * database sums them per category, day and currency over the whole range, and
+   * {@link summarizeLedgerMonths} cuts the sums into months.
+   */
+  async ledgerMonths(
+    groupId: string,
+    currency: string,
+    from: string,
+    to: string,
+  ): Promise<Ledger[]> {
+    const { rows, categories } = await this.ledgerRows(groupId, currency, from, to)
+    return await summarizeLedgerMonths(rows, categories, { currency, from, to }, this.rate)
+  }
+
+  /** The sums a ledger converts, per category, day and currency, and the household's categories. */
+  private async ledgerRows(
+    groupId: string,
+    currency: string,
+    from: string,
+    to: string,
+  ): Promise<{ rows: LedgerRow[]; categories: LedgerCategory[] }> {
     const [rows, categories] = await Promise.all([
       this.sql<(Omit<LedgerRow, "amount"> & { amount: string })[]>`
         SELECT
@@ -310,13 +337,11 @@ export class PostgresTransactionRepository implements TransactionRepository {
         SELECT id, kind, parent_id FROM categories WHERE group_id = ${groupId}
       `,
     ])
-    return await summarizeLedger(
+    return {
       // A sum past the safe range reads as an unsafe number, which the summary reports as too large.
-      rows.map((row) => ({ ...row, amount: Number(row.amount) })),
+      rows: rows.map((row) => ({ ...row, amount: Number(row.amount) })),
       categories,
-      { currency, from, to },
-      this.rate,
-    )
+    }
   }
 
   /** The rate lookup {@link deriveAmounts} and {@link summarizeLedger} take. */

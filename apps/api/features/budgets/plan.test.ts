@@ -44,6 +44,7 @@ function stack(plan: string, billingEnabled = true, role = GroupRole.OWNER) {
       groups,
       settings: { get: () => Promise.resolve({ baseCurrency: "USD" }) },
       ledger: () => Promise.reject(new Error("a set reads no ledger")),
+      ledgerMonths: () => Promise.reject(new Error("a set reads no ledger")),
       rate: () => Promise.resolve(null),
       now: () => new Date("2026-11-05T12:00:00Z"),
     }),

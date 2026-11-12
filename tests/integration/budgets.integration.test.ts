@@ -341,6 +341,8 @@ Deno.test("budgets against Postgres", async (t) => {
           },
           settings: { get: () => Promise.resolve({ baseCurrency: "EUR" }) },
           ledger: (groupId, currency, from, to) => transactions.ledger(groupId, currency, from, to),
+          ledgerMonths: (groupId, currency, from, to) =>
+            transactions.ledgerMonths(groupId, currency, from, to),
           rate: async (base, quote, date) => {
             const lookup = await rates.lookup(base, quote, date)
             return lookup.found ? lookup.rate : null

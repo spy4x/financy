@@ -81,6 +81,8 @@ function stack() {
     settings: { get: () => Promise.resolve({ baseCurrency: "USD" }) },
     ledger: (group: string, currency: string, from: string, to: string) =>
       transactions.ledger(group, currency, from, to),
+    ledgerMonths: (group: string, currency: string, from: string, to: string) =>
+      transactions.ledgerMonths(group, currency, from, to),
     rate: () => Promise.resolve(null),
     now: () => NOW,
   }
@@ -99,6 +101,8 @@ function stack() {
   queries.register(BudgetMonthQuery, createBudgetMonthHandler(dependencies))
   const operations = createBudgetOperations({
     set: (command) => commands.execute(command),
+    setMethod: (command) => commands.execute(command),
+    move: (command) => commands.execute(command),
     month: (query) => queries.execute(query),
   })
   /** Takes the member out of the household, as the owner's removal does. */

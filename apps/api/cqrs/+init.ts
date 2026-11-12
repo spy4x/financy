@@ -202,8 +202,15 @@ import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction
 import { transactionRestoreHandler } from "@api/cqrs/command-handlers/transaction-restore.ts"
 import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.ts"
 import { transactionLedgerHandler } from "@api/cqrs/query-handlers/transaction-ledger.ts"
-import { BudgetMonthQuery, BudgetSetCommand } from "@domain/budgets"
+import {
+  BudgetMethodSetCommand,
+  BudgetMonthQuery,
+  BudgetMoveCommand,
+  BudgetSetCommand,
+} from "@domain/budgets"
 import { budgetSetHandler } from "@api/cqrs/command-handlers/budget-set.ts"
+import { budgetMethodSetHandler } from "@api/cqrs/command-handlers/budget-method-set.ts"
+import { budgetMoveHandler } from "@api/cqrs/command-handlers/budget-move.ts"
 import { budgetMonthHandler } from "@api/cqrs/query-handlers/budget-month.ts"
 import {
   ImportCheckQuery,
@@ -361,6 +368,8 @@ commandBus.register(TransactionUpdateCommand, transactionUpdateHandler)
 commandBus.register(TransactionDeleteCommand, transactionDeleteHandler)
 commandBus.register(TransactionRestoreCommand, transactionRestoreHandler)
 commandBus.register(BudgetSetCommand, budgetSetHandler)
+commandBus.register(BudgetMethodSetCommand, budgetMethodSetHandler)
+commandBus.register(BudgetMoveCommand, budgetMoveHandler)
 commandBus.register(
   HouseholdUpdateSettingsCommand,
   createHouseholdUpdateSettingsHandler(householdDependencies),

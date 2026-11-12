@@ -13,6 +13,8 @@ export const budgetDependencies: BudgetHandlerDependencies = {
   },
   settings: db.householdSettings,
   ledger: (groupId, currency, from, to) => db.transaction.ledger(groupId, currency, from, to),
+  ledgerMonths: (groupId, currency, from, to) =>
+    db.transaction.ledgerMonths(groupId, currency, from, to),
   rate: async (base, quote, date) => {
     const lookup = await db.rates.lookup(base, quote, date)
     return lookup.found ? lookup.rate : null
