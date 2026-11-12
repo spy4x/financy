@@ -2363,4 +2363,38 @@ export default {
     "many": "{count} de catégories",
     "other": "{count} catégories",
   },
+  "AdminNav.entries": "Opérations",
+  "AdminEntries.title": "Opérations",
+  "AdminEntries.subtitle":
+    "Comment les foyers tiennent leurs comptes. Uniquement des chiffres et des dates : ni montants ni notes.",
+  "AdminEntries.retry": "Réessayer",
+  "AdminEntries.loading": "Chargement des chiffres",
+  "AdminEntries.none": "Aucune opération pour l’instant",
+  "AdminEntries.noneHint":
+    "Les chiffres s’afficheront dès qu’un foyer ajoutera sa première opération.",
+  "AdminEntries.keyNumbers": "Chiffres clés",
+  "AdminEntries.entries": "Opérations",
+  "AdminEntries.households": "Foyers",
+  "AdminEntries.householdsHint": "Avec au moins une opération",
+  "AdminEntries.lastEntry": "Dernière opération",
+  "AdminEntries.lastEntryHint": "D’après la date de l’opération",
+  "AdminEntries.byMonth": "6 derniers mois",
+  "AdminEntries.topHouseholds": "Foyers les plus actifs",
+  "AdminEntries.perMonth": "Opérations par mois",
+  "AdminEntries.entryCount": {
+    "one": "{count} opération",
+    "many": "{count} d’opérations",
+    "other": "{count} opérations",
+  },
+  "AdminEntries.householdCount": {
+    "one": "{count} foyer",
+    "many": "{count} de foyers",
+    "other": "{count} foyers",
+  },
+  "AdminEntries.monthCount": {
+    "one": "{month} : {count} opération",
+    "many": "{month} : {count} d’opérations",
+    "other": "{month} : {count} opérations",
+  },
+  "AdminEntries.householdLastEntry": "Dernière opération le {date}",
 } satisfies Catalog
