@@ -134,9 +134,13 @@ describe("the band of a bar (R15)", () => {
     expect(budgetBand(-500, 50000)).toEqual({ band: BudgetBand.GREEN, percent: 0 })
   })
 
-  it("compares the largest safe amounts exactly", () => {
+  it("compares the largest safe amounts exactly, where one unit past the limit is red", () => {
     expect(budgetBand(BUDGET_AMOUNT_MAX, BUDGET_AMOUNT_MAX)).toEqual({
       band: BudgetBand.ORANGE,
+      percent: 100,
+    })
+    expect(budgetBand(BUDGET_AMOUNT_MAX - 1, BUDGET_AMOUNT_MAX - 2)).toEqual({
+      band: BudgetBand.RED,
       percent: 100,
     })
   })
@@ -196,10 +200,14 @@ describe("the budget.set payload", () => {
     }
   })
 
-  it("takes a month read with or without a month, and refuses a range", () => {
+  it("takes a month read with or without a month, and refuses a day or a range", () => {
     expect(parseBudgetRequest(budgetMonthPayloadSchema, { groupId })).toEqual({ groupId })
     expect(parseBudgetRequest(budgetMonthPayloadSchema, { groupId, month: "2026-10" }))
       .toEqual({ groupId, month: "2026-10" })
+    expect(
+      codeOf(() => parseBudgetRequest(budgetMonthPayloadSchema, { groupId, month: "2026-10-01" })),
+    )
+      .toBe("INVALID_REQUEST")
     expect(codeOf(() =>
       parseBudgetRequest(budgetMonthPayloadSchema, {
         groupId,
