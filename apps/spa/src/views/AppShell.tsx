@@ -4,7 +4,14 @@ import { useSignal } from "@preact/signals"
 import { useLocation, useSearch } from "wouter-preact"
 import { canMutateNotes, canViewActivity } from "@domain/groups"
 import { pictureUrl, shownPictureId } from "@domain/identity"
-import { GROUP_PATHS, NOTE_PATHS, profilePath, SCREEN_PATHS } from "@ui/progressive.tsx"
+import {
+  GROUP_PATHS,
+  NOTE_PATHS,
+  profilePath,
+  SCREEN_PATHS,
+  TRANSACTION_PATHS,
+  withNext,
+} from "@ui/progressive.tsx"
 import { AppFrame, type ConnectionStatus, PublicFrame as PublicFrameScreen } from "@ui/frame.tsx"
 import { EmailBanner, showsEmailBanner } from "@ui/email-screen.tsx"
 import { type SearchChoice, SearchPalette } from "@ui/search-palette.tsx"
@@ -224,17 +231,29 @@ export function AppShell(
   const groups = groupsStore.groups.value
   const current = groups.find((group) => group.id === selectionStore.groupId.value)
   const shortcutsOpen = useSignal(false)
+  const search = useSearch()
+  // The quick entry returns to the page it was opened on; opened on itself, it keeps that page's
+  // own way back.
+  const newTransaction = () =>
+    navigate(
+      location.startsWith(TRANSACTION_PATHS.new)
+        ? `${location}${search ? `?${search}` : ""}`
+        : withNext(TRANSACTION_PATHS.new, `${location}${search ? `?${search}` : ""}`),
+    )
   const rows = spaShortcutRows({
     navigate,
     openShortcuts: () => shortcutsOpen.value = true,
     openNewNote: newNoteStore.show,
+    openNewTransaction: current && canMutateNotes(current.role) ? newTransaction : null,
     activityGroupId: current && canViewActivity(current.role) ? current.id : null,
     overviewPage: overviewPageActions.value,
     benchmarkPage: benchmarkPageActions.value,
   })
   useShortcuts(rows, singleKeys.on.value)
   const open = async (choice: SearchChoice) => {
-    if (choice.kind === "page") return navigate(choice.href)
+    if (choice.kind === "page") {
+      return choice.href === TRANSACTION_PATHS.new ? newTransaction() : navigate(choice.href)
+    }
     if (choice.kind === "new-note") return newNoteStore.show()
     if (choice.kind === "command") return runPageCommand(choice.id)
     if (choice.kind === "group") return navigate(GROUP_PATHS.settings(choice.groupId))

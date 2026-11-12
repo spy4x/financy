@@ -19,6 +19,7 @@ import {
   profilePath,
   SCREEN_PATHS,
   TAG_PATHS,
+  TRANSACTION_PATHS,
 } from "./progressive.tsx"
 import { DATA_EXPORT_ANCHOR } from "./profile-export.tsx"
 import { PICTURE_BUTTON_ID, pictureRule } from "./profile-picture.tsx"
@@ -334,6 +335,20 @@ function actionOptions(
         group: t.t(`Search.actions`),
         choice: { kind: "new-note" } as const,
       }]
+      : []),
+    ...(inGroup
+      ? [page("new-transaction", `Search.newTransaction`, TRANSACTION_PATHS.new, inGroup, [
+        `add expense`,
+        `add income`,
+        `spend`,
+        `payment`,
+        `refund`,
+        `entry`,
+        `log`,
+      ])]
+      : []),
+    ...(currentGroup
+      ? [page("transactions", `Search.openTransactions`, TRANSACTION_PATHS.list)]
       : []),
     ...(inGroup ? [page("new-tag", `Search.newTag`, TAG_PATHS.new, inGroup)] : []),
     ...(inGroup

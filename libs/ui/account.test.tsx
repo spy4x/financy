@@ -28,7 +28,13 @@ import { createFormatters } from "@spy4x/time/format"
 import { AppFrame, PublicFrame } from "./frame.tsx"
 import { railFocusRing } from "@spy4x/preact-system/rail"
 import { ProfileScreen, type ProfileScreenProps } from "./profile-screen.tsx"
-import { GROUP_PATHS, NOTE_PATHS, profilePath, SCREEN_PATHS } from "./progressive.tsx"
+import {
+  GROUP_PATHS,
+  NOTE_PATHS,
+  profilePath,
+  SCREEN_PATHS,
+  TRANSACTION_PATHS,
+} from "./progressive.tsx"
 import { TwoFactorProof } from "./two-factor.ts"
 
 const window = new Window({ url: "http://app.localhost/" })
@@ -354,7 +360,7 @@ describe("AppFrame", () => {
     expect(column()).not.toContain("max-w-3xl")
   })
 
-  it("lists Overview, Accounts, Notes, Activity and Groups, with Activity pointing at the selected group", async () => {
+  it("lists Overview, Transactions, Accounts, Activity and Groups, with Activity pointing at the selected group", async () => {
     await mount(
       <AppFrame
         user={ada}
@@ -365,9 +371,9 @@ describe("AppFrame", () => {
       </AppFrame>,
     )
     const rail = '[data-e2e=rail-shell-rail] a[data-e2e="rail-shell-entry"]'
-    expect(railLabels()).toEqual(["Overview", "Accounts", "Notes", "Activity", "Groups"])
+    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Activity", "Groups"])
     expect([...document.querySelectorAll(rail)].map((link) => link.getAttribute("href")))
-      .toEqual(["/overview", "/accounts", "/notes", "/groups/g-1/activity", "/groups"])
+      .toEqual(["/overview", "/transactions", "/accounts", "/groups/g-1/activity", "/groups"])
     expect(texts('[data-e2e=rail-shell-tabbar] [data-e2e="rail-shell-entry"]')).toHaveLength(4)
   })
 
@@ -390,9 +396,9 @@ describe("AppFrame", () => {
       </AppFrame>
     )
     await mount(frame(null))
-    expect(railLabels()).toEqual(["Overview", "Accounts", "Notes", "Groups"])
+    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Groups"])
     await rerender(frame("g-2"))
-    expect(railLabels()).toEqual(["Overview", "Accounts", "Notes", "Groups"])
+    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Groups"])
   })
 
   it("follows a plain click on a navigation entry through navigate, and leaves a Ctrl-click to the browser", async () => {
@@ -400,14 +406,15 @@ describe("AppFrame", () => {
     await mount(
       <AppFrame user={ada} onSignOut={() => {}} navigate={navigate.fn}>page</AppFrame>,
     )
-    const notes = '[data-e2e=rail-shell-rail] a[data-e2e="rail-shell-entry"][href="/notes"]'
+    const entries =
+      '[data-e2e=rail-shell-rail] a[data-e2e="rail-shell-entry"][href="/transactions"]'
 
-    expect(await click(notes)).toBe(true)
-    expect(await click(notes, { ctrlKey: true })).toBe(false)
-    expect(navigate.calls).toEqual([["/notes"]])
+    expect(await click(entries)).toBe(true)
+    expect(await click(entries, { ctrlKey: true })).toBe(false)
+    expect(navigate.calls).toEqual([["/transactions"]])
   })
 
-  it("marks a list as the page, a note inside it as its section, and nothing for the account's pages", async () => {
+  it("marks a list as the page, a transaction inside it as its section, and nothing for the account's pages", async () => {
     const at = (path: string) => (
       <AppFrame user={ada} onSignOut={() => {}} currentPath={path}>page</AppFrame>
     )
@@ -422,11 +429,11 @@ describe("AppFrame", () => {
     await rerender(at(SCREEN_PATHS.profile))
     expect(document.querySelectorAll(current)).toHaveLength(0)
 
-    await rerender(at(NOTE_PATHS.list))
-    expect(marked("page")).toEqual(["/notes"])
-    await rerender(at("/notes/abc"))
+    await rerender(at(TRANSACTION_PATHS.list))
+    expect(marked("page")).toEqual(["/transactions"])
+    await rerender(at("/transactions/abc"))
     expect(marked("page")).toEqual([])
-    expect(marked("true")).toEqual(["/notes"])
+    expect(marked("true")).toEqual(["/transactions"])
     await rerender(at("/groups/abc/pricing"))
     expect(marked("true")).toEqual(["/groups"])
   })
@@ -549,13 +556,13 @@ describe("AppFrame", () => {
     atTop()
   })
 
-  it("names the account entry after the person, heads its menu with their name and address, and offers Categories, Tags and Sign out with no Profile or Theme item", async () => {
+  it("names the account entry after the person, heads its menu with their name and address, and offers Categories, Tags, Notes and Sign out with no Profile or Theme item", async () => {
     await mount(<AppFrame user={ada} onSignOut={() => {}}>page</AppFrame>)
     expect(find(ACCOUNT).getAttribute("aria-label")).toBe("Account: Ada Lovelace")
     expect(find("[data-e2e=account-menu-header]").textContent).toContain(
       "Ada Lovelaceada@example.com",
     )
-    expect(menuItems(ACCOUNT)).toEqual([HEADER, "Categories", "Tags", "Sign out"])
+    expect(menuItems(ACCOUNT)).toEqual([HEADER, "Categories", "Tags", "Notes", "Sign out"])
     expect(document.querySelector("[data-e2e=app-shell-sheet-theme]")).toBe(null)
   })
 
