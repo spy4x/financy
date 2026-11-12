@@ -1567,7 +1567,7 @@ CREATE INDEX idx_household_settings_updated_by ON household_settings (updated_by
 CREATE INDEX idx_household_settings_base_currency ON household_settings (base_currency);
 
 -- Accounts: Financy's first finance aggregate (migration 2026_12_16_0003_accounts.sql explains
--- each column).
+-- each column; 2026_12_16_0006_crypto_accounts.sql adds kind 7, crypto).
 CREATE TABLE accounts (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -1586,8 +1586,12 @@ CREATE TABLE accounts (
     deleted_at TIMESTAMPTZ(3),
     CONSTRAINT accounts_group_id_id_key UNIQUE (group_id, id),
     CONSTRAINT accounts_name_check CHECK (length(btrim(name)) BETWEEN 1 AND 60),
-    CONSTRAINT accounts_kind_check CHECK (kind BETWEEN 1 AND 6),
-    CONSTRAINT accounts_currency_check CHECK (currency ~ '^[A-Z]{3}$'),
+    CONSTRAINT accounts_kind_check CHECK (kind BETWEEN 1 AND 7),
+    -- Kind 7 is crypto: it holds a listed coin (2026_12_16_0006_crypto_accounts.sql), and only it may.
+    CONSTRAINT accounts_currency_check CHECK (
+        CASE WHEN kind = 7 THEN currency IN ('BTC', 'ETH')
+        ELSE currency ~ '^[A-Z]{3}$' AND currency NOT IN ('BTC', 'ETH') END
+    ),
     CONSTRAINT accounts_starting_balance_check
         CHECK (starting_balance BETWEEN -9007199254740991 AND 9007199254740991),
     CONSTRAINT accounts_default_live_check

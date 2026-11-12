@@ -119,6 +119,8 @@ export default {
   "Reason.CATEGORY_REQUIRED":
     "Ein veröffentlichter Artikel braucht eine Kategorie. Wähle eine aus oder blende den Artikel vorher aus.",
   "Reason.CHANNEL_NOT_FOUND": "Diesen Kanal gibt es nicht mehr.",
+  "Reason.CURRENCY_KIND_MISMATCH":
+    "Ein Krypto-Konto führt eine Kryptowährung, und nur ein Krypto-Konto kann das. Wähle eine Währung, die zur Kontoart passt.",
   "Reason.FILE_CONTENT": "Der Inhalt dieser Datei passt nicht zu ihrem Dateityp.",
   "Reason.FILE_MISSING":
     "Es ist keine Datei angekommen. Wähle eine aus und versuche es noch einmal.",

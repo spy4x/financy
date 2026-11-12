@@ -104,6 +104,8 @@ export default {
   "Reason.CATEGORY_NOT_FOUND": "这个分类已不存在，请选择其他分类。",
   "Reason.CATEGORY_REQUIRED": "已发布的商品需要一个分类。请选择一个分类，或先隐藏该商品。",
   "Reason.CHANNEL_NOT_FOUND": "这个渠道已不存在。",
+  "Reason.CURRENCY_KIND_MISMATCH":
+    "加密货币账户只能使用加密货币，加密货币也只能用于加密货币账户。请选择与账户类型相符的币种。",
   "Reason.FILE_CONTENT": "文件内容与其类型不符。",
   "Reason.FILE_MISSING": "没有收到文件，请选择文件后重试。",
   "Reason.FILE_TOO_LARGE": "文件太大了。",

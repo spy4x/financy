@@ -250,6 +250,77 @@ describe("AccountEditorScreen", () => {
     expect(document.body.textContent).toContain("Choose a currency first")
   })
 
+  const CRYPTO_FORM: AccountFormValue = { ...NEW_FORM, kind: AccountKind.CRYPTO, currency: "BTC" }
+
+  it("stores 0.5 BTC as 50000000 and refuses a ninth decimal (R2)", async () => {
+    const seen: AccountFormValue[] = []
+    await mount(<Editor start={CRYPTO_FORM} seen={seen} />)
+
+    await type(BALANCE, "0.5")
+    await type(BALANCE, "0.123456789")
+
+    expect(seen.map((value) => value.startingBalance)).toEqual([50_000_000])
+    expect(find(BALANCE_STATUS).textContent).toBe("BTC takes at most 8 decimals.")
+  })
+
+  it("refuses a BTC balance past the safe bound with a message, never a rounded amount (R3)", async () => {
+    const seen: AccountFormValue[] = []
+    await mount(<Editor start={CRYPTO_FORM} seen={seen} />)
+
+    await type(BALANCE, "90071992.54740991")
+    await type(BALANCE, "90071992.54740992")
+
+    expect(seen.map((value) => value.startingBalance)).toEqual([Number.MAX_SAFE_INTEGER])
+    expect(find(BALANCE_STATUS).textContent).toBe("Type an amount, like 12.34.")
+  })
+
+  /** The codes the open currency picker lists for `query`. */
+  async function offered(query: string): Promise<string[]> {
+    await type(CURRENCY, query)
+    return Array.from(document.querySelectorAll("[role=option]"), (option) => option.textContent!)
+  }
+
+  it("offers only the listed coins on a crypto account, and only ISO currencies on any other", async () => {
+    await mount(<Editor start={{ ...CRYPTO_FORM, currency: null }} seen={[]} />)
+    expect((await offered("Bitcoin")).join()).toContain("BTC")
+    expect(await offered("Euro")).toEqual([])
+    await act(() => render(null, root!))
+
+    await mount(<Editor start={NEW_FORM} seen={[]} />)
+    expect((await offered("Euro")).join()).toContain("EUR")
+    expect(await offered("Bitcoin")).toEqual([])
+  })
+
+  /** Picks `kind` in the kind select the way a person does. */
+  async function pickKind(kind: AccountKind): Promise<void> {
+    const select = find<HTMLSelectElement>("[data-e2e=account-kind]")
+    select.value = String(kind)
+    await act(() => {
+      select.dispatchEvent(new window.Event("change", { bubbles: true }) as unknown as Event)
+    })
+  }
+
+  it("empties a currency and its amount that the new kind cannot hold, and keeps one it can", async () => {
+    const seen: AccountFormValue[] = []
+    await mount(
+      <Editor start={{ ...NEW_FORM, currency: "USD", startingBalance: 1234 }} seen={seen} />,
+    )
+
+    await pickKind(AccountKind.BANK)
+    expect(seen.at(-1)).toMatchObject({
+      kind: AccountKind.BANK,
+      currency: "USD",
+      startingBalance: 1234,
+    })
+
+    await pickKind(AccountKind.CRYPTO)
+    expect(seen.at(-1)).toMatchObject({
+      kind: AccountKind.CRYPTO,
+      currency: null,
+      startingBalance: null,
+    })
+  })
+
   it("shows a viewer the account read-only, with no Save and no menu", async () => {
     const saved = account({
       id: "019a0000-0000-7000-8000-0000000000a1",
@@ -345,6 +416,20 @@ describe("AccountsScreen", () => {
     expect(balance(wallet.id)).not.toContain("500.")
     expect(balance(checking.id)).toContain("12.34")
     expect(balance(dinars.id)).toContain("1.234")
+  })
+
+  it("shows a coin's balance with its 8 decimals: 50000000 BTC units is 0.50000000", async () => {
+    const coins = account({
+      id: "019a0000-0000-7000-8000-0000000000b6",
+      name: "Cold wallet",
+      kind: AccountKind.CRYPTO,
+      currency: "BTC",
+      balance: 50_000_000,
+    })
+    await mount(<AccountsScreen {...listDefaults} accounts={[coins]} />)
+
+    expect(find(`[data-e2e=account-${coins.id}] [data-e2e=account-balance]`).textContent)
+      .toContain("0.50000000")
   })
 
   it("groups accounts by kind in a fixed order, cash first and liabilities last, and marks the default", async () => {

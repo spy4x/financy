@@ -37,6 +37,7 @@ const REASONS: Record<ErrorReason, true> = {
   CATEGORY_KIND_MISMATCH: true,
   CATEGORY_TREE_INVALID: true,
   CHANNEL_NOT_FOUND: true,
+  CURRENCY_KIND_MISMATCH: true,
   CURRENCY_LOCKED: true,
   expired: true,
   FILE_CONTENT: true,

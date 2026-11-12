@@ -13,6 +13,7 @@ import {
   AccountUpdateCommand,
   assertCanReadAccounts,
   assertCanWriteAccounts,
+  assertKindFitsCurrency,
   householdTotal,
 } from "@domain/accounts"
 import type { HouseholdSettings, RateLookup } from "@domain/money"
@@ -50,6 +51,7 @@ export function createAccountCreateHandler(
   return async ({ data, allowance }) => {
     assertGated(allowance, "AccountCreateCommand")
     assertCanWriteAccounts(await groups.roleOf(data.groupId, data.actor.userId))
+    assertKindFitsCurrency(data.kind, data.currency)
     return await accounts.create(
       {
         allowance,
@@ -71,6 +73,7 @@ export function createAccountUpdateHandler(
 ): CommandHandler<AccountUpdateCommand> {
   return async ({ data }) => {
     assertCanWriteAccounts(await groups.roleOf(data.groupId, data.actor.userId))
+    assertKindFitsCurrency(data.kind, data.currency)
     const account = await accounts.update(
       {
         groupId: data.groupId,

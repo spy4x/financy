@@ -616,6 +616,47 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
+    it("refuses a crypto account in a fiat currency and a coin on a bank account, and 0.5 BTC past the safe bound (R3)", async () => {
+      const s = stack()
+      const as = open(s, OWNER)
+      const crypto = { ...create, kind: AccountKind.CRYPTO, currency: "BTC" }
+
+      for (const payload of [{ ...crypto, currency: "USD" }, { ...create, currency: "BTC" }]) {
+        expect(await as.command("account.create", payload)).toMatchObject({
+          kind: "server.error",
+          code: "bad_request",
+          details: { code: "CURRENCY_KIND_MISMATCH" },
+        })
+      }
+      expect(
+        await as.command("account.create", {
+          ...crypto,
+          startingBalance: Number.MAX_SAFE_INTEGER + 1,
+        }),
+      ).toMatchObject({ kind: "server.error", details: { code: "INVALID_REQUEST" } })
+      expect(s.accounts.accounts.size).toBe(0)
+
+      expect(await as.command("account.create", { ...crypto, startingBalance: 50_000_000 }))
+        .toMatchObject({
+          kind: "server.result",
+          payload: { account: { currency: "BTC", startingBalance: 50_000_000 } },
+        })
+      as.shutdown()
+    })
+
+    it("refuses a viewer's crypto account as forbidden, before its currency is looked at", async () => {
+      const s = stack()
+      const as = open(s, VIEWER)
+
+      for (const currency of ["BTC", "USD"]) {
+        expect(
+          await as.command("account.create", { ...create, kind: AccountKind.CRYPTO, currency }),
+        ).toMatchObject({ kind: "server.error", details: { code: "ROLE_INSUFFICIENT" } })
+      }
+      expect(s.accounts.accounts.size).toBe(0)
+      as.shutdown()
+    })
+
     it("answers a retried create with the first account", async () => {
       const s = stack()
       const as = open(s, OWNER)

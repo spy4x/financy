@@ -2314,6 +2314,7 @@ export default {
   "AccountKinds.bank": "Banque",
   "AccountKinds.card": "Carte",
   "AccountKinds.cash": "Espèces",
+  "AccountKinds.crypto": "Crypto",
   "AccountKinds.liability": "Dette",
   "AccountKinds.savings": "Épargne",
   "AccountMessages.change": "Le compte n’a pas pu être modifié.",

@@ -289,4 +289,39 @@ test.describe("accounts", () => {
       await cleanup(request, user)
     }
   })
+  test("a crypto account offers only coins, stores 0.5 BTC as 50000000 and lists it with 8 decimals", async ({ browser, request }) => {
+    const user = "e2e_accounts_crypto@example.com"
+    await cleanup(request, user)
+    const context = await browser.newContext({ baseURL: test.info().project.use.baseURL })
+    try {
+      await signUp(request, user)
+      const page = await context.newPage()
+      await signInOnline(page, user)
+      const groupId = await household(page, request, "Coins")
+      await openAccounts(page, "Coins")
+
+      await page.locator("[data-e2e=account-new]").click()
+      await expect(page).toHaveURL("/accounts/new")
+      await page.locator("[data-e2e=account-kind]").selectOption({ label: "Crypto" })
+      const currency = page.locator("[data-e2e=account-currency-field] input")
+      await currency.fill("Euro")
+      // The kind select has options of its own, so only the currency field's are counted.
+      const offered = page.locator("[data-e2e=account-currency-field]").getByRole("option")
+      await expect(offered).toHaveCount(0)
+      await currency.fill("Bitcoin")
+      await expect(offered).toHaveCount(1)
+      await fillAccount(page, { name: "Cold wallet", currency: "BTC", balance: "0.5" })
+      await saveAndBack(page)
+
+      const [stored] = await serverAccounts(page, groupId)
+      expect(stored).toMatchObject({ kind: 7, currency: "BTC", startingBalance: 50_000_000 })
+      await expect(
+        page.locator("li", { has: page.getByRole("link", { name: "Cold wallet", exact: true }) })
+          .locator("[data-e2e=account-balance]"),
+      ).toContainText("0.50000000")
+    } finally {
+      await context.close()
+      await cleanup(request, user)
+    }
+  })
 })

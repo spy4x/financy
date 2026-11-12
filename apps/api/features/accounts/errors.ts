@@ -36,6 +36,10 @@ const ERROR_DEFINITIONS: Record<AccountFeatureErrorCode, ErrorDefinition> = {
   ACCOUNT_LIMIT_REACHED: { status: 409, message: "The household cannot hold more accounts" },
   ACCOUNT_NOT_FOUND: { status: 404, message: "Account not found" },
   AUTH_REQUIRED: { status: 401, message: "Authentication required" },
+  CURRENCY_KIND_MISMATCH: {
+    status: 400,
+    message: "A crypto account holds a listed coin, and only a crypto account can",
+  },
   CURRENCY_LOCKED: { status: 409, message: "The account's currency is fixed once it has entries" },
   GROUP_NOT_FOUND: { status: 404, message: "Group not found" },
   ID_ALREADY_EXISTS: { status: 409, message: "Account id is already in use" },

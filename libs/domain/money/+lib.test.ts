@@ -1,14 +1,40 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
+import { type } from "arktype"
 import { GroupRole } from "@domain/groups"
+import { currencyOptions } from "@spy4x/platform/universal/money-core"
 import {
+  accountCurrencyCode,
+  amountDecimals,
   assertCanChangeHouseholdSettings,
   assertCanReadHouseholdSettings,
+  COINS,
   HouseholdError,
   householdUpdateSettingsPayloadSchema,
   parseHouseholdRequest,
   readHouseholdSettingsView,
 } from "./+lib.ts"
+
+describe("the coin list", () => {
+  it("passes ts-libs' custom currency rules, so no coin code is an ISO 4217 code", () => {
+    const codes = currencyOptions("en", COINS).map((option) => option.code)
+    expect(codes).toEqual(expect.arrayContaining(["BTC", "ETH"]))
+    expect(() => currencyOptions("en", [...COINS, { code: "USD", name: "Fake", decimals: 2 }]))
+      .toThrow(RangeError)
+  })
+
+  it("gives BTC and ETH 8 decimals and every ISO currency its table's", () => {
+    expect([amountDecimals("BTC"), amountDecimals("ETH")]).toEqual([8, 8])
+    expect([amountDecimals("JPY"), amountDecimals("USD"), amountDecimals("BHD")]).toEqual([0, 2, 3])
+  })
+
+  it("accepts an ISO code or a listed coin as an account's currency, and nothing else", () => {
+    for (const code of ["USD", "BTC", "ETH"]) expect(accountCurrencyCode(code)).toBe(code)
+    for (const code of ["DOGE", "btc", "XYZ"]) {
+      expect(accountCurrencyCode(code)).toBeInstanceOf(type.errors)
+    }
+  })
+})
 
 const groupId = "7b6d8d6c-1af5-4f04-8ae4-b1ee5d111002"
 

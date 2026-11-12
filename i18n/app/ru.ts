@@ -2322,6 +2322,7 @@ export default {
   "AccountKinds.bank": "Банк",
   "AccountKinds.card": "Карта",
   "AccountKinds.cash": "Наличные",
+  "AccountKinds.crypto": "Криптовалюта",
   "AccountKinds.liability": "Долг",
   "AccountKinds.savings": "Накопления",
   "AccountMessages.change": "Не удалось изменить счёт.",

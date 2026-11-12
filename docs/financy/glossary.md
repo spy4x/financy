@@ -26,6 +26,7 @@ word where the language has a pair: ru аккаунт and счёт, zh-CN 账号
 | savings                 | накопления          | ahorros                | Ersparnisse       | poupança           | مدخرات              | 储蓄     | 貯蓄           | épargne             |
 | asset                   | актив               | activo                 | Vermögenswert     | ativo              | أصل                 | 资产     | 資産           | actif               |
 | liability (debt)        | долг                | deuda                  | Schulden          | dívida             | دَين                 | 负债     | 負債           | dette               |
+| crypto (kind; a coin)   | криптовалюта        | cripto                 | Krypto            | cripto             | عملات مشفّرة         | 加密货币 | 暗号資産       | crypto              |
 | transaction             | операция            | movimiento             | Buchung           | lançamento         | معاملة              | 交易     | 取引           | opération           |
 | income                  | доход               | ingreso                | Einnahme          | receita            | دخل                 | 收入     | 収入           | revenu              |
 | expense                 | расход              | gasto                  | Ausgabe           | despesa            | مصروف               | 支出     | 支出           | dépense             |

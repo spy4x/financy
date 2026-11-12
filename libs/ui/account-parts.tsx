@@ -8,7 +8,7 @@ export interface AccountRow {
   id: string
   name: string
   kind: AccountKind
-  /** The ISO 4217 code: every amount of the account is in its smallest unit. */
+  /** The ISO 4217 code, or a coin's: every amount of the account is in its smallest unit. */
   currency: string
   /** What the account held when tracking started, in the currency's smallest unit. */
   startingBalance: number
@@ -26,6 +26,7 @@ const KIND_ICONS = {
   [AccountKind.SAVINGS]: ICONS["piggy-bank"].Icon,
   [AccountKind.ASSET]: ICONS["briefcase"].Icon,
   [AccountKind.LIABILITY]: ICONS["hand-coins"].Icon,
+  [AccountKind.CRYPTO]: ICONS["wallet"].Icon,
 } as const
 
 /** The `app` catalog key of each kind's name. */
@@ -36,6 +37,7 @@ const KIND_KEYS = {
   [AccountKind.SAVINGS]: `AccountKinds.savings`,
   [AccountKind.ASSET]: `AccountKinds.asset`,
   [AccountKind.LIABILITY]: `AccountKinds.liability`,
+  [AccountKind.CRYPTO]: `AccountKinds.crypto`,
 } as const
 
 /** The kind's name in `t`'s language: "Cash", "Bank". */

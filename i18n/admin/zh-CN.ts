@@ -1972,6 +1972,7 @@ export default {
   "AdminAccounts.kindBank": "银行",
   "AdminAccounts.kindCard": "卡",
   "AdminAccounts.kindCash": "现金",
+  "AdminAccounts.kindCrypto": "加密货币",
   "AdminAccounts.kindLiability": "负债",
   "AdminAccounts.kindSavings": "储蓄",
   "AdminAccounts.loading": "正在加载数据",

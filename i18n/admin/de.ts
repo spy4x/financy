@@ -2197,6 +2197,7 @@ export default {
   "AdminAccounts.kindBank": "Bank",
   "AdminAccounts.kindCard": "Karte",
   "AdminAccounts.kindCash": "Bargeld",
+  "AdminAccounts.kindCrypto": "Krypto",
   "AdminAccounts.kindLiability": "Schulden",
   "AdminAccounts.kindSavings": "Ersparnisse",
   "AdminAccounts.loading": "Zahlen werden geladen",

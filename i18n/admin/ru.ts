@@ -2331,6 +2331,7 @@ export default {
   "AdminAccounts.kindBank": "Банк",
   "AdminAccounts.kindCard": "Карта",
   "AdminAccounts.kindCash": "Наличные",
+  "AdminAccounts.kindCrypto": "Криптовалюта",
   "AdminAccounts.kindLiability": "Долг",
   "AdminAccounts.kindSavings": "Накопления",
   "AdminAccounts.loading": "Загружаем цифры",

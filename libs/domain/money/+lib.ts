@@ -1,6 +1,11 @@
 import { type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
-import { currencyCode, type ExchangeRate } from "@spy4x/platform/universal/money"
+import {
+  currencyCode,
+  currencyDecimals,
+  type CustomCurrency,
+  type ExchangeRate,
+} from "@spy4x/platform/universal/money"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
 import type { Actor } from "@domain/identity"
@@ -21,6 +26,43 @@ export const ECB_BASE = "EUR"
 
 /** The first day of the ECB's reference rates. Nothing earlier is fetched. */
 export const ECB_FIRST_DATE = "1999-01-04"
+
+/** A crypto coin Financy accepts as an account's currency, with its id at the price source. */
+export interface Coin extends CustomCurrency {
+  /** The coin's id at CoinGecko, the price source: `bitcoin`, `ethereum`. */
+  coingeckoId: string
+}
+
+/**
+ * The coins a crypto account may hold. Decimals are the coin's own, capped at 8, so every amount
+ * stays a safe integer: ETH is stored at 8, not its chain's 18. A code is never an ISO 4217 code,
+ * which ts-libs `currencyOptions` refuses (the test runs every row through it). Adding a coin is
+ * one line here and the same code in the `accounts_currency_check` migration.
+ */
+export const COINS: readonly Coin[] = [
+  { code: "BTC", name: "Bitcoin", decimals: 8, coingeckoId: "bitcoin" },
+  { code: "ETH", name: "Ethereum", decimals: 8, coingeckoId: "ethereum" },
+]
+
+/** Whether `code` is a listed coin. */
+export function isCoin(code: string): boolean {
+  return COINS.some((coin) => coin.code === code)
+}
+
+/** A listed coin's code, for an arktype schema. */
+export const coinCode = type.enumerated(...COINS.map((coin) => coin.code))
+
+/** An ISO 4217 code or a listed coin: every currency an account may hold. */
+export const accountCurrencyCode = currencyCode.or(coinCode)
+
+/**
+ * The decimals of any currency Financy accepts: a listed coin's own, else the ISO 4217 table's.
+ * Every amount of an account is scaled and formatted with this, never with `Intl`'s guess, which
+ * gives `BTC` two.
+ */
+export function amountDecimals(code: string): number {
+  return COINS.find((coin) => coin.code === code)?.decimals ?? currencyDecimals(code)
+}
 
 /**
  * The sources a rate row names, as the ts-libs clients name themselves: the ECB through

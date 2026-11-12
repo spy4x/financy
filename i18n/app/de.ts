@@ -2196,6 +2196,7 @@ export default {
   "AccountKinds.bank": "Bank",
   "AccountKinds.card": "Karte",
   "AccountKinds.cash": "Bargeld",
+  "AccountKinds.crypto": "Krypto",
   "AccountKinds.liability": "Schulden",
   "AccountKinds.savings": "Ersparnisse",
   "AccountMessages.change": "Das Konto konnte nicht geändert werden.",

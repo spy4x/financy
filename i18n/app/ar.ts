@@ -2386,6 +2386,7 @@ export default {
   "AccountKinds.bank": "بنك",
   "AccountKinds.card": "بطاقة",
   "AccountKinds.cash": "نقد",
+  "AccountKinds.crypto": "عملات مشفّرة",
   "AccountKinds.liability": "دَين",
   "AccountKinds.savings": "مدخرات",
   "AccountMessages.change": "تعذّر تغيير الحساب.",

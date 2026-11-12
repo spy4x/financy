@@ -9,6 +9,7 @@ import { MoneyDisplay } from "@spy4x/preact-ui/money-display"
 import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
 import { IconEllipsisVertical, IconPlus } from "@spy4x/preact-icons"
 import { ACCOUNT_KINDS, ACCOUNT_RESTORE_DAYS, type HouseholdTotal } from "@domain/accounts"
+import { amountDecimals } from "@domain/money"
 import {
   ListCard,
   ListEmpty,
@@ -338,7 +339,12 @@ function Row(
         </div>
       </div>
       <span class="shrink-0 text-end font-medium" data-e2e="account-balance">
-        <MoneyDisplay amount={account.balance} currency={account.currency} tone="negative" />
+        <MoneyDisplay
+          amount={account.balance}
+          currency={account.currency}
+          decimals={amountDecimals(account.currency)}
+          tone="negative"
+        />
       </span>
       {children && <div class="relative -my-2 -me-2 shrink-0">{children}</div>}
     </li>
