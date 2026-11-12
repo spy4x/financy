@@ -122,7 +122,7 @@ function Body(
           />
         </KpiGrid>
       </section>
-      <div class="grid gap-4 lg:grid-cols-2 lg:items-start">
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
         <Card data-e2e="admin-entries-months">
           <CardHeader title={t.t(`AdminEntries.byMonth`)} headingLevel={2} />
           <CardBody>
@@ -152,15 +152,15 @@ function Body(
             <ul class="flex flex-col divide-y divide-subtle">
               {overview.topHouseholds.map((household) => (
                 <li key={household.groupId} class="flex flex-col gap-2 py-3">
-                  <div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                  <div class="flex min-w-0 items-center gap-3">
                     <Link
                       href={ADMIN_GROUP_PATHS.group(household.groupId)}
                       navigate={navigate}
-                      class="inline-flex min-h-11 min-w-0 items-center truncate font-medium sm:min-h-9"
+                      class="inline-flex min-h-11 min-w-0 items-center font-medium sm:min-h-9"
                     >
-                      <bdi>{household.groupName}</bdi>
+                      <bdi class="min-w-0 truncate">{household.groupName}</bdi>
                     </Link>
-                    <span class="ms-auto text-sm tabular-nums">
+                    <span class="ms-auto shrink-0 text-sm tabular-nums">
                       {t.t(`AdminEntries.entryCount`, { count: household.entries })}
                     </span>
                   </div>
@@ -175,7 +175,7 @@ function Body(
                           count ? `bg-selected-soft` : `bg-track`
                         }`}
                       >
-                        <span aria-hidden="true" class="text-xs text-muted">
+                        <span aria-hidden="true" class={`text-xs ${count ? `` : `text-muted`}`}>
                           {months[index].short}
                         </span>
                         <span
