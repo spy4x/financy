@@ -9,6 +9,8 @@ import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.t
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { CategoryError, type CategoryIcon, CategoryKind } from "@domain/categories"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
+import { TransactionError, TransactionKind } from "@domain/transactions"
+import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
 import { team, withSchema } from "./group-team.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
@@ -193,6 +195,83 @@ for (const change of ["removal", "demotion"] as const) {
         `
         expect(rows).toEqual(
           write === "create" ? [] : [{ name: "Food", version: 1, archived: false }],
+        )
+      })
+    })
+  }
+}
+
+const TRANSACTION_WRITES = ["create", "update", "delete", "restore"] as const
+
+for (const change of ["removal", "demotion"] as const) {
+  for (const write of TRANSACTION_WRITES) {
+    Deno.test(`entry ${write}: refused when a ${change} commits while the write waits`, async () => {
+      await withSchema(async (sql) => {
+        const { groupId, owner, editor } = await team(sql)
+        const accountId = uuidV7()
+        const categoryId = uuidV7()
+        await new PostgresAccountRepository(sql).create({
+          groupId,
+          id: accountId,
+          name: "Main",
+          kind: AccountKind.BANK,
+          currency: "USD",
+          startingBalance: 0,
+          allowance: null,
+        }, owner)
+        await new PostgresCategoryRepository(sql).create({
+          groupId,
+          id: categoryId,
+          name: "Food",
+          kind: CategoryKind.EXPENSE,
+          icon: "utensils" as CategoryIcon,
+          color: "#c2410c",
+          parentId: null,
+          allowance: null,
+        }, owner)
+        const transactions = new PostgresTransactionRepository(sql)
+        const id = uuidV7()
+        const fields = {
+          accountId,
+          categoryId,
+          kind: TransactionKind.EXPENSE,
+          amount: 1234,
+          currency: "USD",
+          memo: "",
+          date: "2026-11-05",
+        }
+        if (write !== "create") {
+          await transactions.create({ groupId, id, ...fields, allowance: null }, editor)
+        }
+        if (write === "restore") {
+          await transactions.delete({ groupId, id, expectedVersion: 1 }, editor)
+        }
+
+        const held = await holdMemberChange(sql, groupId, owner, editor, change)
+        const at = { groupId, id, expectedVersion: 1 }
+        const writing = write === "create"
+          ? transactions.create({ groupId, id, ...fields, allowance: null }, editor)
+          : write === "update"
+          ? transactions.update({ ...at, ...fields, memo: "Late" }, editor)
+          : write === "delete"
+          ? transactions.delete(at, editor)
+          : transactions.restore({ groupId, id, allowance: null }, editor)
+        const outcome = writing.then(() => null, (error) => error)
+
+        expect(await stillWaiting(outcome)).toBe(true)
+        held.release()
+        await held.committed
+
+        const error = await outcome
+        expect(error).toBeInstanceOf(TransactionError)
+        expect((error as TransactionError).code).toBe(EXPECTED_CODE[change])
+        const rows = await sql`
+          SELECT memo, version, deleted_at IS NOT NULL AS deleted FROM transactions WHERE id = ${id}
+        `
+        expect(rows).toEqual(
+          write === "create"
+            ? []
+            : [{ memo: "", version: write === "restore" ? 2 : 1, deleted: write === "restore" }],
         )
       })
     })
