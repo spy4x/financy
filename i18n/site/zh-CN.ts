@@ -546,11 +546,11 @@ export default {
   "FeatureAccounts.nav": "账户",
   "FeatureAccounts.title": "每个账户都有自己的币种",
   "Features.description":
-    "Financy 现状：任意币种的账户、带角色的家庭、实时同步、离线应用、导出、九种语言和自托管。接下来是交易。",
+    "Financy 现状：任意币种的账户和交易、带角色的家庭、实时同步、离线应用、导出、九种语言和自托管。",
   "Features.title": "Financy 功能：账户、家庭、同步、离线",
   "FeaturesHero.lead":
     "Financy 正在重建。今天已经可用的：任意币种的账户，以及它下面的基础：登录、按角色共享访问、实时更新、离线应用、导出、九种语言和你自己的服务器。每一节都链接到它的代码。",
-  "FeaturesHero.note": "交易和预算还没有做好。<status>看看重建进行到哪一步了</status>。",
+  "FeaturesHero.note": "转账和预算还没有做好。<status>看看重建进行到哪一步了</status>。",
   "HomeFaq.useAnswer": "还不行。登录、家庭、同步和任意币种的账户已经可用；交易正在开发中。",
   "Catalog.title": "商品目录",
   "Catalog.intro": "在售的全部商品，附价格、尺码和颜色。",
@@ -575,6 +575,15 @@ export default {
   "FeatureCategories.fact3": "查看者可以阅读分类；只有编辑者及以上可以更改",
   "FeatureCategories.code": "阅读分类代码",
   "FeatureTierSettled.lead":
-    "这些部分已经可用，并在 CI 中测试。任意币种的账户及其分类已经上线；交易是下一步。",
+    "这些部分已经可用，并在 CI 中测试。任意币种的账户、分类和交易已经上线；预算是下一步。",
   "HomeStatus.categories": "带一级子分类的分类",
+  "FeatureTransactions.nav": "交易",
+  "FeatureTransactions.title": "每一笔支出和收入，都按你付款的币种记录",
+  "FeatureTransactions.lead":
+    "输入金额，按 Enter。账户、分类和日期取自你的上一笔交易。用另一种币种付款时，Financy 按当天汇率换算，你也可以填入银行实际扣的金额。",
+  "FeatureTransactions.fact1": "两个金额都会保留，换算过的会有标记",
+  "FeatureTransactions.fact2": "搜索和筛选在设备上的副本中进行，所以列表离线也能用",
+  "FeatureTransactions.fact3": "支出分类中的收入就是退款",
+  "FeatureTransactions.fact4": "删除的交易可在 30 天内恢复",
+  "FeatureTransactions.code": "阅读交易代码",
 } satisfies Catalog

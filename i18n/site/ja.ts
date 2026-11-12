@@ -593,12 +593,12 @@ export default {
   "FeatureAccounts.nav": "口座",
   "FeatureAccounts.title": "口座ごとに、それぞれの通貨で",
   "Features.description":
-    "Financy の現在：どの通貨でも使える口座、ロール付きの世帯、リアルタイム同期、オフラインアプリ、エクスポート、9 言語、セルフホスト。次は取引です。",
+    "Financy の現在：どの通貨でも使える口座と取引、ロール付きの世帯、リアルタイム同期、オフラインアプリ、エクスポート、9 言語、セルフホスト。",
   "Features.title": "Financy の機能：口座、世帯、同期、オフライン",
   "FeaturesHero.lead":
     "Financy は作り直しの最中です。今日使えるもの：どの通貨でも使える口座と、それを支える土台。ログイン、ロールによる共有、リアルタイムの更新、オフラインアプリ、エクスポート、9 言語、そしてあなた自身のサーバー。各セクションから、そのコードに飛べます。",
   "FeaturesHero.note":
-    "取引と予算はまだできていません。<status>作り直しの進み具合を見る</status>。",
+    "振替と予算はまだできていません。<status>作り直しの進み具合を見る</status>。",
   "HomeFaq.useAnswer":
     "まだです。ログイン、世帯、同期、どの通貨でも使える口座は動いています。取引はいま作っているところです。",
   "Catalog.title": "カタログ",
@@ -626,6 +626,16 @@ export default {
   "FeatureCategories.fact3": "閲覧者はカテゴリを読めます。変更できるのは編集者以上だけです",
   "FeatureCategories.code": "カテゴリのコードを読む",
   "FeatureTierSettled.lead":
-    "これらは動いていて、CI でテストされています。どの通貨の口座も、そのカテゴリも使えます。取引は次に来ます。",
+    "これらは動いていて、CI でテストされています。どの通貨の口座も、そのカテゴリも、取引も使えます。予算は次に来ます。",
   "HomeStatus.categories": "1階層のサブカテゴリを持てるカテゴリ",
+  "FeatureTransactions.nav": "取引",
+  "FeatureTransactions.title": "支出も収入も、支払った通貨のまま",
+  "FeatureTransactions.lead":
+    "金額を入力して Enter を押すだけ。口座、カテゴリ、日付は前回の取引から入ります。別の通貨で払ったときは、Financy がその日のレートで換算します。銀行が引き落とした額を入力することもできます。",
+  "FeatureTransactions.fact1": "両方の金額を保存し、換算した金額には印が付きます",
+  "FeatureTransactions.fact2":
+    "検索とフィルターは端末内のコピーで動くので、オフラインでも一覧を使えます",
+  "FeatureTransactions.fact3": "支出カテゴリに入れた収入は返金になります",
+  "FeatureTransactions.fact4": "削除した取引は 30 日間は元に戻せます",
+  "FeatureTransactions.code": "取引のコードを読む",
 } satisfies Catalog

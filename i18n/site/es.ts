@@ -615,12 +615,12 @@ export default {
   "FeatureAccounts.nav": "Cuentas",
   "FeatureAccounts.title": "Cada cuenta en su propia moneda",
   "Features.description":
-    "Financy hoy: cuentas en cualquier moneda, hogares con roles, sincronización, app sin conexión, exportación, nueve idiomas y tu servidor. Luego, movimientos.",
+    "Financy hoy: cuentas y movimientos en cualquier moneda, hogares con roles, sincronización, app sin conexión, exportación, nueve idiomas y tu servidor.",
   "Features.title": "Funciones de Financy: cuentas, hogares, sincronización",
   "FeaturesHero.lead":
     "Financy se está reconstruyendo desde cero. Lo que funciona hoy: cuentas en cualquier moneda y la base que hay debajo: inicio de sesión, uso compartido con roles, cambios en tiempo real, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza al código que la hace.",
   "FeaturesHero.note":
-    "Los movimientos y los presupuestos aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
+    "Las transferencias y los presupuestos aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
   "HomeFaq.useAnswer":
     "Todavía no. El inicio de sesión, los hogares, la sincronización y las cuentas en cualquier moneda funcionan; los movimientos están en marcha.",
   "Catalog.title": "Catálogo",
@@ -649,6 +649,16 @@ export default {
     "Quien solo ve lee las categorías; solo un editor o superior las cambia",
   "FeatureCategories.code": "Ver el código de las categorías",
   "FeatureTierSettled.lead":
-    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda y sus categorías ya están; los movimientos son lo siguiente.",
+    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda, sus categorías y los movimientos ya están; los presupuestos son lo siguiente.",
   "HomeStatus.categories": "Categorías con un nivel de subcategorías",
+  "FeatureTransactions.nav": "Movimientos",
+  "FeatureTransactions.title": "Cada gasto e ingreso, en la moneda en que pagaste",
+  "FeatureTransactions.lead":
+    "Escribe un importe y pulsa Enter. La cuenta, la categoría y la fecha salen de tu último movimiento. Si pagas en otra moneda, Financy lo convierte al tipo de cambio de ese día, o escribes lo que cobró tu banco.",
+  "FeatureTransactions.fact1": "Se guardan los dos importes, y el convertido queda marcado",
+  "FeatureTransactions.fact2":
+    "La búsqueda y los filtros usan la copia del dispositivo, así que la lista funciona sin conexión",
+  "FeatureTransactions.fact3": "Un ingreso en una categoría de gastos es un reembolso",
+  "FeatureTransactions.fact4": "Un movimiento eliminado se puede restaurar durante 30 días",
+  "FeatureTransactions.code": "Ver el código de los movimientos",
 } satisfies Catalog
