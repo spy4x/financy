@@ -16,6 +16,7 @@ import { Notice } from "@spy4x/preact-ui/notice"
 import { PageHeader } from "@spy4x/preact-ui/page-header"
 import { Rich } from "@spy4x/preact-ui/i18n"
 import { SegmentedControl } from "@spy4x/preact-ui/segmented-control"
+import { dayLabel } from "@spy4x/time/locale"
 import { currencyOptions, formatMoney } from "@spy4x/platform/universal/money-core"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import type { PlanRefusal } from "@domain/billing"
@@ -577,7 +578,7 @@ function ReadOnly(props: Shown): JSX.Element {
         <bdi>{category ? categoryLabel(category, props.categories) : transaction.categoryName}
         </bdi>,
       ],
-      [t.t(`TransactionEditor.date`), value.date],
+      [t.t(`TransactionEditor.date`), dayLabel(value.date, locale)],
       ...(value.memo
         ? [[t.t(`TransactionEditor.memoLabel`), <bdi>{value.memo}</bdi>]] as [
           string,

@@ -478,6 +478,8 @@ describe("TransactionEditorScreen", () => {
       "Date",
       "Memo",
     ])
+    const shown = [...document.querySelectorAll("[data-e2e=transaction-facts] dd")].map(text)
+    expect(shown[facts.indexOf("Date")]).toBe("13 November 2026")
   })
 
   it("tells a viewer on the new page that only editors add entries", async () => {
