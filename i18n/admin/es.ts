@@ -2263,6 +2263,7 @@ export default {
   "AdminAccounts.kindBank": "Banco",
   "AdminAccounts.kindCard": "Tarjeta",
   "AdminAccounts.kindCash": "Efectivo",
+  "AdminAccounts.kindCrypto": "Cripto",
   "AdminAccounts.kindLiability": "Deuda",
   "AdminAccounts.kindSavings": "Ahorros",
   "AdminAccounts.loading": "Cargando las cifras",

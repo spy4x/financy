@@ -108,6 +108,8 @@ export default {
   "Reason.CATEGORY_REQUIRED":
     "公開するアイテムにはカテゴリーが必要です。カテゴリーを選ぶか、先にアイテムを非公開にしてください。",
   "Reason.CHANNEL_NOT_FOUND": "このチャンネルはもう存在しません。",
+  "Reason.CURRENCY_KIND_MISMATCH":
+    "暗号資産の口座には暗号資産だけを、暗号資産は暗号資産の口座にだけ入れられます。口座の種類に合う通貨を選んでください。",
   "Reason.FILE_CONTENT": "ファイルの中身が種類と一致しません。",
   "Reason.FILE_MISSING": "ファイルが届きませんでした。ファイルを選んで、もう一度お試しください。",
   "Reason.FILE_TOO_LARGE": "ファイルが大きすぎます。",

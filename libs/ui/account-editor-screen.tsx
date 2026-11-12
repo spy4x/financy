@@ -13,12 +13,9 @@ import { MoneyDisplay } from "@spy4x/preact-ui/money-display"
 import { MoneyInput } from "@spy4x/preact-ui/money-input"
 import { Notice } from "@spy4x/preact-ui/notice"
 import { PageHeader } from "@spy4x/preact-ui/page-header"
-import {
-  currencyDecimals,
-  currencyOptions,
-  formatMoney,
-} from "@spy4x/platform/universal/money-core"
+import { currencyOptions, formatMoney } from "@spy4x/platform/universal/money-core"
 import { ACCOUNT_AMOUNT_MAX, ACCOUNT_NAME_MAX_LENGTH, AccountKind } from "@domain/accounts"
+import { amountDecimals, COINS, isCoin } from "@domain/money"
 import { ListEmpty, NoGroup, type NotesGroup } from "./notes-screen.tsx"
 import { type AccountRow, kindOptions } from "./account-parts.tsx"
 import { FORM_WIDTH, useWaited } from "./tag-editor-screen.tsx"
@@ -51,7 +48,7 @@ export function balanceInCurrency(
 ): number | null | undefined {
   if (to === null) return null
   if (amount === null || from === null) return amount
-  const shift = currencyDecimals(to) - currencyDecimals(from)
+  const shift = amountDecimals(to) - amountDecimals(from)
   const scaled = shift >= 0 ? amount * 10 ** shift : amount / 10 ** -shift
   return Number.isSafeInteger(scaled) && Math.abs(scaled) <= ACCOUNT_AMOUNT_MAX ? scaled : undefined
 }
@@ -148,7 +145,12 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
   useEffect(() => {
     if (errors.name) name.current?.focus()
   }, [errors.name])
-  const options = useMemo(() => currencyOptions(t.language, []), [t.language])
+  // A crypto account offers only the listed coins, every other kind only ISO currencies.
+  const crypto = value.kind === AccountKind.CRYPTO
+  const options = useMemo(
+    () => currencyOptions(t.language, COINS).filter((option) => isCoin(option.code) === crypto),
+    [t.language, crypto],
+  )
   const { locale } = useFormat()
   /** Says why a currency change emptied the starting balance, until the person types one. */
   const [cleared, setCleared] = useState<string | null>(null)
@@ -158,12 +160,21 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
     setCleared(
       kept === undefined && amount !== null && from !== null && currency !== null
         ? t.t(`AccountEditor.amountCleared`, {
-          amount: formatMoney(amount, from, locale),
+          amount: formatMoney(amount, from, locale, { decimals: amountDecimals(from) }),
           currency,
         })
         : null,
     )
     onChange?.({ ...value, currency, startingBalance: kept ?? null })
+  }
+  /** A kind the chosen currency does not fit (a coin on a bank account) empties the currency. */
+  function changeKind(kind: AccountKind): void {
+    const fits = value.currency === null ||
+      isCoin(value.currency) === (kind === AccountKind.CRYPTO)
+    setCleared(null)
+    onChange?.(
+      fits ? { ...value, kind } : { ...value, kind, currency: null, startingBalance: null },
+    )
   }
   const showFooter = canWrite && (account === null || props.dirty)
   const menu = canWrite && account && (
@@ -260,8 +271,7 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
                   name="kind"
                   data-e2e="account-kind"
                   value={String(value.kind)}
-                  onChange={(e) =>
-                    onChange?.({ ...value, kind: Number(e.currentTarget.value) as AccountKind })}
+                  onChange={(e) => changeKind(Number(e.currentTarget.value) as AccountKind)}
                   options={kindOptions(t)}
                 />
               </Field>
@@ -305,6 +315,9 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
                         onChange?.({ ...value, startingBalance })
                       }}
                       currency={value.currency ?? ""}
+                      decimals={value.currency === null
+                        ? undefined
+                        : amountDecimals(value.currency)}
                       disabled={value.currency === null}
                       min={-ACCOUNT_AMOUNT_MAX}
                       max={ACCOUNT_AMOUNT_MAX}
@@ -377,7 +390,12 @@ function Summary({ account }: { account: AccountRow }): JSX.Element {
   return (
     <span>
       {t.t(`AccountEditor.balance`)}{" "}
-      <MoneyDisplay amount={account.balance} currency={account.currency} tone="negative" />
+      <MoneyDisplay
+        amount={account.balance}
+        currency={account.currency}
+        decimals={amountDecimals(account.currency)}
+        tone="negative"
+      />
       {account.isDefault && ` · ${t.t(`Accounts.defaultBadge`)}`}
       {account.archived && ` · ${t.t(`Accounts.archivedBadge`)}`}
     </span>

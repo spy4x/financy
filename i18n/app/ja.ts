@@ -2009,6 +2009,7 @@ export default {
   "AccountKinds.bank": "銀行",
   "AccountKinds.card": "カード",
   "AccountKinds.cash": "現金",
+  "AccountKinds.crypto": "暗号資産",
   "AccountKinds.liability": "負債",
   "AccountKinds.savings": "貯蓄",
   "AccountMessages.change": "口座を変更できませんでした。",

@@ -2056,6 +2056,7 @@ export default {
   "AdminAccounts.kindBank": "銀行",
   "AdminAccounts.kindCard": "カード",
   "AdminAccounts.kindCash": "現金",
+  "AdminAccounts.kindCrypto": "暗号資産",
   "AdminAccounts.kindLiability": "負債",
   "AdminAccounts.kindSavings": "貯蓄",
   "AdminAccounts.loading": "件数を読み込んでいます",

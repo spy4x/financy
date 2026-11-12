@@ -258,6 +258,7 @@ const ACCOUNT_ERROR_CODES: Record<
   ACCOUNT_ARCHIVED: "conflict",
   ACCOUNT_LIMIT_REACHED: "conflict",
   ACCOUNT_NOT_FOUND: "not_found",
+  CURRENCY_KIND_MISMATCH: "bad_request",
   GROUP_NOT_FOUND: "not_found",
   ID_ALREADY_EXISTS: "conflict",
   INVALID_REQUEST: "bad_request",

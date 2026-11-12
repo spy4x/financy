@@ -24,6 +24,7 @@ const KIND_NAMES: Record<AccountKind, string> = {
   [AccountKind.SAVINGS]: `AdminAccounts.kindSavings`,
   [AccountKind.ASSET]: `AdminAccounts.kindAsset`,
   [AccountKind.LIABILITY]: `AdminAccounts.kindLiability`,
+  [AccountKind.CRYPTO]: `AdminAccounts.kindCrypto`,
 }
 
 export interface AdminAccountsScreenProps {

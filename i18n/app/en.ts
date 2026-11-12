@@ -1711,6 +1711,7 @@ export default {
   },
   "AccountsTotal.tooLarge": "The total is too large to show.",
   "AccountKinds.cash": "Cash",
+  "AccountKinds.crypto": "Crypto",
   "AccountKinds.bank": "Bank",
   "AccountKinds.card": "Card",
   "AccountKinds.savings": "Savings",

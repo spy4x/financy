@@ -2427,6 +2427,7 @@ export default {
   "AdminAccounts.kindBank": "بنك",
   "AdminAccounts.kindCard": "بطاقة",
   "AdminAccounts.kindCash": "نقد",
+  "AdminAccounts.kindCrypto": "عملات مشفّرة",
   "AdminAccounts.kindLiability": "دَين",
   "AdminAccounts.kindSavings": "مدخرات",
   "AdminAccounts.loading": "جارٍ تحميل الأعداد",

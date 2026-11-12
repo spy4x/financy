@@ -12,6 +12,7 @@ import {
   assertAccountRoom,
   assertCanReadAccounts,
   assertCanWriteAccounts,
+  assertKindFitsCurrency,
   householdTotal,
   parseAccountExportEntry,
   parseAccountRequest,
@@ -63,6 +64,17 @@ describe("parsing an account request", () => {
     }
   })
 
+  it("takes a listed coin as the currency, and refuses a coin that is not listed", () => {
+    for (const currency of ["BTC", "ETH"]) {
+      expect(parseAccountRequest(accountCreatePayloadSchema, { ...base, currency }).currency)
+        .toBe(currency)
+    }
+    for (const currency of ["DOGE", "btc"]) {
+      expect(() => parseAccountRequest(accountCreatePayloadSchema, { ...base, currency }))
+        .toThrow("currency")
+    }
+  })
+
   it("refuses a fraction of the smallest unit as the starting balance (R2)", () => {
     expect(() =>
       parseAccountRequest(accountCreatePayloadSchema, { ...base, startingBalance: 12.5 })
@@ -84,11 +96,11 @@ describe("parsing an account request", () => {
     }
   })
 
-  it("takes the six kinds and refuses any other number", () => {
-    for (const kind of [1, 2, 3, 4, 5, 6]) {
+  it("takes the seven kinds and refuses any other number", () => {
+    for (const kind of [1, 2, 3, 4, 5, 6, 7]) {
       expect(parseAccountRequest(accountCreatePayloadSchema, { ...base, kind }).kind).toBe(kind)
     }
-    for (const kind of [0, 7, 1.5, "bank"]) {
+    for (const kind of [0, 8, 1.5, "bank"]) {
       expect(() => parseAccountRequest(accountCreatePayloadSchema, { ...base, kind })).toThrow(
         "kind",
       )
@@ -103,6 +115,23 @@ describe("parsing an account request", () => {
   it("refuses a field the payload does not have, such as a balance", () => {
     expect(() => parseAccountRequest(accountCreatePayloadSchema, { ...base, balance: 1 }))
       .toThrow()
+  })
+})
+
+describe("which currency fits which kind", () => {
+  it("lets a crypto account hold a listed coin, and every other kind an ISO currency", () => {
+    expect(() => assertKindFitsCurrency(AccountKind.CRYPTO, "BTC")).not.toThrow()
+    expect(() => assertKindFitsCurrency(AccountKind.CRYPTO, "ETH")).not.toThrow()
+    expect(() => assertKindFitsCurrency(AccountKind.BANK, "USD")).not.toThrow()
+  })
+
+  it("refuses a crypto account in a fiat currency, and a coin on any other kind", () => {
+    expect(() => assertKindFitsCurrency(AccountKind.CRYPTO, "USD"))
+      .toThrow("A crypto account must hold a listed coin, not USD")
+    for (const kind of [AccountKind.CASH, AccountKind.BANK, AccountKind.LIABILITY]) {
+      expect(() => assertKindFitsCurrency(kind, "BTC"))
+        .toThrow("Only a crypto account can hold BTC")
+    }
   })
 })
 
@@ -143,6 +172,15 @@ describe("an account in an export file", () => {
     expect(parseAccountExportEntry(entry).currency).toBe("VND")
     expect(() => parseAccountExportEntry({ ...entry, balance: 5 })).toThrow("does not have")
     expect(() => parseAccountExportEntry({ ...entry, currency: "vnd" })).toThrow()
+  })
+
+  it("reads a crypto account in BTC, and refuses a coin on a cash account or a crypto one in VND", () => {
+    const crypto = { ...entry, kind: AccountKind.CRYPTO, currency: "BTC" }
+    expect(parseAccountExportEntry(crypto).currency).toBe("BTC")
+    expect(() => parseAccountExportEntry({ ...entry, currency: "BTC" }))
+      .toThrow("Only a crypto account can hold BTC")
+    expect(() => parseAccountExportEntry({ ...crypto, currency: "VND" }))
+      .toThrow("A crypto account must hold a listed coin, not VND")
   })
 
   it("refuses a second default, an archived default and more accounts than the cap", () => {
