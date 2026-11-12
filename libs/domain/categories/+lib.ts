@@ -649,7 +649,7 @@ export function parentsFirst<C extends { parentId: string | null }>(categories: 
 // #endregion Export file
 
 // #region Starter set
-/** One category of the starter set: its name's `app` catalog key, and how it looks. */
+/** One category of the starter set: its name's `mail` catalog key, and how it looks. */
 export interface StarterCategory {
   key: string
   kind: CategoryKind

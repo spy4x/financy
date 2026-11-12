@@ -166,7 +166,7 @@ export function CategoriesScreen(props: CategoriesScreenProps): JSX.Element {
 
 /**
  * The question before a parent with subcategories is archived: they are archived too, and how
- * many categories that makes. Focus starts on Cancel.
+ * many categories that makes. Focus starts on the dialog's close button, the library's default.
  */
 export function ArchiveCategoryDialog(
   { category, subcategories, onConfirm, onCancel }: {
