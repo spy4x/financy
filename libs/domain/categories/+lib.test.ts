@@ -333,7 +333,10 @@ describe("a category in an export file", () => {
 
   it("refuses more live categories than the cap, and counts archived ones only to the bound", () => {
     const many = (count: number, archived: boolean) =>
-      Array.from({ length: count }, (_, index) => row({ name: `c${index}`, archived }))
+      Array.from(
+        { length: count },
+        (_, index) => row({ name: `${archived ? "a" : "c"}${index}`, archived }),
+      )
 
     expect(categoryExportProblems(many(CATEGORY_MAX_PER_GROUP + 1, false))[0].issue)
       .toEqual({
@@ -341,6 +344,8 @@ describe("a category in an export file", () => {
         values: { count: CATEGORY_MAX_PER_GROUP + 1, max: CATEGORY_MAX_PER_GROUP },
       })
     expect(categoryExportProblems(many(CATEGORY_MAX_PER_GROUP, false))).toEqual([])
+    expect(categoryExportProblems([...many(CATEGORY_MAX_PER_GROUP, false), ...many(5, true)]))
+      .toEqual([])
     expect(categoryExportProblems(many(CATEGORY_MAX_STORED + 1, true))[0].issue.code)
       .toBe("tooManyCategories")
   })
