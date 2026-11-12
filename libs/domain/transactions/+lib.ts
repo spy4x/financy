@@ -324,6 +324,14 @@ function convertAmount(
 }
 
 /**
+ * Whether a category of `category` may hold an entry of `kind` (R7): an expense needs an expense
+ * category; an income takes an income category, or an expense one as a refund.
+ */
+export function categoryFitsKind(kind: TransactionKind, category: CategoryKind): boolean {
+  return kind === TransactionKind.INCOME || category === CategoryKind.EXPENSE
+}
+
+/**
  * Checks what an entry points at (R12, R17): another household's account or category answers
  * `ACCOUNT_NOT_FOUND` or `CATEGORY_NOT_FOUND`, the same as an id that does not exist. An expense
  * takes an expense category; an income takes an income category, or an expense category as a
@@ -343,7 +351,7 @@ export function assertEntryReferences(
       categoryId: { code: "notFound" },
     })
   }
-  if (kind === TransactionKind.EXPENSE && references.category.kind !== CategoryKind.EXPENSE) {
+  if (!categoryFitsKind(kind, references.category.kind)) {
     throw new TransactionError("CATEGORY_KIND_MISMATCH", "An expense needs an expense category", {
       categoryId: { code: "kindMismatch" },
     })

@@ -12,10 +12,11 @@ from the shared library `@spy4x/realtime`.
 
 | Piece                         | What it does                                                                                |
 | ----------------------------- | ------------------------------------------------------------------------------------------- |
-| `offline/index.ts`            | Starts and stops the layer for a user: the read cache, the notes and tags copy, the queues. |
-| `offline/device-copy.ts`      | The device copy of every group's notes and tags, kept by the changes pull.                  |
+| `offline/index.ts`            | Starts and stops the layer for a user: the read cache, the notes, tags and entries copy, the queues. |
+| `offline/device-copy.ts`      | The device copy of every group's notes, tags and entries, kept by the changes pull.                  |
 | `offline/notes-collection.ts` | The notes' commands, error codes and wording for the shared queue.                          |
 | `offline/tags-collection.ts`  | The same for tags.                                                                          |
+| `offline/transactions-collection.ts` | The same for a household's entries (transactions).                                  |
 | `offline/OfflineStatus.tsx`   | The sync line (offline, waiting, syncing, failed with Retry) and the conflict chooser.      |
 | `state/read-keys.ts`          | The key of every offline-readable list in the read cache.                                   |
 | `modules.ts`                  | The composition root: decides which modules run, and remembers who was signed in.           |
@@ -32,9 +33,9 @@ the device keeps. [aggregates.md](aggregates.md#choosing-the-offline-level) has 
 
 | Level               | What works with no network                         | Which lists                                                                                                                                              |
 | ------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Online only      | Nothing: the screen says the server is unreachable | Deleted notes and groups, sign-in, two-factor set-up, every write but a note's or a tag's                                                                |
+| 1. Online only      | Nothing: the screen says the server is unreachable | Deleted notes, transactions and groups, sign-in, two-factor set-up, every write but a note's, a tag's or a transaction's                                |
 | 2. Offline-readable | The last list the server sent                      | Groups, members, invitations, notifications and the bell's count, activity, the overview's widgets, push devices, billing, API tokens, signed-in devices |
-| 3. Offline-writable | The last list, and create, edit and delete         | Notes, tags                                                                                                                                              |
+| 3. Offline-writable | The last list, and create, edit and delete         | Notes, tags, transactions                                                                                                                                |
 
 The selected group can be switched offline only among groups already on the device.
 
@@ -102,8 +103,9 @@ answers from the copy.
 Without the layer, the notes store pages the REST list (`/api/groups/:groupId/notes`) instead.
 
 The server sends a household's entries too: live ones in `upserts.transactions`, a deleted one as a
-tombstone of kind `transactions`, and with the notes off (`NOTES=false`) as well. The SPA does not
-keep them yet; the pull leaves out a kind the device does not know, rows and tombstones alike.
+tombstone of kind `transactions`, and with the notes off (`NOTES=false`) as well. The SPA keeps
+them in the same database, the latest date first (`offline/device-copy.ts`). The pull leaves out a
+kind the device does not know, rows and tombstones alike.
 
 ## Which answers count as "unreachable"
 

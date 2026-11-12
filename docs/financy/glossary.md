@@ -31,6 +31,8 @@ word where the language has a pair: ru аккаунт and счёт, zh-CN 账号
 | income                  | доход               | ingreso                | Einnahme          | receita            | دخل                 | 收入     | 収入           | revenu              |
 | expense                 | расход              | gasto                  | Ausgabe           | despesa            | مصروف               | 支出     | 支出           | dépense             |
 | transfer (of money)     | перевод             | transferencia          | Umbuchung         | transferência      | تحويل               | 转账     | 振替           | virement            |
+| memo (of a transaction) | комментарий         | concepto               | Vermerk           | descrição          | بيان                | 备注     | 摘要           | libellé             |
+| refund                  | возврат             | reembolso              | Erstattung        | reembolso          | استرداد             | 退款     | 返金           | remboursement       |
 | category                | категория           | categoría              | Kategorie         | categoria          | فئة                 | 分类     | カテゴリ       | catégorie           |
 | subcategory | подкатегория | subcategoría | Unterkategorie | subcategoria | فئة فرعية | 子分类 | サブカテゴリ | sous-catégorie |
 | parent (category) | родительская категория | categoría principal | Oberkategorie | categoria principal | الفئة الأم | 上级分类 | 親カテゴリ | catégorie parente |

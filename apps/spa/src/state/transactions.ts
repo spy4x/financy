@@ -3,8 +3,12 @@ import { ConnectionLostError, describeError, RealtimeRequestError } from "@spy4x
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { type PlanRefusal, readPlanRefusal } from "@domain/billing"
-import { CategoryKind } from "@domain/categories"
-import { TRANSACTION_MEMO_MAX_LENGTH, TransactionKind } from "@domain/transactions"
+import type { CategoryKind } from "@domain/categories"
+import {
+  categoryFitsKind,
+  TRANSACTION_MEMO_MAX_LENGTH,
+  TransactionKind,
+} from "@domain/transactions"
 import type { Message } from "@ui/message.ts"
 import { refusedField } from "../i18n.ts"
 import { byDate } from "../offline/transactions-cache.ts"
@@ -209,15 +213,6 @@ export function prefillEntry(source: PrefillSource): TransactionFormValue {
   }
 }
 
-/**
- * Whether `category` may hold an entry of `kind`: an expense needs an expense category; an income
- * takes an income category, or an expense one as a refund (R7).
- */
-export function categoryFits(kind: TransactionKind, category: CategoryKind | undefined): boolean {
-  if (category === undefined) return false
-  return kind === TransactionKind.INCOME || category === CategoryKind.EXPENSE
-}
-
 /** The plan's refusal of a call, or `null` when the plan did not refuse it. */
 function planRefusal(error: unknown): PlanRefusal | null {
   return error instanceof RealtimeRequestError ? readPlanRefusal(error.details) : null
@@ -371,9 +366,12 @@ export function createTransactionsStore(
     const current = form.value
     if (!current) return
     const merged = { ...current, ...next }
+    const categoryKind = merged.categoryId === null
+      ? undefined
+      : references.categoryKind(merged.categoryId)
     if (
-      next.kind !== undefined && merged.categoryId !== null &&
-      !categoryFits(merged.kind, references.categoryKind(merged.categoryId))
+      next.kind !== undefined && categoryKind !== undefined &&
+      !categoryFitsKind(merged.kind, categoryKind)
     ) merged.categoryId = null
     const accountCurrency = merged.accountId === null
       ? undefined
