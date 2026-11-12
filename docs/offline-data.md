@@ -101,6 +101,10 @@ answers from the copy.
 
 Without the layer, the notes store pages the REST list (`/api/groups/:groupId/notes`) instead.
 
+The server sends a household's entries too: live ones in `upserts.transactions`, a deleted one as a
+tombstone of kind `transactions`, and with the notes off (`NOTES=false`) as well. The SPA does not
+keep them yet; the pull leaves out a kind the device does not know, rows and tombstones alike.
+
 ## Which answers count as "unreachable"
 
 The copy answers when there is no answer at all: no network, a failed connection, a closed socket.
