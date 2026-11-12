@@ -53,6 +53,7 @@ import { PostgresTransactionRepository } from "@server/transactions/postgres-tra
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
 import { transactionMovable } from "@server/transactions/transaction-movable.ts"
+import { transactionPortable } from "@server/transactions/transaction-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresAttachmentRepository } from "@server/notes/postgres-attachment-repository.ts"
@@ -217,6 +218,7 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   notePortable,
   accountPortable,
   categoryPortable,
+  transactionPortable,
   householdPortable,
 ]
 

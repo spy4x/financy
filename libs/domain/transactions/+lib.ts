@@ -1,7 +1,13 @@
 import { type Type, type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
 import type { Actor } from "@domain/identity"
-import { canMutateNotes, canRead, type GroupRole } from "@domain/groups"
+import {
+  canMutateNotes,
+  canRead,
+  type GroupImportIssue,
+  type GroupRole,
+  plainEntryProblem,
+} from "@domain/groups"
 import { CategoryKind } from "@domain/categories"
 import { accountCurrencyCode, amountDecimals } from "@domain/money"
 import { convertMoney, type ExchangeRate } from "@spy4x/platform/universal/money"
@@ -690,3 +696,132 @@ export interface TransactionRepository {
   ledger(groupId: string, currency: string, from: string, to: string): Promise<Ledger>
 }
 // #endregion Ports
+
+// #region Export file
+/** A stored amount: a whole number of the smallest unit, signed by the kind, never zero (R5). */
+const signedAmount =
+  `${-TRANSACTION_AMOUNT_MAX} <= number.integer <= ${TRANSACTION_AMOUNT_MAX}` as const
+
+/**
+ * One entry in a household's export file: what the server stored, both amounts and the conversion
+ * flag included, so an import keeps them as they were and never converts again (R4). Its account
+ * and category are named by their ids in the same file. Never a person, a version or a deleted
+ * entry.
+ */
+export const transactionExportEntrySchema = type({
+  id: UUID_PATTERN,
+  accountId: UUID_PATTERN,
+  categoryId: UUID_PATTERN,
+  kind: `1 <= number.integer <= 2`,
+  accountAmount: signedAmount,
+  amount: signedAmount,
+  currency: accountCurrencyCode,
+  converted: `boolean`,
+  memo: `string`,
+  date: calendarDate,
+  createdAt: `string.date.iso.parse`,
+  updatedAt: `string.date.iso.parse`,
+  "+": `reject`,
+})
+export type TransactionExportEntry = typeof transactionExportEntrySchema.infer
+
+/** What a refusal calls each field of an entry in a file. */
+const TRANSACTION_EXPORT_LABELS = {
+  id: `id`,
+  accountId: `account`,
+  categoryId: `category`,
+  kind: `kind`,
+  accountAmount: `account amount`,
+  amount: `amount`,
+  currency: `currency`,
+  converted: `converted flag`,
+  memo: `memo`,
+  date: `date`,
+  createdAt: `creation date`,
+  updatedAt: `last change date`,
+}
+
+/**
+ * Checks one entry of a file with the rules of a write: the memo's, and both amounts signed by the
+ * kind, an expense below zero and an income above (R5). Throws `TransactionError`.
+ */
+export function parseTransactionExportEntry(entry: unknown): TransactionExportEntry {
+  const shape = transactionExportEntrySchema(entry)
+  if (shape instanceof type.errors) {
+    throw new TransactionError(
+      `INVALID_REQUEST`,
+      plainEntryProblem(shape, `entry`, TRANSACTION_EXPORT_LABELS),
+      fieldErrors(shape),
+    )
+  }
+  const parsed = parseTransactionRequest(
+    transactionExportEntrySchema,
+    entry,
+  ) as TransactionExportEntry
+  const sign = parsed.kind === TransactionKind.EXPENSE ? -1 : 1
+  for (const field of [`amount`, `accountAmount`] as const) {
+    if (Math.sign(parsed[field]) !== sign) {
+      throw new TransactionError(
+        `INVALID_REQUEST`,
+        `the ${TRANSACTION_EXPORT_LABELS[field]} of ${
+          sign < 0 ? `an expense must be below` : `an income must be above`
+        } zero`,
+        { [field]: { code: `sign` } },
+      )
+    }
+  }
+  return parsed
+}
+
+/** What an entry of a file points at, by its id in the file; `null` when the file has none. */
+export interface EntryFileReferences {
+  account(fileId: string): { currency: string } | null
+  category(fileId: string): { kind: CategoryKind } | null
+}
+
+/**
+ * What is wrong between a file's entries and the accounts and categories it holds, by index: an
+ * account or a category the file lacks, an expense in an income category (R12, as
+ * {@link assertEntryReferences} refuses it), and an entry in its account's own currency whose two
+ * amounts differ or that claims a conversion.
+ */
+export function transactionReferenceProblems(
+  entries: readonly Pick<
+    TransactionExportEntry,
+    `accountId` | `categoryId` | `kind` | `amount` | `accountAmount` | `currency` | `converted`
+  >[],
+  references: EntryFileReferences,
+): { index: number; problem: string; issue: GroupImportIssue }[] {
+  const problems: { index: number; problem: string; issue: GroupImportIssue }[] = []
+  entries.forEach((entry, index) => {
+    const found = {
+      account: references.account(entry.accountId),
+      category: references.category(entry.categoryId),
+    }
+    try {
+      assertEntryReferences(entry.kind, found)
+    } catch (error) {
+      if (!(error instanceof TransactionError)) throw error
+      const [field, { code }] = Object.entries(error.fields ?? {})[0]
+      problems.push({ index, problem: messageOfReference(error.code), issue: { code, field } })
+      return
+    }
+    const sameCurrency = entry.currency === found.account!.currency
+    if (sameCurrency && (entry.amount !== entry.accountAmount || entry.converted)) {
+      problems.push({
+        index,
+        problem: `in the account's own currency, the account amount is the amount, unconverted`,
+        issue: { code: `mismatch`, field: `accountAmount` },
+      })
+    }
+  })
+  return problems
+}
+
+/** A file's words for a refusal of {@link assertEntryReferences}. */
+function messageOfReference(code: TransactionErrorCode): string {
+  if (code === `ACCOUNT_NOT_FOUND`) return `its account is not among the file's accounts`
+  if (code === `CATEGORY_NOT_FOUND`) return `its category is not among the file's categories`
+  return `an expense needs an expense category`
+}
+// #endregion Export file

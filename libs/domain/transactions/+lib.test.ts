@@ -11,6 +11,7 @@ import {
   type EntryRateLookup,
   LEDGER_MAX_DAYS,
   type LedgerCategory,
+  parseTransactionExportEntry,
   parseTransactionRequest,
   summarizeLedger,
   TRANSACTION_MEMO_MAX_LENGTH,
@@ -526,5 +527,53 @@ describe("the ledger summary", () => {
     )
 
     expect(ledger).toMatchObject({ income: null, spending: null, net: null, tooLarge: true })
+  })
+})
+
+describe("an entry in a household's export file", () => {
+  const entry = {
+    id,
+    accountId,
+    categoryId,
+    kind: TransactionKind.EXPENSE,
+    accountAmount: -1450,
+    amount: -1330,
+    currency: "EUR",
+    converted: true,
+    memo: "Lunch",
+    date: "2026-11-02",
+    createdAt: "2026-11-02T10:00:00.000Z",
+    updatedAt: "2026-11-02T10:00:00.000Z",
+  }
+
+  it("keeps both signed amounts, the currency and the conversion flag as stored (R4)", () => {
+    expect(parseTransactionExportEntry(entry)).toEqual({
+      ...entry,
+      createdAt: new Date(entry.createdAt),
+      updatedAt: new Date(entry.updatedAt),
+    })
+    const income = { ...entry, kind: TransactionKind.INCOME, accountAmount: 1, amount: 2 }
+    expect(parseTransactionExportEntry(income).amount).toBe(2)
+  })
+
+  it("refuses amounts whose sign does not follow the kind, and a zero amount (R5)", () => {
+    expect(() => parseTransactionExportEntry({ ...entry, amount: 1330 })).toThrow(
+      "the amount of an expense must be below zero",
+    )
+    expect(() => parseTransactionExportEntry({ ...entry, accountAmount: 0 })).toThrow(
+      "the account amount of an expense must be below zero",
+    )
+    expect(() =>
+      parseTransactionExportEntry({ ...entry, kind: TransactionKind.INCOME, amount: 1330 })
+    ).toThrow("the account amount of an income must be above zero")
+  })
+
+  it("refuses an amount past the exact range, a field an entry lacks and a memo a write refuses", () => {
+    expect(() => parseTransactionExportEntry({ ...entry, amount: -(2 ** 53) })).toThrow()
+    expect(() => parseTransactionExportEntry({ ...entry, version: 3 })).toThrow("does not have")
+    expect(() => parseTransactionExportEntry({ ...entry, memo: "a\u200bb" })).toThrow(
+      "control or invisible",
+    )
+    expect(() => parseTransactionExportEntry({ ...entry, date: "2026-02-30" })).toThrow()
   })
 })
