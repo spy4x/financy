@@ -11,6 +11,8 @@ import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.t
 import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { AccountKind } from "@domain/accounts"
+import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
+import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import { tagPortable } from "@server/tags/tag-portable.ts"
 import { notePortable } from "@server/notes/note-portable.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
@@ -90,7 +92,31 @@ async function seed(sql: postgres.Sql) {
   )
   await accounts.archive({ groupId, id: accountIds[1], archived: true, expectedVersion: 1 }, owner)
   await accounts.delete({ groupId, id: accountIds[2], expectedVersion: 1 }, owner)
-  return { owner, groupId, tagIds: [home, work], noteIds, accountIds }
+  // A parent with a child, and an archived income category.
+  const categories = new PostgresCategoryRepository(sql)
+  const categoryIds = [uuidV7(), uuidV7(), uuidV7()]
+  const category = (id: string, name: string, kind: CategoryKind, parentId: string | null) =>
+    categories.create(
+      {
+        groupId,
+        id,
+        name,
+        kind,
+        icon: "tag" as CategoryIcon,
+        color: "#c2410c",
+        parentId,
+        allowance: null,
+      },
+      owner,
+    )
+  await category(categoryIds[0], "Food", CategoryKind.EXPENSE, null)
+  await category(categoryIds[1], "Groceries", CategoryKind.EXPENSE, categoryIds[0])
+  await category(categoryIds[2], "Bonus", CategoryKind.INCOME, null)
+  await categories.archive(
+    { groupId, id: categoryIds[2], archived: true, expectedVersion: 1, allowance: null },
+    owner,
+  )
+  return { owner, groupId, tagIds: [home, work], noteIds, accountIds, categoryIds }
 }
 
 /** What the owner downloads, through the handler: the file's name, media type and pieces. */
@@ -168,7 +194,17 @@ async function contents(sql: postgres.Sql, groupId: string) {
       archived_at IS NOT NULL AS archived, is_default
     FROM accounts WHERE group_id = ${groupId} AND deleted_at IS NULL ORDER BY name
   `
-  return { notes: [...notes], tags: [...tags], accounts: [...accounts] }
+  const categories = await sql<{ name: string; parent: string | null }[]>`
+    SELECT c.name, c.kind, c.icon, c.color, p.name AS parent, c.archived_at IS NOT NULL AS archived
+    FROM categories c LEFT JOIN categories p ON p.id = c.parent_id
+    WHERE c.group_id = ${groupId} ORDER BY c.name
+  `
+  return {
+    notes: [...notes],
+    tags: [...tags],
+    accounts: [...accounts],
+    categories: [...categories],
+  }
 }
 
 async function counts(sql: postgres.Sql) {
@@ -185,7 +221,7 @@ async function counts(sql: postgres.Sql) {
   return row
 }
 
-Deno.test("an export imported by another person gives the same notes, tags and accounts under new ids", async () => {
+Deno.test("an export imported by another person gives the same notes, tags, accounts and category tree under new ids", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
     const file = await exportAs(sql, source.groupId, source.owner) as {
@@ -214,6 +250,7 @@ Deno.test("an export imported by another person gives the same notes, tags and a
         ["tags", 2],
         ...PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0] as const),
         ["accounts", 2],
+        ["categories", 3],
       ]),
     )
     expect(await contents(sql, copy)).toEqual(await contents(sql, source.groupId))
@@ -237,6 +274,39 @@ Deno.test("an export imported by another person gives the same notes, tags and a
       },
     ])
 
+    // The child sits under the copy's own parent, and the archived category stays archived.
+    expect((await contents(sql, copy)).categories).toEqual([
+      {
+        name: "Bonus",
+        kind: CategoryKind.INCOME,
+        icon: "tag",
+        color: "#c2410c",
+        parent: null,
+        archived: true,
+      },
+      {
+        name: "Food",
+        kind: CategoryKind.EXPENSE,
+        icon: "tag",
+        color: "#c2410c",
+        parent: null,
+        archived: false,
+      },
+      {
+        name: "Groceries",
+        kind: CategoryKind.EXPENSE,
+        icon: "tag",
+        color: "#c2410c",
+        parent: "Food",
+        archived: false,
+      },
+    ])
+    const [{ crossed }] = await sql<{ crossed: number }[]>`
+      SELECT count(*)::int AS crossed FROM categories c JOIN categories p ON p.id = c.parent_id
+      WHERE c.group_id = ${copy} AND p.group_id <> ${copy}
+    `
+    expect(crossed).toBe(0)
+
     const [group] = await sql<
       { name: string; description: string; color: string; emoji: string; ownerUserId: number }[]
     >`
@@ -259,10 +329,17 @@ Deno.test("an export imported by another person gives the same notes, tags and a
     const ids = await sql<{ id: string }[]>`
       SELECT id FROM notes WHERE group_id = ${copy} UNION ALL SELECT id FROM tags WHERE group_id = ${copy}
       UNION ALL SELECT id FROM accounts WHERE group_id = ${copy}
+      UNION ALL SELECT id FROM categories WHERE group_id = ${copy}
     `
-    expect(ids).toHaveLength(7)
+    expect(ids).toHaveLength(10)
+    const sourceIds = [
+      ...source.noteIds,
+      ...source.tagIds,
+      ...source.accountIds,
+      ...source.categoryIds,
+    ]
     for (const { id } of ids) {
-      expect([...source.noteIds, ...source.tagIds, ...source.accountIds]).not.toContain(id)
+      expect(sourceIds).not.toContain(id)
       expect(id[14]).toBe("7")
     }
 
@@ -287,7 +364,8 @@ Deno.test("an export imported by another person gives the same notes, tags and a
           tags: 2,
           ...Object.fromEntries(PRODUCT_AGGREGATES.map((aggregate) => [aggregate.kind, 0])),
           accounts: 2,
-          count: 7,
+          categories: 3,
+          count: 10,
         },
       },
     ])

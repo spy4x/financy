@@ -177,6 +177,18 @@ import { accountListHandler } from "@api/cqrs/query-handlers/account-list.ts"
 import { accountGetHandler } from "@api/cqrs/query-handlers/account-get.ts"
 import { accountTotalHandler } from "@api/cqrs/query-handlers/account-total.ts"
 import {
+  CategoryArchiveCommand,
+  CategoryCreateCommand,
+  CategoryGetQuery,
+  CategoryListQuery,
+  CategoryUpdateCommand,
+} from "@domain/categories"
+import { categoryCreateHandler } from "@api/cqrs/command-handlers/category-create.ts"
+import { categoryUpdateHandler } from "@api/cqrs/command-handlers/category-update.ts"
+import { categoryArchiveHandler } from "@api/cqrs/command-handlers/category-archive.ts"
+import { categoryListHandler } from "@api/cqrs/query-handlers/category-list.ts"
+import { categoryGetHandler } from "@api/cqrs/query-handlers/category-get.ts"
+import {
   ImportCheckQuery,
   ImportCommitCommand,
   ImportCreateCommand,
@@ -324,6 +336,9 @@ commandBus.register(AccountArchiveCommand, accountArchiveHandler)
 commandBus.register(AccountSetDefaultCommand, accountSetDefaultHandler)
 commandBus.register(AccountDeleteCommand, accountDeleteHandler)
 commandBus.register(AccountRestoreCommand, accountRestoreHandler)
+commandBus.register(CategoryCreateCommand, categoryCreateHandler)
+commandBus.register(CategoryUpdateCommand, categoryUpdateHandler)
+commandBus.register(CategoryArchiveCommand, categoryArchiveHandler)
 commandBus.register(
   HouseholdUpdateSettingsCommand,
   createHouseholdUpdateSettingsHandler(householdDependencies),
@@ -354,6 +369,8 @@ queryBus.register(MyInvitationsQuery, createMyInvitationsHandler(invitationDepen
 queryBus.register(AccountListQuery, accountListHandler)
 queryBus.register(AccountGetQuery, accountGetHandler)
 queryBus.register(AccountTotalQuery, accountTotalHandler)
+queryBus.register(CategoryListQuery, categoryListHandler)
+queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)

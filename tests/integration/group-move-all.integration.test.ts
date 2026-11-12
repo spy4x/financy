@@ -90,6 +90,38 @@ async function accountsOf(sql: postgres.Sql, groupId: string) {
   ]
 }
 
+/**
+ * Inserts an expense category named `name` into `groupId`, under `parentId` when given, created by
+ * `userId`; answers its id.
+ */
+async function insertCategory(
+  sql: postgres.Sql,
+  groupId: string,
+  name: string,
+  userId: number,
+  state: { parentId?: string; archived?: boolean } = {},
+): Promise<string> {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO categories (id, group_id, parent_id, name, kind, icon, color, archived_at,
+      change_sequence, created_by_user_id, updated_by_user_id)
+    VALUES (${id}, ${groupId}, ${state.parentId ?? null}, ${name}, 1, 'tag', '#c2410c',
+      ${state.archived ? new Date() : null}, 1, ${userId}, ${userId})
+  `
+  return id
+}
+
+/** A group's categories by name, with their parent's name. */
+async function categoriesOf(sql: postgres.Sql, groupId: string) {
+  return [
+    ...await sql<{ id: string; name: string; parent: string | null; archived: boolean }[]>`
+      SELECT c.id, c.name, p.name AS parent, c.archived_at IS NOT NULL AS archived, c.version
+      FROM categories c LEFT JOIN categories p ON p.id = c.parent_id
+      WHERE c.group_id = ${groupId} ORDER BY c.name
+    `,
+  ]
+}
+
 /** Inserts a tag named `name` into `groupId`, created by `userId`; answers its id. */
 async function insertTag(
   sql: postgres.Sql,
@@ -305,7 +337,10 @@ Deno.test("moving all of a group's data", async (t) => {
         const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
 
         // Work, Idle and Old changed group; Shared joined the target's "shared".
-        expect(result).toEqual({ moved: 5, counts: { accounts: 0, tags: 4, notes: 1 } })
+        expect(result).toEqual({
+          moved: 5,
+          counts: { accounts: 0, categories: 0, tags: 4, notes: 1 },
+        })
         expect(await tagsOf(sql, from)).toEqual([])
         expect(await tagsOf(sql, to)).toEqual([
           { id: idle, name: "Idle", version: 2 },
@@ -423,6 +458,80 @@ Deno.test("moving all of a group's data", async (t) => {
 
         expect(fits.counts).toMatchObject({ accounts: 2 })
         expect(await accountsOf(sql, from)).toEqual([])
+      },
+    )
+
+    await t.step(
+      "the registered aggregates move every category, archived ones included, with its tree",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to } = await seed(sql, [])
+        const food = await insertCategory(sql, from, "Food", editor)
+        const groceries = await insertCategory(sql, from, "Groceries", editor, { parentId: food })
+        const old = await insertCategory(sql, from, "Old", editor, { archived: true })
+        const theirs = await insertCategory(sql, to, "Theirs", editor)
+
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result).toMatchObject({ moved: 3, counts: { categories: 3 } })
+        expect(await categoriesOf(sql, from)).toEqual([])
+        expect(await categoriesOf(sql, to)).toEqual([
+          { id: food, name: "Food", parent: null, archived: false, version: 2 },
+          { id: groceries, name: "Groceries", parent: "Food", archived: false, version: 2 },
+          { id: old, name: "Old", parent: null, archived: true, version: 2 },
+          { id: theirs, name: "Theirs", parent: null, archived: false, version: 1 },
+        ])
+      },
+    )
+
+    await t.step(
+      "refuses whole when a moved category would share a name with one of its new siblings (D3)",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to, ids, notes } = await seed(sql, ["a"])
+        await insertCategory(sql, to, "FÓOD", editor)
+        const food = await insertCategory(sql, from, "Food", editor)
+
+        const refused = await refusal(
+          app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP),
+        )
+
+        expect(refused).toMatchObject({ code: "CATEGORY_NAME_TAKEN" })
+        expect((await categoriesOf(sql, from)).map((category) => category.id)).toEqual([food])
+        expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
+      },
+    )
+
+    await t.step(
+      "refuses whole when the source's live categories would take the target over its plan's maxCategories",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to, ids, notes } = await seed(sql, ["a"])
+        await insertCategory(sql, to, "Theirs", editor)
+        const moving = [
+          await insertCategory(sql, from, "Food", editor),
+          await insertCategory(sql, from, "Old", editor, { archived: true }),
+          await insertCategory(sql, from, "Travel", editor),
+        ]
+        const input = { fromGroupId: from, toGroupId: to }
+
+        const over = await refusal(
+          app.moveAll(input, editor, { maxNotes: null, maxCategories: 2 }),
+        )
+
+        expect(over).toMatchObject({
+          code: "PLAN_LIMIT_REACHED",
+          entitlement: "maxCategories",
+          limit: 2,
+        })
+        expect((await categoriesOf(sql, from)).map((category) => category.id)).toEqual(moving)
+        expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
+
+        // The archived one does not count (D1): three live categories fit a cap of three.
+        const fits = await app.moveAll(input, editor, { maxNotes: null, maxCategories: 3 })
+
+        expect(fits.counts).toMatchObject({ categories: 3 })
+        expect(await categoriesOf(sql, from)).toEqual([])
       },
     )
 

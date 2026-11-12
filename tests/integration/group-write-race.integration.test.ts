@@ -7,6 +7,8 @@ import { AccountError, AccountKind } from "@domain/accounts"
 import { lockActorRole, recordAccessChange } from "@server/groups/group-change-log.ts"
 import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
+import { CategoryError, type CategoryIcon, CategoryKind } from "@domain/categories"
+import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { team, withSchema } from "./group-team.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
@@ -145,6 +147,53 @@ for (const change of ["removal", "demotion"] as const) {
           SELECT name, version FROM accounts WHERE id = ${id}
         `
         expect(rows).toEqual(write === "create" ? [] : [{ name: "Wallet", version: 1 }])
+      })
+    })
+  }
+}
+
+const CATEGORY_WRITES = ["create", "update", "archive"] as const
+
+for (const change of ["removal", "demotion"] as const) {
+  for (const write of CATEGORY_WRITES) {
+    Deno.test(`category ${write}: refused when a ${change} commits while the write waits`, async () => {
+      await withSchema(async (sql) => {
+        const { groupId, owner, editor } = await team(sql)
+        const categories = new PostgresCategoryRepository(sql)
+        const id = uuidV7()
+        const fields = {
+          name: "Food",
+          kind: CategoryKind.EXPENSE,
+          icon: "utensils" as CategoryIcon,
+          color: "#c2410c",
+          parentId: null,
+        }
+        if (write !== "create") {
+          await categories.create({ groupId, id, ...fields, allowance: null }, editor)
+        }
+
+        const held = await holdMemberChange(sql, groupId, owner, editor, change)
+        const at = { groupId, id, expectedVersion: 1 }
+        const writing = write === "create"
+          ? categories.create({ groupId, id, ...fields, allowance: null }, editor)
+          : write === "update"
+          ? categories.update({ ...at, ...fields, name: "Late" }, editor)
+          : categories.archive({ ...at, archived: true, allowance: null }, editor)
+        const outcome = writing.then(() => null, (error) => error)
+
+        expect(await stillWaiting(outcome)).toBe(true)
+        held.release()
+        await held.committed
+
+        const error = await outcome
+        expect(error).toBeInstanceOf(CategoryError)
+        expect((error as CategoryError).code).toBe(EXPECTED_CODE[change])
+        const rows = await sql`
+          SELECT name, version, archived_at IS NOT NULL AS archived FROM categories WHERE id = ${id}
+        `
+        expect(rows).toEqual(
+          write === "create" ? [] : [{ name: "Food", version: 1, archived: false }],
+        )
       })
     })
   }

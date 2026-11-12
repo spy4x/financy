@@ -231,6 +231,7 @@ export function createSignInCodeOperations(own: SignInParts): SignInCodeOperatio
             signedUp.user.id,
             SIGN_IN_LINK_METHOD,
             firstGroupId,
+            request.language,
           )
           await joinInvitedGroup(tx, invitation, user.id)
           return { user, ...started }

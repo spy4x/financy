@@ -11,6 +11,7 @@ import { auditModule } from "./audit/module.tsx"
 import { billingModule } from "./billing/module.tsx"
 import { blogModule } from "./blog/module.tsx"
 import { catalogModule } from "./catalog/module.tsx"
+import { categoriesModule } from "./categories/module.tsx"
 import { contactLinksModule } from "./contact-links/module.tsx"
 import { dashboardModule } from "./dashboard/module.tsx"
 import { groupsModule } from "./groups/module.tsx"
@@ -28,6 +29,7 @@ export const ADMIN_MODULES: readonly AdminModule[] = [
   usersModule,
   groupsModule,
   accountsModule,
+  categoriesModule,
   billingModule,
   newsletterModule,
   blogModule,

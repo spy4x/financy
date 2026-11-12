@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "check": "deno check postgres-category-repository.ts category-movable.ts category-portable.ts admin-categories.ts"
+  }
+}

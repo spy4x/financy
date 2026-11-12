@@ -15,6 +15,7 @@ import { AccessError, type Actor, PictureError, userChangeGroupId } from "@domai
 import { AttachmentError, NoteError, NoteVersionConflictError } from "@domain/notes"
 import { TagError, TagVersionConflictError } from "@domain/tags"
 import { AccountError, AccountVersionConflictError } from "@domain/accounts"
+import { CategoryError, CategoryVersionConflictError } from "@domain/categories"
 import { HouseholdError, HouseholdVersionConflictError } from "@domain/money"
 import { PlanError, toPlanRefusal } from "@domain/billing"
 import { IdempotencyError } from "@spy4x/server/idempotency"
@@ -96,6 +97,15 @@ export function toRequestError(error: unknown): RealtimeRequestError | null {
       ? { code: error.code, currentVersion: error.currentVersion }
       : { code: error.code }
     return new RealtimeRequestError(ACCOUNT_ERROR_CODES[error.code], error.message, details, {
+      reason: error.code,
+      fields: error.fields,
+    })
+  }
+  if (error instanceof CategoryError) {
+    const details = error instanceof CategoryVersionConflictError
+      ? { code: error.code, currentVersion: error.currentVersion }
+      : { code: error.code }
+    return new RealtimeRequestError(CATEGORY_ERROR_CODES[error.code], error.message, details, {
       reason: error.code,
       fields: error.fields,
     })
@@ -248,6 +258,22 @@ const ACCOUNT_ERROR_CODES: Record<
   ACCOUNT_ARCHIVED: "conflict",
   ACCOUNT_LIMIT_REACHED: "conflict",
   ACCOUNT_NOT_FOUND: "not_found",
+  GROUP_NOT_FOUND: "not_found",
+  ID_ALREADY_EXISTS: "conflict",
+  INVALID_REQUEST: "bad_request",
+  ROLE_INSUFFICIENT: "forbidden",
+  VERSION_CONFLICT: "conflict",
+}
+
+const CATEGORY_ERROR_CODES: Record<
+  CategoryError["code"],
+  "bad_request" | "forbidden" | "not_found" | "conflict"
+> = {
+  CATEGORY_LIMIT_REACHED: "conflict",
+  CATEGORY_NAME_TAKEN: "conflict",
+  CATEGORY_NOT_FOUND: "not_found",
+  CATEGORY_PARENT_ARCHIVED: "conflict",
+  CATEGORY_TREE_INVALID: "conflict",
   GROUP_NOT_FOUND: "not_found",
   ID_ALREADY_EXISTS: "conflict",
   INVALID_REQUEST: "bad_request",

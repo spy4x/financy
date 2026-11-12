@@ -214,6 +214,30 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       ORDER BY created_at, id`,
   },
   {
+    // The finance categories the person created, in households they still belong to, archived
+    // ones included. The parent is an id from this same list or another member's category.
+    name: `finance_categories`,
+    columns: [
+      `id`,
+      `groupId`,
+      `parentId`,
+      `name`,
+      `kind`,
+      `icon`,
+      `color`,
+      `archivedAt`,
+      `createdAt`,
+      `updatedAt`,
+    ],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, parent_id, name,
+        CASE kind WHEN 1 THEN 'expense' ELSE 'income' END AS kind,
+        icon, color, archived_at, created_at, updated_at
+      FROM categories
+      WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
     // What the person did in their groups, by kind and id. `details` and the person acted on are
     // left out: they can name other people.
     name: `group_activity`,

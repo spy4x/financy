@@ -618,8 +618,6 @@ export default {
     "Espèces, comptes bancaires, cartes, épargne, actifs et dettes, chacun dans sa devise, regroupés par type, avec un compte par défaut. Tout le foyer voit chaque modification aussitôt.",
   "FeatureAccounts.nav": "Comptes",
   "FeatureAccounts.title": "Chaque compte dans sa propre devise",
-  "FeatureTierSettled.lead":
-    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises sont là ; leurs opérations viennent ensuite.",
   "Features.description":
     "Financy aujourd’hui : comptes en toute devise, foyers avec rôles, synchro, appli hors ligne, export, neuf langues et votre serveur. Ensuite : les opérations.",
   "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
@@ -643,4 +641,18 @@ export default {
   "CatalogItem.care": "Entretien",
   "CatalogItem.inStock": "{choice} : en stock",
   "CatalogItem.soldOut": "{choice} : épuisé",
+  "FeatureCategories.nav": "Catégories",
+  "FeatureCategories.title": "Des catégories sur un seul niveau",
+  "FeatureCategories.lead":
+    "Rangez dépenses et revenus dans des catégories, chacune avec son icône et sa couleur. Mettez Courses et Restaurant sous Alimentation. Un nouveau foyer commence avec une courte liste dans sa langue.",
+  "FeatureCategories.fact1":
+    "Une catégorie n’est jamais supprimée : l’archiver la retire des listes de choix, et ses opérations passées la gardent",
+  "FeatureCategories.fact2":
+    "Une sous-catégorie a le type de sa parente, et une parente ne peut pas avoir de parente, vérifié sur le serveur",
+  "FeatureCategories.fact3":
+    "Un lecteur voit les catégories ; seuls un éditeur ou plus les modifient",
+  "FeatureCategories.code": "Lire le code source des catégories",
+  "FeatureTierSettled.lead":
+    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises et leurs catégories sont là ; les opérations viennent ensuite.",
+  "HomeStatus.categories": "Des catégories avec un niveau de sous‑catégories",
 } satisfies Catalog

@@ -424,6 +424,20 @@ describe("the public website", () => {
     )
   })
 
+  it("lists categories on /features as built, right after accounts, and on the home page's Works today", async () => {
+    const { html } = await page("/features")
+
+    expect(html.indexOf(`<section id="categories"`)).toBeGreaterThan(
+      html.indexOf(`<section id="accounts"`),
+    )
+    expect(html.indexOf(`<section id="categories"`)).toBeLessThan(
+      html.indexOf(`<section id="sign-in"`),
+    )
+    expect(html).toContain(`Categories, one level deep`)
+    expect(html).toContain(`Accounts in any currency and their categories are here`)
+    expect((await page("/")).html).toContain(`Categories with one level of subcategories`)
+  })
+
   it("lists passkeys on /features as built, not under Not built yet", async () => {
     const { html } = await page("/features")
 
@@ -902,6 +916,9 @@ describe("the public website", () => {
       `its sign-in records with IP addresses, its devices, notifications and API`,
     )
     expect(html).toContain(`and each household&#39;s members, plan and overview`)
+    expect(html).toContain(
+      `and how many accounts and categories a household has, never their names`,
+    )
     expect(html).toContain(
       `open and download a household&#39;s uploaded files, and each time they open one, it is recorded`,
     )

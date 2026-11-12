@@ -545,8 +545,6 @@ export default {
     "现金、银行账户、银行卡、储蓄、资产和负债，各用自己的币种，按类型分组，并有一个默认账户。家庭里的每个人都能立即看到每次更改。",
   "FeatureAccounts.nav": "账户",
   "FeatureAccounts.title": "每个账户都有自己的币种",
-  "FeatureTierSettled.lead":
-    "这些部分已经可用，并在 CI 中测试。任意币种的账户已经上线；账户里的交易是下一步。",
   "Features.description":
     "Financy 现状：任意币种的账户、带角色的家庭、实时同步、离线应用、导出、九种语言和自托管。接下来是交易。",
   "Features.title": "Financy 功能：账户、家庭、同步、离线",
@@ -568,4 +566,15 @@ export default {
   "CatalogItem.care": "洗护",
   "CatalogItem.inStock": "{choice}：有货",
   "CatalogItem.soldOut": "{choice}：已售罄",
+  "FeatureCategories.nav": "分类",
+  "FeatureCategories.title": "只有一级的分类",
+  "FeatureCategories.lead":
+    "把支出和收入归入分类，每个分类都有图标和颜色。把买菜和外出就餐放在餐饮下。新家庭会以自己语言的一份简短列表开始。",
+  "FeatureCategories.fact1": "分类从不删除：归档只是把它从选择列表中隐藏，过去的记录仍保留它",
+  "FeatureCategories.fact2": "子分类沿用上级分类的类型，上级分类不能再有上级，由服务器检查",
+  "FeatureCategories.fact3": "查看者可以阅读分类；只有编辑者及以上可以更改",
+  "FeatureCategories.code": "阅读分类代码",
+  "FeatureTierSettled.lead":
+    "这些部分已经可用，并在 CI 中测试。任意币种的账户及其分类已经上线；交易是下一步。",
+  "HomeStatus.categories": "带一级子分类的分类",
 } satisfies Catalog

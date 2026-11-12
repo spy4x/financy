@@ -2327,4 +2327,179 @@ export default {
   "GroupSpreadsheets.readme":
     "Os dados do grupo em planilhas: um arquivo CSV para cada tipo de item, em UTF-8 e com uma linha de cabeçalho. Datas e horários estão no formato ISO 8601, em UTC. Para levar o grupo para outro app, baixe o arquivo JSON: só ele pode ser importado.",
   "GroupSpreadsheets.notSpreadsheets": "Não disponível como planilha (está no arquivo JSON):",
+  "Frame.categories": "Categorias",
+  "Search.newCategory": "Nova categoria",
+  "Search.openCategories": "Ir para categorias",
+  "Categories.title": "Categorias",
+  "Categories.add": "Nova categoria",
+  "Categories.addFirst": "Adicionar categoria",
+  "Categories.addOne": "Adicionar uma",
+  "Categories.addChild": "Adicionar subcategoria",
+  "Categories.edit": "Editar categoria",
+  "Categories.actions": "Ações para {name}",
+  "Categories.archive": "Arquivar",
+  "Categories.unarchive": "Desarquivar",
+  "Categories.unarchiveParentFirst": "Desarquive {parent} para trazer esta de volta",
+  "Categories.archivedBadge": "Arquivada",
+  "Categories.showArchived": "Mostrar categorias arquivadas",
+  "Categories.hideArchived": "Ocultar categorias arquivadas",
+  "Categories.expenses": "Despesas",
+  "Categories.income": "Receitas",
+  "Categories.inParent": ", em {parent}",
+  "Categories.noExpenses": "Ainda não há categorias de despesa.",
+  "Categories.noIncome": "Ainda não há categorias de receita.",
+  "Categories.readOnly": "Você pode ver as categorias, mas só editores podem alterá-las.",
+  "Categories.loading": "Carregando categorias",
+  "Categories.empty": "Adicione sua primeira categoria",
+  "Categories.emptyHint":
+    "Uma categoria diz por que o dinheiro se moveu: mercado, aluguel, salário. Dê a cada uma um ícone e uma cor.",
+  "Categories.emptyViewer": "Ainda não há categorias",
+  "Categories.allArchived":
+    "Todas as categorias estão arquivadas. Mostre as arquivadas para vê-las.",
+  "Categories.archiveTitle": {
+    "one": "Arquivar {name} e sua {count} subcategoria?",
+    "many": "Arquivar {name} e suas {count} de subcategorias?",
+    "other": "Arquivar {name} e suas {count} subcategorias?",
+  },
+  "Categories.archiveMessage": {
+    "one":
+      "{names} também é arquivada. Ela sai das listas de escolha, suas transações passadas a mantêm e todo total ainda a conta. Você pode desarquivá-la depois.",
+    "many":
+      "{names} também são arquivadas. Elas saem das listas de escolha, suas transações passadas as mantêm e todo total ainda as conta. Você pode desarquivá-las depois.",
+    "other":
+      "{names} também são arquivadas. Elas saem das listas de escolha, suas transações passadas as mantêm e todo total ainda as conta. Você pode desarquivá-las depois.",
+  },
+  "Categories.archiveConfirm": {
+    "one": "Arquivar {count} categoria",
+    "many": "Arquivar {count} de categorias",
+    "other": "Arquivar {count} categorias",
+  },
+  "Categories.cancel": "Cancelar",
+  "CategoryParts.expense": "Despesa",
+  "CategoryParts.income": "Receita",
+  "CategoryEditor.title": "Categoria",
+  "CategoryEditor.new": "Nova categoria",
+  "CategoryEditor.back": "Categorias",
+  "CategoryEditor.loading": "Carregando a categoria",
+  "CategoryEditor.notFound": "Categoria não encontrada",
+  "CategoryEditor.notFoundHint": "Ela pode pertencer a outra família.",
+  "CategoryEditor.name": "Nome",
+  "CategoryEditor.namePlaceholder": "Mercado",
+  "CategoryEditor.kind": "Tipo",
+  "CategoryEditor.parent": "Categoria principal",
+  "CategoryEditor.noParent": "Sem principal: uma categoria de primeiro nível",
+  "CategoryEditor.noParentMatch": "Nenhuma categoria corresponde.",
+  "CategoryEditor.clearParent": "Remover a categoria principal",
+  "CategoryEditor.topLevel": "Nenhuma: uma categoria de primeiro nível",
+  "CategoryEditor.icon": "Ícone",
+  "CategoryEditor.iconSearch": "Buscar ícones",
+  "CategoryEditor.iconEmpty": "Nenhum ícone corresponde a “{query}”.",
+  "CategoryEditor.iconClear": "Limpar busca",
+  "CategoryEditor.iconCount": {
+    "one": "{count} ícone",
+    "many": "{count} de ícones",
+    "other": "{count} ícones",
+  },
+  "CategoryEditor.color": "Cor",
+  "CategoryEditor.summaryTop": "{kind} · primeiro nível",
+  "CategoryEditor.summaryChild": "{kind} · em {parent}",
+  "CategoryEditor.kindLockedChild":
+    "Uma subcategoria tem o tipo da principal. Remova a principal para mudá-lo.",
+  "CategoryEditor.kindLockedParent":
+    "{name} tem subcategorias, então o tipo não pode mudar. Mova-as primeiro.",
+  "CategoryEditor.parentLockedParent":
+    "{name} tem subcategorias, então não pode ficar dentro de outra categoria.",
+  "CategoryEditor.noParentExpense": "Ainda não há outra categoria de despesa onde colocá-la.",
+  "CategoryEditor.noParentIncome": "Ainda não há outra categoria de receita onde colocá-la.",
+  "CategoryEditor.offlineTitle": "Você está offline",
+  "CategoryEditor.offline":
+    "Você pode ver suas categorias, mas as alterações esperam até você voltar a ficar online.",
+  "CategoryEditor.create": "Criar categoria",
+  "CategoryEditor.creating": "Criando categoria",
+  "CategoryEditor.save": "Salvar",
+  "CategoryEditor.saving": "Salvando",
+  "CategoryEditor.discard": "Descartar",
+  "CategoryEditor.cancel": "Cancelar",
+  "CategoriesView.savedTitle": "Categoria salva",
+  "CategoriesView.saved": "{name} está salva.",
+  "CategoriesView.archivedTitle": "Categoria arquivada",
+  "CategoriesView.archived": "{name} está arquivada. Suas transações passadas a mantêm.",
+  "CategoriesView.archivedWithChildren": {
+    "one":
+      "{name} e sua {count} subcategoria estão arquivadas. Suas transações passadas as mantêm.",
+    "many":
+      "{name} e suas {count} de subcategorias estão arquivadas. Suas transações passadas as mantêm.",
+    "other":
+      "{name} e suas {count} subcategorias estão arquivadas. Suas transações passadas as mantêm.",
+  },
+  "CategoriesView.unarchivedTitle": "Categoria de volta ao uso",
+  "CategoriesView.unarchived": "{name} está de volta ao uso.",
+  "CategoriesView.unarchivedWithChildren": {
+    "one": "{name} e sua {count} subcategoria estão de volta ao uso.",
+    "many": "{name} e suas {count} de subcategorias estão de volta ao uso.",
+    "other": "{name} e suas {count} subcategorias estão de volta ao uso.",
+  },
+  "CategoriesView.undo": "Desfazer",
+  "CategoriesView.discardTitle": "Descartar as alterações?",
+  "CategoriesView.discard": "Suas alterações em {name} não estão salvas.",
+  "CategoriesView.discardNew": "A nova categoria não está salva.",
+  "CategoriesView.discardLeave": "Descartar",
+  "CategoriesView.discardStay": "Continuar editando",
+  "CategoryMessages.nameRequired": "Dê um nome à categoria.",
+  "CategoryMessages.nameTakenChild": "{parent} já tem uma subcategoria chamada {name}.",
+  "CategoryMessages.nameTakenExpense": "Já existe uma categoria de despesa chamada {name}.",
+  "CategoryMessages.nameTakenIncome": "Já existe uma categoria de receita chamada {name}.",
+  "CategoryMessages.conflict":
+    "Outra pessoa alterou esta categoria. Agora você vê a alteração dela.",
+  "CategoryMessages.gone": "Esta categoria não está mais nesta família.",
+  "CategoryMessages.parentGone":
+    "Essa categoria principal foi arquivada ou alterada. Escolha outra.",
+  "CategoryMessages.treeChanged":
+    "As categorias mudaram nesse meio-tempo. Confira a principal e o tipo e salve de novo.",
+  "CategoryMessages.parentArchived":
+    "A categoria principal está arquivada. Desarquive a principal para trazer esta de volta.",
+  "CategoryMessages.limit":
+    "Uma família pode ter no máximo {max} categorias. Arquive uma primeiro.",
+  "CategoryMessages.load": "Não foi possível carregar as categorias.",
+  "CategoryMessages.create": "Não foi possível criar a categoria. Tente de novo.",
+  "CategoryMessages.save": "Não foi possível salvar a categoria. Tente de novo.",
+  "CategoryMessages.change": "Não foi possível alterar a categoria. Tente de novo.",
+  "GroupActivity.categoryCreated": "<who>{who}</who> adicionou a categoria “<value>{name}</value>”",
+  "GroupActivity.categoryRenamed":
+    "<who>{who}</who> renomeou a categoria “<value>{from}</value>” para “<value>{name}</value>”",
+  "GroupActivity.categoryChanged": "<who>{who}</who> alterou a categoria “<value>{name}</value>”",
+  "GroupActivity.categoryChangedUnnamed": "<who>{who}</who> alterou uma categoria",
+  "GroupActivity.categoryArchived": "<who>{who}</who> arquivou a categoria “<value>{name}</value>”",
+  "GroupActivity.categoryArchivedWithChildren": {
+    "one": "<who>{who}</who> arquivou a categoria “<value>{name}</value>” com {count} subcategoria",
+    "many":
+      "<who>{who}</who> arquivou a categoria “<value>{name}</value>” com {count} de subcategorias",
+    "other":
+      "<who>{who}</who> arquivou a categoria “<value>{name}</value>” com {count} subcategorias",
+  },
+  "GroupActivity.categoryUnarchived":
+    "<who>{who}</who> desarquivou a categoria “<value>{name}</value>”",
+  "GroupActivity.categoryUnarchivedWithChildren": {
+    "one":
+      "<who>{who}</who> desarquivou a categoria “<value>{name}</value>” com {count} subcategoria",
+    "many":
+      "<who>{who}</who> desarquivou a categoria “<value>{name}</value>” com {count} de subcategorias",
+    "other":
+      "<who>{who}</who> desarquivou a categoria “<value>{name}</value>” com {count} subcategorias",
+  },
+  "GroupImport.categories": {
+    "one": "{count} categoria",
+    "many": "{count} de categorias",
+    "other": "{count} categorias",
+  },
+  "PlanRefusalNotice.categoriesTitle": "{group} atingiu o limite de categorias",
+  "PlanRefusalNotice.categoriesTitleUnnamed": "Este grupo atingiu o limite de categorias",
+  "PlanRefusalNotice.categoriesText": {
+    "one":
+      "O plano permite até {count} categoria em uso. As categorias existentes continuam legíveis, editáveis e arquiváveis.",
+    "many":
+      "O plano permite até {count} de categorias em uso. As categorias existentes continuam legíveis, editáveis e arquiváveis.",
+    "other":
+      "O plano permite até {count} categorias em uso. As categorias existentes continuam legíveis, editáveis e arquiváveis.",
+  },
 } satisfies Catalog

@@ -7,6 +7,7 @@ const ROOT = new URL(`../../`, import.meta.url)
 /** The sections of `/features`: what works today, then the questions. */
 const SECTIONS = [
   `accounts`,
+  `categories`,
   `sign-in`,
   `teams`,
   `realtime`,

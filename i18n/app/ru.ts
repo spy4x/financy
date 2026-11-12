@@ -2418,4 +2418,192 @@ export default {
   "GroupSpreadsheets.readme":
     "Данные группы в виде таблиц: по одному CSV-файлу на каждый вид записей, в кодировке UTF-8, с заголовками в первой строке. Даты и время указаны в формате ISO 8601, по UTC. Чтобы перенести группу в другое приложение, скачайте JSON-файл: импортировать можно только его.",
   "GroupSpreadsheets.notSpreadsheets": "Нет в таблицах, но есть в JSON-файле:",
+  "Frame.categories": "Категории",
+  "Search.newCategory": "Новая категория",
+  "Search.openCategories": "Перейти к категориям",
+  "Categories.title": "Категории",
+  "Categories.add": "Новая категория",
+  "Categories.addFirst": "Добавить категорию",
+  "Categories.addOne": "Добавить",
+  "Categories.addChild": "Добавить подкатегорию",
+  "Categories.edit": "Изменить категорию",
+  "Categories.actions": "Действия для {name}",
+  "Categories.archive": "Убрать в архив",
+  "Categories.unarchive": "Вернуть из архива",
+  "Categories.unarchiveParentFirst": "Верните из архива {parent}, чтобы вернуть эту",
+  "Categories.archivedBadge": "В архиве",
+  "Categories.showArchived": "Показать категории в архиве",
+  "Categories.hideArchived": "Скрыть категории в архиве",
+  "Categories.expenses": "Расходы",
+  "Categories.income": "Доходы",
+  "Categories.inParent": ", в {parent}",
+  "Categories.noExpenses": "Категорий расходов пока нет.",
+  "Categories.noIncome": "Категорий доходов пока нет.",
+  "Categories.readOnly": "Вы можете смотреть категории, но менять их могут только редакторы.",
+  "Categories.loading": "Загружаем категории",
+  "Categories.empty": "Добавьте первую категорию",
+  "Categories.emptyHint":
+    "Категория говорит, на что ушли или откуда пришли деньги: продукты, аренда, зарплата. У каждой есть значок и цвет.",
+  "Categories.emptyViewer": "Категорий пока нет",
+  "Categories.allArchived":
+    "Все категории в архиве. Покажите категории в архиве, чтобы их увидеть.",
+  "Categories.archiveTitle": {
+    "one": "Убрать в архив {name} и {count} подкатегорию?",
+    "few": "Убрать в архив {name} и {count} подкатегории?",
+    "many": "Убрать в архив {name} и {count} подкатегорий?",
+    "other": "Убрать в архив {name} и {count} подкатегории?",
+  },
+  "Categories.archiveMessage": {
+    "one":
+      "{names} тоже уходит в архив. Она пропадёт из списков выбора, прошлые операции её сохранят, а все итоги по-прежнему её учитывают. Её можно вернуть из архива позже.",
+    "few":
+      "{names} тоже уходят в архив. Они пропадут из списков выбора, прошлые операции их сохранят, а все итоги по-прежнему их учитывают. Их можно вернуть из архива позже.",
+    "many":
+      "{names} тоже уходят в архив. Они пропадут из списков выбора, прошлые операции их сохранят, а все итоги по-прежнему их учитывают. Их можно вернуть из архива позже.",
+    "other":
+      "{names} тоже уходят в архив. Они пропадут из списков выбора, прошлые операции их сохранят, а все итоги по-прежнему их учитывают. Их можно вернуть из архива позже.",
+  },
+  "Categories.archiveConfirm": {
+    "one": "Убрать в архив {count} категорию",
+    "few": "Убрать в архив {count} категории",
+    "many": "Убрать в архив {count} категорий",
+    "other": "Убрать в архив {count} категории",
+  },
+  "Categories.cancel": "Отмена",
+  "CategoryParts.expense": "Расход",
+  "CategoryParts.income": "Доход",
+  "CategoryEditor.title": "Категория",
+  "CategoryEditor.new": "Новая категория",
+  "CategoryEditor.back": "Категории",
+  "CategoryEditor.loading": "Загружаем категорию",
+  "CategoryEditor.notFound": "Категория не найдена",
+  "CategoryEditor.notFoundHint": "Возможно, она принадлежит другой семье.",
+  "CategoryEditor.name": "Название",
+  "CategoryEditor.namePlaceholder": "Продукты",
+  "CategoryEditor.kind": "Тип",
+  "CategoryEditor.parent": "Родительская категория",
+  "CategoryEditor.noParent": "Без родителя: категория верхнего уровня",
+  "CategoryEditor.noParentMatch": "Ни одна категория не подходит.",
+  "CategoryEditor.clearParent": "Убрать родительскую категорию",
+  "CategoryEditor.topLevel": "Нет: категория верхнего уровня",
+  "CategoryEditor.icon": "Значок",
+  "CategoryEditor.iconSearch": "Искать значки",
+  "CategoryEditor.iconEmpty": "Нет значка для «{query}».",
+  "CategoryEditor.iconClear": "Очистить поиск",
+  "CategoryEditor.iconCount": {
+    "one": "{count} значок",
+    "few": "{count} значка",
+    "many": "{count} значков",
+    "other": "{count} значка",
+  },
+  "CategoryEditor.color": "Цвет",
+  "CategoryEditor.summaryTop": "{kind} · верхний уровень",
+  "CategoryEditor.summaryChild": "{kind} · в {parent}",
+  "CategoryEditor.kindLockedChild":
+    "У подкатегории тип её родителя. Уберите родителя, чтобы сменить тип.",
+  "CategoryEditor.kindLockedParent":
+    "У {name} есть подкатегории, поэтому тип нельзя сменить. Сначала перенесите их.",
+  "CategoryEditor.parentLockedParent":
+    "У {name} есть подкатегории, поэтому её нельзя вложить в другую категорию.",
+  "CategoryEditor.noParentExpense": "Пока нет другой категории расходов, куда её можно вложить.",
+  "CategoryEditor.noParentIncome": "Пока нет другой категории доходов, куда её можно вложить.",
+  "CategoryEditor.offlineTitle": "Вы офлайн",
+  "CategoryEditor.offline":
+    "Категории можно смотреть, а изменения подождут, пока вы снова не окажетесь в сети.",
+  "CategoryEditor.create": "Создать категорию",
+  "CategoryEditor.creating": "Создаём категорию",
+  "CategoryEditor.save": "Сохранить",
+  "CategoryEditor.saving": "Сохраняем",
+  "CategoryEditor.discard": "Отменить изменения",
+  "CategoryEditor.cancel": "Отмена",
+  "CategoriesView.savedTitle": "Категория сохранена",
+  "CategoriesView.saved": "{name} сохранена.",
+  "CategoriesView.archivedTitle": "Категория в архиве",
+  "CategoriesView.archived": "{name} в архиве. Прошлые операции её сохраняют.",
+  "CategoriesView.archivedWithChildren": {
+    "one": "{name} и {count} подкатегория в архиве. Прошлые операции их сохраняют.",
+    "few": "{name} и {count} подкатегории в архиве. Прошлые операции их сохраняют.",
+    "many": "{name} и {count} подкатегорий в архиве. Прошлые операции их сохраняют.",
+    "other": "{name} и {count} подкатегории в архиве. Прошлые операции их сохраняют.",
+  },
+  "CategoriesView.unarchivedTitle": "Категория снова в деле",
+  "CategoriesView.unarchived": "{name} снова в деле.",
+  "CategoriesView.unarchivedWithChildren": {
+    "one": "{name} и {count} подкатегория снова в деле.",
+    "few": "{name} и {count} подкатегории снова в деле.",
+    "many": "{name} и {count} подкатегорий снова в деле.",
+    "other": "{name} и {count} подкатегории снова в деле.",
+  },
+  "CategoriesView.undo": "Отменить",
+  "CategoriesView.discardTitle": "Не сохранять изменения?",
+  "CategoriesView.discard": "Изменения в {name} не сохранены.",
+  "CategoriesView.discardNew": "Новая категория не сохранена.",
+  "CategoriesView.discardLeave": "Не сохранять",
+  "CategoriesView.discardStay": "Продолжить редактирование",
+  "CategoryMessages.nameRequired": "Дайте категории название.",
+  "CategoryMessages.nameTakenChild": "У {parent} уже есть подкатегория {name}.",
+  "CategoryMessages.nameTakenExpense": "Категория расходов {name} уже есть.",
+  "CategoryMessages.nameTakenIncome": "Категория доходов {name} уже есть.",
+  "CategoryMessages.conflict":
+    "Кто-то другой изменил эту категорию. Теперь вы видите его изменения.",
+  "CategoryMessages.gone": "Этой категории больше нет в этой семье.",
+  "CategoryMessages.parentGone":
+    "Эту родительскую категорию убрали в архив или изменили. Выберите другую.",
+  "CategoryMessages.treeChanged":
+    "Пока вы редактировали, категории изменились. Проверьте родителя и тип и сохраните снова.",
+  "CategoryMessages.parentArchived":
+    "Её родительская категория в архиве. Верните родителя из архива, чтобы вернуть эту.",
+  "CategoryMessages.limit":
+    "В семье может быть не больше {max} категорий. Сначала уберите одну в архив.",
+  "CategoryMessages.load": "Не удалось загрузить категории.",
+  "CategoryMessages.create": "Не удалось создать категорию. Попробуйте ещё раз.",
+  "CategoryMessages.save": "Не удалось сохранить категорию. Попробуйте ещё раз.",
+  "CategoryMessages.change": "Не удалось изменить категорию. Попробуйте ещё раз.",
+  "GroupActivity.categoryCreated": "<who>{who}</who> добавляет категорию «<value>{name}</value>»",
+  "GroupActivity.categoryRenamed":
+    "<who>{who}</who> переименовывает категорию «<value>{from}</value>» в «<value>{name}</value>»",
+  "GroupActivity.categoryChanged": "<who>{who}</who> изменяет категорию «<value>{name}</value>»",
+  "GroupActivity.categoryChangedUnnamed": "<who>{who}</who> изменяет категорию",
+  "GroupActivity.categoryArchived":
+    "<who>{who}</who> убирает в архив категорию «<value>{name}</value>»",
+  "GroupActivity.categoryArchivedWithChildren": {
+    "one":
+      "<who>{who}</who> убирает в архив категорию «<value>{name}</value>» и {count} подкатегорию",
+    "few":
+      "<who>{who}</who> убирает в архив категорию «<value>{name}</value>» и {count} подкатегории",
+    "many":
+      "<who>{who}</who> убирает в архив категорию «<value>{name}</value>» и {count} подкатегорий",
+    "other":
+      "<who>{who}</who> убирает в архив категорию «<value>{name}</value>» и {count} подкатегории",
+  },
+  "GroupActivity.categoryUnarchived":
+    "<who>{who}</who> возвращает из архива категорию «<value>{name}</value>»",
+  "GroupActivity.categoryUnarchivedWithChildren": {
+    "one":
+      "<who>{who}</who> возвращает из архива категорию «<value>{name}</value>» и {count} подкатегорию",
+    "few":
+      "<who>{who}</who> возвращает из архива категорию «<value>{name}</value>» и {count} подкатегории",
+    "many":
+      "<who>{who}</who> возвращает из архива категорию «<value>{name}</value>» и {count} подкатегорий",
+    "other":
+      "<who>{who}</who> возвращает из архива категорию «<value>{name}</value>» и {count} подкатегории",
+  },
+  "GroupImport.categories": {
+    "one": "{count} категория",
+    "few": "{count} категории",
+    "many": "{count} категорий",
+    "other": "{count} категории",
+  },
+  "PlanRefusalNotice.categoriesTitle": "{group}: достигнут предел категорий",
+  "PlanRefusalNotice.categoriesTitleUnnamed": "Группа достигла предела категорий",
+  "PlanRefusalNotice.categoriesText": {
+    "one":
+      "Тариф группы позволяет до {count} категории в деле. Существующие категории можно читать, менять и убирать в архив.",
+    "few":
+      "Тариф группы позволяет до {count} категорий в деле. Существующие категории можно читать, менять и убирать в архив.",
+    "many":
+      "Тариф группы позволяет до {count} категорий в деле. Существующие категории можно читать, менять и убирать в архив.",
+    "other":
+      "Тариф группы позволяет до {count} категории в деле. Существующие категории можно читать, менять и убирать в архив.",
+  },
 } satisfies Catalog

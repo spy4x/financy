@@ -186,11 +186,12 @@ export default define.page(function Privacy({ state }) {
       <p>
         To run the service and answer support, the operators can see in the admin panel each
         account's details, its sign-in records with IP addresses, its devices, notifications and API
-        tokens, and each household's members, plan and overview. They can also open and download a
-        household's uploaded files, and each time they open one, it is recorded. The small image
-        previews in the file list are not recorded. Nobody at NeatSoft looks at a household's
-        accounts or transactions, except when the household asks for help with a problem, or when
-        the law requires it.
+        tokens, and each household's members, plan and overview, and how many accounts and
+        categories a household has, never their names. They can also open and download a household's
+        uploaded files, and each time they open one, it is recorded. The small image previews in the
+        file list are not recorded. Nobody at NeatSoft looks at a household's accounts or
+        transactions, except when the household asks for help with a problem, or when the law
+        requires it.
       </p>
 
       <h2 id="processors">Companies that handle it</h2>

@@ -524,7 +524,7 @@ export function createSignIn(options: SignInOptions): SignIn {
 
   /**
    * The profile, first group, starter data and `SIGNED_UP` audit row of a new auth user, written
-   * in the sign-up's transaction `tx`.
+   * in the sign-up's transaction `tx`. `language` is the sign-up page's, for the starter data.
    */
   async function createProfile(
     c: Context,
@@ -532,6 +532,7 @@ export function createSignIn(options: SignInOptions): SignIn {
     authUserId: number,
     email: string | null,
     firstGroupId: string,
+    language: string | null = null,
   ): Promise<User> {
     const user = await tx.user.createForAuthUser(authUserId, {
       firstName: "",
@@ -542,7 +543,7 @@ export function createSignIn(options: SignInOptions): SignIn {
     })
     await tx.group.createFirst({ id: firstGroupId, name: "Personal" }, user.id)
     // The worker makes the welcome note, so a slow job never holds up the sign-up.
-    await tx.starterData.queue(user.id)
+    await tx.starterData.queue(user.id, language)
     await tx.authAudit.insert(auditRow(c, user.id, AuthAuditEventType.SIGNED_UP, email))
     return user
   }
