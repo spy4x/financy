@@ -14,6 +14,7 @@ import {
   parseTransactionExportEntry,
   parseTransactionRequest,
   summarizeLedger,
+  summarizeLedgerMonths,
   TRANSACTION_MEMO_MAX_LENGTH,
   transactionCreatePayloadSchema,
   type TransactionFields,
@@ -527,6 +528,43 @@ describe("the ledger summary", () => {
     )
 
     expect(ledger).toMatchObject({ income: null, spending: null, net: null, tooLarge: true })
+  })
+
+  it("cuts a run of months into one ledger per month, each as it reads alone, an empty month included", async () => {
+    const rows = [
+      { categoryId: salary, currency: "EUR", date: "2026-10-31", amount: 1000 },
+      { categoryId: rent, currency: "EUR", date: "2026-11-01", amount: -500 },
+      { categoryId: groceries, currency: "USD", date: "2027-01-31", amount: -200 },
+    ]
+    const lookup = lookupFrom({ "USD:EUR:2027-01-31": "0.5" })
+
+    const months = await summarizeLedgerMonths(
+      rows,
+      categories,
+      { currency: "EUR", from: "2026-10-01", to: "2027-01-31" },
+      lookup,
+    )
+    const alone = await Promise.all(
+      [["2026-10-01", "2026-10-31"], ["2026-11-01", "2026-11-30"], [
+        "2026-12-01",
+        "2026-12-31",
+      ], ["2027-01-01", "2027-01-31"]].map(([from, to]) =>
+        summarizeLedger(
+          rows.filter((row) => row.date >= from && row.date <= to),
+          categories,
+          { currency: "EUR", from, to },
+          lookup,
+        )
+      ),
+    )
+
+    expect(months).toEqual(alone)
+    expect(months.map((month) => [month.from, month.income, month.spending])).toEqual([
+      ["2026-10-01", 1000, 0],
+      ["2026-11-01", 0, 500],
+      ["2026-12-01", 0, 0],
+      ["2027-01-01", 0, 100],
+    ])
   })
 })
 

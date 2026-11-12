@@ -8,21 +8,33 @@ import {
   type LedgerCategory,
   type LedgerRow,
   summarizeLedger,
+  summarizeLedgerMonths,
 } from "@domain/transactions"
+import { endOfMonth } from "@spy4x/time/date"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
   assertBudgetCategory,
   assertCanReadBudgets,
+  assertCanSetBudgetMethod,
   assertCanWriteBudgets,
   BUDGET_AMOUNT_MAX,
+  type BudgetAssignment,
   BudgetBand,
   budgetBand,
   type BudgetCategory,
   type BudgetLimit,
   BudgetLimitSource,
+  BudgetMethod,
+  budgetMethodAt,
+  budgetMethodSetPayloadSchema,
   budgetMonth,
   budgetMonthPayloadSchema,
+  budgetMovePayloadSchema,
+  type BudgetMoveTotal,
   budgetSetPayloadSchema,
+  ENVELOPE_RUN_MAX_MONTHS,
+  envelopeMonth,
+  envelopeRunStart,
   parseBudgetRequest,
 } from "./+lib.ts"
 
@@ -460,5 +472,282 @@ describe("a month of bars", () => {
       band: null,
       percent: null,
     })
+  })
+})
+
+describe("the budget.method.set and budget.move payloads", () => {
+  const move = {
+    id: "019a5b0e-1af5-7f04-8ae4-b1ee5d119001",
+    groupId,
+    month: "2026-11",
+    fromCategoryId: rent,
+    toCategoryId: food,
+    amount: 1000,
+  }
+
+  it("takes either method with or without a version, and refuses another method or a month", () => {
+    for (const method of [BudgetMethod.LIMITS, BudgetMethod.ENVELOPES]) {
+      expect(
+        parseBudgetRequest(budgetMethodSetPayloadSchema, { groupId, method, expectedVersion: 2 }),
+      ).toEqual({ groupId, method, expectedVersion: 2 })
+    }
+    for (
+      const payload of [
+        { groupId, method: 3, expectedVersion: null },
+        { groupId, method: BudgetMethod.ENVELOPES, expectedVersion: null, month: "2026-11" },
+        { groupId, method: BudgetMethod.ENVELOPES },
+      ]
+    ) {
+      expect(codeOf(() => parseBudgetRequest(budgetMethodSetPayloadSchema, payload))).toBe(
+        "INVALID_REQUEST",
+      )
+    }
+  })
+
+  it("takes a move, and refuses one into the envelope it comes from", () => {
+    expect(parseBudgetRequest(budgetMovePayloadSchema, move)).toEqual(move)
+    let refusal: unknown
+    try {
+      parseBudgetRequest(budgetMovePayloadSchema, { ...move, toCategoryId: rent })
+    } catch (error) {
+      refusal = error
+    }
+    expect(refusal).toMatchObject({
+      code: "INVALID_REQUEST",
+      fields: { toCategoryId: { code: "same" } },
+    })
+  })
+
+  it("refuses a move of zero, a fraction, past the safe range, or with an id that is no UUID", () => {
+    for (
+      const payload of [
+        { ...move, amount: 0 },
+        { ...move, amount: 0.5 },
+        { ...move, amount: BUDGET_AMOUNT_MAX + 1 },
+        { ...move, id: "move-1" },
+        { ...move, currency: "EUR" },
+      ]
+    ) {
+      expect(codeOf(() => parseBudgetRequest(budgetMovePayloadSchema, payload))).toBe(
+        "INVALID_REQUEST",
+      )
+    }
+  })
+})
+
+describe("who may switch the budgeting method", () => {
+  it("lets an admin or the owner switch it, refuses an editor and a viewer, and tells a stranger nothing", () => {
+    expect(codeOf(() => assertCanSetBudgetMethod(GroupRole.OWNER))).toBeUndefined()
+    expect(codeOf(() => assertCanSetBudgetMethod(GroupRole.ADMIN))).toBeUndefined()
+    expect(codeOf(() => assertCanSetBudgetMethod(GroupRole.EDITOR))).toBe("ROLE_INSUFFICIENT")
+    expect(codeOf(() => assertCanSetBudgetMethod(GroupRole.VIEWER))).toBe("ROLE_INSUFFICIENT")
+    expect(codeOf(() => assertCanSetBudgetMethod(null))).toBe("GROUP_NOT_FOUND")
+  })
+})
+
+describe("a month's budgeting method", () => {
+  const rows = [
+    { month: "2026-11", method: BudgetMethod.ENVELOPES },
+    { month: "2027-02", method: BudgetMethod.LIMITS },
+    { month: "2027-05", method: BudgetMethod.ENVELOPES },
+    { month: "2027-07", method: BudgetMethod.ENVELOPES },
+  ]
+
+  it("is monthly limits before the first switch, and the latest switch at or before a month after it", () => {
+    expect(budgetMethodAt([], "2026-11")).toBe(BudgetMethod.LIMITS)
+    expect(budgetMethodAt(rows, "2026-10")).toBe(BudgetMethod.LIMITS)
+    expect(budgetMethodAt(rows, "2026-11")).toBe(BudgetMethod.ENVELOPES)
+    expect(budgetMethodAt(rows, "2027-01")).toBe(BudgetMethod.ENVELOPES)
+    expect(budgetMethodAt(rows, "2027-03")).toBe(BudgetMethod.LIMITS)
+    expect(budgetMethodAt(rows, "2027-06")).toBe(BudgetMethod.ENVELOPES)
+  })
+
+  it("starts an envelope run at the switch after a month of limits, and keeps a second envelope row in it", () => {
+    expect(envelopeRunStart(rows, "2026-10")).toBeNull()
+    expect(envelopeRunStart(rows, "2027-01")).toBe("2026-11")
+    expect(envelopeRunStart(rows, "2027-03")).toBeNull()
+    expect(envelopeRunStart(rows, "2027-06")).toBe("2027-05")
+    expect(envelopeRunStart([...rows].reverse(), "2027-09")).toBe("2027-05")
+  })
+
+  it("never walks back more than the cap", () => {
+    const start = [{ month: "2020-01", method: BudgetMethod.ENVELOPES }]
+    expect(ENVELOPE_RUN_MAX_MONTHS).toBe(60)
+    expect(envelopeRunStart(start, "2024-12")).toBe("2020-01")
+    expect(envelopeRunStart(start, "2025-01")).toBe("2020-02")
+  })
+})
+
+describe("a month of envelopes", () => {
+  const salary = "019a5b0e-1af5-7f04-8ae4-b1ee5d114005"
+  const categories: LedgerCategory[] = [
+    ...LEDGER_CATEGORIES,
+    { id: salary, kind: CategoryKind.INCOME, parentId: null },
+  ]
+  const earned = (amount: number, date = "2026-11-01") => ({
+    categoryId: salary,
+    currency: "EUR",
+    date,
+    amount,
+  })
+  const assigned = (
+    categoryId: string,
+    amount: number,
+    month = "2026-11",
+    currency = "EUR",
+  ): BudgetAssignment => ({ month, categoryId, amount, currency })
+  const moved = (
+    categoryId: string,
+    movedIn: number,
+    movedOut: number,
+    month = "2026-11",
+    currency = "EUR",
+  ): BudgetMoveTotal => ({ month, categoryId, currency, movedIn, movedOut })
+
+  /**
+   * The last month of a run from `from` to `to` over `rows`, through the real ledger summary in
+   * EUR. Each month converts at its last day's rate; rates are keyed `BASE:QUOTE:DATE`.
+   */
+  async function run(input: {
+    from?: string
+    to?: string
+    rows?: LedgerRow[]
+    assignments?: BudgetAssignment[]
+    moves?: BudgetMoveTotal[]
+    rates?: Record<string, string>
+  }) {
+    const lookup: EntryRateLookup = (base, quote, date) => {
+      const value = input.rates?.[`${base}:${quote}:${date}`]
+      return Promise.resolve(value === undefined ? null : rate(base, quote, value, date))
+    }
+    const from = input.from ?? "2026-11"
+    const ledgers = await summarizeLedgerMonths(input.rows ?? [], categories, {
+      currency: "EUR",
+      from: `${from}-01`,
+      to: endOfMonth(`${input.to ?? from}-01`),
+    }, lookup)
+    return await envelopeMonth({
+      baseCurrency: "EUR",
+      categories: CATEGORIES,
+      months: ledgers.map((ledger) => ({
+        month: ledger.from.slice(0, 7),
+        ledger,
+        rateDate: ledger.to,
+      })),
+      assignments: input.assignments ?? [],
+      moves: input.moves ?? [],
+    }, lookup)
+  }
+
+  it("rolls what an envelope left into the next month, and assigns each month only its own row", async () => {
+    const december = await run({
+      to: "2026-12",
+      rows: [spent(rent, 20000), spent(rent, 10000, "EUR", "2026-12-03")],
+      assignments: [assigned(rent, 50000)],
+    })
+
+    expect(december.envelopes.get(rent)).toEqual({
+      assigned: 0,
+      movedIn: 0,
+      movedOut: 0,
+      spent: 10000,
+      available: 20000,
+    })
+  })
+
+  it("shows an overspent envelope below zero, starts it at zero next month and takes the excess from ready to assign", async () => {
+    const input = {
+      rows: [earned(100000), spent(rent, 35000)],
+      assignments: [assigned(rent, 30000), assigned(rent, 10000, "2026-12")],
+    }
+
+    const november = await run(input)
+    const december = await run({ ...input, to: "2026-12" })
+
+    expect(november.envelopes.get(rent)).toMatchObject({ available: -5000 })
+    expect(november.readyToAssign).toBe(70000)
+    expect(december.envelopes.get(rent)).toMatchObject({ assigned: 10000, available: 10000 })
+    // 70000 carried, no income, 10000 assigned, 5000 overspent in November.
+    expect(december.readyToAssign).toBe(55000)
+  })
+
+  it("moves money between envelopes without changing ready to assign", async () => {
+    const month = await run({
+      rows: [earned(100000)],
+      assignments: [assigned(rent, 30000)],
+      moves: [moved(rent, 0, 10000), moved(cafes, 10000, 0)],
+    })
+
+    expect(month.envelopes.get(rent)).toMatchObject({ movedOut: 10000, available: 20000 })
+    expect(month.envelopes.get(cafes)).toMatchObject({ movedIn: 10000, available: 10000 })
+    expect(month.readyToAssign).toBe(70000)
+  })
+
+  it("converts assignments and moves at the month's rate, entries at their day's, and names a currency with no rate (R8)", async () => {
+    const month = await run({
+      rows: [earned(10000), spent(rent, 4000, "USD", "2026-11-10")],
+      assignments: [
+        assigned(rent, 10000, "2026-11", "USD"),
+        assigned(cafes, 1000, "2026-11", "JPY"),
+      ],
+      moves: [moved(rent, 2000, 0, "2026-11", "USD")],
+      rates: { "USD:EUR:2026-11-30": "0.5", "USD:EUR:2026-11-10": "0.75" },
+    })
+
+    // Assigned 100 USD at 0.5 and moved in 20 USD at 0.5; spent 40 USD at 0.75.
+    expect(month.envelopes.get(rent)).toEqual({
+      assigned: 5000,
+      movedIn: 1000,
+      movedOut: 0,
+      spent: 3000,
+      available: 3000,
+    })
+    expect(month.envelopes.get(cafes)).toMatchObject({ assigned: 0, available: 0 })
+    expect(month.readyToAssign).toBe(5000)
+    expect(month.leftOut).toEqual(["JPY"])
+  })
+
+  it("rolls a parent's own envelope up with its children's, each with its own balance (R13)", async () => {
+    const month = await run({
+      rows: [spent(groceries, 6000), spent(food, 1000)],
+      assignments: [assigned(food, 10000), assigned(groceries, 5000), assigned(cafes, 2000)],
+    })
+
+    expect(month.envelopes.get(groceries)).toMatchObject({ spent: 6000, available: -1000 })
+    expect(month.envelopes.get(food)).toEqual({
+      assigned: 17000,
+      movedIn: 0,
+      movedOut: 0,
+      spent: 7000,
+      available: 10000,
+    })
+  })
+
+  it("carries each child's balance on its own, so a parent's overspent child starts the next month at zero", async () => {
+    const december = await run({
+      to: "2026-12",
+      rows: [spent(groceries, 6000)],
+      assignments: [assigned(food, 10000), assigned(groceries, 5000)],
+    })
+
+    expect(december.envelopes.get(groceries)).toMatchObject({ available: 0 })
+    expect(december.envelopes.get(food)).toMatchObject({ available: 10000 })
+    expect(december.readyToAssign).toBe(-16000)
+  })
+
+  it("makes every figure null when a sum in the run is past the safe range", async () => {
+    const month = await run({
+      rows: [spent(rent, BUDGET_AMOUNT_MAX), spent(rent, BUDGET_AMOUNT_MAX, "EUR", "2026-11-11")],
+      assignments: [assigned(rent, 1000)],
+    })
+
+    expect(month.envelopes.get(rent)).toEqual({
+      assigned: null,
+      movedIn: null,
+      movedOut: null,
+      spent: null,
+      available: null,
+    })
+    expect(month.readyToAssign).toBeNull()
   })
 })

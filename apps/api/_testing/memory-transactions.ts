@@ -8,6 +8,7 @@ import {
   type Ledger,
   type LedgerRow,
   summarizeLedger,
+  summarizeLedgerMonths,
   type Transaction,
   type TransactionCreateInput,
   type TransactionDeleteInput,
@@ -155,6 +156,26 @@ export class MemoryTransactionRepository implements TransactionRepository {
   }
 
   async ledger(groupId: string, currency: string, from: string, to: string): Promise<Ledger> {
+    const { rows, categories } = this.#ledgerRows(groupId, currency, from, to)
+    return await summarizeLedger(rows, categories, { currency, from, to }, this.references.rates)
+  }
+
+  async ledgerMonths(
+    groupId: string,
+    currency: string,
+    from: string,
+    to: string,
+  ): Promise<Ledger[]> {
+    const { rows, categories } = this.#ledgerRows(groupId, currency, from, to)
+    return await summarizeLedgerMonths(
+      rows,
+      categories,
+      { currency, from, to },
+      this.references.rates,
+    )
+  }
+
+  #ledgerRows(groupId: string, currency: string, from: string, to: string) {
     const rows: LedgerRow[] = [...this.transactions.values()]
       .filter((entry) =>
         entry.groupId === groupId && entry.deletedAt === null && entry.date >= from &&
@@ -173,7 +194,7 @@ export class MemoryTransactionRepository implements TransactionRepository {
     const categories = [...this.references.categories]
       .filter(([, category]) => category.groupId === groupId)
       .map(([id, category]) => ({ id, kind: category.kind, parentId: category.parentId ?? null }))
-    return await summarizeLedger(rows, categories, { currency, from, to }, this.references.rates)
+    return { rows, categories }
   }
 
   #find(groupId: string, id: string): Transaction | null {

@@ -1,15 +1,23 @@
 import type postgres from "postgres"
 import {
   assertBudgetCategory,
+  assertCanSetBudgetMethod,
   assertCanWriteBudgets,
   type Budget,
   BUDGET_EVENTS,
+  type BudgetAssignment,
   type BudgetCategory,
   BudgetError,
+  type BudgetMethodSetInput,
+  type BudgetMethodSetting,
+  type BudgetMove,
+  type BudgetMoveInput,
+  type BudgetMoveTotal,
   type BudgetRepository,
   type BudgetSetInput,
   BudgetVersionConflictError,
 } from "@domain/budgets"
+import type { GroupRole } from "@domain/groups"
 import { CategoryKind } from "@domain/categories"
 import {
   GroupNotActiveError,
@@ -24,18 +32,25 @@ interface BudgetRow extends postgres.Row, Omit<Budget, "amount"> {
   amount: string | null
 }
 
+/** A move as postgres.js reads it: the BIGINT amount comes as decimal text. */
+interface BudgetMoveRow extends postgres.Row, Omit<BudgetMove, "amount"> {
+  amount: string
+}
+
 /**
- * Checks, in the write's own transaction, that the actor may still set budgets. The lock it takes
- * on the group makes every other write of the household wait, so the category cannot be archived
- * or change its kind under the set. A group deleted since is answered as a missing group.
+ * Checks, in the write's own transaction, that the actor may still write budgets by `assert`. The
+ * lock it takes on the group makes every other write of the household wait, so a category cannot
+ * be archived or change its kind under the write. A group deleted since is answered as a missing
+ * group.
  */
 async function assertWriterNow(
   transaction: postgres.TransactionSql,
   groupId: string,
   actorId: number,
+  assert: (role: GroupRole | null) => void = assertCanWriteBudgets,
 ): Promise<void> {
   try {
-    assertCanWriteBudgets(await lockActorRole(transaction, groupId, actorId))
+    assert(await lockActorRole(transaction, groupId, actorId))
   } catch (error) {
     if (error instanceof GroupNotActiveError) {
       throw new BudgetError("GROUP_NOT_FOUND", "Group not found")
@@ -96,6 +111,148 @@ export class PostgresBudgetRepository implements BudgetRepository {
     })
   }
 
+  async setMethod(input: BudgetMethodSetInput, actorId: number): Promise<BudgetMethodSetting> {
+    return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
+      await assertWriterNow(transaction, input.groupId, actorId, assertCanSetBudgetMethod)
+      const month = `${input.month}-01`
+      const [current] = await transaction<{ id: string; version: number }[]>`
+        SELECT id, version FROM budget_methods
+        WHERE group_id = ${input.groupId} AND month = ${month}::date
+        FOR UPDATE
+      `
+      if ((current?.version ?? null) !== input.expectedVersion) {
+        throw new BudgetVersionConflictError(current?.version ?? null)
+      }
+      const id = current?.id ?? uuidV7()
+      const sequence = await recordChange(
+        transaction,
+        input.groupId,
+        actorId,
+        BUDGET_EVENTS.methodSet,
+      )
+      const [row] = current
+        ? await transaction<BudgetMethodSetting[]>`
+          UPDATE budget_methods
+          SET method = ${input.method}, version = version + 1, change_sequence = ${sequence}::bigint,
+              updated_by_user_id = ${actorId}, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ${id} AND group_id = ${input.groupId}
+          RETURNING ${methodColumns(transaction)}
+        `
+        : await transaction<BudgetMethodSetting[]>`
+          INSERT INTO budget_methods (
+            id, group_id, month, method, change_sequence, created_by_user_id, updated_by_user_id
+          ) VALUES (
+            ${id}, ${input.groupId}, ${month}::date, ${input.method}, ${sequence}::bigint,
+            ${actorId}, ${actorId}
+          )
+          RETURNING ${methodColumns(transaction)}
+        `
+      return row
+    })
+  }
+
+  async move(input: BudgetMoveInput, actorId: number): Promise<BudgetMove> {
+    return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
+      await assertWriterNow(transaction, input.groupId, actorId)
+      const categories = await transaction<
+        { id: string; kind: CategoryKind; archived: boolean }[]
+      >`
+        SELECT id, kind, archived_at IS NOT NULL AS archived FROM categories
+        WHERE group_id = ${input.groupId}
+          AND id IN (${input.fromCategoryId}, ${input.toCategoryId})
+      `
+      for (const id of [input.fromCategoryId, input.toCategoryId]) {
+        assertBudgetCategory(
+          categories.find((category) => category.id === id) ?? null,
+          input.amount,
+        )
+      }
+      const [inserted] = await transaction<{ id: string }[]>`
+        INSERT INTO budget_moves (
+          id, group_id, month, from_category_id, to_category_id, amount, currency,
+          change_sequence, created_by_user_id
+        ) VALUES (
+          ${input.id}, ${input.groupId}, ${`${input.month}-01`}::date, ${input.fromCategoryId},
+          ${input.toCategoryId}, ${input.amount}, ${input.currency}, 1, ${actorId}
+        )
+        ON CONFLICT (id) DO NOTHING
+        RETURNING id
+      `
+      if (!inserted) {
+        // The id names a move already stored, maybe another household's: only this household's
+        // move with the same fields is this request's, and a retry records no second change.
+        const [stored] = await transaction<BudgetMoveRow[]>`
+          SELECT ${moveColumns(transaction)} FROM budget_moves WHERE id = ${input.id}
+        `
+        const move = stored ? toMove(stored) : null
+        if (
+          move === null || move.groupId !== input.groupId || move.month !== input.month ||
+          move.fromCategoryId !== input.fromCategoryId ||
+          move.toCategoryId !== input.toCategoryId || move.amount !== input.amount
+        ) {
+          throw new BudgetError("ID_ALREADY_EXISTS", "This move id is taken by another move")
+        }
+        return move
+      }
+      const sequence = await recordChange(transaction, input.groupId, actorId, BUDGET_EVENTS.move)
+      const [row] = await transaction<BudgetMoveRow[]>`
+        UPDATE budget_moves SET change_sequence = ${sequence}::bigint
+        WHERE id = ${input.id} AND group_id = ${input.groupId}
+        RETURNING ${moveColumns(transaction)}
+      `
+      return toMove(row)
+    })
+  }
+
+  async methodsUpTo(groupId: string, month: string): Promise<BudgetMethodSetting[]> {
+    return await this.sql<BudgetMethodSetting[]>`
+      SELECT ${methodColumns(this.sql)} FROM budget_methods
+      WHERE group_id = ${groupId} AND month <= ${`${month}-01`}::date
+      ORDER BY month
+    `
+  }
+
+  async assignmentsIn(groupId: string, from: string, to: string): Promise<BudgetAssignment[]> {
+    const rows = await this.sql<(Omit<BudgetAssignment, "amount"> & { amount: string })[]>`
+      SELECT to_char(month, 'YYYY-MM') AS month, category_id, amount::text AS amount, currency
+      FROM budgets
+      WHERE group_id = ${groupId} AND amount IS NOT NULL
+        AND month BETWEEN ${`${from}-01`}::date AND ${`${to}-01`}::date
+    `
+    return rows.map((row) => ({ ...row, amount: amountOf(row.amount) }))
+  }
+
+  async moveTotalsIn(groupId: string, from: string, to: string): Promise<BudgetMoveTotal[]> {
+    const rows = await this.sql<
+      (Omit<BudgetMoveTotal, "movedIn" | "movedOut"> & { movedIn: string; movedOut: string })[]
+    >`
+      SELECT
+        to_char(sides.month, 'YYYY-MM') AS month,
+        sides.category_id,
+        sides.currency,
+        sum(sides.moved_in)::text AS moved_in,
+        sum(sides.moved_out)::text AS moved_out
+      FROM (
+        SELECT month, to_category_id AS category_id, currency, amount AS moved_in, 0 AS moved_out
+        FROM budget_moves
+        WHERE group_id = ${groupId}
+          AND month BETWEEN ${`${from}-01`}::date AND ${`${to}-01`}::date
+        UNION ALL
+        SELECT month, from_category_id, currency, 0, amount
+        FROM budget_moves
+        WHERE group_id = ${groupId}
+          AND month BETWEEN ${`${from}-01`}::date AND ${`${to}-01`}::date
+      ) AS sides
+      GROUP BY 1, 2, 3
+    `
+    // A sum past the safe range reads as an unsafe number, which the envelopes report as too large.
+    return rows.map((row) => ({
+      ...row,
+      movedIn: Number(row.movedIn),
+      movedOut: Number(row.movedOut),
+    }))
+  }
+
   async limitsAt(groupId: string, month: string): Promise<Budget[]> {
     const rows = await this.sql<BudgetRow[]>`
       SELECT DISTINCT ON (budgets.category_id) ${this.columns()} FROM budgets
@@ -132,15 +289,7 @@ export class PostgresBudgetRepository implements BudgetRepository {
     id: string,
     actorId: number,
   ): Promise<Budget> {
-    let sequence: string
-    try {
-      sequence = await recordGroupChange(transaction, groupId, actorId, BUDGET_EVENTS.set)
-    } catch (error) {
-      if (error instanceof GroupNotActiveError) {
-        throw new BudgetError("GROUP_NOT_FOUND", "Group not found")
-      }
-      throw error
-    }
+    const sequence = await recordChange(transaction, groupId, actorId, BUDGET_EVENTS.set)
     const [row] = await this.sql<BudgetRow[]>`
       UPDATE budgets SET change_sequence = ${sequence}::bigint
       WHERE id = ${id} AND group_id = ${groupId}
@@ -165,6 +314,68 @@ export class PostgresBudgetRepository implements BudgetRepository {
       budgets.created_at,
       budgets.updated_at
     `
+  }
+}
+
+/** Moves the group's sequence for one budget write; a group deleted since is a missing group. */
+async function recordChange(
+  transaction: postgres.TransactionSql,
+  groupId: string,
+  actorId: number,
+  kind: string,
+): Promise<string> {
+  try {
+    return await recordGroupChange(transaction, groupId, actorId, kind)
+  } catch (error) {
+    if (error instanceof GroupNotActiveError) {
+      throw new BudgetError("GROUP_NOT_FOUND", "Group not found")
+    }
+    throw error
+  }
+}
+
+function methodColumns(sql: postgres.Sql) {
+  return sql`
+    budget_methods.id,
+    budget_methods.group_id,
+    to_char(budget_methods.month, 'YYYY-MM') AS month,
+    budget_methods.method,
+    budget_methods.version,
+    budget_methods.change_sequence::text AS change_sequence,
+    budget_methods.created_by_user_id,
+    budget_methods.updated_by_user_id,
+    budget_methods.created_at,
+    budget_methods.updated_at
+  `
+}
+
+function moveColumns(sql: postgres.Sql) {
+  return sql`
+    budget_moves.id,
+    budget_moves.group_id,
+    to_char(budget_moves.month, 'YYYY-MM') AS month,
+    budget_moves.from_category_id,
+    budget_moves.to_category_id,
+    budget_moves.amount::text AS amount,
+    budget_moves.currency,
+    budget_moves.change_sequence::text AS change_sequence,
+    budget_moves.created_by_user_id,
+    budget_moves.created_at
+  `
+}
+
+function toMove(row: BudgetMoveRow): BudgetMove {
+  return {
+    id: row.id,
+    groupId: row.groupId,
+    month: row.month,
+    fromCategoryId: row.fromCategoryId,
+    toCategoryId: row.toCategoryId,
+    amount: amountOf(row.amount),
+    currency: row.currency,
+    changeSequence: row.changeSequence,
+    createdByUserId: row.createdByUserId,
+    createdAt: row.createdAt,
   }
 }
 

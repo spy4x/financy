@@ -329,6 +329,7 @@ const BUDGET_ERROR_CODES: Record<
   CATEGORY_ARCHIVED: "conflict",
   CATEGORY_NOT_FOUND: "not_found",
   GROUP_NOT_FOUND: "not_found",
+  ID_ALREADY_EXISTS: "conflict",
   INVALID_REQUEST: "bad_request",
   ROLE_INSUFFICIENT: "forbidden",
   VERSION_CONFLICT: "conflict",
