@@ -507,9 +507,10 @@ function BudgetDialog(
   const format = useFormat()
   const decimals = amountDecimals(form.currency)
   const amountError = messageText(t, form.amountError)
+  const amountRow = useRef<HTMLDivElement>(null)
   // A refused amount sends focus back to its field, where the message now sits.
   useEffect(() => {
-    if (form.amountError) document.getElementById(`budget-amount`)?.focus()
+    if (form.amountError) amountRow.current?.querySelector(`input`)?.focus()
   }, [form])
   return (
     <Modal
@@ -524,7 +525,7 @@ function BudgetDialog(
           {form.conflict && (
             <Notice tone="info" data-e2e="budget-conflict">{t.t(`BudgetDialog.conflict`)}</Notice>
           )}
-          <div data-e2e="budget-amount">
+          <div ref={amountRow} data-e2e="budget-amount">
             <Field
               id="budget-amount"
               label={t.t(`BudgetDialog.amount`)}
