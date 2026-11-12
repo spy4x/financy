@@ -115,8 +115,11 @@ const listDefaults: CategoriesScreenProps = {
 
 describe("placeCategories", () => {
   it("puts each top-level category by folded name, each followed by its subcategories by name", () => {
-    const placed = placeCategories([groceries, rent, eatingOut, food], "en")
+    // "atm fees" sorts before "Food" only when case is folded: by code point "F" comes first.
+    const atm = category({ id: "c-atm", name: "atm fees" })
+    const placed = placeCategories([groceries, rent, eatingOut, food, atm], "en")
     expect(placed.map((p) => [p.category.name, p.parent?.name ?? null])).toEqual([
+      ["atm fees", null],
       ["Food", null],
       ["Eating out", "Food"],
       ["Groceries", "Food"],
