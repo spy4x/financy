@@ -111,7 +111,7 @@ says what it needs, and the plan answers.
 | Key              | Free | Household | Checked when                                                 |
 | ---------------- | ---- | --------- | ------------------------------------------------------------ |
 | `memberRoles`    | no   | yes       | A member is promoted (`GroupMemberRoleCommand`)              |
-| `budgets`        | no   | yes       | A budget limit is set; removing one passes on every plan     |
+| `budgets`        | no   | yes       | A budget limit is set, envelopes are switched on or money moves between them; removing a limit or switching back to limits passes on every plan |
 | `maxNotes`       | 0    | no cap    | A note is created, or notes move into the group              |
 | `maxMembers`     | 1    | 6         | An invitation is created or accepted                         |
 | `maxAttachments` | 0    | no cap    | A note attachment is signed or confirmed: files of all notes |

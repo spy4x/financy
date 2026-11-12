@@ -3,7 +3,15 @@ import { describe, it } from "@std/testing/bdd"
 import { drainMicrotasks, FakeClock, FakeSocket } from "@spy4x/realtime/testing"
 import { CommandBus, QueryBus } from "@spy4x/platform/cqrs"
 import { PRO_PLAN_ID } from "@domain/billing"
-import { BudgetBand, BudgetLimitSource, BudgetMonthQuery, BudgetSetCommand } from "@domain/budgets"
+import {
+  BudgetBand,
+  BudgetLimitSource,
+  BudgetMethod,
+  BudgetMethodSetCommand,
+  BudgetMonthQuery,
+  BudgetMoveCommand,
+  BudgetSetCommand,
+} from "@domain/budgets"
 import { CategoryKind } from "@domain/categories"
 import { GroupRole } from "@domain/groups"
 import { TransactionKind } from "@domain/transactions"
@@ -24,7 +32,12 @@ import { checkedError } from "../../_testing/api-error.ts"
 import { createCallRoute } from "../../routes/call.ts"
 import { Realtime, toRequestError } from "../../services/realtime.ts"
 import { TEST_PLANS, testUsage } from "../../../../libs/domain/billing/test-plans.ts"
-import { createBudgetMonthHandler, createBudgetSetHandler } from "./handlers.ts"
+import {
+  createBudgetMethodSetHandler,
+  createBudgetMonthHandler,
+  createBudgetMoveHandler,
+  createBudgetSetHandler,
+} from "./handlers.ts"
 import { createBudgetOperations } from "./operations.ts"
 
 /**
@@ -42,18 +55,23 @@ const groceries = uuidV7()
 const salary = uuidV7()
 const old = uuidV7()
 const otherCategory = uuidV7()
+const otherSecond = uuidV7()
 const OWNER = 1
 const VIEWER = 2
 const EDITOR = 3
+const ADMIN = 4
 const STRANGER = 9
 /** 16:30 UTC on 30 November: already 1 December in Singapore, the household's zone. */
 const NOW = new Date("2026-11-30T16:30:00.000Z")
 
 function stack() {
+  /** The instant the handlers read; a test moves it to switch methods in a later month. */
+  const clock = { now: NOW }
   const memberships: Record<string, GroupRole> = {
     [`${groupId}:${OWNER}`]: GroupRole.OWNER,
     [`${groupId}:${VIEWER}`]: GroupRole.VIEWER,
     [`${groupId}:${EDITOR}`]: GroupRole.EDITOR,
+    [`${groupId}:${ADMIN}`]: GroupRole.ADMIN,
     [`${otherGroupId}:${OWNER}`]: GroupRole.OWNER,
   }
   const groups = {
@@ -66,6 +84,7 @@ function stack() {
     [salary, { groupId, kind: CategoryKind.INCOME }],
     [old, { groupId, kind: CategoryKind.EXPENSE, archived: true }],
     [otherCategory, { groupId: otherGroupId, kind: CategoryKind.EXPENSE }],
+    [otherSecond, { groupId: otherGroupId, kind: CategoryKind.EXPENSE }],
   ])
   const timeZones = new Map([[groupId, "Asia/Singapore"]])
   const budgets = new MemoryBudgetRepository(categories, timeZones)
@@ -84,7 +103,7 @@ function stack() {
     ledgerMonths: (group: string, currency: string, from: string, to: string) =>
       transactions.ledgerMonths(group, currency, from, to),
     rate: () => Promise.resolve(null),
-    now: () => NOW,
+    now: () => clock.now,
   }
   const commands = new CommandBus()
   commands.use(createSessionGate([]))
@@ -96,6 +115,8 @@ function stack() {
     usage: testUsage({}),
   }, ENTITLEMENT_NEEDS))
   commands.register(BudgetSetCommand, createBudgetSetHandler(dependencies))
+  commands.register(BudgetMethodSetCommand, createBudgetMethodSetHandler(dependencies))
+  commands.register(BudgetMoveCommand, createBudgetMoveHandler(dependencies))
   const queries = new QueryBus()
   queries.use(createSessionGate([]))
   queries.register(BudgetMonthQuery, createBudgetMonthHandler(dependencies))
@@ -122,7 +143,7 @@ function stack() {
       allowance: null,
     }, OWNER)
   }
-  return { budgets, operations, remove, spend }
+  return { budgets, clock, operations, remove, spend }
 }
 
 type Stack = ReturnType<typeof stack>
@@ -464,6 +485,206 @@ for (const [via, open] of TRANSPORTS) {
       expect(answers).toMatchObject(Array(4).fill(refused("not_found", "GROUP_NOT_FOUND")))
       expect(s.budgets.writes).toBe(0)
       stranger.shutdown()
+      editor.shutdown()
+    })
+  })
+
+  describe(`budgeting methods and envelopes over ${via}`, () => {
+    /** Switches the household's method, as its owner by default. */
+    const switchTo = (
+      as: Transport,
+      method: BudgetMethod,
+      expectedVersion: number | null = null,
+    ) => as.command("budget.method.set", { groupId, method, expectedVersion })
+
+    /** A move of 50.00 from Food to Groceries in December. */
+    const move = (overrides: Record<string, unknown> = {}) => ({
+      id: moveId,
+      groupId,
+      month: "2026-12",
+      fromCategoryId: food,
+      toCategoryId: groceries,
+      amount: 5000,
+      ...overrides,
+    })
+    const moveId = uuidV7()
+
+    it("lets the owner and an admin switch from the household's current month, and refuses an editor and a viewer", async () => {
+      const s = stack()
+      const owner = open(s, OWNER)
+      const admin = open(s, ADMIN)
+      const editor = open(s, EDITOR)
+      const viewer = open(s, VIEWER)
+      const stranger = open(s, STRANGER)
+
+      const refusals = [
+        await switchTo(editor, BudgetMethod.ENVELOPES),
+        await switchTo(viewer, BudgetMethod.ENVELOPES),
+        await switchTo(stranger, BudgetMethod.ENVELOPES),
+      ]
+      const switched = await switchTo(owner, BudgetMethod.ENVELOPES)
+      const back = await switchTo(admin, BudgetMethod.LIMITS, 1)
+
+      expect(refusals).toMatchObject([
+        refused("forbidden", "ROLE_INSUFFICIENT"),
+        refused("forbidden", "ROLE_INSUFFICIENT"),
+        refused("not_found", "GROUP_NOT_FOUND"),
+      ])
+      // 16:30 UTC on 30 November is already December in Singapore.
+      expect(switched).toMatchObject({
+        kind: "server.result",
+        payload: {
+          method: { groupId, month: "2026-12", method: BudgetMethod.ENVELOPES, version: 1 },
+        },
+      })
+      expect(back).toMatchObject({
+        payload: { method: { month: "2026-12", method: BudgetMethod.LIMITS, version: 2 } },
+      })
+      expect(s.budgets.writes).toBe(2)
+      for (const as of [owner, admin, editor, viewer, stranger]) as.shutdown()
+    })
+
+    it("refuses a switch at a version the current month's row no longer has, with the current one", async () => {
+      const s = stack()
+      const owner = open(s, OWNER)
+      await switchTo(owner, BudgetMethod.ENVELOPES)
+
+      const stale = await switchTo(owner, BudgetMethod.LIMITS)
+
+      expect(stale).toMatchObject({
+        kind: "server.error",
+        code: "conflict",
+        details: { code: "VERSION_CONFLICT", currentVersion: 1 },
+      })
+      owner.shutdown()
+    })
+
+    it("reads a month of envelopes: ready to assign, and each envelope's assigned, moves, spending and balance", async () => {
+      const s = stack()
+      const owner = open(s, OWNER)
+      const editor = open(s, EDITOR)
+      await switchTo(owner, BudgetMethod.ENVELOPES)
+      await editor.command("budget.set", limit({ month: "2026-12", amount: 40000 }))
+      await s.spend(salary, -100000, "2026-12-01")
+      await s.spend(groceries, 10000, "2026-12-02")
+      const moved = await editor.command("budget.move", move())
+
+      const december = await editor.query("budget.month", { groupId })
+
+      expect(moved).toMatchObject({
+        kind: "server.result",
+        payload: { move: { id: moveId, amount: 5000, currency: "USD", createdByUserId: EDITOR } },
+      })
+      expect(monthOf(december)).toMatchObject({
+        month: "2026-12",
+        method: BudgetMethod.ENVELOPES,
+        methodVersion: 1,
+        readyToAssign: 60000,
+        envelopeLeftOut: [],
+      })
+      // Food's own envelope holds 400 less the 50 moved out; Groceries is 50 in and 100 spent.
+      expect(rowOf(december, food)).toMatchObject({
+        envelope: {
+          assigned: 40000,
+          movedIn: 5000,
+          movedOut: 5000,
+          spent: 10000,
+          available: 30000,
+        },
+      })
+      expect(rowOf(december, groceries)).toMatchObject({
+        envelope: { assigned: 0, movedIn: 5000, movedOut: 0, spent: 10000, available: -5000 },
+      })
+      owner.shutdown()
+      editor.shutdown()
+    })
+
+    it("keeps every past month as it read when the method switches back and forth", async () => {
+      const s = stack()
+      const owner = open(s, OWNER)
+      await owner.command("budget.set", limit())
+      await owner.command("budget.set", limit({ month: "2026-12", amount: 30000 }))
+      await s.spend(food, 12000, "2026-11-05")
+      await s.spend(food, 1000, "2026-12-05")
+      const novemberBefore = await owner.query("budget.month", { groupId, month: "2026-11" })
+
+      await switchTo(owner, BudgetMethod.ENVELOPES)
+      const decemberUnder = await owner.query("budget.month", { groupId, month: "2026-12" })
+      s.clock.now = new Date("2027-01-15T12:00:00.000Z")
+      await switchTo(owner, BudgetMethod.LIMITS)
+      const january = await owner.query("budget.month", { groupId, month: "2027-01" })
+      s.clock.now = new Date("2027-02-15T12:00:00.000Z")
+      await switchTo(owner, BudgetMethod.ENVELOPES)
+      const february = await owner.query("budget.month", { groupId, month: "2027-02" })
+
+      const novemberAfter = await owner.query("budget.month", { groupId, month: "2026-11" })
+      const decemberAfter = await owner.query("budget.month", { groupId, month: "2026-12" })
+      expect(monthOf(novemberBefore)).toMatchObject({ method: BudgetMethod.LIMITS })
+      expect(novemberAfter).toEqual(novemberBefore)
+      expect(decemberAfter).toEqual(decemberUnder)
+      expect(rowOf(decemberAfter, food)).toMatchObject({
+        envelope: { assigned: 30000, spent: 1000, available: 29000 },
+      })
+      expect(monthOf(january)).toMatchObject({ method: BudgetMethod.LIMITS, methodVersion: 1 })
+      expect(monthOf(january)).not.toHaveProperty("readyToAssign")
+      expect(rowOf(january, food)).not.toHaveProperty("envelope")
+      expect(rowOf(january, food)).toMatchObject({ limit: { amount: 30000, currency: "USD" } })
+      // A new run starts in February: nothing December left over is carried across January.
+      expect(rowOf(february, food)).toMatchObject({ envelope: { assigned: 0, available: 0 } })
+      expect(monthOf(february)).toMatchObject({ readyToAssign: 0 })
+      owner.shutdown()
+    })
+
+    it("moves money once when a move is retried with its id, and refuses the id with other fields or in another household", async () => {
+      const s = stack()
+      const owner = open(s, OWNER)
+      const editor = open(s, EDITOR)
+      const otherOwner = open(s, OWNER)
+      await switchTo(owner, BudgetMethod.ENVELOPES)
+
+      const first = await editor.command("budget.move", move())
+      const retry = await editor.command("budget.move", move())
+      const changed = await editor.command("budget.move", move({ amount: 6000 }))
+      const elsewhere = await otherOwner.command(
+        "budget.move",
+        move({ groupId: otherGroupId, fromCategoryId: otherCategory, toCategoryId: otherSecond }),
+      )
+      const december = await editor.query("budget.month", { groupId })
+
+      expect(retry).toEqual(first)
+      expect([changed, elsewhere]).toMatchObject([
+        refused("conflict", "ID_ALREADY_EXISTS"),
+        refused("conflict", "ID_ALREADY_EXISTS"),
+      ])
+      expect(s.budgets.moves.size).toBe(1)
+      expect(rowOf(december, groceries)).toMatchObject({ envelope: { movedIn: 5000 } })
+      for (const as of [owner, editor, otherOwner]) as.shutdown()
+    })
+
+    it("refuses a move by a viewer, into the envelope it comes from, or with an income, archived, another household's or unknown category", async () => {
+      const s = stack()
+      const viewer = open(s, VIEWER)
+      const editor = open(s, EDITOR)
+
+      const answers = [
+        await viewer.command("budget.move", move()),
+        await editor.command("budget.move", move({ toCategoryId: food })),
+        await editor.command("budget.move", move({ toCategoryId: salary })),
+        await editor.command("budget.move", move({ fromCategoryId: old })),
+        await editor.command("budget.move", move({ toCategoryId: otherCategory })),
+        await editor.command("budget.move", move({ fromCategoryId: uuidV7() })),
+      ]
+
+      expect(answers).toMatchObject([
+        refused("forbidden", "ROLE_INSUFFICIENT"),
+        refused("bad_request", "INVALID_REQUEST"),
+        refused("bad_request", "BUDGET_INCOME_CATEGORY"),
+        refused("conflict", "CATEGORY_ARCHIVED"),
+        refused("not_found", "CATEGORY_NOT_FOUND"),
+        refused("not_found", "CATEGORY_NOT_FOUND"),
+      ])
+      expect(s.budgets.writes).toBe(0)
+      viewer.shutdown()
       editor.shutdown()
     })
   })
