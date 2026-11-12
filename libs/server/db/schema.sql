@@ -1644,7 +1644,8 @@ CREATE INDEX idx_categories_group_change_sequence ON categories (group_id, chang
 CREATE INDEX idx_categories_created_by ON categories (created_by_user_id);
 CREATE INDEX idx_categories_updated_by ON categories (updated_by_user_id);
 
--- Transactions (migration 2026_12_16_0007_transactions.sql explains each column).
+-- Transactions (migration 2026_12_16_0007_transactions.sql explains each column, and
+-- 2026_12_16_0008_transactions_deferrable_keys.sql why both keys are deferrable).
 CREATE TABLE transactions (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -1665,9 +1666,9 @@ CREATE TABLE transactions (
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMPTZ(3),
     CONSTRAINT transactions_account_fkey FOREIGN KEY (group_id, account_id)
-        REFERENCES accounts (group_id, id),
+        REFERENCES accounts (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT transactions_category_fkey FOREIGN KEY (group_id, category_id)
-        REFERENCES categories (group_id, id),
+        REFERENCES categories (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT transactions_kind_check CHECK (kind BETWEEN 1 AND 2),
     CONSTRAINT transactions_sign_check CHECK (
         (kind = 1 AND account_amount < 0 AND amount < 0)

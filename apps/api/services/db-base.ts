@@ -52,6 +52,7 @@ import { PostgresCategoryRepository } from "@server/categories/postgres-category
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
+import { transactionMovable } from "@server/transactions/transaction-movable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresAttachmentRepository } from "@server/notes/postgres-attachment-repository.ts"
@@ -194,11 +195,14 @@ export interface UserTotp {
 /**
  * The aggregates "move all of a group's data" moves, in the order it moves them. A new aggregate
  * joins here (`docs/aggregate-lifecycle.md`, "Make it movable"): put one that other aggregates
- * point at before the ones that point at it.
+ * point at before the ones that point at it. Entries are the one exception: they defer the keys
+ * to their accounts and categories to the move's commit, so they move before them
+ * (`transaction-movable.ts`).
  */
 export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   tagMovable,
   noteMovable,
+  transactionMovable,
   accountMovable,
   categoryMovable,
 ]
