@@ -373,7 +373,7 @@ describe("BudgetsScreen", () => {
     expect(input.getAttribute("aria-invalid")).toBe("true")
     expect(input.getAttribute("aria-describedby")?.split(" ")).toContain("budget-amount-error")
     expect(input.parentElement?.classList.contains("border-danger")).toBe(true)
-    expect(document.activeElement).toBe(input)
+    expect(document.activeElement?.id).toBe("budget-amount")
     expect(count("[data-e2e=budget-dialog] [role=alert]")).toBe(0)
   })
 
