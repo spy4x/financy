@@ -2366,6 +2366,8 @@ export default {
   "Transactions.empty": "Add your first transaction",
   "Transactions.emptyHint":
     "A transaction is money that went out or came in: a coffee, the rent, a salary. Press {key} on any page to add one.",
+  "Transactions.emptyHintNoKey":
+    "A transaction is money that went out or came in: a coffee, the rent, a salary.",
   "Transactions.emptyViewer": "No transactions yet",
   "Transactions.noAccount": "Add an account first",
   "Transactions.noAccountHint":

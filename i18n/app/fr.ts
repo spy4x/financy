@@ -2653,6 +2653,8 @@ export default {
   "Transactions.empty": "Ajoutez votre première opération",
   "Transactions.emptyHint":
     "Une opération, c’est de l’argent qui sort ou qui entre : un café, le loyer, un salaire. Appuyez sur {key} sur n’importe quelle page pour en ajouter une.",
+  "Transactions.emptyHintNoKey":
+    "Une opération, c’est de l’argent qui sort ou qui entre : un café, le loyer, un salaire.",
   "Transactions.emptyViewer": "Aucune opération pour l’instant",
   "Transactions.noAccount": "Ajoutez d’abord un compte",
   "Transactions.noAccountHint":

@@ -2086,6 +2086,7 @@ export default {
   "Transactions.empty": "添加你的第一笔交易",
   "Transactions.emptyHint":
     "交易就是流出或流入的钱：一杯咖啡、房租、工资。在任意页面按 {key} 即可添加。",
+  "Transactions.emptyHintNoKey": "交易就是流出或流入的钱：一杯咖啡、房租、工资。",
   "Transactions.emptyViewer": "还没有交易",
   "Transactions.noAccount": "请先添加账户",
   "Transactions.noAccountHint": "每笔交易都记入一个账户：钱包、银行账户或卡。",

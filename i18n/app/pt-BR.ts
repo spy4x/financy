@@ -2558,6 +2558,8 @@ export default {
   "Transactions.empty": "Adicione seu primeiro lançamento",
   "Transactions.emptyHint":
     "Um lançamento é dinheiro que saiu ou entrou: um café, o aluguel, um salário. Pressione {key} em qualquer página para adicionar um.",
+  "Transactions.emptyHintNoKey":
+    "Um lançamento é dinheiro que saiu ou entrou: um café, o aluguel, um salário.",
   "Transactions.emptyViewer": "Ainda não há lançamentos",
   "Transactions.noAccount": "Adicione uma conta primeiro",
   "Transactions.noAccountHint":

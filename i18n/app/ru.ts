@@ -2665,6 +2665,8 @@ export default {
   "Transactions.empty": "Добавьте первую операцию",
   "Transactions.emptyHint":
     "Операция — это деньги, которые ушли или пришли: кофе, аренда, зарплата. Нажмите {key} на любой странице, чтобы добавить её.",
+  "Transactions.emptyHintNoKey":
+    "Операция — это деньги, которые ушли или пришли: кофе, аренда, зарплата.",
   "Transactions.emptyViewer": "Операций пока нет",
   "Transactions.noAccount": "Сначала добавьте счёт",
   "Transactions.noAccountHint":

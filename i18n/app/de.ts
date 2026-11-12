@@ -2503,6 +2503,8 @@ export default {
   "Transactions.empty": "Füge deine erste Buchung hinzu",
   "Transactions.emptyHint":
     "Eine Buchung ist Geld, das hinaus- oder hereingeht: ein Kaffee, die Miete, ein Gehalt. Drücke auf jeder Seite {key}, um eine hinzuzufügen.",
+  "Transactions.emptyHintNoKey":
+    "Eine Buchung ist Geld, das hinaus- oder hereingeht: ein Kaffee, die Miete, ein Gehalt.",
   "Transactions.emptyViewer": "Noch keine Buchungen",
   "Transactions.noAccount": "Füge zuerst ein Konto hinzu",
   "Transactions.noAccountHint":

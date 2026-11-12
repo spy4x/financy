@@ -2739,6 +2739,7 @@ export default {
   "Transactions.empty": "أضف معاملتك الأولى",
   "Transactions.emptyHint":
     "المعاملة مال خرج أو دخل: قهوة، الإيجار، راتب. اضغط {key} في أي صفحة لإضافة واحدة.",
+  "Transactions.emptyHintNoKey": "المعاملة مال خرج أو دخل: قهوة، الإيجار، راتب.",
   "Transactions.emptyViewer": "لا معاملات بعد",
   "Transactions.noAccount": "أضف حسابًا أولًا",
   "Transactions.noAccountHint": "كل معاملة تدخل في حساب: محفظة، حساب مصرفي، بطاقة.",

@@ -2288,6 +2288,8 @@ export default {
   "Transactions.empty": "最初の取引を追加しましょう",
   "Transactions.emptyHint":
     "取引とは、出ていったお金や入ってきたお金のことです。コーヒー、家賃、給料など。どのページでも {key} を押すと追加できます。",
+  "Transactions.emptyHintNoKey":
+    "取引とは、出ていったお金や入ってきたお金のことです。コーヒー、家賃、給料など。",
   "Transactions.emptyViewer": "まだ取引はありません",
   "Transactions.noAccount": "先に口座を追加してください",
   "Transactions.noAccountHint": "取引はどれも口座に記録されます。財布、銀行口座、カードなどです。",

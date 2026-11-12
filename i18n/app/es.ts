@@ -2579,6 +2579,8 @@ export default {
   "Transactions.empty": "Añade tu primer movimiento",
   "Transactions.emptyHint":
     "Un movimiento es dinero que salió o entró: un café, el alquiler, un sueldo. Pulsa {key} en cualquier página para añadir uno.",
+  "Transactions.emptyHintNoKey":
+    "Un movimiento es dinero que salió o entró: un café, el alquiler, un sueldo.",
   "Transactions.emptyViewer": "Aún no hay movimientos",
   "Transactions.noAccount": "Añade primero una cuenta",
   "Transactions.noAccountHint":

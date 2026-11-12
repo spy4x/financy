@@ -310,11 +310,19 @@ describe("TransactionsScreen", () => {
 
   it("asks an editor with no entries for the first one, naming its key", async () => {
     await mount(<TransactionsScreen {...listDefaults} rows={[]} />)
-    expect(text(document.querySelector("[data-e2e=transactions-empty]"))).toContain(
-      "Add your first transaction",
-    )
+    const empty = text(document.querySelector("[data-e2e=transactions-empty]"))
+    expect(empty).toContain("Add your first transaction")
+    expect(empty).toContain("Press T on any page to add one.")
     expect(has("[data-e2e=transaction-new-empty]")).toBe(true)
     expect(has("[data-e2e=transactions-filter-bar]")).toBe(false)
+  })
+
+  it("names no key in the first-run hint where the key does nothing", async () => {
+    await mount(<TransactionsScreen {...listDefaults} rows={[]} newKey={undefined} />)
+    const empty = text(document.querySelector("[data-e2e=transactions-empty]"))
+    expect(empty).toContain("a coffee, the rent, a salary.")
+    expect(empty).not.toContain("Press")
+    expect(has("[data-e2e=transaction-new-empty]")).toBe(true)
   })
 
   it("tells a viewer with no entries there are none, with nothing to add", async () => {

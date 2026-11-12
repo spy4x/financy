@@ -55,8 +55,11 @@ export interface TransactionsScreenProps {
   onClearFilters?: () => void
   /** Today in the household's zone, `YYYY-MM-DD`, for the "Today" and "Yesterday" headings. */
   today: string
-  /** The key that opens the new transaction, as the platform writes it ("T"). */
-  newKey: string
+  /**
+   * The key that opens the new transaction, as the platform writes it ("T"). Left out where it
+   * does nothing: single keys off, or a device with no keyboard.
+   */
+  newKey?: string
   onShowDeleted?: (show: boolean) => void
   onRestore?: (id: string) => void
   /** The entry whose restore is in flight. */
@@ -238,7 +241,9 @@ function Empty(
     <div data-e2e="transactions-empty">
       <ListEmpty
         title={t.t(`Transactions.empty`)}
-        description={t.t(`Transactions.emptyHint`, { key: props.newKey })}
+        description={props.newKey
+          ? t.t(`Transactions.emptyHint`, { key: props.newKey })
+          : t.t(`Transactions.emptyHintNoKey`)}
         action={
           <Button
             href={TRANSACTION_PATHS.new}

@@ -1863,6 +1863,7 @@ Transactions.deletedOn	70f59da17d453b6b
 Transactions.deletedTitle	465d650bb903f7a2
 Transactions.empty	c4adb225b42800cf
 Transactions.emptyHint	72687fb807ccd63f
+Transactions.emptyHintNoKey	9e95037a33f7105e
 Transactions.emptyViewer	f75dda0d2e0613e9
 Transactions.expenses	d311416fa3aadb4d
 Transactions.filteredEmpty	6f5ce4a3aced1887

@@ -6,6 +6,7 @@ import { useUrlFilters } from "@spy4x/preact-signals/use-url-filters"
 import { useFormat } from "@spy4x/preact-ui/format"
 import { todayInTz } from "@spy4x/time/tz"
 import { canMutateNotes, groupTimeZone } from "@domain/groups"
+import { hasFinePointer, singleKeys } from "@platform/shortcuts.ts"
 import { TransactionKind } from "@domain/transactions"
 import { TransactionsScreen } from "@ui/transactions-screen.tsx"
 import type { TransactionFilters } from "@ui/transaction-parts.tsx"
@@ -143,7 +144,7 @@ export function TransactionsView() {
         to.value = ""
       }}
       today={today}
-      newKey="T"
+      newKey={singleKeys.on.value && hasFinePointer() ? "T" : undefined}
       onShowDeleted={(show) =>
         setParams((previous) => {
           const next = new URLSearchParams(previous)
