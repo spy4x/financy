@@ -151,7 +151,7 @@ export function CategoriesScreen(props: CategoriesScreenProps): JSX.Element {
       {confirming && (
         <ArchiveCategoryDialog
           category={confirming}
-          children={liveChildren(categories, confirming.id)}
+          subcategories={liveChildren(categories, confirming.id)}
           onConfirm={() => {
             const category = confirming
             setConfirming(null)
@@ -169,24 +169,24 @@ export function CategoriesScreen(props: CategoriesScreenProps): JSX.Element {
  * many categories that makes. Focus starts on Cancel.
  */
 export function ArchiveCategoryDialog(
-  { category, children, onConfirm, onCancel }: {
+  { category, subcategories, onConfirm, onCancel }: {
     category: CategoryRow
-    children: readonly CategoryRow[]
+    subcategories: readonly CategoryRow[]
     onConfirm: () => void
     onCancel: () => void
   },
 ): JSX.Element {
   const t = useAppText()
   const names = new Intl.ListFormat(t.language, { type: "conjunction" })
-    .format(children.map((child) => isolate(child.name)))
+    .format(subcategories.map((child) => isolate(child.name)))
   return (
     <ConfirmDialog
       title={t.t(`Categories.archiveTitle`, {
         name: isolate(category.name),
-        count: children.length,
+        count: subcategories.length,
       })}
-      message={t.t(`Categories.archiveMessage`, { names, count: children.length })}
-      confirmLabel={t.t(`Categories.archiveConfirm`, { count: children.length + 1 })}
+      message={t.t(`Categories.archiveMessage`, { names, count: subcategories.length })}
+      confirmLabel={t.t(`Categories.archiveConfirm`, { count: subcategories.length + 1 })}
       cancelLabel={t.t(`Categories.cancel`)}
       tone="default"
       onConfirm={onConfirm}
@@ -211,7 +211,7 @@ function sectionName(t: Translator<string>, kind: CategoryKind): string {
 }
 
 /** The two sections, Expenses then Income, or the page's empty and loading states. */
-function Live(props: Listed): JSX.Element {
+function Live(props: Listed): JSX.Element | null {
   const t = useAppText()
   const { canWrite, navigate, shown, categories } = props
   const waited = useWaited(props.loading && categories.length === 0)
@@ -224,7 +224,7 @@ function Live(props: Listed): JSX.Element {
             <LoadingSkeleton rows={6} />
           </div>
         )
-        : <></>
+        : null
     }
     return (
       <ListEmpty
