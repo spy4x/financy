@@ -36,12 +36,13 @@ export function BudgetsView() {
   const [now] = useState(() => new Date())
   const thisMonth = currentPeriod(PeriodUnit.Month, { now, timeZone }).from.slice(0, 7)
   const month = store.groupId.value === groupId && store.month.value ? store.month.value : thisMonth
+  // Once per household: a step to another month reads only that month, in `onMonth`.
   useEffect(() => {
     if (!groupId) return
     void store.open(groupId, month)
     void categoriesStore.open(groupId)
     if (billingStore.current.value?.groupId !== groupId) void billingStore.load(groupId)
-  }, [groupId, month])
+  }, [groupId])
   const canWrite = membership ? canMutateNotes(membership.role) : false
   const current = billingStore.current.value
   const billing = current?.groupId === groupId ? current.billing : null
