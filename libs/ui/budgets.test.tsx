@@ -13,6 +13,7 @@ import {
   budgetBand,
   type BudgetLimit,
   BudgetLimitSource,
+  BudgetMethod,
   type BudgetRow,
 } from "@domain/budgets"
 import { CategoryKind } from "@domain/categories"
@@ -153,6 +154,8 @@ const defaults: BudgetsScreenProps = {
     to: "2026-11-30",
     baseCurrency: "EUR",
     rows: ROWS,
+    method: BudgetMethod.LIMITS,
+    methodVersion: null,
   },
   categories: CATEGORIES,
   loading: false,
