@@ -1,7 +1,6 @@
 import { type ComponentChildren, Fragment, type JSX } from "preact"
 import { Button } from "@spy4x/preact-ui/button"
 import { ErrorState } from "@spy4x/preact-ui/error-state"
-import { Field } from "@spy4x/preact-ui/field"
 import { FilterBar, type FilterBarMenu } from "@spy4x/preact-ui/filter-bar"
 import { useFormat, When } from "@spy4x/preact-ui/format"
 import { Rich } from "@spy4x/preact-ui/i18n"
@@ -306,39 +305,39 @@ function TransactionsFilterBar(
         filters={menus}
         onClear={props.onClearFilters}
         clearLabel={t.t(`Transactions.clearFilters`)}
-        count={
-          <span data-e2e="transactions-count">
-            {t.t(`Transactions.count`, { count: props.count })}
-          </span>
-        }
       />
       {
-        /* The date range: two native date fields, side by side from the smallest phone up, each
-          shrinking instead of pushing the page sideways. */
+        /* The date range sits under the menus at their height, with its labels beside the fields,
+          and the count closes the row. Each field shrinks instead of pushing a phone sideways. */
       }
-      <div class="grid grid-cols-2 gap-3 sm:max-w-md">
-        <Field id="transactions-from" label={t.t(`Transactions.from`)}>
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
+        <div class="flex min-w-0 items-center gap-2">
+          <label for="transactions-from" class="text-muted">{t.t(`Transactions.from`)}</label>
           <Input
+            id="transactions-from"
             type="date"
             name="from"
-            class="min-w-0"
+            class="h-11 min-w-0 text-sm sm:h-8 sm:w-40"
             value={filters.from}
             max={filters.to || undefined}
             onChange={(e) => change({ from: e.currentTarget.value })}
             data-e2e="transactions-from"
           />
-        </Field>
-        <Field id="transactions-to" label={t.t(`Transactions.to`)}>
+          <label for="transactions-to" class="text-muted">{t.t(`Transactions.to`)}</label>
           <Input
+            id="transactions-to"
             type="date"
             name="to"
-            class="min-w-0"
+            class="h-11 min-w-0 text-sm sm:h-8 sm:w-40"
             value={filters.to}
             min={filters.from || undefined}
             onChange={(e) => change({ to: e.currentTarget.value })}
             data-e2e="transactions-to"
           />
-        </Field>
+        </div>
+        <p aria-live="polite" class="text-muted tabular-nums" data-e2e="transactions-count">
+          {t.t(`Transactions.count`, { count: props.count })}
+        </p>
       </div>
     </div>
   )
