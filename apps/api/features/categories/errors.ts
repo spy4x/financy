@@ -43,6 +43,7 @@ export const CATEGORY_ERROR_DEFINITIONS: Record<CategoryFeatureErrorCode, ErrorD
   ID_ALREADY_EXISTS: { status: 409, message: "Category id is already in use" },
   INTERNAL_ERROR: { status: 500, message: "Internal server error" },
   INVALID_REQUEST: { status: 400, message: "Request is invalid" },
+  KIND_LOCKED: { status: 409, message: "A category's kind is fixed once it has entries" },
   MFA_REQUIRED: { status: 401, message: "Complete MFA to access categories" },
   ROLE_INSUFFICIENT: { status: 403, message: "Only an editor can change categories" },
   VERSION_CONFLICT: { status: 409, message: "The category was changed by someone else" },
