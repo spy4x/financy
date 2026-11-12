@@ -5,6 +5,7 @@ import {
   type GroupAccessLoss,
   listenForGroupAccessLoss,
 } from "@server/groups/group-change-notify.ts"
+import { recordAccessChange } from "@server/groups/group-change-log.ts"
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
 import { buildPostgresOptions } from "@spy4x/server/db/postgres"
 import { requireDbConnection } from "@spy4x/server/db/testing"
@@ -160,4 +161,48 @@ export async function runBlockedOnLock<T>(
     holder.release()
   }
   return await Promise.all(started)
+}
+
+/** What the owner does to the writer, in a transaction that waits for `release` to commit. */
+export type MemberChange = "removal" | "demotion"
+
+export async function holdMemberChange(
+  sql: postgres.Sql,
+  groupId: string,
+  owner: number,
+  member: number,
+  change: MemberChange,
+) {
+  let release!: () => void
+  const released = new Promise<void>((resolve) => release = resolve)
+  let written!: () => void
+  const writtenSignal = new Promise<void>((resolve) => written = resolve)
+  const committed = sql.begin(async (transaction: postgres.TransactionSql) => {
+    if (change === "removal") {
+      await transaction`
+        DELETE FROM group_members WHERE group_id = ${groupId} AND user_id = ${member}
+      `
+      await recordAccessChange(transaction, groupId, owner, "group.member_removed", [member])
+    } else {
+      await transaction`
+        UPDATE group_members SET role = ${GroupRole.VIEWER}
+        WHERE group_id = ${groupId} AND user_id = ${member}
+      `
+      await recordAccessChange(transaction, groupId, owner, "group.member_role_changed", [])
+    }
+    written()
+    await released
+  })
+  await writtenSignal
+  return { release, committed }
+}
+
+/** Whether `promise` is still pending after a moment: the write is waiting on the member change. */
+export async function stillWaiting(promise: Promise<unknown>): Promise<boolean> {
+  const pending = Symbol("pending")
+  const settled = await Promise.race([
+    promise.then(() => "settled", () => "settled"),
+    new Promise((resolve) => setTimeout(() => resolve(pending), 300)),
+  ])
+  return settled === pending
 }

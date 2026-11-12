@@ -4,14 +4,20 @@ import postgres from "postgres"
 import { GroupRole } from "@domain/groups"
 import { NoteError } from "@domain/notes"
 import { AccountError, AccountKind } from "@domain/accounts"
-import { lockActorRole, recordAccessChange } from "@server/groups/group-change-log.ts"
+import { lockActorRole } from "@server/groups/group-change-log.ts"
 import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.ts"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { CategoryError, type CategoryIcon, CategoryKind } from "@domain/categories"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { TransactionError, TransactionKind } from "@domain/transactions"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
-import { team, withSchema } from "./group-team.ts"
+import {
+  holdMemberChange,
+  type MemberChange,
+  stillWaiting,
+  team,
+  withSchema,
+} from "./group-team.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
 /**
@@ -21,50 +27,6 @@ import { uuidV7 } from "@spy4x/platform/universal/uuid"
  * Needs "DB_HOST", "DB_USER", "DB_PASS" and "DB_NAME" (recipe in docs/handoff.md); it fails when
  * they are missing.
  */
-
-/** What the owner does to the writer, in a transaction that waits for `release` to commit. */
-type MemberChange = "removal" | "demotion"
-
-async function holdMemberChange(
-  sql: postgres.Sql,
-  groupId: string,
-  owner: number,
-  member: number,
-  change: MemberChange,
-) {
-  let release!: () => void
-  const released = new Promise<void>((resolve) => release = resolve)
-  let written!: () => void
-  const writtenSignal = new Promise<void>((resolve) => written = resolve)
-  const committed = sql.begin(async (transaction: postgres.TransactionSql) => {
-    if (change === "removal") {
-      await transaction`
-        DELETE FROM group_members WHERE group_id = ${groupId} AND user_id = ${member}
-      `
-      await recordAccessChange(transaction, groupId, owner, "group.member_removed", [member])
-    } else {
-      await transaction`
-        UPDATE group_members SET role = ${GroupRole.VIEWER}
-        WHERE group_id = ${groupId} AND user_id = ${member}
-      `
-      await recordAccessChange(transaction, groupId, owner, "group.member_role_changed", [])
-    }
-    written()
-    await released
-  })
-  await writtenSignal
-  return { release, committed }
-}
-
-/** Whether `promise` is still pending after a moment: the write is waiting on the member change. */
-async function stillWaiting(promise: Promise<unknown>): Promise<boolean> {
-  const pending = Symbol("pending")
-  const settled = await Promise.race([
-    promise.then(() => "settled", () => "settled"),
-    new Promise((resolve) => setTimeout(() => resolve(pending), 300)),
-  ])
-  return settled === pending
-}
 
 const EXPECTED_CODE: Record<MemberChange, string> = {
   removal: "GROUP_NOT_FOUND",
