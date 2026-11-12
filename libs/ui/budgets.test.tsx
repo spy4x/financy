@@ -238,7 +238,7 @@ describe("BudgetsScreen", () => {
   })
 
   it("gives a viewer no buttons and one line that says why", async () => {
-    await mount({ group: { ...home, canWrite: false }, actions: undefined })
+    await mount({ group: { ...home, canWrite: false } })
     expect(buttons()).toEqual([])
     expect(text("[data-e2e=budgets-read-only]"))
       .toBe("You can view budgets, but only editors can change them.")
