@@ -3,7 +3,8 @@ import { describe, it } from "@std/testing/bdd"
 import { drainMicrotasks, FakeClock, FakeSocket } from "@spy4x/realtime/testing"
 import { CommandBus, QueryBus } from "@spy4x/platform/cqrs"
 import { FREE_PLAN_ID } from "@domain/billing"
-import { CategoryKind } from "@domain/categories"
+import { AccountError } from "@domain/accounts"
+import { CategoryError, CategoryKind } from "@domain/categories"
 import { GroupRole } from "@domain/groups"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
@@ -529,3 +530,15 @@ for (const [via, open] of TRANSPORTS) {
     })
   })
 }
+
+describe("the locks entries put on accounts and categories", () => {
+  it("answers a locked currency, a locked kind and an account with entries as conflicts on both transports", () => {
+    const answers = [
+      new AccountError("CURRENCY_LOCKED", "locked"),
+      new AccountError("ACCOUNT_HAS_TRANSACTIONS", "has entries"),
+      new CategoryError("KIND_LOCKED", "locked"),
+    ].map((error) => toRequestError(error))
+
+    expect(answers.map((answer) => answer?.code)).toEqual(["conflict", "conflict", "conflict"])
+  })
+})
