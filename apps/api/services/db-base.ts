@@ -50,6 +50,7 @@ import { accountMovable } from "@server/accounts/account-movable.ts"
 import { accountPortable } from "@server/accounts/account-portable.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
+import { PostgresBudgetRepository } from "@server/budgets/postgres-budget-repository.ts"
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
@@ -381,6 +382,11 @@ export class AppDbBase extends DbServiceBase {
   /** The income and expense entries. Built per access, like `note`. */
   get transaction(): PostgresTransactionRepository {
     return new PostgresTransactionRepository(this.sql)
+  }
+
+  /** The monthly category limits. Built per access, like `note`. */
+  get budget(): PostgresBudgetRepository {
+    return new PostgresBudgetRepository(this.sql)
   }
 
   /** A household's main currency. Built per access, like `note`. */
