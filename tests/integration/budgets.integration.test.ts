@@ -671,7 +671,7 @@ Deno.test("budget methods and moves against Postgres", async (t) => {
     )
 
     await t.step(
-      "reads a run of envelope months over the real ledger, moves and rates: rollover, overspending and a converted assignment",
+      "reads a run of envelope months over the real ledger, moves and rates: rollover, overspending, and assignments at the rate of the month's last day or of today",
       async () => {
         const h = await household(sql)
         const rates = new PostgresRateRepository(sql)
@@ -685,6 +685,7 @@ Deno.test("budget methods and moves against Postgres", async (t) => {
               source: RATE_SOURCES.ecb,
             },
             { base: "EUR", quote: "USD", rate: "2", date: "2026-12-05", source: RATE_SOURCES.ecb },
+            { base: "EUR", quote: "USD", rate: "4", date: "2026-12-20", source: RATE_SOURCES.ecb },
           ],
           new Date(),
           (_rate, problem) => {
@@ -712,6 +713,7 @@ Deno.test("budget methods and moves against Postgres", async (t) => {
         await budgets.set(at(h.food, "2026-11", 30000, "USD"), h.editor)
         await budgets.set(at(h.groceries, "2026-11", 10000, "EUR"), h.editor)
         await budgets.set(at(h.food, "2026-12", 5000, "USD"), h.editor)
+        await budgets.set(at(h.groceries, "2026-12", 1000, "EUR"), h.editor)
         await entry(h.salary, TransactionKind.INCOME, 100000, "2026-11-01")
         await entry(h.food, TransactionKind.EXPENSE, 1000, "2026-11-15")
         await entry(h.groceries, TransactionKind.EXPENSE, 20000, "2026-11-30")
@@ -773,17 +775,22 @@ Deno.test("budget methods and moves against Postgres", async (t) => {
         })
         expect(november).toMatchObject({ method: BudgetMethod.ENVELOPES, methodVersion: 1 })
         expect(november.readyToAssign).toBe(57500)
-        // Food's own 240 rolls over and takes December's 50; Groceries starts again at zero.
-        expect(envelope(december, h.groceries)).toMatchObject({ spent: 3000, available: -3000 })
+        // December runs: its 10 EUR convert at the rate of today, 10 December, not of 20 December.
+        // Groceries starts again at zero; Food's own 240 rolls over and takes December's 50.
+        expect(envelope(december, h.groceries)).toMatchObject({
+          assigned: 2000,
+          spent: 3000,
+          available: -1000,
+        })
         expect(envelope(december, h.food)).toEqual({
-          assigned: 5000,
+          assigned: 7000,
           movedIn: 0,
           movedOut: 0,
           spent: 3000,
-          available: 26000,
+          available: 28000,
         })
-        // 575 carried, 50 assigned, 25 overspent in November.
-        expect(december).toMatchObject({ readyToAssign: 50000, methodVersion: null })
+        // 575 carried, 70 assigned, 25 overspent in November.
+        expect(december).toMatchObject({ readyToAssign: 48000, methodVersion: null })
       },
     )
   })

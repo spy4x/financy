@@ -107,8 +107,8 @@ export function createBudgetMethodSetHandler(
 
 /**
  * Moves money between two envelopes in one month, in the household's main currency, for an
- * editor or above. The repository refuses a month that is not an envelope month and answers a
- * retried move with the one it stored.
+ * editor or above. A move in a month of limits is stored but counts only once that month reads as
+ * envelopes. The repository answers a retried move with the one it stored.
  */
 export function createBudgetMoveHandler(
   { budgets, groups, settings }: BudgetHandlerDependencies,
