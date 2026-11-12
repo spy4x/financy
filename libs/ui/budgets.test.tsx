@@ -122,11 +122,14 @@ const FOOD = category("food", "Food")
 const MARKET = category("market", "Market", "food")
 const RENT = category("rent", "Rent")
 const CATEGORIES = [RENT, MARKET, FOOD]
-/** Food sums its subcategories, Market has its own limit, Rent has none. */
+/**
+ * Food sums its subcategories, Market has its own limit, Rent has none and spent the most, so an
+ * order by spending would put it first.
+ */
 const ROWS = [
   row("food", eur(35_000), { source: BudgetLimitSource.CHILDREN, spending: 41_200 }),
   row("market", eur(35_000), { parentId: "food", spending: 30_000 }),
-  row("rent", null, { spending: 11_200 }),
+  row("rent", null, { spending: 90_000 }),
 ]
 
 const noop = () => {}
@@ -220,7 +223,7 @@ describe("BudgetsScreen", () => {
     ])
     expect(text("[data-e2e=budget-food] [data-e2e=budget-children-sum]"))
       .toBe("Sum of its subcategories' limits")
-    expect(text("[data-e2e=budget-rent] [data-e2e=budget-spent]")).toBe("€112.00 spent")
+    expect(text("[data-e2e=budget-rent] [data-e2e=budget-spent]")).toBe("€900.00 spent")
     expect(count("[data-e2e=budget-rent] [role=meter]")).toBe(0)
   })
 
