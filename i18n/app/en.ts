@@ -2316,4 +2316,12 @@ export default {
     "other":
       "Its plan allows up to {count} categories in use. Existing categories stay readable, editable and archivable.",
   },
+  "PlanRefusalNotice.transactionsTitle": "{group} has reached its transaction limit",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "This group has reached its transaction limit",
+  "PlanRefusalNotice.transactionsText": {
+    "one":
+      "Its plan allows up to {count} transaction. Existing transactions stay readable, editable and deletable.",
+    "other":
+      "Its plan allows up to {count} transactions. Existing transactions stay readable, editable and deletable.",
+  },
 } satisfies Catalog

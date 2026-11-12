@@ -2452,4 +2452,12 @@ export default {
     "other":
       "Ihr Tarif erlaubt bis zu {count} Kategorien in Gebrauch. Bestehende Kategorien lassen sich weiter lesen, bearbeiten und archivieren.",
   },
+  "PlanRefusalNotice.transactionsTitle": "{group} hat sein Buchungslimit erreicht",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "Diese Gruppe hat ihr Buchungslimit erreicht",
+  "PlanRefusalNotice.transactionsText": {
+    "one":
+      "Ihr Tarif erlaubt bis zu {count} Buchung. Bestehende Buchungen lassen sich weiter lesen, bearbeiten und löschen.",
+    "other":
+      "Ihr Tarif erlaubt bis zu {count} Buchungen. Bestehende Buchungen lassen sich weiter lesen, bearbeiten und löschen.",
+  },
 } satisfies Catalog

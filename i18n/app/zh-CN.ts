@@ -2041,4 +2041,9 @@ export default {
   "PlanRefusalNotice.categoriesText": {
     "other": "其方案最多允许 {count} 个在用分类。现有分类仍可查看、编辑和归档。",
   },
+  "PlanRefusalNotice.transactionsTitle": "{group}的交易数量已达上限",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "此群组的交易数量已达上限",
+  "PlanRefusalNotice.transactionsText": {
+    "other": "其方案最多允许 {count} 笔交易。现有交易仍可查看、编辑和删除。",
+  },
 } satisfies Catalog

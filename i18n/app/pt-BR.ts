@@ -2505,4 +2505,14 @@ export default {
     "other":
       "O plano permite até {count} categorias em uso. As categorias existentes continuam legíveis, editáveis e arquiváveis.",
   },
+  "PlanRefusalNotice.transactionsTitle": "{group} atingiu o limite de transações",
+  "PlanRefusalNotice.transactionsTitleUnnamed": "Este grupo atingiu o limite de transações",
+  "PlanRefusalNotice.transactionsText": {
+    "one":
+      "O plano permite até {count} transação. As transações existentes continuam legíveis, editáveis e excluíveis.",
+    "many":
+      "O plano permite até {count} de transações. As transações existentes continuam legíveis, editáveis e excluíveis.",
+    "other":
+      "O plano permite até {count} transações. As transações existentes continuam legíveis, editáveis e excluíveis.",
+  },
 } satisfies Catalog
