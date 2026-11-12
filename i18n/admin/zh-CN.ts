@@ -1981,6 +1981,7 @@ export default {
   "AdminAccounts.title": "账户",
   "AdminAccounts.topHouseholds": "账户最多的家庭",
   "AdminAuditEvent.financeAccountArchived": "财务账户已归档",
+  "AdminAuditEvent.mainCurrencyChanged": "已更改主货币",
   "AdminAuditEvent.financeAccountCreated": "已添加财务账户",
   "AdminAuditEvent.financeAccountDefaultCleared": "已取消默认财务账户",
   "AdminAuditEvent.financeAccountDefaultSet": "已设置默认财务账户",

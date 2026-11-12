@@ -2320,6 +2320,9 @@ export default {
   "GroupActivity.accountArchived": "<who>{who}</who> archivó la cuenta «<value>{name}</value>»",
   "GroupActivity.accountChanged": "<who>{who}</who> cambió la cuenta «<value>{name}</value>»",
   "GroupActivity.accountChangedUnnamed": "<who>{who}</who> cambió una cuenta",
+  "GroupActivity.mainCurrencyChangedFromTo":
+    "<who>{who}</who> cambió la moneda principal de <value>{from}</value> a <value>{to}</value>",
+  "GroupActivity.mainCurrencyChanged": "<who>{who}</who> cambió la moneda principal",
   "GroupActivity.accountCreated": "<who>{who}</who> añadió la cuenta «<value>{name}</value>»",
   "GroupActivity.accountDefaultCleared":
     "<who>{who}</who> quitó «<value>{name}</value>» como cuenta predeterminada",

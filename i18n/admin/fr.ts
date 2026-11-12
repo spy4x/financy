@@ -2290,6 +2290,7 @@ export default {
   "AdminAccounts.title": "Comptes",
   "AdminAccounts.topHouseholds": "Foyers qui ont le plus de comptes",
   "AdminAuditEvent.financeAccountArchived": "Compte financier archivé",
+  "AdminAuditEvent.mainCurrencyChanged": "Devise principale changée",
   "AdminAuditEvent.financeAccountCreated": "Compte financier ajouté",
   "AdminAuditEvent.financeAccountDefaultCleared": "Compte financier par défaut retiré",
   "AdminAuditEvent.financeAccountDefaultSet": "Compte financier par défaut choisi",

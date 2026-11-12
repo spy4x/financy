@@ -7,7 +7,9 @@ import { createOutboxProcessor, startRepeatingJobs } from "@server/jobs/wiring.t
 import { TelegramClient } from "@spy4x/integrations/telegram"
 import { readTelegramSetup } from "@server/telegram/setup.ts"
 import { queueDueBlogJobs } from "@server/blog/blog-publish-job.ts"
-import { readIndexNowSetup } from "@server/blog/blog-indexnow-job.ts"
+import { readIndexNowSetup } from "@server/jobs/indexnow.ts"
+import { readCatalogSetup } from "@server/catalog/setup.ts"
+import { readCatalogItemPath } from "@server/catalog/tracking.ts"
 import { readCrosspostSetup } from "@server/blog/blog-crosspost-job.ts"
 import { type RatesSetup, readRatesSetup } from "@server/money/rates-setup.ts"
 import { readShareResultsSetup } from "@server/blog/blog-share-results-job.ts"
@@ -94,6 +96,8 @@ const billingSetup = readBillingSetup(
 const filesSetup = readServerFilesSetup(processEnv)
 if (!filesSetup.success) console.warn(filesSetup.error)
 const files = filesSetup.success ? s3ServerFiles(filesSetup.output) : null
+// With `NOTES=false` the demo's seed and sample data write no notes, tags or attachments.
+const notes = readNotesSetup(processEnv)
 
 // Image processing runs `vips` on files: each run gets a folder of its own under the one
 // directory the worker may read and write (`--allow-read`/`--allow-write` in compose), and removes
@@ -133,6 +137,13 @@ const telegram = telegramSetup
 const indexNow = readIndexNowSetup(processEnv, processEnv.get("ENV") === "dev" ? "dev" : "prod")
 if (!indexNow && processEnv.get("INDEXNOW_KEY")?.trim()) {
   console.warn("IndexNow is off: INDEXNOW_KEY is set, but MPA_DOMAIN is not")
+}
+// A catalog item is announced at the addresses the website and the tracking links use
+// (docs/catalog.md#indexnow): `CATALOG_ITEM_PATH` in each of `CATALOG_LANGUAGES`. A bad one stops
+// the worker, as it stops the API.
+const catalogPages = {
+  itemPath: readCatalogItemPath(processEnv),
+  languages: readCatalogSetup(processEnv).settings.languages,
 }
 
 // The Dev.to cross-post (docs/blog.md): with `DEVTO_API_KEY` and `MPA_DOMAIN`, a live post
@@ -214,6 +225,7 @@ const processor = createOutboxProcessor(
         demoDataSeed(new Date()),
         new Date(),
         files,
+        notes,
       )
     : null,
   undefined,
@@ -226,6 +238,7 @@ const processor = createOutboxProcessor(
   shareResults,
   autoPost,
   rates,
+  catalogPages,
   // The API reads the same switch: with the notes off, no import job creates a note.
   readNotesSetup(processEnv),
 )
@@ -266,7 +279,7 @@ if (demo) {
     signal,
     isSeeded: () => isDemoSeeded(sql, new Date(), demoAdmin !== null),
     reset: async () => {
-      await resetDemo(sql, { subscribers: subscribersSetup, admin: demoAdmin })
+      await resetDemo(sql, { subscribers: subscribersSetup, admin: demoAdmin, notes })
       console.log("Demo wiped and seeded again")
     },
     now: () => new Date(),

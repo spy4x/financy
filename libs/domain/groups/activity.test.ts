@@ -122,42 +122,6 @@ Deno.test("activity: a tag's changes read as sentences that name the tag", () =>
   )
 })
 
-Deno.test("activity: an account's changes read as sentences that name the account", () => {
-  expect(say("account.created", { details: { name: "Wallet" } })).toBe(
-    "Ada added the account “Wallet”",
-  )
-  expect(say("account.created")).toBe("Ada added an account")
-  expect(say("account.updated", { details: { name: "Cash", from: "Wallet" } })).toBe(
-    "Ada renamed the account “Wallet” to “Cash”",
-  )
-  expect(say("account.updated", { details: { name: "Cash" } })).toBe(
-    "Ada changed the account “Cash”",
-  )
-  expect(say("account.archived", { details: { name: "Cash" } })).toBe(
-    "Ada archived the account “Cash”",
-  )
-  expect(say("account.default_set", { details: { name: "Cash" } })).toBe(
-    "Ada made the account “Cash” the default",
-  )
-  expect(say("account.default_cleared")).toBe("Ada stopped using an account as the default")
-})
-
-Deno.test("activity: a category's changes name it, and the subcategories that followed it", () => {
-  expect(say("category.created", { details: { name: "Food" } })).toBe(
-    "Ada added the category “Food”",
-  )
-  expect(say("category.updated", { details: { name: "Meals", from: "Food" } })).toBe(
-    "Ada renamed the category “Food” to “Meals”",
-  )
-  expect(say("category.archived", { details: { name: "Food", children: 2 } })).toBe(
-    "Ada archived the category “Food” with 2 subcategories",
-  )
-  expect(say("category.unarchived", { details: { name: "Food", children: 1 } })).toBe(
-    "Ada unarchived the category “Food” with 1 subcategory",
-  )
-  expect(say("category.archived")).toBe("Ada archived a category")
-})
-
 Deno.test("activity: every kind the server writes has its own sentence", () => {
   for (const kind of ACTIVITY_KINDS) {
     expect(say(kind)).not.toBe(say("future.kind"))

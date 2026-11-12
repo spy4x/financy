@@ -2,7 +2,7 @@ import type { Query } from "@spy4x/platform/cqrs"
 import { pluralize } from "@spy4x/platform/universal/text"
 import type { Actor } from "@domain/identity"
 import { GroupError, GroupRole } from "./+lib.ts"
-import { PRODUCT_ACTIVITY_KINDS } from "./product-activity.ts"
+import { PRODUCT_ACTIVITY_KINDS, type ProductEntityType } from "./product-activity.ts"
 
 /**
  * How long the worker keeps a group's activity: events older than this many days are deleted. A
@@ -14,8 +14,11 @@ export const AUDIT_RETENTION_DAYS = 365
 export const ACTIVITY_PAGE_MAX = 100
 export const ACTIVITY_PAGE_DEFAULT = 50
 
-/** What an audit event can point at besides a member: the thing the event is about. */
-export type AuditEntityType = "note" | "invitation" | "tag" | "account" | "category"
+/**
+ * What an audit event can point at besides a member: the thing the event is about. A product adds
+ * its own things through `ProductEntityType` (`product-activity.ts`).
+ */
+export type AuditEntityType = "note" | "invitation" | "tag" | ProductEntityType
 
 /** Short facts an event keeps for its sentence: names, roles, a count. Never a body or an address. */
 export type AuditDetails = Record<string, string | number>
@@ -53,18 +56,6 @@ export const ACTIVITY_KINDS = [
   "tag.created",
   "tag.updated",
   "tag.deleted",
-  "account.created",
-  "account.updated",
-  "account.archived",
-  "account.unarchived",
-  "account.default_set",
-  "account.default_cleared",
-  "account.deleted",
-  "account.restored",
-  "category.created",
-  "category.updated",
-  "category.archived",
-  "category.unarchived",
 ] as const
 
 /** The `app` catalog key of an event's sentence, and the values it fills in. */
@@ -354,59 +345,8 @@ export function describeActivity(
         ? `${deleted}, which ${counted(details.notes, "note")} carried`
         : deleted
     }
-    case "account.created":
-    case "account.archived":
-    case "account.unarchived":
-    case "account.default_set":
-    case "account.default_cleared":
-    case "account.deleted":
-    case "account.restored": {
-      const name = quoted(details.name)
-      const verb = ACCOUNT_VERBS[event.kind]
-      return name ? `${who} ${verb(`the account ${name}`)}` : `${who} ${verb("an account")}`
-    }
-    case "account.updated": {
-      const name = quoted(details.name)
-      const from = quoted(details.from)
-      if (from && name) return `${who} renamed the account ${from} to ${name}`
-      return name ? `${who} changed the account ${name}` : `${who} changed an account`
-    }
-    case "category.created":
-    case "category.archived":
-    case "category.unarchived": {
-      const name = quoted(details.name)
-      const verb = CATEGORY_VERBS[event.kind]
-      const said = name ? `${who} ${verb(`the category ${name}`)}` : `${who} ${verb("a category")}`
-      return typeof details.children === "number" && details.children > 0
-        ? `${said} with ${counted(details.children, "subcategory")}`
-        : said
-    }
-    case "category.updated": {
-      const name = quoted(details.name)
-      const from = quoted(details.from)
-      if (from && name) return `${who} renamed the category ${from} to ${name}`
-      return name ? `${who} changed the category ${name}` : `${who} changed a category`
-    }
     default:
       return productKinds.find((product) => product.kind === event.kind)?.describe(who, details) ??
         `${who} changed something in the group`
   }
-}
-
-/** How the log says each category event, around the category it names. */
-const CATEGORY_VERBS: Record<string, (category: string) => string> = {
-  "category.created": (category) => `added ${category}`,
-  "category.archived": (category) => `archived ${category}`,
-  "category.unarchived": (category) => `unarchived ${category}`,
-}
-
-/** How the log says each account event, around the account it names. */
-const ACCOUNT_VERBS: Record<string, (account: string) => string> = {
-  "account.created": (account) => `added ${account}`,
-  "account.archived": (account) => `archived ${account}`,
-  "account.unarchived": (account) => `unarchived ${account}`,
-  "account.default_set": (account) => `made ${account} the default`,
-  "account.default_cleared": (account) => `stopped using ${account} as the default`,
-  "account.deleted": (account) => `deleted ${account}`,
-  "account.restored": (account) => `restored ${account}`,
 }

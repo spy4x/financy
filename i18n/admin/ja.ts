@@ -2065,6 +2065,7 @@ export default {
   "AdminAccounts.title": "口座",
   "AdminAccounts.topHouseholds": "口座が多い世帯",
   "AdminAuditEvent.financeAccountArchived": "口座をアーカイブ",
+  "AdminAuditEvent.mainCurrencyChanged": "メイン通貨を変更",
   "AdminAuditEvent.financeAccountCreated": "口座を追加",
   "AdminAuditEvent.financeAccountDefaultCleared": "メインの口座を解除",
   "AdminAuditEvent.financeAccountDefaultSet": "メインの口座を設定",

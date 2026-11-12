@@ -159,6 +159,9 @@ export default {
     "one": "<who>{who}</who> deleted a tag used on {count} note",
     "other": "<who>{who}</who> deleted a tag used on {count} notes",
   },
+  "GroupActivity.mainCurrencyChangedFromTo":
+    "<who>{who}</who> changed the main currency from <value>{from}</value> to <value>{to}</value>",
+  "GroupActivity.mainCurrencyChanged": "<who>{who}</who> changed the main currency",
   "GroupActivity.accountCreated": "<who>{who}</who> added the account “<value>{name}</value>”",
   "GroupActivity.accountRenamed":
     "<who>{who}</who> renamed the account “<value>{from}</value>” to “<value>{name}</value>”",

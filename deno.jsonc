@@ -410,7 +410,7 @@
     // processing, translator-aware formats, the changes pull of a group, process adapters for Node
     // and Bun, signals, the port-only healthcheck, and the default environment, `runCommand` and
     // file storage on Node and Bun, serving HTTP and WebSockets, Redis and DNS on Node and Bun, a
-    // billing period per plan price).
+    // billing period per plan price, the locale an "Automatic" region format means).
     // hono, postgres and arktype below must stay on the exact versions these packages were
     // published with, or two copies load and their types stop matching.
     "@spy4x/validation": "jsr:@spy4x/validation@1.125.0",

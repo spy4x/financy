@@ -38,3 +38,4 @@ libs/server/blog/seed-posts/og/*
 apps/mpa/screenshots/blog-og.ts
 apps/mpa/screenshots/blog-og.html
 apps/mpa/feature-posts.test.ts
+libs/domain/groups/product-activity.ts

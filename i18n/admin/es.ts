@@ -2273,6 +2273,7 @@ export default {
   "AdminAccounts.title": "Cuentas",
   "AdminAccounts.topHouseholds": "Hogares con más cuentas",
   "AdminAuditEvent.financeAccountArchived": "Cuenta archivada",
+  "AdminAuditEvent.mainCurrencyChanged": "Moneda principal cambiada",
   "AdminAuditEvent.financeAccountCreated": "Cuenta añadida",
   "AdminAuditEvent.financeAccountDefaultCleared": "Cuenta predeterminada quitada",
   "AdminAuditEvent.financeAccountDefaultSet": "Cuenta predeterminada elegida",
