@@ -575,7 +575,10 @@ const FILE_PROBLEMS: Record<CategoryProblem, { problem: string; code: string }> 
   },
   ownParent: { problem: `it is its own parent`, code: `categoryOwnParent` },
   parentNested: { problem: `its parent has a parent`, code: `categoryParentNested` },
-  hasChildren: { problem: `its parent has a parent`, code: `categoryParentNested` },
+  hasChildren: {
+    problem: `it has a parent and children of its own`,
+    code: `categoryHasChildren`,
+  },
   kindMismatch: {
     problem: `its kind differs from its parent's`,
     code: `categoryKindMismatch`,

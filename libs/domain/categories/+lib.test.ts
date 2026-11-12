@@ -311,11 +311,25 @@ describe("a category in an export file", () => {
     ]
 
     expect(categoryExportProblems(file).map(({ index, issue }) => [index, issue.code])).toEqual([
-      [1, "categoryParentNested"],
+      [1, "categoryHasChildren"],
       [2, "categoryParentNested"],
       [3, "categoryKindMismatch"],
       [4, "duplicateCategoryName"],
     ])
+  })
+
+  it("says a parent entry that sits under a parent itself has a parent and children, not that its parent is nested", () => {
+    const file = [
+      row({ id: FOOD, name: "Food" }),
+      row({ id: GROCERIES, name: "a", parentId: FOOD }),
+      row({ id: SALARY, name: "b", parentId: GROCERIES }),
+    ]
+
+    const [first] = categoryExportProblems(file)
+    expect(first.index).toBe(1)
+    expect(first.problem).toContain("it has a parent and children of its own")
+    expect(first.problem).not.toContain("its parent has a parent")
+    expect(first.issue.code).toBe("categoryHasChildren")
   })
 
   it("names a missing parent and a live child under an archived one", () => {

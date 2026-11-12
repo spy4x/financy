@@ -264,6 +264,7 @@ export default {
   "ImportIssue.categoryParentArchived": "هي قيد الاستخدام، لكن فئتها الأم مؤرشفة.",
   "ImportIssue.categoryOwnParent": "تشير إلى نفسها كفئة أم.",
   "ImportIssue.categoryParentNested": "فئتها الأم فئة فرعية بدورها. للفئات مستويان فقط.",
+  "ImportIssue.categoryHasChildren": "لها فئة أم ولها فئات فرعية خاصة بها. للفئات مستويان فقط.",
   "ImportIssue.categoryKindMismatch": "نوعها يختلف عن نوع فئتها الأم.",
   "ImportIssue.duplicateCategoryName": "توجد فئة أخرى بجانبها في الملف بهذا الاسم.",
   "ImportIssue.tooManyCategories": {

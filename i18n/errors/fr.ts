@@ -263,6 +263,8 @@ export default {
   "ImportIssue.categoryOwnParent": "Elle se désigne comme sa propre parente.",
   "ImportIssue.categoryParentNested":
     "Sa parente est elle-même une sous-catégorie. Les catégories n’ont que deux niveaux.",
+  "ImportIssue.categoryHasChildren":
+    "Elle a une parente et ses propres sous-catégories. Les catégories n’ont que deux niveaux.",
   "ImportIssue.categoryKindMismatch": "Son type diffère de celui de sa parente.",
   "ImportIssue.duplicateCategoryName": "Une autre catégorie à côté dans le fichier porte ce nom.",
   "ImportIssue.tooManyCategories": {

@@ -264,6 +264,8 @@ export default {
   "ImportIssue.categoryOwnParent": "Sie nennt sich selbst als Oberkategorie.",
   "ImportIssue.categoryParentNested":
     "Ihre Oberkategorie ist selbst eine Unterkategorie. Kategorien haben nur zwei Ebenen.",
+  "ImportIssue.categoryHasChildren":
+    "Sie hat eine Oberkategorie und eigene Unterkategorien. Kategorien haben nur zwei Ebenen.",
   "ImportIssue.categoryKindMismatch": "Ihre Art weicht von der ihrer Oberkategorie ab.",
   "ImportIssue.duplicateCategoryName": "Eine andere Kategorie daneben in der Datei heißt genauso.",
   "ImportIssue.tooManyCategories": {

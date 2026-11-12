@@ -240,6 +240,8 @@ export default {
   "ImportIssue.categoryOwnParent": "It names itself as its parent.",
   "ImportIssue.categoryParentNested":
     "Its parent is a subcategory itself. Categories go only two levels deep.",
+  "ImportIssue.categoryHasChildren":
+    "It has a parent and children of its own. Categories go only two levels deep.",
   "ImportIssue.categoryKindMismatch": "Its kind differs from its parent's.",
   "ImportIssue.duplicateCategoryName": "Another category beside it in the file has this name.",
   "ImportIssue.tooManyCategories": {

@@ -262,6 +262,8 @@ export default {
   "ImportIssue.categoryOwnParent": "Она указана родителем самой себя.",
   "ImportIssue.categoryParentNested":
     "Её родитель сам подкатегория. У категорий только два уровня.",
+  "ImportIssue.categoryHasChildren":
+    "У неё есть родитель и свои подкатегории. У категорий только два уровня.",
   "ImportIssue.categoryKindMismatch": "Её тип отличается от типа родителя.",
   "ImportIssue.duplicateCategoryName": "Рядом в файле есть другая категория с таким же названием.",
   "ImportIssue.tooManyCategories": {

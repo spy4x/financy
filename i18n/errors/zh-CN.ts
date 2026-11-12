@@ -215,6 +215,7 @@ export default {
   "ImportIssue.categoryParentArchived": "它在使用中，但它的上级分类已归档。",
   "ImportIssue.categoryOwnParent": "它把自己设为了上级分类。",
   "ImportIssue.categoryParentNested": "它的上级分类本身是子分类。分类只有两级。",
+  "ImportIssue.categoryHasChildren": "它有上级分类，自己也有子分类。分类只有两级。",
   "ImportIssue.categoryKindMismatch": "它的类型与上级分类不同。",
   "ImportIssue.duplicateCategoryName": "文件中旁边有另一个同名的分类。",
   "ImportIssue.tooManyCategories": {

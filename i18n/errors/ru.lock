@@ -58,6 +58,7 @@ Field.weightBothEnds	96fc48965564ce76
 Field.weightWholeNumbers	4a3214257d6978bc
 Field.withinYears	c9cb51a4f00cbfd5
 ImportIssue.archivedDefaultAccount	3d63f0d7a50d0605
+ImportIssue.categoryHasChildren	81c103a78a410094
 ImportIssue.categoryKindMismatch	0a08ed1d02117d83
 ImportIssue.categoryOwnParent	c952cdbe06ebe6bf
 ImportIssue.categoryParentArchived	409fcc933713e04e

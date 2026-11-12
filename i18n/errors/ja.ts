@@ -243,6 +243,8 @@ export default {
   "ImportIssue.categoryParentArchived": "使用中ですが、親カテゴリがアーカイブ済みです。",
   "ImportIssue.categoryOwnParent": "自分自身を親カテゴリにしています。",
   "ImportIssue.categoryParentNested": "親カテゴリ自体がサブカテゴリです。カテゴリは2階層までです。",
+  "ImportIssue.categoryHasChildren":
+    "親カテゴリがあり、自身にもサブカテゴリがあります。カテゴリは2階層までです。",
   "ImportIssue.categoryKindMismatch": "種類が親カテゴリと異なります。",
   "ImportIssue.duplicateCategoryName": "ファイル内の隣に同じ名前のカテゴリがあります。",
   "ImportIssue.tooManyCategories": {

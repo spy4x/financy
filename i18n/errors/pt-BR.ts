@@ -250,6 +250,8 @@ export default {
   "ImportIssue.categoryOwnParent": "Ela indica a si mesma como principal.",
   "ImportIssue.categoryParentNested":
     "A categoria principal é uma subcategoria. As categorias têm só dois níveis.",
+  "ImportIssue.categoryHasChildren":
+    "Ela tem uma categoria principal e subcategorias próprias. As categorias têm só dois níveis.",
   "ImportIssue.categoryKindMismatch": "O tipo é diferente do tipo da categoria principal.",
   "ImportIssue.duplicateCategoryName": "Outra categoria ao lado no arquivo tem este nome.",
   "ImportIssue.tooManyCategories": {
