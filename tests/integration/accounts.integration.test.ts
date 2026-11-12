@@ -260,7 +260,7 @@ Deno.test("accounts against Postgres", async (t) => {
           .rejects.toThrow("accounts_currency_check")
         await expect(sql`UPDATE accounts SET currency = 'USD' WHERE id = ${btc.id}`)
           .rejects.toThrow("accounts_currency_check")
-        await expect(sql`UPDATE accounts SET kind = 8 WHERE id = ${btc.id}`)
+        await expect(sql`UPDATE accounts SET kind = 8 WHERE id = ${bank.id}`)
           .rejects.toThrow("accounts_kind_check")
       },
     )
