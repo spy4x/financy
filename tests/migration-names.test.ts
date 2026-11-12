@@ -125,6 +125,7 @@ const ON_MAIN: readonly string[] = [
   "2026_12_16_0005_categories.sql",
   "2026_12_16_0006_crypto_accounts.sql",
   "2026_12_16_0007_transactions.sql",
+  "2026_12_16_0008_audit_file_access_once.sql",
   "2026_12_17_0001_budgets.sql",
 ]
 
