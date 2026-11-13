@@ -428,6 +428,7 @@ describe("TransactionEditorScreen", () => {
       "There's no exchange rate for USD on 2026-11-13 yet. Type what Wallet was charged in EUR.",
     )
     expect(field.querySelector("input")?.required).toBe(true)
+    expect(field.querySelector("label [aria-hidden=true]")?.textContent).toBe("*")
   })
 
   it("lists expense categories under Refund on an income", async () => {
