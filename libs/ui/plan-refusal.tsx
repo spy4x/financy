@@ -65,6 +65,8 @@ const REFUSAL_KEYS: Record<
   },
   // Only the paid plan sets a budget, so the refusal asks for a plan, as a cap of 0 does.
   budgets: NO_PLAN_KEYS,
+  // Sold at 0 or with no cap, so the refusal asks for a plan too.
+  maxRecurringRules: NO_PLAN_KEYS,
 }
 
 export interface PlanRefusalNoticeProps {

@@ -270,6 +270,9 @@ export default {
     "Cette catégorie a déjà des opérations : elle ne peut plus passer des dépenses aux revenus, ni l’inverse.",
   "Reason.ACCOUNT_HAS_TRANSACTIONS":
     "Ce compte a des opérations : il ne peut pas être supprimé. Archivez-le plutôt.",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "Des opérations récurrentes utilisent ce compte : il ne peut pas être supprimé. Archivez-le plutôt.",
+  "Reason.RECURRING_RULE_NOT_FOUND": "Cette opération récurrente n’existe plus.",
   "ImportIssue.categoryParentMissing": "Sa parente ne figure pas parmi les catégories du fichier.",
   "ImportIssue.categoryParentArchived": "Elle est utilisée, mais sa parente est archivée.",
   "ImportIssue.categoryOwnParent": "Elle se désigne comme sa propre parente.",

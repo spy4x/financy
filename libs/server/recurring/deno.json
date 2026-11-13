@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "check": "deno check postgres-recurring-rule-repository.ts purge-deleted-recurring-rules.ts recurring-rule-movable.ts"
+  }
+}

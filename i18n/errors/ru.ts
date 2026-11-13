@@ -267,6 +267,9 @@ export default {
     "В этой категории уже есть операции, поэтому её нельзя переключить между расходами и доходами.",
   "Reason.ACCOUNT_HAS_TRANSACTIONS":
     "По этому счёту есть операции, поэтому его нельзя удалить. Уберите его в архив.",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "Этот счёт используют регулярные операции, поэтому его нельзя удалить. Уберите его в архив.",
+  "Reason.RECURRING_RULE_NOT_FOUND": "Этой регулярной операции больше нет.",
   "ImportIssue.categoryParentMissing": "Её родителя нет среди категорий файла.",
   "ImportIssue.categoryParentArchived": "Она в деле, а её родитель в архиве.",
   "ImportIssue.categoryOwnParent": "Она указана родителем самой себя.",

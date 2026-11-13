@@ -155,6 +155,41 @@ async function entriesOf(sql: postgres.Sql, groupId: string) {
   ]
 }
 
+/**
+ * Inserts a monthly repeating expense of 13.30 EUR into `groupId` on `accountId` and `categoryId`,
+ * created by `userId`, in the trash when `deleted`; answers its id.
+ */
+async function insertRule(
+  sql: postgres.Sql,
+  groupId: string,
+  refs: { accountId: string; categoryId: string },
+  userId: number,
+  deleted = false,
+): Promise<string> {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO recurring_rules (id, group_id, account_id, category_id, kind, amount, currency, memo,
+      rrule, start_date, skipped_dates, change_sequence, created_by_user_id, updated_by_user_id,
+      deleted_at)
+    VALUES (${id}, ${groupId}, ${refs.accountId}, ${refs.categoryId}, 1, 1330, 'EUR', 'Rent',
+      'FREQ=MONTHLY;BYMONTHDAY=1', '2026-11-01', '{2026-12-01}', 1, ${userId}, ${userId},
+      ${deleted ? new Date() : null})
+  `
+  return id
+}
+
+/** A group's repeating rules by id, deleted ones included. */
+async function rulesOf(sql: postgres.Sql, groupId: string) {
+  return [
+    ...await sql`
+      SELECT id, account_id, category_id, amount::text AS amount, currency, rrule,
+        skipped_dates::text[] AS skipped_dates, created_by_user_id, updated_by_user_id,
+        deleted_at IS NOT NULL AS deleted, version
+      FROM recurring_rules WHERE group_id = ${groupId} ORDER BY id
+    `,
+  ]
+}
+
 /** Inserts a tag named `name` into `groupId`, created by `userId`; answers its id. */
 async function insertTag(
   sql: postgres.Sql,
@@ -372,7 +407,14 @@ Deno.test("moving all of a group's data", async (t) => {
         // Work, Idle and Old changed group; Shared joined the target's "shared".
         expect(result).toEqual({
           moved: 5,
-          counts: { accounts: 0, categories: 0, transactions: 0, tags: 4, notes: 1 },
+          counts: {
+            accounts: 0,
+            categories: 0,
+            transactions: 0,
+            recurringRules: 0,
+            tags: 4,
+            notes: 1,
+          },
         })
         expect(await tagsOf(sql, from)).toEqual([])
         expect(await tagsOf(sql, to)).toEqual([
@@ -647,6 +689,86 @@ Deno.test("moving all of a group's data", async (t) => {
     )
 
     await t.step(
+      "moves every repeating rule, deleted ones included, with the account and category it names",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { owner, editor, from, to } = await seed(sql, [])
+        const refs = {
+          accountId: await insertAccount(sql, from, "Main", editor),
+          categoryId: await insertCategory(sql, from, "Housing", editor),
+        }
+        const live = await insertRule(sql, from, refs, owner)
+        const binned = await insertRule(sql, from, refs, owner, true)
+
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result).toMatchObject({
+          moved: 4,
+          counts: { recurringRules: 2, accounts: 1, categories: 1 },
+        })
+        expect(await rulesOf(sql, from)).toEqual([])
+        const moved = {
+          ...refs,
+          amount: "1330",
+          currency: "EUR",
+          rrule: "FREQ=MONTHLY;BYMONTHDAY=1",
+          skippedDates: ["2026-12-01"],
+          createdByUserId: owner,
+          updatedByUserId: editor,
+          version: 2,
+        }
+        expect(await rulesOf(sql, to)).toEqual([
+          { id: live, ...moved, deleted: false },
+          { id: binned, ...moved, deleted: true },
+        ])
+      },
+    )
+
+    await t.step(
+      "refuses whole when the source's live repeating rules would take the target over its plan's maxRecurringRules",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to, ids, notes } = await seed(sql, ["a"])
+        const theirs = {
+          accountId: await insertAccount(sql, to, "Theirs", editor),
+          categoryId: await insertCategory(sql, to, "Theirs", editor),
+        }
+        await insertRule(sql, to, theirs, editor)
+        const refs = {
+          accountId: await insertAccount(sql, from, "Main", editor),
+          categoryId: await insertCategory(sql, from, "Housing", editor),
+        }
+        const moving = [
+          await insertRule(sql, from, refs, editor),
+          await insertRule(sql, from, refs, editor),
+          await insertRule(sql, from, refs, editor, true),
+        ]
+        const input = { fromGroupId: from, toGroupId: to }
+
+        const over = await refusal(
+          app.moveAll(input, editor, { maxNotes: null, maxRecurringRules: 2 }),
+        )
+
+        expect(over).toMatchObject({
+          code: "PLAN_LIMIT_REACHED",
+          entitlement: "maxRecurringRules",
+          limit: 2,
+        })
+        expect((await rulesOf(sql, from)).map((rule) => rule.id)).toEqual(moving.sort())
+        expect((await accountsOf(sql, from)).map((account) => account.id)).toEqual([
+          refs.accountId,
+        ])
+        expect((await notes.list(from, { limit: 10 })).notes.map((note) => note.id)).toEqual(ids)
+
+        // The deleted one does not count: three live rules fit a cap of three.
+        const fits = await app.moveAll(input, editor, { maxNotes: null, maxRecurringRules: 3 })
+
+        expect(fits.counts).toMatchObject({ recurringRules: 3 })
+        expect(await rulesOf(sql, from)).toEqual([])
+      },
+    )
+
+    await t.step(
       "with the notes off, moving a group's data leaves its notes and tags where they were",
       async () => {
         const off = new AppDbBase({ sql, notes: NOTES_OFF }).groupData
@@ -677,7 +799,7 @@ Deno.test("moving all of a group's data", async (t) => {
 
         expect(result).toEqual({
           moved: 1,
-          counts: { accounts: 1, categories: 0, transactions: 0 },
+          counts: { accounts: 1, categories: 0, transactions: 0, recurringRules: 0 },
         })
         expect(await accountsOf(sql, from)).toEqual([])
         expect(await accountsOf(sql, to)).toEqual([
