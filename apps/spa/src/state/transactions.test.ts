@@ -160,6 +160,22 @@ describe("prefillEntry", () => {
   })
 })
 
+describe("reading the list", () => {
+  it("keeps the entries it has and says so when a later read fails", async () => {
+    let fail = false
+    const { store } = harness({
+      fetchList: () => fail ? Promise.reject(new Error("down")) : Promise.resolve([entry("t-1")]),
+    })
+    await store.open(groupId)
+    fail = true
+
+    await store.refresh()
+
+    expect(store.listError.value).toBe(TRANSACTION_MESSAGES.load)
+    expect(store.transactions.value.map((row) => row.id)).toEqual(["t-1"])
+  })
+})
+
 describe("the transaction editor", () => {
   it("clears an income category when the kind switches to Expense", async () => {
     const { store } = await newEntry()
@@ -379,6 +395,39 @@ describe("deleting an entry", () => {
     expect(store.undo.value).toBe(null)
     expect(reads).toBe(2)
     expect(store.transactions.value.map((row) => row.version)).toEqual([2])
+  })
+
+  it("says an entry another member deleted first is gone, and drops it from the list", async () => {
+    let rows = [entry("t-1")]
+    const { store } = harness({
+      fetchList: () => Promise.resolve(rows),
+      delete: () => Promise.reject(refused("TRANSACTION_NOT_FOUND")),
+    })
+    await store.open(groupId)
+    rows = []
+
+    expect(await store.remove("t-1")).toBe(false)
+
+    expect(store.listError.value).toBe(TRANSACTION_MESSAGES.gone)
+    expect(store.transactions.value).toEqual([])
+  })
+
+  it("shows the plan's refusal of a restore instead of an error", async () => {
+    const plan = {
+      code: "PLAN_LIMIT_REACHED",
+      entitlement: "maxTransactions",
+      limit: 500,
+      canUpgrade: true,
+    }
+    const { store } = harness({
+      restore: () => Promise.reject(new RealtimeRequestError("forbidden", "No plan", plan)),
+    })
+    await store.open(groupId)
+
+    expect(await store.restore("t-1")).toBe(null)
+
+    expect(store.listPlan.value).toEqual(plan)
+    expect(store.listError.value).toBe(null)
   })
 
   it("says a restore needs the server when it cannot be reached", async () => {
