@@ -8,6 +8,7 @@
 0e5c088cdfda63a855864bd22e0eae48ccc5646d:apps/api/routes/subscribers.test.ts:generic-api-key:33
 0e5c088cdfda63a855864bd22e0eae48ccc5646d:tests/integration/subscribers.integration.test.ts:generic-api-key:30
 0c2b25589ad83db64e422fb4620fe5e3d26dc5d4:libs/server/notifications/notification-cursor.test.ts:generic-api-key:8
+fdcd7deb7c80d1696c526f66f88abda030e44162:tests/integration/coin-prices.integration.test.ts:generic-api-key:32
 25ebca96f60ce5c10f84e43505f9eea17daa8e0e:libs/ui/admin-audit-screen.test.tsx:generic-api-key:335
 999b920a8323a27a58c16b6203d36d4bd5190e89:tests/db-reset-main.test.ts:generic-api-key:40
 40c412e4dd00399905d049066a801500c6124a5d:tests/integration/auth.integration.test.ts:generic-api-key:457

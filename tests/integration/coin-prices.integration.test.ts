@@ -30,7 +30,7 @@ import ethereumHistory from "../../libs/server/money/fixtures/coingecko-ethereum
 
 /** Friday 16:00 UTC, the day of the recorded CoinGecko replies. */
 const FRIDAY_16H = new Date(`2026-10-30T16:00:00Z`)
-const KEY = `CG-testkey12345`
+const KEY = `CG-testkey12345` // gitleaks:allow
 const ECB_HOST = `api.frankfurter.dev`
 const COIN_HOST = `api.coingecko.com`
 
