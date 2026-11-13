@@ -365,6 +365,22 @@ describe("deleting an entry", () => {
     expect(store.undo.value).toBe(null)
   })
 
+  it("keeps an entry another member changed, says so, and reads the list again", async () => {
+    let reads = 0
+    const { store } = harness({
+      fetchList: () => (reads++, Promise.resolve([entry("t-1", { version: 2 })])),
+      delete: () => Promise.reject(refused("VERSION_CONFLICT")),
+    })
+    await store.open(groupId)
+
+    expect(await store.remove("t-1")).toBe(false)
+
+    expect(store.listError.value).toBe(TRANSACTION_MESSAGES.conflict)
+    expect(store.undo.value).toBe(null)
+    expect(reads).toBe(2)
+    expect(store.transactions.value.map((row) => row.version)).toEqual([2])
+  })
+
   it("says a restore needs the server when it cannot be reached", async () => {
     const { store } = harness({
       restore: () => Promise.reject(new ConnectionLostError("offline")),

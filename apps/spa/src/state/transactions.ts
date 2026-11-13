@@ -551,12 +551,13 @@ export function createTransactionsStore(
       return true
     } catch (cause) {
       const code = transactionCode(cause)
+      // Read the list first: a read that succeeds clears the list's message.
+      if (code === "VERSION_CONFLICT" || code === "TRANSACTION_NOT_FOUND") await refresh()
       listError.value = code === "VERSION_CONFLICT"
         ? TRANSACTION_MESSAGES.conflict
         : code === "TRANSACTION_NOT_FOUND"
         ? TRANSACTION_MESSAGES.gone
         : describeError(cause, TRANSACTION_MESSAGES.delete)
-      if (code === "VERSION_CONFLICT" || code === "TRANSACTION_NOT_FOUND") await refresh()
       return false
     } finally {
       pendingId.value = null
