@@ -28,6 +28,7 @@
     "jsr:@spy4x/preact-signals@14.4.0": "14.4.0",
     "jsr:@spy4x/preact-system@14.4.0": "14.4.0",
     "jsr:@spy4x/preact-theme@13.11.1": "13.11.1",
+    "jsr:@spy4x/preact-theme@14.3.0": "14.3.0",
     "jsr:@spy4x/preact-theme@14.4.0": "14.4.0",
     "jsr:@spy4x/preact-theme@^14.4.0": "14.4.0",
     "jsr:@spy4x/preact-ui@14.4.0": "14.4.0",
@@ -317,6 +318,9 @@
     },
     "@spy4x/preact-theme@13.11.1": {
       "integrity": "3a205c5b7345ae7bca6b5664c2b1524b6c100b1eef1646580cfab52b6452bab4"
+    },
+    "@spy4x/preact-theme@14.3.0": {
+      "integrity": "2937f14e8ff4bad6b7da6484575dfd7e0f4b5b1fcd96b5695e8d8c3226482877"
     },
     "@spy4x/preact-theme@14.4.0": {
       "integrity": "9c270e790676f7fd4418fc48e252da9794a28e5465e147943d665b55473ea3b6",
