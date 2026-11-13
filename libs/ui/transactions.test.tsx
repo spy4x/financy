@@ -353,16 +353,16 @@ describe("TransactionsScreen", () => {
     await mount(list([gone, train]))
     await discardFirst()
     await act(() => render(list([train]), root!))
-    expect(document.activeElement)
-      .toBe(
-        document.querySelector(`[data-e2e=transaction-${train.id}] a[data-e2e=transaction-row]`),
-      )
+    // Compared by name: a failed match of two elements would print the whole DOM.
+    const focused = () => document.activeElement
+    expect(focused()?.getAttribute("data-e2e")).toBe("transaction-row")
+    expect(focused()?.closest("li")?.getAttribute("data-e2e")).toBe(`transaction-${train.id}`)
 
     await act(() => render(list([gone]), root!))
     await discardFirst()
     await act(() => render(list([]), root!))
     const heading = document.querySelector("h1")!
-    expect(document.activeElement).toBe(heading)
+    expect(focused()?.tagName).toBe("H1")
     // A heading takes focus in a browser only with a tabindex; happy-dom does not check.
     expect(heading.getAttribute("tabindex")).toBe("-1")
   })
