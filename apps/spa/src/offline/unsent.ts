@@ -23,9 +23,12 @@ export interface UnsentCounts {
 export function countUnsent(layer: OfflineLayer): UnsentCounts {
   const notes = layer.entries.value
   const tags = layer.tagEntries.value
-  const refused = [...tags, ...notes].filter((entry) => entry.status === "conflict")
+  const transactions = layer.transactionEntries.value
+  const refused = [...tags, ...notes, ...transactions].filter((entry) =>
+    entry.status === "conflict"
+  )
   // A write held back by a refused parent is still `pending` in its own queue, so it is not counted
-  // twice.
+  // twice. Entries name no queued parent, so none is held.
   const held = layer.collections.waiting().filter((waiting) => waiting.onPerson)
     .map((waiting) =>
       (waiting.collection === TAGS_COLLECTION ? tags : notes).find((entry) =>
@@ -35,7 +38,7 @@ export function countUnsent(layer: OfflineLayer): UnsentCounts {
     .filter((entry) => entry !== undefined)
   const stuck = [...refused, ...held]
   return {
-    unsent: notes.length + tags.length,
+    unsent: notes.length + tags.length + transactions.length,
     conflicts: stuck.length,
     reviewGroupId: stuck[0]?.payload.groupId ?? null,
   }

@@ -10,6 +10,8 @@ import {
   TransactionGetQuery,
   transactionLedgerPayloadSchema,
   TransactionLedgerQuery,
+  transactionListDeletedPayloadSchema,
+  TransactionListDeletedQuery,
   TransactionRestoreCommand,
   transactionRestorePayloadSchema,
   TransactionUpdateCommand,
@@ -26,6 +28,7 @@ export interface TransactionOperationDependencies {
   delete(command: TransactionDeleteCommand): Promise<{ transaction: Transaction }>
   restore(command: TransactionRestoreCommand): Promise<{ transaction: Transaction }>
   get(query: TransactionGetQuery): Promise<{ transaction: Transaction }>
+  listDeleted(query: TransactionListDeletedQuery): Promise<{ transactions: Transaction[] }>
   ledger(query: TransactionLedgerQuery): Promise<{ ledger: Ledger }>
 }
 
@@ -79,6 +82,13 @@ export function createTransactionOperations(
       handle: async ({ actor, payload }) => {
         const input = parseTransactionRequest(transactionGetPayloadSchema, payload)
         return await dependencies.get(new TransactionGetQuery({ actor, ...input }))
+      },
+    },
+    "transaction.listDeleted": {
+      kind: "query",
+      handle: async ({ actor, payload }) => {
+        const input = parseTransactionRequest(transactionListDeletedPayloadSchema, payload)
+        return await dependencies.listDeleted(new TransactionListDeletedQuery({ actor, ...input }))
       },
     },
     "transaction.ledger": {

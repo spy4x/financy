@@ -619,12 +619,12 @@ export default {
   "FeatureAccounts.nav": "Comptes",
   "FeatureAccounts.title": "Chaque compte dans sa propre devise",
   "Features.description":
-    "Financy aujourd’hui : comptes en toute devise, budgets mensuels, foyers avec rôles, synchro, appli hors ligne, export, neuf langues et votre serveur.",
+    "Financy aujourd’hui : comptes et opérations en toute devise, budgets mensuels, foyers avec rôles, synchro, appli hors ligne, export, neuf langues.",
   "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
   "FeaturesHero.lead":
-    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, leurs catégories et les budgets mensuels, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
+    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
   "FeaturesHero.note":
-    "Les opérations ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
+    "Les virements ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
   "HomeFaq.useAnswer":
     "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
   "Catalog.title": "Catalogue",
@@ -653,7 +653,7 @@ export default {
     "Un lecteur voit les catégories ; seuls un éditeur ou plus les modifient",
   "FeatureCategories.code": "Lire le code source des catégories",
   "FeatureTierSettled.lead":
-    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises, leurs catégories et les budgets mensuels sont là ; les opérations viennent ensuite.",
+    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels sont là ; les virements viennent ensuite.",
   "HomeStatus.categories": "Des catégories avec un niveau de sous‑catégories",
   "HomeStatus.budgets": "Un plafond mensuel pour chaque catégorie",
   "FeatureBudgets.nav": "Budgets",
@@ -667,4 +667,14 @@ export default {
   "FeatureBudgets.fact3":
     "Fixer un plafond demande le forfait Household ; lire les budgets et retirer un plafond, jamais, et le serveur le vérifie",
   "FeatureBudgets.code": "Lire le code source des budgets",
+  "FeatureTransactions.nav": "Opérations",
+  "FeatureTransactions.title": "Chaque dépense et chaque revenu, dans la devise payée",
+  "FeatureTransactions.lead":
+    "Tapez un montant et appuyez sur Entrée. Le compte, la catégorie et la date viennent de votre dernière opération. Si vous payez dans une autre devise, Financy convertit au taux du jour, ou vous saisissez ce que votre banque a débité.",
+  "FeatureTransactions.fact1": "Les deux montants sont gardés, et un montant converti est signalé",
+  "FeatureTransactions.fact2":
+    "La recherche et les filtres tournent sur la copie de l’appareil, donc la liste marche hors ligne",
+  "FeatureTransactions.fact3": "Un revenu dans une catégorie de dépenses est un remboursement",
+  "FeatureTransactions.fact4": "Une opération supprimée peut être restaurée pendant 30 jours",
+  "FeatureTransactions.code": "Lire le code source des opérations",
 } satisfies Catalog

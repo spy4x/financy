@@ -147,3 +147,10 @@ export async function openProfile(page: Page, section?: string): Promise<void> {
   await page.waitForURL(`/profile/${section}`)
   await page.locator("[data-e2e=settings-heading]").waitFor()
 }
+
+/** Opens the notes list the way a person does on a wide window: Notes in the account menu. */
+export async function openNotesFromMenu(page: Page): Promise<void> {
+  await page.locator("[data-e2e=account-menu-button]").click()
+  await page.getByRole("menuitem", { name: "Notes", exact: true }).click()
+  await page.waitForURL("/notes")
+}

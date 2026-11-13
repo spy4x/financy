@@ -6,7 +6,7 @@ import { act } from "preact/test-utils"
 import { signal } from "@preact/signals"
 import type { notesStore, UndoOffer } from "../state/notes.ts"
 import { toasts } from "../state/toasts.ts"
-import { useUndoToast } from "./use-undo-toast.ts"
+import { NOTE_UNDO_TEXT, useUndoToast } from "./use-undo-toast.ts"
 
 const window = new Window({ url: "http://app.localhost/" })
 const own = { document: globalThis.document }
@@ -70,7 +70,7 @@ async function pressCtrl(
 }
 
 function Host({ store }: { store: typeof notesStore }) {
-  useUndoToast(store)
+  useUndoToast(store, NOTE_UNDO_TEXT)
   return null
 }
 

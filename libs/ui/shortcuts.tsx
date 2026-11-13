@@ -79,7 +79,9 @@ export function ShortcutsList(
   }))
   // The switch drops or restores rows, and the dialog is centred, so it would jump away from the
   // pointer. A press on the switch pins the dialog's height until it closes, and the footer keeps
-  // to the bottom (`[&>footer]:mt-auto`), so the switch stays where it was.
+  // to the bottom (`[&>footer]:mt-auto`), so the switch stays where it was. On a window too short for
+  // the list, the dialog scrolls and its footer sticks to the bottom edge, so the switch is there
+  // before the press as well as after it.
   const pinned = useRef<HTMLDialogElement | null>(null)
   useEffect(() => {
     if (open || !pinned.current) return
@@ -97,7 +99,7 @@ export function ShortcutsList(
       open={open}
       onClose={onClose}
       shortcuts={active}
-      class="sm:max-w-lg [&>footer]:mt-auto"
+      class="sm:max-w-lg [&>footer]:sticky [&>footer]:bottom-0 [&>footer]:mt-auto [&>footer]:bg-surface"
       footer={
         <div class="w-full" data-e2e="shortcuts-footer" onClickCapture={keepHeight}>
           <ToggleField

@@ -19,6 +19,13 @@ import { type NotesCollection, notesCollection } from "./notes-collection.ts"
 import type { TagEntry, TagPayload, TagsCache } from "./tags-cache.ts"
 import { type TagsCollection, tagsCollection } from "./tags-collection.ts"
 import type { TagItem } from "../state/tags.ts"
+import type { TransactionItem } from "../state/transactions.ts"
+import type {
+  TransactionEntry,
+  TransactionPayload,
+  TransactionsCache,
+} from "./transactions-cache.ts"
+import { type TransactionsCollection, transactionsCollection } from "./transactions-collection.ts"
 import type { Message } from "@ui/message.ts"
 
 /**
@@ -28,10 +35,12 @@ import type { Message } from "@ui/message.ts"
  *
  * One signed-in user has these things on the device, each its own IndexedDB database:
  * - the read copies (`reads:<id>`): the last answer of every offline-readable list;
- * - the notes and tags of every group read, with the change sequence each group's copy is complete
- *   through (`offline:user:<id>:changes`), which the changes pull keeps in step (`device-copy.ts`);
- * - the queue of note writes (`offline:user:<id>:outbox`) and of tag writes
- *   (`offline:user:<id>:tags-outbox`).
+ * - the notes, tags and entries of every group read, with the change sequence each group's copy is
+ *   complete through (`offline:user:<id>:changes`), which the changes pull keeps in step
+ *   (`device-copy.ts`);
+ * - the queue of note writes (`offline:user:<id>:outbox`), of tag writes
+ *   (`offline:user:<id>:tags-outbox`) and of entry writes
+ *   (`offline:user:<id>:transactions-outbox`).
  *
  * Stopping the layer for a sign-out deletes the read copies and the notes and tags. The sign-out
  * then deletes every database of the app, the queues included (`wipeDevice` in `modules.ts`).
@@ -55,6 +64,8 @@ export interface OfflineStorage {
   openTagsQueue?(userId: number): OutboxStore<TagPayload, TagItem>
   /** The notes queue of one user, when it is not the IndexedDB one the collection opens itself. */
   openQueue?(userId: number): OutboxStore<NotePayload, NoteItem>
+  /** The entries queue of one user, when it is not the IndexedDB one. */
+  openTransactionsQueue?(userId: number): OutboxStore<TransactionPayload, TransactionItem>
 }
 
 /** The device copy and the queue of one signed-in user. */
@@ -78,6 +89,12 @@ export interface OfflineLayer {
   entries: Signal<readonly NoteEntry[]>
   /** The queued tag writes, for the screen. */
   tagEntries: Signal<readonly TagEntry[]>
+  /** The device's copy of the entries. */
+  transactionsCache: TransactionsCache
+  /** The entries queue and its overlay. */
+  transactions: TransactionsCollection
+  /** The queued entry writes, for the screen. */
+  transactionEntries: Signal<readonly TransactionEntry[]>
   /**
    * What the layer did without asking: a tag that will never exist was taken off queued notes.
    * Each is a key of the `app` catalog with its values; the screen shows it in the person's
@@ -215,9 +232,16 @@ export function startOffline(
     store: storage.openTagsQueue?.(userId),
   })
   const definition = notesCollection({ userId, cache, store: storage.openQueue?.(userId) })
+  const transactionsCache = copy.transactions
+  const transactionsDefinition = transactionsCollection({
+    userId,
+    cache: transactionsCache,
+    store: storage.openTransactionsQueue?.(userId),
+  })
   const collections = createCollections({
-    // Parents first (ADR 003, section 5): a note names tags, so tags go out before notes.
-    collections: [tagsDefinition, definition],
+    // Parents first (ADR 003, section 5): a note names tags, so tags go out before notes. Entries
+    // name no queued parent.
+    collections: [tagsDefinition, definition, transactionsDefinition],
     calls: transport.calls,
     canSend: () => transport.canSend(),
     lock: withBrowserLock(userId),
@@ -232,6 +256,9 @@ export function startOffline(
   const tagEntries = signal<readonly TagEntry[]>([])
   notes.outbox.subscribe((all) => entries.value = all)
   tags.outbox.subscribe((all) => tagEntries.value = all)
+  const transactions = collections.get(transactionsDefinition)
+  const transactionEntries = signal<readonly TransactionEntry[]>([])
+  transactions.outbox.subscribe((all) => transactionEntries.value = all)
   const runner = createSyncRunner({ flush: collections.syncFlush })
   // The queue is read first, so the runner's first flush sends what an earlier visit left. A
   // layer that was stopped meanwhile (the person signed out) does not start its runner: nothing
@@ -250,6 +277,9 @@ export function startOffline(
     notes,
     entries,
     tagEntries,
+    transactionsCache,
+    transactions,
+    transactionEntries,
     notices,
     runner,
     loaded,
@@ -275,6 +305,7 @@ export async function stopOffline({ forget = false } = {}): Promise<void> {
   closing.runner.stop()
   closing.entries.value = []
   closing.tagEntries.value = []
+  closing.transactionEntries.value = []
   closing.notices.value = []
   if (forget) await forgetCopies(closing.reads, closing.copy)
 }

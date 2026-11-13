@@ -435,16 +435,31 @@ describe("the public website", () => {
     )
     expect(html).toContain(`Categories, one level deep`)
     expect(html).toContain(
-      `Accounts in any currency, their categories and monthly budgets are here`,
+      `Accounts in any currency, their categories, transactions and monthly budgets are here`,
     )
     expect((await page("/")).html).toContain(`Categories with one level of subcategories`)
   })
 
-  it("lists budgets on /features as built, right after categories, and on the home page's Works today, not under Later", async () => {
+  it("lists transactions on /features as built, right after categories, and no longer calls them unbuilt", async () => {
+    const { html } = await page("/features")
+
+    expect(html.indexOf(`<section id="transactions"`)).toBeGreaterThan(
+      html.indexOf(`<section id="categories"`),
+    )
+    expect(html.indexOf(`<section id="transactions"`)).toBeLessThan(
+      html.indexOf(`<section id="budgets"`),
+    )
+    expect(html).toContain(`Every expense and income, in the currency you paid`)
+    expect(html).toContain(`/tree/main/libs/domain/transactions"`)
+    expect(html).not.toContain(`Transactions are not built yet`)
+    expect(html).toContain(`Transfers are not built yet`)
+  })
+
+  it("lists budgets on /features as built, right after transactions, and on the home page's Works today, not under Later", async () => {
     const { html } = await page("/features")
 
     expect(html.indexOf(`<section id="budgets"`)).toBeGreaterThan(
-      html.indexOf(`<section id="categories"`),
+      html.indexOf(`<section id="transactions"`),
     )
     expect(html.indexOf(`<section id="budgets"`)).toBeLessThan(
       html.indexOf(`<section id="sign-in"`),
@@ -902,7 +917,8 @@ describe("the public website", () => {
         `short-lived cookies hold the step you are on`,
         `its invitations`,
         `crypto holdings`,
-        `every transaction and`,
+        `every transaction: the amount, the currency, the date, the category, the memo, who added it`,
+        `A deleted transaction is kept for 30 days so it can be restored, then removed for good`,
         `Categories, monthly budgets and recurring transactions`,
         `A bank statement you upload, until its import is saved or abandoned`,
         `your Telegram account&#39;s id`,

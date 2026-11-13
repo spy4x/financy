@@ -16,6 +16,7 @@ import {
   NOTE_PATHS,
   profilePath,
   SCREEN_PATHS,
+  TRANSACTION_PATHS,
 } from "./progressive.tsx"
 
 /**
@@ -136,10 +137,10 @@ const railBottom = (selector: string) => `[data-e2e="rail-shell-bottom"] ${selec
 export function tourSteps(t: Translator<string>): TourStep[] {
   return [
     {
-      id: "notes",
-      target: railLink(NOTE_PATHS.list),
-      title: t.t(`OnboardingCard.tourNotesTitle`),
-      body: t.t(`OnboardingCard.tourNotesText`),
+      id: "transactions",
+      target: railLink(TRANSACTION_PATHS.list),
+      title: t.t(`OnboardingCard.tourTransactionsTitle`),
+      body: t.t(`OnboardingCard.tourTransactionsText`),
       placement: "right",
     },
     {

@@ -5,9 +5,11 @@ import type { CallPort } from "@spy4x/realtime/calls"
 import type { NoteItem } from "../state/notes.ts"
 import { createMemoryStorage } from "./memory-storage.ts"
 import type { NoteEntry } from "./notes-cache.ts"
-import { type QueueDatabases, refusedMessage, sendQueueOnce } from "./send-once.ts"
+import { countQueueOnce, type QueueDatabases, refusedMessage, sendQueueOnce } from "./send-once.ts"
+import { TransactionKind } from "@domain/transactions"
 
 const NOTES_QUEUE = "offline:user:7:outbox"
+const TRANSACTIONS_QUEUE = "offline:user:7:transactions-outbox"
 const TAGS_QUEUE = "offline:user:7:tags-outbox"
 
 function note(id: string, version: number, title: string): NoteItem {
@@ -108,6 +110,45 @@ describe("sendQueueOnce", () => {
     expect(result).toEqual({ done: true, refused: [] })
     expect(sent).toEqual(["note.update n-1", "note.update n-2"])
     expect(deleted).toEqual([NOTES_QUEUE])
+  })
+
+  it("counts and sends a queued transaction, then deletes its queue", async () => {
+    const storage = createMemoryStorage()
+    await storage.of(7).transactionsQueue.putEntry({
+      key: "key-t-1",
+      entityId: "t-1",
+      kind: "create",
+      payload: {
+        groupId: "g-1",
+        accountId: "a-1",
+        categoryId: "c-1",
+        kind: TransactionKind.EXPENSE,
+        amount: 450,
+        currency: "EUR",
+        accountAmount: null,
+        memo: "Coffee",
+        date: "2026-11-12",
+        accountCurrency: "EUR",
+      },
+      baseVersion: 0,
+      attempted: false,
+      status: "pending",
+      queuedAt: "2026-11-12T08:00:00.000Z",
+    })
+    const { databases, deleted } = databasesHolding(TRANSACTIONS_QUEUE, "reads:7")
+    const { calls, sent } = serverAnswering(() => Promise.resolve({}))
+
+    expect(await countQueueOnce({ userId: 7, storage, databases })).toBe(1)
+    const result = await sendQueueOnce({
+      userId: 7,
+      transport: { calls, canSend: () => true },
+      storage,
+      databases,
+    })
+
+    expect(result).toEqual({ done: true, refused: [] })
+    expect(sent).toEqual(["transaction.create t-1"])
+    expect(deleted).toEqual([TRANSACTIONS_QUEUE])
   })
 
   it("opens only the queue the device holds, so no other database is created", async () => {

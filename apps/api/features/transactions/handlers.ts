@@ -2,12 +2,14 @@ import type { CommandHandler, QueryHandler } from "@spy4x/platform/cqrs"
 import {
   assertCanReadTransactions,
   assertCanWriteTransactions,
+  TRANSACTION_DELETED_LIST_MAX,
   TransactionCreateCommand,
   TransactionDeleteCommand,
   TransactionError,
   type TransactionFields,
   TransactionGetQuery,
   TransactionLedgerQuery,
+  TransactionListDeletedQuery,
   type TransactionRepository,
   type TransactionRequestFields,
   TransactionRestoreCommand,
@@ -164,6 +166,18 @@ export function createTransactionGetHandler(
     const transaction = await transactions.get(data.groupId, data.id)
     if (!transaction) throw new TransactionError("TRANSACTION_NOT_FOUND", "Transaction not found")
     return { transaction }
+  }
+}
+
+/** The household's deleted entries that can still be restored, for every member who reads. */
+export function createTransactionListDeletedHandler(
+  { transactions, groups }: TransactionHandlerDependencies,
+): QueryHandler<TransactionListDeletedQuery> {
+  return async ({ data }) => {
+    assertCanReadTransactions(await groups.roleOf(data.groupId, data.actor.userId))
+    return {
+      transactions: await transactions.listDeleted(data.groupId, TRANSACTION_DELETED_LIST_MAX),
+    }
   }
 }
 

@@ -13,6 +13,7 @@ import {
   TransactionGetQuery,
   TransactionKind,
   TransactionLedgerQuery,
+  TransactionListDeletedQuery,
   TransactionRestoreCommand,
   TransactionUpdateCommand,
 } from "@domain/transactions"
@@ -34,6 +35,7 @@ import {
   createTransactionDeleteHandler,
   createTransactionGetHandler,
   createTransactionLedgerHandler,
+  createTransactionListDeletedHandler,
   createTransactionRestoreHandler,
   createTransactionUpdateHandler,
 } from "./handlers.ts"
@@ -115,6 +117,7 @@ function stack() {
   const queries = new QueryBus()
   queries.use(createSessionGate([]))
   queries.register(TransactionGetQuery, createTransactionGetHandler(dependencies))
+  queries.register(TransactionListDeletedQuery, createTransactionListDeletedHandler(dependencies))
   queries.register(
     TransactionLedgerQuery,
     createTransactionLedgerHandler({
@@ -128,6 +131,7 @@ function stack() {
     delete: (command) => commands.execute(command),
     restore: (command) => commands.execute(command),
     get: (query) => queries.execute(query),
+    listDeleted: (query) => queries.execute(query),
     ledger: (query) => queries.execute(query),
   })
   /** Takes the member out of the household, as the owner's removal does. */
@@ -544,6 +548,32 @@ for (const [via, open] of TRANSPORTS) {
         refused("not_found", "TRANSACTION_NOT_FOUND"),
       )
       as.shutdown()
+    })
+
+    it("lists the household's deleted entries, the latest deleted first, to every member", async () => {
+      const s = stack()
+      const first = await existing(s)
+      const second = await existing(s)
+      const live = await existing(s)
+      await existing(s, {
+        groupId: otherGroupId,
+        accountId: otherAccount,
+        categoryId: otherCategory,
+      })
+      const editor = open(s, EDITOR)
+      await editor.command("transaction.delete", { groupId, id: first.id, version: 1 })
+      await editor.command("transaction.delete", { groupId, id: second.id, version: 1 })
+      const viewer = open(s, VIEWER)
+
+      const answer = payloadOf(await viewer.query("transaction.listDeleted", { groupId }))
+      const ids = (answer.transactions as { id: string }[]).map((entry) => entry.id)
+      expect(ids).toEqual([second.id, first.id])
+      expect(ids).not.toContain(live.id)
+      expect(await open(s, STRANGER).query("transaction.listDeleted", { groupId })).toMatchObject(
+        refused("not_found", "GROUP_NOT_FOUND"),
+      )
+      editor.shutdown()
+      viewer.shutdown()
     })
 
     it("answers a retried create with the first entry, and a reused id with a conflict", async () => {

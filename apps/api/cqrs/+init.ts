@@ -193,6 +193,7 @@ import {
   TransactionDeleteCommand,
   TransactionGetQuery,
   TransactionLedgerQuery,
+  TransactionListDeletedQuery,
   TransactionRestoreCommand,
   TransactionUpdateCommand,
 } from "@domain/transactions"
@@ -202,6 +203,7 @@ import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction
 import { transactionRestoreHandler } from "@api/cqrs/command-handlers/transaction-restore.ts"
 import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.ts"
 import { transactionLedgerHandler } from "@api/cqrs/query-handlers/transaction-ledger.ts"
+import { transactionListDeletedHandler } from "@api/cqrs/query-handlers/transaction-list-deleted.ts"
 import {
   BudgetMethodSetCommand,
   BudgetMonthQuery,
@@ -423,6 +425,7 @@ queryBus.register(CategoryListQuery, categoryListHandler)
 queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(TransactionGetQuery, transactionGetHandler)
 queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
+queryBus.register(TransactionListDeletedQuery, transactionListDeletedHandler)
 queryBus.register(BudgetMonthQuery, budgetMonthHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
