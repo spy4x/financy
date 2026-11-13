@@ -119,6 +119,7 @@ says what it needs, and the plan answers.
 | `maxAccounts`    | 0    | no cap    | An account is created or restored, or imported with a file   |
 | `maxCategories`  | 0    | no cap    | A category is created or unarchived, or imported with a file |
 | `maxTransactions` | 0   | no cap    | A transaction is created or restored                         |
+| `maxRecurringRules` | 0 | no cap    | A repeating entry's rule is created or restored              |
 
 A limit of `null` means no cap. Each plan also has `attachments` rules for one file and one note
 (`maxFileBytes` 2 MiB, `maxPerNote` 10 on both plans). They are not sold by a plan, so they hold

@@ -68,10 +68,24 @@ describe("Financy's plans", () => {
     expect(() => assertRoomFor("maxMembers", maxMembers, 6, GroupRole.OWNER)).toThrow(PlanError)
   })
 
-  it("puts no cap on notes, files, accounts, categories or transactions on the Household plan", () => {
-    const { maxNotes, maxAttachments, maxAccounts, maxCategories, maxTransactions } =
-      household.entitlements.limits
-    expect([maxNotes, maxAttachments, maxAccounts, maxCategories, maxTransactions]).toEqual([
+  it("puts no cap on notes, files, accounts, categories, transactions or repeating entries on the Household plan", () => {
+    const {
+      maxNotes,
+      maxAttachments,
+      maxAccounts,
+      maxCategories,
+      maxTransactions,
+      maxRecurringRules,
+    } = household.entitlements.limits
+    expect([
+      maxNotes,
+      maxAttachments,
+      maxAccounts,
+      maxCategories,
+      maxTransactions,
+      maxRecurringRules,
+    ]).toEqual([
+      null,
       null,
       null,
       null,
@@ -85,6 +99,7 @@ describe("Financy's plans", () => {
     expect(free.entitlements.limits.maxAccounts).toBe(0)
     expect(free.entitlements.limits.maxCategories).toBe(0)
     expect(free.entitlements.limits.maxTransactions).toBe(0)
+    expect(free.entitlements.limits.maxRecurringRules).toBe(0)
   })
 
   it("sells budgets on the Household plan only", () => {
@@ -102,6 +117,7 @@ describe("Financy's plans", () => {
     expect(UNLIMITED.limits.maxAccounts).toBeNull()
     expect(UNLIMITED.limits.maxCategories).toBeNull()
     expect(UNLIMITED.limits.maxTransactions).toBeNull()
+    expect(UNLIMITED.limits.maxRecurringRules).toBeNull()
     expect(UNLIMITED.features.memberRoles).toBe(true)
     expect(UNLIMITED.features.budgets).toBe(true)
   })
