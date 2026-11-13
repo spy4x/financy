@@ -2254,16 +2254,16 @@ export default {
     "Der tägliche Job ruft sie um 16:00 UTC ab. Um sie jetzt abzurufen, starte „Exchange rates“ unter Jobs.",
   "AdminRates.loadError":
     "Die Kurse konnten nicht geladen werden. Prüf deine Verbindung und versuch es noch einmal.",
-  "AdminRates.coinsTitle": "Coin-Preise",
+  "AdminRates.coinsTitle": "Krypto-Preise",
   "AdminRates.coinPrice": "{price} am {date}",
   "AdminRates.coinFetched": "Abgerufen {time}",
   "AdminRates.coinsUnpriced":
-    "Konten halten diese Coins, aber es gibt keinen Preis für sie. Preise werden einmal am Tag abgerufen, solange ein CoinGecko-Schlüssel gesetzt ist.",
-  "AdminRates.coinsNone": "Kein Konto hält einen Coin, daher wird kein Preis abgerufen.",
+    "Konten halten diese Krypto, aber es gibt keinen Preis dafür. Preise werden einmal am Tag abgerufen, solange ein CoinGecko-Schlüssel gesetzt ist.",
+  "AdminRates.coinsNone": "Kein Konto hält Krypto, daher wird kein Preis abgerufen.",
   "AdminRates.coinCalls": "CoinGecko-Aufrufe in diesem Monat",
   "AdminRates.coinCallsHint":
-    "Jeder Aufruf bepreist einen Coin, einmal am Tag. Die Zählung beginnt am {date} neu.",
-  "AdminRates.coinsCapped": "Das Monatslimit ist erreicht. Keine Coin-Preise bis {date}.",
+    "Jeder Aufruf liefert den Preis einer Krypto, einmal am Tag. Die Zählung beginnt am {date} neu.",
+  "AdminRates.coinsCapped": "Das Monatslimit ist erreicht. Keine Krypto-Preise bis {date}.",
   "AdminRates.coinsCredit": "Daten bereitgestellt von CoinGecko",
   "AdminAuditEvent.categoryCreated": "Kategorie hinzugefügt",
   "AdminAuditEvent.categoryUpdated": "Kategorie geändert",

@@ -2321,17 +2321,17 @@ export default {
     "La tarea diaria los obtiene a las 16:00 UTC. Para obtenerlos ahora, ejecuta «Exchange rates» en Tareas.",
   "AdminRates.loadError":
     "No se pudieron cargar los tipos. Revisa tu conexión e inténtalo de nuevo.",
-  "AdminRates.coinsTitle": "Precios de monedas",
+  "AdminRates.coinsTitle": "Precios de cripto",
   "AdminRates.coinPrice": "{price} el {date}",
   "AdminRates.coinFetched": "Obtenido {time}",
   "AdminRates.coinsUnpriced":
-    "Hay cuentas con estas monedas, pero no tienen precio. Los precios se obtienen una vez al día mientras haya una clave de CoinGecko.",
-  "AdminRates.coinsNone": "Ninguna cuenta tiene una moneda, así que no se obtiene ningún precio.",
+    "Hay cuentas con estas cripto, pero no tienen precio. Los precios se obtienen una vez al día mientras haya una clave de CoinGecko.",
+  "AdminRates.coinsNone": "Ninguna cuenta tiene cripto, así que no se obtiene ningún precio.",
   "AdminRates.coinCalls": "Llamadas a CoinGecko este mes",
   "AdminRates.coinCallsHint":
-    "Cada llamada da el precio de una moneda, una vez al día. El recuento vuelve a empezar el {date}.",
+    "Cada llamada da el precio de una cripto, una vez al día. El recuento vuelve a empezar el {date}.",
   "AdminRates.coinsCapped":
-    "Se alcanzó el límite mensual. No habrá precios de monedas hasta el {date}.",
+    "Se alcanzó el límite mensual. No habrá precios de cripto hasta el {date}.",
   "AdminRates.coinsCredit": "Datos proporcionados por CoinGecko",
   "AdminAuditEvent.categoryCreated": "Categoría añadida",
   "AdminAuditEvent.categoryUpdated": "Categoría cambiada",
