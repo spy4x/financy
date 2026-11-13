@@ -238,34 +238,21 @@ test.describe("transactions offline", () => {
           ),
         )
 
-      // Discard, from the keyboard: the entry leaves the device and never reaches the server.
-      // Tab goes from the entry to its two actions.
+      // Discard, from the keyboard, asks first. Tab goes from the entry to its two actions, and
+      // Escape closes the question with focus back on Discard.
+      const discard = flowers.locator("[data-e2e=transaction-conflict-discard]")
+      const dialog = partnerPage.locator("[data-e2e=transaction-discard-dialog]")
       await flowers.locator("[data-e2e=transaction-row]").focus()
       await partnerPage.keyboard.press("Tab")
       await expect(flowers.locator("[data-e2e=transaction-conflict-pick]")).toBeFocused()
       await partnerPage.keyboard.press("Tab")
-      await expect(flowers.locator("[data-e2e=transaction-conflict-discard]")).toBeFocused()
-      const discard = flowers.locator("[data-e2e=transaction-conflict-discard]")
-      const dialog = partnerPage.locator("[data-e2e=transaction-discard-dialog]")
-      // It asks first, and Escape keeps the entry and puts focus back on Discard.
+      await expect(discard).toBeFocused()
       await partnerPage.keyboard.press("Space")
       await expect(dialog).toBeVisible()
       await expect(dialog).toContainText("Discard this transaction?")
       await partnerPage.keyboard.press("Escape")
       await expect(dialog).toHaveCount(0)
       await expect(discard).toBeFocused()
-      await expect(flowers).toHaveCount(1)
-      // Confirmed, the entry goes, and focus moves on to the next entry.
-      // The open dialog first focuses its close button, so focus moves to confirm only after.
-      await partnerPage.keyboard.press("Space")
-      await expect(dialog).toBeVisible()
-      const confirm = partnerPage.locator("[data-e2e=transaction-discard-confirm]")
-      await expect(confirm).toHaveText("Discard transaction")
-      await confirm.focus()
-      await expect(confirm).toBeFocused()
-      await partnerPage.keyboard.press("Enter")
-      await expect(flowers).toHaveCount(0)
-      await expect(stall.locator("[data-e2e=transaction-row]")).toBeFocused()
 
       // Pick another account, from the keyboard: the editor opens on the entry's account field.
       const pick = stall.locator("[data-e2e=transaction-conflict-pick]")
@@ -281,6 +268,21 @@ test.describe("transactions offline", () => {
       await gotoApp(partnerPage, "/transactions", stall)
       await expect(stall.locator("[data-e2e=transaction-conflict]")).toHaveCount(0)
       await expect(stall.locator("[data-e2e=transaction-meta]")).toContainText("Wallet")
+      // The Escape above kept the entry: after a whole trip to the editor, it is still there.
+      await expect(flowers.locator("[data-e2e=transaction-conflict]")).toHaveCount(1)
+
+      // Confirmed, the entry leaves the device, and focus moves on to the next entry. The open
+      // dialog first focuses its close button, so focus moves to confirm only after it opens.
+      await discard.focus()
+      await partnerPage.keyboard.press("Space")
+      await expect(dialog).toBeVisible()
+      const confirm = partnerPage.locator("[data-e2e=transaction-discard-confirm]")
+      await expect(confirm).toHaveText("Discard transaction")
+      await confirm.focus()
+      await expect(confirm).toBeFocused()
+      await partnerPage.keyboard.press("Enter")
+      await expect(flowers).toHaveCount(0)
+      await expect(stall.locator("[data-e2e=transaction-row]")).toBeFocused()
 
       // The server holds the fixed entry and not the discarded one.
       const selected = await ownerPage.request.put(`${apiBase}/api/groups/selected`, {
