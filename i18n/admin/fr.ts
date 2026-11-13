@@ -2366,7 +2366,7 @@ export default {
   "AdminNav.entries": "Opérations",
   "AdminEntries.title": "Opérations",
   "AdminEntries.subtitle":
-    "Comment les foyers tiennent leurs comptes. Uniquement des chiffres et des dates : ni montants ni notes.",
+    "Comment les foyers enregistrent leurs opérations. Des décomptes et des dates seulement : ni montant ni note.",
   "AdminEntries.retry": "Réessayer",
   "AdminEntries.loading": "Chargement des chiffres",
   "AdminEntries.none": "Aucune opération pour l’instant",
@@ -2392,9 +2392,9 @@ export default {
     "other": "{count} foyers",
   },
   "AdminEntries.monthCount": {
-    "one": "{month} : {count} opération",
-    "many": "{month} : {count} d’opérations",
-    "other": "{month} : {count} opérations",
+    "one": "{month} : {count} opération",
+    "many": "{month} : {count} d’opérations",
+    "other": "{month} : {count} opérations",
   },
   "AdminEntries.householdLastEntry": "Dernière opération le {date}",
 } satisfies Catalog

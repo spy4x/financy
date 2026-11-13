@@ -2422,7 +2422,7 @@ export default {
   "AdminEntries.retry": "Повторить",
   "AdminEntries.loading": "Загружаем цифры",
   "AdminEntries.none": "Операций пока нет",
-  "AdminEntries.noneHint": "Цифры появятся, когда какая-нибудь семья добавит первую операцию.",
+  "AdminEntries.noneHint": "Цифры появятся здесь, когда семья добавит первую операцию.",
   "AdminEntries.keyNumbers": "Ключевые показатели",
   "AdminEntries.entries": "Операции",
   "AdminEntries.households": "Семьи",

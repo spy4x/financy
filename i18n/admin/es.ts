@@ -2350,7 +2350,7 @@ export default {
   "AdminNav.entries": "Movimientos",
   "AdminEntries.title": "Movimientos",
   "AdminEntries.subtitle":
-    "Cómo usan los hogares sus cuentas. Solo cifras y fechas: sin importes ni notas.",
+    "Cómo registran sus movimientos los hogares. Solo recuentos y fechas: ningún importe ni nota.",
   "AdminEntries.retry": "Reintentar",
   "AdminEntries.loading": "Cargando las cifras",
   "AdminEntries.none": "Aún no hay movimientos",
