@@ -67,10 +67,10 @@ test.describe("the interface language", () => {
       })
       await signIn(page, email, password)
       await expect(page.locator("html")).toHaveAttribute("lang", "de")
-      await expect(page.getByRole("link", { name: "Notizen" }).first()).toBeVisible()
+      await expect(page.getByRole("link", { name: "Buchungen" }).first()).toBeVisible()
       // The device still keeps German after its saves: a reload opens in it too.
       await page.reload()
-      await expect(page.getByRole("link", { name: "Notizen" }).first()).toBeVisible()
+      await expect(page.getByRole("link", { name: "Buchungen" }).first()).toBeVisible()
 
       // A new English device follows the account's language once it signs in.
       const phone = await browser.newContext({ locale: "en-GB" })
@@ -78,7 +78,7 @@ test.describe("the interface language", () => {
       const other = await phone.newPage()
       await signIn(other, email, password)
       await expect(other.locator("html")).toHaveAttribute("lang", "de")
-      await expect(other.getByRole("link", { name: "Notizen" }).first()).toBeVisible()
+      await expect(other.getByRole("link", { name: "Buchungen" }).first()).toBeVisible()
 
       // The admin app speaks the operator's language, and shows the person's on their screen.
       const admin = await browser.newContext({ locale: "en-GB" })
