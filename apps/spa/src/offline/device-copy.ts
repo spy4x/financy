@@ -12,7 +12,8 @@ import type { TagItem } from "../state/tags.ts"
 import { databasePrefix, type NotesCache } from "./notes-cache.ts"
 import type { TagsCache } from "./tags-cache.ts"
 import type { TransactionItem } from "../state/transactions.ts"
-import { byDate, type TransactionsCache } from "./transactions-cache.ts"
+import type { TransactionsCache } from "./transactions-cache.ts"
+import { byDate } from "../state/transaction-order.ts"
 
 /**
  * The device's copy of each group's notes, tags and entries, kept by the changes pull of

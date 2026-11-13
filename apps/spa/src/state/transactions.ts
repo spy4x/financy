@@ -11,7 +11,7 @@ import {
 } from "@domain/transactions"
 import type { Message } from "@ui/message.ts"
 import { refusedField } from "../i18n.ts"
-import { byDate } from "../offline/transactions-cache.ts"
+import { byDate } from "./transaction-order.ts"
 import { accountsStore } from "./accounts.ts"
 import { categoriesStore } from "./categories.ts"
 import { callCommand, callQuery, canCall, currentLayer, offlineTransactions } from "../modules.ts"

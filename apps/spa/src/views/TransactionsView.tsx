@@ -19,7 +19,7 @@ import { selectionStore } from "../state/selection.ts"
 import { sessionState } from "../state/session.ts"
 import { toasts } from "../state/toasts.ts"
 import { transactionsStore } from "../state/transactions.ts"
-import { OfflineStatus } from "../offline/OfflineStatus.tsx"
+import { OfflineStatus } from "../modules.ts"
 import {
   amountInCategory,
   transactionAccounts,

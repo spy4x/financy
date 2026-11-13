@@ -39,13 +39,6 @@ export interface TransactionsCache {
   clear(): Promise<void>
 }
 
-/** The latest date first, then the latest written: the order of the entries list. */
-export function byDate(a: TransactionItem, b: TransactionItem): number {
-  if (a.date !== b.date) return a.date < b.date ? 1 : -1
-  if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1
-  return a.id < b.id ? 1 : a.id > b.id ? -1 : 0
-}
-
 /** The name of the queue database of one user's entries. */
 export function transactionsQueueDatabase(userId: number): string {
   return `${databasePrefix(userId)}:transactions-outbox`

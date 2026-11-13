@@ -1,5 +1,6 @@
 import type { TransactionItem } from "../state/transactions.ts"
-import { byDate, type TransactionsCache } from "./transactions-cache.ts"
+import type { TransactionsCache } from "./transactions-cache.ts"
+import { byDate } from "../state/transaction-order.ts"
 
 /** A `TransactionsCache` in memory, for the tests of the offline layer: Deno has no IndexedDB. */
 export function createMemoryTransactionsCache(): TransactionsCache {
