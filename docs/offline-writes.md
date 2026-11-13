@@ -82,8 +82,9 @@ available."
 **Entries.** A transaction names an account and a category, which are never queued (level 2). If
 either was deleted before a queued entry reached the server, the server refuses it, and the entry
 stays in the outbox as a conflict that says which one is gone. The transactions list keeps the
-entry, marked, with **Pick another account** (or category), which opens its editor: saving sends
-it with the new choice and clears the conflict. **Discard** drops it from the device. The sync line
+entry, marked, with **Pick another account** (or category), which opens its editor on that field:
+saving sends it with the new choice and clears the conflict. **Discard** asks first, then drops it
+from the device, since it never reached the server and nothing brings it back. The sync line
 shows the same reason, with **Discard mine**.
 
 A write made online that the server refuses is not queued. The notes screen shows "Someone changed
