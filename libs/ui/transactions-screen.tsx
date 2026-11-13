@@ -474,7 +474,7 @@ function Row(
       {row.gone && (
         <div class="flex flex-col gap-2 px-4 pb-3 sm:px-6" data-e2e="transaction-conflict">
           <p class="flex items-start gap-2 text-sm text-danger">
-            <IconExclamationCircle class="mt-0.5 size-4 shrink-0" />
+            <IconExclamationCircle class="mt-px size-4 shrink-0" />
             <span id={problem} data-e2e="transaction-conflict-message">
               {t.t(
                 row.gone === "account"
@@ -513,7 +513,7 @@ function Row(
               class="flex items-start gap-2 text-sm text-danger"
               data-e2e="transaction-discard-failed"
             >
-              <IconExclamationCircle class="mt-0.5 size-4 shrink-0" />
+              <IconExclamationCircle class="mt-px size-4 shrink-0" />
               {t.t(`Transactions.discardFailed`)}
             </p>
           )}
