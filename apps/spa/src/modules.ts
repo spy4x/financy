@@ -14,6 +14,7 @@ import {
   socketFirstOpen,
 } from "./realtime/index.ts"
 import {
+  activeLayer,
   currentLayer as offlineLayer,
   flushOutbox as flushOfflineOutbox,
   forgetDeviceCopy,
@@ -26,7 +27,10 @@ import {
 } from "./offline/index.ts"
 import { offlineNotes as notesOverLayer } from "./offline/notes-collection.ts"
 import { offlineTags as tagsOverLayer } from "./offline/tags-collection.ts"
-import { offlineTransactions as transactionsOverLayer } from "./offline/transactions-collection.ts"
+import {
+  goneReference,
+  offlineTransactions as transactionsOverLayer,
+} from "./offline/transactions-collection.ts"
 import { conflictsToReview, OfflineStatus as OfflineStatusLine } from "./offline/OfflineStatus.tsx"
 import { benchmarkLocalData as benchmarkOverLayer } from "./offline/benchmark.ts"
 import {
@@ -622,6 +626,26 @@ export const offlineTransactions = transactionsOverLayer
 
 /** The offline status line and the conflict screen. */
 export const OfflineStatus = OfflineStatusLine
+
+/**
+ * A household's queued entries the server refused because their account or category was deleted,
+ * by entry id. Read during a render, it follows the queue.
+ */
+export function goneEntries(groupId: string): ReadonlyMap<string, "account" | "category"> {
+  const gone = new Map<string, "account" | "category">()
+  for (const entry of activeLayer.value?.transactionEntries.value ?? []) {
+    const reference = entry.payload.groupId === groupId ? goneReference(entry) : null
+    if (reference) gone.set(entry.entityId, reference)
+  }
+  return gone
+}
+
+/** Drops a queued entry from {@link goneEntries} from the device, as the conflict's "Discard". */
+export async function discardGoneEntry(id: string): Promise<void> {
+  const layer = offlineLayer()
+  const entry = layer?.transactionEntries.value.find((queued) => queued.entityId === id)
+  if (layer && entry && goneReference(entry)) await layer.transactions.outbox.useTheirs(entry)
+}
 
 /** The local data the benchmark page measures (`BenchmarkLocalData`). */
 export const benchmarkLocalData: BenchmarkLocalData | null = benchmarkOverLayer

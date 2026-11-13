@@ -2311,6 +2311,10 @@ export default {
   "OfflineStatus.transaction": "取引 {line}",
   "OfflineStatus.transactionGone": "この取引はもうこの世帯にありません。",
   "OfflineStatus.youDeletedTransaction": "この取引はあなたが削除しました。",
+  "TransactionSync.accountGone":
+    "オフラインの間に、この取引の口座が削除されました。別の口座を選ぶか、この取引を破棄してください。",
+  "TransactionSync.categoryGone":
+    "オフラインの間に、この取引のカテゴリが削除されました。別のカテゴリを選ぶか、この取引を破棄してください。",
   "TransactionSync.gone": "オフラインの間に、この取引は削除されました。",
   "TransactionSync.rejected": "サーバーがこの取引を受け付けませんでした。",
   "TransactionSync.version": "オフラインの間に、この取引は他の人によって変更されました。",
@@ -2324,6 +2328,9 @@ export default {
   "Transactions.amountIn": "{account}で{amount}",
   "Transactions.convertLater": "オンラインに戻ったら換算します",
   "Transactions.unknown": "不明",
+  "Transactions.discard": "破棄",
+  "Transactions.pickAccount": "別の口座を選ぶ",
+  "Transactions.pickCategory": "別のカテゴリを選ぶ",
   "Transactions.count": {
     "other": "取引{count}件",
   },

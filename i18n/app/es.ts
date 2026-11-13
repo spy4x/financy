@@ -2603,6 +2603,10 @@ export default {
   "OfflineStatus.transaction": "Movimiento {line}",
   "OfflineStatus.transactionGone": "El movimiento ya no está en este hogar.",
   "OfflineStatus.youDeletedTransaction": "Eliminaste este movimiento.",
+  "TransactionSync.accountGone":
+    "La cuenta de este movimiento se eliminó mientras estabas sin conexión. Elige otra cuenta o descarta el movimiento.",
+  "TransactionSync.categoryGone":
+    "La categoría de este movimiento se eliminó mientras estabas sin conexión. Elige otra categoría o descarta el movimiento.",
   "TransactionSync.gone": "Este movimiento se eliminó mientras estabas sin conexión.",
   "TransactionSync.rejected": "El servidor no aceptó este movimiento.",
   "TransactionSync.version": "Alguien cambió este movimiento mientras estabas sin conexión.",
@@ -2616,6 +2620,9 @@ export default {
   "Transactions.amountIn": "{amount} en {account}",
   "Transactions.convertLater": "Se convertirá al volver la conexión",
   "Transactions.unknown": "Desconocido",
+  "Transactions.discard": "Descartar",
+  "Transactions.pickAccount": "Elegir otra cuenta",
+  "Transactions.pickCategory": "Elegir otra categoría",
   "Transactions.count": {
     "one": "{count} movimiento",
     "many": "{count} movimientos",

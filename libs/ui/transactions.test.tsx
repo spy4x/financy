@@ -297,6 +297,47 @@ describe("TransactionsScreen", () => {
       .toBe("Converted when back online")
   })
 
+  it("marks an entry refused for a deleted account, offering another account or Discard", async () => {
+    const discarded: string[] = []
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        rows={[{ ...latte, queued: true, gone: "account" }, train]}
+        onDiscard={(id) => discarded.push(id)}
+      />,
+    )
+    const conflicts = document.querySelectorAll("[data-e2e=transaction-conflict]")
+    expect(conflicts.length).toBe(1)
+    const message = document.querySelector("[data-e2e=transaction-conflict-message]")!
+    expect(text(message)).toBe(
+      "Its account was deleted while you were offline. Pick another account, or discard this transaction.",
+    )
+    const link = document.querySelector(
+      `[data-e2e=transaction-${latte.id}] a[data-e2e=transaction-row]`,
+    )!
+    expect(link.getAttribute("aria-describedby")).toBe(message.id)
+    const pick = document.querySelector("[data-e2e=transaction-conflict-pick]")!
+    expect(text(pick)).toBe("Pick another account")
+    expect(pick.getAttribute("href")).toBe(`/transactions/${latte.id}`)
+    await click(document.querySelector("[data-e2e=transaction-conflict-discard]")!)
+    expect(discarded).toEqual([latte.id])
+  })
+
+  it("names the category, not the account, for an entry refused for a deleted category", async () => {
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        rows={[{ ...latte, queued: true, gone: "category" }]}
+      />,
+    )
+    expect(text(document.querySelector("[data-e2e=transaction-conflict-message]")))
+      .toContain("Its category was deleted")
+    expect(text(document.querySelector("[data-e2e=transaction-conflict-pick]")))
+      .toBe("Pick another category")
+    // A viewer, or a list with nothing to discard with, offers no Discard.
+    expect(has("[data-e2e=transaction-conflict-discard]")).toBe(false)
+  })
+
   it("offers an editor Add transaction and the deleted view, and a viewer neither", async () => {
     await mount(<TransactionsScreen {...listDefaults} />)
     expect(has("[data-e2e=transaction-new]")).toBe(true)

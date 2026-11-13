@@ -2582,6 +2582,10 @@ export default {
   "OfflineStatus.transaction": "Lançamento {line}",
   "OfflineStatus.transactionGone": "O lançamento não está mais nesta família.",
   "OfflineStatus.youDeletedTransaction": "Você excluiu este lançamento.",
+  "TransactionSync.accountGone":
+    "A conta deste lançamento foi excluída enquanto você estava offline. Escolha outra conta ou descarte o lançamento.",
+  "TransactionSync.categoryGone":
+    "A categoria deste lançamento foi excluída enquanto você estava offline. Escolha outra categoria ou descarte o lançamento.",
   "TransactionSync.gone": "Este lançamento foi excluído enquanto você estava offline.",
   "TransactionSync.rejected": "O servidor não aceitou este lançamento.",
   "TransactionSync.version": "Alguém alterou este lançamento enquanto você estava offline.",
@@ -2595,6 +2599,9 @@ export default {
   "Transactions.amountIn": "{amount} em {account}",
   "Transactions.convertLater": "Convertido quando a conexão voltar",
   "Transactions.unknown": "Desconhecido",
+  "Transactions.discard": "Descartar",
+  "Transactions.pickAccount": "Escolher outra conta",
+  "Transactions.pickCategory": "Escolher outra categoria",
   "Transactions.count": {
     "one": "{count} lançamento",
     "many": "{count} de lançamentos",

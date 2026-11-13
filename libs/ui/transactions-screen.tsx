@@ -64,6 +64,8 @@ export interface TransactionsScreenProps {
   onRestore?: (id: string) => void
   /** The entry whose restore is in flight. */
   pendingId?: string | null
+  /** Drops a queued entry the server refused (`TransactionRow.gone`) from this device. */
+  onDiscard?: (id: string) => void
   navigate?: Navigate
 }
 
@@ -362,7 +364,13 @@ function Days(props: TransactionsScreenProps & { rows: TransactionRow[] }): JSX.
             </h2>
             <ListCard dataE2E="transaction-list">
               {day.rows.map((row) => (
-                <Row key={row.id} row={row} today={props.today} navigate={props.navigate} />
+                <Row
+                  key={row.id}
+                  row={row}
+                  today={props.today}
+                  navigate={props.navigate}
+                  onDiscard={props.onDiscard}
+                />
               ))}
             </ListCard>
           </section>
@@ -395,20 +403,29 @@ function money(amount: number, currency: string, locale: string): string {
 
 /**
  * One entry, a link to its page: the category and the amount, then the memo, the account and who
- * added it. An entry in another currency than its account's shows the account's amount too.
+ * added it. An entry in another currency than its account's shows the account's amount too. A
+ * queued entry the server refused because its account or category is gone says so under it, with
+ * a way to pick another one (its page) or to discard it.
  */
 function Row(
-  { row, today, navigate }: { row: TransactionRow; today: string; navigate?: Navigate },
+  { row, today, navigate, onDiscard }: {
+    row: TransactionRow
+    today: string
+    navigate?: Navigate
+    onDiscard?: (id: string) => void
+  },
 ): JSX.Element {
   const t = useAppText()
   const { locale } = useFormat()
   const meta = [row.memo, row.accountName, row.author].filter((part) => part)
+  const problem = `transaction-problem-${row.id}`
   return (
     <li data-e2e={`transaction-${row.id}`}>
       <Link
         href={TRANSACTION_PATHS.transaction(row.id)}
         navigate={navigate}
         aria-label={rowName(t, row, locale, today)}
+        aria-describedby={row.gone ? problem : undefined}
         class="flex min-h-14 items-start gap-3 px-4 py-3 hover:bg-hover focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus sm:px-6"
         data-e2e="transaction-row"
       >
@@ -445,6 +462,41 @@ function Row(
           )}
         </div>
       </Link>
+      {row.gone && (
+        <div class="flex flex-col gap-2 px-4 pb-3 sm:px-6" data-e2e="transaction-conflict">
+          <p id={problem} class="text-sm text-danger" data-e2e="transaction-conflict-message">
+            {t.t(
+              row.gone === "account"
+                ? `TransactionSync.accountGone`
+                : `TransactionSync.categoryGone`,
+            )}
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              href={TRANSACTION_PATHS.transaction(row.id)}
+              navigate={navigate}
+              variant="secondary"
+              class="min-h-11 sm:min-h-9"
+              data-e2e="transaction-conflict-pick"
+            >
+              {t.t(
+                row.gone === "account" ? `Transactions.pickAccount` : `Transactions.pickCategory`,
+              )}
+            </Button>
+            {onDiscard && (
+              <Button
+                type="button"
+                variant="outline"
+                class="min-h-11 sm:min-h-9"
+                data-e2e="transaction-conflict-discard"
+                onClick={() => onDiscard(row.id)}
+              >
+                {t.t(`Transactions.discard`)}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </li>
   )
 }

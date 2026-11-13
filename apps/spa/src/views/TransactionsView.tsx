@@ -19,7 +19,7 @@ import { selectionStore } from "../state/selection.ts"
 import { sessionState } from "../state/session.ts"
 import { toasts } from "../state/toasts.ts"
 import { transactionsStore } from "../state/transactions.ts"
-import { OfflineStatus } from "../modules.ts"
+import { discardGoneEntry, goneEntries, OfflineStatus } from "../modules.ts"
 import {
   amountInCategory,
   transactionAccounts,
@@ -105,6 +105,7 @@ export function TransactionsView() {
   const rowContext = { ...context, t }
   useUndoToast(store, transactionUndoText(context, locale))
   const today = todayInTz(groupTimeZone(membership ?? {}))
+  const gone = groupId ? goneEntries(groupId) : new Map()
   return (
     <TransactionsScreen
       group={membership ? { id: membership.id, name: membership.name, canWrite } : null}
@@ -115,7 +116,10 @@ export function TransactionsView() {
           underHeader
         />
       )}
-      rows={store.transactions.value.map((entry) => transactionRow(entry, rowContext))}
+      rows={store.transactions.value.map((entry) => ({
+        ...transactionRow(entry, rowContext),
+        gone: gone.get(entry.id) ?? null,
+      }))}
       deleted={showDeleted && canWrite
         ? (store.deleted.value ?? []).map((entry) => transactionRow(entry, rowContext))
         : null}
@@ -166,6 +170,9 @@ export function TransactionsView() {
         }
         : undefined}
       pendingId={store.pendingId.value}
+      onDiscard={canWrite
+        ? (id) => void discardGoneEntry(id).then(() => store.refresh()).catch(() => {})
+        : undefined}
       navigate={navigate}
     />
   )

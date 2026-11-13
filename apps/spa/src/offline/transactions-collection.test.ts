@@ -8,7 +8,12 @@ import { TransactionKind } from "@domain/transactions"
 import type { TransactionItem, TransactionsDependencies } from "../state/transactions.ts"
 import { createMemoryTransactionsCache } from "./memory-transactions-cache.ts"
 import type { TransactionPayload } from "./transactions-cache.ts"
-import { offlineTransactions, transactionsCollection } from "./transactions-collection.ts"
+import {
+  goneReference,
+  offlineTransactions,
+  REFERENCE_GONE,
+  transactionsCollection,
+} from "./transactions-collection.ts"
 
 const groupId = "g-1"
 
@@ -216,5 +221,95 @@ describe("the entries queue", () => {
 
     expect(restored).toEqual(["t-9"])
     expect((await cache.readTransactions(groupId)).map((row) => row.id)).toEqual(["t-9"])
+  })
+
+  for (const reference of ["account", "category"] as const) {
+    const code = reference === "account" ? "ACCOUNT_NOT_FOUND" : "CATEGORY_NOT_FOUND"
+
+    it(`keeps an offline entry whose ${reference} was deleted as a conflict, sent once`, async () => {
+      const { dependencies, state, transactions, sent } = harness()
+      state.online = false
+      await dependencies.create(typed)
+      state.online = true
+      state.server = () => {
+        throw new RealtimeRequestError("not_found", "Account not found", { code })
+      }
+
+      await transactions.outbox.flush()
+      await transactions.outbox.flush()
+
+      const [queued] = transactions.outbox.entries()
+      expect(queued).toMatchObject({ status: "conflict", entityId: "t-new" })
+      expect(queued.conflict?.message).toBe(REFERENCE_GONE[reference])
+      expect(goneReference(queued)).toBe(reference)
+      expect(sent.filter((call) => call.payload.id === "t-new").length).toBe(1)
+      expect((await dependencies.fetchList(groupId)).map((row) => row.id)).toEqual(["t-new"])
+    })
+  }
+
+  it("sends a conflicted entry again with the account picked instead, and clears it", async () => {
+    const { dependencies, state, transactions, sent } = harness()
+    state.online = false
+    await dependencies.create(typed)
+    state.online = true
+    state.server = () => {
+      throw new RealtimeRequestError("not_found", "Account not found", {
+        code: "ACCOUNT_NOT_FOUND",
+      })
+    }
+    await transactions.outbox.flush()
+    state.server = (call) => ({
+      transaction: entry(String(call.payload.id), { accountId: "a-eur" }),
+    })
+
+    const { transaction } = await dependencies.update({
+      ...typed,
+      accountId: "a-eur",
+      accountCurrency: "EUR",
+      version: 0,
+    })
+
+    expect(sent.at(-1)).toMatchObject({
+      name: "transaction.create",
+      payload: { id: "t-new", accountId: "a-eur" },
+    })
+    expect(transactions.outbox.entries()).toEqual([])
+    expect(transaction.accountId).toBe("a-eur")
+  })
+
+  it("discards a conflicted entry from the device without sending it", async () => {
+    const { dependencies, state, transactions, sent } = harness()
+    state.online = false
+    await dependencies.create(typed)
+    state.online = true
+    state.server = () => {
+      throw new RealtimeRequestError("not_found", "Account not found", {
+        code: "CATEGORY_NOT_FOUND",
+      })
+    }
+    await transactions.outbox.flush()
+    const before = sent.length
+
+    await transactions.outbox.useTheirs(transactions.outbox.entries()[0])
+
+    expect(transactions.outbox.entries()).toEqual([])
+    expect(await dependencies.fetchList(groupId)).toEqual([])
+    expect(sent.length).toBe(before)
+  })
+
+  it("keeps the server's words, and no gone reference, for any other refusal", async () => {
+    const { dependencies, state, transactions } = harness()
+    state.online = false
+    await dependencies.create(typed)
+    state.online = true
+    state.server = () => {
+      throw new RealtimeRequestError("conflict", "No rate for that day", { code: "NO_RATE" })
+    }
+
+    await transactions.outbox.flush()
+
+    const [queued] = transactions.outbox.entries()
+    expect(queued.conflict?.message).toBe("No rate for that day")
+    expect(goneReference(queued)).toBe(null)
   })
 })

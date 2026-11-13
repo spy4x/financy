@@ -2391,6 +2391,10 @@ export default {
   "OfflineStatus.transaction": "Transaction {line}",
   "OfflineStatus.transactionGone": "The transaction is no longer in this household.",
   "OfflineStatus.youDeletedTransaction": "You deleted this transaction.",
+  "TransactionSync.accountGone":
+    "Its account was deleted while you were offline. Pick another account, or discard this transaction.",
+  "TransactionSync.categoryGone":
+    "Its category was deleted while you were offline. Pick another category, or discard this transaction.",
   "TransactionSync.gone": "This transaction was deleted while you were offline.",
   "TransactionSync.rejected": "The server did not accept this transaction.",
   "TransactionSync.version": "Someone changed this transaction while you were offline.",
@@ -2404,6 +2408,9 @@ export default {
   "Transactions.amountIn": "{amount} in {account}",
   "Transactions.convertLater": "Converted when back online",
   "Transactions.unknown": "Unknown",
+  "Transactions.discard": "Discard",
+  "Transactions.pickAccount": "Pick another account",
+  "Transactions.pickCategory": "Pick another category",
   "Transactions.count": {
     "one": "{count} transaction",
     "other": "{count} transactions",
