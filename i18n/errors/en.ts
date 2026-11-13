@@ -246,6 +246,9 @@ export default {
     "This category already has transactions, so it can't switch between expense and income.",
   "Reason.ACCOUNT_HAS_TRANSACTIONS":
     "This account has transactions, so it can't be deleted. Archive it instead.",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "Repeating transactions use this account, so it can't be deleted. Archive it instead.",
+  "Reason.RECURRING_RULE_NOT_FOUND": "This repeating transaction no longer exists.",
   "ImportIssue.categoryParentMissing": "Its parent isn't among the file's categories.",
   "ImportIssue.categoryParentArchived": "It's in use, but its parent is archived.",
   "ImportIssue.categoryOwnParent": "It names itself as its parent.",

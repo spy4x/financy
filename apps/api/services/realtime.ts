@@ -18,6 +18,7 @@ import { AccountError, AccountVersionConflictError } from "@domain/accounts"
 import { CategoryError, CategoryVersionConflictError } from "@domain/categories"
 import { TransactionError, TransactionVersionConflictError } from "@domain/transactions"
 import { BudgetError, BudgetVersionConflictError } from "@domain/budgets"
+import { RecurringRuleError, RecurringRuleVersionConflictError } from "@domain/recurring"
 import { HouseholdError, HouseholdVersionConflictError } from "@domain/money"
 import { PlanError, toPlanRefusal } from "@domain/billing"
 import { IdempotencyError } from "@spy4x/server/idempotency"
@@ -129,6 +130,20 @@ export function toRequestError(error: unknown): RealtimeRequestError | null {
       reason: error.code,
       fields: error.fields,
     })
+  }
+  if (error instanceof RecurringRuleError) {
+    const details = error instanceof RecurringRuleVersionConflictError
+      ? { code: error.code, currentVersion: error.currentVersion }
+      : { code: error.code }
+    return new RealtimeRequestError(
+      RECURRING_RULE_ERROR_CODES[error.code],
+      error.message,
+      details,
+      {
+        reason: error.code,
+        fields: error.fields,
+      },
+    )
   }
   if (error instanceof HouseholdError) {
     // A conflict carries the settings as they are now, so the dialog can say what was chosen.
@@ -277,6 +292,7 @@ const ACCOUNT_ERROR_CODES: Record<
 > = {
   ACCOUNT_ARCHIVED: "conflict",
   ACCOUNT_HAS_TRANSACTIONS: "conflict",
+  ACCOUNT_HAS_RECURRING_RULES: "conflict",
   ACCOUNT_LIMIT_REACHED: "conflict",
   ACCOUNT_NOT_FOUND: "not_found",
   CURRENCY_KIND_MISMATCH: "bad_request",
@@ -318,6 +334,18 @@ const TRANSACTION_ERROR_CODES: Record<
   NO_RATE: "conflict",
   ROLE_INSUFFICIENT: "forbidden",
   TRANSACTION_NOT_FOUND: "not_found",
+  VERSION_CONFLICT: "conflict",
+}
+
+const RECURRING_RULE_ERROR_CODES: Record<
+  RecurringRuleError["code"],
+  "bad_request" | "forbidden" | "not_found" | "conflict"
+> = {
+  GROUP_NOT_FOUND: "not_found",
+  ID_ALREADY_EXISTS: "conflict",
+  INVALID_REQUEST: "bad_request",
+  RECURRING_RULE_NOT_FOUND: "not_found",
+  ROLE_INSUFFICIENT: "forbidden",
   VERSION_CONFLICT: "conflict",
 }
 

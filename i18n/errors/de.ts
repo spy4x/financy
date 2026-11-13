@@ -271,6 +271,9 @@ export default {
     "Diese Kategorie hat schon Buchungen, deshalb kann sie nicht zwischen Ausgaben und Einnahmen wechseln.",
   "Reason.ACCOUNT_HAS_TRANSACTIONS":
     "Dieses Konto hat Buchungen und lässt sich nicht löschen. Archiviere es stattdessen.",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "Wiederkehrende Buchungen nutzen dieses Konto, daher lässt es sich nicht löschen. Archiviere es stattdessen.",
+  "Reason.RECURRING_RULE_NOT_FOUND": "Diese wiederkehrende Buchung gibt es nicht mehr.",
   "ImportIssue.categoryParentMissing": "Ihre Oberkategorie fehlt unter den Kategorien der Datei.",
   "ImportIssue.categoryParentArchived":
     "Sie ist in Gebrauch, aber ihre Oberkategorie ist archiviert.",
