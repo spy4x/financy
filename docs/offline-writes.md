@@ -85,7 +85,7 @@ stays in the outbox as a conflict that says which one is gone. The transactions 
 entry, marked, with **Pick another account** (or category), which opens its editor on that field:
 saving sends it with the new choice and clears the conflict. **Discard** asks first, then drops it
 from the device, since it never reached the server and nothing brings it back. The sync line
-shows the same reason, with **Discard mine**.
+leaves such an entry out, since the list handles it; it still shows an entry's other conflicts.
 
 A write made online that the server refuses is not queued. The notes screen shows "Someone changed
 this note since you opened it." with "Load the latest version".

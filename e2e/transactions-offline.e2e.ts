@@ -230,13 +230,9 @@ test.describe("transactions offline", () => {
           { timeout: 20_000 },
         )
       }
-      // The sync line says the same, in the app's words rather than the server's.
-      await expect(partnerPage.locator("[data-e2e=offline-status] [data-e2e=conflict-message]"))
-        .toHaveText(
-          Array(2).fill(
-            "Its account was deleted while you were offline. Pick another account, or discard this transaction.",
-          ),
-        )
+      // The list is the one place that handles them: the sync line, whose Discard mine does not
+      // ask first, leaves them out, and with nothing else to say it is not drawn.
+      await expect(partnerPage.locator("[data-e2e=offline-status]")).toHaveCount(0)
 
       // Discard, from the keyboard, asks first. Tab goes from the entry to its two actions, and
       // Escape closes the question with focus back on Discard.
