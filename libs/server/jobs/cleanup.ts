@@ -8,6 +8,7 @@ import { purgeDeadInvitations } from "../groups/purge-dead-invitations.ts"
 import { purgeDeletedNotes } from "../notes/purge-deleted-notes.ts"
 import { purgeDeletedAccounts } from "../accounts/purge-deleted-accounts.ts"
 import { purgeDeletedTransactions } from "../transactions/purge-deleted-transactions.ts"
+import { purgeDeletedRecurringRules } from "../recurring/purge-deleted-recurring-rules.ts"
 import { purgeDeletedGroups } from "../groups/purge-deleted-groups.ts"
 import { purgeNotifications } from "../notifications/purge-notifications.ts"
 import { purgeOldAuditEvents } from "../groups/purge-audit-events.ts"
@@ -98,6 +99,13 @@ export function cleanupSteps(
       const transactions = await purgeDeletedTransactions(sql)
       if (transactions.removed > 0) {
         console.log(`Removed ${transactions.removed} deleted transaction(s) for good`)
+      }
+    }],
+    // Before the accounts too: a repeating rule names its account.
+    ["purge deleted repeating rules", async () => {
+      const rules = await purgeDeletedRecurringRules(sql)
+      if (rules.removed > 0) {
+        console.log(`Removed ${rules.removed} deleted repeating rule(s) for good`)
       }
     }],
     ["purge deleted finance accounts", async () => {

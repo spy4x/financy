@@ -53,6 +53,8 @@ export type FeatureKey =
  * - `maxTransactions`: Financy's income and expense entries in the household that are not
  *   deleted. Sold at 0 or with no cap, like `maxAccounts`: without a paid plan a household adds no
  *   entry, and keeps reading, editing, deleting and exporting the ones it has.
+ * - `maxRecurringRules`: Financy's repeating entries (their rules) in the household that are not
+ *   deleted. Sold at 0 or with no cap, like `maxAccounts`.
  */
 export type LimitKey =
   | "maxMembers"
@@ -62,6 +64,7 @@ export type LimitKey =
   | "maxAccounts"
   | "maxCategories"
   | "maxTransactions"
+  | "maxRecurringRules"
 
 /** What a plan allows: which features it includes, and how much of each count, `null` for no cap. */
 export interface Entitlements {
@@ -80,6 +83,7 @@ export const UNLIMITED: Entitlements = {
     maxAccounts: null,
     maxCategories: null,
     maxTransactions: null,
+    maxRecurringRules: null,
   },
 }
 
@@ -167,6 +171,7 @@ export const PLANS: readonly Plan[] = [
         maxAccounts: 0,
         maxCategories: 0,
         maxTransactions: 0,
+        maxRecurringRules: 0,
       },
     },
     attachments: { maxFileBytes: 2 * 1024 * 1024, maxPerNote: 10 },
@@ -198,6 +203,7 @@ export const PLANS: readonly Plan[] = [
         maxAccounts: null,
         maxCategories: null,
         maxTransactions: null,
+        maxRecurringRules: null,
       },
     },
     attachments: { maxFileBytes: 2 * 1024 * 1024, maxPerNote: 10 },

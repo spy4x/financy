@@ -219,6 +219,8 @@ export default {
   "Reason.CURRENCY_LOCKED": "这个账户已有交易，无法再更改货币。",
   "Reason.KIND_LOCKED": "这个分类已有交易，无法在支出和收入之间切换。",
   "Reason.ACCOUNT_HAS_TRANSACTIONS": "这个账户有交易，无法删除。请改为归档。",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES": "有定期交易使用这个账户，无法删除。请改为归档。",
+  "Reason.RECURRING_RULE_NOT_FOUND": "这笔定期交易已不存在。",
   "ImportIssue.categoryParentMissing": "它的上级分类不在文件的分类中。",
   "ImportIssue.categoryParentArchived": "它在使用中，但它的上级分类已归档。",
   "ImportIssue.categoryOwnParent": "它把自己设为了上级分类。",

@@ -11,6 +11,7 @@ import { NoteCreateCommand, NoteMoveCommand, NoteRestoreCommand } from "@domain/
 import { CategoryArchiveCommand, CategoryCreateCommand } from "@domain/categories"
 import { AccountCreateCommand, AccountRestoreCommand } from "@domain/accounts"
 import { TransactionCreateCommand, TransactionRestoreCommand } from "@domain/transactions"
+import { RecurringRuleCreateCommand, RecurringRuleRestoreCommand } from "@domain/recurring"
 import {
   BudgetMethod,
   BudgetMethodSetCommand,
@@ -106,6 +107,20 @@ export const ENTITLEMENT_NEEDS: EntitlementNeeds = new Map([
   needsRoom(
     TransactionRestoreCommand,
     "maxTransactions",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
+  ),
+  // A repeating entry's rule added or restored counts the same way; editing, skipping a date or
+  // deleting one passes on every plan.
+  needsRoom(
+    RecurringRuleCreateCommand,
+    "maxRecurringRules",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
+  ),
+  needsRoom(
+    RecurringRuleRestoreCommand,
+    "maxRecurringRules",
     (command) => command.data.groupId,
     (actor) => canMutateNotes(actor),
   ),

@@ -249,6 +249,9 @@ export default {
   "Reason.KIND_LOCKED": "このカテゴリーにはすでに取引があるため、支出と収入を切り替えられません。",
   "Reason.ACCOUNT_HAS_TRANSACTIONS":
     "この口座には取引があるため、削除できません。代わりにアーカイブしてください。",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "定期取引がこの口座を使っているため、削除できません。代わりにアーカイブしてください。",
+  "Reason.RECURRING_RULE_NOT_FOUND": "この定期取引はもう存在しません。",
   "ImportIssue.categoryParentMissing": "親カテゴリがファイルのカテゴリの中にありません。",
   "ImportIssue.categoryParentArchived": "使用中ですが、親カテゴリがアーカイブ済みです。",
   "ImportIssue.categoryOwnParent": "自分自身を親カテゴリにしています。",

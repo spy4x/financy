@@ -14,6 +14,7 @@ import { createCategoryOperations } from "../features/categories/operations.ts"
 import { createTransactionOperations } from "../features/transactions/operations.ts"
 import { createBudgetOperations } from "../features/budgets/operations.ts"
 import { createHouseholdOperations } from "../features/household/operations.ts"
+import { createRecurringRuleOperations } from "../features/recurring/operations.ts"
 import { createPictureOperations } from "../features/profile/picture.ts"
 import { createNotesOperations } from "../features/notes/switch.ts"
 import { signIn } from "./auth.ts"
@@ -134,6 +135,15 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
   ...createHouseholdOperations({
     updateSettings: (command) => commandBus.execute(command),
     settings: (query) => queryBus.execute(query),
+  }),
+  ...createRecurringRuleOperations({
+    create: (command) => commandBus.execute(command),
+    update: (command) => commandBus.execute(command),
+    delete: (command) => commandBus.execute(command),
+    restore: (command) => commandBus.execute(command),
+    skip: (command) => commandBus.execute(command),
+    get: (query) => queryBus.execute(query),
+    list: (query) => queryBus.execute(query),
   }),
 })
 

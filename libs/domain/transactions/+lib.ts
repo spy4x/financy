@@ -146,9 +146,10 @@ const idField = { id: UUID_PATTERN } as const
 /**
  * What a person types into an entry: never its sign, group, author or conversion flag (R18).
  * `accountAmount` is stated only for a manual rate; left out, the server converts. The currency is
- * an ISO 4217 code or a listed coin, as an account's may be.
+ * an ISO 4217 code or a listed coin, as an account's may be. A repeating rule's entry template
+ * (`@domain/recurring`) takes the same fields.
  */
-const entryFields = {
+export const entryFields = {
   accountId: UUID_PATTERN,
   categoryId: UUID_PATTERN,
   kind: `1 <= number.integer <= 2`,
