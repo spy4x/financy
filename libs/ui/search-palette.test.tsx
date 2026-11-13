@@ -187,7 +187,7 @@ describe("SearchPalette", () => {
     expect(document.activeElement).toBe(find("[data-e2e=search] input"))
   })
 
-  it("lists the current group's recent notes, then the actions, before anything is typed", async () => {
+  it("lists the current group's recent notes, then Go to, Create, Settings and Account, before anything is typed", async () => {
     const { asked } = await mount()
 
     await open()
@@ -197,24 +197,41 @@ describe("SearchPalette", () => {
       "# Notes",
       "Weekly plan | …call the bank…",
       "Untitled note",
-      "# Actions",
+      "# Go to",
+      "Overview",
+      "Transactions",
+      "Accounts",
+      "Categories",
+      "Budgets",
+      "Notes",
+      "Tags",
+      "Groups",
+      "Notifications",
+      "Profile",
+      "# Create",
       "New note | In Home",
       "New transaction | In Home",
-      "Go to transactions",
-      "New tag | In Home",
       "New category | In Home",
-      "Go to categories",
-      "Go to budgets",
+      "New tag | In Home",
       "New group",
-      "Open overview",
-      "Open notifications",
-      "Open profile | Name, email, password, two-factor sign-in",
+      "# Settings",
+      "Theme | System",
+      "Account | Your picture, name, email and a copy of your data.",
+      "Sign-in and security | How you sign in, and where your account is signed in.",
+      "Language and region | Your language, and how dates, times and numbers look.",
+      "Appearance | How the app looks on this device.",
+      "Notifications | Where we notify you when something changes in your groups.",
+      "API tokens | Let a script or another service use one of your groups without your password.",
+      "Delete account | Delete your account and everything only you can see.",
       "Download my data | A ZIP of your profile, groups and notes",
       "Change profile picture | JPEG, PNG, WebP or HEIC, up to 10 MB.",
+      "Keyboard shortcuts",
+      "# Account",
+      "Sign out",
     ])
   })
 
-  it("lists the open page's own commands first among the actions, and hands back the picked one", async () => {
+  it("lists the open page's own commands first under This page, and hands back the picked one", async () => {
     const { picked } = await mount({
       pageCommands: [
         { id: "overview-range", label: "Change date range" },
@@ -223,8 +240,7 @@ describe("SearchPalette", () => {
     })
     await open()
 
-    expect(listed().slice(listed().indexOf("# Actions"), listed().indexOf("# Actions") + 3))
-      .toEqual(["# Actions", "Change date range", "Customise overview"])
+    expect(listed().slice(3, 6)).toEqual(["# This page", "Change date range", "Customise overview"])
 
     await type("customise")
     const row = [...document.querySelectorAll("[role=option]")]
@@ -260,41 +276,60 @@ describe("SearchPalette", () => {
     await open()
 
     await type("notifications")
-    expect(listed()).toContain("Открыть уведомления")
+    expect(listed().slice(0, 2)).toEqual(["# Переход", "Уведомления"])
     await type("уведомления")
-    expect(listed()).toContain("Открыть уведомления")
+    expect(listed().slice(0, 2)).toEqual(["# Переход", "Уведомления"])
+    await type("open notifications")
+    expect(listed().slice(0, 2)).toEqual(["# Переход", "Уведомления"])
     await type("date range")
     expect(listed()).toContain("Изменить период")
-    // The English detail finds its action too.
-    await type("password")
-    expect(listed().some((row) => row.startsWith("Открыть профиль"))).toBe(true)
+    // The English detail finds its command too.
+    await type("where your account")
+    expect(listed().some((row) => row.startsWith("Вход и безопасность"))).toBe(true)
   })
 
-  it("offers Open overview only while there is a current group", async () => {
+  it("offers Go to Overview only while there is a current group", async () => {
     await mount({ currentGroup: null })
     await open()
 
-    expect(listed()).not.toContain("Open overview")
+    expect(listed()).not.toContain("Overview")
   })
 
-  it("lists matching notes with their group, then groups, then actions, with the role and the current group", async () => {
+  it("lists matching notes with their group above the groups and commands, with the role and the current group", async () => {
     await mount()
     await open()
 
     await type("  ho ")
 
-    expect(listed()).toEqual([
+    expect(listed().slice(0, 5)).toEqual([
       "# Notes",
       "Weekly plan | Home · …call the bank…",
       "Untitled note | Acme Studio",
       "# Groups",
       "Home | Owner | Current",
-      "# Actions",
-      "New note | In Home",
-      "New transaction | In Home",
-      "New tag | In Home",
-      "New category | In Home",
     ])
+    expect(listed()).toContain("New note | In Home")
+  })
+
+  it("highlights the strongest match first across groups and commands", async () => {
+    const TEAM = { id: "group-team", name: "Acme design team", role: GroupRole.EDITOR }
+    const PARK = { id: "group-park", name: "Park rangers", role: GroupRole.EDITOR }
+    await mount({ groups: [HOME, TEAM, PARK] }, () => ({ notes: [], onDevice: false }))
+    await open()
+    const highlighted = () => text(find("[data-e2e=search] [role=option][aria-selected=true]"))
+
+    for (const query of ["тема", "ntvf"]) {
+      await type(query)
+      expect(highlighted()).toMatch(/^Theme \|/)
+      expect(listed()).toContain("Acme design team | Editor")
+    }
+
+    await type("dark")
+    expect(highlighted()).toMatch(/^Theme \|/)
+    expect(listed()).toContain("Park rangers | Editor")
+
+    await type("design team")
+    expect(highlighted()).toBe("Acme design team | Editor")
   })
 
   it("names no group in a found note's row when the person has one group", async () => {
@@ -329,8 +364,8 @@ describe("SearchPalette", () => {
 
     await type(`${"x".repeat(45)}`)
 
-    expect(status()).toBe(`No notes or groups match “${"x".repeat(40)}…”.`)
-    expect(emptyLabel(EN, "  ab  ", false)).toBe("No notes or groups match “ab”.")
+    expect(status()).toBe(`Nothing matches “${"x".repeat(40)}…”.`)
+    expect(emptyLabel(EN, "  ab  ", false)).toBe("Nothing matches “ab”.")
   })
 
   it("does not search notes for a single character, but still matches groups", async () => {
@@ -347,13 +382,14 @@ describe("SearchPalette", () => {
     await mount()
     await open()
 
-    await type("q")
+    // A letter can start a word in the other layout or alphabet ("q" is "й"), a digit cannot.
+    await type("7")
 
     expect(listed()).toEqual([])
     expect(status()).toBe("Type at least 2 characters to search notes.")
   })
 
-  it("offers no new note or tag in a group the person may only read, and no new group offline", async () => {
+  it("offers no new note or tag in a group the person may only read, and dims New group offline", async () => {
     await mount({
       currentGroup: { id: STUDIO.id, name: STUDIO.name, canWrite: false },
       online: false,
@@ -362,11 +398,13 @@ describe("SearchPalette", () => {
     await open()
 
     const rows = listed()
-    for (const action of ["New note", "New transaction", "New tag", "New category", "New group"]) {
+    for (const action of ["New note", "New transaction", "New tag", "New category"]) {
       expect(rows.some((row) => row.startsWith(action))).toBe(false)
     }
-    expect(rows).toContain("Open notifications")
-    expect(rows).toContain("Go to transactions")
+    const newGroup = [...document.querySelectorAll("[role=option]")]
+      .find((candidate) => text(candidate).startsWith("New group"))!
+    expect([newGroup.getAttribute("aria-disabled"), text(newGroup)])
+      .toEqual(["true", "New group | Needs a connection"])
   })
 
   it("finds New transaction by the words a person would try, and opens the new transaction", async () => {
@@ -384,15 +422,15 @@ describe("SearchPalette", () => {
     expect(picked).toEqual(Array(3).fill({ kind: "page", href: "/transactions/new" }))
   })
 
-  it("finds New category by subcategory and категория, Go to categories by категории, and Go to budgets by limits and бюджет", async () => {
+  it("finds New category by subcategory and категория, Categories by категории, and Budgets by limits and бюджет", async () => {
     const { picked } = await mount()
     for (
       const [query, label] of [
         ["subcategory", "New category"],
         ["категория", "New category"],
-        ["категории", "Go to categories"],
-        ["limits", "Go to budgets"],
-        ["бюджет", "Go to budgets"],
+        ["категории", "Categories"],
+        ["limits", "Budgets"],
+        ["бюджет", "Budgets"],
       ]
     ) {
       await open()
@@ -469,6 +507,28 @@ describe("SearchPalette", () => {
     )
   })
 
+  it("finds Open benchmark by speed test, speedtest and тест скорости, only when it is offered", async () => {
+    const queries = ["speed test", "speedtest", "тест скорости"]
+    const { picked } = await mount({ benchmark: true })
+    for (const query of queries) {
+      await open()
+      await type(query)
+      const row = [...document.querySelectorAll("[role=option]")]
+        .find((candidate) => text(candidate).startsWith("Open benchmark"))
+      expect(row, query).toBeDefined()
+      await act(() => {
+        row!.dispatchEvent(new window.MouseEvent("click", { bubbles: true }) as unknown as Event)
+      })
+    }
+    expect(picked).toEqual(Array(3).fill({ kind: "page", href: "/benchmark" }))
+
+    await act(() => render(null, root!))
+    await mount()
+    await open()
+    await type("speed test")
+    expect(listed().some((row) => row.startsWith("Open benchmark"))).toBe(false)
+  })
+
   it("shows the error line when the search fails", async () => {
     await mount(
       {},
@@ -478,10 +538,68 @@ describe("SearchPalette", () => {
 
     await type("plan")
 
-    expect(status()).toBe("Couldn't search. Change your search to try again.")
+    expect(status()).toBe("Could not search. Change your search to try again.")
   })
 
-  it("asks the app to open a picked note of another group in that group, and a picked group's page", async () => {
+  it("draws the app's shortcut keys, a g sequence among them, without failing", async () => {
+    await mount({
+      shortcuts: [
+        { keys: "n", description: "Shortcuts.newNoteRow", group: "General" },
+        { keys: "g n", description: "Frame.notes", group: "Go to" },
+      ],
+    })
+    await open()
+    const keys = (label: string) =>
+      [...document.querySelectorAll("[role=option]")]
+        .find((candidate) => text(candidate).startsWith(label))
+        ?.getAttribute("aria-keyshortcuts")
+
+    expect([keys("New note"), keys("Notes")]).toEqual(["N", null])
+  })
+
+  it("switches to a group on Enter and opens its settings on Ctrl Enter", async () => {
+    const { picked } = await mount({}, () => ({ notes: [], onDevice: false }))
+    for (const ctrlKey of [false, true]) {
+      await open()
+      await type("switch to acme")
+      await act(() => {
+        find("[data-e2e=search] input").dispatchEvent(
+          new window.KeyboardEvent("keydown", {
+            key: "Enter",
+            ctrlKey,
+            bubbles: true,
+          }) as unknown as Event,
+        )
+      })
+    }
+    expect(picked).toEqual([
+      { kind: "switch-group", groupId: STUDIO.id },
+      { kind: "group-settings", groupId: STUDIO.id },
+    ])
+  })
+
+  it("applies Dark from the Theme submenu at once and keeps the palette open", async () => {
+    const { picked } = await mount()
+    const dialog = find<HTMLDialogElement>("dialog[data-e2e=search]")
+    const pick = async (label: string) => {
+      const row = [...document.querySelectorAll("[role=option]")]
+        .find((candidate) => text(candidate).startsWith(label))!
+      await act(() => {
+        row.dispatchEvent(new window.MouseEvent("click", { bubbles: true }) as unknown as Event)
+      })
+      await settle()
+    }
+    await open()
+    await type("dark")
+
+    await pick("Theme")
+    await pick("Dark")
+
+    expect(picked).toEqual([{ kind: "theme", theme: "dark" }])
+    expect(dialog.open).toBe(true)
+  })
+
+  it("asks the app to open a picked note of another group in that group, and switch to a picked group", async () => {
     const { picked } = await mount()
     const pick = async (label: string) => {
       const row = [...document.querySelectorAll("[role=option]")]
@@ -500,7 +618,7 @@ describe("SearchPalette", () => {
 
     expect(picked).toEqual([
       { kind: "note", noteId: SKETCH.id, groupId: STUDIO.id },
-      { kind: "group", groupId: STUDIO.id },
+      { kind: "switch-group", groupId: STUDIO.id },
     ])
   })
 

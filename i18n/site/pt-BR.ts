@@ -25,7 +25,7 @@ export default {
   "SiteFooter.terms": "Termos",
   "FooterNewsletter.title": "Newsletter",
   "FooterNewsletter.lead":
-    "Um e-mail curto quando o {site} muda. Você confirma uma vez por e-mail e sai com um clique.",
+    "Um e-mail curto quando {site} muda. Você confirma uma vez por e-mail e sai com um clique.",
   "NewsletterForm.email": "E-mail",
   "NewsletterForm.placeholder": "voce@exemplo.com",
   "NewsletterForm.submit": "Inscrever-se",
@@ -33,9 +33,9 @@ export default {
   "LegalPage.updated": "Atualizada em {date}",
   "LegalPage.noticeTitle": "Um ponto de partida, não uma orientação jurídica",
   "LegalPage.notice":
-    "Esta página vale para a demo do {site}. Se você criar um produto com o {site}, adapte este texto ao que o seu produto guarda e faz, e peça a um advogado para revisar.",
+    "Esta página vale para a demo de {site}. Se você criar um produto com {site}, adapte este texto ao que o seu produto guarda e faz, e peça a um advogado para revisar.",
   "OnThisPage.title": "Nesta página",
-  "Blog.name": "Blog do {site}",
+  "Blog.name": "Blog de {site}",
   "ErrorPage.notFoundTitle": "Página não encontrada",
   "ErrorPage.notFoundDescription": "Não existe nenhuma página neste endereço.",
   "ErrorPage.errorTitle": "Algo deu errado",
@@ -86,7 +86,7 @@ export default {
   "Unsubscribe.unsubscribing": "Cancelando…",
   "Unsubscribe.submit": "Cancelar inscrição",
   "NewsletterPage.title": "Newsletter",
-  "NewsletterPage.description": "Confirme ou cancele sua inscrição na newsletter do {site}.",
+  "NewsletterPage.description": "Confirme ou cancele sua inscrição na newsletter de {site}.",
   "NewsletterPage.subscribeTitle": "Newsletter do {site}: saiba quando estiver pronto",
   "NewsletterPage.subscribeDescription":
     "Um e-mail no dia em que o {site} puder ser usado, e notícias curtas enquanto ele é construído: o que saiu, o que quebrou, o que aprendi. Confirme uma vez; para cancelar a inscrição, basta um clique.",
@@ -99,12 +99,12 @@ export default {
   "NewsletterPage.promiseUnsubscribe":
     "Todo e-mail tem um link que cancela a inscrição com um clique.",
   "NewsletterPage.promisePrivate": "Seu e-mail serve só para esta newsletter e mais nada.",
-  "NewsletterOff.title": "A newsletter do {site}",
+  "NewsletterOff.title": "A newsletter de {site}",
   "NewsletterOff.noticeTitle": "A newsletter está pausada",
   "NewsletterOff.notice":
     "No momento, este site não está aceitando inscrições nem enviando a newsletter. Os links de confirmação e de cancelamento voltam a funcionar quando ela for reativada.",
   "NewsletterOff.lead":
-    "Para saber quando o {site} mudar, acompanhe as releases no GitHub. Ou veja o que ele já faz hoje.",
+    "Para saber quando {site} mudar, acompanhe as releases no GitHub. Ou veja o que {site} já faz hoje.",
   "NewsletterOff.releases": "Releases no GitHub",
   "Architecture.webApp": "App web",
   "Architecture.website": "Site",

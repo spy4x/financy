@@ -356,7 +356,7 @@ export default {
   "Blog.notFoundLead": "Il a peut-être été déplacé ou dépublié.",
   "Blog.published": "Publié le <time>{date}</time>",
   "Blog.updated": "· Mis à jour le <time>{date}</time>",
-  "Blog.alsoIn": "Aussi disponible en : <links></links>",
+  "Blog.alsoIn": "Aussi disponible en : <links></links>",
   "Blog.relatedFeature": "Fonctionnalité associée : {name} →",
   "Blog.minutes": {
     "one": "· {count} min de lecture",
@@ -371,7 +371,7 @@ export default {
   "Blog.breadcrumb": "Fil d’Ariane",
   "PostFigure.noScript":
     "Affiché avec les chiffres de l’article. Activez JavaScript pour essayer les vôtres.",
-  "PostFigure.rssLink": "Essayez-le sur le site : {link}",
+  "PostFigure.rssLink": "Essayez-le sur le site : {link}",
   "PostFigure.OfflineSyncDemo.title": "Écrire une note sans réseau",
   "PostFigure.OfflineSyncDemo.lead": "Écrivez une note hors ligne, puis rallumez le réseau.",
   "PostFigure.OfflineSyncDemo.network": "Réseau",
@@ -398,12 +398,12 @@ export default {
   "PostFigure.CostCalculator.perMember": "Par membre, par mois",
   "PostFigure.CostCalculator.caption": "Prix des offres de la démo, hors taxes.",
   "PostFigure.CostCalculator.fallback":
-    "Membres de l’équipe : {members}. Avec l’offre Pro de la démo, ils paient {total} par mois, soit {price} par membre.",
+    "Membres de l’équipe : {members}. Avec l’offre Pro de la démo, ils paient {total} par mois, soit {price} par membre.",
   "PostFigure.HostingCost.title": "Seed sur un serveur face à une stack managée",
   "PostFigure.HostingCost.lead":
     "Choisissez un serveur Hetzner et le nombre de développeurs qui ont besoin d’un siège Vercel.",
   "PostFigure.HostingCost.server": "Serveur Hetzner",
-  "PostFigure.HostingCost.serverOption": "{name} : {cores} vCPU, {memory} Go",
+  "PostFigure.HostingCost.serverOption": "{name} : {cores} vCPU, {memory} Go",
   "PostFigure.HostingCost.developers": "Développeurs avec un siège Vercel",
   "PostFigure.HostingCost.seed": "Seed chez Hetzner, par mois",
   "PostFigure.HostingCost.managed": "Vercel Pro et Supabase Pro, par mois",
@@ -416,9 +416,9 @@ export default {
   "PostFigure.HostingCost.managedVerdict":
     "La stack managée fait économiser {month} par mois, {year} par an.",
   "PostFigure.HostingCost.caption":
-    "Prix catalogue hors taxes, relevés le 3 novembre 2026. Seed : le serveur, son adresse IPv4 et Object Storage pour les sauvegardes. Managé : les offres de base, hors usage. Dollars convertis en euros au taux de la BCE du 2 novembre 2026.",
+    "Prix catalogue hors taxes, relevés le 3 novembre 2026. Seed : le serveur, son adresse IPv4 et Object Storage pour les sauvegardes. Managé : les offres de base, hors usage. Dollars convertis en euros au taux de la BCE du 2 novembre 2026.",
   "PostFigure.HostingCost.fallback":
-    "Sur un serveur Hetzner {server}, Seed coûte {seed} par mois avec son adresse IPv4 et le stockage des sauvegardes. Vercel Pro et Supabase Pro coûtent {managed} par mois, environ {managedEuro}. Développeurs avec un siège Vercel : {developers}.",
+    "Sur un serveur Hetzner {server}, Seed coûte {seed} par mois avec son adresse IPv4 et le stockage des sauvegardes. Vercel Pro et Supabase Pro coûtent {managed} par mois, environ {managedEuro}. Développeurs avec un siège Vercel : {developers}.",
   "FeaturePage.what": "Ce que vous obtenez",
   "FeaturePage.how": "Comment ça marche",
   "FeaturePage.limits": "Limites",
@@ -611,49 +611,49 @@ export default {
   "FeatureAccounts.fact1":
     "Le serveur calcule chaque solde à la lecture et ne le stocke jamais, donc il ne peut pas dériver",
   "FeatureAccounts.fact2":
-    "Les montants sont des entiers dans la plus petite unité de la devise : le yen n’en a pas, le dinar en a trois",
+    "Les montants sont des entiers dans la plus petite unité de la devise : le yen n’en a pas, le dinar en a trois",
   "FeatureAccounts.fact3":
-    "Un lecteur voit les comptes ; seuls les éditeurs et au-dessus les modifient, et le serveur le vérifie",
+    "Un lecteur voit les comptes ; seuls les éditeurs et au-dessus les modifient, et le serveur le vérifie",
   "FeatureAccounts.lead":
     "Espèces, comptes bancaires, cartes, épargne, actifs et dettes, chacun dans sa devise, regroupés par type, avec un compte par défaut. Tout le foyer voit chaque modification aussitôt.",
   "FeatureAccounts.nav": "Comptes",
   "FeatureAccounts.title": "Chaque compte dans sa propre devise",
   "Features.description":
-    "Financy aujourd’hui : comptes et opérations en toute devise, budgets mensuels, foyers avec rôles, synchro, appli hors ligne, export, neuf langues.",
-  "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
+    "Financy aujourd’hui : comptes et opérations en toute devise, budgets mensuels, foyers avec rôles, synchro, appli hors ligne, export, neuf langues.",
+  "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
   "FeaturesHero.lead":
-    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
+    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
   "FeaturesHero.note":
     "Les virements ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
   "HomeFaq.useAnswer":
-    "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
+    "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
   "Catalog.title": "Catalogue",
   "Catalog.intro": "Tout ce que nous vendons, avec les prix, les tailles et les couleurs.",
   "Catalog.categories": "Catégories",
   "Catalog.all": "Tout",
   "Catalog.empty": "Rien en vente pour le moment",
   "Catalog.emptyLead": "Les nouveaux articles apparaissent ici dès qu’ils sont prêts.",
-  "Catalog.categoryIntro": "{category} : prix, tailles et couleurs.",
-  "CatalogItem.intro": "{item} : prix, tailles et couleurs.",
+  "Catalog.categoryIntro": "{category} : prix, tailles et couleurs.",
+  "CatalogItem.intro": "{item} : prix, tailles et couleurs.",
   "CatalogItem.photos": "Photos",
   "CatalogItem.material": "Matière",
   "CatalogItem.fit": "Coupe",
   "CatalogItem.care": "Entretien",
-  "CatalogItem.inStock": "{choice} : en stock",
-  "CatalogItem.soldOut": "{choice} : épuisé",
+  "CatalogItem.inStock": "{choice} : en stock",
+  "CatalogItem.soldOut": "{choice} : épuisé",
   "FeatureCategories.nav": "Catégories",
   "FeatureCategories.title": "Des catégories sur un seul niveau",
   "FeatureCategories.lead":
     "Rangez dépenses et revenus dans des catégories, chacune avec son icône et sa couleur. Mettez Courses et Restaurant sous Alimentation. Un nouveau foyer commence avec une courte liste dans sa langue.",
   "FeatureCategories.fact1":
-    "Une catégorie n’est jamais supprimée : l’archiver la retire des listes de choix, et ses opérations passées la gardent",
+    "Une catégorie n’est jamais supprimée : l’archiver la retire des listes de choix, et ses opérations passées la gardent",
   "FeatureCategories.fact2":
     "Une sous-catégorie a le type de sa parente, et une parente ne peut pas avoir de parente, vérifié sur le serveur",
   "FeatureCategories.fact3":
-    "Un lecteur voit les catégories ; seuls un éditeur ou plus les modifient",
+    "Un lecteur voit les catégories ; seuls un éditeur ou plus les modifient",
   "FeatureCategories.code": "Lire le code source des catégories",
   "FeatureTierSettled.lead":
-    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels sont là ; les virements viennent ensuite.",
+    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels sont là ; les virements viennent ensuite.",
   "HomeStatus.categories": "Des catégories avec un niveau de sous‑catégories",
   "HomeStatus.budgets": "Un plafond mensuel pour chaque catégorie",
   "FeatureBudgets.nav": "Budgets",
@@ -663,9 +663,9 @@ export default {
   "FeatureBudgets.fact1":
     "Une catégorie parente sans plafond propre affiche la somme des plafonds de ses sous‑catégories",
   "FeatureBudgets.fact2":
-    "La dépense, ce sont les dépenses moins les remboursements ; une devise sans taux de change est nommée, pas écartée en silence",
+    "La dépense, ce sont les dépenses moins les remboursements ; une devise sans taux de change est nommée, pas écartée en silence",
   "FeatureBudgets.fact3":
-    "Fixer un plafond demande le forfait Household ; lire les budgets et retirer un plafond, jamais, et le serveur le vérifie",
+    "Fixer un plafond demande le forfait Household ; lire les budgets et retirer un plafond, jamais, et le serveur le vérifie",
   "FeatureBudgets.code": "Lire le code source des budgets",
   "FeatureTransactions.nav": "Opérations",
   "FeatureTransactions.title": "Chaque dépense et chaque revenu, dans la devise payée",

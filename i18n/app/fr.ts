@@ -2,6 +2,10 @@ import type { Catalog } from "@spy4x/platform/universal/i18n"
 
 export default {
   "AppShell.attachFiles": "Joindre des fichiers à cette note",
+  "AppShell.copyNoteLink": "Copier le lien vers cette note",
+  "AppShell.deleteNote": "Supprimer cette note",
+  "AppShell.duplicateNote": "Dupliquer cette note",
+  "AppShell.moveNote": "Déplacer cette note vers un autre groupe",
   "AttachmentMessages.load": "Impossible de charger les fichiers",
   "AttachmentMessages.type":
     "Impossible de joindre {name}. Seuls les fichiers PDF et les images JPEG, PNG, WebP et GIF sont acceptés.",
@@ -216,9 +220,9 @@ export default {
     "other": "{count} membres",
   },
   "GroupEditor.memberCountLink": {
-    "one": "{count} membre : ouvrir l’onglet Facturation",
-    "many": "{count} de membres : ouvrir l’onglet Facturation",
-    "other": "{count} membres : ouvrir l’onglet Facturation",
+    "one": "{count} membre : ouvrir l’onglet Facturation",
+    "many": "{count} de membres : ouvrir l’onglet Facturation",
+    "other": "{count} membres : ouvrir l’onglet Facturation",
   },
   "GroupEditor.tabGeneral": "Général",
   "GroupEditor.tabMembers": "Membres",
@@ -445,7 +449,7 @@ export default {
   "GroupInvitations.verifyEmail": "Vérifier l’adresse e-mail",
   "GroupInvitations.notForYou":
     "Cette invitation a été envoyée à une autre adresse e-mail. Si c’est la vôtre, confirmez-la d’abord dans votre <link>profil</link>, ou connectez-vous avec le compte utilisateur qui l’utilise.",
-  "GroupInvitations.somethingWrong": "Un problème est survenu. Réessayez.",
+  "GroupInvitations.somethingWrong": "Impossible de traiter l’invitation. Réessayez.",
   "GroupInvitations.unreachable": "Impossible de joindre le serveur. Réessayez.",
   "GroupMembers.unnamed": "Membre sans nom",
   "GroupMembers.title": "Membres",
@@ -517,7 +521,7 @@ export default {
   "GroupTransfer.unreachable": "Impossible de joindre le serveur. Réessayez.",
   "GroupTransfer.tooManyAttempts":
     "Trop de tentatives. Patientez quelques minutes, puis réessayez.",
-  "GroupTransfer.somethingWrong": "Un problème est survenu. Réessayez.",
+  "GroupTransfer.somethingWrong": "Impossible de transférer la propriété. Réessayez.",
   "Groups.title": "Groupes",
   "Groups.new": "Nouveau groupe",
   "Groups.import": "Importer un groupe…",
@@ -588,7 +592,7 @@ export default {
   "GroupBillingPanel.paymentFailedFree":
     "Un paiement a échoué : le groupe est donc passé au forfait Gratuit. Mettez à jour votre carte avec « Changer de carte » pour retrouver {plan}.",
   "GroupBillingPanel.offline": "Impossible de joindre le serveur. Réessayez.",
-  "GroupBillingPanel.unreadable": "Impossible de charger le forfait.",
+  "GroupBillingPanel.unreadable": "Impossible de charger le forfait",
   "GroupBillingPanel.unsafePage":
     "Le prestataire de paiement a renvoyé une adresse que cette application refuse d’ouvrir.",
   "GroupBillingPanel.checkoutUnreachable":
@@ -716,10 +720,10 @@ export default {
   "GroupBillingView.trialUntil": "« {group} » bénéficie de {plan} jusqu’au {date}.",
   "GroupBillingView.paid": "Vous êtes passé à {plan}",
   "GroupBillingView.paidText": "Stripe a confirmé le paiement pour « {group} ».",
-  "NotificationsScreen.loadFailed": "Impossible de charger les notifications.",
-  "NotificationsScreen.loadMoreFailed": "Impossible de charger plus de notifications.",
-  "NotificationsScreen.readFailed": "Impossible de la marquer comme lue.",
-  "NotificationsScreen.readAllFailed": "Impossible de les marquer comme lues.",
+  "NotificationsScreen.loadFailed": "Impossible de charger les notifications",
+  "NotificationsScreen.loadMoreFailed": "Impossible de charger plus de notifications",
+  "NotificationsScreen.readFailed": "Impossible de la marquer comme lue",
+  "NotificationsScreen.readAllFailed": "Impossible de les marquer comme lues",
   "NotificationsScreen.invitedViewer":
     "Vous êtes invité à rejoindre « <group>{group}</group> » en tant que lecteur.",
   "NotificationsScreen.invitedEditor":
@@ -1046,7 +1050,7 @@ export default {
   "GuestScreens.signOutAnyway": "Se déconnecter quand même",
   "GuestScreens.signOutText":
     "Ce compte utilisateur n’a aucune méthode de connexion : vous ne pourrez pas vous reconnecter. Vous perdrez tout son contenu.",
-  "GuestScreens.offline": "Vous êtes hors ligne. Connectez-vous à Internet et réessayez.",
+  "GuestScreens.offline": "Impossible de joindre le serveur. Réessayez.",
   "GuestScreens.providerFailed":
     "{provider} n’a pas abouti. Votre compte utilisateur n’a pas été modifié. Réessayez ou choisissez une autre méthode.",
   "GuestScreens.noPasskey":
@@ -1064,6 +1068,7 @@ export default {
   "OAuthNotice.guestTaken": "Cette méthode de connexion appartient à un autre compte utilisateur.",
   "PasswordResetScreen.forgotFailed": "Impossible d’envoyer le code",
   "PasswordResetScreen.resetFailed": "Impossible de changer le mot de passe",
+  "PasswordResetScreen.sentTitle": "Saisissez le code de réinitialisation",
   "PasswordResetScreen.sent":
     "Si <email>{email}</email> correspond à un compte utilisateur, nous y avons envoyé un code.",
   "PasswordResetScreen.forgotDescription": {
@@ -1091,8 +1096,8 @@ export default {
   "PasswordResetScreen.save": "Enregistrer le mot de passe",
   "MoveNote.title": "Déplacer vers un groupe",
   "MoveNote.cancel": "Annuler",
-  "MoveNote.question":
-    "Choisissez où déplacer « <title>{title}</title> ». Tous les membres de ce groupe la verront.",
+  "MoveNote.hint": "Tous les membres du groupe choisi la verront.",
+  "MoveNote.move": "Déplacer",
   "NewNote.title": "Nouvelle note",
   "NewNote.close": "Fermer",
   "NewNote.titleLabel": "Titre",
@@ -1181,6 +1186,8 @@ export default {
   "NoteEditor.tags": "Étiquettes",
   "NoteEditorView.createdTitle": "Note ajoutée",
   "NoteEditorView.created": "« {title} » a été créée.",
+  "NoteEditorView.copyTitle": "{title} (copie)",
+  "NoteEditorView.duplicateFailed": "Impossible de dupliquer la note",
   "NoteEditorView.savedTitle": "Note enregistrée",
   "NoteEditorView.saved": "« {title} » a été enregistrée.",
   "NoteEditorView.unsaved":
@@ -1263,7 +1270,7 @@ export default {
     "other": "{count} sélectionnées",
   },
   "Notes.cancelSelect": "Annuler",
-  "Notes.moveTo": "Déplacer vers un groupe",
+  "Notes.moveTo": "Vers le groupe",
   "Notes.moving": "Déplacement…",
   "Notes.move": "Déplacer",
   "Notes.updated": "Modifiée <date>{date}</date>",
@@ -1281,7 +1288,6 @@ export default {
   "NotesFilter.allTags": "Toutes ces étiquettes",
   "NotesFilter.author": "Auteur",
   "NotesFilter.anyone": "Tout le monde",
-  "NotesFilter.you": "Vous",
   "NotesFilter.search": "Rechercher dans les notes",
   "NotesFilter.mine": "Créées par moi",
   "NotesFilter.sortUpdated": "Dernière modification",
@@ -1421,7 +1427,7 @@ export default {
   "SeatPriceConfirm.hint":
     "Chaque nouveau membre ajoute {price} par mois : un membre de plus fait passer le groupe de {now} à {next}. La différence pour le reste de la période sera facturée sur la prochaine facture.",
   "SeatPriceConfirm.hintYear":
-    "Chaque nouveau membre ajoute {price} par an : un membre de plus fait passer le groupe de {now} à {next}. La différence pour le reste de la période sera facturée sur la prochaine facture.",
+    "Chaque nouveau membre ajoute {price} par an : un membre de plus fait passer le groupe de {now} à {next}. La différence pour le reste de la période sera facturée sur la prochaine facture.",
   "SeatPriceConfirm.accept":
     "J’accepte le prix plus élevé pour chaque personne qui rejoint le groupe",
   "ProfileAccount.name": "Nom",
@@ -1751,7 +1757,7 @@ export default {
   "SignInMethods.passkeyOnDevice":
     "Cet appareil possède déjà une clé d’accès pour votre compte utilisateur.",
   "SignUpCodeScreen.checkFailed": "Impossible de vérifier le code",
-  "SignUpCodeScreen.offline": "Vous êtes hors ligne. Connectez-vous à Internet et réessayez.",
+  "SignUpCodeScreen.offline": "Impossible de joindre le serveur. Réessayez.",
   "SignUpCodeScreen.title": "Consultez votre boîte de réception",
   "SignUpCodeScreen.loading": "Chargement…",
   "SignUpCodeScreen.code": "Code",
@@ -1801,7 +1807,7 @@ export default {
   "SignedInDevices.lastActive": "Dernière activité <when></when>",
   "SignedInDevices.ip": "<label>Adresse IP</label> <ip>{ip}</ip>",
   "Search.search": "Rechercher",
-  "Search.placeholder": "Rechercher des notes et des groupes",
+  "Search.placeholder": "Rechercher ou lancer une commande",
   "Search.close": "Fermer la recherche",
   "Search.loading": "Recherche…",
   "Search.error": "La recherche a échoué. Modifiez votre recherche pour réessayer.",
@@ -1810,13 +1816,18 @@ export default {
     "many": "Saisissez au moins {count} caractères pour rechercher des notes.",
     "other": "Saisissez au moins {count} caractères pour rechercher des notes.",
   },
-  "Search.empty": "Aucune note ni aucun groupe ne correspond à « {query} ».",
+  "Search.empty": "Rien ne correspond à « {query} ».",
   "Search.emptyOnDevice":
     "Rien sur cet appareil ne correspond à « {query} ». Relancez la recherche une fois de retour en ligne.",
   "Search.notes": "Notes",
   "Search.notesOnDevice": "Notes sur cet appareil",
   "Search.groups": "Groupes",
-  "Search.actions": "Actions",
+  "Search.create": "Créer",
+  "Search.settings": "Paramètres",
+  "Search.account": "Compte",
+  "Search.switchTo": "Passer à {group}",
+  "Search.installApp": "Installer l’application",
+  "Search.needsConnection": "Connexion requise",
   "Search.untitled": "Note sans titre",
   "Search.current": "Actuel",
   "Search.inGroup": "Dans {group}",
@@ -1829,7 +1840,6 @@ export default {
   "Search.openOverview": "Ouvrir la vue d’ensemble",
   "Search.openNotifications": "Ouvrir les notifications",
   "Search.openProfile": "Ouvrir le profil",
-  "Search.profileDetail": "Nom, adresse e-mail, mot de passe, double authentification",
   "Search.downloadData": "Télécharger mes données",
   "Search.downloadDetail": "Un fichier ZIP de votre profil, de vos groupes et de vos notes",
   "Search.changePicture": "Changer de photo de profil",
@@ -1842,7 +1852,7 @@ export default {
   "Shortcuts.switchLabel": "Raccourcis à une touche",
   "Shortcuts.inFields": "Les raccourcis ne fonctionnent pas pendant la saisie dans un champ.",
   "Shortcuts.off": "Les raccourcis à une touche sont désactivés sur cet appareil.",
-  "Shortcuts.search": "Rechercher des notes et des groupes",
+  "Shortcuts.search": "Rechercher ou lancer une commande",
   "Shortcuts.newNoteRow": "Nouvelle note",
   "Shortcuts.undo": "Annuler une suppression, tant que son message est affiché",
   "Shortcuts.notifications": "Notifications",
@@ -1955,11 +1965,11 @@ export default {
   },
   "TelegramBot.stale": {
     "one":
-      "Ce bouton ne fonctionne plus. Il a déjà été utilisé, un plus récent l’a remplacé, ou il date de plus de {count} minute. Pour associer cette conversation, créez un nouveau code dans l’application.",
+      "Ce bouton ne fonctionne plus : il a déjà été utilisé, un plus récent l’a remplacé, il date de plus de {count} minute, le mot de passe du compte a été réinitialisé ou modifié, ou le compte a été supprimé ou bloqué. Pour associer cette conversation, créez un nouveau code dans l’application.",
     "many":
-      "Ce bouton ne fonctionne plus. Il a déjà été utilisé, un plus récent l’a remplacé, ou il date de plus de {count} minutes. Pour associer cette conversation, créez un nouveau code dans l’application.",
+      "Ce bouton ne fonctionne plus : il a déjà été utilisé, un plus récent l’a remplacé, il date de plus de {count} minutes, le mot de passe du compte a été réinitialisé ou modifié, ou le compte a été supprimé ou bloqué. Pour associer cette conversation, créez un nouveau code dans l’application.",
     "other":
-      "Ce bouton ne fonctionne plus. Il a déjà été utilisé, un plus récent l’a remplacé, ou il date de plus de {count} minutes. Pour associer cette conversation, créez un nouveau code dans l’application.",
+      "Ce bouton ne fonctionne plus : il a déjà été utilisé, un plus récent l’a remplacé, il date de plus de {count} minutes, le mot de passe du compte a été réinitialisé ou modifié, ou le compte a été supprimé ou bloqué. Pour associer cette conversation, créez un nouveau code dans l’application.",
   },
   "TelegramBot.privateOnly": "Envoyez-moi cela dans une conversation privée.",
   "TelegramBot.codeSpent":
@@ -2027,7 +2037,7 @@ export default {
   "ApiTokenNewView.discardMessage": "Vous n’avez pas encore créé ce jeton.",
   "ApiTokenNewView.discard": "Abandonner les modifications",
   "ApiTokenNewView.keepEditing": "Continuer à modifier",
-  "ApiTokens.failed": "Un problème est survenu avec vos jetons d’API.",
+  "ApiTokens.failed": "Impossible de charger ou de révoquer vos jetons d’API. Réessayez.",
   "ApiTokens.savedCopyTitle": "Copie enregistrée de vos jetons d’API",
   "ApiTokens.savedCopyBody":
     "Impossible de joindre le serveur. Voici la liste enregistrée sur cet appareil : {time}. Les jetons créés ou révoqués depuis n’y figurent pas.",
@@ -2155,7 +2165,7 @@ export default {
   "EmailScreen.verifyFailed": "Impossible de vérifier le code",
   "EmailScreen.sendFailed": "Impossible d’envoyer un nouveau code",
   "EmailScreen.changeFailed": "Impossible de modifier votre adresse e-mail",
-  "EmailScreen.loadFailed": "Impossible de charger votre adresse e-mail.",
+  "EmailScreen.loadFailed": "Impossible de charger votre adresse e-mail",
   "EmailScreen.enterCode": "Saisir le code",
   "EmailScreen.banner": "Confirmez <email>{email}</email> avec le code que nous y envoyons.",
   "EmailScreen.tryAgain": "Réessayer",
@@ -2281,10 +2291,10 @@ export default {
     "other": "{currency} accepte au plus {count} décimales.",
   },
   "AccountEditor.amountInvalid": "Saisissez un montant, par exemple 12,34.",
-  "AccountEditor.amountNoDecimals": "{currency} n’a pas de centimes : saisissez un montant entier.",
+  "AccountEditor.amountNoDecimals": "{currency} n’a pas de centimes : saisissez un montant entier.",
   "AccountEditor.amountTooLarge": "Ce montant est trop élevé.",
   "AccountEditor.amountCleared":
-    "{amount} ne peut pas s’écrire en {currency} : le solde initial a été vidé. Saisissez-le à nouveau.",
+    "{amount} ne peut pas s’écrire en {currency} : le solde initial a été vidé. Saisissez-le à nouveau.",
   "AccountEditor.back": "Retour aux comptes",
   "AccountEditor.balance": "Solde",
   "AccountEditor.cancel": "Annuler",
@@ -2350,7 +2360,7 @@ export default {
   "Accounts.edit": "Modifier le compte",
   "Accounts.empty": "Ajoutez votre premier compte",
   "Accounts.emptyHint":
-    "Un compte, c’est là où se trouve l’argent : un portefeuille, un compte bancaire, une carte. Chacun a sa propre devise.",
+    "Un compte, c’est là où se trouve l’argent : un portefeuille, un compte bancaire, une carte. Chacun a sa propre devise.",
   "Accounts.emptyViewer": "Aucun compte pour l’instant",
   "Accounts.hideArchived": "Masquer les comptes archivés",
   "Accounts.loading": "Chargement des comptes…",
@@ -2375,7 +2385,7 @@ export default {
   "AccountsView.discardLeave": "Abandonner",
   "AccountsView.discardNew": "Ce compte n’est pas encore créé.",
   "AccountsView.discardStay": "Continuer la modification",
-  "AccountsView.discardTitle": "Abandonner vos modifications ?",
+  "AccountsView.discardTitle": "Abandonner vos modifications ?",
   "AccountsView.saved": "{name} est enregistré.",
   "AccountsView.savedTitle": "Compte enregistré",
   "AccountsView.unarchived": "{name} est de nouveau utilisé.",
@@ -2428,9 +2438,9 @@ export default {
   "Budgets.loadError": "Les budgets n’ont pas pu être chargés.",
   "Budgets.retry": "Réessayer",
   "Budgets.leftOut":
-    "Ce mois-ci ne compte pas les dépenses en {currencies} : pas encore de taux de change pour elles.",
+    "Ce mois-ci ne compte pas les dépenses en {currencies} : pas encore de taux de change pour elles.",
   "Budgets.leftOutMonth":
-    "{month} ne compte pas les dépenses en {currencies} : pas encore de taux de change pour elles.",
+    "{month} ne compte pas les dépenses en {currencies} : pas encore de taux de change pour elles.",
   "Budgets.past": "{month} est terminé. Ses plafonds et dépenses s’affichent tels qu’ils étaient.",
   "Budgets.future": "{month} n’a pas encore commencé.",
   "Budgets.planTitle": "Fixer des plafonds demande le forfait Household",
@@ -2440,7 +2450,7 @@ export default {
     "Vous pouvez consulter les budgets, mais seuls les éditeurs peuvent les modifier.",
   "Budgets.savedTitle": "Copie enregistrée de {month}",
   "Budgets.savedBody":
-    "Impossible de joindre le serveur. Voici les budgets enregistrés sur cet appareil : {time}. Les dépenses et plafonds modifiés depuis n’y figurent pas.",
+    "Impossible de joindre le serveur. Voici les budgets enregistrés sur cet appareil : {time}. Les dépenses et plafonds modifiés depuis n’y figurent pas.",
   "Budgets.emptyTitle": "Ajoutez d’abord une catégorie de dépenses",
   "Budgets.emptyText":
     "Un budget est un plafond mensuel sur une catégorie de dépenses, comme les courses ou le loyer.",
@@ -2471,15 +2481,15 @@ export default {
   "BudgetDialog.amountRequired": "Saisissez un plafond.",
   "BudgetDialog.amountRange": "Saisissez un plafond supérieur à zéro.",
   "BudgetDialog.gone":
-    "Cette catégorie a été archivée ou supprimée : elle ne peut donc pas avoir de plafond.",
+    "Cette catégorie a été archivée ou supprimée : elle ne peut donc pas avoir de plafond.",
   "BudgetDialog.saveFailed": "Le plafond n’a pas pu être enregistré. Réessayez.",
   "BudgetDialog.removeFailed": "Le plafond n’a pas pu être retiré. Réessayez.",
-  "BudgetRemove.title": "Retirer le plafond de {name} ?",
+  "BudgetRemove.title": "Retirer le plafond de {name} ?",
   "BudgetRemove.message":
     "À partir de {month}, {name} n’a plus de plafond. Les mois précédents gardent le leur. Vous pouvez le fixer de nouveau à tout moment.",
   "BudgetRemove.confirm": "Retirer le plafond",
   "BudgetsView.savedTitle": "Plafond enregistré",
-  "BudgetsView.saved": "{name} : {amount} par mois à partir de {month}.",
+  "BudgetsView.saved": "{name} : {amount} par mois à partir de {month}.",
   "BudgetsView.removedTitle": "Plafond retiré",
   "BudgetsView.removed": "{name} n’a plus de plafond à partir de {month}.",
   "Categories.title": "Catégories",
@@ -2505,14 +2515,14 @@ export default {
   "Categories.loading": "Chargement des catégories",
   "Categories.empty": "Ajoutez votre première catégorie",
   "Categories.emptyHint":
-    "Une catégorie dit pourquoi l’argent a bougé : courses, loyer, salaire. Donnez à chacune une icône et une couleur.",
+    "Une catégorie dit pourquoi l’argent a bougé : courses, loyer, salaire. Donnez à chacune une icône et une couleur.",
   "Categories.emptyViewer": "Pas encore de catégorie",
   "Categories.allArchived":
     "Toutes les catégories sont archivées. Affichez les catégories archivées pour les voir.",
   "Categories.archiveTitle": {
-    "one": "Archiver {name} et sa {count} sous-catégorie ?",
-    "many": "Archiver {name} et ses {count} sous-catégories ?",
-    "other": "Archiver {name} et ses {count} sous-catégories ?",
+    "one": "Archiver {name} et sa {count} sous-catégorie ?",
+    "many": "Archiver {name} et ses {count} sous-catégories ?",
+    "other": "Archiver {name} et ses {count} sous-catégories ?",
   },
   "Categories.archiveMessage": {
     "one":
@@ -2540,10 +2550,10 @@ export default {
   "CategoryEditor.namePlaceholder": "Courses",
   "CategoryEditor.kind": "Type",
   "CategoryEditor.parent": "Catégorie parente",
-  "CategoryEditor.noParent": "Sans parente : une catégorie de premier niveau",
+  "CategoryEditor.noParent": "Sans parente : une catégorie de premier niveau",
   "CategoryEditor.noParentMatch": "Aucune catégorie ne correspond.",
   "CategoryEditor.clearParent": "Retirer la catégorie parente",
-  "CategoryEditor.topLevel": "Aucune : une catégorie de premier niveau",
+  "CategoryEditor.topLevel": "Aucune : une catégorie de premier niveau",
   "CategoryEditor.icon": "Icône",
   "CategoryEditor.iconSearch": "Rechercher une icône",
   "CategoryEditor.iconEmpty": "Aucune icône ne correspond à « {query} ».",
@@ -2594,7 +2604,7 @@ export default {
     "other": "{name} et ses {count} sous-catégories sont de nouveau utilisées.",
   },
   "CategoriesView.undo": "Annuler",
-  "CategoriesView.discardTitle": "Abandonner vos modifications ?",
+  "CategoriesView.discardTitle": "Abandonner vos modifications ?",
   "CategoriesView.discard": "Vos modifications de {name} ne sont pas enregistrées.",
   "CategoriesView.discardNew": "La nouvelle catégorie n’est pas enregistrée.",
   "CategoriesView.discardLeave": "Abandonner",
@@ -2713,13 +2723,13 @@ export default {
   "Transactions.clearSearch": "Effacer la recherche",
   "Transactions.empty": "Ajoutez votre première opération",
   "Transactions.emptyHint":
-    "Une opération, c’est de l’argent qui sort ou qui entre : un café, le loyer, un salaire. Appuyez sur {key} sur n’importe quelle page pour en ajouter une.",
+    "Une opération, c’est de l’argent qui sort ou qui entre : un café, le loyer, un salaire. Appuyez sur {key} sur n’importe quelle page pour en ajouter une.",
   "Transactions.emptyHintNoKey":
-    "Une opération, c’est de l’argent qui sort ou qui entre : un café, le loyer, un salaire.",
+    "Une opération, c’est de l’argent qui sort ou qui entre : un café, le loyer, un salaire.",
   "Transactions.emptyViewer": "Aucune opération pour l’instant",
   "Transactions.noAccount": "Ajoutez d’abord un compte",
   "Transactions.noAccountHint":
-    "Chaque opération va dans un compte : un portefeuille, un compte bancaire, une carte.",
+    "Chaque opération va dans un compte : un portefeuille, un compte bancaire, une carte.",
   "Transactions.addAccount": "Ajouter un compte",
   "Transactions.filteredEmpty": "Aucune opération ne correspond à ces filtres",
   "Transactions.filteredEmptyHint": "Essayez une période plus large ou moins de filtres.",
@@ -2765,8 +2775,8 @@ export default {
   "TransactionEditor.accountAmountHint":
     "Laissez vide pour convertir au taux de change du {date}. Saisissez ce qui a été débité du compte pour utiliser votre propre taux.",
   "TransactionEditor.convertedAt":
-    "Converti au taux de change du {date} : 1 {currency} = {rate} {accountCurrency}.",
-  "TransactionEditor.ownRate": "Votre propre taux : 1 {currency} = {rate} {accountCurrency}.",
+    "Converti au taux de change du {date} : 1 {currency} = {rate} {accountCurrency}.",
+  "TransactionEditor.ownRate": "Votre propre taux : 1 {currency} = {rate} {accountCurrency}.",
   "TransactionEditor.account": "Compte",
   "TransactionEditor.category": "Catégorie",
   "TransactionEditor.chooseCategory": "Choisissez une catégorie",
@@ -2816,9 +2826,9 @@ export default {
   "TransactionToasts.addedTitle": "Opération ajoutée",
   "TransactionToasts.added": "{what}.",
   "TransactionToasts.savedTitle": "Opération enregistrée",
-  "TransactionToasts.saved": "{what} : enregistrée.",
+  "TransactionToasts.saved": "{what} : enregistrée.",
   "TransactionToasts.deletedTitle": "Opération supprimée",
-  "TransactionToasts.deleted": "{what} : supprimée.",
+  "TransactionToasts.deleted": "{what} : supprimée.",
   "TransactionToasts.restoredTitle": "Opération restaurée",
-  "TransactionToasts.restored": "{what} : de retour dans la liste.",
+  "TransactionToasts.restored": "{what} : de retour dans la liste.",
 } satisfies Catalog

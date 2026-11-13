@@ -173,7 +173,7 @@ describe("OnboardingView", () => {
 
     expect(cardShown()).toBe(true)
     expect(root!.querySelector("[data-e2e=onboarding-error]")?.textContent).toContain(
-      "Couldn't save that. Try again.",
+      "Could not save that. Try again.",
     )
   })
 

@@ -112,7 +112,6 @@ export function TransactionsView() {
         <OfflineStatus
           groupId={groupId}
           onResolved={() => void store.refresh().catch(() => {})}
-          underHeader
         />
       )}
       rows={store.transactions.value.map((entry) => transactionRow(entry, rowContext))}
