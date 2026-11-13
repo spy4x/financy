@@ -2110,6 +2110,8 @@ export default {
   "AdminUser.tabs": "Sobre esta pessoa",
   "AdminUser.account": "Conta de usuário",
   "AdminUser.picture": "Foto de perfil",
+  "AdminUser.picturePreparing": "Preparando a foto…",
+  "AdminUser.pictureRefused": "Não foi possível usar esta foto.",
   "AdminUser.none": "Nenhuma",
   "AdminUser.address": "E-mail",
   "AdminUser.role": "Função",

@@ -322,14 +322,14 @@ export default {
     "Сервер не ответил, поэтому неясно, прошло ли действие. Проверьте клиента в Stripe или повторите — повтор из этого окна не выполнит действие дважды.",
   "AdminBillingCustomer.doneRefundAmount": "{amount} возвращено группе {group}.",
   "AdminBillingCustomer.doneRefund": "Последний платёж группы {group} возвращён.",
-  "AdminBillingCustomer.doneTimeUntil": "С группы {group} не будут списывать деньги до {date}.",
+  "AdminBillingCustomer.doneTimeUntil": "До {date} с группы {group} не будут списывать деньги.",
   "AdminBillingCustomer.doneTime": "Группе {group} дан бесплатный период.",
   "AdminBillingCustomer.doneCancelNow":
     "Подписка группы {group} отменена. Теперь группа на бесплатном тарифе.",
-  "AdminBillingCustomer.doneCancelOn": "Подписка группы {group} закончится {date}.",
+  "AdminBillingCustomer.doneCancelOn": "{date} подписка группы {group} закончится.",
   "AdminBillingCustomer.doneCancelEnd":
     "Подписка группы {group} закончится вместе с текущим периодом.",
-  "AdminBillingCustomer.doneUndoOn": "Подписка группы {group} продлится {date}.",
+  "AdminBillingCustomer.doneUndoOn": "{date} подписка группы {group} продлится.",
   "AdminBillingCustomer.doneUndo": "Подписка группы {group} будет продлеваться как обычно.",
   "AdminBillingCustomer.needsSupervisor": "Нужен старший оператор",
   "AdminBillingCustomer.youBelong": "Вы состоите в этой группе",
@@ -413,9 +413,9 @@ export default {
   "AdminBillingCustomer.saving": "Сохраняем…",
   "AdminBillingCustomer.howLong": "На какой срок",
   "AdminBillingCustomer.timeText":
-    "У группы <group>{group}</group> останется тариф {plan} без списаний до {date}. Потом снова начнёт списываться обычная плата — {charge} в месяц.",
+    "У группы <group>{group}</group> останется тариф {plan} без списаний до {date}, потом снова начнёт списываться обычная плата — {charge} в месяц.",
   "AdminBillingCustomer.timeTextYear":
-    "У группы <group>{group}</group> останется тариф {plan} без списаний до {date}. Потом снова начнёт списываться обычная плата — {charge} в год.",
+    "У группы <group>{group}</group> останется тариф {plan} без списаний до {date}, потом снова начнёт списываться обычная плата — {charge} в год.",
   "AdminBillingCustomer.length7d": "7 дней",
   "AdminBillingCustomer.length14d": "14 дней",
   "AdminBillingCustomer.length30d": "30 дней",
@@ -524,19 +524,19 @@ export default {
   "AdminBlogChannels.keyMissing":
     "Ждёт ключа. Укажите <key>{key}</key> в env-файле сервера и выполните деплой.",
   "AdminBlogChannels.lastFailed": "Последнее размещение не удалось: {reason}",
-  "AdminBlogChannels.signInOk": "Вход в LinkedIn действует до {date}.",
+  "AdminBlogChannels.signInOk": "До {date} вход в LinkedIn действует.",
   "AdminBlogChannels.signInSoon": {
     "one":
-      "Вход в LinkedIn истекает через {count} день, {date}. Продлите его командой <cmd>{command}</cmd>.",
+      "{date}, через {count} день, истекает вход в LinkedIn. Продлите его командой <cmd>{command}</cmd>.",
     "few":
-      "Вход в LinkedIn истекает через {count} дня, {date}. Продлите его командой <cmd>{command}</cmd>.",
+      "{date}, через {count} дня, истекает вход в LinkedIn. Продлите его командой <cmd>{command}</cmd>.",
     "many":
-      "Вход в LinkedIn истекает через {count} дней, {date}. Продлите его командой <cmd>{command}</cmd>.",
+      "{date}, через {count} дней, истекает вход в LinkedIn. Продлите его командой <cmd>{command}</cmd>.",
     "other":
-      "Вход в LinkedIn истекает через {count} дня, {date}. Продлите его командой <cmd>{command}</cmd>.",
+      "{date}, через {count} дня, истекает вход в LinkedIn. Продлите его командой <cmd>{command}</cmd>.",
   },
   "AdminBlogChannels.signInExpired":
-    "Вход в LinkedIn истёк {date}. Посты подождут, пока вы не выполните <cmd>{command}</cmd>.",
+    "{date} истёк вход в LinkedIn. Посты подождут, пока вы не выполните <cmd>{command}</cmd>.",
   "AdminBlogChannels.loading": "Загружаем каналы продвижения",
   "AdminBlogChannels.listError": "Не удалось загрузить каналы продвижения. Попробуйте чуть позже.",
   "AdminBlogChannels.retry": "Повторить",
@@ -935,8 +935,8 @@ export default {
   "AdminBlogEditor.coverPrivacy":
     "Если картинка лежит на чужом сайте, этот сайт увидит IP-адреса ваших читателей.",
   "AdminBlogEditor.publishing": "Публикация",
-  "AdminBlogEditor.goesLive": "Выйдет {date}.",
-  "AdminBlogEditor.publishedOn": "Опубликован {date}.",
+  "AdminBlogEditor.goesLive": "Выйдет: {date}",
+  "AdminBlogEditor.publishedOn": "Опубликован: {date}",
   "AdminBlogEditor.sharedOn": "Размещён в каналах: {done} из {total}",
   "AdminBlogEditor.sharingToDo": {
     "one": "Остался {count}",
@@ -945,7 +945,7 @@ export default {
     "other": "Осталось {count}",
   },
   "AdminBlogEditor.sharingChecklist": "Чек-лист размещения",
-  "AdminBlogEditor.publishedUpdated": "Опубликован {date} · Обновлён {updated}.",
+  "AdminBlogEditor.publishedUpdated": "Опубликован: {date} · Обновлён: {updated}",
   "AdminBlogEditor.emailedTo": {
     "one": "Разослан {date}: {count} подписчику",
     "few": "Разослан {date}: {count} подписчикам",
@@ -2186,6 +2186,8 @@ export default {
   "AdminUser.tabs": "О пользователе",
   "AdminUser.account": "Аккаунт",
   "AdminUser.picture": "Фото профиля",
+  "AdminUser.picturePreparing": "Готовим фото…",
+  "AdminUser.pictureRefused": "Это фото не подошло.",
   "AdminUser.none": "Нет",
   "AdminUser.address": "E-mail",
   "AdminUser.role": "Роль",
@@ -2367,14 +2369,14 @@ export default {
   "AdminRates.jobFailed": "Последняя загрузка не удалась в {time}.",
   "AdminRates.missingTitle": "Нет курса на сегодня",
   "AdminRates.missingText":
-    "У этих валют нет курса на {date}. Итоги с ними считаются без них, и об этом сказано.",
-  "AdminRates.missingNone": "У всех используемых валют есть курс на {date}.",
+    "На {date} у этих валют нет курса. Итоги с ними считаются без них, и об этом сказано.",
+  "AdminRates.missingNone": "На {date} у всех используемых валют есть курс.",
   "AdminRates.fallbackTitle": "Платный резервный источник",
   "AdminRates.fallbackCalls": "Запросы в этом месяце",
   "AdminRates.fallbackHint":
-    "К нему обращаются только за валютами, которых нет у ЕЦБ, и останавливаются на лимите. Счётчик обнулится {date}.",
+    "К нему обращаются только за валютами, которых нет у ЕЦБ, и останавливаются на лимите. {date} счётчик обнулится.",
   "AdminRates.fallbackCapped":
-    "Месячный лимит исчерпан. Новых запросов не будет до {date}. До тех пор у валют, которых нет у ЕЦБ, курс будет отсутствовать.",
+    "Месячный лимит исчерпан: до {date} новых запросов не будет. До тех пор у валют, которых нет у ЕЦБ, курс будет отсутствовать.",
   "AdminRates.fallbackOffTitle": "Резервный источник выключен",
   "AdminRates.fallbackOffText":
     "Ключ не задан, поэтому используются только курсы ЕЦБ. Как его включить, написано в руководстве по курсам валют.",
@@ -2397,8 +2399,8 @@ export default {
   "AdminRates.coinsNone": "Ни на одном счёте нет криптовалюты, поэтому цены не загружаются.",
   "AdminRates.coinCalls": "Запросы к CoinGecko в этом месяце",
   "AdminRates.coinCallsHint":
-    "Каждый запрос даёт цену одной криптовалюты, раз в день. Счёт начнётся заново {date}.",
-  "AdminRates.coinsCapped": "Месячный лимит исчерпан. Цен криптовалют не будет до {date}.",
+    "Каждый запрос даёт цену одной криптовалюты, раз в день. {date} счёт начнётся заново.",
+  "AdminRates.coinsCapped": "Месячный лимит исчерпан: до {date} цен криптовалют не будет.",
   "AdminRates.coinsCredit": "Данные предоставлены CoinGecko",
   "AdminAuditEvent.categoryCreated": "Добавлена категория",
   "AdminAuditEvent.categoryUpdated": "Изменена категория",
