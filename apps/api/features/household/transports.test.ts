@@ -2,7 +2,10 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { drainMicrotasks, FakeClock, FakeSocket } from "@spy4x/realtime/testing"
 import { CommandBus, QueryBus } from "@spy4x/platform/cqrs"
+import { SecondFactorStatus } from "@spy4x/server/sign-in"
+import { ApiTokenError } from "@domain/api-tokens"
 import { GroupRole } from "@domain/groups"
+import { UserMFAStatus } from "@domain/identity"
 import { HouseholdSettingsQuery, HouseholdUpdateSettingsCommand } from "@domain/money"
 import type { GroupRoleLookup } from "@domain/notes"
 import { createSessionGate } from "../../cqrs/session-gate.ts"
@@ -41,6 +44,8 @@ const ECB_USD = {
   source: "frankfurter:ECB",
 }
 
+const BTC_PRICE = { coin: "BTC", price: "69608.44966893936", date: "2026-10-30" }
+
 function stack() {
   const members = new Map<string, GroupRole>([
     [`${groupId}:${OWNER}`, GroupRole.OWNER],
@@ -62,7 +67,7 @@ function stack() {
   }
   const settings = new MemoryHouseholdSettings(groups)
   // VND is rated by the fallback only: its code is listed, its rate never sent.
-  const rates = memoryRates([ECB_USD], ["EUR", "USD", "VND"])
+  const rates = memoryRates([ECB_USD], ["EUR", "USD", "VND"], [BTC_PRICE])
   const dependencies = { settings, rates, groups: handlerGroups }
   const commands = new CommandBus()
   commands.use(createSessionGate([]))
@@ -79,6 +84,7 @@ function stack() {
   })
   return {
     settings,
+    queries,
     operations,
     members,
     raceRemoval: (user: number) => {
@@ -238,7 +244,7 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
-    it("lets a viewer read the settings with ECB rates only, and fallback currencies by code", async () => {
+    it("lets a viewer read the settings with ECB rates only, fallback currencies by code, and coin prices", async () => {
       const s = stack()
       const as = open(s, VIEWER)
       expect(await as.query("household.settings", { groupId })).toEqual({
@@ -247,9 +253,30 @@ for (const [via, open] of TRANSPORTS) {
           settings: { groupId, baseCurrency: "EUR", version: 0, chosen: false, updatedAt: null },
           rates: [ECB_USD],
           ratedCurrencies: ["EUR", "USD", "VND"],
+          coinPrices: [BTC_PRICE],
         },
       })
       as.shutdown()
     })
   })
 }
+
+describe("household settings and an API token", () => {
+  it("refuses the settings, with their coin prices, to a token of the group, even a read-write one", async () => {
+    const s = stack()
+    const token = {
+      userId: OWNER,
+      userMfa: UserMFAStatus.NOT_CONFIGURED,
+      sessionSecondFactor: SecondFactorStatus.Completed,
+      token: { tokenId: "token-1", groupId, canWrite: true },
+    }
+    let refusal: unknown = null
+    try {
+      await s.queries.execute(new HouseholdSettingsQuery({ actor: token, groupId }))
+    } catch (error) {
+      refusal = error
+    }
+    expect(refusal).toBeInstanceOf(ApiTokenError)
+    expect((refusal as ApiTokenError).code).toBe("TOKEN_SCOPE")
+  })
+})

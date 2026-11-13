@@ -42,8 +42,9 @@ export function createHouseholdUpdateSettingsHandler(
 
 /**
  * `household.settings`: every member reads the main currency, every currency this server has a
- * daily rate for, and the latest ECB rate of each. A fallback rate is never sent to a client: its
- * provider's terms forbid it.
+ * daily rate for, the latest ECB rate of each, and today's coin prices. A fallback rate is never
+ * sent to a client: its provider's terms forbid it. No API token may send this query
+ * (`cqrs/token-scope.ts`), so coin prices never leave through the token API either.
  */
 export function createHouseholdSettingsHandler(
   { settings, rates, groups }: HouseholdHandlerDependencies,
@@ -55,6 +56,7 @@ export function createHouseholdSettingsHandler(
       settings: await settings.get(data.groupId),
       rates: await rates.latestEcbRates(ratedCurrencies),
       ratedCurrencies,
+      coinPrices: await rates.coinPrices(),
     }
   }
 }

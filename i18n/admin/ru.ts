@@ -2389,6 +2389,17 @@ export default {
   "AdminRates.emptyText":
     "Ежедневная задача получает их в 16:00 UTC. Чтобы получить их сейчас, запустите «Exchange rates» в разделе «Задачи».",
   "AdminRates.loadError": "Не удалось загрузить курсы. Проверьте подключение и попробуйте ещё раз.",
+  "AdminRates.coinsTitle": "Цены криптовалют",
+  "AdminRates.coinPrice": "{price} на {date}",
+  "AdminRates.coinFetched": "Получено {time}",
+  "AdminRates.coinsUnpriced":
+    "Эти криптовалюты есть на счетах, но цены для них нет. Цены загружаются раз в день, пока задан ключ CoinGecko.",
+  "AdminRates.coinsNone": "Ни на одном счёте нет криптовалюты, поэтому цены не загружаются.",
+  "AdminRates.coinCalls": "Запросы к CoinGecko в этом месяце",
+  "AdminRates.coinCallsHint":
+    "Каждый запрос даёт цену одной криптовалюты, раз в день. Счёт начнётся заново {date}.",
+  "AdminRates.coinsCapped": "Месячный лимит исчерпан. Цен криптовалют не будет до {date}.",
+  "AdminRates.coinsCredit": "Данные предоставлены CoinGecko",
   "AdminAuditEvent.categoryCreated": "Добавлена категория",
   "AdminAuditEvent.categoryUpdated": "Изменена категория",
   "AdminAuditEvent.categoryArchived": "Категория убрана в архив",

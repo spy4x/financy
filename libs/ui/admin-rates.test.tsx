@@ -1,6 +1,7 @@
 /**
  * The Exchange rates screen, driven in a browser DOM (happy-dom): loading, a failed read, no fetch
- * yet, the three facts with the fallback off, in use or capped, and the last 7 days.
+ * yet, the three facts with the fallback off, in use or capped, the coin prices, and the last 7
+ * days.
  */
 import { expect } from "@std/expect"
 import { afterAll, afterEach, beforeAll, describe, it } from "@std/testing/bdd"
@@ -59,6 +60,16 @@ const SNAPSHOT: AdminRatesSnapshot = {
       ? []
       : [{ source: "frankfurter:ECB", currencies: 30, fetchedAt: `${date}T16:02:00.000Z` }],
   })),
+  coins: {
+    prices: [{
+      coin: "BTC",
+      price: "69608.44966893936",
+      date: "2026-11-12",
+      fetchedAt: "2026-11-12T16:01:00.000Z",
+    }],
+    unpriced: ["ETH"],
+    calls: { used: 24, cap: 10000, resetsOn: "2026-12-01" },
+  },
 }
 
 async function draw(props: Partial<AdminRatesScreenProps> = {}): Promise<{ retries: number }> {
@@ -218,5 +229,50 @@ describe("AdminRatesScreen", () => {
     await draw({ error: "Couldn't load the rates." })
     expect(text("[data-e2e=admin-rates-error]")).toContain("Couldn't load the rates.")
     expect(has("[data-e2e=admin-rates-facts]")).toBe(true)
+  })
+
+  it("shows each coin price in euros with its day and fetch time, and credits CoinGecko", async () => {
+    await draw()
+    const coins = text("[data-e2e=admin-rates-coins]")
+    expect(coins).toContain("Coin prices")
+    expect(coins).toContain("BTC")
+    expect(coins).toContain("€69,608.45 on ")
+    expect(coins).toContain("November")
+    expect(coins).toMatch(/Fetched .*Nov.*UTC/)
+    expect(coins).toContain("Data provided by CoinGecko")
+  })
+
+  it("names the coins accounts hold that have no price", async () => {
+    await draw()
+    expect(text("[data-e2e=admin-rates-coins-unpriced]")).toContain("ETH")
+    expect(text("[data-e2e=admin-rates-coins-unpriced]")).toContain("they have no price")
+  })
+
+  it("says no account holds a coin when there is no price and none is missing", async () => {
+    await draw({
+      snapshot: { ...SNAPSHOT, coins: { ...SNAPSHOT.coins, prices: [], unpriced: [] } },
+    })
+    expect(text("[data-e2e=admin-rates-coins]")).toContain("No account holds a coin")
+    expect(has("[data-e2e=admin-rates-coins-unpriced]")).toBe(false)
+  })
+
+  it("shows CoinGecko's calls this month against the monthly limit", async () => {
+    await draw()
+    const meter = find("[data-e2e=admin-rates-coins] [role=meter]")
+    expect(meter.getAttribute("aria-valuenow")).toBe("24")
+    expect(meter.getAttribute("aria-valuemax")).toBe("10000")
+    expect(meter.textContent).toContain("CoinGecko calls this month")
+    expect(text("[data-e2e=admin-rates-coins]")).toMatch(/The count starts again on .*December/)
+    expect(text("[data-e2e=admin-rates-coins]")).not.toContain("monthly limit is reached")
+  })
+
+  it("warns that coin prices stopped once CoinGecko's monthly limit is reached", async () => {
+    await draw({
+      snapshot: {
+        ...SNAPSHOT,
+        coins: { ...SNAPSHOT.coins, calls: { used: 10000, cap: 10000, resetsOn: "2026-12-01" } },
+      },
+    })
+    expect(text("[data-e2e=admin-rates-coins]")).toContain("The monthly limit is reached")
   })
 })

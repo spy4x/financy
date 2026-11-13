@@ -183,14 +183,21 @@ Deno.test("the api container receives the SPA switch", async () => {
   expect(await environmentOf("api")).toContain("SPA")
 })
 
-Deno.test("the worker receives every exchange-rate variable, and only the worker gets the fallback key", async () => {
+Deno.test("the worker receives every exchange-rate variable, and only the worker gets the fallback and CoinGecko keys", async () => {
   const worker = await environmentOf("worker")
   for (
-    const name of ["RATES_FRANKFURTER_URL", "RATES_FALLBACK_KEY", "RATES_FALLBACK_MONTHLY_CAP"]
+    const name of [
+      "RATES_FRANKFURTER_URL",
+      "RATES_FALLBACK_KEY",
+      "RATES_FALLBACK_MONTHLY_CAP",
+      "RATES_COINGECKO_KEY",
+      "RATES_COINGECKO_PLAN",
+    ]
   ) {
     expect(worker, name).toContain(name)
   }
   const api = await environmentOf("api")
   expect(api).toContain("RATES_FALLBACK_MONTHLY_CAP")
   expect(api).not.toContain("RATES_FALLBACK_KEY")
+  expect(api).not.toContain("RATES_COINGECKO_KEY")
 })

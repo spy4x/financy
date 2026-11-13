@@ -74,6 +74,25 @@ export const RATE_SOURCES = {
   fallback: "exchangerate-api",
 } as const
 
+/** CoinGecko, which prices the listed coins: its id as the ts-libs client names itself. */
+export const COIN_PRICE_SOURCE = "coingecko"
+
+/**
+ * The most calls the daily job makes to CoinGecko in one calendar month: its Demo plan's monthly
+ * limit. One call prices one coin.
+ */
+export const COIN_PRICE_MONTHLY_CAP = 10_000
+
+/**
+ * Today's price of a listed coin: one coin buys `price` euros (a plain decimal string), as of
+ * 00:00 UTC on `date`. Only the latest price is kept, never a history.
+ */
+export interface CoinPrice {
+  coin: string
+  price: string
+  date: string
+}
+
 /** The kinds of the outbox and audit rows a settings change writes. */
 export const HOUSEHOLD_EVENTS = {
   /** The group's change log entry: other members' pages read the settings again. */
@@ -118,14 +137,15 @@ export function defaultHouseholdSettings(groupId: string): HouseholdSettings {
 
 /**
  * What the settings section reads: the settings, the latest ECB rate of each currency the group
- * uses with its date, and every currency this server has a daily rate for. Fallback rates are never
- * in `rates`; a currency only the fallback covers is still in `ratedCurrencies`, which names codes,
- * not rates.
+ * uses with its date, every currency this server has a daily rate for, and today's price of each
+ * coin an account on this server holds. Fallback rates are never in `rates`; a currency only the
+ * fallback covers is still in `ratedCurrencies`, which names codes, not rates.
  */
 export interface HouseholdSettingsView {
   settings: HouseholdSettings
   rates: ExchangeRate[]
   ratedCurrencies: string[]
+  coinPrices: CoinPrice[]
 }
 
 export type HouseholdErrorCode =
@@ -269,6 +289,8 @@ export interface HouseholdRateReader {
   latestEcbRates(currencies: readonly string[]): Promise<ExchangeRate[]>
   /** Every currency with a rate from any source in the last week, plus the euro. */
   ratedCurrencies(): Promise<string[]>
+  /** Every stored coin price, by coin: one per coin, never a history. */
+  coinPrices(): Promise<CoinPrice[]>
 }
 // #endregion Ports
 
@@ -309,10 +331,16 @@ const rateShape = type({
   date: /^\d{4}-\d{2}-\d{2}$/,
   source: "string",
 })
+const coinPriceShape = type({
+  coin: "string",
+  price: /^\d+(\.\d+)?$/,
+  date: /^\d{4}-\d{2}-\d{2}$/,
+})
 const viewShape = type({
   settings: settingsShape,
   rates: rateShape.array(),
   ratedCurrencies: "string[]",
+  coinPrices: coinPriceShape.array(),
 })
 
 /** The settings view the API sent, or `null` when it is not one (a client reads untrusted JSON). */
@@ -331,7 +359,8 @@ export function readHouseholdSettings(value: unknown): HouseholdSettings | null 
 /**
  * The admin's Exchange rates page (`GET /api/admin/rates`): the daily job's last run, each
  * source's last fetch, the main currencies in use with no rate on the latest rate day, the paid
- * fallback's calls this month, and the last 7 days. It names no household and counts none.
+ * fallback's calls this month, the last 7 days, and the coin prices. It names no household and
+ * counts none.
  */
 export interface AdminRatesSnapshot {
   /** The daily job's last finished run, or `null` before the first. */
@@ -344,4 +373,13 @@ export interface AdminRatesSnapshot {
   fallback: { used: number; cap: number; resetsOn: string } | null
   /** The last 7 days, newest first; a day no source has rates for has no rows. */
   days: { date: string; rows: { source: string; currencies: number; fetchedAt: string }[] }[]
+  /**
+   * CoinGecko's coin prices: each stored price with its day and fetch time (ISO 8601), the listed
+   * coins an account holds that have no price, and the calls this month against the monthly cap.
+   */
+  coins: {
+    prices: { coin: string; price: string; date: string; fetchedAt: string }[]
+    unpriced: string[]
+    calls: { used: number; cap: number; resetsOn: string }
+  }
 }

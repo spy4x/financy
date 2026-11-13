@@ -1904,3 +1904,15 @@ CREATE INDEX idx_recurring_rules_deleted_at
     ON recurring_rules (deleted_at) WHERE deleted_at IS NOT NULL;
 CREATE INDEX idx_recurring_rules_created_by ON recurring_rules (created_by_user_id);
 CREATE INDEX idx_recurring_rules_updated_by ON recurring_rules (updated_by_user_id);
+
+-- Coin prices (2026_12_20_0001_coin_prices.sql): today's price in euros of each listed coin an
+-- account holds, one row per coin, upserted by `rates.fetch`, never a history. Deleted when the
+-- CoinGecko key is removed, as its terms require.
+CREATE TABLE coin_prices (
+    coin VARCHAR(12) PRIMARY KEY,
+    price NUMERIC NOT NULL,
+    price_date DATE NOT NULL,
+    fetched_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT coin_prices_coin_check CHECK (coin ~ '^[A-Z][A-Z0-9]{1,11}$'),
+    CONSTRAINT coin_prices_price_check CHECK (price > 0)
+);
