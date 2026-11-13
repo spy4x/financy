@@ -255,6 +255,9 @@ export default {
     "Esta categoria já tem lançamentos, então não pode trocar entre despesas e receitas.",
   "Reason.ACCOUNT_HAS_TRANSACTIONS":
     "Esta conta tem lançamentos, então não pode ser excluída. Arquive-a em vez disso.",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "Lançamentos recorrentes usam esta conta, então ela não pode ser excluída. Arquive-a em vez disso.",
+  "Reason.RECURRING_RULE_NOT_FOUND": "Este lançamento recorrente não existe mais.",
   "ImportIssue.categoryParentMissing":
     "A categoria principal não está entre as categorias do arquivo.",
   "ImportIssue.categoryParentArchived":

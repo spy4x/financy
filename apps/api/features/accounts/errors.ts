@@ -33,6 +33,10 @@ const ERROR_DEFINITIONS: Record<AccountFeatureErrorCode, ErrorDefinition> = {
     status: 409,
     message: "The account has entries: archive it instead, or delete its entries first",
   },
+  ACCOUNT_HAS_RECURRING_RULES: {
+    status: 409,
+    message: "Repeating entries use the account: archive it instead, or delete them first",
+  },
   ACCOUNT_LIMIT_REACHED: { status: 409, message: "The household cannot hold more accounts" },
   ACCOUNT_NOT_FOUND: { status: 404, message: "Account not found" },
   AUTH_REQUIRED: { status: 401, message: "Authentication required" },

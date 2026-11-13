@@ -268,6 +268,9 @@ export default {
   "Reason.CURRENCY_LOCKED": "لهذا الحساب معاملات بالفعل، لذلك لا يمكن تغيير عملته.",
   "Reason.KIND_LOCKED": "لهذه الفئة معاملات بالفعل، لذلك لا يمكن تحويلها بين المصروفات والدخل.",
   "Reason.ACCOUNT_HAS_TRANSACTIONS": "لهذا الحساب معاملات، لذلك لا يمكن حذفه. أرشفه بدلًا من ذلك.",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "تستخدم معاملات متكررة هذا الحساب، لذلك لا يمكن حذفه. أرشفه بدلًا من ذلك.",
+  "Reason.RECURRING_RULE_NOT_FOUND": "هذه المعاملة المتكررة لم تعد موجودة.",
   "ImportIssue.categoryParentMissing": "فئتها الأم ليست ضمن فئات الملف.",
   "ImportIssue.categoryParentArchived": "هي قيد الاستخدام، لكن فئتها الأم مؤرشفة.",
   "ImportIssue.categoryOwnParent": "تشير إلى نفسها كفئة أم.",
