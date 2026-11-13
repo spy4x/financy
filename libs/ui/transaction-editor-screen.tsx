@@ -382,7 +382,6 @@ function Editor(props: Shown): JSX.Element {
                   label={t.t(`TransactionEditor.accountAmount`, { currency: accountCurrency! })}
                   error={noRateText ?? messageText(t, errors.accountAmount)}
                   hint={accountAmountHint}
-                  required={errors.noRate}
                 >
                   {(wiring) => (
                     <MoneyInput
