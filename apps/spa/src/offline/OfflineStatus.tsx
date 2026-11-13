@@ -21,7 +21,9 @@ const network = createOnlineStatus()
 
 /**
  * The group whose conflict chooser takes focus the next time this strip shows it: "Review changes"
- * in the sign-out dialog sets it (`reviewConflicts` in `modules.ts`), and the strip clears it.
+ * in the sign-out dialog sets it (`reviewConflicts` in `modules.ts`) when a write the strip shows
+ * waits on a choice, and the strip clears it. Entries refused for a deleted account or category are
+ * reviewed on the transactions list instead, which does not read it.
  */
 export const conflictsToReview = signal<string | null>(null)
 

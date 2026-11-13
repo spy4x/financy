@@ -2,21 +2,28 @@ import { computed, type ReadonlySignal, signal } from "@preact/signals"
 import type { SyncRunner, SyncRunnerState } from "@spy4x/realtime/sync-runner"
 import type { OfflineLayer } from "./index.ts"
 import { TAGS_COLLECTION } from "./tags-collection.ts"
+import { goneReference } from "./transactions-collection.ts"
 
 /**
  * What a sign-out must know about the writes that have not reached the server: how many there are,
  * how many wait on the person's choice, and where that choice is made.
  */
 export interface UnsentCounts {
-  /** Every queued write, notes and tags, those that wait on a choice included. */
+  /** Every queued write (notes, tags and transaction entries), those that wait on a choice included. */
   unsent: number
   /**
    * The writes that never send by themselves: the server refused them (a conflict), or they are
    * held back by a parent in conflict.
    */
   conflicts: number
-  /** The group of the first write that waits on a choice: its notes page shows the chooser. */
+  /** The group whose page shows the choice: see {@link UnsentCounts.reviewAt}. */
   reviewGroupId: string | null
+  /**
+   * Where that choice is made: the sync strip, for the first write that waits on a choice and that
+   * the strip shows; else the transactions list, when every such write is a transaction entry whose
+   * account or category was deleted (the strip leaves those to the list).
+   */
+  reviewAt: "strip" | "transactions"
 }
 
 /** Counts the layer's queued writes as {@link UnsentCounts}. */
@@ -37,10 +44,13 @@ export function countUnsent(layer: OfflineLayer): UnsentCounts {
     )
     .filter((entry) => entry !== undefined)
   const stuck = [...refused, ...held]
+  const gone = new Set<unknown>(transactions.filter((entry) => goneReference(entry) !== null))
+  const onStrip = stuck.find((entry) => !gone.has(entry))
   return {
     unsent: notes.length + tags.length + transactions.length,
     conflicts: stuck.length,
-    reviewGroupId: stuck[0]?.payload.groupId ?? null,
+    reviewGroupId: (onStrip ?? stuck[0])?.payload.groupId ?? null,
+    reviewAt: onStrip || stuck.length === 0 ? "strip" : "transactions",
   }
 }
 

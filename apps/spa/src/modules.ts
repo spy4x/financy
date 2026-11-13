@@ -537,7 +537,9 @@ async function watchUnreadLayer(
   const { userId } = layer
   return watchQueue({
     counts: () =>
-      read.value ? countUnsent(layer) : { unsent: known, conflicts: 0, reviewGroupId: null },
+      read.value
+        ? countUnsent(layer)
+        : { unsent: known, conflicts: 0, reviewGroupId: null, reviewAt: "strip" },
     runner: layer.runner,
     online: network.online,
     canSend: () => canCallAs(userId),
@@ -564,7 +566,7 @@ async function watchLeftQueue(opened: Session, ms: number): Promise<UnsentWait |
     },
   })
   const wait = watchQueue({
-    counts: () => ({ unsent: unsent.value, conflicts: 0, reviewGroupId: null }),
+    counts: () => ({ unsent: unsent.value, conflicts: 0, reviewGroupId: null, reviewAt: "strip" }),
     runner,
     online: network.online,
     canSend: () => canCallAs(userId),
