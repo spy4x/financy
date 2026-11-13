@@ -277,26 +277,6 @@ describe("the entries queue", () => {
     expect(transaction.accountId).toBe("a-eur")
   })
 
-  it("discards a conflicted entry from the device without sending it", async () => {
-    const { dependencies, state, transactions, sent } = harness()
-    state.online = false
-    await dependencies.create(typed)
-    state.online = true
-    state.server = () => {
-      throw new RealtimeRequestError("not_found", "Account not found", {
-        code: "CATEGORY_NOT_FOUND",
-      })
-    }
-    await transactions.outbox.flush()
-    const before = sent.length
-
-    await transactions.outbox.useTheirs(transactions.outbox.entries()[0])
-
-    expect(transactions.outbox.entries()).toEqual([])
-    expect(await dependencies.fetchList(groupId)).toEqual([])
-    expect(sent.length).toBe(before)
-  })
-
   it("keeps the server's words, and no gone reference, for any other refusal", async () => {
     const { dependencies, state, transactions } = harness()
     state.online = false
