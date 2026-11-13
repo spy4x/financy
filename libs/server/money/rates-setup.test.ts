@@ -1,6 +1,6 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
-import { readFallbackCap, readRatesSetup } from "./rates-setup.ts"
+import { readCoinSource, readFallbackCap, readRatesSetup } from "./rates-setup.ts"
 
 function env(values: Record<string, string>) {
   return { get: (name: string) => values[name] }
@@ -45,5 +45,56 @@ describe("reading the rate sources from the environment", () => {
     expect(() => readRatesSetup(env({ RATES_FRANKFURTER_URL: "ftp://rates.example.com" }))).toThrow(
       "RATES_FRANKFURTER_URL is not an http or https address",
     )
+  })
+
+  it("leaves coin prices off without the CoinGecko key, whatever the plan", () => {
+    expect(readCoinSource(env({ RATES_COINGECKO_PLAN: "pro" }))).toBeNull()
+    expect(readCoinSource(env({ RATES_COINGECKO_KEY: "  " }))).toBeNull()
+    expect(readRatesSetup(env({})).coins).toBeNull()
+  })
+
+  it("turns coin prices on with the key, on the Demo plan by default", async () => {
+    const asked: { url: string; headers: Headers }[] = []
+    const fetch: typeof globalThis.fetch = (input, init) => {
+      asked.push({ url: String(input), headers: new Headers(init?.headers) })
+      return Promise.resolve(new Response(`{}`, { status: 404 }))
+    }
+    const setup = readRatesSetup(env({ RATES_COINGECKO_KEY: KEY }), fetch)
+    expect(setup.coins?.id).toBe("coingecko")
+    await setup.coins!.daily("2026-11-12", "ETH", ["EUR"])
+    expect(asked[0].url).toContain("https://api.coingecko.com/api/v3/coins/ethereum/history")
+    expect(asked[0].headers.get("x-cg-demo-api-key")).toBe(KEY)
+  })
+
+  it("asks the Pro host with the pro plan", async () => {
+    const asked: string[] = []
+    const fetch: typeof globalThis.fetch = (input) => {
+      asked.push(String(input))
+      return Promise.resolve(new Response(`{}`, { status: 404 }))
+    }
+    const coins = readCoinSource(
+      env({ RATES_COINGECKO_KEY: KEY, RATES_COINGECKO_PLAN: "pro" }),
+      fetch,
+    )
+    await coins!.daily("2026-11-12", "BTC", ["EUR"])
+    expect(asked[0]).toContain("https://pro-api.coingecko.com/api/v3/coins/bitcoin/history")
+  })
+
+  it("throws on a plan that is not demo or pro, and names no value", () => {
+    expect(() => readCoinSource(env({ RATES_COINGECKO_KEY: KEY, RATES_COINGECKO_PLAN: "free" })))
+      .toThrow("RATES_COINGECKO_PLAN must be demo or pro")
+  })
+
+  it("throws on a key with a space or a control character, and names no value", () => {
+    for (const key of ["two words", "tab\there"]) {
+      let message = ""
+      try {
+        readRatesSetup(env({ RATES_COINGECKO_KEY: key }))
+      } catch (error) {
+        message = String(error)
+      }
+      expect(message).toContain("RATES_COINGECKO_KEY must be printable ASCII without spaces")
+      expect(message).not.toContain(key)
+    }
   })
 })

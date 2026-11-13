@@ -998,11 +998,13 @@ services:
       - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME:-}
       - TELEGRAM_POLLING=${TELEGRAM_POLLING:-}
       - TELEGRAM_API_URL=${TELEGRAM_API_URL:-}
-      # Exchange rates (docs/financy/exchange-rates.md): the worker fetches them. Only it receives
-      # the fallback's key.
+      # Exchange rates (docs/financy/exchange-rates.md): the worker fetches them and the coin
+      # prices. Only it receives the fallback's and CoinGecko's keys.
       - RATES_FRANKFURTER_URL=${RATES_FRANKFURTER_URL:-}
       - RATES_FALLBACK_KEY=${RATES_FALLBACK_KEY:-}
       - RATES_FALLBACK_MONTHLY_CAP=${RATES_FALLBACK_MONTHLY_CAP:-}
+      - RATES_COINGECKO_KEY=${RATES_COINGECKO_KEY:-}
+      - RATES_COINGECKO_PLAN=${RATES_COINGECKO_PLAN:-}
     deploy:
       resources:
         limits:
