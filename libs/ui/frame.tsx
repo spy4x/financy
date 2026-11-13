@@ -25,6 +25,7 @@ import { PRODUCT_NAME } from "./brand.ts"
 import { GroupPicker, type GroupPickerData, GroupSheet } from "./group-picker.tsx"
 import {
   ACCOUNT_PATHS,
+  BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
   type Navigate,
@@ -261,6 +262,7 @@ export function AppFrame(
         headerHref: SCREEN_PATHS.profile,
         items: [
           { label: t.t("Frame.categories"), href: CATEGORY_PATHS.list },
+          { label: t.t("Frame.budgets"), href: BUDGET_PATHS.list },
           { label: t.t("Frame.tags"), href: TAG_PATHS.list },
           ...shortcutsMenuItems(shortcuts, t.t("Frame.shortcuts")),
         ],

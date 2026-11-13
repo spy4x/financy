@@ -8,6 +8,7 @@ const ROOT = new URL(`../../`, import.meta.url)
 const SECTIONS = [
   `accounts`,
   `categories`,
+  `budgets`,
   `sign-in`,
   `teams`,
   `realtime`,

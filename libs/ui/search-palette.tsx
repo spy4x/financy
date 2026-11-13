@@ -13,6 +13,7 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { type GroupRole } from "@domain/groups"
 import { roleName } from "./groups-screen.tsx"
 import {
+  BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
   OVERVIEW_PATHS,
@@ -128,7 +129,9 @@ interface SearchOption extends CommandPaletteOption {
 }
 
 /** The palette's fixed words; the no-results line is set per answer. */
-function labels(t: Translator<string>): Omit<CommandPaletteLabels, "empty"> {
+function labels(
+  t: Translator<string>,
+): Pick<CommandPaletteLabels, `search` | `placeholder` | `close` | `loading` | `error`> {
   return {
     search: t.t(`Search.search`),
     placeholder: t.t(`Search.placeholder`),
@@ -346,6 +349,13 @@ function actionOptions(
       ? [page("categories", `Search.openCategories`, CATEGORY_PATHS.list, undefined, [
         `categories`,
         `категории`,
+      ])]
+      : []),
+    ...(currentGroup
+      ? [page("budgets", `Search.openBudgets`, BUDGET_PATHS.list, undefined, [
+        `budget`,
+        `limits`,
+        `бюджет`,
       ])]
       : []),
     ...(online ? [page("new-group", `Search.newGroup`, GROUP_PATHS.new)] : []),

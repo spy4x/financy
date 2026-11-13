@@ -48,6 +48,12 @@ export const CATEGORY_PATHS = {
   category: (categoryId: string) => `/categories/${categoryId}`,
 } as const
 
+/** The budgets of the person's selected household: one month's limits and spending. */
+export const BUDGET_PATHS = {
+  /** Each expense category with the month's bar, parents first. */
+  list: "/budgets",
+} as const
+
 /** The pages of a household's accounts, in the person's selected group. */
 export const ACCOUNT_PATHS = {
   /** The accounts by kind, each with its balance; archived ones behind "Show archived accounts". */

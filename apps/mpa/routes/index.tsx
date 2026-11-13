@@ -70,6 +70,7 @@ const PROOF = [
 const WORKS_TODAY = [
   `HomeStatus.accounts`,
   `HomeStatus.categories`,
+  `HomeStatus.budgets`,
   `HomeStatus.signIn`,
   `HomeStatus.groups`,
   `HomeStatus.realtime`,
