@@ -411,13 +411,13 @@ describe("first-steps tour", () => {
     await mount()
 
     expect(TOUR_STEPS.map((step) => step.id)).toEqual([
-      "notes",
+      "transactions",
       "groups",
       "notifications",
       "profile",
     ])
     expect(TOUR_STEPS.map((step) => step.target)).toEqual([
-      `[data-e2e="rail-shell-rail"] a[href="/notes"]`,
+      `[data-e2e="rail-shell-rail"] a[href="/transactions"]`,
       `[data-e2e="rail-shell-rail"] a[href="/groups"]`,
       `[data-e2e="rail-shell-bottom"] a[href="/notifications"]`,
       `[data-e2e="rail-shell-bottom"] [data-e2e="account-menu-button"]`,
@@ -483,7 +483,11 @@ describe("first-steps card in another language", () => {
     // The render reached the card, its error and the tour: each one's pseudo-text is on the page.
     const page = document.body.textContent ?? ""
     for (
-      const key of ["OnboardingCard.title", "OnboardingCard.failed", "OnboardingCard.tourNotesText"]
+      const key of [
+        "OnboardingCard.title",
+        "OnboardingCard.failed",
+        "OnboardingCard.tourTransactionsText",
+      ]
     ) {
       expect(page).toContain(PSEUDO.t(key))
     }

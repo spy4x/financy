@@ -16,10 +16,32 @@ rates come from, what it costs, and what to check when a rate is missing.
   households use that the ECB lacks. `RATES_FALLBACK_MONTHLY_CAP` is required with the key: the
   most calls in one calendar month. Each call is counted before it is made, and at the cap no call
   is made until the next month. A failed paid call is not retried. Its rates stay on the server:
-  the provider's terms forbid serving them, so the app and the offline copy carry ECB rates only.
+  the provider's terms forbid serving them, so the app's household settings carry ECB rates and
+  coin prices, never a fallback rate.
 
 Every rate is stored once per pair, day and source, and never changed. A rate that is not a plain
 decimal above zero is refused and logged by its pair, day and source.
+
+## Coin prices
+
+A crypto account holds a listed coin (`COINS` in `libs/domain/money/+lib.ts`). With
+`RATES_COINGECKO_KEY` set, the same `rates.fetch` job first asks
+[CoinGecko](https://www.coingecko.com) for today's price in euros of each listed coin an account
+holds (a deleted account or group does not count, an archived account does). `RATES_COINGECKO_PLAN`
+is `demo` (the default) or `pro`.
+
+- **Only today's price is kept.** `coin_prices` holds one row per coin, replaced each day, never a
+  history. A coin no account holds loses its row. CoinGecko's terms ask for stored prices to be
+  refreshed within 24 hours and deleted when access ends: **removing the key deletes every stored
+  price at the next run.**
+- **One call per coin, counted.** Each call is counted before it is made, under a cap of 10,000 a
+  calendar month, the Demo plan's limit. A coin priced today already is not asked again, so a rerun
+  makes no call.
+- **Failures never stop the rates.** A failed call, a missing or refused price is logged by source
+  and error code, never a URL or the key, and not retried; the ECB step runs after it either way.
+- **Where prices go.** `household.settings` sends each price with its date to the app. No API
+  token may send that query, so prices never leave through the token API. Wherever a price is
+  shown, CoinGecko is credited: "Data provided by CoinGecko".
 
 ## How a rate is chosen
 
@@ -59,9 +81,10 @@ fallback is never asked for past days, so a backfill costs nothing.
 
 ## Checking it
 
-`GET /api/admin/rates` returns the latest fetch of each source, the rates per day, and the
-fallback's calls this month against its cap. The admin panel's **Exchange rates** screen that
-shows them comes later, with a child issue of #93. The **Jobs** page shows each run of
-`rates.fetch` and `rates.backfill`; a failed ECB call is retried there.
+`GET /api/admin/rates` returns the latest fetch of each source, the rates per day, the
+fallback's calls this month against its cap, and the coin prices: each stored price with its day
+and fetch time, the coins accounts hold with no price, and CoinGecko's calls this month. The admin
+panel's **Exchange rates** screen shows them. The **Jobs** page shows each run of `rates.fetch`
+and `rates.backfill`; a failed ECB call is retried there, a failed coin call is not.
 
 Settings: [settings.md](../settings.md), "Exchange rates".

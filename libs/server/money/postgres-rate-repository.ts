@@ -1,6 +1,7 @@
 import type postgres from "postgres"
 import { crossRate, type ExchangeRate } from "@spy4x/platform/universal/money"
 import {
+  type CoinPrice,
   DEFAULT_BASE_CURRENCY,
   ECB_BASE,
   type HouseholdRateReader,
@@ -8,6 +9,7 @@ import {
   type RateLookup,
 } from "@domain/money"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import { readCoinPrices } from "./coin-prices.ts"
 
 /** A rate as a source may send it: a plain decimal above zero, nothing else. */
 const PLAIN_POSITIVE_DECIMAL = /^(?=.*[1-9])\d+(\.\d+)?$/
@@ -185,6 +187,11 @@ export class PostgresRateRepository implements HouseholdRateReader {
       WHERE base = ${ECB_BASE} AND source = ${RATE_SOURCES.ecb} AND quote IN ${this.sql(quotes)}
       ORDER BY quote, rate_date DESC
     `
+  }
+
+  /** Every stored coin price, by coin, without the time it was fetched. */
+  async coinPrices(): Promise<CoinPrice[]> {
+    return (await readCoinPrices(this.sql)).map(({ coin, price, date }) => ({ coin, price, date }))
   }
 
   /** Every currency with a rate from any source in the 7 days before the latest one, and the euro. */

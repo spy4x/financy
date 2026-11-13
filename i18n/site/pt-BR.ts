@@ -567,7 +567,7 @@ export default {
   "HomeStatus.transfers": "Transferências entre contas, também entre moedas",
   "HomeStatus.month": "O dinheiro do mês num relance",
   "HomeStatus.later":
-    "Orçamentos, importação de extratos bancários e a nuvem paga vêm depois: <plan>veja o plano completo</plan>.",
+    "A importação de extratos bancários e a nuvem paga vêm depois: <plan>veja o plano completo</plan>.",
   "HomeWho.keeperTitle": "Quem cuida das contas",
   "HomeWho.keeperText":
     "Salário numa moeda, aluguel em outra, poupança numa terceira: um só total pelas taxas do BCE, com a data delas.",
@@ -611,12 +611,12 @@ export default {
   "FeatureAccounts.nav": "Contas",
   "FeatureAccounts.title": "Cada conta na própria moeda",
   "Features.description":
-    "Financy hoje: contas em qualquer moeda, famílias com funções, sincronização, app offline, exportação, nove idiomas e seu servidor. Depois, lançamentos.",
+    "Financy hoje: contas e lançamentos em qualquer moeda, orçamentos mensais, famílias com funções, sincronização, app offline, exportação, nove idiomas.",
   "Features.title": "Recursos do Financy: contas, famílias, sincronização",
   "FeaturesHero.lead":
-    "O Financy está sendo reconstruído. O que funciona hoje: contas em qualquer moeda e a base por trás delas: login, acesso compartilhado com funções, atualizações ao vivo, um app offline, exportação, nove idiomas e seu próprio servidor. Cada seção leva ao código dela.",
+    "O Financy está sendo reconstruído. O que funciona hoje: contas em qualquer moeda, suas categorias, lançamentos e orçamentos mensais, e a base por trás delas: login, acesso compartilhado com funções, atualizações ao vivo, um app offline, exportação, nove idiomas e seu próprio servidor. Cada seção leva ao código dela.",
   "FeaturesHero.note":
-    "Lançamentos e orçamentos ainda não existem. <status>Veja em que ponto está a reconstrução</status>.",
+    "Transferências ainda não existem. <status>Veja em que ponto está a reconstrução</status>.",
   "HomeFaq.useAnswer":
     "Ainda não. Login, famílias, sincronização e contas em qualquer moeda funcionam; os lançamentos estão sendo feitos agora.",
   "Catalog.title": "Catálogo",
@@ -644,6 +644,28 @@ export default {
   "FeatureCategories.fact3": "Quem só vê lê as categorias; só um editor ou acima as altera",
   "FeatureCategories.code": "Ler o código das categorias",
   "FeatureTierSettled.lead":
-    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda e suas categorias já estão aqui; os lançamentos vêm a seguir.",
+    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda, suas categorias, os lançamentos e os orçamentos mensais já estão aqui; as transferências vêm a seguir.",
   "HomeStatus.categories": "Categorias com um nível de subcategorias",
+  "HomeStatus.budgets": "Um limite mensal para cada categoria",
+  "FeatureBudgets.nav": "Orçamentos",
+  "FeatureBudgets.title": "Um limite mensal para cada categoria",
+  "FeatureBudgets.lead":
+    "Defina quanto cada categoria de despesa pode gastar no mês e veja quanto sobra, ao vivo para toda a família. Um limite continua nos meses seguintes até você mudá-lo, e os meses passados guardam os limites que tinham.",
+  "FeatureBudgets.fact1":
+    "Uma categoria principal sem limite próprio mostra a soma dos limites das subcategorias",
+  "FeatureBudgets.fact2":
+    "Gasto é despesa menos reembolsos; uma moeda ainda sem cotação é nomeada, não descartada em silêncio",
+  "FeatureBudgets.fact3":
+    "Definir um limite exige o plano Household; ver os orçamentos e remover um limite, nunca; o servidor confere",
+  "FeatureBudgets.code": "Ler o código dos orçamentos",
+  "FeatureTransactions.nav": "Lançamentos",
+  "FeatureTransactions.title": "Cada despesa e receita, na moeda em que você pagou",
+  "FeatureTransactions.lead":
+    "Digite um valor e pressione Enter. A conta, a categoria e a data vêm do seu último lançamento. Pagou em outra moeda? O Financy converte pela cotação do dia, ou você digita o que o banco cobrou.",
+  "FeatureTransactions.fact1": "Os dois valores ficam guardados, e um valor convertido é marcado",
+  "FeatureTransactions.fact2":
+    "A busca e os filtros rodam na cópia do aparelho, então a lista funciona offline",
+  "FeatureTransactions.fact3": "Uma receita numa categoria de despesa é um reembolso",
+  "FeatureTransactions.fact4": "Um lançamento excluído pode ser restaurado por 30 dias",
+  "FeatureTransactions.code": "Ler o código dos lançamentos",
 } satisfies Catalog

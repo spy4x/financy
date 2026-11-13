@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test"
 import { type NewGroupPlan, payForGroup } from "./sign-up.ts"
-import { gotoApp } from "./app.ts"
+import { gotoApp, openNotesFromMenu } from "./app.ts"
 
 /** Page objects for the group pages: the list, the editor and the way to a group's notes. */
 
@@ -86,8 +86,7 @@ export async function openNotes(page: Page, name: string): Promise<void> {
     await page.getByRole("menuitem", { name: "Switch to this group" }).click()
     await expect(page.locator("[data-e2e=group-current]")).toBeVisible()
   }
-  await page.getByRole("navigation", { name: "Main navigation" })
-    .getByRole("link", { name: "Notes" }).click()
+  await openNotesFromMenu(page)
   await expect(page.getByRole("heading", { level: 1, name: "Notes", exact: true })).toBeVisible()
   await expect(page.locator("[data-e2e=notes-group]")).toHaveText(name)
 }
@@ -129,5 +128,22 @@ export async function openCategories(page: Page, name: string): Promise<void> {
     "/categories",
     page.getByRole("heading", { level: 1, name: "Categories", exact: true }),
   )
+  await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
+}
+
+/**
+ * Opens the budgets of the group named `name` the way `openCategories` opens its categories: the
+ * group becomes the current one, then the page loads at `/budgets` and waits for the live
+ * connection again.
+ */
+export async function openBudgets(page: Page, name: string): Promise<void> {
+  await openGroups(page)
+  await openGroup(page, name)
+  if (await page.locator("[data-e2e=group-current]").count() === 0) {
+    await page.locator("[data-e2e=group-menu]").click()
+    await page.getByRole("menuitem", { name: "Switch to this group" }).click()
+    await expect(page.locator("[data-e2e=group-current]")).toBeVisible()
+  }
+  await gotoApp(page, "/budgets", page.getByRole("heading", { level: 1, name: "Budgets" }))
   await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 }

@@ -3,6 +3,7 @@ import { RealtimeRequestError } from "@spy4x/realtime"
 import { afterEach, describe, it } from "@std/testing/bdd"
 import { type LocalReads, noLocalReads } from "../modules.ts"
 import { createAccountsStore } from "./accounts.ts"
+import { createBudgetsStore } from "./budgets.ts"
 import { createCategoriesStore } from "./categories.ts"
 import { createActivityStore } from "./activity.ts"
 import { createApiTokensStore } from "./api-tokens.ts"
@@ -137,6 +138,19 @@ const CASES: ListCase[] = [
     },
     expected: (answer) => answer,
     empty: [],
+  },
+  {
+    name: "the budgets of a household's month",
+    answers: [
+      { month: "2026-11", baseCurrency: "EUR", rows: [] },
+      { month: "2026-11", baseCurrency: "EUR", rows: [{ categoryId: "c-1" }] },
+    ],
+    open(read, device) {
+      const store = createBudgetsStore({ month: read as never, set: unused }, device)
+      return { load: () => store.open(groupId, "2026-11"), shown: () => store.budgets.value }
+    },
+    expected: (answer) => answer,
+    empty: null,
   },
   {
     name: "the members of a group",
@@ -411,6 +425,10 @@ describe("a list that may mislead when it is old", () => {
     "the signed-in devices": (read: () => Promise<unknown>, device: LocalReads) => {
       const store = createDevicesStore(read as never, device)
       return { load: () => store.load(), savedAt: store.savedAt }
+    },
+    "the budgets": (read: () => Promise<unknown>, device: LocalReads) => {
+      const store = createBudgetsStore({ month: read as never, set: unused }, device)
+      return { load: () => store.open(groupId, "2026-11"), savedAt: store.savedAt }
     },
   }
   const answer = { ok: true, data: { tokens: [] }, sessions: [] }

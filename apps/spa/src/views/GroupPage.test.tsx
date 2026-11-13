@@ -76,6 +76,7 @@ const unchosen = {
   settings: { groupId, baseCurrency: "EUR", version: 0, chosen: false, updatedAt: null },
   rates: [],
   ratedCurrencies: ["EUR"],
+  coinPrices: [],
 }
 
 /**

@@ -2312,6 +2312,17 @@ export default {
     "A tarefa diária busca as cotações às 16:00 UTC. Para buscar agora, execute “Exchange rates” em Tarefas.",
   "AdminRates.loadError":
     "Não foi possível carregar as cotações. Verifique sua conexão e tente de novo.",
+  "AdminRates.coinsTitle": "Preços de cripto",
+  "AdminRates.coinPrice": "{price} em {date}",
+  "AdminRates.coinFetched": "Obtido {time}",
+  "AdminRates.coinsUnpriced":
+    "Há contas com estas cripto, mas elas não têm preço. Os preços são obtidos uma vez por dia enquanto houver uma chave da CoinGecko.",
+  "AdminRates.coinsNone": "Nenhuma conta tem cripto, então nenhum preço é obtido.",
+  "AdminRates.coinCalls": "Chamadas à CoinGecko neste mês",
+  "AdminRates.coinCallsHint":
+    "Cada chamada traz o preço de uma cripto, uma vez por dia. A contagem recomeça em {date}.",
+  "AdminRates.coinsCapped": "O limite mensal foi atingido. Sem preços de cripto até {date}.",
+  "AdminRates.coinsCredit": "Dados fornecidos pela CoinGecko",
   "AdminAuditEvent.categoryCreated": "Categoria adicionada",
   "AdminAuditEvent.categoryUpdated": "Categoria alterada",
   "AdminAuditEvent.categoryArchived": "Categoria arquivada",

@@ -1,5 +1,6 @@
 import {
   assertCanChangeHouseholdSettings,
+  type CoinPrice,
   defaultHouseholdSettings,
   type HouseholdRateReader,
   type HouseholdSettings,
@@ -41,10 +42,18 @@ export class MemoryHouseholdSettings implements HouseholdSettingsRepository {
   }
 }
 
-/** Rates in memory: `ecb` is what the ECB sent, `rated` every code with a rate. */
-export function memoryRates(ecb: ExchangeRate[], rated: string[]): HouseholdRateReader {
+/**
+ * Rates in memory: `ecb` is what the ECB sent, `rated` every code with a rate, `coins` the stored
+ * coin prices.
+ */
+export function memoryRates(
+  ecb: ExchangeRate[],
+  rated: string[],
+  coins: CoinPrice[] = [],
+): HouseholdRateReader {
   return {
     latestEcbRates: (codes) => Promise.resolve(ecb.filter((rate) => codes.includes(rate.quote))),
     ratedCurrencies: () => Promise.resolve(rated),
+    coinPrices: () => Promise.resolve(coins),
   }
 }

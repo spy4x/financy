@@ -566,7 +566,7 @@ export default {
   "HomeStatus.transfers": "Umbuchungen zwischen Konten, auch über Währungen hinweg",
   "HomeStatus.month": "Das Geld dieses Monats auf einen Blick",
   "HomeStatus.later":
-    "Budgets, der Import von Kontoauszügen und die kostenpflichtige Cloud kommen später: <plan>den ganzen Plan ansehen</plan>.",
+    "Der Import von Kontoauszügen und die kostenpflichtige Cloud kommen später: <plan>den ganzen Plan ansehen</plan>.",
   "HomeWho.keeperTitle": "Wer das Geld verwaltet",
   "HomeWho.keeperText":
     "Gehalt in einer Währung, Miete in einer anderen, Erspartes in einer dritten: eine Summe zu den Kursen der EZB, mit deren Datum.",
@@ -609,12 +609,12 @@ export default {
   "FeatureAccounts.nav": "Konten",
   "FeatureAccounts.title": "Jedes Konto in seiner eigenen Währung",
   "Features.description":
-    "Financy heute: Konten in jeder Währung, Haushalte mit Rollen, Sync, Offline-App, Export, neun Sprachen und dein eigener Server. Als Nächstes: Buchungen.",
+    "Financy heute: Konten und Buchungen in jeder Währung, Monatsbudgets, Haushalte mit Rollen, Sync, Offline-App, Export, neun Sprachen, eigener Server.",
   "Features.title": "Financy-Funktionen: Konten, Haushalte, Sync, offline",
   "FeaturesHero.lead":
-    "Financy wird von Grund auf neu gebaut. Was heute funktioniert: Konten in jeder Währung und das Fundament darunter: Anmeldung, Teilen mit Rollen, Änderungen in Echtzeit, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt den Code dahinter.",
+    "Financy wird von Grund auf neu gebaut. Was heute funktioniert: Konten in jeder Währung, ihre Kategorien, Buchungen und Monatsbudgets, und das Fundament darunter: Anmeldung, Teilen mit Rollen, Änderungen in Echtzeit, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt den Code dahinter.",
   "FeaturesHero.note":
-    "Buchungen und Budgets gibt es noch nicht. <status>Sieh nach, wie weit der Neubau ist</status>.",
+    "Umbuchungen gibt es noch nicht. <status>Sieh nach, wie weit der Neubau ist</status>.",
   "HomeFaq.useAnswer":
     "Noch nicht. Anmeldung, Haushalte, Synchronisierung und Konten in jeder Währung funktionieren; Buchungen werden gerade gebaut.",
   "Catalog.title": "Katalog",
@@ -643,6 +643,28 @@ export default {
     "Ein Betrachter liest die Kategorien; nur ein Bearbeiter oder höher ändert sie",
   "FeatureCategories.code": "Code der Kategorien lesen",
   "FeatureTierSettled.lead":
-    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung und ihre Kategorien sind da; Buchungen kommen als Nächstes.",
+    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung, ihre Kategorien, Buchungen und Monatsbudgets sind da; Umbuchungen kommen als Nächstes.",
   "HomeStatus.categories": "Kategorien mit einer Ebene Unterkategorien",
+  "HomeStatus.budgets": "Ein Monatslimit für jede Kategorie",
+  "FeatureBudgets.nav": "Budgets",
+  "FeatureBudgets.title": "Ein Monatslimit für jede Kategorie",
+  "FeatureBudgets.lead":
+    "Lege fest, wie viel jede Ausgabenkategorie im Monat ausgeben darf, und sieh, was übrig ist, live für alle im Haushalt. Ein Limit gilt in den folgenden Monaten weiter, bis du es änderst, und vergangene Monate behalten ihre Limits.",
+  "FeatureBudgets.fact1":
+    "Eine Oberkategorie ohne eigenes Limit zeigt die Summe der Limits ihrer Unterkategorien",
+  "FeatureBudgets.fact2":
+    "Ausgaben sind Ausgaben minus Erstattungen; eine Währung ohne Wechselkurs wird genannt, nicht still weggelassen",
+  "FeatureBudgets.fact3":
+    "Ein Limit setzen braucht den Tarif Household; Budgets lesen und ein Limit entfernen nie, geprüft auf dem Server",
+  "FeatureBudgets.code": "Code der Budgets lesen",
+  "FeatureTransactions.nav": "Buchungen",
+  "FeatureTransactions.title": "Jede Ausgabe und Einnahme, in der Währung, in der du bezahlt hast",
+  "FeatureTransactions.lead":
+    "Gib einen Betrag ein und drücke Enter. Konto, Kategorie und Datum kommen aus deiner letzten Buchung. Zahlst du in einer anderen Währung, rechnet Financy zum Kurs des Tages um, oder du gibst ein, was deine Bank belastet hat.",
+  "FeatureTransactions.fact1": "Beide Beträge bleiben erhalten, ein umgerechneter ist markiert",
+  "FeatureTransactions.fact2":
+    "Suche und Filter laufen auf der Kopie im Gerät, deshalb funktioniert die Liste auch offline",
+  "FeatureTransactions.fact3": "Eine Einnahme in einer Ausgabenkategorie ist eine Erstattung",
+  "FeatureTransactions.fact4": "Eine gelöschte Buchung lässt sich 30 Tage lang wiederherstellen",
+  "FeatureTransactions.code": "Code der Buchungen lesen",
 } satisfies Catalog

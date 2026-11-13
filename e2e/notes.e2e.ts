@@ -1,7 +1,7 @@
 import { type APIRequestContext, type Page } from "@playwright/test"
 import { AxeBuilder } from "@axe-core/playwright"
 import { expect, test } from "./fixtures/stack.ts"
-import { gotoApp, signIn } from "./fixtures/app.ts"
+import { gotoApp, openNotesFromMenu, signIn } from "./fixtures/app.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { openNotes } from "./fixtures/groups.ts"
 import { payForGroup, signUpWithCode } from "./fixtures/sign-up.ts"
@@ -354,9 +354,7 @@ test.describe("notes in a shared group", () => {
       await signUp(request, owner)
       const page = await context.newPage()
       await signInOnline(page, owner)
-      await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", {
-        name: "Notes",
-      }).click()
+      await openNotesFromMenu(page)
       await page.locator("[data-e2e=note-new]").click()
       await expect(page).toHaveURL("/notes/new")
 

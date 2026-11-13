@@ -39,12 +39,10 @@ test.describe("auth profile ws push flow", () => {
       await submitAuthForm(page, "/notes", page.locator("[data-e2e=shell-ws-status]"))
       await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 
-      // The signed-in layout: the skip link is the first thing Tab reaches. A sign-in lands on the
-      // notes list, whose entry is the current one.
+      // The signed-in layout: the skip link is the first thing Tab reaches.
       await page.keyboard.press("Tab")
       await expect(page.locator("[data-e2e=rail-shell-skip-link]")).toBeFocused()
       const nav = page.getByRole("navigation", { name: "Main navigation" })
-      await expect(nav.getByRole("link", { name: "Notes" })).toHaveAttribute("aria-current", "page")
 
       // Nav links go through the router: a click keeps the page instead of reloading it, and a
       // Ctrl-click (Cmd on macOS) is left to the browser, which opens the link in a new tab. The
@@ -57,7 +55,7 @@ test.describe("auth profile ws push flow", () => {
       )
       expect(await page.evaluate(() => "e2ePageMarker" in globalThis)).toBe(true)
       const newTab = page.context().waitForEvent("page", { timeout: 5_000 })
-      await nav.getByRole("link", { name: "Notes" }).click({ modifiers: ["ControlOrMeta"] })
+      await nav.getByRole("link", { name: "Transactions" }).click({ modifiers: ["ControlOrMeta"] })
       await (await newTab).close()
 
       // Profile in the account menu goes through the router too.

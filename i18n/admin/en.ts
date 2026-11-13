@@ -2180,6 +2180,17 @@ export default {
   "AdminRates.emptyText":
     'The daily job fetches them at 16:00 UTC. To fetch them now, run "Exchange rates" in Jobs.',
   "AdminRates.loadError": "Couldn't load the rates. Check your connection and try again.",
+  "AdminRates.coinsTitle": "Coin prices",
+  "AdminRates.coinPrice": "{price} on {date}",
+  "AdminRates.coinFetched": "Fetched {time}",
+  "AdminRates.coinsUnpriced":
+    "Accounts hold these coins, but they have no price. Prices are fetched once a day while a CoinGecko key is set.",
+  "AdminRates.coinsNone": "No account holds a coin, so no price is fetched.",
+  "AdminRates.coinCalls": "CoinGecko calls this month",
+  "AdminRates.coinCallsHint":
+    "Each call prices one coin, once a day. The count starts again on {date}.",
+  "AdminRates.coinsCapped": "The monthly limit is reached. No coin prices until {date}.",
+  "AdminRates.coinsCredit": "Data provided by CoinGecko",
   "AdminAuditEvent.categoryCreated": "Category added",
   "AdminAuditEvent.categoryUpdated": "Category changed",
   "AdminAuditEvent.categoryArchived": "Category archived",

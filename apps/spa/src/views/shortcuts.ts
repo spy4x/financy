@@ -1,11 +1,13 @@
 import {
   ACCOUNT_PATHS,
+  BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
   SCREEN_PATHS,
   TAG_PATHS,
+  TRANSACTION_PATHS,
 } from "@ui/progressive.tsx"
 import { generalRows, SHORTCUT_GROUPS, type ShortcutRow } from "@ui/shortcuts.tsx"
 import type { PageCommand } from "@ui/search-palette.tsx"
@@ -17,6 +19,8 @@ export interface SpaShortcutPorts {
   navigate: (href: string) => void
   openShortcuts: () => void
   openNewNote: () => void
+  /** Opens the new transaction; `null` for a viewer, who gets neither `t` nor `g x`. */
+  openNewTransaction: (() => void) | null
   /** The group whose Activity the rail shows, or `null` while it shows none. */
   activityGroupId: string | null
   /** The overview's own keys while it is open; `null` or left out on every other page. */
@@ -28,7 +32,8 @@ export interface SpaShortcutPorts {
 /**
  * The SPA's keyboard shortcuts, the one list the "Keyboard shortcuts" dialog shows and the frame
  * binds, each described by a key of the `app` catalog. Search's keys, the New note dialog's and Undo's (`useUndoToast`) are bound where they act
- * and listed here; Activity is listed and bound only while the rail shows it, and the overview's
+ * and listed here; `t` and `g x` only for an editor of the selected group; Activity is listed and
+ * bound only while the rail shows it, and the overview's
  * `d` and `c` only while it is open, and the benchmark's `r` and `c` only while it is.
  */
 export function spaShortcutRows(ports: SpaShortcutPorts): ShortcutRow[] {
@@ -44,14 +49,24 @@ export function spaShortcutRows(ports: SpaShortcutPorts): ShortcutRow[] {
     show,
     { keys: "mod+k", description: `Shortcuts.search`, group: general },
     { keys: "/", description: `Shortcuts.search`, group: general },
+    ...(ports.openNewTransaction
+      ? [{
+        keys: "t",
+        description: `Shortcuts.newTransaction`,
+        group: general,
+        run: ports.openNewTransaction,
+      }]
+      : []),
     { keys: "n", description: `Shortcuts.newNoteRow`, group: general, run: ports.openNewNote },
     { keys: "mod+z", description: `Shortcuts.undo`, group: general },
     close,
     go("g o", `Frame.overview`, OVERVIEW_PATHS.root),
+    ...(ports.openNewTransaction ? [go("g x", `Frame.transactions`, TRANSACTION_PATHS.list)] : []),
     go("g f", `Frame.accounts`, ACCOUNT_PATHS.list),
     go("g n", `Frame.notes`, NOTE_PATHS.list),
     go("g t", `Frame.tags`, TAG_PATHS.list),
     go("g c", `Frame.categories`, CATEGORY_PATHS.list),
+    go("g b", `Frame.budgets`, BUDGET_PATHS.list),
     ...(ports.activityGroupId === null
       ? []
       : [go("g a", `Frame.activity`, GROUP_PATHS.activity(ports.activityGroupId))]),

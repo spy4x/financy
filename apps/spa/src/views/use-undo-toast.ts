@@ -1,16 +1,41 @@
-import { effect } from "@preact/signals"
+import { effect, type ReadonlySignal } from "@preact/signals"
 import { useEffect } from "preact/hooks"
 import { useHotkeys } from "@spy4x/preact-ui/hotkeys"
 import { keyFaces } from "@spy4x/preact-ui/kbd"
 import { isApplePlatform } from "@spy4x/platform/browser/hotkeys"
-import type { notesStore } from "../state/notes.ts"
+import type { UndoOffer } from "../state/notes.ts"
 import { toasts } from "../state/toasts.ts"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAppText } from "@ui/i18n.ts"
 import { isolate } from "@spy4x/preact-ui/bdi"
 
-/** The key that takes a deleted note back while its toast shows. */
+/** The key that takes a deleted item back while its toast shows. */
 export const UNDO_KEYS = "mod+z"
+
+/** What the hook reads from a store that offers Undo after a delete. */
+export interface UndoStore<Offer extends { id: string; until: number }> {
+  undo: ReadonlySignal<Offer | null>
+  undoDelete(): Promise<unknown>
+  dismissUndo(): void
+}
+
+/** The toast's words for one offer, and the `data-e2e` name its toast and button carry. */
+export interface UndoText<Offer> {
+  /** `<e2e>-undo-toast` on the toast and `<e2e>-undo` on its button. */
+  e2e: string
+  title(t: Translator<string>, offer: Offer): string
+  body(t: Translator<string>, offer: Offer): string
+}
+
+/** A deleted note's toast: "Note deleted" and its title. */
+export const NOTE_UNDO_TEXT: UndoText<UndoOffer> = {
+  e2e: `note`,
+  title: (t) => t.t(`UndoToast.title`),
+  body: (t, offer) =>
+    offer.title
+      ? t.t(`UndoToast.deleted`, { title: isolate(offer.title) })
+      : t.t(`UndoToast.deletedUntitled`),
+}
 
 /**
  * The toast's hint for {@link UNDO_KEYS}, as the platform writes the key ("Ctrl+Z", "⌘Z"), or
@@ -25,14 +50,18 @@ function undoKeyHint(t: Translator<string>): string {
 }
 
 /**
- * Shows the toast that follows a delete in the app's one toast list: the note's title and an Undo
- * button. It lasts as long as the offer does, and goes when the offer ends or the list leaves the
- * screen. An offer that ended while another page was open is not shown late.
+ * Shows the toast that follows a delete in the app's one toast list: what was deleted, in the
+ * words `text` gives, and an Undo button. It lasts as long as the offer does, and goes when the
+ * offer ends or the page leaves the screen. An offer that ended while another page was open is not
+ * shown late.
  *
- * While the offer lasts, Ctrl Z (⌘Z on a Mac) takes the note back too, so a keyboard user need not
+ * While the offer lasts, Ctrl Z (⌘Z on a Mac) takes the item back too, so a keyboard user need not
  * Tab past every row to reach the toast. A press in a text field keeps the field's own undo.
  */
-export function useUndoToast(store: typeof notesStore): void {
+export function useUndoToast<Offer extends { id: string; until: number }>(
+  store: UndoStore<Offer>,
+  text: UndoText<Offer>,
+): void {
   const offer = store.undo.value
   const t = useAppText()
   useHotkeys([{ keys: UNDO_KEYS, handler: () => void store.undoDelete() }], {
@@ -44,21 +73,18 @@ export function useUndoToast(store: typeof notesStore): void {
     if (left <= 0) return
     toasts.info({
       id: offer.id,
-      title: t.t(`UndoToast.title`),
-      body: (offer.title
-        ? t.t(`UndoToast.deleted`, { title: isolate(offer.title) })
-        : t.t(`UndoToast.deletedUntitled`)) + undoKeyHint(t),
+      title: text.title(t, offer),
+      body: text.body(t, offer) + undoKeyHint(t),
       duration: left,
-      dataE2E: "note-undo-toast",
+      dataE2E: `${text.e2e}-undo-toast`,
       action: {
         label: t.t(`UndoToast.undo`),
-        dataE2E: "note-undo",
-        onAction: () =>
-          void store.undoDelete(),
+        dataE2E: `${text.e2e}-undo`,
+        onAction: () => void store.undoDelete(),
       },
     })
     // Dismiss and the toast's own timer take it off the list: that ends the offer too, so it does
-    // not come back when the person returns to the list.
+    // not come back when the person returns to the page.
     const stop = effect(() => {
       if (!toasts.list.value.some((toast) => toast.id === offer.id)) store.dismissUndo()
     })

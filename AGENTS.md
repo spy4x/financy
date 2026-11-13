@@ -104,12 +104,22 @@ Financy is AGPL-3.0 (`LICENSE`). The code that came from Seed keeps its MIT noti
 version does, the price, and the owner's decisions in the owner's words. Read it before building a
 feature; a feature it does not list needs the owner first.
 
-## No release and no deploy yet
+## Production
 
-Until the deploy issue ([#88](https://github.com/spy4x/financy/issues/88)) merges, nothing is
-tagged and nothing is deployed: that issue sets up the hosts, the server and the first release,
-and none of them exist yet. The global rule to release after a green gate starts to apply here
-then.
+Financy runs at financy.dev (website), app.financy.dev (app) and admin.financy.dev (admin panel),
+on the `homelab` server next to Seed, behind the homelab's Traefik. Its env file is
+`infra/envs/.env.prod.age`. Woodpecker deploys every push to `main` that passes CI
+(`.woodpecker/deploy.yml`), so each merge is live minutes later. Agents never deploy by hand. A
+merge is not done until its push pipeline, deploy included, is green on the Woodpecker page of
+that push; a red deploy is fixed before the next merge. Release tags and images start with the
+rest of [#88](https://github.com/spy4x/financy/issues/88).
+
+Backups run nightly from the homelab's backup runner (`servers/home/configs/backup/financy.backup.ts`
+in spy4x/homelab). Uptime checks with alerts run on the cloud server's Gatus; metrics, logs and
+Grafana run in this project's `monitoring` profile, with Grafana on `127.0.0.1:13001` on the server.
+
+Sign-up is closed (`SIGN_UP=invite`) until live Stripe keys are in the env file, because without
+billing every household would get everything for free.
 
 ## Money and finance data
 

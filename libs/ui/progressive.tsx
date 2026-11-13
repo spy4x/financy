@@ -48,7 +48,25 @@ export const CATEGORY_PATHS = {
   category: (categoryId: string) => `/categories/${categoryId}`,
 } as const
 
+/** The budgets of the person's selected household: one month's limits and spending. */
+export const BUDGET_PATHS = {
+  /** Each expense category with the month's bar, parents first. */
+  list: "/budgets",
+} as const
+
 /** The pages of a household's accounts, in the person's selected group. */
+/** The transaction pages. `?next=` on the create page names the page to return to after a save. */
+export const TRANSACTION_PATHS = {
+  /** The household's entries, newest first; `?deleted=1` shows the deleted ones. */
+  list: "/transactions",
+  /** The deleted entries, each with Restore. */
+  deleted: "/transactions?deleted=1",
+  /** The create page: the quick entry. */
+  new: "/transactions/new",
+  /** One entry's editor. */
+  transaction: (transactionId: string) => `/transactions/${transactionId}`,
+} as const
+
 export const ACCOUNT_PATHS = {
   /** The accounts by kind, each with its balance; archived ones behind "Show archived accounts". */
   list: "/accounts",

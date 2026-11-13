@@ -1,8 +1,9 @@
 /**
  * The name of every read copy the device keeps (ADR 003, level 2 "offline-readable"): one key per
  * list, in the read cache of the signed-in user. A store reads through its key
- * (`localReads` in `apps/spa/src/modules.ts`); nothing else names one. Notes are not here: they are
- * offline-writable and keep their own copy beside their queue (`apps/spa/src/offline/`).
+ * (`localReads` in `apps/spa/src/modules.ts`); nothing else names one. Notes, tags and transactions
+ * are not here: they are offline-writable and keep their own copy beside their queue
+ * (`apps/spa/src/offline/`).
  */
 export const READ_KEYS = {
   groups: "groups",
@@ -19,6 +20,8 @@ export const READ_KEYS = {
   billing: (groupId: string) => `billing:${groupId}`,
   accounts: (groupId: string) => `accounts:${groupId}`,
   categories: (groupId: string) => `categories:${groupId}`,
+  /** One month's bars of a household, `YYYY-MM`: each month keeps its own copy. */
+  budgets: (groupId: string, month: string) => `budgets:${groupId}:${month}`,
   apiTokens: "api-tokens",
   devices: "devices",
 } as const

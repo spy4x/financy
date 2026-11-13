@@ -155,8 +155,9 @@ if (!crosspost && processEnv.get("DEVTO_API_KEY")?.trim()) {
 }
 
 // Exchange rates (docs/financy/exchange-rates.md): the ECB's through Frankfurter in every
-// environment, and the paid fallback only with `RATES_FALLBACK_KEY`, under its monthly cap. A key
-// without a cap stops the worker here; the message names the variable, never the key.
+// environment, the paid fallback only with `RATES_FALLBACK_KEY`, under its monthly cap, and coin
+// prices only with `RATES_COINGECKO_KEY`. A fallback key without a cap, or a malformed CoinGecko
+// key or plan, stops the worker here; the message names the variable, never the key.
 let rates: RatesSetup
 try {
   rates = readRatesSetup(processEnv)

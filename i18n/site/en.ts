@@ -299,12 +299,12 @@ export default {
     "Not in a store yet. Today the web app installs from the browser on phones and computers and opens with no network.",
   "Features.title": "Financy features: accounts, households, sync, offline",
   "Features.description":
-    "Financy today: accounts in any currency, households with roles, live sync, an offline app, export, nine languages and self-hosting. Transactions come next.",
+    "Financy today: accounts and transactions in any currency, monthly budgets, households with roles, sync, offline app, export, nine languages, self-hosting.",
   "FeaturesHero.title": "What Financy does today, and what comes next",
   "FeaturesHero.lead":
-    "Financy is being rebuilt. What works today: accounts in any currency, and the ground under them: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
+    "Financy is being rebuilt. What works today: accounts in any currency, their categories, transactions and monthly budgets, and the ground under them: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
   "FeaturesHero.note":
-    "Transactions and budgets are not built yet. <status>See where the rebuild stands</status>.",
+    "Transfers are not built yet. <status>See where the rebuild stands</status>.",
   "FeaturesFaq.title": "Can Financy do that?",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "For developers",
@@ -562,7 +562,7 @@ export default {
   "HomeStatus.transfers": "Transfers between accounts, across currencies",
   "HomeStatus.month": "This month's money at a glance",
   "HomeStatus.later":
-    "Budgets, bank statement import and the paid cloud come later: <plan>see the whole plan</plan>.",
+    "Bank statement import and the paid cloud come later: <plan>see the whole plan</plan>.",
   "HomeWho.keeperTitle": "The money keeper",
   "HomeWho.keeperText":
     "Salary in one currency, rent in another, savings in a third: one total at the ECB's rates, with their date on it.",
@@ -619,6 +619,28 @@ export default {
   "FeatureCategories.fact3": "A viewer reads the categories; only an editor or above changes them",
   "FeatureCategories.code": "Read the categories domain",
   "FeatureTierSettled.lead":
-    "These parts work and are tested in CI. Accounts in any currency and their categories are here; transactions come next.",
+    "These parts work and are tested in CI. Accounts in any currency, their categories, transactions and monthly budgets are here; transfers come next.",
   "HomeStatus.categories": "Categories with one level of subcategories",
+  "HomeStatus.budgets": "A monthly limit for each category",
+  "FeatureBudgets.nav": "Budgets",
+  "FeatureBudgets.title": "A monthly limit for each category",
+  "FeatureBudgets.lead":
+    "Set how much each expense category may spend in a month and see what is left, live for everyone in the household. A limit carries on into later months until you change it, and past months keep the limits they had.",
+  "FeatureBudgets.fact1":
+    "A parent with no limit of its own shows the sum of its subcategories' limits",
+  "FeatureBudgets.fact2":
+    "Spending is expenses less refunds; a currency with no exchange rate yet is named, not quietly dropped",
+  "FeatureBudgets.fact3":
+    "Setting a limit needs the Household plan; reading budgets and removing a limit never do, checked on the server",
+  "FeatureBudgets.code": "Read the budgets domain",
+  "FeatureTransactions.nav": "Transactions",
+  "FeatureTransactions.title": "Every expense and income, in the currency you paid",
+  "FeatureTransactions.lead":
+    "Type an amount and press Enter. The account, category and date come from your last transaction. Pay in another currency and Financy converts it at that day's rate, or you type what your bank charged.",
+  "FeatureTransactions.fact1": "Both amounts are kept, and a converted one is marked",
+  "FeatureTransactions.fact2":
+    "Search and filters run on the device's copy, so the list works offline",
+  "FeatureTransactions.fact3": "Income in an expense category is a refund",
+  "FeatureTransactions.fact4": "A deleted transaction can be restored for 30 days",
+  "FeatureTransactions.code": "Read the transactions domain",
 } satisfies Catalog

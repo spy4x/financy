@@ -180,6 +180,7 @@ const EMPTY_RATES: AdminRatesSnapshot = {
   missing: { date: `2026-11-06`, currencies: [] },
   fallback: null,
   days: [],
+  coins: { prices: [], unpriced: [], calls: { used: 0, cap: 10_000, resetsOn: `2026-12-01` } },
 }
 
 const ROUTES = [

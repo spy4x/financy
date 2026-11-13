@@ -1,5 +1,5 @@
 import { type APIRequestContext, expect, type Locator, type Page, test } from "@playwright/test"
-import { gotoApp } from "./app.ts"
+import { gotoApp, openNotesFromMenu } from "./app.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { payForGroup, signUpWithCode } from "./sign-up.ts"
 
@@ -146,11 +146,9 @@ export class TagsPage {
     await expect(this.page).toHaveURL("/tags")
   }
 
-  /** Goes to the notes list through the main navigation: Tags is a destination of its own. */
+  /** Goes to the notes list through the account menu: Tags is a destination of its own. */
   async toNotes(): Promise<void> {
-    await this.page.getByRole("navigation", { name: "Main navigation" })
-      .getByRole("link", { name: "Notes" }).click()
-    await expect(this.page).toHaveURL("/notes")
+    await openNotesFromMenu(this.page)
   }
 }
 

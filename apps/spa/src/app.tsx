@@ -21,7 +21,9 @@ import { groupsStore } from "./state/groups.ts"
 import { notesStore } from "./state/notes.ts"
 import { tagsStore } from "./state/tags.ts"
 import { accountsStore } from "./state/accounts.ts"
+import { budgetsStore } from "./state/budgets.ts"
 import { categoriesStore } from "./state/categories.ts"
+import { transactionsStore } from "./state/transactions.ts"
 import { householdTotalStore } from "./state/household-total.ts"
 import { householdSettingsStore } from "./state/household-settings.ts"
 import { selectionStore } from "./state/selection.ts"
@@ -68,9 +70,12 @@ import { NoteEditorView } from "./views/NoteEditorView.tsx"
 import { NotesView } from "./views/NotesView.tsx"
 import { TagsView } from "./views/TagsView.tsx"
 import { AccountsView } from "./views/AccountsView.tsx"
+import { BudgetsView } from "./views/BudgetsView.tsx"
 import { CategoriesView } from "./views/CategoriesView.tsx"
 import { CategoryEditorView } from "./views/CategoryEditorView.tsx"
 import { AccountEditorView } from "./views/AccountEditorView.tsx"
+import { TransactionsView } from "./views/TransactionsView.tsx"
+import { TransactionEditorView } from "./views/TransactionEditorView.tsx"
 import { TagEditorView } from "./views/TagEditorView.tsx"
 import { ProfileView } from "./views/ProfileView.tsx"
 import { ApiTokenNewView } from "./views/ApiTokenNewView.tsx"
@@ -177,11 +182,17 @@ const PAGES: {
   "/accounts/:accountId": (params) => (
     <AccountEditorView key={params.accountId} accountId={params.accountId} />
   ),
+  "/transactions": () => <TransactionsView />,
+  "/transactions/new": () => <TransactionEditorView key="new" />,
+  "/transactions/:transactionId": (params) => (
+    <TransactionEditorView key={params.transactionId} transactionId={params.transactionId} />
+  ),
   "/categories": () => <CategoriesView />,
   "/categories/new": () => <CategoryEditorView key="new" />,
   "/categories/:categoryId": (params) => (
     <CategoryEditorView key={params.categoryId} categoryId={params.categoryId} />
   ),
+  "/budgets": () => <BudgetsView />,
   "/tags": () => <TagsView />,
   "/tags/new": () => <TagEditorView key="new" />,
   "/tags/:tagId": (params) => <TagEditorView key={params.tagId} tagId={params.tagId} />,
@@ -333,6 +344,8 @@ export function App() {
       tagsStore.reset()
       accountsStore.reset()
       categoriesStore.reset()
+      transactionsStore.reset()
+      budgetsStore.reset()
       householdTotalStore.reset()
       householdSettingsStore.reset()
       profileStore.reset()
@@ -365,6 +378,8 @@ export function App() {
         },
       },
       categories: categoriesStore,
+      transactions: transactionsStore,
+      budgets: budgetsStore,
       // The main currency is read with the members of the group whose settings are open: a save
       // moves the group's sequence, and the same page shows both.
       members: {

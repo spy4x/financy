@@ -14,7 +14,7 @@ import { sessionState } from "../state/session.ts"
 import { tagsStore } from "../state/tags.ts"
 import { selectionStore } from "../state/selection.ts"
 import { toasts } from "../state/toasts.ts"
-import { useUndoToast } from "./use-undo-toast.ts"
+import { NOTE_UNDO_TEXT, useUndoToast } from "./use-undo-toast.ts"
 import { personName, personPicture } from "./note-people.ts"
 import { movedToast } from "./note-toasts.ts"
 import { OfflineStatus } from "../modules.ts"
@@ -37,7 +37,7 @@ export function NotesView() {
   const [, navigate] = useLocation()
   const t = useAppText()
   const store = notesStore
-  useUndoToast(store)
+  useUndoToast(store, NOTE_UNDO_TEXT)
   const groupId = selectionStore.groupId.value
   useEffect(() => {
     if (groupId) {

@@ -26,6 +26,7 @@ import {
 } from "./offline/index.ts"
 import { offlineNotes as notesOverLayer } from "./offline/notes-collection.ts"
 import { offlineTags as tagsOverLayer } from "./offline/tags-collection.ts"
+import { offlineTransactions as transactionsOverLayer } from "./offline/transactions-collection.ts"
 import { conflictsToReview, OfflineStatus as OfflineStatusLine } from "./offline/OfflineStatus.tsx"
 import { benchmarkLocalData as benchmarkOverLayer } from "./offline/benchmark.ts"
 import {
@@ -481,7 +482,9 @@ export async function watchUnsentChanges(): Promise<UnsentWait | null> {
   const read = await within(running.loaded.then(() => true), ms, false)
   if (session !== opened || offlineLayer() !== running) return null
   if (!read) return await watchUnreadLayer(opened, running, ms)
-  if (running.entries.value.length + running.tagEntries.value.length === 0) return null
+  const queued = running.entries.value.length + running.tagEntries.value.length +
+    running.transactionEntries.value.length
+  if (queued === 0) return null
   const { userId } = running
   return watchLayerUnsent({
     layer: running,
@@ -613,6 +616,9 @@ export const offlineNotes = notesOverLayer
 
 /** The tags store's server dependencies with the device copy and the queue in front of them. */
 export const offlineTags = tagsOverLayer
+
+/** The transactions store's server dependencies with the device copy and the queue in front. */
+export const offlineTransactions = transactionsOverLayer
 
 /** The offline status line and the conflict screen. */
 export const OfflineStatus = OfflineStatusLine
@@ -767,7 +773,8 @@ function belongsTo(name: string, userIds: readonly number[]): boolean {
 
 /** Whether the IndexedDB database `name` is one of the queues of unsent writes of `userId`. */
 function isQueueOf(name: string, userId: number): boolean {
-  return name === `offline:user:${userId}:outbox` || name === `offline:user:${userId}:tags-outbox`
+  return [`outbox`, `tags-outbox`, `transactions-outbox`]
+    .some((queue) => name === `offline:user:${userId}:${queue}`)
 }
 
 /**

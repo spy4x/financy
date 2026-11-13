@@ -120,6 +120,7 @@ describe("reading the settings view the API sent", () => {
       source: "frankfurter:ECB",
     }],
     ratedCurrencies: ["EUR", "USD"],
+    coinPrices: [{ coin: "BTC", price: "69608.44966893936", date: "2026-10-30" }],
   }
 
   it("keeps a well-formed view and turns the save time into a date", () => {
@@ -132,5 +133,14 @@ describe("reading the settings view the API sent", () => {
   it("refuses a rate that is not a plain decimal", () => {
     expect(readHouseholdSettingsView({ ...view, rates: [{ ...view.rates[0], rate: "-1" }] }))
       .toBeNull()
+  })
+
+  it("keeps the coin prices, and refuses a price that is not a plain decimal", () => {
+    expect(readHouseholdSettingsView(view)?.coinPrices).toEqual(view.coinPrices)
+    for (const price of ["-1", "1e5", "", "NaN"]) {
+      expect(readHouseholdSettingsView({ ...view, coinPrices: [{ ...view.coinPrices[0], price }] }))
+        .toBeNull()
+    }
+    expect(readHouseholdSettingsView({ ...view, coinPrices: undefined })).toBeNull()
   })
 })

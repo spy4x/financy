@@ -199,9 +199,12 @@ describe("SearchPalette", () => {
       "Untitled note",
       "# Actions",
       "New note | In Home",
+      "New transaction | In Home",
+      "Go to transactions",
       "New tag | In Home",
       "New category | In Home",
       "Go to categories",
+      "Go to budgets",
       "New group",
       "Open overview",
       "Open notifications",
@@ -288,6 +291,7 @@ describe("SearchPalette", () => {
       "Home | Owner | Current",
       "# Actions",
       "New note | In Home",
+      "New transaction | In Home",
       "New tag | In Home",
       "New category | In Home",
     ])
@@ -358,19 +362,37 @@ describe("SearchPalette", () => {
     await open()
 
     const rows = listed()
-    for (const action of ["New note", "New tag", "New category", "New group"]) {
+    for (const action of ["New note", "New transaction", "New tag", "New category", "New group"]) {
       expect(rows.some((row) => row.startsWith(action))).toBe(false)
     }
     expect(rows).toContain("Open notifications")
+    expect(rows).toContain("Go to transactions")
   })
 
-  it("finds New category by subcategory and категория, and Go to categories by категории", async () => {
+  it("finds New transaction by the words a person would try, and opens the new transaction", async () => {
+    const { picked } = await mount()
+    for (const query of ["add expense", "refund", "payment"]) {
+      await open()
+      await type(query)
+      const row = [...document.querySelectorAll("[role=option]")]
+        .find((candidate) => text(candidate).startsWith("New transaction"))
+      expect(row, query).toBeDefined()
+      await act(() => {
+        row!.dispatchEvent(new window.MouseEvent("click", { bubbles: true }) as unknown as Event)
+      })
+    }
+    expect(picked).toEqual(Array(3).fill({ kind: "page", href: "/transactions/new" }))
+  })
+
+  it("finds New category by subcategory and категория, Go to categories by категории, and Go to budgets by limits and бюджет", async () => {
     const { picked } = await mount()
     for (
       const [query, label] of [
         ["subcategory", "New category"],
         ["категория", "New category"],
         ["категории", "Go to categories"],
+        ["limits", "Go to budgets"],
+        ["бюджет", "Go to budgets"],
       ]
     ) {
       await open()
@@ -386,6 +408,8 @@ describe("SearchPalette", () => {
       { kind: "page", href: "/categories/new" },
       { kind: "page", href: "/categories/new" },
       { kind: "page", href: "/categories" },
+      { kind: "page", href: "/budgets" },
+      { kind: "page", href: "/budgets" },
     ])
   })
 

@@ -148,9 +148,10 @@ export default define.page(function Privacy({ state }) {
       <h3 class={GROUP}>Your finances</h3>
       <ul>
         <li>
-          Accounts and their balances, crypto holdings among them, and every transaction and
-          transfer: the amount, the currency, the date, the category, the note, and the converted
-          amount next to the original.
+          Accounts and their balances, crypto holdings among them, and every transaction: the
+          amount, the currency, the date, the category, the memo, who added it, and the converted
+          amount next to the original. A deleted transaction is kept for 30 days so it can be
+          restored, then removed for good.
         </li>
         <li>Categories, monthly budgets and recurring transactions.</li>
       </ul>

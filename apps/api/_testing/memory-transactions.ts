@@ -49,6 +49,17 @@ export class MemoryTransactionRepository implements TransactionRepository {
     return Promise.resolve(entry && entry.deletedAt === null ? entry : null)
   }
 
+  listDeleted(groupId: string, limit: number): Promise<Transaction[]> {
+    const deleted = [...this.transactions.values()]
+      .filter((entry) => entry.groupId === groupId && entry.deletedAt !== null)
+      // Every delete here is stamped at one instant, so the later write breaks the tie.
+      .sort((a, b) =>
+        b.deletedAt!.getTime() - a.deletedAt!.getTime() ||
+        Number(b.changeSequence) - Number(a.changeSequence)
+      )
+    return Promise.resolve(deleted.slice(0, limit))
+  }
+
   count(groupId: string): Promise<number> {
     return Promise.resolve(
       [...this.transactions.values()].filter((entry) =>

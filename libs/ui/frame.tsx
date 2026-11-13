@@ -5,7 +5,7 @@ import {
   IconBank,
   IconChartPie,
   IconClock,
-  IconDocumentText,
+  IconList,
   IconSearch,
   IconUsers,
   IconWallet,
@@ -25,6 +25,7 @@ import { PRODUCT_NAME } from "./brand.ts"
 import { GroupPicker, type GroupPickerData, GroupSheet } from "./group-picker.tsx"
 import {
   ACCOUNT_PATHS,
+  BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
   type Navigate,
@@ -33,6 +34,7 @@ import {
   SCREEN_PATHS,
   ScreenForm,
   TAG_PATHS,
+  TRANSACTION_PATHS,
 } from "./progressive.tsx"
 import { openSearch, searchHotkeys } from "./search-palette.tsx"
 import { ShortcutsList, type ShortcutsProps } from "./shortcuts.tsx"
@@ -43,8 +45,9 @@ import { useAppText } from "./i18n.ts"
  * The daily destinations, in the order the rail and the phone tab bar show them. The rail shows
  * them all; the phone bar shows the first four and moves the rest into the Account sheet behind its
  * last slot, so the order puts the destinations used most first. Activity belongs to the selected group and
- * shows only while there is one whose log the person may read. Profile, Categories and Tags are in
- * the account menu; Tags is in Notes' "More actions" too. Labels come from `t`, the app's translator.
+ * shows only while there is one whose log the person may read. Profile, Categories, Budgets, Tags
+ * and Notes are in the account menu; Tags is in Notes' "More actions" too. Labels come from `t`,
+ * the app's translator.
  */
 export function navItems(
   activityGroupId: string | null,
@@ -57,8 +60,13 @@ export function navItems(
       href: OVERVIEW_PATHS.root,
       Icon: IconChartPie,
     },
+    {
+      key: "transactions",
+      label: t.t("Frame.transactions"),
+      href: TRANSACTION_PATHS.list,
+      Icon: IconList,
+    },
     { key: "accounts", label: t.t("Frame.accounts"), href: ACCOUNT_PATHS.list, Icon: IconBank },
-    { key: "notes", label: t.t("Frame.notes"), href: NOTE_PATHS.list, Icon: IconDocumentText },
     ...(activityGroupId === null ? [] : [{
       key: "activity",
       label: t.t("Frame.activity"),
@@ -261,7 +269,9 @@ export function AppFrame(
         headerHref: SCREEN_PATHS.profile,
         items: [
           { label: t.t("Frame.categories"), href: CATEGORY_PATHS.list },
+          { label: t.t("Frame.budgets"), href: BUDGET_PATHS.list },
           { label: t.t("Frame.tags"), href: TAG_PATHS.list },
+          { label: t.t("Frame.notes"), href: NOTE_PATHS.list },
           ...shortcutsMenuItems(shortcuts, t.t("Frame.shortcuts")),
         ],
         signOut: { label: t.t("Frame.signOut"), onClick: onSignOut },

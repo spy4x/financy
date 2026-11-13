@@ -2,12 +2,14 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import {
   ACCOUNT_PATHS,
+  BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
   SCREEN_PATHS,
   TAG_PATHS,
+  TRANSACTION_PATHS,
 } from "@ui/progressive.tsx"
 import { SHORTCUT_GROUPS } from "@ui/shortcuts.tsx"
 import { createTranslator } from "@spy4x/platform/universal/i18n"
@@ -15,12 +17,20 @@ import app from "@i18n/app/en.ts"
 import appRu from "@i18n/app/ru.ts"
 import { pageCommands, spaShortcutRows } from "./shortcuts.ts"
 
-function rows(activityGroupId: string | null, onOverview = false) {
-  const seen = { navigated: [] as string[], newNote: 0, shortcuts: 0, range: 0, customise: 0 }
+function rows(activityGroupId: string | null, onOverview = false, editor = true) {
+  const seen = {
+    navigated: [] as string[],
+    newNote: 0,
+    newTransaction: 0,
+    shortcuts: 0,
+    range: 0,
+    customise: 0,
+  }
   const list = spaShortcutRows({
     navigate: (href) => void seen.navigated.push(href),
     openShortcuts: () => void seen.shortcuts++,
     openNewNote: () => void seen.newNote++,
+    openNewTransaction: editor ? () => void seen.newTransaction++ : null,
     activityGroupId,
     overviewPage: onOverview
       ? { openRange: () => void seen.range++, openCustomise: () => void seen.customise++ }
@@ -35,10 +45,12 @@ describe("SPA keyboard shortcuts", () => {
     const goTo = list.filter((row) => row.keys.startsWith("g "))
     expect(goTo.map((row) => row.keys)).toEqual([
       "g o",
+      "g x",
       "g f",
       "g n",
       "g t",
       "g c",
+      "g b",
       "g a",
       "g g",
       "g i",
@@ -47,10 +59,12 @@ describe("SPA keyboard shortcuts", () => {
     for (const row of goTo) row.run!()
     expect(seen.navigated).toEqual([
       OVERVIEW_PATHS.root,
+      TRANSACTION_PATHS.list,
       ACCOUNT_PATHS.list,
       NOTE_PATHS.list,
       TAG_PATHS.list,
       CATEGORY_PATHS.list,
+      BUDGET_PATHS.list,
       GROUP_PATHS.activity("0190a000-0000-7000-8000-000000000001"),
       SCREEN_PATHS.groups,
       SCREEN_PATHS.notifications,
@@ -66,7 +80,18 @@ describe("SPA keyboard shortcuts", () => {
     const { list, seen } = rows(null)
     list.find((row) => row.keys === "n")!.run!()
     list.find((row) => row.keys === "?")!.run!()
-    expect(seen).toEqual({ navigated: [], newNote: 1, shortcuts: 1, range: 0, customise: 0 })
+    expect(seen).toMatchObject({ navigated: [], newNote: 1, shortcuts: 1 })
+  })
+
+  it("opens the new transaction with t for an editor", () => {
+    const { list, seen } = rows(null)
+    list.find((row) => row.keys === "t")!.run!()
+    expect(seen.newTransaction).toBe(1)
+  })
+
+  it("gives a viewer neither t nor g x", () => {
+    const keys = rows(null, false, false).list.map((row) => row.keys)
+    expect([keys.includes("t"), keys.includes("g x")]).toEqual([false, false])
   })
 
   it("opens the range picker with d and Customise with c while the overview is open", () => {

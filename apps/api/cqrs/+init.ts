@@ -193,6 +193,7 @@ import {
   TransactionDeleteCommand,
   TransactionGetQuery,
   TransactionLedgerQuery,
+  TransactionListDeletedQuery,
   TransactionRestoreCommand,
   TransactionUpdateCommand,
 } from "@domain/transactions"
@@ -202,6 +203,7 @@ import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction
 import { transactionRestoreHandler } from "@api/cqrs/command-handlers/transaction-restore.ts"
 import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.ts"
 import { transactionLedgerHandler } from "@api/cqrs/query-handlers/transaction-ledger.ts"
+import { transactionListDeletedHandler } from "@api/cqrs/query-handlers/transaction-list-deleted.ts"
 import {
   BudgetMethodSetCommand,
   BudgetMonthQuery,
@@ -281,6 +283,25 @@ import { realtimeOnOnboardingMarkedHandler } from "@api/cqrs/event-handlers/real
 import { realtimeOnPreferencesUpdatedHandler } from "@api/cqrs/event-handlers/realtime-on-preferences-updated.ts"
 import { realtimeOnUserSignedOutHandler } from "@api/cqrs/event-handlers/realtime-on-user-signed-out.ts"
 import { pushOnOwnershipTransferredHandler } from "@api/cqrs/event-handlers/push-on-ownership-transferred.ts"
+import {
+  RecurringRuleCreateCommand,
+  RecurringRuleDeleteCommand,
+  RecurringRuleGetQuery,
+  RecurringRuleListQuery,
+  RecurringRuleRestoreCommand,
+  RecurringRuleSkipCommand,
+  RecurringRuleUpdateCommand,
+} from "@domain/recurring"
+import {
+  createRecurringRuleCreateHandler,
+  createRecurringRuleDeleteHandler,
+  createRecurringRuleGetHandler,
+  createRecurringRuleListHandler,
+  createRecurringRuleRestoreHandler,
+  createRecurringRuleSkipHandler,
+  createRecurringRuleUpdateHandler,
+} from "../features/recurring/handlers.ts"
+import { recurringRuleDependencies } from "@api/cqrs/recurring-dependencies.ts"
 
 // Audit rows have no listener: sign-up, sign-in, sign-out and the profile change write their
 // `auth_audits` row in the transaction of the change itself, so the change and its row are kept
@@ -404,6 +425,7 @@ queryBus.register(CategoryListQuery, categoryListHandler)
 queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(TransactionGetQuery, transactionGetHandler)
 queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
+queryBus.register(TransactionListDeletedQuery, transactionListDeletedHandler)
 queryBus.register(BudgetMonthQuery, budgetMonthHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
@@ -412,6 +434,28 @@ queryBus.register(NotificationListQuery, notificationListHandler)
 queryBus.register(NotificationUnreadCountQuery, notificationUnreadCountHandler)
 commandBus.register(NotificationMarkReadCommand, notificationMarkReadHandler)
 commandBus.register(NotificationMarkAllReadCommand, notificationMarkAllReadHandler)
+commandBus.register(
+  RecurringRuleCreateCommand,
+  createRecurringRuleCreateHandler(recurringRuleDependencies),
+)
+commandBus.register(
+  RecurringRuleUpdateCommand,
+  createRecurringRuleUpdateHandler(recurringRuleDependencies),
+)
+commandBus.register(
+  RecurringRuleDeleteCommand,
+  createRecurringRuleDeleteHandler(recurringRuleDependencies),
+)
+commandBus.register(
+  RecurringRuleRestoreCommand,
+  createRecurringRuleRestoreHandler(recurringRuleDependencies),
+)
+commandBus.register(
+  RecurringRuleSkipCommand,
+  createRecurringRuleSkipHandler(recurringRuleDependencies),
+)
+queryBus.register(RecurringRuleGetQuery, createRecurringRuleGetHandler(recurringRuleDependencies))
+queryBus.register(RecurringRuleListQuery, createRecurringRuleListHandler(recurringRuleDependencies))
 
 // The notes example: off with NOTES=false, and then the buses refuse every note, tag, attachment
 // and note-widget command and query as one with no handler.

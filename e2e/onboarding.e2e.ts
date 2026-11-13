@@ -1,6 +1,6 @@
 import { type APIRequestContext, type Page } from "@playwright/test"
 import { expect, test } from "./fixtures/stack.ts"
-import { gotoApp, signIn } from "./fixtures/app.ts"
+import { gotoApp, openNotesFromMenu, signIn } from "./fixtures/app.ts"
 import { freePlanAllowsNothing, signUpInPage } from "./fixtures/sign-up.ts"
 
 const apiBase = "http://app.localhost"
@@ -53,7 +53,7 @@ const notesHeading = (page: Page) =>
 async function openHome(page: Page): Promise<void> {
   await nav(page).getByRole("link", { name: "Groups" }).click()
   await expect(page.getByRole("heading", { level: 1, name: "Groups", exact: true })).toBeVisible()
-  await nav(page).getByRole("link", { name: "Notes" }).click()
+  await openNotesFromMenu(page)
   await expect(notesHeading(page)).toBeVisible()
 }
 
@@ -158,7 +158,7 @@ test.describe("first steps", () => {
       await page.keyboard.press("Enter")
       await expect(tour).toBeVisible()
       await expect(tour).toContainText("Step 1 of 4")
-      await expect(tour.getByRole("heading", { name: "Notes" })).toBeFocused()
+      await expect(tour.getByRole("heading", { name: "Transactions" })).toBeFocused()
 
       for (const [place, title] of [[2, "Groups"], [3, "Notifications"], [4, "Profile"]] as const) {
         await tabTo(page, "Next")

@@ -27,14 +27,21 @@ word where the language has a pair: ru аккаунт and счёт, zh-CN 账号
 | asset                   | актив               | activo                 | Vermögenswert     | ativo              | أصل                 | 资产     | 資産           | actif               |
 | liability (debt)        | долг                | deuda                  | Schulden          | dívida             | دَين                 | 负债     | 負債           | dette               |
 | crypto (kind; a coin)   | криптовалюта        | cripto                 | Krypto            | cripto             | عملات مشفّرة         | 加密货币 | 暗号資産       | crypto              |
+| price (of a coin)       | цена                | precio                 | Preis             | preço              | سعر                 | 价格     | 価格           | prix                |
 | transaction             | операция            | movimiento             | Buchung           | lançamento         | معاملة              | 交易     | 取引           | opération           |
 | income                  | доход               | ingreso                | Einnahme          | receita            | دخل                 | 收入     | 収入           | revenu              |
 | expense                 | расход              | gasto                  | Ausgabe           | despesa            | مصروف               | 支出     | 支出           | dépense             |
 | transfer (of money)     | перевод             | transferencia          | Umbuchung         | transferência      | تحويل               | 转账     | 振替           | virement            |
+| memo (of a transaction) | комментарий         | concepto               | Vermerk           | descrição          | بيان                | 备注     | 摘要           | libellé             |
+| refund                  | возврат             | reembolso              | Erstattung        | reembolso          | استرداد             | 退款     | 返金           | remboursement       |
 | category                | категория           | categoría              | Kategorie         | categoria          | فئة                 | 分类     | カテゴリ       | catégorie           |
 | subcategory | подкатегория | subcategoría | Unterkategorie | subcategoria | فئة فرعية | 子分类 | サブカテゴリ | sous-catégorie |
 | parent (category) | родительская категория | categoría principal | Oberkategorie | categoria principal | الفئة الأم | 上级分类 | 親カテゴリ | catégorie parente |
+| recurring transaction | регулярная операция | movimiento recurrente | wiederkehrende Buchung | lançamento recorrente | معاملة متكررة | 定期交易 | 定期取引 | opération récurrente |
 | budget                  | бюджет              | presupuesto            | Budget            | orçamento          | ميزانية             | 预算     | 予算           | budget              |
+| limit (of a budget)     | лимит               | límite                 | Limit             | limite             | الحد                | 限额     | 上限           | plafond             |
+| spent                   | потрачено           | gastado                | ausgegeben        | gasto              | المُنفَق            | 已支出   | 使った額       | dépensé             |
+| left (to spend)         | осталось            | disponible             | übrig             | restante           | المتبقي             | 剩余     | 残り           | restant             |
 | base currency           | основная валюта     | moneda principal       | Hauptwährung      | moeda principal    | العملة الأساسية     | 本位币   | 基準通貨       | devise principale   |
 | exchange rate           | курс                | tipo de cambio         | Wechselkurs       | cotação            | سعر الصرف           | 汇率     | 為替レート     | taux de change      |
 | smallest unit (of money) | наименьшая единица | unidad más pequeña     | kleinste Einheit  | menor unidade      | أصغر وحدة           | 最小单位 | 最小単位       | plus petite unité   |

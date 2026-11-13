@@ -22,6 +22,7 @@ const viewOf = (groupId: string, baseCurrency = "EUR", version = 0) => ({
   settings: settingsOf(groupId, baseCurrency, version),
   rates: [],
   ratedCurrencies: ["EUR", "USD"],
+  coinPrices: [],
 })
 
 /** A server holding one group's settings, which counts the saves it was sent. */

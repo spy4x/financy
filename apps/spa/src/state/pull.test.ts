@@ -11,7 +11,12 @@ const USER = 7
  * `calls` records every read in order, so a read of a group that is gone shows up.
  */
 function harness(
-  options: { open: string | null; groupsAfterRead: string[]; settings?: string | null },
+  options: {
+    open: string | null
+    groupsAfterRead: string[]
+    settings?: string | null
+    budgets?: string | null
+  },
 ) {
   const calls: string[] = []
   const inbox: string[] = []
@@ -34,6 +39,10 @@ function harness(
       groupId: signal(options.open),
       refresh: () => Promise.resolve(void calls.push("notes")),
     },
+    budgets: {
+      groupId: signal(options.budgets ?? null),
+      refresh: () => Promise.resolve(void calls.push("budgets")),
+    },
     members: {
       groupId: signal(options.settings ?? null),
       refresh: () => Promise.resolve(void calls.push("members")),
@@ -45,6 +54,30 @@ function harness(
 }
 
 describe("the pull after a hint", () => {
+  it("reads the open household's transactions for its hint, and not for another's", async () => {
+    const read: string[] = []
+    const groups = signal<readonly { id: string }[]>([{ id: "home" }, { id: "team" }])
+    const pull = createPull({
+      userId: USER,
+      flushOutbox: () => Promise.resolve(),
+      profile: { refresh: () => Promise.resolve() },
+      selection: { refresh: () => Promise.resolve() },
+      groups: { groups, refresh: () => Promise.resolve() },
+      notes: { groupId: signal(null), refresh: () => Promise.resolve() },
+      transactions: {
+        groupId: signal("team"),
+        refresh: () => Promise.resolve(void read.push("transactions")),
+      },
+      members: { groupId: signal(null), refresh: () => Promise.resolve() },
+      notifications: { refresh: () => Promise.resolve() },
+    })
+
+    await pull({ groupId: "home" })
+    expect(read).toEqual([])
+    await pull({ groupId: "team" })
+    expect(read).toEqual(["transactions"])
+  })
+
   it("never reads the notes of the open group once that group is deleted", async () => {
     const { pull, calls } = harness({ open: "team", groupsAfterRead: ["home"] })
 
@@ -111,6 +144,16 @@ describe("the pull after a hint", () => {
     await removed.pull({ groupId: "team" })
     expect(removed.calls).not.toContain("members")
   })
+
+  it("reads the open budgets month again for its household's hint, and not for another's", async () => {
+    const own = harness({ open: null, budgets: "team", groupsAfterRead: ["home", "team"] })
+    await own.pull({ groupId: "team" })
+    expect(own.calls).toEqual(["flush", "selection", "groups", "budgets"])
+
+    const other = harness({ open: null, budgets: "team", groupsAfterRead: ["home", "team"] })
+    await other.pull({ groupId: "home" })
+    expect(other.calls).not.toContain("budgets")
+  })
   it("reads the unread count again for this person's own hint, for a start-up and a reconnect", async () => {
     const own = harness({ open: null, groupsAfterRead: ["home"] })
     await own.pull({ groupId: userChangeGroupId(USER) })
@@ -131,7 +174,11 @@ describe("the pull after a hint", () => {
 })
 
 /** A change check over fakes; `sequences` is what the next read of the groups list answers. */
-function checkHarness(open: string | null, settings: string | null = null) {
+function checkHarness(
+  open: string | null,
+  settings: string | null = null,
+  budgets: string | null = null,
+) {
   const calls: string[] = []
   const sequences: Record<string, string> = { home: "1", team: "5" }
   const groups = signal<readonly { id: string; changeSequence: string }[]>([])
@@ -152,6 +199,10 @@ function checkHarness(open: string | null, settings: string | null = null) {
       },
     },
     notes: { groupId: signal(open), refresh: () => Promise.resolve(void calls.push("notes")) },
+    budgets: {
+      groupId: signal(budgets),
+      refresh: () => Promise.resolve(void calls.push("budgets")),
+    },
     members: {
       groupId: signal(settings),
       refresh: () => Promise.resolve(void calls.push("members")),
@@ -195,6 +246,15 @@ describe("the change check of a page with no socket", () => {
 
     expect(moved).toEqual(["flush", "groups", "notes", "members"])
     expect(settled).toEqual(["flush", "groups"])
+  })
+
+  it("reads the open budgets month again once its household's sequence moved, and once only", async () => {
+    const { run, sequences } = checkHarness(null, null, "team")
+    await run(true)
+    sequences.team = "6"
+
+    expect(await run(false)).toEqual(["flush", "groups", "budgets"])
+    expect(await run(false)).toEqual(["flush", "groups"])
   })
 
   it("leaves the notes alone when another group's sequence moved", async () => {

@@ -420,6 +420,7 @@ function fakeSources(answer: (from: string, to: string) => RatesResult | Promise
       },
     },
     fallback: { source: paid, monthlyCap: 100 },
+    coins: null,
   }
   return { setup, ranges, paidCalls }
 }

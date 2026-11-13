@@ -167,6 +167,39 @@ Deno.test("entries against Postgres", async (t) => {
     )
 
     await t.step(
+      "lists only the household's deleted entries, the latest deleted first, up to the limit",
+      async () => {
+        const h = await household()
+        const other = await household()
+        const [first, second, third] = [await h.entry(), await h.entry(), await h.entry()]
+        const live = await h.entry()
+        const theirs = await other.entry()
+        for (const [entry, ago] of [[first, 3], [second, 2], [third, 1]] as const) {
+          await transactions.delete(
+            { groupId: h.groupId, id: entry.id, expectedVersion: 1 },
+            h.owner,
+          )
+          await sql`
+            UPDATE transactions SET deleted_at = now() - make_interval(hours => ${ago})
+            WHERE id = ${entry.id}
+          `
+        }
+        await transactions.delete(
+          { groupId: other.groupId, id: theirs.id, expectedVersion: 1 },
+          other.owner,
+        )
+
+        const listed = await transactions.listDeleted(h.groupId, 2)
+
+        expect(listed.map((entry) => entry.id)).toEqual([third.id, second.id])
+        expect(listed[0].deletedAt).toBeInstanceOf(Date)
+        const all = (await transactions.listDeleted(h.groupId, 10)).map((entry) => entry.id)
+        expect(all).toEqual([third.id, second.id, first.id])
+        expect(all).not.toContain(live.id)
+      },
+    )
+
+    await t.step(
       "keeps an entry's stored account amount when a better rate arrives, and converts again on a new date with the latest earlier rate (R4, R6)",
       async () => {
         const h = await household("USD")

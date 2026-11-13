@@ -23,7 +23,7 @@ const OPERATOR = 2
  * target matches nothing loses its spotlight without failing anything else.
  */
 const TOUR_TARGETS = [
-  `[data-e2e="rail-shell-rail"] a[href="/notes"]`,
+  `[data-e2e="rail-shell-rail"] a[href="/transactions"]`,
   `[data-e2e="rail-shell-rail"] a[href="/groups"]`,
   `[data-e2e="rail-shell-bottom"] a[href="/notifications"]`,
   `[data-e2e="rail-shell-bottom"] [data-e2e="account-menu-button"]`,
@@ -140,17 +140,17 @@ async function focusRing(control: Locator): Promise<Record<string, string>> {
  * cell's, held back for a moment when the pointer arrives, and the same ring on keyboard focus.
  */
 async function expectSwitcherLikeRail(page: Page): Promise<void> {
-  const notes = page.locator(`[data-e2e="rail-shell-rail"] a[href="/notes"]`)
+  const entries = page.locator(`[data-e2e="rail-shell-rail"] a[href="/transactions"]`)
   const picker = page.locator("[data-e2e=group-picker]")
-  const noteTip = page.locator("[data-e2e=rail-shell-rail] [data-e2e=rail-shell-tooltip]", {
-    hasText: "Notes",
+  const entriesTip = page.locator("[data-e2e=rail-shell-rail] [data-e2e=rail-shell-tooltip]", {
+    hasText: "Transactions",
   }).locator("span")
   // The switcher's tip says the group's name and the person's role there: `Home · Owner`.
   const switcherTip = page.getByText(/ · Owner$/)
 
-  await notes.hover()
-  await expect(noteTip).toBeVisible()
-  const railBubble = await bubbleStyle(noteTip)
+  await entries.hover()
+  await expect(entriesTip).toBeVisible()
+  const railBubble = await bubbleStyle(entriesTip)
 
   await page.mouse.move(700, 450)
   await picker.hover()
@@ -161,7 +161,7 @@ async function expectSwitcherLikeRail(page: Page): Promise<void> {
   expect(await bubbleStyle(switcherTip)).toEqual(railBubble)
   await page.mouse.move(700, 450)
 
-  const railRing = await focusRing(notes)
+  const railRing = await focusRing(entries)
   expect(railRing.focusVisible).toBe("true")
   expect(await focusRing(picker)).toEqual(railRing)
   await page.locator("body").focus()
@@ -212,7 +212,8 @@ test.describe("one frame for the SPA and the admin", () => {
 
       await page.setViewportSize({ width: 1440, height: 900 })
       await signIn(page, email, password)
-      await page.goto("/notes")
+      // The rail cell the switcher is compared with is the current page's, as Notes was before.
+      await page.goto("/transactions")
       await expect(page.locator("[data-e2e=rail-shell-column]")).toBeVisible()
       for (const target of TOUR_TARGETS) await expect(page.locator(target)).toHaveCount(1)
       await expectSwitcherLikeRail(page)

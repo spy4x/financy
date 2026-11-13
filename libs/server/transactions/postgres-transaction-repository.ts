@@ -114,6 +114,16 @@ export class PostgresTransactionRepository implements TransactionRepository {
     return row ? toTransaction(row) : null
   }
 
+  async listDeleted(groupId: string, limit: number): Promise<Transaction[]> {
+    const rows = await this.sql<TransactionRow[]>`
+      SELECT ${this.columns()} FROM transactions
+      WHERE group_id = ${groupId} AND deleted_at IS NOT NULL
+      ORDER BY deleted_at DESC, id
+      LIMIT ${limit}
+    `
+    return rows.map(toTransaction)
+  }
+
   async count(groupId: string): Promise<number> {
     const [{ count }] = await this.sql<{ count: number }[]>`
       SELECT count(*)::int AS count FROM transactions

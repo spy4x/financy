@@ -8,6 +8,7 @@
 0e5c088cdfda63a855864bd22e0eae48ccc5646d:apps/api/routes/subscribers.test.ts:generic-api-key:33
 0e5c088cdfda63a855864bd22e0eae48ccc5646d:tests/integration/subscribers.integration.test.ts:generic-api-key:30
 0c2b25589ad83db64e422fb4620fe5e3d26dc5d4:libs/server/notifications/notification-cursor.test.ts:generic-api-key:8
+fdcd7deb7c80d1696c526f66f88abda030e44162:tests/integration/coin-prices.integration.test.ts:generic-api-key:32
 25ebca96f60ce5c10f84e43505f9eea17daa8e0e:libs/ui/admin-audit-screen.test.tsx:generic-api-key:335
 999b920a8323a27a58c16b6203d36d4bd5190e89:tests/db-reset-main.test.ts:generic-api-key:40
 40c412e4dd00399905d049066a801500c6124a5d:tests/integration/auth.integration.test.ts:generic-api-key:457
@@ -33,3 +34,26 @@ e33c4e94a332771b51fbfcb01e154e6d20d438be:infra/envs/.env.example:generic-api-key
 4a08b2fa4891134177d45245e68f98b425f48fae:apps/front/web-client/src/firebase-messaging-sw.js:gcp-api-key:11
 # Branch v1 only, an Nx Cloud token the owner confirmed is outdated (#494).
 2717e6f1dadc7b58e80caeac90f01a2df2873685:nx.json:generic-api-key:22
+
+# The first commit of the rebuild (#83) carries Seed's test fixtures: fake UUIDs, passwords, peppers,
+# HMAC secrets and a WebSocket sample nonce that only tests use.
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:apps/api/cqrs/session-gate.test.ts:generic-api-key:120
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:apps/api/routes/api-tokens.test.ts:generic-api-key:27
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:apps/api/routes/subscribers.test.ts:generic-api-key:35
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:apps/api/services/socket-route.test.ts:generic-api-key:85
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:libs/server/notifications/notification-cursor.test.ts:generic-api-key:8
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:libs/ui/admin-audit-screen.test.tsx:generic-api-key:361
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:tests/db-reset-main.test.ts:generic-api-key:40
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:tests/integration/auth.integration.test.ts:generic-api-key:546
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:tests/integration/subscribers.integration.test.ts:generic-api-key:34
+3d267c6fde8fa39ae020bcebe94aed0c223e2a53:tests/integration/api-tokens.integration.test.ts:generic-api-key:705
+
+# The first Financy's .env.example held a Fixer.io key, replaced with a placeholder in 69d19c79.
+2fb8cb6411afebbbeb4188cdd431d1554e3728b5:infra/envs/.env.example:generic-api-key:95
+
+# IndexNow test keys and the old example value of INDEXNOW_KEY, which is public by design (search
+# engines fetch it from the site), plus an import line gitleaks takes for a LinkedIn client id.
+1a024628d54382c9c5b175d7e831eab1453e6ffe:apps/mpa/app.test.ts:generic-api-key:734
+1a024628d54382c9c5b175d7e831eab1453e6ffe:apps/mpa/config.test.ts:generic-api-key:88
+1a024628d54382c9c5b175d7e831eab1453e6ffe:infra/envs/.env.example:generic-api-key:42
+ac2f7282c48007fd615c5b42df979e8ad1e118b0:tests/integration/blog-auto-post.integration.test.ts:linkedin-client-id:37

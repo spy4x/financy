@@ -13,12 +13,14 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { type GroupRole } from "@domain/groups"
 import { roleName } from "./groups-screen.tsx"
 import {
+  BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
   OVERVIEW_PATHS,
   profilePath,
   SCREEN_PATHS,
   TAG_PATHS,
+  TRANSACTION_PATHS,
 } from "./progressive.tsx"
 import { DATA_EXPORT_ANCHOR } from "./profile-export.tsx"
 import { PICTURE_BUTTON_ID, pictureRule } from "./profile-picture.tsx"
@@ -128,7 +130,9 @@ interface SearchOption extends CommandPaletteOption {
 }
 
 /** The palette's fixed words; the no-results line is set per answer. */
-function labels(t: Translator<string>): Omit<CommandPaletteLabels, "empty"> {
+function labels(
+  t: Translator<string>,
+): Pick<CommandPaletteLabels, `search` | `placeholder` | `close` | `loading` | `error`> {
   return {
     search: t.t(`Search.search`),
     placeholder: t.t(`Search.placeholder`),
@@ -335,6 +339,20 @@ function actionOptions(
         choice: { kind: "new-note" } as const,
       }]
       : []),
+    ...(inGroup
+      ? [page("new-transaction", `Search.newTransaction`, TRANSACTION_PATHS.new, inGroup, [
+        `add expense`,
+        `add income`,
+        `spend`,
+        `payment`,
+        `refund`,
+        `entry`,
+        `log`,
+      ])]
+      : []),
+    ...(currentGroup
+      ? [page("transactions", `Search.openTransactions`, TRANSACTION_PATHS.list)]
+      : []),
     ...(inGroup ? [page("new-tag", `Search.newTag`, TAG_PATHS.new, inGroup)] : []),
     ...(inGroup
       ? [page("new-category", `Search.newCategory`, CATEGORY_PATHS.new, inGroup, [
@@ -346,6 +364,13 @@ function actionOptions(
       ? [page("categories", `Search.openCategories`, CATEGORY_PATHS.list, undefined, [
         `categories`,
         `категории`,
+      ])]
+      : []),
+    ...(currentGroup
+      ? [page("budgets", `Search.openBudgets`, BUDGET_PATHS.list, undefined, [
+        `budget`,
+        `limits`,
+        `бюджет`,
       ])]
       : []),
     ...(online ? [page("new-group", `Search.newGroup`, GROUP_PATHS.new)] : []),

@@ -196,7 +196,7 @@ describe("OnboardingView", () => {
 
     await press("Take the tour")
     expect(store.tourOpen.value).toBe(true)
-    expect(focused().textContent).toBe("Notes")
+    expect(focused().textContent).toBe("Transactions")
     await press("Skip tour")
 
     expect(store.tourOpen.value).toBe(false)

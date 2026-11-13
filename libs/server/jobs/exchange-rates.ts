@@ -1,7 +1,17 @@
 import type postgres from "postgres"
 import { currencies, type ExchangeRate } from "@spy4x/platform/universal/money"
-import { ECB_BASE } from "@domain/money"
-import { monthOf, PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
+import { COIN_PRICE_MONTHLY_CAP, ECB_BASE } from "@domain/money"
+import {
+  coinsInUse,
+  deleteCoinPricesExcept,
+  readCoinPrices,
+  storeCoinPrice,
+} from "@server/money/coin-prices.ts"
+import {
+  monthOf,
+  PostgresRateRepository,
+  rateProblem,
+} from "@server/money/postgres-rate-repository.ts"
 import { closeBackfillRequest, openBackfillRequests } from "@server/money/rate-backfill.ts"
 import type { RatesSetup } from "@server/money/rates-setup.ts"
 import type { JobHandler } from "./jobs.ts"
@@ -23,7 +33,7 @@ export interface RatesJobDeps {
   sql: postgres.Sql
   /** `null` when the worker has no rate setup (a test of other jobs): the job fetches nothing. */
   setup: RatesSetup | null
-  /** Told about each refused rate and each fallback call not made. Never gets a key. */
+  /** Told about each refused rate or price and each call not made or failed. Never gets a key. */
   log: (line: string) => void
   /** The clock; tests pass a fixed one. */
   now?: () => Date
@@ -54,7 +64,64 @@ function refusal(log: (line: string) => void) {
 }
 
 /**
- * Stores the day's rates (`rates.fetch`). First the ECB's, through Frankfurter, against the euro:
+ * Stores today's price in euros of each listed coin an account holds, from CoinGecko, as that
+ * coin's only price. Without a CoinGecko key no call is made and every stored price is deleted,
+ * as CoinGecko's terms require when access ends; the price of a coin no account holds is deleted
+ * too. A coin priced today already is not asked again, so a rerun makes no call.
+ *
+ * Each coin takes one call, counted before it is made and only while the month is under
+ * {@link COIN_PRICE_MONTHLY_CAP}. Nothing here throws: a failed call, a refused price or a failed
+ * statement is logged by source and error code (never a URL or key) and not retried, so the ECB
+ * step after it still runs.
+ */
+async function storeCoinPrices(deps: RatesJobDeps, setup: RatesSetup, at: Date): Promise<void> {
+  const source = setup.coins
+  try {
+    if (!source) {
+      await deleteCoinPricesExcept(deps.sql, [])
+      return
+    }
+    const today = at.toISOString().slice(0, 10)
+    const inUse = await coinsInUse(deps.sql)
+    await deleteCoinPricesExcept(deps.sql, inUse)
+    const pricedToday = new Set(
+      (await readCoinPrices(deps.sql)).filter((price) => price.date === today).map((p) => p.coin),
+    )
+    const rates = new PostgresRateRepository(deps.sql)
+    for (const coin of inUse.filter((code) => !pricedToday.has(code))) {
+      if (!(await rates.reserveCall(source.id, monthOf(at), COIN_PRICE_MONTHLY_CAP))) {
+        deps.log(
+          `coin prices: ${source.id} not asked, its monthly cap of ${COIN_PRICE_MONTHLY_CAP} is reached`,
+        )
+        return
+      }
+      const answer = await source.daily(today, coin, [ECB_BASE])
+      if (!answer.success) {
+        deps.log(`coin prices: ${source.id} answered ${answer.error.code} for ${coin}`)
+        continue
+      }
+      const rate = answer.output.rates.find((found) =>
+        found.base === coin && found.quote === ECB_BASE && found.date === today
+      )
+      if (!rate) {
+        deps.log(`coin prices: ${source.id} has no ${coin} price for ${today}`)
+        continue
+      }
+      const problem = rateProblem(rate)
+      if (problem) {
+        deps.log(`coin prices: refused ${source.id} ${coin}/${ECB_BASE} ${today}: ${problem}`)
+        continue
+      }
+      await storeCoinPrice(deps.sql, { coin, price: rate.rate, date: today }, at)
+    }
+  } catch (error) {
+    deps.log(`coin prices: failed with ${(error as Error).name}`)
+  }
+}
+
+/**
+ * Stores the day's rates (`rates.fetch`). First the coin prices ({@link storeCoinPrices}), which
+ * never throw. Then the ECB's rates, through Frankfurter, against the euro:
  * on a weekend or a holiday Frankfurter answers with the last working day, whose rows exist
  * already, so a rerun stores nothing. A failed ECB call throws, and the worker retries it.
  *
@@ -72,6 +139,7 @@ export function ratesFetchJob(deps: RatesJobDeps): JobHandler {
     const rates = new PostgresRateRepository(deps.sql)
     const refuse = refusal(deps.log)
 
+    await storeCoinPrices(deps, setup, at)
     const ecb = await setup.ecb.daily(today, ECB_BASE, ecbQuotes())
     if (!ecb.success) throw new RatesFetchError(ecb.error.source, ecb.error.code)
     await rates.insert(ecb.output.rates, at, refuse)
