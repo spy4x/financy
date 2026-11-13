@@ -2110,6 +2110,17 @@ export default {
   "AdminRates.emptyText":
     "毎日のジョブが16:00 UTCに取得します。今すぐ取得するには、ジョブで「Exchange rates」を実行してください。",
   "AdminRates.loadError": "レートを読み込めませんでした。接続を確認して、もう一度お試しください。",
+  "AdminRates.coinsTitle": "暗号資産の価格",
+  "AdminRates.coinPrice": "{date}時点で{price}",
+  "AdminRates.coinFetched": "{time}に取得",
+  "AdminRates.coinsUnpriced":
+    "これらの暗号資産を保有する口座がありますが、価格がありません。価格はCoinGeckoのキーが設定されている間、1日1回取得されます。",
+  "AdminRates.coinsNone": "暗号資産を保有する口座がないため、価格は取得されません。",
+  "AdminRates.coinCalls": "今月のCoinGecko呼び出し",
+  "AdminRates.coinCallsHint":
+    "1回の呼び出しで1つの暗号資産の価格を1日1回取得します。カウントは{date}にリセットされます。",
+  "AdminRates.coinsCapped": "月間上限に達しました。{date}まで暗号資産の価格は取得されません。",
+  "AdminRates.coinsCredit": "データ提供: CoinGecko",
   "AdminAuditEvent.categoryCreated": "カテゴリを追加",
   "AdminAuditEvent.categoryUpdated": "カテゴリを変更",
   "AdminAuditEvent.categoryArchived": "カテゴリをアーカイブ",

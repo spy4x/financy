@@ -2023,6 +2023,17 @@ export default {
   "AdminRates.emptyText":
     "每日任务会在 UTC 16:00 获取汇率。要立即获取，请在“任务”中运行“Exchange rates”。",
   "AdminRates.loadError": "无法加载汇率。请检查网络连接后重试。",
+  "AdminRates.coinsTitle": "加密货币价格",
+  "AdminRates.coinPrice": "{date}：{price}",
+  "AdminRates.coinFetched": "获取于 {time}",
+  "AdminRates.coinsUnpriced":
+    "有账户持有这些加密货币，但它们没有价格。设置 CoinGecko 密钥后，每天获取一次价格。",
+  "AdminRates.coinsNone": "没有账户持有加密货币，因此不获取价格。",
+  "AdminRates.coinCalls": "本月 CoinGecko 调用次数",
+  "AdminRates.coinCallsHint":
+    "每次调用获取一种加密货币的价格，每天一次。计数将于 {date} 重新开始。",
+  "AdminRates.coinsCapped": "已达到每月上限。{date} 之前不再获取加密货币价格。",
+  "AdminRates.coinsCredit": "数据由 CoinGecko 提供",
   "AdminAuditEvent.categoryCreated": "添加了分类",
   "AdminAuditEvent.categoryUpdated": "更改了分类",
   "AdminAuditEvent.categoryArchived": "归档了分类",

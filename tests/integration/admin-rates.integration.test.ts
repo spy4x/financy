@@ -2,10 +2,11 @@
 import { expect } from "@std/expect"
 import type postgres from "postgres"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
-import { RATE_SOURCES } from "@domain/money"
+import { COIN_PRICE_SOURCE, RATE_SOURCES } from "@domain/money"
 import { JOB_AGGREGATE } from "@server/jobs/jobs.ts"
 import { RATES_FETCH_JOB } from "@server/jobs/exchange-rates.ts"
 import { readAdminRates } from "@server/money/admin-rates.ts"
+import { storeCoinPrice } from "@server/money/coin-prices.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { team, withSchema } from "./group-team.ts"
@@ -50,6 +51,7 @@ Deno.test("admin rates: a server with no rates and no fallback shows seven empty
       missing: { date: `2026-11-02`, currencies: [] },
       fallback: null,
       days: DAYS.map((date) => ({ date, rows: [] })),
+      coins: { prices: [], unpriced: [], calls: { used: 0, cap: 10_000, resetsOn: `2026-12-01` } },
     })
   })
 })
@@ -100,5 +102,29 @@ Deno.test("admin rates: the page shows the last run, each source's fetch, the cu
     expect(page.days[4].rows.map((row) => row.source).toSorted()).toEqual(
       [RATE_SOURCES.ecb, RATE_SOURCES.fallback].toSorted(),
     )
+  })
+})
+
+Deno.test("admin rates: the page shows each stored coin price, the coins in use with none, and CoinGecko's calls this month", async () => {
+  await withSchema(async (sql) => {
+    const { groupId } = await team(sql)
+    for (const coin of [`BTC`, `ETH`]) {
+      await sql`
+        INSERT INTO accounts (id, group_id, name, kind, currency, change_sequence)
+        VALUES (${uuidV7()}, ${groupId}, 'Wallet', 7, ${coin}, 1)
+      `
+    }
+    await storeCoinPrice(sql, { coin: `BTC`, price: `69608.45`, date: `2026-11-02` }, FETCHED)
+    const rates = new PostgresRateRepository(sql)
+    await rates.reserveCall(COIN_PRICE_SOURCE, `2026-11-01`, 10)
+    await rates.reserveCall(COIN_PRICE_SOURCE, `2026-10-01`, 10)
+
+    expect((await readAdminRates(sql, MONDAY, null)).coins).toEqual({
+      prices: [
+        { coin: `BTC`, price: `69608.45`, date: `2026-11-02`, fetchedAt: FETCHED.toISOString() },
+      ],
+      unpriced: [`ETH`],
+      calls: { used: 1, cap: 10_000, resetsOn: `2026-12-01` },
+    })
   })
 })

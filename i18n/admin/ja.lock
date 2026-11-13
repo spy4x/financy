@@ -1514,6 +1514,15 @@ AdminPreferences.timeZone	b9fe1464783e1c0d
 AdminPreferences.title	4f9555cd54eade38
 AdminPreferences.zoneNow	b0286af0cc38bdfa
 AdminPreferences.zoneSignedUp	02823cafa830bcf6
+AdminRates.coinCalls	9018115bd820fc57
+AdminRates.coinCallsHint	4aacd10081197d10
+AdminRates.coinFetched	f45094d59e2fd016
+AdminRates.coinPrice	60738f9db53d244f
+AdminRates.coinsCapped	604ffc96dfabf35b
+AdminRates.coinsCredit	41241791667d1bc9
+AdminRates.coinsNone	23782f0bcd2c308a
+AdminRates.coinsTitle	7de02c4b83297ce0
+AdminRates.coinsUnpriced	c0101de1472e6ba9
 AdminRates.currencies	d079ee92c1cb3559
 AdminRates.day	8f2364e11b8be3ff
 AdminRates.daysTitle	d3a3f6100b6cff93

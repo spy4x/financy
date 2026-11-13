@@ -13,7 +13,7 @@ import { PageHeader } from "@spy4x/preact-ui/page-header"
 import { UsageMeter } from "@spy4x/preact-ui/usage-meter"
 import { useFormat } from "@spy4x/preact-ui/format"
 import type { Translator } from "@spy4x/platform/universal/i18n"
-import { type AdminRatesSnapshot, RATE_SOURCES } from "@domain/money"
+import { type AdminRatesSnapshot, ECB_BASE, RATE_SOURCES } from "@domain/money"
 import { ADMIN_JOB_PATHS } from "./admin-jobs-screen.tsx"
 import type { Navigate } from "./progressive.tsx"
 import { useAdminText } from "./i18n.ts"
@@ -232,8 +232,75 @@ function RatesBody(
             )}
         </FactCard>
       </section>
+      <CoinPrices coins={snapshot.coins} />
       <RatesByDay snapshot={snapshot} />
     </>
+  )
+}
+
+/**
+ * CoinGecko's coin prices: each stored price with its day and fetch time, the coins accounts hold
+ * that have no price, and the calls this month against the monthly limit. CoinGecko's terms ask
+ * for its credit next to its data.
+ */
+function CoinPrices({ coins }: { coins: AdminRatesSnapshot["coins"] }): JSX.Element {
+  const t = useAdminText()
+  const dates = useRateDates()
+  const euros = new Intl.NumberFormat(t.language, { style: `currency`, currency: ECB_BASE })
+  const { prices, unpriced, calls } = coins
+  return (
+    <FactCard title={t.t(`AdminRates.coinsTitle`)} dataE2E="admin-rates-coins">
+      {prices.length > 0 && (
+        <FactList
+          class="-my-3"
+          facts={prices.map((price) => ({
+            label: price.coin,
+            value: (
+              <span class="flex flex-col gap-0.5">
+                <span class="tabular-nums">
+                  {t.t(`AdminRates.coinPrice`, {
+                    // A display only: the stored decimal string, formatted, never computed with.
+                    price: euros.format(price.price as Intl.StringNumericLiteral),
+                    date: dates.long(price.date),
+                  })}
+                </span>
+                <span class="text-xs text-muted">
+                  {t.t(`AdminRates.coinFetched`, { time: dates.at(price.fetchedAt) })}
+                </span>
+              </span>
+            ),
+          }))}
+        />
+      )}
+      {unpriced.length > 0
+        ? (
+          <Notice tone="warning">
+            <span class="flex flex-col gap-1" data-e2e="admin-rates-coins-unpriced">
+              <span class="font-medium" translate={false}>{unpriced.join(`, `)}</span>
+              <span>{t.t(`AdminRates.coinsUnpriced`)}</span>
+            </span>
+          </Notice>
+        )
+        : prices.length === 0 && <p class="text-sm text-muted">{t.t(`AdminRates.coinsNone`)}</p>}
+      <UsageMeter
+        used={calls.used}
+        limit={calls.cap}
+        label={t.t(`AdminRates.coinCalls`)}
+        format={(amount) => new Intl.NumberFormat(t.language).format(amount)}
+      />
+      {calls.used >= calls.cap
+        ? (
+          <Notice tone="warning">
+            {t.t(`AdminRates.coinsCapped`, { date: dates.long(calls.resetsOn) })}
+          </Notice>
+        )
+        : (
+          <p class="text-xs text-muted">
+            {t.t(`AdminRates.coinCallsHint`, { date: dates.long(calls.resetsOn) })}
+          </p>
+        )}
+      <p class="text-xs text-muted">{t.t(`AdminRates.coinsCredit`)}</p>
+    </FactCard>
   )
 }
 

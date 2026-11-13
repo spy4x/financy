@@ -2486,6 +2486,17 @@ export default {
   "AdminRates.emptyText":
     "تجلبها المهمة اليومية في 16:00 UTC. لجلبها الآن، شغّل «Exchange rates» في المهام.",
   "AdminRates.loadError": "تعذّر تحميل الأسعار. تحقّق من اتصالك وحاول مرة أخرى.",
+  "AdminRates.coinsTitle": "أسعار العملات الرقمية",
+  "AdminRates.coinPrice": "{price} في {date}",
+  "AdminRates.coinFetched": "جُلب {time}",
+  "AdminRates.coinsUnpriced":
+    "تحتفظ حسابات بهذه العملات الرقمية، لكن لا سعر لها. تُجلب الأسعار مرة في اليوم ما دام مفتاح CoinGecko مضبوطًا.",
+  "AdminRates.coinsNone": "لا يحتفظ أي حساب بعملة رقمية، لذا لا يُجلب أي سعر.",
+  "AdminRates.coinCalls": "طلبات CoinGecko هذا الشهر",
+  "AdminRates.coinCallsHint":
+    "كل طلب يجلب سعر عملة رقمية واحدة، مرة في اليوم. يبدأ العدّ من جديد في {date}.",
+  "AdminRates.coinsCapped": "بلغ الحد الشهري. لا أسعار للعملات الرقمية حتى {date}.",
+  "AdminRates.coinsCredit": "البيانات مقدّمة من CoinGecko",
   "AdminAuditEvent.categoryCreated": "أُضيفت فئة",
   "AdminAuditEvent.categoryUpdated": "غُيّرت فئة",
   "AdminAuditEvent.categoryArchived": "أُرشفت فئة",

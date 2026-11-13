@@ -12,6 +12,16 @@ const SNAPSHOT: AdminRatesSnapshot = {
     date: `2026-11-06`,
     rows: [{ source: `frankfurter:ECB`, currencies: 30, fetchedAt: `2026-11-06T16:02:00.000Z` }],
   }],
+  coins: {
+    prices: [{
+      coin: `BTC`,
+      price: `69608.45`,
+      date: `2026-11-06`,
+      fetchedAt: `2026-11-06T16:01:00.000Z`,
+    }],
+    unpriced: [`ETH`],
+    calls: { used: 6, cap: 10_000, resetsOn: `2026-12-01` },
+  },
 }
 
 Deno.test("the exchange rates route answers the page's snapshot after the rate limit", async () => {

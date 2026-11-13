@@ -1,8 +1,9 @@
 import type postgres from "postgres"
 import type { AdminRatesSnapshot } from "@domain/money"
-import { RATE_SOURCES } from "@domain/money"
+import { COIN_PRICE_MONTHLY_CAP, COIN_PRICE_SOURCE, RATE_SOURCES } from "@domain/money"
 import { readRepeatingRuns } from "@server/jobs/admin-jobs.ts"
 import { RATES_FETCH_JOB } from "@server/jobs/exchange-rates.ts"
+import { coinsInUse, readCoinPrices } from "./coin-prices.ts"
 import { monthOf, PostgresRateRepository } from "./postgres-rate-repository.ts"
 
 /** How many days the page's table covers, today included. */
@@ -28,17 +29,21 @@ export async function readAdminRates(
   const rates = new PostgresRateRepository(sql)
   const today = dayOf(now)
   const oldest = dayOf(now, 1 - ADMIN_RATE_DAYS)
-  const [[run], fetches, latest, inUse, rows] = await Promise.all([
+  const month = monthOf(now)
+  const [[run], fetches, latest, inUse, rows, coins, prices, coinCalls] = await Promise.all([
     readRepeatingRuns(sql, [RATES_FETCH_JOB]),
     rates.lastFetches(),
     rates.latestEcbDate(),
     rates.currenciesInUse(),
     rates.days(oldest),
+    coinsInUse(sql),
+    readCoinPrices(sql),
+    rates.callsIn(COIN_PRICE_SOURCE, month),
   ])
   const date = latest ?? today
-  const month = monthOf(now)
   const nextMonth = new Date(`${month}T00:00:00Z`)
   nextMonth.setUTCMonth(nextMonth.getUTCMonth() + 1)
+  const priced = new Set(prices.map((price) => price.coin))
   return {
     lastRun: run.lastRunAt ? { at: run.lastRunAt.toISOString(), failed: run.lastFailed } : null,
     fetches: fetches.map((fetch) => ({ ...fetch, fetchedAt: fetch.fetchedAt.toISOString() })),
@@ -59,6 +64,11 @@ export async function readAdminRates(
         })),
       }
     }),
+    coins: {
+      prices: prices.map((price) => ({ ...price, fetchedAt: price.fetchedAt.toISOString() })),
+      unpriced: coins.filter((coin) => !priced.has(coin)),
+      calls: { used: coinCalls, cap: COIN_PRICE_MONTHLY_CAP, resetsOn: dayOf(nextMonth) },
+    },
   }
 }
 

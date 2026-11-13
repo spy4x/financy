@@ -2337,6 +2337,19 @@ export default {
   "AdminRates.emptyText":
     "La tâche quotidienne les récupère à 16 h 00 UTC. Pour les récupérer maintenant, lancez « Exchange rates » dans Tâches.",
   "AdminRates.loadError": "Impossible de charger les taux. Vérifiez votre connexion et réessayez.",
+  "AdminRates.coinsTitle": "Prix des cryptomonnaies",
+  "AdminRates.coinPrice": "{price} le {date}",
+  "AdminRates.coinFetched": "Récupéré {time}",
+  "AdminRates.coinsUnpriced":
+    "Des comptes détiennent ces cryptomonnaies, mais elles n'ont pas de prix. Les prix sont récupérés une fois par jour tant qu'une clé CoinGecko est définie.",
+  "AdminRates.coinsNone":
+    "Aucun compte ne détient de cryptomonnaie, donc aucun prix n'est récupéré.",
+  "AdminRates.coinCalls": "Appels à CoinGecko ce mois-ci",
+  "AdminRates.coinCallsHint":
+    "Chaque appel donne le prix d'une cryptomonnaie, une fois par jour. Le compteur repart le {date}.",
+  "AdminRates.coinsCapped":
+    "La limite mensuelle est atteinte. Pas de prix de cryptomonnaies avant le {date}.",
+  "AdminRates.coinsCredit": "Données fournies par CoinGecko",
   "AdminAuditEvent.categoryCreated": "Catégorie ajoutée",
   "AdminAuditEvent.categoryUpdated": "Catégorie modifiée",
   "AdminAuditEvent.categoryArchived": "Catégorie archivée",

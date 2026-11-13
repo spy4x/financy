@@ -359,7 +359,8 @@ export function readHouseholdSettings(value: unknown): HouseholdSettings | null 
 /**
  * The admin's Exchange rates page (`GET /api/admin/rates`): the daily job's last run, each
  * source's last fetch, the main currencies in use with no rate on the latest rate day, the paid
- * fallback's calls this month, and the last 7 days. It names no household and counts none.
+ * fallback's calls this month, the last 7 days, and the coin prices. It names no household and
+ * counts none.
  */
 export interface AdminRatesSnapshot {
   /** The daily job's last finished run, or `null` before the first. */
@@ -371,5 +372,13 @@ export interface AdminRatesSnapshot {
   /** The paid fallback's calls this month, or `null` while it is off. */
   fallback: { used: number; cap: number; resetsOn: string } | null
   /** The last 7 days, newest first; a day no source has rates for has no rows. */
-  days: { date: string; rows: { source: string; currencies: number; fetchedAt: string }[] }[]
+  days: { date: string; rows: { source: string; currencies: number; fetchedAt: string }[] }[]  /**
+   * CoinGecko's coin prices: each stored price with its day and fetch time (ISO 8601), the listed
+   * coins an account holds that have no price, and the calls this month against the monthly cap.
+   */
+  coins: {
+    prices: { coin: string; price: string; date: string; fetchedAt: string }[]
+    unpriced: string[]
+    calls: { used: number; cap: number; resetsOn: string }
+  }
 }
