@@ -49,7 +49,7 @@ export function AdminEntriesScreen(props: AdminEntriesScreenProps): JSX.Element 
           ? (
             <div class="flex flex-col items-start gap-3">
               <ErrorState message={error} dataE2E="admin-entries-error" />
-              <Button variant="secondary" onClick={props.onRetry}>
+              <Button variant="secondary" class="max-sm:min-h-11" onClick={props.onRetry}>
                 {t.t(`AdminEntries.retry`)}
               </Button>
             </div>
@@ -148,7 +148,7 @@ function Body(
                       navigate={navigate}
                       class="inline-flex min-h-11 min-w-0 items-center font-medium sm:min-h-9"
                     >
-                      <bdi class="min-w-0 truncate">{household.groupName}</bdi>
+                      <bdi class="min-w-0 line-clamp-2 break-words">{household.groupName}</bdi>
                     </Link>
                     <span class="ms-auto shrink-0 text-sm tabular-nums">
                       {t.t(`AdminEntries.entryCount`, { count: household.entries })}
@@ -162,7 +162,7 @@ function Body(
                       <li
                         key={months[index].month}
                         class={`flex flex-col items-center rounded-md py-1 ${
-                          count ? `bg-selected-soft` : `bg-track`
+                          count ? `bg-selected-soft` : `border border-subtle`
                         }`}
                       >
                         <span aria-hidden="true" class={`text-xs ${count ? `` : `text-muted`}`}>
