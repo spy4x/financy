@@ -10,6 +10,7 @@ import { TransactionKind } from "@domain/transactions"
 import {
   RecurringRuleCreateCommand,
   RecurringRuleDeleteCommand,
+  RecurringRuleError,
   RecurringRuleRestoreCommand,
   RecurringRuleSkipCommand,
   RecurringRuleUpdateCommand,
@@ -55,14 +56,19 @@ function repository() {
   })
 }
 
-function stack(plan: string, billingEnabled = true, rules = repository()) {
-  const dependencies = { rules, groups: { roleOf: () => Promise.resolve(GroupRole.OWNER) } }
+function stack(
+  plan: string,
+  billingEnabled = true,
+  rules = repository(),
+  role = GroupRole.OWNER,
+) {
+  const dependencies = { rules, groups: { roleOf: () => Promise.resolve(role) } }
   const commands = new CommandBus()
   commands.use(createEntitlementGate({
     billingEnabled,
     plans: PLANS,
     planOf: () => Promise.resolve(plan),
-    roleOf: () => Promise.resolve(GroupRole.OWNER),
+    roleOf: () => Promise.resolve(role),
     usage: testUsage({ maxRecurringRules: (group) => rules.count(group) }),
   }, ENTITLEMENT_NEEDS))
   commands.register(RecurringRuleCreateCommand, createRecurringRuleCreateHandler(dependencies))
@@ -107,6 +113,20 @@ describe(`repeating rules under Financy's plans`, () => {
       s.commands.execute(new RecurringRuleRestoreCommand({ actor, groupId, id })),
     ).rejects.toThrow(PlanError)
     expect(s.rules.rules.get(id)?.deletedAt).not.toBeNull()
+  })
+
+  it(`tells a viewer they may not write before it tells them about the plan`, async () => {
+    const rules = repository()
+    const s = stack(FREE_PLAN_ID, true, rules, GroupRole.VIEWER)
+    const id = await s.existing()
+    await rules.delete({ groupId, id, expectedVersion: 1 }, OWNER)
+
+    for (
+      const command of [createCommand(), new RecurringRuleRestoreCommand({ actor, groupId, id })]
+    ) {
+      await expect(s.commands.execute(command)).rejects.toThrow(RecurringRuleError)
+    }
+    expect(await s.rules.count(groupId)).toBe(0)
   })
 
   it(`adds rules and brings them back with no cap on the Household plan`, async () => {

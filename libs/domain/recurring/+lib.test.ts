@@ -161,7 +161,11 @@ describe(`a rule request`, () => {
       const payload of [
         { ...rent, count: 0 },
         { ...rent, count: RECURRING_COUNT_MAX + 1 },
-        { ...rent, rrule: `FREQ=DAILY;${`X`.repeat(RECURRING_RRULE_MAX_LENGTH)}` },
+        // The parser takes this text; only the length cap refuses it.
+        {
+          ...rent,
+          rrule: `FREQ=MONTHLY;BYMONTHDAY=${`1,`.repeat(RECURRING_RRULE_MAX_LENGTH / 2)}1`,
+        },
         { ...rent, startDate: `2026-02-30` },
         { ...rent, madeThrough: `2026-11-01` },
         { ...rent, pausedReason: 1 },
@@ -289,6 +293,7 @@ describe(`skipping a date`, () => {
   it(`counts the last day of a short month as a monthly occurrence on day -1`, () => {
     const lastDay = { ...mondays, rrule: `FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=-1` }
     expect(isOccurrence(lastDay, `2027-02-28`)).toBe(true)
+    expect(isOccurrence(lastDay, `2027-03-31`)).toBe(true)
     expect(isOccurrence(lastDay, `2027-02-27`)).toBe(false)
   })
 })
