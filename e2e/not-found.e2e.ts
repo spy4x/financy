@@ -68,7 +68,8 @@ test.describe("an unknown address", () => {
       await expect(marked(page)).toHaveCount(0)
       await page.locator("[data-e2e=not-found-link]").click()
       await expect(page).toHaveURL(`${appBase}/notes`)
-      await expect(marked(page)).not.toHaveCount(0)
+      // Financy keeps Notes in the account menu, not the rail, so no rail entry marks it.
+      await expect(page.getByRole("heading", { level: 1, name: "Notes" })).toBeVisible()
     } finally {
       await cleanup(request, email)
     }
