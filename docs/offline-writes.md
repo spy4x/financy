@@ -2,8 +2,8 @@
 
 > Also on the website: [seedsaas.com/docs/offline-writes](https://seedsaas.com/docs/offline-writes).
 
-This page explains how a note or tag written with no network reaches the server, and what the
-person sees when the server refuses it.
+This page explains how a note, tag or transaction written with no network reaches the server, and
+what the person sees when the server refuses it.
 
 ## Writes: the outbox
 
@@ -78,6 +78,13 @@ notes screen shows both sides:
 The server's side shows the server's copy of a changed note or tag. A deleted one reads "The note is
 no longer in this group." Any other conflict without a copy reads "The server's version isn't
 available."
+
+**Entries.** A transaction names an account and a category, which are never queued (level 2). If
+either was deleted before a queued entry reached the server, the server refuses it, and the entry
+stays in the outbox as a conflict that says which one is gone. The transactions list keeps the
+entry, marked, with **Pick another account** (or category), which opens its editor: saving sends
+it with the new choice and clears the conflict. **Discard** drops it from the device. The sync line
+shows the same reason, with **Discard mine**.
 
 A write made online that the server refuses is not queued. The notes screen shows "Someone changed
 this note since you opened it." with "Load the latest version".
