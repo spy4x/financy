@@ -67,6 +67,7 @@ const VIEW: HouseholdSettingsView = {
   },
   rates: [],
   ratedCurrencies: ["EUR", "USD"],
+  coinPrices: [],
 }
 
 /** The app's English, with the components' words, as the SPA builds it. */

@@ -137,14 +137,15 @@ export function defaultHouseholdSettings(groupId: string): HouseholdSettings {
 
 /**
  * What the settings section reads: the settings, the latest ECB rate of each currency the group
- * uses with its date, and every currency this server has a daily rate for. Fallback rates are never
- * in `rates`; a currency only the fallback covers is still in `ratedCurrencies`, which names codes,
- * not rates.
+ * uses with its date, every currency this server has a daily rate for, and today's price of each
+ * coin an account on this server holds. Fallback rates are never in `rates`; a currency only the
+ * fallback covers is still in `ratedCurrencies`, which names codes, not rates.
  */
 export interface HouseholdSettingsView {
   settings: HouseholdSettings
   rates: ExchangeRate[]
   ratedCurrencies: string[]
+  coinPrices: CoinPrice[]
 }
 
 export type HouseholdErrorCode =
@@ -288,6 +289,8 @@ export interface HouseholdRateReader {
   latestEcbRates(currencies: readonly string[]): Promise<ExchangeRate[]>
   /** Every currency with a rate from any source in the last week, plus the euro. */
   ratedCurrencies(): Promise<string[]>
+  /** Every stored coin price, by coin: one per coin, never a history. */
+  coinPrices(): Promise<CoinPrice[]>
 }
 // #endregion Ports
 
@@ -328,10 +331,16 @@ const rateShape = type({
   date: /^\d{4}-\d{2}-\d{2}$/,
   source: "string",
 })
+const coinPriceShape = type({
+  coin: "string",
+  price: /^\d+(\.\d+)?$/,
+  date: /^\d{4}-\d{2}-\d{2}$/,
+})
 const viewShape = type({
   settings: settingsShape,
   rates: rateShape.array(),
   ratedCurrencies: "string[]",
+  coinPrices: coinPriceShape.array(),
 })
 
 /** The settings view the API sent, or `null` when it is not one (a client reads untrusted JSON). */

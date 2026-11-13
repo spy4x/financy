@@ -209,6 +209,17 @@ Deno.test("coin prices: yesterday's price is replaced by today's, never kept bes
   })
 })
 
+Deno.test("coin prices: the household settings read each stored price with its date, and no fetch time", async () => {
+  await withSchema(async (sql) => {
+    await storeCoinPrice(sql, { coin: `ETH`, price: ETH_EUR, date: `2026-10-30` }, FRIDAY_16H)
+    await storeCoinPrice(sql, { coin: `BTC`, price: BTC_EUR, date: `2026-10-29` }, FRIDAY_16H)
+    expect(await new PostgresRateRepository(sql).coinPrices()).toEqual([
+      { coin: `BTC`, price: BTC_EUR, date: `2026-10-29` },
+      { coin: `ETH`, price: ETH_EUR, date: `2026-10-30` },
+    ])
+  })
+})
+
 Deno.test("coin prices: a stored price of a later day is never moved back by an earlier one", async () => {
   await withSchema(async (sql) => {
     await storeCoinPrice(sql, { coin: `BTC`, price: `2`, date: `2026-10-31` }, FRIDAY_16H)
