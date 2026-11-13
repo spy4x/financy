@@ -119,9 +119,9 @@ export interface RecurringRule {
   count: number | null
   /** Occurrences that make no entry, in date order. */
   skippedDates: string[]
-  /** The last day the job made entries through; `null` until it first runs (#219). */
+  /** The last day the job made entries through; `null` until it first runs. */
   madeThrough: string | null
-  /** Why the job stopped making entries; `null` while it runs. Set only by the job (#219). */
+  /** Why the job stopped making entries; `null` while it runs. Set only by the job. */
   pausedReason: number | null
   /** Starts at 1 and grows by one with every change; a change or delete must name it. */
   version: number
@@ -216,14 +216,15 @@ function refuse(
 }
 
 /**
- * Checks a repeat against the subset Financy makes entries for (its length is capped at
- * {@link RECURRING_RRULE_MAX_LENGTH} by the request schemas, before it is parsed), and returns it as `formatRrule`
- * writes it, the one text stored for it. The subset never skips a period in silence:
+ * Checks a repeat against the subset Financy makes entries for (the request schemas cap its
+ * length at {@link RECURRING_RRULE_MAX_LENGTH} before it is parsed), and returns it as
+ * `formatRrule` writes it, the one text stored for it. The subset never skips a period in silence:
  *
- * - `FREQ` is daily, weekly, monthly or yearly, and `INTERVAL` at most {@link RECURRING_INTERVAL_MAX}.
+ * - `FREQ` is daily, weekly, monthly or yearly, and `INTERVAL` at most
+ *   {@link RECURRING_INTERVAL_MAX}.
  * - Weekly names its weekdays (`BYDAY=MO,TH`), without a number and each once.
- * - Monthly names its days (`BYMONTHDAY`; one named twice is kept once), from 1 to 28 or -1 for the last day of the
- *   month: day 29, 30 or 31 would leave out the months that lack it.
+ * - Monthly names its days (`BYMONTHDAY`; one named twice is kept once), from 1 to 28 or -1 for
+ *   the last day of the month: day 29, 30 or 31 would leave out the months that lack it.
  * - Daily and yearly take no `BY` part; yearly repeats on the start date's day, which therefore
  *   cannot be 29 February.
  * - `COUNT` and `UNTIL` are refused: the end is the rule's `endDate` or `count`, never its text.

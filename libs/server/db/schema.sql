@@ -1849,8 +1849,7 @@ CREATE INDEX idx_budget_moves_from_category ON budget_moves (group_id, from_cate
 CREATE INDEX idx_budget_moves_to_category ON budget_moves (group_id, to_category_id);
 CREATE INDEX idx_budget_moves_created_by ON budget_moves (created_by_user_id);
 
--- Repeating rules (#102): an entry that comes back on a schedule; see the migration for the
--- columns.
+-- Repeating rules: an entry that comes back on a schedule; see the migration for the columns.
 CREATE TABLE recurring_rules (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
