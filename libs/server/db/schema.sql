@@ -1848,3 +1848,15 @@ CREATE INDEX idx_budget_moves_group_change_sequence ON budget_moves (group_id, c
 CREATE INDEX idx_budget_moves_from_category ON budget_moves (group_id, from_category_id);
 CREATE INDEX idx_budget_moves_to_category ON budget_moves (group_id, to_category_id);
 CREATE INDEX idx_budget_moves_created_by ON budget_moves (created_by_user_id);
+
+-- Coin prices (2026_12_20_0001_coin_prices.sql): today's price in euros of each listed coin an
+-- account holds, one row per coin, upserted by `rates.fetch`, never a history. Deleted when the
+-- CoinGecko key is removed, as its terms require.
+CREATE TABLE coin_prices (
+    coin VARCHAR(12) PRIMARY KEY,
+    price NUMERIC NOT NULL,
+    price_date DATE NOT NULL,
+    fetched_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT coin_prices_coin_check CHECK (coin ~ '^[A-Z][A-Z0-9]{1,11}$'),
+    CONSTRAINT coin_prices_price_check CHECK (price > 0)
+);

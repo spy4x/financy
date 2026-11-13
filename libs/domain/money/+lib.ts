@@ -74,6 +74,25 @@ export const RATE_SOURCES = {
   fallback: "exchangerate-api",
 } as const
 
+/** CoinGecko, which prices the listed coins: its id as the ts-libs client names itself. */
+export const COIN_PRICE_SOURCE = "coingecko"
+
+/**
+ * The most calls the daily job makes to CoinGecko in one calendar month: its Demo plan's monthly
+ * limit. One call prices one coin.
+ */
+export const COIN_PRICE_MONTHLY_CAP = 10_000
+
+/**
+ * Today's price of a listed coin: one coin buys `price` euros (a plain decimal string), as of
+ * 00:00 UTC on `date`. Only the latest price is kept, never a history.
+ */
+export interface CoinPrice {
+  coin: string
+  price: string
+  date: string
+}
+
 /** The kinds of the outbox and audit rows a settings change writes. */
 export const HOUSEHOLD_EVENTS = {
   /** The group's change log entry: other members' pages read the settings again. */
