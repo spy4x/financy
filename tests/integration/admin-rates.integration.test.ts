@@ -117,6 +117,7 @@ Deno.test("admin rates: the page shows each stored coin price, the coins in use 
     await storeCoinPrice(sql, { coin: `BTC`, price: `69608.45`, date: `2026-11-02` }, FETCHED)
     const rates = new PostgresRateRepository(sql)
     await rates.reserveCall(COIN_PRICE_SOURCE, `2026-11-01`, 10)
+    await rates.reserveCall(COIN_PRICE_SOURCE, `2026-11-01`, 10)
     await rates.reserveCall(COIN_PRICE_SOURCE, `2026-10-01`, 10)
 
     expect((await readAdminRates(sql, MONDAY, null)).coins).toEqual({
@@ -124,7 +125,7 @@ Deno.test("admin rates: the page shows each stored coin price, the coins in use 
         { coin: `BTC`, price: `69608.45`, date: `2026-11-02`, fetchedAt: FETCHED.toISOString() },
       ],
       unpriced: [`ETH`],
-      calls: { used: 1, cap: 10_000, resetsOn: `2026-12-01` },
+      calls: { used: 2, cap: 10_000, resetsOn: `2026-12-01` },
     })
   })
 })
