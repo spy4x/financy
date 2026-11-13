@@ -173,7 +173,7 @@ describe("the notes and tags a device keeps in IndexedDB", () => {
     expect(await notesOf(8)).toEqual([])
   })
 
-  it("keeps a household's transactions, the latest date first, and drops one deleted later", async () => {
+  it("keeps a household's transactions, the latest date first, then the latest written, and drops one deleted later", async () => {
     const { copyOf } = browser()
     const entry = (id: string, date: string, createdAt: string) => ({
       id,
@@ -201,20 +201,21 @@ describe("the notes and tags a device keeps in IndexedDB", () => {
       tombstones: gone,
     })
     const copy = copyOf(7, [
+      // The ids sort the other way round, so only the written time puts "evening" first.
       page(0, 3, [
         entry("older", "2026-11-01", "2026-11-01T09:00:00.000Z"),
-        entry("early", "2026-11-12", "2026-11-12T08:00:00.000Z"),
-        entry("late", "2026-11-12", "2026-11-12T18:00:00.000Z"),
+        entry("morning", "2026-11-12", "2026-11-12T08:00:00.000Z"),
+        entry("evening", "2026-11-12", "2026-11-12T18:00:00.000Z"),
       ]),
-      page(3, 4, [], [{ kind: "transactions", id: "early" }]),
+      page(3, 4, [], [{ kind: "transactions", id: "morning" }]),
     ])
 
     await copy.pull(groupId)
     expect((await copy.transactions.readTransactions(groupId)).map((row) => row.id))
-      .toEqual(["late", "early", "older"])
+      .toEqual(["evening", "morning", "older"])
     await copy.pull(groupId)
     expect((await copy.transactions.readTransactions(groupId)).map((row) => row.id))
-      .toEqual(["late", "older"])
+      .toEqual(["evening", "older"])
   })
 
   it("asks only for the changes after its cursor, and drops the notes the server sends as gone", async () => {
