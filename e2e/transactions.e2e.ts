@@ -71,15 +71,35 @@ test.describe("transactions", () => {
       await currency.press("Enter")
       await page.locator("[data-e2e=account-save]").click()
       await expect(page.locator("[data-e2e=account-save]")).toHaveCount(0)
+      await page.getByRole("link", { name: "Back to accounts" }).click()
+      await page.locator("[data-e2e=account-new]").click()
+      await page.locator("[data-e2e=account-name-input]").fill("Card")
+      await currency.fill("USD")
+      await currency.press("Enter")
+      await page.locator("[data-e2e=account-save]").click()
+      await expect(page.locator("[data-e2e=account-save]")).toHaveCount(0)
 
       // The first entry, from the list: nothing to take a category from yet.
       await rail(page).getByRole("link", { name: "Transactions" }).click()
       await expect(page).toHaveURL("/transactions")
       await page.locator("[data-e2e=transaction-new-empty]").click()
       await expect(amount(page)).toBeFocused()
-      await expect(chosen(page, "account")).toHaveText("Wallet · EUR")
+      // No default account and no last entry: the editor starts with the first account, and the
+      // amount's currency follows the account the person picks.
+      const amountField = page.locator("[data-e2e=transaction-amount-field]")
+      await expect(chosen(page, "account")).toHaveText("Card · USD")
+      await expect(amountField).toContainText("(USD)")
+      await page.locator("select[data-e2e=transaction-account]").selectOption({
+        label: "Wallet · EUR",
+      })
+      await expect(amountField).toContainText("(EUR)")
+      // Enter with no category shows the editor's own message, not the browser's.
       await amount(page).fill("4.50")
-      await page.locator("select[data-e2e=transaction-category]").selectOption({ label: "Coffee" })
+      await amount(page).press("Enter")
+      const category = page.locator("select[data-e2e=transaction-category]")
+      await expect(page.getByText("Choose a category.")).toBeVisible()
+      await expect(category).toBeFocused()
+      await category.selectOption({ label: "Coffee" })
       // A refused save moves focus from Save to the field it names.
       const memo = page.locator("[data-e2e=transaction-memo]")
       await memo.fill("Latte‮")

@@ -434,6 +434,11 @@ function Editor(props: Shown): JSX.Element {
                   ))}
               </select>
             </Field>
+            {
+              /* A function child, so `Field` draws the `*` but hands the select no native
+                `required`: the browser's bubble would block Enter before the editor's own
+                "Choose a category." and its focus move. */
+            }
             <Field
               id="transaction-category"
               label={t.t(`TransactionEditor.category`)}
@@ -441,26 +446,31 @@ function Editor(props: Shown): JSX.Element {
               hint={refund ? t.t(`TransactionEditor.refundHint`) : undefined}
               required
             >
-              <select
-                class="pc-select"
-                name="categoryId"
-                data-e2e="transaction-category"
-                value={value.categoryId ?? ""}
-                onChange={(e) => change({ categoryId: e.currentTarget.value || null })}
-                required
-              >
-                <option value="">{t.t(`TransactionEditor.chooseCategory`)}</option>
-                {groups.own.map((category) => (
-                  <option key={category.id} value={category.id}>{category.label}</option>
-                ))}
-                {groups.refund.length > 0 && (
-                  <optgroup label={t.t(`TransactionEditor.refundGroup`)}>
-                    {groups.refund.map((category) => (
-                      <option key={category.id} value={category.id}>{category.label}</option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
+              {(wiring) => (
+                <select
+                  id={wiring.id}
+                  aria-describedby={wiring["aria-describedby"]}
+                  aria-invalid={errors.category !== null}
+                  aria-required="true"
+                  class="pc-select"
+                  name="categoryId"
+                  data-e2e="transaction-category"
+                  value={value.categoryId ?? ""}
+                  onChange={(e) => change({ categoryId: e.currentTarget.value || null })}
+                >
+                  <option value="">{t.t(`TransactionEditor.chooseCategory`)}</option>
+                  {groups.own.map((category) => (
+                    <option key={category.id} value={category.id}>{category.label}</option>
+                  ))}
+                  {groups.refund.length > 0 && (
+                    <optgroup label={t.t(`TransactionEditor.refundGroup`)}>
+                      {groups.refund.map((category) => (
+                        <option key={category.id} value={category.id}>{category.label}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+              )}
             </Field>
             <Field
               id="transaction-date"
