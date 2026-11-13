@@ -571,7 +571,7 @@ export default {
   "HomeStatus.transfers": "Transferencias entre cuentas, también entre monedas",
   "HomeStatus.month": "El dinero de este mes de un vistazo",
   "HomeStatus.later":
-    "Los presupuestos, la importación de extractos bancarios y la nube de pago llegan después: <plan>ver el plan completo</plan>.",
+    "La importación de extractos bancarios y la nube de pago llegan después: <plan>ver el plan completo</plan>.",
   "HomeWho.keeperTitle": "Quien lleva las cuentas",
   "HomeWho.keeperText":
     "El sueldo en una moneda, el alquiler en otra, los ahorros en una tercera: un solo total con los tipos del BCE y su fecha.",
@@ -615,12 +615,12 @@ export default {
   "FeatureAccounts.nav": "Cuentas",
   "FeatureAccounts.title": "Cada cuenta en su propia moneda",
   "Features.description":
-    "Financy hoy: cuentas en cualquier moneda, hogares con roles, sincronización, app sin conexión, exportación, nueve idiomas y tu servidor. Luego, movimientos.",
+    "Financy hoy: cuentas en cualquier moneda, presupuestos mensuales, hogares con roles, sincronización, app sin conexión, exportación, nueve idiomas y tu servidor.",
   "Features.title": "Funciones de Financy: cuentas, hogares, sincronización",
   "FeaturesHero.lead":
-    "Financy se está reconstruyendo desde cero. Lo que funciona hoy: cuentas en cualquier moneda y la base que hay debajo: inicio de sesión, uso compartido con roles, cambios en tiempo real, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza al código que la hace.",
+    "Financy se está reconstruyendo desde cero. Lo que funciona hoy: cuentas en cualquier moneda, sus categorías y presupuestos mensuales, y la base que hay debajo: inicio de sesión, uso compartido con roles, cambios en tiempo real, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza al código que la hace.",
   "FeaturesHero.note":
-    "Los movimientos y los presupuestos aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
+    "Los movimientos aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
   "HomeFaq.useAnswer":
     "Todavía no. El inicio de sesión, los hogares, la sincronización y las cuentas en cualquier moneda funcionan; los movimientos están en marcha.",
   "Catalog.title": "Catálogo",
@@ -649,6 +649,18 @@ export default {
     "Quien solo ve lee las categorías; solo un editor o superior las cambia",
   "FeatureCategories.code": "Ver el código de las categorías",
   "FeatureTierSettled.lead":
-    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda y sus categorías ya están; los movimientos son lo siguiente.",
+    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda, sus categorías y los presupuestos mensuales ya están; los movimientos son lo siguiente.",
   "HomeStatus.categories": "Categorías con un nivel de subcategorías",
+  "HomeStatus.budgets": "Un límite mensual para cada categoría",
+  "FeatureBudgets.nav": "Presupuestos",
+  "FeatureBudgets.title": "Un límite mensual para cada categoría",
+  "FeatureBudgets.lead":
+    "Fija cuánto puede gastar cada categoría de gastos en un mes y mira cuánto queda, en vivo para todo el hogar. Un límite sigue en los meses siguientes hasta que lo cambies, y los meses pasados conservan los límites que tenían.",
+  "FeatureBudgets.fact1":
+    "Una categoría principal sin límite propio muestra la suma de los límites de sus subcategorías",
+  "FeatureBudgets.fact2":
+    "El gasto son los gastos menos los reembolsos; una moneda que aún no tiene tipo de cambio se nombra, no se descarta en silencio",
+  "FeatureBudgets.fact3":
+    "Fijar un límite requiere el plan Household; ver los presupuestos y quitar un límite, nunca; lo comprueba el servidor",
+  "FeatureBudgets.code": "Ver el código de los presupuestos",
 } satisfies Catalog

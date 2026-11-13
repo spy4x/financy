@@ -37,6 +37,9 @@ word where the language has a pair: ru аккаунт and счёт, zh-CN 账号
 | parent (category) | родительская категория | categoría principal | Oberkategorie | categoria principal | الفئة الأم | 上级分类 | 親カテゴリ | catégorie parente |
 | recurring transaction | регулярная операция | movimiento recurrente | wiederkehrende Buchung | lançamento recorrente | معاملة متكررة | 定期交易 | 定期取引 | opération récurrente |
 | budget                  | бюджет              | presupuesto            | Budget            | orçamento          | ميزانية             | 预算     | 予算           | budget              |
+| limit (of a budget)     | лимит               | límite                 | Limit             | limite             | الحد                | 限额     | 上限           | plafond             |
+| spent                   | потрачено           | gastado                | ausgegeben        | gasto              | المُنفَق            | 已支出   | 使った額       | dépensé             |
+| left (to spend)         | осталось            | disponible             | übrig             | restante           | المتبقي             | 剩余     | 残り           | restant             |
 | base currency           | основная валюта     | moneda principal       | Hauptwährung      | moeda principal    | العملة الأساسية     | 本位币   | 基準通貨       | devise principale   |
 | exchange rate           | курс                | tipo de cambio         | Wechselkurs       | cotação            | سعر الصرف           | 汇率     | 為替レート     | taux de change      |
 | smallest unit (of money) | наименьшая единица | unidad más pequeña     | kleinste Einheit  | menor unidade      | أصغر وحدة           | 最小单位 | 最小単位       | plus petite unité   |
