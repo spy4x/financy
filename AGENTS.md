@@ -108,10 +108,10 @@ feature; a feature it does not list needs the owner first.
 
 Financy runs at financy.dev (website), app.financy.dev (app) and admin.financy.dev (admin panel),
 on the `homelab` server next to Seed, behind the homelab's Traefik. Its env file is
-`infra/envs/.env.prod.age`. The global rule to release after a green gate applies: after every
-merge to `main`, the lead fast-forwards a clean checkout to `origin/main`, decrypts the env files
-and runs `deno task deploy`, so the owner sees each change live. A failed deploy is fixed before
-the next merge.
+`infra/envs/.env.prod.age`. After every merge to `main`, the lead fast-forwards a clean checkout
+to `origin/main`, decrypts the env files and runs `deno task deploy`, so the owner sees each change
+live. A failed deploy is fixed before the next merge. Release tags and images start with the rest
+of [#88](https://github.com/spy4x/financy/issues/88).
 
 Sign-up is closed (`SIGN_UP=invite`) until live Stripe keys are in the env file, because without
 billing every household would get everything for free.
