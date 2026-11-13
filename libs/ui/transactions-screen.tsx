@@ -485,7 +485,7 @@ function Row(
           </p>
           <div class="flex flex-wrap gap-2">
             <Button
-              href={TRANSACTION_PATHS.transaction(row.id)}
+              href={TRANSACTION_PATHS.transaction(row.id, row.gone)}
               navigate={navigate}
               variant="secondary"
               class="min-h-11 sm:min-h-9"

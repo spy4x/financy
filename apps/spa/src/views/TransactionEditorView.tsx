@@ -43,7 +43,9 @@ export function TransactionEditorView(
   const { locale } = useFormat()
   const store = transactionsStore
   const groupId = selectionStore.groupId.value
-  const back = readNext(new URLSearchParams(useSearch())) ?? TRANSACTION_PATHS.list
+  const search = new URLSearchParams(useSearch())
+  const back = readNext(search) ?? TRANSACTION_PATHS.list
+  const field = search.get("field")
   useEffect(() => network.watch(), [])
   useEffect(() => {
     if (!groupId) return
@@ -156,6 +158,7 @@ export function TransactionEditorView(
           : undefined}
         pending={store.pendingId.value !== null}
         backHref={back}
+        focusField={field === "account" || field === "category" ? field : null}
         recentCurrencies={accountsStore.currencies.value}
         offline={canWrite && !network.online.value}
         navigate={navigate}

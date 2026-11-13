@@ -96,6 +96,8 @@ export interface TransactionEditorScreenProps {
   recentCurrencies?: readonly string[]
   /** The device has no network: the write waits in the queue. */
   offline?: boolean
+  /** The field that takes focus when the page opens instead of the amount: the one to fix. */
+  focusField?: "account" | "category" | null
   navigate?: Navigate
 }
 
@@ -208,11 +210,16 @@ function Editor(props: Shown): JSX.Element {
   const refund = value.kind === TransactionKind.INCOME &&
     chosenCategory?.kind === CategoryKind.EXPENSE
 
-  // The amount takes focus when the page opens, so the quick entry is: type, Enter.
+  // The amount takes focus when the page opens, so the quick entry is: type, Enter. An entry
+  // opened to fix its account or category focuses that field instead.
   const amountBox = useRef<HTMLDivElement>(null)
   const fields = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    amountBox.current?.querySelector("input")?.focus()
+    const fix = props.focusField
+      ? fields.current?.querySelector<HTMLElement>(`#transaction-${props.focusField}`)
+      : null
+    const target = fix ?? amountBox.current?.querySelector("input")
+    target?.focus()
   }, [])
   // A refused save moves focus to the first field it newly names, top to bottom. A field whose
   // error stays, or one that clears while the person types, leaves the focus where it is.

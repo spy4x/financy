@@ -267,12 +267,13 @@ test.describe("transactions offline", () => {
       await expect(flowers).toHaveCount(0)
       await expect(stall.locator("[data-e2e=transaction-row]")).toBeFocused()
 
-      // Pick another account, from the keyboard: the editor opens on the entry.
+      // Pick another account, from the keyboard: the editor opens on the entry's account field.
       const pick = stall.locator("[data-e2e=transaction-conflict-pick]")
       await expect(pick).toHaveText("Pick another account")
       await pick.focus()
       await partnerPage.keyboard.press("Enter")
-      await expect(partnerPage).toHaveURL(/\/transactions\/[0-9a-f-]+$/)
+      await expect(partnerPage).toHaveURL(/\/transactions\/[0-9a-f-]+\?field=account$/)
+      await expect(partnerPage.locator("select[data-e2e=transaction-account]")).toBeFocused()
       await partnerPage.locator("select[data-e2e=transaction-account]").selectOption({
         label: "Wallet · EUR",
       })

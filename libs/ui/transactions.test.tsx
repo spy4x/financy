@@ -321,7 +321,8 @@ describe("TransactionsScreen", () => {
     expect(link.getAttribute("aria-describedby")).toBe(message.id)
     const pick = document.querySelector("[data-e2e=transaction-conflict-pick]")!
     expect(text(pick)).toBe("Pick another account")
-    expect(pick.getAttribute("href")).toBe(`/transactions/${latte.id}`)
+    // The editor opens on the account field, the one to fix.
+    expect(pick.getAttribute("href")).toBe(`/transactions/${latte.id}?field=account`)
     // Discard asks first; Cancel keeps the entry.
     const discard = document.querySelector("[data-e2e=transaction-conflict-discard]")!
     await click(discard)
@@ -511,6 +512,14 @@ describe("TransactionEditorScreen", () => {
     await mount(<TransactionEditorScreen {...editorDefaults} />)
     expect(document.activeElement?.closest("[data-e2e=transaction-amount-field]")).not.toBe(null)
     expect(text(document.querySelector("[data-e2e=transaction-save]"))).toBe("Add transaction")
+  })
+
+  it("puts focus on the account or category to fix, when opened for that", async () => {
+    await mount(<TransactionEditorScreen {...editorDefaults} focusField="account" />)
+    expect(document.activeElement?.getAttribute("data-e2e")).toBe("transaction-account")
+    await act(() => render(null, root!))
+    await mount(<TransactionEditorScreen {...editorDefaults} focusField="category" />)
+    expect(document.activeElement?.id).toBe("transaction-category")
   })
 
   it("asks for no account amount in the account's own currency", async () => {

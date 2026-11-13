@@ -63,8 +63,12 @@ export const TRANSACTION_PATHS = {
   deleted: "/transactions?deleted=1",
   /** The create page: the quick entry. */
   new: "/transactions/new",
-  /** One entry's editor. */
-  transaction: (transactionId: string) => `/transactions/${transactionId}`,
+  /**
+   * One entry's editor. `field` names the field that takes focus instead of the amount: the one
+   * to fix on an entry refused because its account or category was deleted.
+   */
+  transaction: (transactionId: string, field?: "account" | "category" | null) =>
+    field ? `/transactions/${transactionId}?field=${field}` : `/transactions/${transactionId}`,
 } as const
 
 export const ACCOUNT_PATHS = {
