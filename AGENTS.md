@@ -104,12 +104,17 @@ Financy is AGPL-3.0 (`LICENSE`). The code that came from Seed keeps its MIT noti
 version does, the price, and the owner's decisions in the owner's words. Read it before building a
 feature; a feature it does not list needs the owner first.
 
-## No release and no deploy yet
+## Production
 
-Until the deploy issue ([#88](https://github.com/spy4x/financy/issues/88)) merges, nothing is
-tagged and nothing is deployed: that issue sets up the hosts, the server and the first release,
-and none of them exist yet. The global rule to release after a green gate starts to apply here
-then.
+Financy runs at financy.dev (website), app.financy.dev (app) and admin.financy.dev (admin panel),
+on the `homelab` server next to Seed, behind the homelab's Traefik. Its env file is
+`infra/envs/.env.prod.age`. The global rule to release after a green gate applies: after every
+merge to `main`, the lead fast-forwards a clean checkout to `origin/main`, decrypts the env files
+and runs `deno task deploy`, so the owner sees each change live. A failed deploy is fixed before
+the next merge.
+
+Sign-up is closed (`SIGN_UP=invite`) until live Stripe keys are in the env file, because without
+billing every household would get everything for free.
 
 ## Money and finance data
 
