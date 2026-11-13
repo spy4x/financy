@@ -256,7 +256,7 @@ function CoinPrices({ coins }: { coins: AdminRatesSnapshot["coins"] }): JSX.Elem
           facts={prices.map((price) => ({
             label: price.coin,
             value: (
-              <span class="flex flex-col gap-0.5">
+              <span class="flex flex-col gap-1">
                 <span class="tabular-nums">
                   {t.t(`AdminRates.coinPrice`, {
                     // A display only: the stored decimal string, formatted, never computed with.
