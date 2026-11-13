@@ -2,6 +2,7 @@
 import { expect } from "@std/expect"
 import type postgres from "postgres"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import type { ExchangeRateSource } from "@spy4x/integrations/exchange-rates"
 import { COIN_PRICE_MONTHLY_CAP, COIN_PRICE_SOURCE, RATE_SOURCES } from "@domain/money"
 import { ratesFetchJob, type RatesJobDeps } from "@server/jobs/exchange-rates.ts"
 import type { JobHandler } from "@server/jobs/jobs.ts"
@@ -281,14 +282,35 @@ Deno.test("coin prices: a coin CoinGecko has no euro price for stores nothing an
   })
 })
 
-Deno.test("coin prices: a price of 0, a negative or a string from CoinGecko is never stored", async () => {
+Deno.test("coin prices: a price that is not a plain decimal above zero is refused, logged and never stored", async () => {
   await withSchema(async (sql) => {
     const { groupId } = await team(sql)
     await addAccount(sql, groupId, `BTC`)
-    for (const eur of [0, -5, `69608.4`, null]) {
-      const body = { id: `bitcoin`, market_data: { current_price: { eur } } }
-      await fetchOnce(sql, fakeFetch({ bitcoin: { status: 200, body } }))
+    // ts-libs drops 0, negatives and non-numbers from CoinGecko's reply; this is the job's own
+    // check of what a source hands it, so a source that slips is still refused.
+    const source: ExchangeRateSource = {
+      id: COIN_PRICE_SOURCE,
+      daily: (date, base, quotes) =>
+        Promise.resolve({
+          success: true,
+          output: {
+            rates: [{ base, quote: quotes[0], rate: `1e5`, date, source: COIN_PRICE_SOURCE }],
+            missing: [],
+          },
+          error: null,
+        }),
     }
+    const fake = fakeFetch()
+    const log: string[] = []
+    await ratesFetchJob({
+      sql,
+      setup: { ...readRatesSetup(env({}), fake.fetch), coins: source },
+      log: (line) => log.push(line),
+      now: () => FRIDAY_16H,
+    })({} as Parameters<JobHandler>[0])
+    expect(log).toEqual([
+      `coin prices: refused coingecko BTC/EUR 2026-10-30: the rate is not a decimal above zero`,
+    ])
     expect(await prices(sql)).toEqual([])
   })
 })
