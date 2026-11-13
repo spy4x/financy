@@ -10,6 +10,8 @@ import { render, type VNode } from "preact"
 import { act } from "preact/test-utils"
 import { CategoryKind } from "@domain/categories"
 import { TransactionKind } from "@domain/transactions"
+import { FormatContext } from "@spy4x/preact-ui/format"
+import { createFormatters } from "@spy4x/time/format"
 import { TransactionsScreen, type TransactionsScreenProps } from "./transactions-screen.tsx"
 import {
   categoryGroups,
@@ -460,19 +462,27 @@ describe("TransactionEditorScreen", () => {
   })
 
   it("shows a viewer the entry as text, its date in words, with no field, Save or menu", async () => {
+    // A fixed locale: the default follows the machine, and CI's formats the date another way.
+    const format = createFormatters({
+      locale: `en-GB`,
+      timeZone: `Europe/Berlin`,
+      hourCycle: `h23`,
+    })
     await mount(
-      <TransactionEditorScreen
-        {...editorDefaults}
-        group={viewerOfHome}
-        transaction={train}
-        value={{
-          ...editorDefaults.value,
-          amount: 2000,
-          currency: "USD",
-          categoryId: travel.id,
-          memo: train.memo,
-        }}
-      />,
+      <FormatContext.Provider value={format}>
+        <TransactionEditorScreen
+          {...editorDefaults}
+          group={viewerOfHome}
+          transaction={train}
+          value={{
+            ...editorDefaults.value,
+            amount: 2000,
+            currency: "USD",
+            categoryId: travel.id,
+            memo: train.memo,
+          }}
+        />
+      </FormatContext.Provider>,
     )
     expect(document.querySelectorAll("input, select, textarea")).toHaveLength(0)
     expect(has("[data-e2e=transaction-save]")).toBe(false)
