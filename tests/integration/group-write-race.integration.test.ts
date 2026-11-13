@@ -11,6 +11,8 @@ import { CategoryError, type CategoryIcon, CategoryKind } from "@domain/categori
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { TransactionError, TransactionKind } from "@domain/transactions"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
+import { RecurringRuleError } from "@domain/recurring"
+import { PostgresRecurringRuleRepository } from "@server/recurring/postgres-recurring-rule-repository.ts"
 import {
   holdMemberChange,
   type MemberChange,
@@ -234,6 +236,94 @@ for (const change of ["removal", "demotion"] as const) {
           write === "create"
             ? []
             : [{ memo: "", version: write === "restore" ? 2 : 1, deleted: write === "restore" }],
+        )
+      })
+    })
+  }
+}
+
+const RULE_WRITES = ["create", "update", "skip", "delete", "restore"] as const
+
+for (const change of ["removal", "demotion"] as const) {
+  for (const write of RULE_WRITES) {
+    Deno.test(`repeating rule ${write}: refused when a ${change} commits while the write waits`, async () => {
+      await withSchema(async (sql) => {
+        const { groupId, owner, editor } = await team(sql)
+        const accountId = uuidV7()
+        const categoryId = uuidV7()
+        await new PostgresAccountRepository(sql).create({
+          groupId,
+          id: accountId,
+          name: "Main",
+          kind: AccountKind.BANK,
+          currency: "USD",
+          startingBalance: 0,
+          allowance: null,
+        }, owner)
+        await new PostgresCategoryRepository(sql).create({
+          groupId,
+          id: categoryId,
+          name: "Rent",
+          kind: CategoryKind.EXPENSE,
+          icon: "utensils" as CategoryIcon,
+          color: "#c2410c",
+          parentId: null,
+          allowance: null,
+        }, owner)
+        const rules = new PostgresRecurringRuleRepository(sql)
+        const id = uuidV7()
+        const fields = {
+          accountId,
+          categoryId,
+          kind: TransactionKind.EXPENSE,
+          amount: 120000,
+          currency: "USD",
+          accountAmount: null,
+          memo: "",
+          rrule: "FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1",
+          startDate: "2026-12-01",
+          endDate: null,
+          count: null,
+        }
+        if (write !== "create") {
+          await rules.create({ groupId, id, ...fields, allowance: null }, editor)
+        }
+        if (write === "restore") {
+          await rules.delete({ groupId, id, expectedVersion: 1 }, editor)
+        }
+
+        const held = await holdMemberChange(sql, groupId, owner, editor, change)
+        const at = { groupId, id, expectedVersion: 1 }
+        const writing = write === "create"
+          ? rules.create({ groupId, id, ...fields, allowance: null }, editor)
+          : write === "update"
+          ? rules.update({ ...at, ...fields, memo: "Late" }, editor)
+          : write === "skip"
+          ? rules.skip({ groupId, id, date: "2027-01-01" }, editor)
+          : write === "delete"
+          ? rules.delete(at, editor)
+          : rules.restore({ groupId, id, allowance: null }, editor)
+        const outcome = writing.then(() => null, (error) => error)
+
+        expect(await stillWaiting(outcome)).toBe(true)
+        held.release()
+        await held.committed
+
+        const error = await outcome
+        expect(error).toBeInstanceOf(RecurringRuleError)
+        expect((error as RecurringRuleError).code).toBe(EXPECTED_CODE[change])
+        const rows = await sql`
+          SELECT memo, version, cardinality(skipped_dates) AS skipped,
+            deleted_at IS NOT NULL AS deleted
+          FROM recurring_rules WHERE id = ${id}
+        `
+        expect(rows).toEqual(
+          write === "create" ? [] : [{
+            memo: "",
+            version: write === "restore" ? 2 : 1,
+            skipped: 0,
+            deleted: write === "restore",
+          }],
         )
       })
     })
