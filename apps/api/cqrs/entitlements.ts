@@ -20,6 +20,7 @@ export const entitlementGate = createEntitlementGate(
       maxAccounts: (groupId) => db.account.count(groupId),
       maxCategories: (groupId) => db.category.count(groupId),
       maxTransactions: (groupId) => db.transaction.count(groupId),
+      maxRecurringRules: (groupId) => db.recurringRule.count(groupId),
     },
   },
   ENTITLEMENT_NEEDS,

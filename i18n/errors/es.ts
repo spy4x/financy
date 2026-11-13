@@ -261,6 +261,9 @@ export default {
     "Esta categoría ya tiene movimientos, así que no puede pasar de gastos a ingresos ni al revés.",
   "Reason.ACCOUNT_HAS_TRANSACTIONS":
     "Esta cuenta tiene movimientos, así que no se puede eliminar. Archívala en su lugar.",
+  "Reason.ACCOUNT_HAS_RECURRING_RULES":
+    "Hay movimientos recurrentes que usan esta cuenta, así que no se puede eliminar. Archívala en su lugar.",
+  "Reason.RECURRING_RULE_NOT_FOUND": "Este movimiento recurrente ya no existe.",
   "ImportIssue.categoryParentMissing":
     "Su categoría principal no está entre las categorías del archivo.",
   "ImportIssue.categoryParentArchived": "Está en uso, pero su categoría principal está archivada.",

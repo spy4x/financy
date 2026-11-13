@@ -34,6 +34,7 @@ word where the language has a pair: ru аккаунт and счёт, zh-CN 账号
 | category                | категория           | categoría              | Kategorie         | categoria          | فئة                 | 分类     | カテゴリ       | catégorie           |
 | subcategory | подкатегория | subcategoría | Unterkategorie | subcategoria | فئة فرعية | 子分类 | サブカテゴリ | sous-catégorie |
 | parent (category) | родительская категория | categoría principal | Oberkategorie | categoria principal | الفئة الأم | 上级分类 | 親カテゴリ | catégorie parente |
+| recurring transaction | регулярная операция | movimiento recurrente | wiederkehrende Buchung | lançamento recorrente | معاملة متكررة | 定期交易 | 定期取引 | opération récurrente |
 | budget                  | бюджет              | presupuesto            | Budget            | orçamento          | ميزانية             | 预算     | 予算           | budget              |
 | limit (of a budget)     | лимит               | límite                 | Limit             | limite             | الحد                | 限额     | 上限           | plafond             |
 | spent                   | потрачено           | gastado                | ausgegeben        | gasto              | المُنفَق            | 已支出   | 使った額       | dépensé             |

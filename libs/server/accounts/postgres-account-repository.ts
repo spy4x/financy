@@ -292,10 +292,18 @@ export class PostgresAccountRepository implements AccountRepository {
       await assertWriterNow(transaction, input.groupId, actorId)
       // An entry, live or in the trash, keeps its account: the person archives it instead. A purge
       // could not remove the row anyway while an entry names it.
-      if ((await repository.usage(input))?.hasEntries) {
+      const usage = await repository.usage(input)
+      if (usage?.hasEntries) {
         throw new AccountError(
           "ACCOUNT_HAS_TRANSACTIONS",
           "The account has entries: archive it instead",
+        )
+      }
+      // So does a repeating entry's rule, live or in the trash, for the same reason.
+      if (usage?.hasRules) {
+        throw new AccountError(
+          "ACCOUNT_HAS_RECURRING_RULES",
+          "Repeating entries use the account: archive it instead",
         )
       }
       // A deleted account cannot stay the default: the household is then left with none.
@@ -346,12 +354,14 @@ export class PostgresAccountRepository implements AccountRepository {
    */
   private async usage(
     input: { groupId: string; id: string; expectedVersion: number },
-  ): Promise<{ currency: string; hasEntries: boolean } | null> {
+  ): Promise<{ currency: string; hasEntries: boolean; hasRules: boolean } | null> {
     const row = (
-      await this.sql<{ currency: string; hasEntries: boolean }[]>`
+      await this.sql<{ currency: string; hasEntries: boolean; hasRules: boolean }[]>`
         SELECT accounts.currency, EXISTS (
           SELECT 1 FROM transactions WHERE transactions.account_id = accounts.id
-        ) AS has_entries
+        ) AS has_entries, EXISTS (
+          SELECT 1 FROM recurring_rules WHERE recurring_rules.account_id = accounts.id
+        ) AS has_rules
         FROM accounts
         WHERE id = ${input.id} AND group_id = ${input.groupId} AND deleted_at IS NULL
           AND version = ${input.expectedVersion}

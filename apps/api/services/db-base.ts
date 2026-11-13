@@ -50,6 +50,8 @@ import { accountMovable } from "@server/accounts/account-movable.ts"
 import { accountPortable } from "@server/accounts/account-portable.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
+import { PostgresRecurringRuleRepository } from "@server/recurring/postgres-recurring-rule-repository.ts"
+import { recurringRuleMovable } from "@server/recurring/recurring-rule-movable.ts"
 import { PostgresBudgetRepository } from "@server/budgets/postgres-budget-repository.ts"
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
@@ -198,14 +200,15 @@ export interface UserTotp {
 /**
  * The aggregates "move all of a group's data" moves, in the order it moves them. A new aggregate
  * joins here (`docs/aggregate-lifecycle.md`, "Make it movable"): put one that other aggregates
- * point at before the ones that point at it. Entries are the one exception: they defer the keys
- * to their accounts and categories to the move's commit, so they move before them
- * (`transaction-movable.ts`).
+ * point at before the ones that point at it. Entries and repeating rules are the exceptions: they
+ * defer the keys to their accounts and categories to the move's commit, so they move before them
+ * (`transaction-movable.ts`, `recurring-rule-movable.ts`).
  */
 export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   tagMovable,
   noteMovable,
   transactionMovable,
+  recurringRuleMovable,
   accountMovable,
   categoryMovable,
 ]
@@ -393,6 +396,11 @@ export class AppDbBase extends DbServiceBase {
   /** The income and expense entries. Built per access, like `note`. */
   get transaction(): PostgresTransactionRepository {
     return new PostgresTransactionRepository(this.sql)
+  }
+
+  /** The repeating entries' rules. Built per access, like `note`. */
+  get recurringRule(): PostgresRecurringRuleRepository {
+    return new PostgresRecurringRuleRepository(this.sql)
   }
 
   /** The monthly category limits. Built per access, like `note`. */

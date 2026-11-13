@@ -20,6 +20,7 @@ const RUSSIAN = createTranslator({
 const REASONS: Record<ErrorReason, true> = {
   ACCOUNT_ARCHIVED: true,
   ACCOUNT_HAS_TRANSACTIONS: true,
+  ACCOUNT_HAS_RECURRING_RULES: true,
   ACCOUNT_LIMIT_REACHED: true,
   ACCOUNT_NOT_FOUND: true,
   ADDRESS_NOT_PROVEN: true,
@@ -120,6 +121,7 @@ const REASONS: Record<ErrorReason, true> = {
   TAG_NAME_TAKEN: true,
   TAG_NOT_FOUND: true,
   TRANSACTION_NOT_FOUND: true,
+  RECURRING_RULE_NOT_FOUND: true,
   TOKEN_INVALID: true,
   TOKEN_NOT_FOUND: true,
   TOKEN_SCOPE: true,
