@@ -2109,9 +2109,9 @@ export default {
   "OfflineStatus.transactionGone": "这笔交易已不在这个家庭中。",
   "OfflineStatus.youDeletedTransaction": "你删除了这笔交易。",
   "TransactionSync.accountGone":
-    "你离线期间，这笔交易的账户被删除了。请选择另一个账户，或放弃这笔交易。",
+    "你离线期间，这笔交易的账户被删除了。请选择另一个账户，或删除这笔交易。",
   "TransactionSync.categoryGone":
-    "你离线期间，这笔交易的分类被删除了。请选择另一个分类，或放弃这笔交易。",
+    "你离线期间，这笔交易的分类被删除了。请选择另一个分类，或删除这笔交易。",
   "TransactionSync.gone": "你离线期间，这笔交易被删除了。",
   "TransactionSync.rejected": "服务器没有接受这笔交易。",
   "TransactionSync.version": "你离线期间，有人修改了这笔交易。",
@@ -2125,9 +2125,14 @@ export default {
   "Transactions.amountIn": "{account}：{amount}",
   "Transactions.convertLater": "联网后换算",
   "Transactions.unknown": "未知",
-  "Transactions.discard": "放弃",
+  "Transactions.discard": "删除",
   "Transactions.pickAccount": "选择另一个账户",
   "Transactions.pickCategory": "选择另一个分类",
+  "Transactions.discardTitle": "删除这笔交易？",
+  "Transactions.discardMessage": "这笔交易从未到达服务器，只存在于这台设备上。删除后无法恢复。",
+  "Transactions.discardConfirm": "删除交易",
+  "Transactions.discardCancel": "保留",
+  "Transactions.discardFailed": "无法删除这笔交易，请重试。",
   "Transactions.count": {
     "other": "{count} 笔交易",
   },

@@ -2411,6 +2411,12 @@ export default {
   "Transactions.discard": "Discard",
   "Transactions.pickAccount": "Pick another account",
   "Transactions.pickCategory": "Pick another category",
+  "Transactions.discardTitle": "Discard this transaction?",
+  "Transactions.discardMessage":
+    "It never reached the server, so it exists only on this device. Once discarded, it can't be brought back.",
+  "Transactions.discardConfirm": "Discard transaction",
+  "Transactions.discardCancel": "Keep it",
+  "Transactions.discardFailed": "Couldn't discard the transaction. Try again.",
   "Transactions.count": {
     "one": "{count} transaction",
     "other": "{count} transactions",

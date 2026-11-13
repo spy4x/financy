@@ -2679,9 +2679,9 @@ export default {
   "OfflineStatus.transactionGone": "L’opération ne fait plus partie de ce foyer.",
   "OfflineStatus.youDeletedTransaction": "Vous avez supprimé cette opération.",
   "TransactionSync.accountGone":
-    "Le compte de cette opération a été supprimé pendant que vous étiez hors ligne. Choisissez un autre compte ou abandonnez l’opération.",
+    "Le compte de cette opération a été supprimé pendant que vous étiez hors ligne. Choisissez un autre compte ou supprimez l’opération.",
   "TransactionSync.categoryGone":
-    "La catégorie de cette opération a été supprimée pendant que vous étiez hors ligne. Choisissez une autre catégorie ou abandonnez l’opération.",
+    "La catégorie de cette opération a été supprimée pendant que vous étiez hors ligne. Choisissez une autre catégorie ou supprimez l’opération.",
   "TransactionSync.gone": "Cette opération a été supprimée pendant que vous étiez hors ligne.",
   "TransactionSync.rejected": "Le serveur n’a pas accepté cette opération.",
   "TransactionSync.version":
@@ -2697,9 +2697,15 @@ export default {
   "Transactions.amountIn": "{amount} sur {account}",
   "Transactions.convertLater": "Converti au retour de la connexion",
   "Transactions.unknown": "Inconnu",
-  "Transactions.discard": "Abandonner",
+  "Transactions.discard": "Supprimer",
   "Transactions.pickAccount": "Choisir un autre compte",
   "Transactions.pickCategory": "Choisir une autre catégorie",
+  "Transactions.discardTitle": "Supprimer cette opération ?",
+  "Transactions.discardMessage":
+    "Elle n’a jamais atteint le serveur et n’existe que sur cet appareil. Une fois supprimée, elle ne peut plus être récupérée.",
+  "Transactions.discardConfirm": "Supprimer l’opération",
+  "Transactions.discardCancel": "La garder",
+  "Transactions.discardFailed": "Impossible de supprimer l’opération. Réessayez.",
   "Transactions.count": {
     "one": "{count} opération",
     "many": "{count} opérations",

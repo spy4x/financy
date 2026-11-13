@@ -303,7 +303,10 @@ describe("TransactionsScreen", () => {
       <TransactionsScreen
         {...listDefaults}
         rows={[{ ...latte, queued: true, gone: "account" }, train]}
-        onDiscard={(id) => discarded.push(id)}
+        onDiscard={(id) => {
+          discarded.push(id)
+          return Promise.resolve()
+        }}
       />,
     )
     const conflicts = document.querySelectorAll("[data-e2e=transaction-conflict]")
@@ -319,8 +322,65 @@ describe("TransactionsScreen", () => {
     const pick = document.querySelector("[data-e2e=transaction-conflict-pick]")!
     expect(text(pick)).toBe("Pick another account")
     expect(pick.getAttribute("href")).toBe(`/transactions/${latte.id}`)
-    await click(document.querySelector("[data-e2e=transaction-conflict-discard]")!)
+    // Discard asks first; Cancel keeps the entry.
+    const discard = document.querySelector("[data-e2e=transaction-conflict-discard]")!
+    await click(discard)
+    expect(has("[data-e2e=transaction-discard-dialog]")).toBe(true)
+    await click(document.querySelector("[data-e2e=transaction-discard-cancel]")!)
+    expect(has("[data-e2e=transaction-discard-dialog]")).toBe(false)
+    expect(discarded).toEqual([])
+    // Confirming discards it.
+    await click(discard)
+    await click(document.querySelector("[data-e2e=transaction-discard-confirm]")!)
+    expect(has("[data-e2e=transaction-discard-dialog]")).toBe(false)
     expect(discarded).toEqual([latte.id])
+  })
+
+  it("moves focus to the next row after a discard, and to the heading when no row is left", async () => {
+    const gone = { ...latte, queued: true, gone: "account" as const }
+    const list = (rows: TransactionRow[]) => (
+      <TransactionsScreen
+        {...listDefaults}
+        rows={rows}
+        onDiscard={() => Promise.resolve()}
+      />
+    )
+    const discardFirst = async () => {
+      await click(document.querySelector("[data-e2e=transaction-conflict-discard]")!)
+      await click(document.querySelector("[data-e2e=transaction-discard-confirm]")!)
+    }
+    await mount(list([gone, train]))
+    await discardFirst()
+    await act(() => render(list([train]), root!))
+    expect(document.activeElement)
+      .toBe(
+        document.querySelector(`[data-e2e=transaction-${train.id}] a[data-e2e=transaction-row]`),
+      )
+
+    await act(() => render(list([gone]), root!))
+    await discardFirst()
+    await act(() => render(list([]), root!))
+    const heading = document.querySelector("h1")!
+    expect(document.activeElement).toBe(heading)
+    // A heading takes focus in a browser only with a tabindex; happy-dom does not check.
+    expect(heading.getAttribute("tabindex")).toBe("-1")
+  })
+
+  it("keeps an entry whose discard failed and says so under it", async () => {
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        rows={[{ ...latte, queued: true, gone: "account" }]}
+        onDiscard={() => Promise.reject(new Error("IndexedDB is gone"))}
+      />,
+    )
+    await click(document.querySelector("[data-e2e=transaction-conflict-discard]")!)
+    await click(document.querySelector("[data-e2e=transaction-discard-confirm]")!)
+    await act(() => Promise.resolve())
+    const failed = document.querySelector("[data-e2e=transaction-discard-failed]")
+    expect(failed?.getAttribute("role")).toBe("alert")
+    expect(text(failed)).toBe("Couldn't discard the transaction. Try again.")
+    expect(has(`[data-e2e=transaction-${latte.id}]`)).toBe(true)
   })
 
   it("names the category, not the account, for an entry refused for a deleted category", async () => {

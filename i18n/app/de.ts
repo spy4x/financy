@@ -2550,6 +2550,13 @@ export default {
   "Transactions.discard": "Verwerfen",
   "Transactions.pickAccount": "Anderes Konto wählen",
   "Transactions.pickCategory": "Andere Kategorie wählen",
+  "Transactions.discardTitle": "Diese Buchung verwerfen?",
+  "Transactions.discardMessage":
+    "Sie hat den Server nie erreicht und existiert nur auf diesem Gerät. Einmal verworfen, lässt sie sich nicht zurückholen.",
+  "Transactions.discardConfirm": "Buchung verwerfen",
+  "Transactions.discardCancel": "Behalten",
+  "Transactions.discardFailed":
+    "Die Buchung konnte nicht verworfen werden. Versuch es noch einmal.",
   "Transactions.count": {
     "one": "{count} Buchung",
     "other": "{count} Buchungen",

@@ -1,4 +1,5 @@
 import { type ComponentChildren, Fragment, type JSX } from "preact"
+import { useEffect, useState } from "preact/hooks"
 import { Button } from "@spy4x/preact-ui/button"
 import { ErrorState } from "@spy4x/preact-ui/error-state"
 import { FilterBar, type FilterBarMenu } from "@spy4x/preact-ui/filter-bar"
@@ -8,7 +9,8 @@ import { Input } from "@spy4x/preact-ui/input"
 import { Stack } from "@spy4x/preact-ui/layout"
 import { Link } from "@spy4x/preact-ui/link"
 import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
-import { IconPlus } from "@spy4x/preact-icons"
+import { ConfirmDialog } from "@spy4x/preact-ui/confirm-dialog"
+import { IconExclamationCircle, IconPlus } from "@spy4x/preact-icons"
 import { relativeDayLabel } from "@spy4x/time/locale"
 import { formatMoney } from "@spy4x/platform/universal/money-core"
 import type { Translator } from "@spy4x/platform/universal/i18n"
@@ -64,8 +66,11 @@ export interface TransactionsScreenProps {
   onRestore?: (id: string) => void
   /** The entry whose restore is in flight. */
   pendingId?: string | null
-  /** Drops a queued entry the server refused (`TransactionRow.gone`) from this device. */
-  onDiscard?: (id: string) => void
+  /**
+   * Drops a queued entry the server refused (`TransactionRow.gone`) from this device, once the
+   * person confirms. A rejection keeps the row and says the discard failed.
+   */
+  onDiscard?: (id: string) => Promise<void>
   navigate?: Navigate
 }
 
@@ -129,13 +134,14 @@ function Live(props: TransactionsScreenProps): JSX.Element {
   const canWrite = props.group!.canWrite
   const shown = filterTransactions(props.rows, filters)
   const filtered = hasFilters(filters) || filters.q.trim() !== ""
+  const discard = useDiscard(props)
   return (
     <>
       {(props.rows.length > 0 || filtered) && (
         <TransactionsFilterBar {...props} count={shown.length} />
       )}
       {shown.length > 0
-        ? <Days {...props} rows={shown} />
+        ? <Days {...props} rows={shown} discard={discard.control} />
         : <Empty {...props} canWrite={canWrite} filtered={filtered} />}
       {canWrite && (
         <div>
@@ -149,6 +155,7 @@ function Live(props: TransactionsScreenProps): JSX.Element {
           </Link>
         </div>
       )}
+      {discard.dialog}
     </>
   )
 }
@@ -351,7 +358,9 @@ function TransactionsFilterBar(
 }
 
 /** The entries under a heading per day: "Today", "Yesterday", then the date. */
-function Days(props: TransactionsScreenProps & { rows: TransactionRow[] }): JSX.Element {
+function Days(
+  props: TransactionsScreenProps & { rows: TransactionRow[]; discard?: DiscardControl },
+): JSX.Element {
   const { locale } = useFormat()
   return (
     <>
@@ -369,7 +378,7 @@ function Days(props: TransactionsScreenProps & { rows: TransactionRow[] }): JSX.
                   row={row}
                   today={props.today}
                   navigate={props.navigate}
-                  onDiscard={props.onDiscard}
+                  discard={props.discard}
                 />
               ))}
             </ListCard>
@@ -408,11 +417,11 @@ function money(amount: number, currency: string, locale: string): string {
  * a way to pick another one (its page) or to discard it.
  */
 function Row(
-  { row, today, navigate, onDiscard }: {
+  { row, today, navigate, discard }: {
     row: TransactionRow
     today: string
     navigate?: Navigate
-    onDiscard?: (id: string) => void
+    discard?: DiscardControl
   },
 ): JSX.Element {
   const t = useAppText()
@@ -464,12 +473,15 @@ function Row(
       </Link>
       {row.gone && (
         <div class="flex flex-col gap-2 px-4 pb-3 sm:px-6" data-e2e="transaction-conflict">
-          <p id={problem} class="text-sm text-danger" data-e2e="transaction-conflict-message">
-            {t.t(
-              row.gone === "account"
-                ? `TransactionSync.accountGone`
-                : `TransactionSync.categoryGone`,
-            )}
+          <p class="flex items-start gap-2 text-sm text-danger">
+            <IconExclamationCircle class="mt-0.5 size-4 shrink-0" />
+            <span id={problem} data-e2e="transaction-conflict-message">
+              {t.t(
+                row.gone === "account"
+                  ? `TransactionSync.accountGone`
+                  : `TransactionSync.categoryGone`,
+              )}
+            </span>
           </p>
           <div class="flex flex-wrap gap-2">
             <Button
@@ -483,18 +495,28 @@ function Row(
                 row.gone === "account" ? `Transactions.pickAccount` : `Transactions.pickCategory`,
               )}
             </Button>
-            {onDiscard && (
+            {discard && (
               <Button
                 type="button"
                 variant="outline"
                 class="min-h-11 sm:min-h-9"
                 data-e2e="transaction-conflict-discard"
-                onClick={() => onDiscard(row.id)}
+                onClick={(event) => discard.ask(row.id, event.currentTarget)}
               >
                 {t.t(`Transactions.discard`)}
               </Button>
             )}
           </div>
+          {discard?.failedId === row.id && (
+            <p
+              role="alert"
+              class="flex items-start gap-2 text-sm text-danger"
+              data-e2e="transaction-discard-failed"
+            >
+              <IconExclamationCircle class="mt-0.5 size-4 shrink-0" />
+              {t.t(`Transactions.discardFailed`)}
+            </p>
+          )}
         </div>
       )}
     </li>
@@ -570,4 +592,86 @@ function Trash(props: TransactionsScreenProps & { rows: readonly TransactionRow[
 /** The page's content, in the column the app's frame sets: never a width of its own. */
 function Page({ children }: { children?: ComponentChildren }): JSX.Element {
   return <div class="flex flex-col gap-8">{children}</div>
+}
+
+/**
+ * The Discard of a refused entry's row: `ask` opens the question before it, from the button that
+ * asked; `failedId` is the entry whose last discard failed, which says so under its buttons.
+ */
+interface DiscardControl {
+  ask: (id: string, button: HTMLElement) => void
+  failedId: string | null
+}
+
+/** Where focus goes once a discarded row is gone: the next row's link, else the page heading. */
+interface FocusAfterDiscard {
+  id: string
+  next: HTMLElement | null
+  heading: HTMLElement | null
+}
+
+/**
+ * Discard behind a confirmation: the entry never reached the server, so nothing brings it back.
+ * Cancel leaves focus on the Discard button (the dialog restores it). A confirmed discard moves
+ * focus, once the row has left the list, to the row after it (or before it, at the end), or to
+ * the page heading when none is left, since the button that had it is gone. A failed discard
+ * keeps the row and says so under it.
+ */
+function useDiscard(
+  props: TransactionsScreenProps,
+): { control?: DiscardControl; dialog: JSX.Element | null } {
+  const t = useAppText()
+  const [asking, setAsking] = useState<{ id: string; button: HTMLElement } | null>(null)
+  const [failedId, setFailedId] = useState<string | null>(null)
+  const [focusAfter, setFocusAfter] = useState<FocusAfterDiscard | null>(null)
+  useEffect(() => {
+    if (!focusAfter || props.rows.some((row) => row.id === focusAfter.id)) return
+    const heading = focusAfter.heading
+    if (heading && !heading.hasAttribute(`tabindex`)) heading.tabIndex = -1
+    const target = focusAfter.next?.isConnected ? focusAfter.next : heading
+    target?.focus()
+    setFocusAfter(null)
+  }, [focusAfter, props.rows])
+  const onDiscard = props.onDiscard
+  if (!onDiscard) return { dialog: null }
+  const confirm = () => {
+    if (!asking) return
+    const { id, button } = asking
+    setAsking(null)
+    const page = button.closest(`main`) ?? button.ownerDocument
+    const links = [...page.querySelectorAll<HTMLElement>(`a[data-e2e=transaction-row]`)]
+    const at = links.findIndex((link) => link.closest(`li`) === button.closest(`li`))
+    setFocusAfter({
+      id,
+      next: links[at + 1] ?? links[at - 1] ?? null,
+      heading: page.querySelector<HTMLElement>(`h1`),
+    })
+    onDiscard(id).catch(() => {
+      setFocusAfter(null)
+      setFailedId(id)
+    })
+  }
+  return {
+    control: {
+      ask: (id, button) => {
+        setFailedId(null)
+        setAsking({ id, button })
+      },
+      failedId,
+    },
+    dialog: asking && (
+      <ConfirmDialog
+        title={t.t(`Transactions.discardTitle`)}
+        message={t.t(`Transactions.discardMessage`)}
+        confirmLabel={t.t(`Transactions.discardConfirm`)}
+        cancelLabel={t.t(`Transactions.discardCancel`)}
+        tone="danger"
+        onConfirm={confirm}
+        onCancel={() => setAsking(null)}
+        dataE2E="transaction-discard-dialog"
+        confirmDataE2E="transaction-discard-confirm"
+        cancelDataE2E="transaction-discard-cancel"
+      />
+    ),
+  }
 }

@@ -2602,6 +2602,12 @@ export default {
   "Transactions.discard": "Descartar",
   "Transactions.pickAccount": "Escolher outra conta",
   "Transactions.pickCategory": "Escolher outra categoria",
+  "Transactions.discardTitle": "Descartar este lançamento?",
+  "Transactions.discardMessage":
+    "Ele nunca chegou ao servidor e só existe neste dispositivo. Depois de descartado, não dá para recuperá-lo.",
+  "Transactions.discardConfirm": "Descartar lançamento",
+  "Transactions.discardCancel": "Manter",
+  "Transactions.discardFailed": "Não foi possível descartar o lançamento. Tente de novo.",
   "Transactions.count": {
     "one": "{count} lançamento",
     "many": "{count} de lançamentos",

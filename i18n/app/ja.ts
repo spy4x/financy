@@ -2331,6 +2331,12 @@ export default {
   "Transactions.discard": "破棄",
   "Transactions.pickAccount": "別の口座を選ぶ",
   "Transactions.pickCategory": "別のカテゴリを選ぶ",
+  "Transactions.discardTitle": "この取引を破棄しますか？",
+  "Transactions.discardMessage":
+    "この取引はサーバーに届いておらず、この端末にしかありません。破棄すると元に戻せません。",
+  "Transactions.discardConfirm": "取引を破棄",
+  "Transactions.discardCancel": "残す",
+  "Transactions.discardFailed": "取引を破棄できませんでした。もう一度お試しください。",
   "Transactions.count": {
     "other": "取引{count}件",
   },

@@ -2623,6 +2623,12 @@ export default {
   "Transactions.discard": "Descartar",
   "Transactions.pickAccount": "Elegir otra cuenta",
   "Transactions.pickCategory": "Elegir otra categoría",
+  "Transactions.discardTitle": "¿Descartar este movimiento?",
+  "Transactions.discardMessage":
+    "Nunca llegó al servidor y solo existe en este dispositivo. Una vez descartado, no se puede recuperar.",
+  "Transactions.discardConfirm": "Descartar movimiento",
+  "Transactions.discardCancel": "Conservarlo",
+  "Transactions.discardFailed": "No se pudo descartar el movimiento. Inténtalo de nuevo.",
   "Transactions.count": {
     "one": "{count} movimiento",
     "many": "{count} movimientos",

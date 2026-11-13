@@ -1916,6 +1916,11 @@ Transactions.deletedHint	3fa32258d33efb84
 Transactions.deletedOn	70f59da17d453b6b
 Transactions.deletedTitle	465d650bb903f7a2
 Transactions.discard	eb1a70e39274bb76
+Transactions.discardCancel	fdce5da2cec2ff02
+Transactions.discardConfirm	e4a1d363e76258fb
+Transactions.discardFailed	4f771bb39d9ef48f
+Transactions.discardMessage	61c8777bc185e77a
+Transactions.discardTitle	f078df3dd107423e
 Transactions.empty	c4adb225b42800cf
 Transactions.emptyHint	72687fb807ccd63f
 Transactions.emptyHintNoKey	9e95037a33f7105e

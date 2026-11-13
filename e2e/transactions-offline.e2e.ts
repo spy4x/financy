@@ -245,8 +245,27 @@ test.describe("transactions offline", () => {
       await expect(flowers.locator("[data-e2e=transaction-conflict-pick]")).toBeFocused()
       await partnerPage.keyboard.press("Tab")
       await expect(flowers.locator("[data-e2e=transaction-conflict-discard]")).toBeFocused()
+      const discard = flowers.locator("[data-e2e=transaction-conflict-discard]")
+      const dialog = partnerPage.locator("[data-e2e=transaction-discard-dialog]")
+      // It asks first, and Escape keeps the entry and puts focus back on Discard.
       await partnerPage.keyboard.press("Space")
+      await expect(dialog).toBeVisible()
+      await expect(dialog).toContainText("Discard this transaction?")
+      await partnerPage.keyboard.press("Escape")
+      await expect(dialog).toHaveCount(0)
+      await expect(discard).toBeFocused()
+      await expect(flowers).toHaveCount(1)
+      // Confirmed, the entry goes, and focus moves on to the next entry.
+      // The open dialog first focuses its close button, so focus moves to confirm only after.
+      await partnerPage.keyboard.press("Space")
+      await expect(dialog).toBeVisible()
+      const confirm = partnerPage.locator("[data-e2e=transaction-discard-confirm]")
+      await expect(confirm).toHaveText("Discard transaction")
+      await confirm.focus()
+      await expect(confirm).toBeFocused()
+      await partnerPage.keyboard.press("Enter")
       await expect(flowers).toHaveCount(0)
+      await expect(stall.locator("[data-e2e=transaction-row]")).toBeFocused()
 
       // Pick another account, from the keyboard: the editor opens on the entry.
       const pick = stall.locator("[data-e2e=transaction-conflict-pick]")

@@ -171,7 +171,10 @@ export function TransactionsView() {
         : undefined}
       pendingId={store.pendingId.value}
       onDiscard={canWrite
-        ? (id) => void discardGoneEntry(id).then(() => store.refresh()).catch(() => {})
+        ? async (id) => {
+          await discardGoneEntry(id)
+          await store.refresh().catch(() => {})
+        }
         : undefined}
       navigate={navigate}
     />
