@@ -360,7 +360,9 @@ export function createTransactionsStore(
 
   /**
    * Takes what the person changed. A kind that the chosen category no longer fits clears the
-   * category; a new account or currency drops the stated account amount, and the rate prompt with it.
+   * category. A new account brings its currency, unless the person had picked a currency other
+   * than the old account's. A new account or currency drops the stated account amount, and the
+   * rate prompt with it.
    */
   function change(next: Partial<TransactionFormValue>): void {
     const current = form.value
@@ -373,6 +375,18 @@ export function createTransactionsStore(
       next.kind !== undefined && categoryKind !== undefined &&
       !categoryFitsKind(merged.kind, categoryKind)
     ) merged.categoryId = null
+    if (
+      next.accountId !== undefined && next.accountId !== current.accountId &&
+      next.currency === undefined
+    ) {
+      const before = current.accountId === null
+        ? undefined
+        : references.accountCurrency(current.accountId)
+      const after = next.accountId === null ? undefined : references.accountCurrency(next.accountId)
+      if (after !== undefined && (current.currency === null || current.currency === before)) {
+        merged.currency = after
+      }
+    }
     const accountCurrency = merged.accountId === null
       ? undefined
       : references.accountCurrency(merged.accountId)

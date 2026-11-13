@@ -194,6 +194,31 @@ describe("the transaction editor", () => {
     expect(store.form.value?.categoryId).toBe("c-food")
   })
 
+  it("switches the currency to the new account's when the account changes", async () => {
+    const { store } = await newEntry()
+
+    store.change({ accountId: "a-eur" })
+
+    expect(store.form.value?.currency).toBe("EUR")
+  })
+
+  it("keeps a currency the person picked apart from the old account's when the account changes", async () => {
+    const { store } = await newEntry()
+    store.change({ currency: "JPY" })
+
+    store.change({ accountId: "a-eur" })
+
+    expect(store.form.value?.currency).toBe("JPY")
+  })
+
+  it("keeps the currency when the new account's currency is unknown", async () => {
+    const { store } = await newEntry()
+
+    store.change({ accountId: "a-unknown" })
+
+    expect(store.form.value?.currency).toBe("USD")
+  })
+
   it("sends no account amount in the account's own currency", async () => {
     const { store, calls } = await newEntry()
     store.change({ accountAmount: 999 })
