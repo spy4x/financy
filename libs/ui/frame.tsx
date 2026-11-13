@@ -25,6 +25,7 @@ import { PRODUCT_NAME } from "./brand.ts"
 import { GroupPicker, type GroupPickerData, GroupSheet } from "./group-picker.tsx"
 import {
   ACCOUNT_PATHS,
+  BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
   type Navigate,
@@ -44,9 +45,9 @@ import { useAppText } from "./i18n.ts"
  * The daily destinations, in the order the rail and the phone tab bar show them. The rail shows
  * them all; the phone bar shows the first four and moves the rest into the Account sheet behind its
  * last slot, so the order puts the destinations used most first. Activity belongs to the selected group and
- * shows only while there is one whose log the person may read. Profile, Categories, Tags and Notes
- * are in the account menu; Tags is in Notes' "More actions" too. Labels come from `t`, the app's
- * translator.
+ * shows only while there is one whose log the person may read. Profile, Categories, Budgets, Tags
+ * and Notes are in the account menu; Tags is in Notes' "More actions" too. Labels come from `t`,
+ * the app's translator.
  */
 export function navItems(
   activityGroupId: string | null,
@@ -268,6 +269,7 @@ export function AppFrame(
         headerHref: SCREEN_PATHS.profile,
         items: [
           { label: t.t("Frame.categories"), href: CATEGORY_PATHS.list },
+          { label: t.t("Frame.budgets"), href: BUDGET_PATHS.list },
           { label: t.t("Frame.tags"), href: TAG_PATHS.list },
           { label: t.t("Frame.notes"), href: NOTE_PATHS.list },
           ...shortcutsMenuItems(shortcuts, t.t("Frame.shortcuts")),

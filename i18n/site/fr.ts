@@ -577,7 +577,7 @@ export default {
   "HomeStatus.transfers": "Virements entre comptes, y compris entre devises",
   "HomeStatus.month": "L’argent du mois en un coup d’œil",
   "HomeStatus.later":
-    "Les budgets, l’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
+    "L’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
   "HomeWho.keeperTitle": "Celui ou celle qui tient les comptes",
   "HomeWho.keeperText":
     "Le salaire dans une devise, le loyer dans une autre, l’épargne dans une troisième : un seul total aux taux de la BCE, avec leur date.",
@@ -619,12 +619,12 @@ export default {
   "FeatureAccounts.nav": "Comptes",
   "FeatureAccounts.title": "Chaque compte dans sa propre devise",
   "Features.description":
-    "Financy aujourd’hui : comptes et opérations en toute devise, foyers avec rôles, synchro, appli hors ligne, export, neuf langues et votre serveur.",
+    "Financy aujourd’hui : comptes et opérations en toute devise, budgets mensuels, foyers avec rôles, synchro, appli hors ligne, export, neuf langues.",
   "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
   "FeaturesHero.lead":
-    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
+    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
   "FeaturesHero.note":
-    "Les virements et les budgets ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
+    "Les virements ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
   "HomeFaq.useAnswer":
     "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
   "Catalog.title": "Catalogue",
@@ -653,8 +653,20 @@ export default {
     "Un lecteur voit les catégories ; seuls un éditeur ou plus les modifient",
   "FeatureCategories.code": "Lire le code source des catégories",
   "FeatureTierSettled.lead":
-    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises , leurs catégories et les opérations sont là ; les budgets viennent ensuite.",
+    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels sont là ; les virements viennent ensuite.",
   "HomeStatus.categories": "Des catégories avec un niveau de sous‑catégories",
+  "HomeStatus.budgets": "Un plafond mensuel pour chaque catégorie",
+  "FeatureBudgets.nav": "Budgets",
+  "FeatureBudgets.title": "Un plafond mensuel pour chaque catégorie",
+  "FeatureBudgets.lead":
+    "Fixez combien chaque catégorie de dépenses peut dépenser par mois et voyez ce qu’il reste, en direct pour tout le foyer. Un plafond continue les mois suivants jusqu’à ce que vous le changiez, et les mois passés gardent leurs plafonds.",
+  "FeatureBudgets.fact1":
+    "Une catégorie parente sans plafond propre affiche la somme des plafonds de ses sous‑catégories",
+  "FeatureBudgets.fact2":
+    "La dépense, ce sont les dépenses moins les remboursements ; une devise sans taux de change est nommée, pas écartée en silence",
+  "FeatureBudgets.fact3":
+    "Fixer un plafond demande le forfait Household ; lire les budgets et retirer un plafond, jamais, et le serveur le vérifie",
+  "FeatureBudgets.code": "Lire le code source des budgets",
   "FeatureTransactions.nav": "Opérations",
   "FeatureTransactions.title": "Chaque dépense et chaque revenu, dans la devise payée",
   "FeatureTransactions.lead":

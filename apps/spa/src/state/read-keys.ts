@@ -20,6 +20,8 @@ export const READ_KEYS = {
   billing: (groupId: string) => `billing:${groupId}`,
   accounts: (groupId: string) => `accounts:${groupId}`,
   categories: (groupId: string) => `categories:${groupId}`,
+  /** One month's bars of a household, `YYYY-MM`: each month keeps its own copy. */
+  budgets: (groupId: string, month: string) => `budgets:${groupId}:${month}`,
   apiTokens: "api-tokens",
   devices: "devices",
 } as const

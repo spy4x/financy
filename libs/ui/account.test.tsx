@@ -556,13 +556,20 @@ describe("AppFrame", () => {
     atTop()
   })
 
-  it("names the account entry after the person, heads its menu with their name and address, and offers Categories, Tags, Notes and Sign out with no Profile or Theme item", async () => {
+  it("names the account entry after the person, heads its menu with their name and address, and offers Categories, Budgets, Tags, Notes and Sign out with no Profile or Theme item", async () => {
     await mount(<AppFrame user={ada} onSignOut={() => {}}>page</AppFrame>)
     expect(find(ACCOUNT).getAttribute("aria-label")).toBe("Account: Ada Lovelace")
     expect(find("[data-e2e=account-menu-header]").textContent).toContain(
       "Ada Lovelaceada@example.com",
     )
-    expect(menuItems(ACCOUNT)).toEqual([HEADER, "Categories", "Tags", "Notes", "Sign out"])
+    expect(menuItems(ACCOUNT)).toEqual([
+      HEADER,
+      "Categories",
+      "Budgets",
+      "Tags",
+      "Notes",
+      "Sign out",
+    ])
     expect(document.querySelector("[data-e2e=app-shell-sheet-theme]")).toBe(null)
   })
 

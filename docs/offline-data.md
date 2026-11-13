@@ -34,7 +34,7 @@ the device keeps. [aggregates.md](aggregates.md#choosing-the-offline-level) has 
 | Level               | What works with no network                         | Which lists                                                                                                                                              |
 | ------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1. Online only      | Nothing: the screen says the server is unreachable | Deleted notes, transactions and groups, sign-in, two-factor set-up, every write but a note's, a tag's or a transaction's                                |
-| 2. Offline-readable | The last list the server sent                      | Groups, members, invitations, notifications and the bell's count, activity, the overview's widgets, push devices, billing, API tokens, signed-in devices |
+| 2. Offline-readable | The last list the server sent                      | Groups, members, invitations, notifications and the bell's count, activity, the overview's widgets, push devices, billing, API tokens, signed-in devices, budgets |
 | 3. Offline-writable | The last list, and create, edit and delete         | Notes, tags, transactions                                                                                                                                |
 
 The selected group can be switched offline only among groups already on the device.

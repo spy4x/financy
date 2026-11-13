@@ -509,7 +509,7 @@ export default {
   "HomeStatus.transactions": "收入和支出，保留原始金额",
   "HomeStatus.transfers": "账户间转账，包括跨币种",
   "HomeStatus.month": "本月资金一目了然",
-  "HomeStatus.later": "预算、银行流水导入和付费云服务稍后推出：<plan>查看完整计划</plan>。",
+  "HomeStatus.later": "银行流水导入和付费云服务稍后推出：<plan>查看完整计划</plan>。",
   "HomeWho.keeperTitle": "管钱的人",
   "HomeWho.keeperText":
     "工资是一种货币，房租是另一种，存款又是第三种：按欧洲央行汇率算出一个总额，并标明汇率日期。",
@@ -546,11 +546,11 @@ export default {
   "FeatureAccounts.nav": "账户",
   "FeatureAccounts.title": "每个账户都有自己的币种",
   "Features.description":
-    "Financy 现状：任意币种的账户和交易、带角色的家庭、实时同步、离线应用、导出、九种语言和自托管。",
+    "Financy 现状：任意币种的账户和交易、每月预算、带角色的家庭、实时同步、离线应用、导出、九种语言和自托管。",
   "Features.title": "Financy 功能：账户、家庭、同步、离线",
   "FeaturesHero.lead":
-    "Financy 正在重建。今天已经可用的：任意币种的账户，以及它下面的基础：登录、按角色共享访问、实时更新、离线应用、导出、九种语言和你自己的服务器。每一节都链接到它的代码。",
-  "FeaturesHero.note": "转账和预算还没有做好。<status>看看重建进行到哪一步了</status>。",
+    "Financy 正在重建。今天已经可用的：任意币种的账户、它们的分类、交易和每月预算，以及下面的基础：登录、按角色共享访问、实时更新、离线应用、导出、九种语言和你自己的服务器。每一节都链接到它的代码。",
+  "FeaturesHero.note": "转账还没有做好。<status>看看重建进行到哪一步了</status>。",
   "HomeFaq.useAnswer": "还不行。登录、家庭、同步和任意币种的账户已经可用；交易正在开发中。",
   "Catalog.title": "商品目录",
   "Catalog.intro": "在售的全部商品，附价格、尺码和颜色。",
@@ -575,8 +575,17 @@ export default {
   "FeatureCategories.fact3": "查看者可以阅读分类；只有编辑者及以上可以更改",
   "FeatureCategories.code": "阅读分类代码",
   "FeatureTierSettled.lead":
-    "这些部分已经可用，并在 CI 中测试。任意币种的账户、分类和交易已经上线；预算是下一步。",
+    "这些部分已经可用，并在 CI 中测试。任意币种的账户、分类、交易和每月预算已经上线；转账是下一步。",
   "HomeStatus.categories": "带一级子分类的分类",
+  "HomeStatus.budgets": "每个分类的每月限额",
+  "FeatureBudgets.nav": "预算",
+  "FeatureBudgets.title": "每个分类的每月限额",
+  "FeatureBudgets.lead":
+    "设定每个支出分类一个月最多花多少，并查看还剩多少，家里每个人都能实时看到。限额会延续到之后的月份，直到你修改它；过去的月份保留当时的限额。",
+  "FeatureBudgets.fact1": "没有自己限额的父分类显示其子分类限额之和",
+  "FeatureBudgets.fact2": "支出是花费减去退款；还没有汇率的币种会被列出，而不是悄悄丢掉",
+  "FeatureBudgets.fact3": "设置限额需要 Household 套餐；查看预算和移除限额从不需要，由服务器检查",
+  "FeatureBudgets.code": "阅读预算代码",
   "FeatureTransactions.nav": "交易",
   "FeatureTransactions.title": "每一笔支出和收入，都按你付款的币种记录",
   "FeatureTransactions.lead":

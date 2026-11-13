@@ -130,3 +130,20 @@ export async function openCategories(page: Page, name: string): Promise<void> {
   )
   await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 }
+
+/**
+ * Opens the budgets of the group named `name` the way `openCategories` opens its categories: the
+ * group becomes the current one, then the page loads at `/budgets` and waits for the live
+ * connection again.
+ */
+export async function openBudgets(page: Page, name: string): Promise<void> {
+  await openGroups(page)
+  await openGroup(page, name)
+  if (await page.locator("[data-e2e=group-current]").count() === 0) {
+    await page.locator("[data-e2e=group-menu]").click()
+    await page.getByRole("menuitem", { name: "Switch to this group" }).click()
+    await expect(page.locator("[data-e2e=group-current]")).toBeVisible()
+  }
+  await gotoApp(page, "/budgets", page.getByRole("heading", { level: 1, name: "Budgets" }))
+  await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
+}
