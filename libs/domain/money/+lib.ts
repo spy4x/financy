@@ -372,7 +372,8 @@ export interface AdminRatesSnapshot {
   /** The paid fallback's calls this month, or `null` while it is off. */
   fallback: { used: number; cap: number; resetsOn: string } | null
   /** The last 7 days, newest first; a day no source has rates for has no rows. */
-  days: { date: string; rows: { source: string; currencies: number; fetchedAt: string }[] }[]  /**
+  days: { date: string; rows: { source: string; currencies: number; fetchedAt: string }[] }[]
+  /**
    * CoinGecko's coin prices: each stored price with its day and fetch time (ISO 8601), the listed
    * coins an account holds that have no price, and the calls this month against the monthly cap.
    */
