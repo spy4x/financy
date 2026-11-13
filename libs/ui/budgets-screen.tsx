@@ -139,6 +139,8 @@ export function BudgetsScreen(props: BudgetsScreenProps): JSX.Element {
       onChange={(next) => props.onMonth(monthOf(next.from))}
       now={props.now}
       timeZone={props.timeZone}
+      // `t` opens a new transaction everywhere in the app, so this month is `.` here.
+      currentHotkey="."
     />
   )
   if (!group) {

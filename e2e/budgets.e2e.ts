@@ -230,7 +230,7 @@ test.describe("budgets", () => {
       await expect(page.locator("[data-e2e=budgets-past]")).toBeVisible()
       await expect(page.getByRole("button", { name: /limit on Groceries/ })).toHaveCount(0)
 
-      await page.keyboard.press("t")
+      await page.keyboard.press(".")
       await expect(meter).toContainText("€0.00 of €600.00, 0%")
       await expect(page.locator("[data-e2e=budgets-past]")).toHaveCount(0)
     } finally {
