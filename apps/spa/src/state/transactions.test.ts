@@ -211,6 +211,16 @@ describe("the transaction editor", () => {
     expect(store.form.value?.currency).toBe("JPY")
   })
 
+  it("drops a stated account amount when the account changes", async () => {
+    const { store } = await newEntry()
+    store.change({ currency: "JPY" })
+    store.change({ accountAmount: 999 })
+
+    store.change({ accountId: "a-eur" })
+
+    expect(store.form.value?.accountAmount).toBe(null)
+  })
+
   it("keeps the currency when the new account's currency is unknown", async () => {
     const { store } = await newEntry()
 

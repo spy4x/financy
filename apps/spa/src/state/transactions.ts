@@ -361,8 +361,9 @@ export function createTransactionsStore(
   /**
    * Takes what the person changed. A kind that the chosen category no longer fits clears the
    * category. A new account brings its currency, unless the person had picked a currency other
-   * than the old account's. A new account or currency drops the stated account amount, and the
-   * rate prompt with it.
+   * than the old account's. A new account drops the stated account amount, which was in the old
+   * account's currency, and so does a currency equal to the account's. A new account, currency or
+   * date drops the rate prompt.
    */
   function change(next: Partial<TransactionFormValue>): void {
     const current = form.value
@@ -390,7 +391,10 @@ export function createTransactionsStore(
     const accountCurrency = merged.accountId === null
       ? undefined
       : references.accountCurrency(merged.accountId)
-    if (merged.currency === null || merged.currency === accountCurrency) merged.accountAmount = null
+    if (
+      merged.currency === null || merged.currency === accountCurrency ||
+      merged.accountId !== current.accountId
+    ) merged.accountAmount = null
     form.value = merged
     if (
       (next.accountId !== undefined && next.accountId !== current.accountId) ||
