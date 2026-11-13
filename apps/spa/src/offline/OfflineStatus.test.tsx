@@ -17,6 +17,8 @@ import appRu from "@i18n/app/ru.ts"
 import { conflictsToReview, OfflineStatus } from "./OfflineStatus.tsx"
 import { startOffline, stopOffline } from "./index.ts"
 import { createMemoryStorage } from "./memory-storage.ts"
+import { REFERENCE_GONE } from "./transactions-collection.ts"
+import { TransactionKind } from "@domain/transactions"
 
 const window = new Window({ url: "http://app.localhost/" })
 const own = { document: globalThis.document }
@@ -122,7 +124,67 @@ const TAG_CONFLICT = {
   queuedAt: "2026-10-01T08:00:00.000Z",
 }
 
+/** A queued entry the server refused, with `message` as the conflict's reason. */
+function refusedEntry(id: string, memo: string, message: string) {
+  return {
+    key: `key-${id}`,
+    entityId: id,
+    kind: "create" as const,
+    payload: {
+      groupId: "g-1",
+      accountId: "a-1",
+      categoryId: "c-1",
+      kind: TransactionKind.EXPENSE,
+      amount: 450,
+      currency: "EUR",
+      accountAmount: null,
+      memo,
+      date: "2026-11-12",
+      accountCurrency: "EUR",
+    },
+    baseVersion: 0,
+    attempted: true,
+    status: "conflict" as const,
+    conflict: { reason: "rejected" as const, message, server: null },
+    queuedAt: "2026-11-12T08:00:00.000Z",
+  }
+}
+
 describe("OfflineStatus", () => {
+  it("leaves out entries refused for a deleted account or category, which the list handles", async () => {
+    const storage = createMemoryStorage()
+    const queue = storage.of(7).transactionsQueue
+    await queue.putEntry(refusedEntry("t-1", "Market stall", REFERENCE_GONE.account))
+    await queue.putEntry(refusedEntry("t-2", "Flowers", REFERENCE_GONE.category))
+    await queue.putEntry({
+      ...refusedEntry("t-3", "Coffee", `TransactionSync.version`),
+      kind: "update",
+      baseVersion: 1,
+      conflict: { reason: "version", message: `TransactionSync.version`, server: null },
+    })
+
+    await mountStrip(storage)
+
+    const messages = [...root!.querySelectorAll("[data-e2e=conflict-message]")]
+      .map((message) => message.textContent)
+    expect(messages).toEqual(["Someone changed this transaction while you were offline."])
+    expect(text()).toContain("1 change needs your choice")
+    expect(text()).toContain("Coffee")
+    expect(text()).not.toContain("Market stall")
+    expect(text()).not.toContain("Flowers")
+  })
+
+  it("hides itself when the only conflicts are entries refused for a deleted account or category", async () => {
+    const storage = createMemoryStorage()
+    const queue = storage.of(7).transactionsQueue
+    await queue.putEntry(refusedEntry("t-1", "Market stall", REFERENCE_GONE.account))
+    await queue.putEntry(refusedEntry("t-2", "Flowers", REFERENCE_GONE.category))
+
+    await mountStrip(storage)
+
+    expect(root!.innerHTML).toBe("")
+  })
+
   it("shows a tag the server refused with both sides, so the person can choose", async () => {
     const storage = createMemoryStorage()
     await storage.of(7).tagsQueue.putEntry({

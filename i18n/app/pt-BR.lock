@@ -1894,6 +1894,8 @@ TransactionMessages.restoreGone	83a147c3ff4371cc
 TransactionMessages.restoreOffline	5d37282d65df7881
 TransactionMessages.role	07c7ec6b59ee6b93
 TransactionMessages.save	57d9e3f4cb9b22cb
+TransactionSync.accountGone	6cd52c824ef30008
+TransactionSync.categoryGone	dedc108ad6fddef7
 TransactionSync.gone	bbf3f154cba4fc26
 TransactionSync.rejected	99ba9423080da5f4
 TransactionSync.version	171fb43bc487a96b
@@ -1924,6 +1926,12 @@ Transactions.deletedEmpty	b457f29cf5a1efe3
 Transactions.deletedHint	3fa32258d33efb84
 Transactions.deletedOn	70f59da17d453b6b
 Transactions.deletedTitle	465d650bb903f7a2
+Transactions.discard	eb1a70e39274bb76
+Transactions.discardCancel	fdce5da2cec2ff02
+Transactions.discardConfirm	e4a1d363e76258fb
+Transactions.discardFailed	4f771bb39d9ef48f
+Transactions.discardMessage	61c8777bc185e77a
+Transactions.discardTitle	f078df3dd107423e
 Transactions.empty	c4adb225b42800cf
 Transactions.emptyHint	72687fb807ccd63f
 Transactions.emptyHintNoKey	9e95037a33f7105e
@@ -1939,6 +1947,8 @@ Transactions.noAccount	5ad515277ff28a69
 Transactions.noAccountHint	f65e7f4792f4b8a5
 Transactions.noCopy	c92286c74042316d
 Transactions.noCopyHint	800b4e7ee5913bd6
+Transactions.pickAccount	637ddb1cc7ad8ca5
+Transactions.pickCategory	7973027fa89ba48a
 Transactions.readOnly	e3f19e8796f9ada0
 Transactions.restore	a76e13b9839270eb
 Transactions.restoreNamed	7ad4831331334084

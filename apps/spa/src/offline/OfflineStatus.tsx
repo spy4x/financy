@@ -12,6 +12,7 @@ import { activeLayer } from "./index.ts"
 import type { NoteEntry } from "./notes-cache.ts"
 import type { TagEntry } from "./tags-cache.ts"
 import type { TransactionEntry } from "./transactions-cache.ts"
+import { goneReference } from "./transactions-collection.ts"
 import { formatMoney } from "@spy4x/platform/universal/money-core"
 import { amountDecimals } from "@domain/money"
 import { isolate } from "@spy4x/preact-ui/bdi"
@@ -20,7 +21,9 @@ const network = createOnlineStatus()
 
 /**
  * The group whose conflict chooser takes focus the next time this strip shows it: "Review changes"
- * in the sign-out dialog sets it (`reviewConflicts` in `modules.ts`), and the strip clears it.
+ * in the sign-out dialog sets it (`reviewConflicts` in `modules.ts`) when a write the strip shows
+ * waits on a choice, and the strip clears it. Entries refused for a deleted account or category are
+ * reviewed on the transactions list instead, which does not read it.
  */
 export const conflictsToReview = signal<string | null>(null)
 
@@ -242,8 +245,11 @@ export function OfflineStatus(
   const conflicts = [
     ...tagEntries.filter((entry) => entry.status === "conflict").map((entry) => tagView(t, entry)),
     ...entries.filter((entry) => entry.status === "conflict").map((entry) => noteView(t, entry)),
-    ...transactionEntries.filter((entry) => entry.status === "conflict")
-      .map((entry) => transactionView(t, entry, t.language)),
+    // An entry refused for a deleted account or category waits on the transactions list, which
+    // offers another one and a confirmed Discard, so the strip leaves it out.
+    ...transactionEntries.filter((entry) =>
+      entry.status === "conflict" && goneReference(entry) === null
+    ).map((entry) => transactionView(t, entry, t.language)),
   ]
   // Notes that wait for the person's choice about a tag they name.
   const held = layer.collections.waiting().filter((w) => w.onPerson).length

@@ -29,6 +29,11 @@ export interface TransactionRow {
   author?: string
   /** Not on the server yet: it waits in this device's queue. */
   queued: boolean
+  /**
+   * The server refused this queued entry because its account or category was deleted: it waits
+   * for the person to pick another one or discard it.
+   */
+  gone?: "account" | "category" | null
   createdAt: string
   /** When it was deleted, in the deleted view. */
   deletedAt?: string | null

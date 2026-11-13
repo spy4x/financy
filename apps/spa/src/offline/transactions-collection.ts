@@ -4,7 +4,7 @@ import {
   type CollectionDefinition,
   defineCollection,
 } from "@spy4x/realtime/collections"
-import type { OutboxStore } from "@spy4x/realtime/outbox"
+import type { OutboxStore, SendFailure } from "@spy4x/realtime/outbox"
 import { TransactionKind } from "@domain/transactions"
 import type { TransactionItem, TransactionsDependencies } from "../state/transactions.ts"
 import {
@@ -19,7 +19,8 @@ import { type DeviceCopy, pullOrKeep } from "./device-copy.ts"
  * The entries adapter: what is the entries' own about being offline-writable (ADR 003, level 3),
  * as `notes-collection.ts` is for notes. The accounts and categories an entry names are level 2:
  * they are never queued, so an entry depends on no other queue. A queued entry whose account or
- * category is gone by the time it is sent is the library's ordinary refusal.
+ * category is gone by the time it is sent is the library's ordinary refusal, kept as a conflict
+ * with its own reason ({@link goneReference}) so the list can offer another account or category.
  */
 
 /** The collection's name in the queue. */
@@ -42,12 +43,49 @@ export interface TransactionsCollectionOptions {
   store?: OutboxStore<TransactionPayload, TransactionItem>
 }
 
-/** Reads a failed entry call: unreachable (try later) or the server's refusal and its code. */
-export const classifyTransactionError = classifyByCode({
+/**
+ * The reason a queued entry is refused when the account or category it names is gone: the
+ * conflict's message, a key of the `app` catalog.
+ */
+export const REFERENCE_GONE = {
+  account: `TransactionSync.accountGone`,
+  category: `TransactionSync.categoryGone`,
+} as const
+
+/** What a queued entry names that the server no longer has. */
+export type GoneReference = keyof typeof REFERENCE_GONE
+
+const classifyByServerCode = classifyByCode({
   version: "VERSION_CONFLICT",
   notFound: "TRANSACTION_NOT_FOUND",
   alreadyExists: "ID_ALREADY_EXISTS",
 })
+
+/**
+ * Reads a failed entry call: unreachable (try later) or the server's refusal and its code. A
+ * refusal because the account or category is gone carries {@link REFERENCE_GONE}'s key instead of
+ * the server's English words.
+ */
+export function classifyTransactionError(error: unknown): SendFailure {
+  const failure = classifyByServerCode(error)
+  if (failure.kind !== "rejected") return failure
+  const code = (error as { details?: { code?: unknown } }).details?.code
+  if (code === "ACCOUNT_NOT_FOUND") return { kind: "rejected", message: REFERENCE_GONE.account }
+  if (code === "CATEGORY_NOT_FOUND") return { kind: "rejected", message: REFERENCE_GONE.category }
+  return failure
+}
+
+/**
+ * The account or category a conflicted entry names that the server no longer has, or `null` for
+ * an entry that is waiting, or in conflict for another reason.
+ */
+export function goneReference(entry: TransactionEntry): GoneReference | null {
+  if (entry.status !== "conflict") return null
+  const message = entry.conflict?.message
+  if (message === REFERENCE_GONE.account) return "account"
+  if (message === REFERENCE_GONE.category) return "category"
+  return null
+}
 
 /**
  * The amounts a queued entry shows with before the server answers. In the account's own currency
@@ -115,8 +153,8 @@ export function transactionsCollection(
     entityFrom: (answer) => (answer as { transaction?: TransactionItem } | undefined)?.transaction,
     classify: classifyTransactionError,
     // Keys of the `app` catalog, shown by `OfflineStatus` in the person's language at that time. A
-    // refusal that carries the server's own words (no rate for the date, a category gone) keeps
-    // those instead of `rejected`.
+    // refusal that carries the server's own words (no rate for the date) keeps those instead of
+    // `rejected`; an account or category gone carries its own key (`classifyTransactionError`).
     messages: {
       version: `TransactionSync.version`,
       gone: `TransactionSync.gone`,

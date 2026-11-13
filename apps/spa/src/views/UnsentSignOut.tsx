@@ -1,19 +1,21 @@
 import { useEffect } from "preact/hooks"
 import { UnsentChangesDialog } from "@spy4x/preact-system/unsent-changes-dialog"
 import type { UnsentWait } from "../modules.ts"
+import { NOTE_PATHS, TRANSACTION_PATHS } from "@ui/progressive.tsx"
 
 /**
  * The question a sign-out asks while writes wait in the offline queue: send them first, sign out
  * anyway, or stay. The wait shows in the same dialog; once nothing is left to send, `onSignOut`
  * runs by itself. Once only writes that need a choice are left, "Review changes" calls `onReview`
- * with their group, whose notes page shows the chooser.
+ * with their group and the page that shows the choice: the notes page with the sync strip, or the
+ * transactions list when only entries refused for a deleted account or category are left.
  */
 export function UnsentSignOut(
   { wait, onSignOut, onCancel, onReview }: {
     wait: UnsentWait
     onSignOut: () => void
     onCancel: () => void
-    onReview: (groupId: string | null) => void
+    onReview: (groupId: string | null, path: string) => void
   },
 ) {
   const view = wait.view.value
@@ -38,7 +40,11 @@ export function UnsentSignOut(
       onSend={() => wait.send()}
       onSignOut={onSignOut}
       onCancel={onCancel}
-      onReview={() => onReview(view.reviewGroupId)}
+      onReview={() =>
+        onReview(
+          view.reviewGroupId,
+          view.reviewAt === "transactions" ? TRANSACTION_PATHS.list : NOTE_PATHS.list,
+        )}
     />
   )
 }

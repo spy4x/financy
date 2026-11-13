@@ -2768,6 +2768,10 @@ export default {
   "OfflineStatus.transaction": "المعاملة {line}",
   "OfflineStatus.transactionGone": "لم تعد المعاملة في هذه الأسرة.",
   "OfflineStatus.youDeletedTransaction": "حذفت هذه المعاملة.",
+  "TransactionSync.accountGone":
+    "حُذف حساب هذه المعاملة بينما كنت دون اتصال. اختر حسابًا آخر أو احذف هذه المعاملة.",
+  "TransactionSync.categoryGone":
+    "حُذفت فئة هذه المعاملة بينما كنت دون اتصال. اختر فئة أخرى أو احذف هذه المعاملة.",
   "TransactionSync.gone": "حُذفت هذه المعاملة بينما كنت دون اتصال.",
   "TransactionSync.rejected": "لم يقبل الخادم هذه المعاملة.",
   "TransactionSync.version": "عدّل أحدهم هذه المعاملة بينما كنت دون اتصال.",
@@ -2781,6 +2785,15 @@ export default {
   "Transactions.amountIn": "{amount} في {account}",
   "Transactions.convertLater": "يُحوَّل عند عودة الاتصال",
   "Transactions.unknown": "غير معروف",
+  "Transactions.discard": "حذف",
+  "Transactions.pickAccount": "اختر حسابًا آخر",
+  "Transactions.pickCategory": "اختر فئة أخرى",
+  "Transactions.discardTitle": "حذف هذه المعاملة؟",
+  "Transactions.discardMessage":
+    "لم تصل هذه المعاملة إلى الخادم أبدًا، فهي موجودة على هذا الجهاز فقط. بعد حذفها لا يمكن استعادتها.",
+  "Transactions.discardConfirm": "حذف المعاملة",
+  "Transactions.discardCancel": "إبقاؤها",
+  "Transactions.discardFailed": "تعذّر حذف المعاملة. حاول مرة أخرى.",
   "Transactions.count": {
     "zero": "لا معاملات",
     "one": "معاملة واحدة",

@@ -2540,6 +2540,10 @@ export default {
   "OfflineStatus.transaction": "Buchung {line}",
   "OfflineStatus.transactionGone": "Die Buchung ist nicht mehr in diesem Haushalt.",
   "OfflineStatus.youDeletedTransaction": "Du hast diese Buchung gelöscht.",
+  "TransactionSync.accountGone":
+    "Das Konto dieser Buchung wurde gelöscht, während du offline warst. Wähle ein anderes Konto oder verwirf die Buchung.",
+  "TransactionSync.categoryGone":
+    "Die Kategorie dieser Buchung wurde gelöscht, während du offline warst. Wähle eine andere Kategorie oder verwirf die Buchung.",
   "TransactionSync.gone": "Diese Buchung wurde gelöscht, während du offline warst.",
   "TransactionSync.rejected": "Der Server hat diese Buchung nicht angenommen.",
   "TransactionSync.version": "Jemand hat diese Buchung geändert, während du offline warst.",
@@ -2554,6 +2558,16 @@ export default {
   "Transactions.amountIn": "{amount} auf {account}",
   "Transactions.convertLater": "Wird umgerechnet, sobald du wieder online bist",
   "Transactions.unknown": "Unbekannt",
+  "Transactions.discard": "Verwerfen",
+  "Transactions.pickAccount": "Anderes Konto wählen",
+  "Transactions.pickCategory": "Andere Kategorie wählen",
+  "Transactions.discardTitle": "Diese Buchung verwerfen?",
+  "Transactions.discardMessage":
+    "Sie hat den Server nie erreicht und existiert nur auf diesem Gerät. Einmal verworfen, lässt sie sich nicht zurückholen.",
+  "Transactions.discardConfirm": "Buchung verwerfen",
+  "Transactions.discardCancel": "Behalten",
+  "Transactions.discardFailed":
+    "Die Buchung konnte nicht verworfen werden. Versuch es noch einmal.",
   "Transactions.count": {
     "one": "{count} Buchung",
     "other": "{count} Buchungen",

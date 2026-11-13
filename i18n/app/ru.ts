@@ -2697,6 +2697,10 @@ export default {
   "OfflineStatus.transaction": "Операция {line}",
   "OfflineStatus.transactionGone": "Этой операции больше нет в семье.",
   "OfflineStatus.youDeletedTransaction": "Вы удалили эту операцию.",
+  "TransactionSync.accountGone":
+    "Пока вы были не в сети, счёт этой операции удалили. Выберите другой счёт или удалите операцию.",
+  "TransactionSync.categoryGone":
+    "Пока вы были не в сети, категорию этой операции удалили. Выберите другую категорию или удалите операцию.",
   "TransactionSync.gone": "Пока вы были не в сети, эту операцию удалили.",
   "TransactionSync.rejected": "Сервер не принял эту операцию.",
   "TransactionSync.version": "Пока вы были не в сети, кто-то изменил эту операцию.",
@@ -2710,6 +2714,15 @@ export default {
   "Transactions.amountIn": "{amount} на счёте {account}",
   "Transactions.convertLater": "Пересчитаем, когда появится сеть",
   "Transactions.unknown": "Неизвестно",
+  "Transactions.discard": "Удалить",
+  "Transactions.pickAccount": "Выбрать другой счёт",
+  "Transactions.pickCategory": "Выбрать другую категорию",
+  "Transactions.discardTitle": "Удалить эту операцию?",
+  "Transactions.discardMessage":
+    "Она так и не попала на сервер и есть только на этом устройстве. После удаления её не вернуть.",
+  "Transactions.discardConfirm": "Удалить операцию",
+  "Transactions.discardCancel": "Оставить",
+  "Transactions.discardFailed": "Не удалось удалить операцию. Попробуйте ещё раз.",
   "Transactions.count": {
     "one": "{count} операция",
     "few": "{count} операции",

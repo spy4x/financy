@@ -152,15 +152,15 @@ function useSignOut(guest: boolean): { onSignOut: () => void; dialog: ComponentC
             signOutNow()
           }}
           onCancel={close}
-          onReview={(groupId) => {
+          onReview={(groupId, path) => {
             close()
-            // The notes page of that group shows the conflicts with their choices; focus lands on
-            // them.
+            // That page of the group shows the writes with their choices. On the notes page focus
+            // lands on the strip's chooser; the transactions list marks its own rows.
             if (groupId) {
-              reviewConflicts(groupId)
+              if (path === NOTE_PATHS.list) reviewConflicts(groupId)
               void selectionStore.select(groupId)
             }
-            navigate(NOTE_PATHS.list)
+            navigate(path)
           }}
         />
       )

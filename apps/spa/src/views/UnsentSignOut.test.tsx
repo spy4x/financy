@@ -41,6 +41,7 @@ function fakeWait(start: Partial<UnsentView> = {}) {
     unsent: 3,
     conflicts: 0,
     reviewGroupId: null,
+    reviewAt: "strip",
     sent: 0,
     state: "ask",
     ...start,
@@ -65,7 +66,7 @@ async function mount(wait: UnsentWait) {
         wait={wait}
         onSignOut={() => calls.push("sign out")}
         onCancel={() => calls.push("cancel")}
-        onReview={(groupId) => calls.push(`review ${groupId}`)}
+        onReview={(groupId, path) => calls.push(`review ${groupId} at ${path}`)}
       />,
       root!,
     )
@@ -142,6 +143,21 @@ describe("UnsentSignOut", () => {
 
     await act(() => button("unsent-review")!.click())
 
-    expect(calls).toEqual(["review g-2"])
+    expect(calls).toEqual(["review g-2 at /notes"])
+  })
+
+  it("opens the transactions list to review when only entries with a deleted account or category are left", async () => {
+    const { wait } = fakeWait({
+      unsent: 1,
+      conflicts: 1,
+      reviewGroupId: "g-4",
+      reviewAt: "transactions",
+      state: "sending",
+    })
+    const calls = await mount(wait)
+
+    await act(() => button("unsent-review")!.click())
+
+    expect(calls).toEqual(["review g-4 at /transactions"])
   })
 })

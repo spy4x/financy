@@ -99,10 +99,13 @@ from these steps.
    ```ts
    export const localReads = noLocalReads
    export const benchmarkLocalData: BenchmarkLocalData | null = null
+   export const goneEntries = (_groupId: string) => new Map<string, "account" | "category">()
+   export const discardGoneEntry = (_id: string) => Promise.resolve()
    ```
 
    The level 2 stores then read from the server and keep nothing, with no change to them or their
-   tests. The `null` closes the benchmark page, which measures this layer.
+   tests. The `null` closes the benchmark page, which measures this layer. With no queue, no entry
+   is ever refused for a deleted account or category.
 5. In `apps/spa/src/app.tsx`:
    - `bootstrapSession(recallUser)` becomes `bootstrapSession()` and loses its `wipeSignedOut`
      step;
@@ -123,7 +126,8 @@ from these steps.
     `apps/spa/src/views/TagsView.tsx`, delete the `OfflineStatus` import and element.
 11. Delete the specs `e2e/offline.e2e.ts`, `e2e/local-data.e2e.ts`, `e2e/search-offline.e2e.ts`,
     `e2e/tags-offline.e2e.ts` and `e2e/notes-restore-offline.e2e.ts`, and their names in
-    `OFFLINE_SPECS` of `infra/scripts/e2e-local-plan.ts`.
+    `OFFLINE_SPECS` of `infra/scripts/e2e-local-plan.ts`. Delete `e2e/transactions-offline.e2e.ts`
+    too; it starts online, so `OFFLINE_SPECS` does not name it.
 12. Delete `tests/offline-removal.test.ts` and its group in `infra/scripts/test.ts`.
 
 The app then reads and writes over the network only. The server's changes read (`group.changes`)

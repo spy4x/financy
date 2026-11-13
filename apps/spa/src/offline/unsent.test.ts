@@ -8,6 +8,7 @@ import type { NoteEntry } from "./notes-cache.ts"
 import type { TagEntry } from "./tags-cache.ts"
 import type { TransactionEntry } from "./transactions-cache.ts"
 import { TransactionKind } from "@domain/transactions"
+import { REFERENCE_GONE } from "./transactions-collection.ts"
 import { countUnsent, watchUnsent } from "./unsent.ts"
 
 function noteEntry(entityId: string, status: "pending" | "conflict", groupId = "g-1"): NoteEntry {
@@ -38,14 +39,18 @@ function tagEntry(entityId: string, status: "pending" | "conflict", groupId = "g
   }
 }
 
-function transactionEntry(entityId: string, status: "pending" | "conflict"): TransactionEntry {
+function transactionEntry(
+  entityId: string,
+  status: "pending" | "conflict",
+  groupId = "g-1",
+): TransactionEntry {
   return {
     seq: 1,
     key: `key-${entityId}`,
     entityId,
     kind: "create",
     payload: {
-      groupId: "g-1",
+      groupId,
       accountId: "a-1",
       categoryId: "c-1",
       kind: TransactionKind.EXPENSE,
@@ -60,6 +65,14 @@ function transactionEntry(entityId: string, status: "pending" | "conflict"): Tra
     attempted: false,
     status,
     queuedAt: "2026-11-12T08:00:00.000Z",
+  }
+}
+
+/** An entry the server refused because its account was deleted: the transactions list shows it. */
+function goneEntry(entityId: string, groupId: string): TransactionEntry {
+  return {
+    ...transactionEntry(entityId, "conflict", groupId),
+    conflict: { reason: "rejected", message: REFERENCE_GONE.account, server: null },
   }
 }
 
@@ -102,7 +115,12 @@ describe("countUnsent", () => {
   it("counts every queued note and tag write", () => {
     const { layer } = layerWith([noteEntry("n-1", "pending")], [tagEntry("t-1", "pending")])
 
-    expect(countUnsent(layer)).toEqual({ unsent: 2, conflicts: 0, reviewGroupId: null })
+    expect(countUnsent(layer)).toEqual({
+      unsent: 2,
+      conflicts: 0,
+      reviewGroupId: null,
+      reviewAt: "strip",
+    })
   })
 
   it("counts queued transaction writes, and a refused one as needing a choice", () => {
@@ -113,7 +131,12 @@ describe("countUnsent", () => {
     }
     const { layer } = layerWith([], [], [], [pending, refused])
 
-    expect(countUnsent(layer)).toEqual({ unsent: 2, conflicts: 1, reviewGroupId: "g-3" })
+    expect(countUnsent(layer)).toEqual({
+      unsent: 2,
+      conflicts: 1,
+      reviewGroupId: "g-3",
+      reviewAt: "strip",
+    })
   })
 
   it("counts refused writes and writes held back by a refused parent as needing a choice", () => {
@@ -128,7 +151,56 @@ describe("countUnsent", () => {
       }],
     )
 
-    expect(countUnsent(layer)).toEqual({ unsent: 3, conflicts: 2, reviewGroupId: "g-2" })
+    expect(countUnsent(layer)).toEqual({
+      unsent: 3,
+      conflicts: 2,
+      reviewGroupId: "g-2",
+      reviewAt: "strip",
+    })
+  })
+
+  it("sends the review to the transactions list of the first entry when only entries with a deleted account wait", () => {
+    const { layer } = layerWith([], [], [], [goneEntry("t-1", "g-4"), goneEntry("t-2", "g-5")])
+
+    expect(countUnsent(layer)).toEqual({
+      unsent: 2,
+      conflicts: 2,
+      reviewGroupId: "g-4",
+      reviewAt: "transactions",
+    })
+  })
+
+  it("sends the review to the strip of a note held by a refused tag, ahead of an entry with a deleted account", () => {
+    const { layer } = layerWith(
+      [noteEntry("n-1", "pending", "g-2")],
+      [],
+      [{
+        collection: "notes",
+        entityId: "n-1",
+        blockedBy: [{ collection: "tags", entityId: "t-9", status: "conflict" }],
+        onPerson: true,
+      }],
+      [goneEntry("t-1", "g-4")],
+    )
+
+    expect(countUnsent(layer)).toMatchObject({ reviewGroupId: "g-2", reviewAt: "strip" })
+  })
+
+  it("sends the review to the strip of a refused tag next to an entry with a deleted account", () => {
+    const { layer } = layerWith([], [tagEntry("t-9", "conflict", "g-2")], [], [
+      goneEntry("t-1", "g-4"),
+    ])
+
+    expect(countUnsent(layer)).toMatchObject({ reviewGroupId: "g-2", reviewAt: "strip" })
+  })
+
+  it("sends the review to the strip of an entry refused for another reason", () => {
+    const { layer } = layerWith([], [], [], [
+      goneEntry("t-1", "g-4"),
+      transactionEntry("t-2", "conflict", "g-6"),
+    ])
+
+    expect(countUnsent(layer)).toMatchObject({ reviewGroupId: "g-6", reviewAt: "strip" })
   })
 
   it("does not count a write that only waits for a parent still on its way", () => {
@@ -171,6 +243,7 @@ describe("watchUnsent", () => {
       unsent: 2,
       conflicts: 0,
       reviewGroupId: null,
+      reviewAt: "strip",
       sent: 1,
       state: "sending",
     })
