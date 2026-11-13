@@ -155,6 +155,8 @@ test.describe("budgets", () => {
       await set.click()
       const dialog = ownerPage.locator("[data-e2e=budget-dialog]")
       await expect(dialog.getByRole("heading")).toHaveText(/^⁨?Groceries⁩? limit$/)
+      // The dialog opens on its one field, so the limit can be typed at once.
+      await expect(dialog.getByLabel("Monthly limit")).toBeFocused()
       await dialog.getByLabel("Monthly limit").fill("500")
       await dialog.getByLabel("Monthly limit").press("Enter")
       await expect(dialog).toHaveCount(0)

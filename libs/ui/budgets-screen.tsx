@@ -416,9 +416,9 @@ function Row(
     ? (
       <Button
         type="button"
-        variant="ghost"
+        variant="danger-ghost"
         size="sm"
-        class="min-h-11 shrink-0 text-danger sm:min-h-9"
+        class="min-h-11 shrink-0 sm:min-h-9"
         aria-label={t.t(`Budgets.removeLimitOn`, { name })}
         onClick={() => onEdit(category.id, true)}
         data-budget-action={category.id}
@@ -535,6 +535,7 @@ function BudgetDialog(
               {(wiring) => (
                 <MoneyInput
                   id={wiring.id}
+                  autoFocus
                   aria-describedby={wiring["aria-describedby"]}
                   aria-invalid={amountError ? true : undefined}
                   value={form.amount}
@@ -562,8 +563,8 @@ function BudgetDialog(
             {canRemove && (
               <Button
                 type="button"
-                variant="ghost"
-                class="text-danger sm:me-auto"
+                variant="danger-ghost"
+                class="sm:me-auto"
                 onClick={onRemove}
                 disabled={saving}
                 data-e2e="budget-dialog-remove"
