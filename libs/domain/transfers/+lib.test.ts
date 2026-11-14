@@ -8,10 +8,12 @@ import {
   assertCanWriteTransfers,
   assertTransferReferences,
   deriveTransferAmounts,
+  parseTransferExportEntry,
   parseTransferRequest,
   TRANSFER_MEMO_MAX_LENGTH,
   transferCreatePayloadSchema,
   type TransferFields,
+  transferReferenceProblems,
   transferUpdatePayloadSchema,
 } from "./+lib.ts"
 
@@ -312,5 +314,94 @@ describe("transfer amounts", () => {
         rates().lookup,
       ),
     ).toEqual({ sentAmount: 20000, receivedAmount: 29000, converted: false })
+  })
+})
+
+describe("a transfer in a household's export file", () => {
+  const transfer = {
+    id,
+    fromAccountId: card,
+    toAccountId: yen,
+    sentAmount: 10000,
+    receivedAmount: 1500000,
+    converted: true,
+    memo: "Trip money",
+    date: "2026-11-05",
+    createdAt: "2026-11-05T10:00:00.000Z",
+    updatedAt: "2026-11-05T10:00:00.000Z",
+  }
+  const accounts: Record<string, { currency: string }> = {
+    [card]: { currency: "USD" },
+    [cash]: { currency: "USD" },
+    [yen]: { currency: "JPY" },
+  }
+  const inFile = { account: (fileId: string) => accounts[fileId] ?? null }
+
+  it("keeps both amounts and the conversion flag as stored (R4)", () => {
+    expect(parseTransferExportEntry(transfer)).toEqual({
+      ...transfer,
+      createdAt: new Date(transfer.createdAt),
+      updatedAt: new Date(transfer.updatedAt),
+    })
+  })
+
+  it("refuses a zero or unsafe amount, an unknown field and a memo over the limit", () => {
+    expect(() => parseTransferExportEntry({ ...transfer, sentAmount: 0 })).toThrow(
+      "the sent amount is not valid",
+    )
+    expect(() => parseTransferExportEntry({ ...transfer, receivedAmount: 2 ** 53 })).toThrow(
+      "the received amount is not valid",
+    )
+    expect(() => parseTransferExportEntry({ ...transfer, version: 3 })).toThrow("does not have")
+    expect(() =>
+      parseTransferExportEntry({ ...transfer, memo: "a".repeat(TRANSFER_MEMO_MAX_LENGTH + 1) })
+    ).toThrow(`at most ${TRANSFER_MEMO_MAX_LENGTH} characters`)
+  })
+
+  it("finds no problem in a transfer across currencies or one in a currency with equal amounts", () => {
+    const same = { ...transfer, toAccountId: cash, receivedAmount: 10000, converted: false }
+    expect(transferReferenceProblems([transfer, same], inFile)).toEqual([])
+  })
+
+  it("names a transfer whose account the file lacks", () => {
+    const missing = "019a5b0e-1af5-7f04-8ae4-b1ee5d112999"
+    expect(
+      transferReferenceProblems(
+        [transfer, { ...transfer, toAccountId: missing }, { ...transfer, fromAccountId: missing }],
+        inFile,
+      ),
+    ).toEqual([
+      {
+        index: 1,
+        problem: "its account is not among the file's accounts",
+        issue: { code: "notFound", field: "toAccountId" },
+      },
+      {
+        index: 2,
+        problem: "its account is not among the file's accounts",
+        issue: { code: "notFound", field: "fromAccountId" },
+      },
+    ])
+  })
+
+  it("names a transfer from an account to the same account", () => {
+    expect(transferReferenceProblems([{ ...transfer, toAccountId: card }], inFile)).toEqual([{
+      index: 0,
+      problem: "it moves money from an account to the same account",
+      issue: { code: "sameAccount", field: "toAccountId" },
+    }])
+  })
+
+  it("names a transfer in one currency whose amounts differ or that claims a conversion (R5)", () => {
+    const same = { ...transfer, toAccountId: cash, receivedAmount: 10000, converted: false }
+    expect(
+      transferReferenceProblems(
+        [{ ...same, receivedAmount: 9999 }, { ...same, converted: true }],
+        inFile,
+      ).map(({ index, issue }) => ({ index, issue })),
+    ).toEqual([
+      { index: 0, issue: { code: "mismatch", field: "receivedAmount" } },
+      { index: 1, issue: { code: "mismatch", field: "converted" } },
+    ])
   })
 })
