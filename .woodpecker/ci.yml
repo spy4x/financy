@@ -364,6 +364,11 @@ steps:
       # Playwright stops after three failed tests. When sign-in itself is broken every test fails,
       # each after 30 s, and the step would otherwise run into the script's limit of 25 minutes.
       - deno task e2e:local --smoke --max-failures=3
+      # financy.dev runs with Seed's notes example off, so a second stack with it off runs the one
+      # spec that checks nothing names notes then; every other spec expects the notes on. Seed's
+      # own CI never runs this spec, and tests/ci-notes-off.test.ts keeps it here. The script
+      # drops and recreates its database each run.
+      - NOTES=false SPA_NOTES=false deno task e2e:local e2e/notes-off.e2e.ts --max-failures=3
     # After `browser`: the run scripts keep the API's vapid.json in the shared checkout while they
     # run, and each starts a worker on the one Valkey service, where a worker would take another
     # stack's jobs. After `lighthouse`, which measures alone, when it runs: a pull request that
