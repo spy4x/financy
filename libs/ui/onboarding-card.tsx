@@ -36,7 +36,7 @@ export const CHOOSE_CURRENCY_QUERY = `currency=choose`
  * The main currency step is shown only with `canChooseCurrency`: the person is an admin or the
  * owner of the selected group.
  * With `notes` off (`SPA_NOTES=false`) there is no note step and no step names notes, so a guest
- * gets only "Keep your account". The words are `t`'s.
+ * gets "Keep your account" and the account step. The words are `t`'s.
  */
 export function onboardingSteps(
   t: Translator<string>,
