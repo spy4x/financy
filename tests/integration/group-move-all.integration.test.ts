@@ -797,6 +797,34 @@ Deno.test("moving all of a group's data", async (t) => {
     )
 
     await t.step(
+      "moves only deleted transfers into a target already past its plan's maxTransactions",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to } = await seed(sql, [])
+        const theirs = {
+          fromAccountId: await insertAccount(sql, to, "Theirs", editor),
+          toAccountId: await insertAccount(sql, to, "Their savings", editor),
+        }
+        await insertTransfer(sql, to, theirs, editor)
+        await insertTransfer(sql, to, theirs, editor)
+        const refs = {
+          fromAccountId: await insertAccount(sql, from, "Main", editor),
+          toAccountId: await insertAccount(sql, from, "Savings", editor),
+        }
+        const binned = await insertTransfer(sql, from, refs, editor, true)
+
+        // A downgraded target holds two live transfers on a cap of one; a deleted one adds nothing.
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, {
+          maxNotes: null,
+          maxTransactions: 1,
+        })
+
+        expect(result.counts).toMatchObject({ transfers: 1 })
+        expect((await transfersOf(sql, to)).map((row) => row.id)).toContain(binned)
+      },
+    )
+
+    await t.step(
       "refuses whole when entries and transfers together would take the target over its plan's maxTransactions, though each fits alone",
       async () => {
         const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
