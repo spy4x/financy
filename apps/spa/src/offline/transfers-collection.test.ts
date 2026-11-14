@@ -4,7 +4,11 @@ import { ConnectionLostError, RealtimeRequestError } from "@spy4x/realtime"
 import type { CallPort } from "@spy4x/realtime/calls"
 import { createCollections } from "@spy4x/realtime/collections"
 import { createMemoryOutboxStore } from "@spy4x/realtime/outbox"
+import { createTranslator } from "@spy4x/platform/universal/i18n"
+import app from "@i18n/app/en.ts"
+import { transferRowName } from "@ui/transfer-parts.tsx"
 import type { TransferItem, TransfersDependencies } from "../state/transfers.ts"
+import { transferRow } from "../views/transfer-rows.ts"
 import { createMemoryTransfersCache } from "./memory-transfers-cache.ts"
 import type { TransferPayload } from "./transfers-cache.ts"
 import {
@@ -200,6 +204,35 @@ describe("the transfers queue", () => {
       receivedAmount: 18500,
       converted: true,
     })
+  })
+
+  it("says an offline edit of a saved transfer's amount across currencies is converted later", async () => {
+    const { dependencies, state, cache } = harness()
+    await cache.putTransfer(transfer("tr-1"))
+    state.online = false
+
+    const { transfer: edited } = await dependencies.update({
+      ...typed,
+      id: "tr-1",
+      sentAmount: 30000,
+      date: "2026-11-10",
+      version: 1,
+    })
+    const t = createTranslator({ language: `en`, catalogs: [{ source: app }] })
+    const row = transferRow(edited, {
+      t,
+      accounts: [
+        { id: "a-usd", name: "Card", currency: "USD", archived: false },
+        { id: "a-eur", name: "Wallet", currency: "EUR", archived: false },
+      ],
+      youId: 1,
+      members: [],
+    })
+
+    expect(edited.version).toBe(1)
+    expect(row.queued).toBe(true)
+    expect(transferRowName(t, row, "en-GB", "2026-11-10").replace(/[⁨⁩]/g, ""))
+      .toBe("Transfer of US$300.00 from Card to Wallet, Today")
   })
 
   it("answers a refused write with the server's code and queues nothing", async () => {
