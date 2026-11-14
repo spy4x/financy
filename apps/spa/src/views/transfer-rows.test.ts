@@ -2,6 +2,8 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { createTranslator } from "@spy4x/platform/universal/i18n"
 import app from "@i18n/app/en.ts"
+import { transferRowName } from "@ui/transfer-parts.tsx"
+import { queuedReceived } from "../offline/transfers-collection.ts"
 import type { TransferItem } from "../state/transfers.ts"
 import { transferRow, transferUndoText } from "./transfer-rows.ts"
 
@@ -51,6 +53,30 @@ describe("transferRow", () => {
   it("marks a transfer the server has not saved yet as queued", () => {
     expect(transferRow({ ...transfer, version: 0 }, context).queued).toBe(true)
     expect(transferRow(transfer, context).queued).toBe(false)
+  })
+
+  it("says an offline edit of a saved transfer's amount across currencies is converted later", () => {
+    // What the queue shows for the edit: the server's version, the new amount, no received one.
+    const edited = {
+      ...transfer,
+      ...queuedReceived({
+        groupId: transfer.groupId,
+        fromAccountId: card.id,
+        toAccountId: wallet.id,
+        sentAmount: 30000,
+        receivedAmount: null,
+        memo: transfer.memo,
+        date: transfer.date,
+        fromCurrency: "USD",
+        toCurrency: "EUR",
+      }, transfer),
+      sentAmount: 30000,
+    }
+    const row = transferRow(edited, context)
+
+    expect(row.queued).toBe(true)
+    expect(transferRowName(t, row, "en-GB", "2026-11-13").replace(/[⁨⁩]/g, ""))
+      .toBe("Transfer of US$300.00 from Card to Wallet, Today")
   })
 })
 

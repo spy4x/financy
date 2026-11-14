@@ -75,7 +75,8 @@ export function goneAccount(entry: TransferEntry): boolean {
  * The received amount a queued transfer shows with before the server answers. Between two
  * accounts of one currency it is the sent amount; a stated one is used as it is; otherwise the
  * server converts later, so the transfer shows as converted with no received amount yet (`0`), or
- * with the one it had when nothing that decides it changed.
+ * with the one it had when nothing that decides it changed. That `0` is how the row of a queued
+ * edit, which keeps the server's version, knows it waits for the rate (`transferRow`).
  */
 export function queuedReceived(
   payload: TransferPayload,
