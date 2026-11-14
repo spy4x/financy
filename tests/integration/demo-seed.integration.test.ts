@@ -401,7 +401,8 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
     expect(amounts.map((row) => row.amounts).sort()).toEqual(expectedAmounts.sort())
     expect(Object.keys(expectedTransfers).some((key) => key.endsWith(`EUR>USD`))).toBe(true)
     expect(Object.keys(expectedTransfers).some((key) => key.endsWith(`USD>VND`))).toBe(true)
-    // No transfer is dated after its household's today or written before either account.
+    // No transfer is dated after its household's today or written before either account, and each
+    // was written on its date's day in the household's zone.
     const [{ strays }] = await sql<{ strays: number }[]>`
       SELECT COUNT(*)::int AS strays
       FROM transfers t
@@ -409,7 +410,7 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
       JOIN accounts f ON f.id = t.from_account_id
       JOIN accounts r ON r.id = t.to_account_id
       WHERE t.date > (now() AT TIME ZONE g.time_zone)::date OR t.created_at < f.created_at
-        OR t.created_at < r.created_at
+        OR t.created_at < r.created_at OR (t.created_at AT TIME ZONE g.time_zone)::date <> t.date
     `
     expect(strays).toBe(0)
     // The group the fake data marks imported has the date and a log that starts with the import.

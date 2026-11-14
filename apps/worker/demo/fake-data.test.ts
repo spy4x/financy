@@ -503,20 +503,24 @@ Deno.test("every demo transfer moves a whole positive amount between two of the 
   }
 })
 
-Deno.test("a household older than three months tops up its dollar card and draws dong cash from it in each month", () => {
+Deno.test("a household older than three months tops up its dollar card after its income and then draws dong cash from it, in each month", () => {
   const old = everyGroup().filter((group) =>
     Math.min(...group.accounts.map((account) => account.createdAgo)) > ENTRY_MONTHS * ENTRY_MONTH
   )
   expect(old.length).toBeGreaterThan(10)
   for (const group of old) {
     for (let month = 0; month < ENTRY_MONTHS; month++) {
-      const routes = group.transfers
+      const inMonth = group.transfers
         .filter((transfer) => Math.floor(transfer.ago / ENTRY_MONTH) === month)
-        .map((transfer) => `${transfer.from}>${transfer.to}`)
+      const routes = inMonth.map((transfer) => `${transfer.from}>${transfer.to}`)
+      // Oldest first, so the top-up comes before the withdrawals it pays for.
+      expect(routes[0]).toBe(`0>1`)
       expect(routes.filter((route) => route === `0>1`)).toHaveLength(1)
       expect(routes.filter((route) => route === `1>2`).length).toBeGreaterThanOrEqual(1)
       expect(routes.filter((route) => route === `1>2`).length).toBeLessThanOrEqual(2)
       expect(routes).toHaveLength(routes.filter((r) => r === `0>1` || r === `1>2`).length)
+      // The top-up lands after the month's income: in its spending days, not its first three.
+      expect(inMonth[0].ago).toBeLessThan((month + 1) * ENTRY_MONTH - 3 * DAY)
     }
   }
 })
