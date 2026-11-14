@@ -31,6 +31,7 @@ import {
   goneReference,
   offlineTransactions as transactionsOverLayer,
 } from "./offline/transactions-collection.ts"
+import { offlineTransfers as transfersOverLayer } from "./offline/transfers-cache.ts"
 import { conflictsToReview, OfflineStatus as OfflineStatusLine } from "./offline/OfflineStatus.tsx"
 import { benchmarkLocalData as benchmarkOverLayer } from "./offline/benchmark.ts"
 import {
@@ -625,6 +626,9 @@ export const offlineTags = tagsOverLayer
 
 /** The transactions store's server dependencies with the device copy and the queue in front. */
 export const offlineTransactions = transactionsOverLayer
+
+/** The transfers store's server dependencies with the device copy in front of its reads. */
+export const offlineTransfers = transfersOverLayer
 
 /** The offline status line and the conflict screen. */
 export const OfflineStatus = OfflineStatusLine

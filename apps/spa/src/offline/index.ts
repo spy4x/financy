@@ -25,6 +25,7 @@ import type {
   TransactionPayload,
   TransactionsCache,
 } from "./transactions-cache.ts"
+import type { TransfersCache } from "./transfers-cache.ts"
 import { type TransactionsCollection, transactionsCollection } from "./transactions-collection.ts"
 import type { Message } from "@ui/message.ts"
 
@@ -95,6 +96,8 @@ export interface OfflineLayer {
   transactions: TransactionsCollection
   /** The queued entry writes, for the screen. */
   transactionEntries: Signal<readonly TransactionEntry[]>
+  /** The device's copy of the transfers, which are read-only offline. */
+  transfersCache: TransfersCache
   /**
    * What the layer did without asking: a tag that will never exist was taken off queued notes.
    * Each is a key of the `app` catalog with its values; the screen shows it in the person's
@@ -233,6 +236,7 @@ export function startOffline(
   })
   const definition = notesCollection({ userId, cache, store: storage.openQueue?.(userId) })
   const transactionsCache = copy.transactions
+  const transfersCache = copy.transfers
   const transactionsDefinition = transactionsCollection({
     userId,
     cache: transactionsCache,
@@ -280,6 +284,7 @@ export function startOffline(
     transactionsCache,
     transactions,
     transactionEntries,
+    transfersCache,
     notices,
     runner,
     loaded,
