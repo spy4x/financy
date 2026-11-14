@@ -12,6 +12,7 @@ import type { Note } from "@domain/notes"
 import { AccountKind } from "@domain/accounts"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import { type Transaction, TransactionKind } from "@domain/transactions"
+import type { Transfer } from "@domain/transfers"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { purgeChangeTombstones, readGroupChanges } from "@server/groups/group-changes.ts"
@@ -20,6 +21,7 @@ import { noteMovable } from "@server/notes/note-movable.ts"
 import { PostgresNoteRepository } from "@server/notes/postgres-note-repository.ts"
 import { PostgresTagRepository } from "@server/tags/postgres-tag-repository.ts"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
+import { PostgresTransferRepository } from "@server/transfers/postgres-transfer-repository.ts"
 import { tagMovable } from "@server/tags/tag-movable.ts"
 import {
   AppDbBase,
@@ -178,8 +180,8 @@ Deno.test("group changes against Postgres", async (t) => {
         const off = new AppDbBase({ sql, notes: NOTES_OFF }).groupChanges
         for (const after of [0, cursor]) {
           const answer = page(await off.read(groupId, after))
-          // Entries are not notes: they stay in the pull, and this group has none.
-          expect(answer.upserts).toEqual({ transactions: [] })
+          // Entries and transfers are not notes: they stay in the pull, and this group has none.
+          expect(answer.upserts).toEqual({ transactions: [], transfers: [] })
           expect(answer.tombstones).toEqual([])
           expect(answer.through).toBe(await current(sql, groupId))
         }
@@ -455,6 +457,131 @@ Deno.test("entries in the changes pull against Postgres", async (t) => {
         expect(ids(target.upserts.transactions)).toEqual(ids([kept, edited, deleted, added]))
         expect(target.tombstones).toEqual([])
         expect(JSON.stringify(target)).not.toContain(gone.id)
+      },
+    )
+  })
+})
+
+Deno.test("transfers in the changes pull against Postgres", async (t) => {
+  await withSchema(async (sql) => {
+    const { repository: groups, groupId, owner, viewer } = await team(sql)
+    const accounts = new PostgresAccountRepository(sql)
+    const transfers = new PostgresTransferRepository(sql)
+    const { call } = changesOf(sql, groups)
+    const other = (await groups.create({ id: uuidV7(), name: "Other" }, owner)).group.id
+
+    /** Two USD accounts in `group`, made by the owner, so a transfer between them needs no rate. */
+    async function setup(group: string) {
+      const account = async (name: string) =>
+        (await accounts.create({
+          groupId: group,
+          id: uuidV7(),
+          name,
+          kind: AccountKind.BANK,
+          currency: "USD",
+          startingBalance: 0,
+          allowance: null,
+        }, owner)).account.id
+      return { fromAccountId: await account("Checking"), toAccountId: await account("Savings") }
+    }
+    const here = await setup(groupId)
+    const there = await setup(other)
+    const fields = (references: { fromAccountId: string; toAccountId: string }, memo: string) => ({
+      ...references,
+      sentAmount: 5000,
+      memo,
+      date: "2026-11-05",
+    })
+    const transfer = async (group: string, memo: string): Promise<Transfer> =>
+      (await transfers.create(
+        {
+          groupId: group,
+          id: uuidV7(),
+          ...fields(group === groupId ? here : there, memo),
+          allowance: null,
+        },
+        owner,
+      )).transfer
+    const kept = await transfer(groupId, "Kept")
+    const edited = await transfer(groupId, "Edited")
+    const deleted = await transfer(groupId, "Secret transfer memo")
+    const elsewhere = await transfer(other, "In another household")
+    const cursor = await current(sql, groupId)
+
+    await t.step(
+      "from 0 a member gets every live transfer of the household and no tombstones",
+      async () => {
+        const answer = page(await call(viewer, { groupId, after: 0 }))
+        expect(ids(answer.upserts.transfers)).toEqual(ids([kept, edited, deleted]))
+        expect(answer.tombstones).toEqual([])
+        expect(JSON.stringify(answer)).not.toContain(elsewhere.id)
+      },
+    )
+
+    await transfers.update(
+      { groupId, id: edited.id, ...fields(here, "Edited again"), expectedVersion: edited.version },
+      owner,
+    )
+    await transfers.delete({ groupId, id: deleted.id, expectedVersion: deleted.version }, owner)
+    const added = await transfer(groupId, "Added")
+    await transfer(other, "Also in another household")
+
+    await t.step(
+      "after a cursor the page holds the transfers written since and a tombstone for the deleted one",
+      async () => {
+        const answer = page(await call(viewer, { groupId, after: cursor }))
+        expect(ids(answer.upserts.transfers)).toEqual(ids([edited, added]))
+        const memo = (answer.upserts.transfers as Transfer[])
+          .find((row) => row.id === edited.id)?.memo
+        expect(memo).toBe("Edited again")
+        expect(answer.tombstones).toEqual([{ kind: "transfers", id: deleted.id }])
+        expect(answer.through).toBe(await current(sql, groupId))
+      },
+    )
+
+    await t.step("a deleted transfer's memo never reaches the page", async () => {
+      for (const after of [0, cursor]) {
+        expect(JSON.stringify(await call(viewer, { groupId, after }))).not.toContain(
+          "Secret transfer memo",
+        )
+      }
+    })
+
+    await t.step("another household's transfers never reach the page", async () => {
+      for (const after of [0, cursor]) {
+        const text = JSON.stringify(await call(viewer, { groupId, after }))
+        expect(text).not.toContain("another household")
+        expect(text).not.toContain(elsewhere.id)
+      }
+    })
+
+    await t.step("with the notes off transfers are still pulled", async () => {
+      const off = new AppDbBase({ sql, notes: NOTES_OFF }).groupChanges
+      const answer = page(await off.read(groupId, cursor))
+      expect(ids(answer.upserts.transfers)).toEqual(ids([edited, added]))
+      expect(answer.tombstones).toEqual([{ kind: "transfers", id: deleted.id }])
+    })
+
+    await t.step("a page holds only the transfers changed up to its end", async () => {
+      // After the cursor: the edit, the delete and the new transfer, one sequence each. A page of
+      // two ends after the delete, so the new transfer waits for the next page.
+      const first = page(await readGroupChanges(sql, CHANGES_AGGREGATES, groupId, cursor, 2))
+      expect(first.through).toBe(cursor + 2)
+      expect(ids(first.upserts.transfers)).toEqual([edited.id])
+      expect(first.tombstones).toEqual([{ kind: "transfers", id: deleted.id }])
+      expect(first.more).toBe(true)
+      const next = page(await readGroupChanges(sql, CHANGES_AGGREGATES, groupId, first.through, 2))
+      expect(ids(next.upserts.transfers)).toEqual([added.id])
+      expect(next.tombstones).toEqual([])
+    })
+
+    await t.step(
+      "a transfer restored after its delete comes as a row, without its tombstone",
+      async () => {
+        await transfers.restore({ groupId, id: deleted.id, allowance: null }, owner)
+        const answer = page(await call(viewer, { groupId, after: cursor }))
+        expect(ids(answer.upserts.transfers)).toEqual(ids([edited, deleted, added]))
+        expect(answer.tombstones).toEqual([])
       },
     )
   })
