@@ -2921,4 +2921,6 @@ export default {
   "TransferToasts.saved": "{what}: сохранено.",
   "TransferToasts.deletedTitle": "Перевод удалён",
   "TransferToasts.deleted": "{what}: удалено.",
+  "TransferToasts.restoredTitle": "Перевод восстановлен",
+  "TransferToasts.restored": "{what}: снова в списке.",
 } satisfies Catalog

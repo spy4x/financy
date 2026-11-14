@@ -2321,4 +2321,6 @@ export default {
   "TransferToasts.saved": "{what}：已保存。",
   "TransferToasts.deletedTitle": "已删除转账",
   "TransferToasts.deleted": "{what}：已删除。",
+  "TransferToasts.restoredTitle": "已恢复转账",
+  "TransferToasts.restored": "{what}：已回到列表中。",
 } satisfies Catalog

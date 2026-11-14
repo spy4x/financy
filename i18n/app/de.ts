@@ -2766,4 +2766,6 @@ export default {
   "TransferToasts.saved": "{what} ist gespeichert.",
   "TransferToasts.deletedTitle": "Umbuchung gelöscht",
   "TransferToasts.deleted": "{what} ist gelöscht.",
+  "TransferToasts.restoredTitle": "Umbuchung wiederhergestellt",
+  "TransferToasts.restored": "{what} ist wieder in der Liste.",
 } satisfies Catalog

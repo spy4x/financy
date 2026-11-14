@@ -2836,4 +2836,6 @@ export default {
   "TransferToasts.saved": "{what}: guardada.",
   "TransferToasts.deletedTitle": "Transferencia eliminada",
   "TransferToasts.deleted": "{what}: eliminada.",
+  "TransferToasts.restoredTitle": "Transferencia restaurada",
+  "TransferToasts.restored": "{what}: de nuevo en la lista.",
 } satisfies Catalog
