@@ -9,13 +9,19 @@ import { Button } from "@spy4x/preact-ui/button"
 import { Card } from "@spy4x/preact-ui/card"
 import { EmptyState } from "@spy4x/preact-ui/empty-state"
 import { Link } from "@spy4x/preact-ui/link"
+import { Notice } from "@spy4x/preact-ui/notice"
 import { Stack } from "@spy4x/preact-ui/layout"
 import { PageHeader } from "@spy4x/preact-ui/page-header"
 import { AuthCard } from "./auth-screen.tsx"
-import { type FrameShortcuts, type FrameTheme, shortcutsMenuItems } from "./frame.tsx"
+import {
+  type FrameShortcuts,
+  type FrameTheme,
+  shortcutsMenuItems,
+  useSearchEntries,
+} from "./frame.tsx"
 import { ShortcutsList } from "./shortcuts.tsx"
 import { type Navigate, ScreenForm } from "./progressive.tsx"
-import { useAdminText } from "./i18n.ts"
+import { useAdminText, useAppText } from "./i18n.ts"
 import { Rich } from "@spy4x/preact-ui/i18n"
 import { PRODUCT_NAME } from "./brand.ts"
 
@@ -76,18 +82,33 @@ export interface AdminNavItem {
  * The signed-in admin app's frame: the library's `AppShell`, the same shell as
  * the product's, so the two look made by one person.
  *
- * - The rail's top zone is empty: there is no group switcher, because operators work across every
- *   group, and no brand, which would repeat the Dashboard entry.
+ * - The rail's top zone holds only "Search", an icon cell with its tooltip that opens `search`, as
+ *   the product's rail does under its group switcher. There is no group switcher, because
+ *   operators work across every group, and no brand, which would repeat the Dashboard entry.
  * - The middle is one entry per module, Dashboard first.
  * - The bottom is the operator's account menu (the theme and Sign out), with a neutral "Admin"
  *   badge under the avatar, so the cell an operator checks says where they are signed in.
  *
- * On a phone the first four modules are tabs and the last tab, "Admin", opens a sheet with the rest
- * and the operator's menu. The page sits in the wide column of 64 rem, the width the design
- * language and `docs/design/ui-layout.md` rule 6 give a page of tables and dashboards.
+ * On a phone the first four modules are tabs and the last tab, "Admin", opens a sheet with
+ * "Search", the rest and the operator's menu. The page sits in the wide column of 64 rem, the width
+ * the design language and `docs/design/ui-layout.md` rule 6 give a page of tables and dashboards.
+ *
+ * `search` is drawn once, at the end of the page's column, with no trigger of its own (such as
+ * `AdminSearchPalette`, which binds Ctrl K itself); both "Search" entries open it.
  */
 export function AdminShell(
-  { navItems, currentPath, operator, theme, onSignOut, navigate, shortcuts, language, children }: {
+  {
+    navItems,
+    currentPath,
+    operator,
+    theme,
+    onSignOut,
+    navigate,
+    shortcuts,
+    language,
+    search,
+    children,
+  }: {
     navItems: readonly AdminNavItem[]
     /**
      * The address of the page shown; the entry whose page it is, or is under, is marked. Left out,
@@ -103,15 +124,27 @@ export function AdminShell(
     shortcuts?: FrameShortcuts
     /** The interface language and its switch: the operator's menu's "Language" entry. */
     language?: AccountMenuLanguage
+    /** The search palette, drawn once. Left out, the shell has no search. */
+    search?: ComponentChildren
     children: ComponentChildren
   },
 ): JSX.Element {
   const t = useAdminText()
+  // `/` focuses a list's own search field here, so only Ctrl K (⌘K) opens the palette.
+  const entries = useSearchEntries(false, useAppText().t("Frame.search"))
+  const hasSearch = search !== undefined
   return (
     <AppShell
       items={navItems.map(({ name, href, Icon }) => ({ key: href, label: name, href, Icon }))}
       currentPath={currentPath}
       navigate={navigate}
+      // The same places and wrappers as the product's frame, so the cell sits where it does there.
+      switcher={hasSearch
+        ? ((place) =>
+          place === "sheet"
+            ? <div class="flex flex-col gap-2">{entries.sheet}</div>
+            : <div class="flex flex-col items-center gap-1">{entries.rail}</div>)
+        : undefined}
       account={{
         // An operator known only by the address would read it twice.
         user: {
@@ -129,6 +162,7 @@ export function AdminShell(
       labels={{ nav: t.t("AdminFrame.sections") }}
     >
       {children}
+      {hasSearch && <div ref={entries.root}>{search}</div>}
       {shortcuts && <ShortcutsList {...shortcuts} />}
     </AppShell>
   )
@@ -266,17 +300,22 @@ export function AdminFrame(
  * is no sign-up, no password reset and no Google or GitHub here; those stay in the product.
  */
 export function AdminSignInScreen(
-  { step, busy, error, onSignIn, onOneTimeCode }: {
+  { step, busy, error, onSignIn, onOneTimeCode, demoAdmin = null }: {
     step: "credentials" | "one-time-code"
     busy: boolean
     error: string | null
     onSignIn: (credentials: AuthCredentials) => void
     onOneTimeCode: (code: string) => void
+    /**
+     * The public demo's admin account (docs/demo.md), or `null` outside the demo: a notice above
+     * the form shows its address and password and signs in with them in one click.
+     */
+    demoAdmin?: { email: string; password: string } | null
   },
 ): JSX.Element {
   const credentials = step === "credentials"
   const t = useAdminText()
-  return (
+  const card = (
     <AuthCard
       title={t.t(credentials ? "AdminFrame.signInTitle" : "AdminFrame.codeTitle")}
       description={t.t(credentials ? "AdminFrame.signInText" : "AdminFrame.codeText")}
@@ -297,6 +336,38 @@ export function AdminSignInScreen(
         onOneTimeCode={onOneTimeCode}
       />
     </AuthCard>
+  )
+  if (!demoAdmin || !credentials) return card
+  return (
+    <div class="flex w-full flex-col gap-6">
+      {/* Standing information, read before the form: no live region announces it. */}
+      <Notice live={false} data-e2e="admin-demo-notice">
+        <Stack gap="sm">
+          <p>{t.t("AdminFrame.demoNote")}</p>
+          <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+            <dt class="text-muted">{t.t("AdminFrame.demoEmail")}</dt>
+            <dd>
+              <code data-e2e="admin-demo-email">{demoAdmin.email}</code>
+            </dd>
+            <dt class="text-muted">{t.t("AdminFrame.demoPassword")}</dt>
+            <dd>
+              <code data-e2e="admin-demo-password">{demoAdmin.password}</code>
+            </dd>
+          </dl>
+          <div>
+            <Button
+              variant="secondary"
+              disabled={busy}
+              onClick={() => onSignIn({ login: demoAdmin.email, password: demoAdmin.password })}
+              data-e2e="admin-demo-sign-in"
+            >
+              {t.t("AdminFrame.demoSignIn")}
+            </Button>
+          </div>
+        </Stack>
+      </Notice>
+      {card}
+    </div>
   )
 }
 

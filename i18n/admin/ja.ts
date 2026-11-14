@@ -1357,6 +1357,11 @@ export default {
   "AdminFrame.signInTitle": "オペレーターのログイン",
   "AdminFrame.signInText":
     "このプロダクトを運営する人向けです。オペレーターのアカウントでログインしてください。",
+  "AdminFrame.demoNote":
+    "ここは公開デモです。デモ用の管理者アカウントでログインして、自由に見てみてください。内容は毎晩すべてリセットされます。",
+  "AdminFrame.demoEmail": "メールアドレス",
+  "AdminFrame.demoPassword": "パスワード",
+  "AdminFrame.demoSignIn": "デモ管理者としてログイン",
   "AdminFrame.codeTitle": "コードを入力",
   "AdminFrame.codeText": "認証アプリを開き、表示されている6桁の数字を入力してください。",
   "AdminFrame.login": "メールアドレスまたはユーザー名",
@@ -1797,6 +1802,11 @@ export default {
   "AdminPreferences.clock24": "24時間制",
   "AdminPreferences.changed": "変更日",
   "AdminPreferences.never": "なし",
+  "AdminSearch.find": "クイック検索",
+  "AdminSearch.findUser": "ユーザー「{query}」を検索",
+  "AdminSearch.findGroup": "グループ「{query}」を検索",
+  "AdminSearch.on": "オン",
+  "AdminSearch.off": "オフ",
   "AdminShortcuts.newPost": "新しい記事",
   "AdminShortcuts.sharingChannels": "共有チャンネルへ移動",
   "AdminShortcuts.addChannel": "共有チャンネルを追加",

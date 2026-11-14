@@ -121,6 +121,10 @@ export default {
   "Reason.CHANNEL_NOT_FOUND": "Diesen Kanal gibt es nicht mehr.",
   "Reason.CURRENCY_KIND_MISMATCH":
     "Ein Krypto-Konto führt eine Kryptowährung, und nur ein Krypto-Konto kann das. Wähle eine Währung, die zur Kontoart passt.",
+  "Reason.DEMO_ADMIN_ELSEWHERE":
+    "Das ist das Admin-Konto der Demo. Melde dich damit stattdessen im Adminbereich an.",
+  "Reason.DEMO_REFUSED":
+    "In der öffentlichen Demo nicht verfügbar: Das würde die echte Website ändern oder echten Menschen E-Mails schicken.",
   "Reason.FILE_CONTENT": "Der Inhalt dieser Datei passt nicht zu ihrem Dateityp.",
   "Reason.FILE_MISSING":
     "Es ist keine Datei angekommen. Wähle eine aus und versuche es noch einmal.",

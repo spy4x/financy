@@ -658,6 +658,8 @@ export default {
   "OnboardingCard.inviteTitle": "グループに誰かを招待する",
   "OnboardingCard.inviteText":
     "招待した人は、割り当てたロールで同じメモをリアルタイムに見られます。",
+  "OnboardingCard.inviteTextPlain":
+    "招待した人は、割り当てたロールでグループの変更をリアルタイムに見られます。",
   "OnboardingCard.inviteAction": "招待する",
   "OnboardingCard.notificationsTitle": "通知をオンにする",
   "OnboardingCard.notificationsText": "アプリを閉じていても、変更があれば通知が届きます。",
@@ -674,6 +676,8 @@ export default {
   "OnboardingCard.tourGroupsTitle": "グループ",
   "OnboardingCard.tourGroupsText":
     "メモはグループの中にあります。ここでグループを作成し、メンバーを招待してロールを選べます。",
+  "OnboardingCard.tourGroupsTextPlain":
+    "ここでグループを作成し、メンバーを招待してロールを選べます。",
   "OnboardingCard.tourNotificationsTitle": "通知",
   "OnboardingCard.tourNotificationsText": "招待など、離れている間に起きたこと。",
   "OnboardingCard.tourProfileTitle": "プロフィール",
@@ -712,6 +716,8 @@ export default {
   "OverviewScreen.choosePlan": "プランを選ぶ",
   "OverviewScreen.allHidden": "すべてのウィジェットが非表示です",
   "OverviewScreen.allHiddenText": "表示したいウィジェットを選んでください。",
+  "OverviewScreen.noWidgets": "まだ表示するものはありません",
+  "OverviewScreen.noWidgetsText": "{group}のウィジェットがここに表示されます。",
   "OverviewScreen.gridLabel": "{group}の概要",
   "OverviewScreen.customiseText":
     "表示するウィジェットとその順番を選べます。レイアウトは他のデバイスにも反映されます。",
@@ -1041,6 +1047,8 @@ export default {
     "このアドレスのページはありません。入力ミスか、ページが移動した可能性があります。",
   "NotFound.signedOut": "このアドレスのページはありません。ログインしてメモを開いてください。",
   "NotFound.toNotes": "メモ一覧へ",
+  "NotFound.toOverview": "概要へ",
+  "NotFound.signedOutPlain": "このアドレスのページはありません。ログインして続けてください。",
   "NotFound.signIn": "ログイン",
   "Notes.title": "メモ",
   "Notes.new": "新しいメモ",
@@ -1234,6 +1242,8 @@ export default {
   "ProfileExport.asking": "リクエストしています…",
   "ProfileExport.never":
     "プロフィール、グループ、メモをJSONとCSVファイルにまとめたZIPです。作成には数分かかり、準備ができたらメールでお知らせします。",
+  "ProfileExport.neverPlain":
+    "プロフィールとグループをJSONとCSVファイルにまとめたZIPです。作成には数分かかり、準備ができたらメールでお知らせします。",
   "ProfileExport.download": "データをダウンロード",
   "ProfileExport.preparing":
     "ファイルを準備しています。準備ができたら、メールと通知でお知らせします。",
@@ -1587,6 +1597,7 @@ export default {
   "Search.openProfile": "プロフィールを開く",
   "Search.downloadData": "データをダウンロード",
   "Search.downloadDetail": "プロフィール、グループ、メモをまとめたZIP",
+  "Search.downloadDetailPlain": "プロフィールとグループをまとめたZIP",
   "Search.changePicture": "プロフィール写真を変更",
   "Shortcuts.general": "全般",
   "Shortcuts.goTo": "移動",

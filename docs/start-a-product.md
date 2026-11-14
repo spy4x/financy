@@ -51,6 +51,7 @@ The paths below are under `apps/mpa/` unless they say otherwise. `[[lang]]/` sta
 | Do      | What                                   | Where                                                    |
 | ------- | -------------------------------------- | -------------------------------------------------------- |
 | Delete  | `/compare`, named competitors' prices  | `[[lang]]/compare.tsx`, `components/compare-alternatives.tsx` |
+| Delete  | `/saas-launch-checklist`, with its footer link and privacy line | `[[lang]]/saas-launch-checklist.tsx`, `launch-checklist.ts`, `islands/launch-checklist.tsx`, `islands/checklist-actions.tsx`, `LaunchChecklist*` keys in `i18n/site/` |
 | Delete  | Seed's blog posts, except `README.md`  | `libs/server/blog/seed-posts/`                           |
 | Delete  | The link cards of Seed's posts         | `libs/server/blog/seed-posts/og/`, drawn by `screenshots/blog-og.ts` and `screenshots/blog-og.html` |
 | Replace | Home, features, admin and pricing copy | `routes/index.tsx`, `[[lang]]/features.tsx`, `[[lang]]/admin.tsx`, `[[lang]]/pricing.tsx` |
@@ -89,7 +90,7 @@ shared ones. Delete those of pages the product deleted, and point the rest at th
 - `/features/sign-in`, `/features/realtime` and `/features/shortcuts`: the product's own feature
   slugs from `features-data.tsx`;
 - `/docs/api`, `/docs/get-started` and `/docs/capacity`: guides listed in the product's
-  `docs-list.ts`.
+  `docs-list.ts`. With `NOTES=false`, `/docs/api` answers 404, so delete it.
 
 A pull request measures only `QUICK_PATHS` in `lighthouse/quick.ts` (the home page, `/pricing`,
 the fixture blog post and `/docs`); each must stay in `lighthouserc.json`, or the check fails.
@@ -199,7 +200,7 @@ there.
 | Set    | Analytics ids ([Analytics](analytics.md)) | `MPA_UMAMI_ORIGIN`, `MPA_UMAMI_WEBSITE_ID` in the env file |
 | Set    | Domains and the demo ([demo](demo.md))   | `MPA_DOMAIN`, `DOMAIN`, `DEMO_MODE` in the env file     |
 | Set    | A website with no customers              | `SPA=false` ([Without the SPA](apps.md#without-the-spa)) |
-| Set    | A product without the notes example      | `NOTES=false` (below)                                   |
+| Set    | A product without the notes example      | `NOTES=false` and `SPA_NOTES=false` (below)             |
 | Set    | Where release images go                  | `IMAGE_PREFIX` in `.woodpecker/release.yml`             |
 | Set    | The billing guide link                   | `ADMIN_BILLING_SETUP_URL` in `libs/ui/admin-billing-list.tsx` |
 | Set    | The Stats guide link                     | `ADMIN_STATS_SETUP_URL` in `libs/ui/admin-stats-screen.tsx` |
@@ -209,9 +210,21 @@ merge cleanly. The API then answers 404 to every note, tag and attachment route 
 personal-token API (`/api/v1`), which serves notes only, and refuses their operations over the
 socket and `/api/call` as unknown ones. The changes pull, the admin app's group widgets and files
 and the Telegram bot's `/notes` leave them out too; moving a group's data leaves notes and tags
-where they are, and a new account gets no welcome note. The tables and migrations stay, as the
-catalog's do. Unset or anything but `false` keeps the notes on. The app's screens, the export and
-the demo still show notes for now.
+where they are, and a new account gets no welcome note. A person's data export, a group's export
+file and spreadsheets leave them out, and a group import skips them (the worker reads `NOTES` too,
+for the data export). The website reads it as well: `/docs/api`, the personal-token API's
+reference, answers 404 in every language, and no footer, docs card, guide, sitemap or `llms.txt`
+links it. The tables and migrations stay, as the catalog's do. Unset or anything but
+`false` keeps the notes on.
+
+Set `SPA_NOTES=false` with it, for the app's screens: the rail, the palette and the keyboard
+shortcuts then offer no notes or tags, `/notes` and `/tags` show the not-found page, sign-in and an
+accepted invitation open the overview, and the overview shows no note widgets. A new account's
+first steps sit on the overview instead, with no note step and no tour stop on the notes, and "Download
+my data" names the profile and groups only. The app's billing screen shows no plan lines, but the
+plans in `libs/domain/billing/+lib.ts` still list notes and files (`features`, `limits`), and the
+website's pricing page shows them: write your own. The token screens still name notes for now
+([#1015](https://github.com/spy4x/seed/issues/1015)); so does the demo.
 
 Create the first operator on the server; it needs no mail
 ([The first operator](operator-access.md#the-first-operator)):

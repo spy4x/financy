@@ -106,6 +106,8 @@ export default {
   "Reason.CHANNEL_NOT_FOUND": "这个渠道已不存在。",
   "Reason.CURRENCY_KIND_MISMATCH":
     "加密货币账户只能使用加密货币，加密货币也只能用于加密货币账户。请选择与账户类型相符的币种。",
+  "Reason.DEMO_ADMIN_ELSEWHERE": "这是演示的管理员账号，请到管理后台用它登录。",
+  "Reason.DEMO_REFUSED": "公开演示中无法使用：这个操作会改动真实网站，或给真实的人发送邮件。",
   "Reason.FILE_CONTENT": "文件内容与其类型不符。",
   "Reason.FILE_MISSING": "没有收到文件，请选择文件后重试。",
   "Reason.FILE_TOO_LARGE": "文件太大了。",

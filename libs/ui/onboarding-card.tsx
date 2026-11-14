@@ -35,7 +35,8 @@ export const CHOOSE_CURRENCY_QUERY = `currency=choose`
  * the invitation and notification steps wait until the account is kept, since both are refused.
  * The main currency step is shown only with `canChooseCurrency`: the person is an admin or the
  * owner of the selected group.
- * The words are `t`'s.
+ * With `notes` off (`SPA_NOTES=false`) there is no note step and no step names notes, so a guest
+ * gets "Keep your account" and the account step. The words are `t`'s.
  */
 export function onboardingSteps(
   t: Translator<string>,
@@ -43,9 +44,10 @@ export function onboardingSteps(
   groupId: string | null,
   navigate?: Navigate,
   guest = false,
+  notes = true,
   canChooseCurrency = false,
 ): OnboardingStep[] {
-  const all: OnboardingStep[] = [
+  const every: OnboardingStep[] = [
     {
       id: "account",
       title: t.t(`OnboardingCard.accountTitle`),
@@ -70,7 +72,7 @@ export function onboardingSteps(
     {
       id: "invite",
       title: t.t(`OnboardingCard.inviteTitle`),
-      description: t.t(`OnboardingCard.inviteText`),
+      description: t.t(notes ? `OnboardingCard.inviteText` : `OnboardingCard.inviteTextPlain`),
       done: steps.memberInvited,
       action: {
         label: t.t(`OnboardingCard.inviteAction`),
@@ -104,7 +106,7 @@ export function onboardingSteps(
   // Only an admin or the owner can choose it, so nobody else is given a step they cannot take. It
   // follows the first note, as it did before the account step came first.
   if (canChooseCurrency && groupId) {
-    all.splice(all.findIndex((step) => step.id === "note") + 1, 0, {
+    every.splice(every.findIndex((step) => step.id === "note") + 1, 0, {
       id: "currency",
       title: t.t(`OnboardingCard.currencyTitle`),
       description: t.t(`OnboardingCard.currencyText`),
@@ -116,6 +118,7 @@ export function onboardingSteps(
       },
     })
   }
+  const all = notes ? every : every.filter((step) => step.id !== "note")
   if (!guest) return all
   const keep: OnboardingStep = {
     id: "keep",
@@ -133,9 +136,12 @@ const railLink = (href: string) => `[data-e2e="rail-shell-rail"] a[href="${href}
 /** A control of the rail's bottom zone: the Notifications cell or the account trigger. */
 const railBottom = (selector: string) => `[data-e2e="rail-shell-bottom"] ${selector}`
 
-/** The tour: the main screens, each shown by the control that opens it, in `t`'s words. */
-export function tourSteps(t: Translator<string>): TourStep[] {
-  return [
+/**
+ * The tour: the main screens, each shown by the control that opens it, in `t`'s words. With
+ * `notes` off no stop is on a Notes link and none names notes.
+ */
+export function tourSteps(t: Translator<string>, notes = true): TourStep[] {
+  const all: TourStep[] = [
     {
       id: "transactions",
       target: railLink(TRANSACTION_PATHS.list),
@@ -147,7 +153,7 @@ export function tourSteps(t: Translator<string>): TourStep[] {
       id: "groups",
       target: railLink(SCREEN_PATHS.groups),
       title: t.t(`OnboardingCard.tourGroupsTitle`),
-      body: t.t(`OnboardingCard.tourGroupsText`),
+      body: t.t(notes ? `OnboardingCard.tourGroupsText` : `OnboardingCard.tourGroupsTextPlain`),
       placement: "right",
     },
     {
@@ -165,6 +171,7 @@ export function tourSteps(t: Translator<string>): TourStep[] {
       placement: "right",
     },
   ]
+  return notes ? all : all.filter((step) => step.id !== "notes")
 }
 
 /**
@@ -188,6 +195,8 @@ export interface OnboardingCardProps {
   guest?: boolean
   /** The person may change the selected group's main currency, so its step is shown. */
   canChooseCurrency?: boolean
+  /** Whether the notes example is on; left out, it is. Off, no step or tour stop names notes. */
+  notes?: boolean
   /** Called by Dismiss and, once every step is done, by Finish. The app stops rendering the card. */
   onDismiss: () => void
   /**
@@ -213,8 +222,9 @@ export interface OnboardingCardProps {
 
 /**
  * The first-steps card of the home page: preact-components' `OnboardingChecklist` over this
- * template's five steps, and its `Tour` over the main screens. It holds no state: the steps tick
- * themselves from `steps`, and the app owns what is dismissed and where the tour stands.
+ * template's steps (without the note step with the notes off), and its `Tour` over the main
+ * screens. It holds no state: the steps tick themselves from `steps`, and the app owns what is
+ * dismissed and where the tour stands.
  *
  * The tour is offered on the card, never opened unasked. Every way out of the tour ("Skip the
  * tour" on the card; Done, Skip tour, Close and Escape in the tour) moves focus to the card's
@@ -228,6 +238,7 @@ export function OnboardingCard(
     navigate,
     guest = false,
     canChooseCurrency = false,
+    notes = true,
     onDismiss,
     error = null,
     tourOffered,
@@ -259,9 +270,10 @@ export function OnboardingCard(
       <Stack gap="sm">
         <OnboardingChecklist
           title={t.t(`OnboardingCard.title`)}
-          steps={onboardingSteps(t, steps, groupId, navigate, guest, canChooseCurrency)}
+          steps={onboardingSteps(t, steps, groupId, navigate, guest, notes, canChooseCurrency)}
           onDismiss={onDismiss}
-          // The page header's "New note" is the screen's one primary action.
+          // The card never takes the screen's one primary action: on the notes list that is the
+          // page header's "New note".
           actionVariant="secondary"
           description={tourOffered
             ? (
@@ -296,7 +308,7 @@ export function OnboardingCard(
         />
       </Stack>
       <Tour
-        steps={tourSteps(t)}
+        steps={tourSteps(t, notes)}
         open={tourOpen}
         index={tourIndex}
         onIndexChange={onTourIndexChange}

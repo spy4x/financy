@@ -1463,6 +1463,11 @@ export default {
   "AdminFrame.signInTitle": "Anmeldung für Operatoren",
   "AdminFrame.signInText":
     "Für alle, die dieses Produkt betreiben. Melde dich mit deinem Operator-Konto an.",
+  "AdminFrame.demoNote":
+    "Das ist die öffentliche Demo. Melde dich mit dem Admin-Konto der Demo an und sieh dich um. Jede Nacht wird alles zurückgesetzt.",
+  "AdminFrame.demoEmail": "E-Mail-Adresse",
+  "AdminFrame.demoPassword": "Passwort",
+  "AdminFrame.demoSignIn": "Als Demo-Admin anmelden",
   "AdminFrame.codeTitle": "Code eingeben",
   "AdminFrame.codeText":
     "Öffne deine Authenticator-App und gib die sechs Ziffern ein, die sie anzeigt.",
@@ -1932,6 +1937,11 @@ export default {
   "AdminPreferences.clock24": "24 Stunden",
   "AdminPreferences.changed": "Geändert",
   "AdminPreferences.never": "Nie",
+  "AdminSearch.find": "Schnellsuche",
+  "AdminSearch.findUser": "Person „{query}“ suchen",
+  "AdminSearch.findGroup": "Gruppe „{query}“ suchen",
+  "AdminSearch.on": "An",
+  "AdminSearch.off": "Aus",
   "AdminShortcuts.newPost": "Neuer Beitrag",
   "AdminShortcuts.sharingChannels": "Zu den Kanälen zum Teilen",
   "AdminShortcuts.addChannel": "Kanal zum Teilen hinzufügen",

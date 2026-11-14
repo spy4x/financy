@@ -48,18 +48,48 @@ Defined in `infra/compose/`:
   `deno task proxy:start` in production and by `deno task dev` locally, unless a container named
   `traefik` already runs (another project's, or a shared one).
 - **vmagent, Vector, postgres-exporter** - collect this project's metrics and logs and send them
-  on; see "Monitoring" below. They always run, and so does **socket-proxy**, through which Vector
-  reads the Docker API ("The Docker socket" below).
+  on; see "Monitoring" below. Behind the `telemetry` and the `monitoring` compose profiles, either
+  of which starts them, together with **socket-proxy**, through which Vector reads the Docker API
+  ("The Docker socket" below).
 - **VictoriaMetrics, VictoriaLogs, Grafana, vmalert, Alertmanager** - store, show and alert on
   them. Behind the `monitoring` compose profile.
 - **node-exporter, cAdvisor** - watch the whole host (CPU, disk, network, every container's
   resources). Behind the `host-monitoring` compose profile, off by default so a shared server
   does not get a second copy of its own monitoring. vmagent keeps their scrape jobs and shows
-  them as down while they are off.
+  them as down while they are off. vmagent is not in this profile, so `host-monitoring` goes with
+  `monitoring` or `telemetry`; alone it starts exporters nothing reads.
 - Images are pinned to a version tag, and PgBouncer's to a digest too, since every query passes
-  through it; change a pin on purpose, not by a moving `latest`. The one moving tag is the nginx
+  through it, as is GlitchTip's, which runs its own migrations on start; change a pin on purpose, not by a moving `latest`. The one moving tag is the nginx
   base of the SPA and admin images (`nginx-unprivileged:stable-alpine`).
 - Traefik router, service and middleware names all end in `-${PROJECT}`.
+
+## Optional parts
+
+Seed needs only Postgres, PgBouncer, Valkey, the migration, the API, the worker and the SPA, the
+must-haves. Every other part has up to three modes, picked in the env file alone: **bundled**
+(this project runs it), **external** (the project uses an instance elsewhere, such as a stack
+shared by several projects on the host) and **off** (nothing of it runs and nothing retries).
+
+| Part | Bundled | External | Off |
+| ---- | ------- | -------- | --- |
+| Monitoring ("Monitoring" below) | `monitoring` in `COMPOSE_PROFILES`; `VM_REMOTE_WRITE_URL=` and `VLOGS_URL=` empty | `telemetry` in `COMPOSE_PROFILES`, not `monitoring`; `VM_REMOTE_WRITE_URL=https://…/api/v1/write`, `VLOGS_URL=https://…` and their user names and passwords | neither `monitoring` nor `telemetry` |
+| Host metrics (node-exporter, cAdvisor) | `host-monitoring` next to `monitoring` or `telemetry` | leave `host-monitoring` out; the host's own exporters report it | leave `host-monitoring` out |
+| Error tracking ("Error tracking" below) | `errors` in `COMPOSE_PROFILES` and `ERRORS_DOMAIN=errors.example.com`, then `deno task errors:setup` once, which fills both DSNs | `ERROR_REPORT_DSN=https://…` and `SPA_ERROR_REPORT_DSN=https://…` | both empty |
+| Files ([files.md](files.md)) | `files` in `COMPOSE_PROFILES`; `S3_ENDPOINT=`, `S3_PUBLIC_ENDPOINT=`, `S3_BUCKET=` empty | leave `files` out; the six `S3_*` settings name the store | not yet: see below |
+| Backup ([backups.md](backups.md)) | `backup` in `COMPOSE_PROFILES`; `BACKUP_RESTIC_REPOSITORY=…`, `BACKUP_RESTIC_PASSWORD=…` | none | leave `backup` out |
+| Traefik | `deno task proxy:start` (`compose.proxy.yml`); `deno task dev` starts it too | a container named `traefik` already on the `proxy` network | none: the apps need a proxy |
+| Website ([apps.md](apps.md)) | `mpa` in `COMPOSE_PROFILES`; `MPA_DOMAIN=…` | none | leave `mpa` out |
+| Admin app ([apps.md](apps.md)) | `admin` in `COMPOSE_PROFILES`; `ADMIN_DOMAIN=…` | none | leave `admin` out |
+
+With only the must-haves the env file says `COMPOSE_PROFILES=` and nothing else changes; the
+lines of the parts left out may stay or go, since every one of them has a default.
+`tests/compose-profiles.test.ts` holds each profile to the services it starts.
+
+**Files have no "off" yet.** Without the `files` profile and without another store, the API starts,
+but its health route waits two seconds for a store that does not answer and reports
+`"files": false`. The container's health probe gives up at the same two seconds, so the API turns
+unhealthy and Traefik stops routing to it: the SPA loads, and every `/api` call answers 404. Keep
+the bundled Garage or name another store until the API can run without one.
 
 ## Database connections
 
@@ -97,7 +127,7 @@ The stack is VictoriaMetrics for metrics and VictoriaLogs for logs, the same as 
 servers run, with Grafana on top. The API and the worker know nothing about it: they write
 their log to standard output, and everything else happens around them.
 
-Two parts always run, in every mode:
+Two parts ship them, in the bundled and the external mode:
 
 - **vmagent** scrapes the targets in `infra/configs/vmagent.yml` (itself, Vector, the Postgres
   exporter, and the bundled VictoriaMetrics, node-exporter and cAdvisor when they run) and pushes
@@ -111,20 +141,24 @@ Two parts always run, in every mode:
   has no metrics endpoint yet. `tests/monitoring-alerts.test.ts` holds the pattern to the lines
   the API's logger writes.
 
-Where they send is the only difference between the two modes, and the env file alone decides it.
+The env file alone picks one of three modes. The shippers are vmagent, Vector, Vector's socket
+proxy and the Postgres exporter; each is in both the `telemetry` and the `monitoring` profile.
 
 **Bundled** (the default of `infra/envs/.env.example`): `COMPOSE_PROFILES` contains `monitoring`,
-and `VM_REMOTE_WRITE_URL` and `VLOGS_URL` are empty. Compose then also runs VictoriaMetrics,
-VictoriaLogs, Grafana, vmalert and Alertmanager, and vmagent and Vector send to them. Grafana is on
+and `VM_REMOTE_WRITE_URL` and `VLOGS_URL` are empty. Compose then runs the shippers and
+VictoriaMetrics, VictoriaLogs, Grafana, vmalert and Alertmanager, and vmagent and Vector send to
+them. Grafana is on
 `127.0.0.1:3000` of the machine, with no public address (docs/operator-access.md, "Admin consoles"; user
 `admin`, password `GRAFANA_PASS`), with both data sources already there
 (`infra/configs/grafana-datasources.yml`); it downloads the VictoriaLogs data source plugin, at the
 version pinned in the Compose file, at its first start. Both databases keep 14 days, under
 `.volumes/victoriametrics` and `.volumes/victorialogs`.
 
-**External**: take `monitoring` out of `COMPOSE_PROFILES` and name the other server:
+**External**: put `telemetry` in `COMPOSE_PROFILES` instead of `monitoring` and name the other
+server:
 
 ```sh
+COMPOSE_PROFILES=telemetry
 VM_REMOTE_WRITE_URL=https://metrics.example.com/api/v1/write
 VM_REMOTE_WRITE_USERNAME=...
 VM_REMOTE_WRITE_PASSWORD=...
@@ -134,9 +168,9 @@ VLOGS_PASSWORD=...
 ```
 
 The user names and passwords are HTTP basic auth; leave them empty for a server that asks for
-none. A password may hold any character. None of the five bundled containers starts; but Compose
-does not stop one that is already running when its profile is turned off, so a project that ran
-the bundled mode before removes them once, by name:
+none. A password may hold any character. Only the shippers start, none of the five bundled
+containers; but Compose does not stop one that is already running when its profile is turned off,
+so a project that ran the bundled mode before removes them once, by name:
 
 ```sh
 deno task compose rm --stop --force victoriametrics victorialogs vmalert alertmanager grafana
@@ -147,8 +181,17 @@ vmagent cannot send waits on disk (`.volumes/vmagent`, up to 1 GiB) and is sent 
 back; Vector retries too, with a small queue in memory. Grafana, the alert rules and the retention
 are then the other server's.
 
-A project started with neither the profile nor the two addresses still runs: vmagent and Vector
-keep trying an address that does not exist, and nothing is stored.
+**Off**: leave both `monitoring` and `telemetry` out of `COMPOSE_PROFILES`. None of these
+containers starts, nothing is collected and nothing retries; the six addresses and passwords are
+not read. A project that ran another mode before removes the running ones once, as above, adding
+`vmagent vector socket-proxy postgres-prometheus-exporter` to the list.
+
+A project with `telemetry` but without the two addresses still runs: vmagent and Vector keep
+trying the bundled addresses, which do not exist, and nothing is stored.
+
+**Upgrading from a Seed before the `telemetry` profile**: vmagent, Vector, the socket proxy and
+the Postgres exporter used to start in every project. A deployment in the external mode adds
+`telemetry` to `COMPOSE_PROFILES`, or they stop shipping; the bundled mode needs no change.
 
 ### Alerts
 
@@ -272,7 +315,7 @@ docker run -d --name other-vl --network app_default victoriametrics/victoria-log
   -httpAuth.username=shipper -httpAuth.password=<password>
 ```
 
-Set `COMPOSE_PROFILES=` (without `monitoring`),
+Set `COMPOSE_PROFILES=telemetry`,
 `VM_REMOTE_WRITE_URL=http://other-vm:8428/api/v1/write`, `VLOGS_URL=http://other-vl:9428` and the
 user name and password in `infra/envs/.env`, run `deno task dev`, open any API address, and after a
 minute ask the other server:
@@ -320,20 +363,43 @@ envelope format, about 270 lines and no dependency, instead of the 30 KB `@sentr
 | Layout | Use when | Cost |
 | ------ | -------- | ---- |
 | External, one instance shared by several projects | You run more than one project on a host. The default. | One more thing to keep up, shared by all |
-| Bundled, an optional Compose profile of this project | One project runs alone on its host | Its own web and worker containers, and a database and cache of its own |
+| Bundled, the `errors` Compose profile of this project | One project runs alone on its host | One more container, about 200 MB of memory, and a database in this project's Postgres |
 
-The bundled profile is not in `infra/compose` yet: this template does not deploy GlitchTip. To
-bring one up, use GlitchTip's own Compose file, point its database at this project's Postgres (a
-separate database and user) and its cache at Valkey, and put it behind Traefik with the same router
-pattern as Grafana. Create two projects (API, SPA) and put their DSNs in the env file.
+**The bundled profile.** Put `errors` in `COMPOSE_PROFILES`, set `ERRORS_DOMAIN` to the host
+GlitchTip answers on, start the stack, and once the `errors` container is healthy run
+`deno task errors:setup`. `deno task init` generates the three passwords it needs
+(`GLITCHTIP_DB_PASS`, `GLITCHTIP_SECRET_KEY`, `GLITCHTIP_ADMIN_PASSWORD`); on a server that already
+has an env file, set them by hand. The profile runs:
+
+- `errors-db`, a one-shot that creates the `glitchtip` user and database in this project's Postgres
+  when they are missing and sets the user's password from `GLITCHTIP_DB_PASS` on every start
+  (`infra/configs/glitchtip-db.sql`).
+- `errors`, GlitchTip 7 pinned by digest: one process serves the site, takes the events and runs the
+  background jobs. It runs its own migrations on start, keeps its queue in Valkey database 1 (the app
+  uses 0), and opens at most 4 Postgres connections. Sign-up, new organizations and uptime checks
+  are off: Gatus watches uptime.
+
+`deno task errors:setup` signs nothing in and opens no port: it runs
+`infra/configs/glitchtip-setup.py` inside the `errors` container. That makes the superuser
+(`DEV_EMAIL`, with `GLITCHTIP_ADMIN_PASSWORD` as its first password), an organization named after
+`PROJECT`, and the projects `api` and `spa`, each only when missing. Then it writes
+`ERROR_REPORT_DSN` and `SPA_ERROR_REPORT_DSN` into `infra/envs/.env` while they are empty, and keeps
+a value someone set. A second run changes nothing. The API's DSN names the container
+(`http://…@<PROJECT>-errors:8000/1`), so the API reports over the project's own network; the SPA's
+names `ERRORS_DOMAIN`. Apply the DSNs with `deno task compose up -d`. On a server, run the task in the
+deployed checkout, then copy the two lines into `infra/envs/.env.prod`: the next
+`deno task deploy` replaces the server's env file with it.
+
+Not bundled: email (GlitchTip sends no alert mail until you set its `EMAIL_URL`), and GlitchTip's
+database is not in the backup, which covers the app's database only.
 
 **Source maps.** The SPA build does not produce source maps, so a browser stack trace shows the
 minified bundle. To get readable traces: set `build.sourcemap: "hidden"` in
 `apps/spa/vite.config.ts`, upload `apps/spa/dist/**/*.map` for the release with `sentry-cli
 sourcemaps upload` (GlitchTip accepts it) in the deploy step, and delete the `.map` files before
 the image is built, so they are never served. The release name must match the `release` option of
-the reporter, which the SPA does not set yet. This is not wired in: it needs a running GlitchTip to
-verify.
+the reporter, which the SPA does not set yet. This is not wired in yet
+([#1019](https://github.com/spy4x/seed/issues/1019)).
 
 ## Runtime configuration
 
@@ -343,8 +409,9 @@ baked into the build; the container writes them to `/config.json` when it starts
 - **The allow list:** `apps/spa/public-env.allow` names the only container variables that reach the
   file (`SPA_ENV` as `env`, `SPA_ERROR_REPORT_DSN` as `errorReportDsn`, and the module switches
   `SPA_REALTIME` as `realtime` and `SPA_OFFLINE` as `offline`; `docs/offline.md`, "Switching a
-  module off"; and `SPA_DEMO` as `demo`, set from `DEMO_MODE`; `docs/demo.md`). Anything else in the
-  container's environment is ignored. The file goes to every visitor's browser, so list a public
+  module off"; the notes example's `SPA_NOTES` as `notes`; `docs/start-a-product.md`; and
+  `SPA_DEMO` as `demo`, set from `DEMO_MODE`; `docs/demo.md`). Anything else in the container's
+  environment is ignored. The file goes to every visitor's browser, so list a public
   value only; `tests/spa-runtime-config.test.ts` fails if a name looks like a secret.
 - **Start-up:** nginx's entrypoint runs `apps/spa/runtime-config.sh`, which writes
   `/tmp/config.json` (`/config.json` is a link to it, so the container can run as any user). A

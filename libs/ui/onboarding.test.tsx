@@ -14,6 +14,7 @@ import {
   ONBOARDING_FAILURE,
   OnboardingCard,
   type OnboardingCardProps,
+  onboardingSteps,
   tourSteps,
 } from "./onboarding-card.tsx"
 import { ENGLISH, englishLeft, PSEUDO } from "./i18n-testing.ts"
@@ -472,6 +473,85 @@ describe("first-steps tour", () => {
     const finished = await mount({ tourOpen: true, tourIndex: TOUR_STEPS.length - 1 })
     await press("Done")
     expect(finished.calls.log).toEqual(["tour end"])
+  })
+})
+
+describe("first steps with the notes off", () => {
+  /** Notes, a note or the notes example's tags, in any English text shown. */
+  const NAMES_NOTES = /\bnotes?\b|\btags?\b/i
+
+  it("lists no note step and no text that names notes, for a person and for a guest", () => {
+    const ids = (guest: boolean, notes?: boolean) =>
+      onboardingSteps(ENGLISH, NONE, "g-1", undefined, guest, notes).map((step) => step.id)
+    const words = (guest: boolean) =>
+      onboardingSteps(ENGLISH, NONE, "g-1", undefined, guest, false).flatMap((step) => [
+        step.title,
+        step.description ?? "",
+        step.action?.label ?? "",
+      ])
+
+    expect(ids(false)).toEqual([
+      "account",
+      "email",
+      "note",
+      "invite",
+      "notifications",
+      "two-factor",
+    ])
+    expect(ids(true)).toEqual(["keep", "account", "note"])
+    expect(ids(false, false)).toEqual(["account", "email", "invite", "notifications", "two-factor"])
+    expect(ids(true, false)).toEqual(["keep", "account"])
+    expect([...words(false), ...words(true)].filter((text) => NAMES_NOTES.test(String(text))))
+      .toEqual([])
+  })
+
+  it("keeps the tour at Transactions first, with no stop on the notes link and no text that names notes", () => {
+    const off = tourSteps(ENGLISH, false)
+    const ids = ["transactions", "groups", "notifications", "profile"]
+
+    expect(TOUR_STEPS.map((step) => step.id)).toEqual(ids)
+    expect(off.map((step) => step.id)).toEqual(ids)
+    expect(off.filter((step) => NAMES_NOTES.test(`${step.title} ${step.body}`))).toEqual([])
+  })
+
+  it("opens the card's tour at Transactions, step 1 of 4", async () => {
+    const { update } = await mount({ notes: false })
+
+    await update({ tourOpen: true })
+
+    expect(document.activeElement?.textContent).toBe("Transactions")
+    expect(document.body.textContent).toContain("Step 1 of 4")
+    expect(document.body.textContent).not.toMatch(NAMES_NOTES)
+  })
+
+  it("draws five steps and offers Finish once they are done, though no note was ever written", async () => {
+    const { calls, update } = await mount({
+      notes: false,
+      steps: {
+        ...NONE,
+        accountCreated: true,
+        emailVerified: true,
+        memberInvited: true,
+        notificationsOn: true,
+      },
+    })
+    expect(stepLines().length).toBe(5)
+    expect(document.body.textContent).not.toMatch(NAMES_NOTES)
+    expect(all("button").some((button) => button.textContent?.trim() === "Finish")).toBe(false)
+
+    await update({
+      steps: {
+        ...NONE,
+        accountCreated: true,
+        emailVerified: true,
+        memberInvited: true,
+        notificationsOn: true,
+        twoFactorOn: true,
+      },
+    })
+    await press("Finish")
+
+    expect(calls.log).toEqual(["dismiss"])
   })
 })
 

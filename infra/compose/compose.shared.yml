@@ -244,17 +244,20 @@ services:
   # endregion Storages
 
   # region Monitoring
-  # Two modes, chosen in the env file (docs/stack.md, "Monitoring"):
+  # Three modes, chosen in the env file (docs/stack.md, "Monitoring"):
   # - Bundled: COMPOSE_PROFILES=monitoring starts VictoriaMetrics, VictoriaLogs, Grafana, vmalert
-  #   and Alertmanager here, and vmagent and Vector send to them.
-  # - External: leave that profile off and set VM_REMOTE_WRITE_URL and VLOGS_URL (and their
-  #   credentials); vmagent and Vector send to that server instead.
-  # vmagent, Vector and the Postgres exporter run in both modes. The API and the worker are told
-  # nothing about either.
+  #   and Alertmanager here, and the shippers (vmagent, Vector, its socket proxy and the Postgres
+  #   exporter) send to them.
+  # - External: COMPOSE_PROFILES=telemetry starts only the shippers; set VM_REMOTE_WRITE_URL and
+  #   VLOGS_URL (and their credentials) to the server they send to.
+  # - Off: neither profile, and none of these containers starts.
+  # A shipper lists both profiles, so either one starts it. The API and the worker are told
+  # nothing about any mode, and no service outside this region waits for one of these.
 
   # Scrapes the targets in infra/configs/vmagent.yml and pushes them on.
   vmagent:
     container_name: ${PROJECT}-vmagent
+    profiles: [telemetry, monitoring]
     image: victoriametrics/vmagent:v1.146.0
     restart: unless-stopped
     volumes:
@@ -292,6 +295,7 @@ services:
   # answers Vector's address only, has no route to anywhere else and publishes no port.
   socket-proxy:
     container_name: ${PROJECT}-socket-proxy
+    profiles: [telemetry, monitoring]
     image: wollomatic/socket-proxy:1.13.1
     restart: unless-stopped
     # The socket belongs to root on the host, and its group's number differs from host to host.
@@ -334,6 +338,7 @@ services:
   # no Linux capability, no way to gain one, a read-only file system and no published port.
   vector:
     container_name: ${PROJECT}-vector
+    profiles: [telemetry, monitoring]
     image: timberio/vector:0.59.0-alpine
     restart: unless-stopped
     volumes:
@@ -385,6 +390,7 @@ services:
 
   postgres-prometheus-exporter:
     container_name: ${PROJECT}-postgres-prometheus-exporter
+    profiles: [telemetry, monitoring]
     image: quay.io/prometheuscommunity/postgres-exporter:v0.20.1
     restart: unless-stopped
     environment:
@@ -392,8 +398,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: ${POSTGRES_EXPORTER_CPU_LIMIT}
-          memory: '${POSTGRES_EXPORTER_MEM_LIMIT}'
+          cpus: '${POSTGRES_EXPORTER_CPU_LIMIT:-1}'
+          memory: '${POSTGRES_EXPORTER_MEM_LIMIT:-512m}'
     depends_on:
       - db
 
@@ -533,14 +539,14 @@ services:
       # The VictoriaMetrics and VictoriaLogs data sources.
       - ../../infra/configs/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro,Z
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS:-}
       # Grafana has no built-in VictoriaLogs data source; it downloads this plugin at first start.
       - GF_PLUGINS_PREINSTALL_SYNC=victoriametrics-logs-datasource@0.32.0
     deploy:
       resources:
         limits:
-          cpus: ${GRAFANA_CPU_LIMIT}
-          memory: '${GRAFANA_MEM_LIMIT}'
+          cpus: '${GRAFANA_CPU_LIMIT:-1}'
+          memory: '${GRAFANA_MEM_LIMIT:-512m}'
     logging:
       driver: json-file
       options:
@@ -563,7 +569,9 @@ services:
   # nodeexporter and cadvisor watch the whole host (its CPU, disk and network, and every
   # container's resources). On a shared server that duplicates the host's own monitoring, so they
   # start only with the `host-monitoring` profile: add it to COMPOSE_PROFILES in the env file.
-  # vmagent still lists their scrape jobs and shows them as down while they are off.
+  # vmagent still lists their scrape jobs and shows them as down while they are off. vmagent is
+  # not in this profile: alone it would push to a VictoriaMetrics that does not run, so pair
+  # `host-monitoring` with `monitoring` or `telemetry`.
   nodeexporter:
     container_name: ${PROJECT}-nodeexporter
     profiles: [host-monitoring]
@@ -582,8 +590,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: ${NODEEXPORTER_CPU_LIMIT}
-          memory: '${NODEEXPORTER_MEM_LIMIT}'
+          cpus: '${NODEEXPORTER_CPU_LIMIT:-1}'
+          memory: '${NODEEXPORTER_MEM_LIMIT:-512m}'
     logging:
       driver: json-file
       options:
@@ -604,14 +612,133 @@ services:
     deploy:
       resources:
         limits:
-          cpus: ${CADVISOR_CPU_LIMIT}
-          memory: '${CADVISOR_MEM_LIMIT}'
+          cpus: '${CADVISOR_CPU_LIMIT:-1}'
+          memory: '${CADVISOR_MEM_LIMIT:-512m}'
     logging:
       driver: json-file
       options:
         max-size: '10m'
         max-file: '3'
   # endregion Monitoring
+
+  # region Error tracking
+  # Three modes, chosen in the env file (docs/stack.md, "Error tracking"):
+  # - Bundled: COMPOSE_PROFILES=errors starts GlitchTip here, then `deno task errors:setup` makes
+  #   its two projects and writes their DSNs into the env file.
+  # - External: leave `errors` out and set ERROR_REPORT_DSN and SPA_ERROR_REPORT_DSN to another
+  #   GlitchTip or Sentry.
+  # - Off: leave `errors` out and both DSNs empty.
+  # `${…:-}`, not `${…:?}`, as for garage: Compose interpolates profiled services too.
+
+  # Makes GlitchTip's own user and database in this project's Postgres, then exits; GlitchTip
+  # starts only after it exits with 0. On every `up`, and a second run changes nothing
+  # (infra/configs/glitchtip-db.sql). The database server's own image, for its psql.
+  errors-db:
+    container_name: ${PROJECT}-errors-db
+    profiles: [errors]
+    image: docker.io/library/postgres:18.6
+    restart: "no"
+    user: postgres
+    command: [ 'psql', '--no-psqlrc', '--quiet', '-f', '/setup/glitchtip-db.sql' ]
+    volumes:
+      - ../../infra/configs/glitchtip-db.sql:/setup/glitchtip-db.sql:ro,z
+    environment:
+      - PGHOST=db
+      - PGUSER=${DB_USER}
+      - PGPASSWORD=${DB_PASS}
+      - PGDATABASE=${DB_NAME}
+      - GLITCHTIP_DB_PASS=${GLITCHTIP_DB_PASS:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: '64M'
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # GlitchTip, the error tracker the API and the SPA report to (docs/stack.md, "Error tracking").
+  # Since 7.0 one process serves the web app, ingests events and runs the background tasks, so
+  # there is no separate worker. It applies its own migrations when it starts, under a lock. It
+  # keeps events in its database and its task queue and cache in Valkey's database 1; the API uses
+  # database 0. Pinned by digest as well as version: it runs migrations on this project's Postgres.
+  errors:
+    container_name: ${PROJECT}-errors
+    profiles: [errors]
+    image: docker.io/glitchtip/glitchtip:7.0.0@sha256:c245745b4179667da3aebd73fb8d4f1fd918f7d68ba07d1fd73ea688933b6e01
+    restart: unless-stopped
+    volumes:
+      # `deno task errors:setup` runs it in this container.
+      - ../../infra/configs/glitchtip-setup.py:/seed/glitchtip-setup.py:ro,z
+    environment:
+      - DATABASE_HOST=${PROJECT}-db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=glitchtip
+      - DATABASE_USER=glitchtip
+      - DATABASE_PASSWORD=${GLITCHTIP_DB_PASS:-}
+      # Postgres takes 30 connections and PgBouncer holds 20 of them (docs/stack.md, "Database
+      # connections"); GlitchTip's own pool would take 20 more.
+      - DATABASE_POOL_MAX_SIZE=4
+      - VALKEY_HOST=${PROJECT}-kv
+      - VALKEY_PORT=6379
+      - VALKEY_DATABASE=1
+      - VALKEY_PASSWORD=${KV_PASSWORD}
+      - SECRET_KEY=${GLITCHTIP_SECRET_KEY:-}
+      # The address in every DSN it shows; compose.prod.yml makes it https.
+      - GLITCHTIP_DOMAIN=http://${ERRORS_DOMAIN:-}
+      # Browsers come by ERRORS_DOMAIN, the API by the container's name
+      # (infra/scripts/errors-setup.ts) and the healthcheck by localhost.
+      - ALLOWED_HOSTS=${ERRORS_DOMAIN:-},${PROJECT}-errors,localhost
+      # Accounts come from `deno task errors:setup` and invitations, never from a sign-up form.
+      - ENABLE_USER_REGISTRATION=false
+      - ENABLE_ORGANIZATION_CREATION=false
+      # Uptime checks are Gatus' job.
+      - GLITCHTIP_ENABLE_UPTIME=false
+    depends_on:
+      errors-db:
+        condition: service_completed_successfully
+      kv:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '${GLITCHTIP_CPU_LIMIT:-1}'
+          memory: '${GLITCHTIP_MEM_LIMIT:-1G}'
+    healthcheck:
+      # The image's own check of /_health/. The first start migrates an empty database first.
+      test: [ 'CMD', 'python', '/code/healthcheck.py' ]
+      interval: 10s
+      timeout: 6s
+      retries: 5
+      start_period: 5m
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    # Browsers post the SPA's reports to ERRORS_DOMAIN, and the operator signs in there.
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.errors-${PROJECT}.rule=Host(`${ERRORS_DOMAIN:-}`)'
+      - 'traefik.http.routers.errors-${PROJECT}.entrypoints=web'
+      - 'traefik.http.routers.errors-${PROJECT}.service=errors-${PROJECT}'
+      - 'traefik.http.services.errors-${PROJECT}.loadbalancer.server.port=8000'
+      - 'traefik.docker.network=proxy'
+    networks:
+      - default
+      - proxy
+  # endregion Error tracking
 
   # Only with COMPOSE_PROFILES=backup (docs/backups.md): a restic snapshot of the database and of
   # the web push keys when it starts and every 24 hours after. Built on the db service's own image,
@@ -801,6 +928,8 @@ services:
       - DB_NAME=${DB_NAME}
       - AUTH_COOKIE_SECRET=${AUTH_COOKIE_SECRET}
       - AUTH_PEPPER=${AUTH_PEPPER}
+      # The public demo (docs/demo.md): its public admin account signs in on the admin host only.
+      - DEMO_MODE=${DEMO_MODE:-}
       - DEV_EMAIL=${DEV_EMAIL}
       - DOMAIN=${DOMAIN}
       - TIMEZONE=${TIMEZONE}
@@ -974,6 +1103,9 @@ services:
       - LINKEDIN_ACCESS_TOKEN=${LINKEDIN_ACCESS_TOKEN:-}
       - LINKEDIN_MEMBER_ID=${LINKEDIN_MEMBER_ID:-}
       - LINKEDIN_TOKEN_EXPIRES_AT=${LINKEDIN_TOKEN_EXPIRES_AT:-}
+      # The notes example (docs/data-export.md): `false` leaves notes out of a data export. On
+      # unless `false`.
+      - NOTES=${NOTES:-}
       # The public demo (docs/demo.md): `true` wipes and seeds the database every night and gives
       # every new account sample groups. Unset → off.
       - DEMO_MODE=${DEMO_MODE:-}
@@ -1041,6 +1173,7 @@ services:
       - SPA_ERROR_REPORT_DSN=${SPA_ERROR_REPORT_DSN:-}
       - SPA_REALTIME=${SPA_REALTIME:-}
       - SPA_OFFLINE=${SPA_OFFLINE:-}
+      - SPA_NOTES=${SPA_NOTES:-}
       # The public demo (docs/demo.md) shows its line on the sign-in and sign-up pages.
       - SPA_DEMO=${DEMO_MODE:-}
       - SPA_GUEST=${GUEST_MODE:-}
@@ -1106,8 +1239,14 @@ services:
       - MPA_UMAMI_WEBSITE_ID=${MPA_UMAMI_WEBSITE_ID:-}
       # IndexNow (docs/blog.md): served at /<key>.txt, the same key the worker pings with.
       - INDEXNOW_KEY=${INDEXNOW_KEY:-}
+      # The public demo (docs/demo.md): the `/admin` page publishes the demo's admin account and
+      # links to the admin app's host.
+      - DEMO_MODE=${DEMO_MODE:-}
+      - ADMIN_DOMAIN=${ADMIN_DOMAIN:-}
       # A demo on its own host (docs/demo.md): the try links go to its /try. Empty: the app's.
       - DEMO_ORIGIN=${DEMO_ORIGIN:-}
+      # The notes example (docs/start-a-product.md): `false` takes the token API's reference away.
+      - NOTES=${NOTES:-}
       # Not `http://api`: on the shared `proxy` network that name is any project's API.
       - API_URL=http://${PROJECT}-api:${API_PORT}
       - DENO_LOG=${DENO_LOG}

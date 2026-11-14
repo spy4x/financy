@@ -42,6 +42,8 @@ const REASONS: Record<ErrorReason, true> = {
   CHANNEL_NOT_FOUND: true,
   CURRENCY_KIND_MISMATCH: true,
   CURRENCY_LOCKED: true,
+  DEMO_ADMIN_ELSEWHERE: true,
+  DEMO_REFUSED: true,
   expired: true,
   FILE_CONTENT: true,
   FILE_MISSING: true,

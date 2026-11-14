@@ -719,6 +719,8 @@ export default {
   "OnboardingCard.noteAction": "Write a note",
   "OnboardingCard.inviteTitle": "Invite someone to your group",
   "OnboardingCard.inviteText": "They'll see the same notes live, with the role you give them.",
+  "OnboardingCard.inviteTextPlain":
+    "They'll see the group's changes live, with the role you give them.",
   "OnboardingCard.inviteAction": "Invite someone",
   "OnboardingCard.notificationsTitle": "Turn on notifications",
   "OnboardingCard.notificationsText": "Get notified about changes, even when the app is closed.",
@@ -737,6 +739,7 @@ export default {
   "OnboardingCard.tourGroupsTitle": "Groups",
   "OnboardingCard.tourGroupsText":
     "Notes live in groups. Create groups here, invite people and choose their roles.",
+  "OnboardingCard.tourGroupsTextPlain": "Create groups here, invite people and choose their roles.",
   "OnboardingCard.tourNotificationsTitle": "Notifications",
   "OnboardingCard.tourNotificationsText":
     "What happened while you were away, such as an invitation.",
@@ -776,6 +779,8 @@ export default {
   "OverviewScreen.choosePlan": "Choose a plan",
   "OverviewScreen.allHidden": "All widgets are hidden",
   "OverviewScreen.allHiddenText": "Choose the ones you want to see.",
+  "OverviewScreen.noWidgets": "Nothing to show yet",
+  "OverviewScreen.noWidgetsText": "Widgets for {group} will appear here.",
   "OverviewScreen.gridLabel": "Overview of {group}",
   "OverviewScreen.customiseText":
     "Choose which widgets you see and in what order. Your layout follows you to your other devices.",
@@ -1111,6 +1116,8 @@ export default {
     "This address doesn't lead to a page. It may be mistyped, or the page has moved.",
   "NotFound.signedOut": "This address doesn't lead to a page. Sign in to get to your notes.",
   "NotFound.toNotes": "Go to your notes",
+  "NotFound.toOverview": "Go to the overview",
+  "NotFound.signedOutPlain": "This address doesn't lead to a page. Sign in to continue.",
   "NotFound.signIn": "Sign in",
   "Notes.title": "Notes",
   "Notes.new": "New note",
@@ -1312,6 +1319,8 @@ export default {
   "ProfileExport.asking": "Requesting…",
   "ProfileExport.never":
     "A ZIP of your profile, groups and notes as JSON and CSV files. It takes a few minutes, and we'll email you when it's ready.",
+  "ProfileExport.neverPlain":
+    "A ZIP of your profile and groups as JSON and CSV files. It takes a few minutes, and we'll email you when it's ready.",
   "ProfileExport.download": "Download my data",
   "ProfileExport.preparing":
     "Preparing your file. We'll email you and send a notification when it's ready.",
@@ -1667,6 +1676,7 @@ export default {
   "Search.openProfile": "Open profile",
   "Search.downloadData": "Download my data",
   "Search.downloadDetail": "A ZIP of your profile, groups and notes",
+  "Search.downloadDetailPlain": "A ZIP of your profile and groups",
   "Search.changePicture": "Change profile picture",
   "Shortcuts.general": "General",
   "Shortcuts.goTo": "Go to",

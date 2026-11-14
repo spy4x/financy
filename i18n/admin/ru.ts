@@ -1547,6 +1547,11 @@ export default {
   "AdminFrame.signInTitle": "Вход для операторов",
   "AdminFrame.signInText":
     "Для тех, кто управляет этим продуктом. Войдите под аккаунтом оператора.",
+  "AdminFrame.demoNote":
+    "Это публичное демо. Войдите под демо-аккаунтом оператора и осмотритесь. Каждую ночь всё сбрасывается.",
+  "AdminFrame.demoEmail": "E-mail",
+  "AdminFrame.demoPassword": "Пароль",
+  "AdminFrame.demoSignIn": "Войти как демо-оператор",
   "AdminFrame.codeTitle": "Введите код",
   "AdminFrame.codeText": "Откройте приложение-аутентификатор и введите шесть цифр оттуда.",
   "AdminFrame.login": "E-mail или логин",
@@ -2049,6 +2054,11 @@ export default {
   "AdminPreferences.clock24": "24-часовой",
   "AdminPreferences.changed": "Изменено",
   "AdminPreferences.never": "Ни разу",
+  "AdminSearch.find": "Быстрый поиск",
+  "AdminSearch.findUser": "Найти человека «{query}»",
+  "AdminSearch.findGroup": "Найти группу «{query}»",
+  "AdminSearch.on": "Вкл.",
+  "AdminSearch.off": "Выкл.",
   "AdminShortcuts.newPost": "Новый пост",
   "AdminShortcuts.sharingChannels": "Перейти к каналам продвижения",
   "AdminShortcuts.addChannel": "Добавить канал продвижения",

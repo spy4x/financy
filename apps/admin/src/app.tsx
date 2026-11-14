@@ -18,7 +18,14 @@ import {
 } from "@ui/admin-frame.tsx"
 import { NotFoundScreen } from "@ui/not-found-screen.tsx"
 import { PRODUCT_NAME } from "@ui/brand.ts"
-import { type AdminStore, hasAdminAccess, operatorName, readOperatorEmail } from "./state.ts"
+import {
+  type AdminStore,
+  type DemoAdminCredentials,
+  hasAdminAccess,
+  operatorName,
+  readDemoAdmin,
+  readOperatorEmail,
+} from "./state.ts"
 import { ADMIN_MODULES, adminPersonTabs, shownModules } from "./modules/registry.ts"
 import type { AdminContext, AdminModule } from "./modules/types.ts"
 import { FormatContext } from "@spy4x/preact-ui/format"
@@ -28,7 +35,8 @@ import { isLanguage, LANGUAGES } from "@domain/identity"
 import { languageSetting, pickLanguage } from "@platform/i18n.ts"
 import { kept, languages as pageLanguages } from "./i18n.ts"
 import { createOperatorFormat, type OperatorFormat } from "./preferences.ts"
-import { adminShortcutRows, focusListFilter } from "./shortcuts.ts"
+import { adminGoTo, adminShortcutRows, focusListFilter, onListPage } from "./shortcuts.ts"
+import { type AdminSearchChoice, AdminSearchPalette } from "@ui/admin-palette.tsx"
 import { guardNavigate } from "./leave.ts"
 import {
   type createSingleKeysSetting,
@@ -175,6 +183,12 @@ function Operator(
     }
   }, [user?.id])
 
+  // The public demo's admin account, shown on the sign-in page; read once.
+  const [demoAdmin, setDemoAdmin] = useState<DemoAdminCredentials | null>(null)
+  useEffect(() => {
+    void readDemoAdmin(store.request).then(setDemoAdmin)
+  }, [])
+
   // One context per signed-in session, so a module's state starts empty for the next one.
   const context = useMemo<AdminContext | null>(
     () =>
@@ -202,6 +216,17 @@ function Operator(
   })
   // Bound only in the signed-in shell, which draws the list too.
   useShortcuts(user && hasAdminAccess(user) ? shortcutRows : [], singleKeys.on.value)
+  // A palette pick runs what its shortcut, menu entry or switch runs.
+  const pick = (choice: AdminSearchChoice) => {
+    if (choice.kind === "page") leave(choice.href)
+    // The account menu's Theme sets it the same way.
+    else if (choice.kind === "theme") theme.set(choice.theme as Parameters<typeof theme.set>[0])
+    else if (choice.kind === "single-keys") singleKeys.set(choice.on)
+    else if (choice.kind === "shortcuts") setShortcutsOpen(true)
+    else if (choice.kind === "list-filter") focusListFilter()
+    // The account menu's Sign out runs the same.
+    else if (choice.kind === "sign-out") store.signOut()
+  }
   const toastr = <Toastr toasts={toasts.list.value} onDismiss={toasts.remove} dataE2E="toasts" />
 
   if (session.step === "loading") {
@@ -226,6 +251,7 @@ function Operator(
           error={session.error}
           onSignIn={store.signIn}
           onOneTimeCode={store.oneTimeCode}
+          demoAdmin={demoAdmin}
         />
       </AdminFrame>
     )
@@ -253,6 +279,15 @@ function Operator(
         language={language}
         onSignOut={store.signOut}
         navigate={leave}
+        search={
+          <AdminSearchPalette
+            goTo={adminGoTo(modules)}
+            listFilter={onListPage(modules, path)}
+            theme={theme.preference.value}
+            singleKeys={singleKeys.on.value}
+            onSelect={pick}
+          />
+        }
         shortcuts={{
           rows: shortcutRows,
           open: shortcutsOpen,

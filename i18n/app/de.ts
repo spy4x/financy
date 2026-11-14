@@ -736,6 +736,8 @@ export default {
   "OnboardingCard.inviteTitle": "Lade jemanden in deine Gruppe ein",
   "OnboardingCard.inviteText":
     "Die Person sieht dieselben Notizen live, mit der Rolle, die du ihr gibst.",
+  "OnboardingCard.inviteTextPlain":
+    "Die Person sieht die Änderungen der Gruppe live, mit der Rolle, die du ihr gibst.",
   "OnboardingCard.inviteAction": "Jemanden einladen",
   "OnboardingCard.notificationsTitle": "Benachrichtigungen einschalten",
   "OnboardingCard.notificationsText": "Erfahre von Änderungen, auch wenn die App geschlossen ist.",
@@ -754,6 +756,8 @@ export default {
   "OnboardingCard.tourGroupsTitle": "Gruppen",
   "OnboardingCard.tourGroupsText":
     "Notizen gehören zu Gruppen. Hier erstellst du Gruppen, lädst Leute ein und legst ihre Rollen fest.",
+  "OnboardingCard.tourGroupsTextPlain":
+    "Hier erstellst du Gruppen, lädst Leute ein und legst ihre Rollen fest.",
   "OnboardingCard.tourNotificationsTitle": "Benachrichtigungen",
   "OnboardingCard.tourNotificationsText":
     "Was passiert ist, während du weg warst – zum Beispiel eine Einladung.",
@@ -795,6 +799,8 @@ export default {
   "OverviewScreen.choosePlan": "Tarif wählen",
   "OverviewScreen.allHidden": "Alle Widgets sind ausgeblendet",
   "OverviewScreen.allHiddenText": "Wähle aus, welche du sehen willst.",
+  "OverviewScreen.noWidgets": "Noch nichts zu sehen",
+  "OverviewScreen.noWidgetsText": "Hier erscheinen die Widgets für {group}.",
   "OverviewScreen.gridLabel": "Übersicht von {group}",
   "OverviewScreen.customiseText":
     "Wähle, welche Widgets du siehst und in welcher Reihenfolge. Dein Layout gilt auch auf deinen anderen Geräten.",
@@ -1153,6 +1159,9 @@ export default {
   "NotFound.signedOut":
     "Unter dieser Adresse gibt es keine Seite. Melde dich an, um zu deinen Notizen zu kommen.",
   "NotFound.toNotes": "Zu deinen Notizen",
+  "NotFound.toOverview": "Zur Übersicht",
+  "NotFound.signedOutPlain":
+    "Unter dieser Adresse gibt es keine Seite. Melde dich an, um fortzufahren.",
   "NotFound.signIn": "Anmelden",
   "Notes.title": "Notizen",
   "Notes.new": "Neue Notiz",
@@ -1360,6 +1369,8 @@ export default {
   "ProfileExport.asking": "Wird angefordert …",
   "ProfileExport.never":
     "Eine ZIP-Datei mit deinem Profil, deinen Gruppen und Notizen als JSON- und CSV-Dateien. Das dauert ein paar Minuten, und wir schicken dir eine E-Mail, sobald sie fertig ist.",
+  "ProfileExport.neverPlain":
+    "Eine ZIP-Datei mit deinem Profil und deinen Gruppen als JSON- und CSV-Dateien. Das dauert ein paar Minuten, und wir schicken dir eine E-Mail, sobald sie fertig ist.",
   "ProfileExport.download": "Meine Daten herunterladen",
   "ProfileExport.preparing":
     "Deine Datei wird vorbereitet. Sobald sie fertig ist, bekommst du eine E-Mail und eine Benachrichtigung.",
@@ -1741,6 +1752,7 @@ export default {
   "Search.openProfile": "Profil öffnen",
   "Search.downloadData": "Meine Daten herunterladen",
   "Search.downloadDetail": "Eine ZIP-Datei mit deinem Profil, deinen Gruppen und Notizen",
+  "Search.downloadDetailPlain": "Eine ZIP-Datei mit deinem Profil und deinen Gruppen",
   "Search.changePicture": "Profilbild ändern",
   "Shortcuts.general": "Allgemein",
   "Shortcuts.goTo": "Gehe zu",

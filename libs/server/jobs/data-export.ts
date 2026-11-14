@@ -41,10 +41,16 @@ data.json holds everything in one file. Each CSV file holds one kind of row: the
 section of data.json with its name. Dates and times are ISO 8601 in UTC. CSV files are UTF-8 with a
 header row.
 
-Notes, tags, finance accounts, categories, entries and transfers are the ones you created in the
-groups you belong to. Other people's notes, accounts, entries and transfers, and their names and
-addresses, are not here.
+Finance accounts, categories, entries and transfers are the ones you created in the groups you
+belong to. Other people's accounts, entries and transfers, and their names and addresses, are not
+here.
 An amount is a whole number in its currency's smallest unit: 1234 in USD is 12.34.
+`
+
+/** The README's part about notes, only in a file that holds them. */
+const README_NOTES = `
+Notes and tags are the ones you created in the groups you belong to. Other people's notes are not
+here.
 `
 
 /** A cell as the export writes it: an ISO 8601 date, a JSON text for an object, or the value. */
@@ -100,6 +106,7 @@ export async function buildDataExport(
 
   const readme = file(`README.txt`)
   readme.write(README)
+  if (sections.some((section) => section.name === `notes`)) readme.write(README_NOTES)
   readme.end()
 
   await sql.begin(`ISOLATION LEVEL REPEATABLE READ READ ONLY`, async (tx) => {
@@ -150,6 +157,8 @@ export interface DataExportJobDeps {
   /** `null` when the worker has no file store settings: the job fails and is retried. */
   files: ServerFiles | null
   now?: () => Date
+  /** What the file holds (`dataExportSectionsOf`); every section when left out. */
+  sections?: readonly DataExportSection[]
 }
 
 /**
@@ -168,7 +177,7 @@ export function dataExportBuildJob(deps: DataExportJobDeps): JobHandler {
     if (!row || row.readyAt) return
     if (!deps.files) throw new Error(`the worker has no file store settings`)
     const at = now()
-    const bytes = await buildDataExport(deps.sql, row.userId, at)
+    const bytes = await buildDataExport(deps.sql, row.userId, at, deps.sections)
     await deps.files.put(dataExportKey(id), bytes)
     const expiresAt = new Date(at.getTime() + DATA_EXPORT_KEEP_DAYS * DAY_MS)
     await deps.sql.begin(async (tx) => {
