@@ -75,6 +75,7 @@
       "jsr:@spy4x/preact-theme",
       "jsr:@spy4x/preact-ui",
       "jsr:@spy4x/realtime",
+      "jsr:@spy4x/search",
       "jsr:@spy4x/server",
       "jsr:@spy4x/time",
       "jsr:@spy4x/validation",
@@ -86,6 +87,7 @@
       "npm:@jsr/spy4x__preact-system",
       "npm:@jsr/spy4x__preact-theme",
       "npm:@jsr/spy4x__preact-ui",
+      "npm:@jsr/spy4x__search",
       "npm:@jsr/spy4x__time",
       "npm:@jsr/spy4x__validation"
     ]
@@ -458,7 +460,7 @@
     // #endregion Aliases
 
     // #region Dependencies
-    // spy4x/ts-libs 1.126.0 (cron schedules, passkeys, idempotency, keyset cursor, lockout, offline
+    // spy4x/ts-libs 1.127.0 (cron schedules, passkeys, idempotency, keyset cursor, lockout, offline
     // outbox, e-mail proof, the redirect-path check of sign-in's `next`, the password check without
     // a session, billing, the provider's name and picture, the healthcheck's HTTP mode, a key
     // giving up its address, safe Markdown and reading time, copying an object inside the S3
@@ -470,14 +472,16 @@
     // region format means, a month's short name).
     // hono, postgres and arktype below must stay on the exact versions these packages were
     // published with, or two copies load and their types stop matching.
-    "@spy4x/validation": "jsr:@spy4x/validation@1.126.0",
-    "@spy4x/platform": "jsr:@spy4x/platform@1.126.0",
-    "@spy4x/server": "jsr:@spy4x/server@1.126.0",
-    "@spy4x/realtime": "jsr:@spy4x/realtime@1.126.0",
-    "@spy4x/integrations": "jsr:@spy4x/integrations@1.126.0",
-    "@spy4x/email": "jsr:@spy4x/email@1.126.0",
-    "@spy4x/net": "jsr:@spy4x/net@1.126.0",
-    "@spy4x/billing": "jsr:@spy4x/billing@1.126.0",
+    "@spy4x/validation": "jsr:@spy4x/validation@1.127.0",
+    "@spy4x/platform": "jsr:@spy4x/platform@1.127.0",
+    "@spy4x/server": "jsr:@spy4x/server@1.127.0",
+    "@spy4x/realtime": "jsr:@spy4x/realtime@1.127.0",
+    "@spy4x/integrations": "jsr:@spy4x/integrations@1.127.0",
+    "@spy4x/email": "jsr:@spy4x/email@1.127.0",
+    "@spy4x/net": "jsr:@spy4x/net@1.127.0",
+    "@spy4x/billing": "jsr:@spy4x/billing@1.127.0",
+    // The version preact-components 14.8.0 imports, so Seed's own imports and theirs share one copy
+    // and the screens' `Formatters` match theirs. It moves with preact-components.
     "@spy4x/time": "jsr:@spy4x/time@1.126.0",
 
     // apps/api
@@ -488,18 +492,18 @@
     // apps/tgbot
 
     // client
-    // spy4x/preact-components 14.6.0. Every package is published at one version together, so all
+    // spy4x/preact-components 14.8.0. Every package is published at one version together, so all
     // seven move in one change, and so does the npm copy of `@spy4x/preact-system` further down
     // (the Playwright config imports it under that name). They take preact and the signals
     // packages as caret ranges, so the versions below are the one copy that loads. wouter-preact
     // must stay on the version they pin, or two copies load.
-    "@spy4x/preact-charts": "jsr:@spy4x/preact-charts@14.6.0",
-    "@spy4x/preact-icons": "jsr:@spy4x/preact-icons@14.6.0",
-    "@spy4x/preact-server": "jsr:@spy4x/preact-server@14.6.0",
-    "@spy4x/preact-signals": "jsr:@spy4x/preact-signals@14.6.0",
-    "@spy4x/preact-system": "jsr:@spy4x/preact-system@14.6.0",
-    "@spy4x/preact-theme": "jsr:@spy4x/preact-theme@14.6.0",
-    "@spy4x/preact-ui": "jsr:@spy4x/preact-ui@14.6.0",
+    "@spy4x/preact-charts": "jsr:@spy4x/preact-charts@14.8.0",
+    "@spy4x/preact-icons": "jsr:@spy4x/preact-icons@14.8.0",
+    "@spy4x/preact-server": "jsr:@spy4x/preact-server@14.8.0",
+    "@spy4x/preact-signals": "jsr:@spy4x/preact-signals@14.8.0",
+    "@spy4x/preact-system": "jsr:@spy4x/preact-system@14.8.0",
+    "@spy4x/preact-theme": "jsr:@spy4x/preact-theme@14.8.0",
+    "@spy4x/preact-ui": "jsr:@spy4x/preact-ui@14.8.0",
     "preact": "npm:preact@10.29.8",
     "wouter-preact": "npm:wouter-preact@3.9.0",
     "@preact/signals": "npm:@preact/signals@2.5.1",
@@ -524,10 +528,10 @@
     // The website's browser tests check each page with axe-core (e2e/mpa).
     "@axe-core/playwright": "npm:@axe-core/playwright@4.13.0",
     // The npm name of `@spy4x/preact-system` above, for Playwright's loader; it moves with the seven.
-    "@jsr/spy4x__preact-system": "npm:@jsr/spy4x__preact-system@14.6.0",
+    "@jsr/spy4x__preact-system": "npm:@jsr/spy4x__preact-system@14.8.0",
     // The npm name of `@spy4x/platform` above, for the same reason: every e2e spec takes `uuidV7`
     // from it. It moves with the `@spy4x/*` packages.
-    "@jsr/spy4x__platform": "npm:@jsr/spy4x__platform@1.126.0",
+    "@jsr/spy4x__platform": "npm:@jsr/spy4x__platform@1.127.0",
 
     // shared/types — 2.2.3 matches spy4x/ts-libs and spy4x/preact-components
     // (spy4x/preact-components#121)
