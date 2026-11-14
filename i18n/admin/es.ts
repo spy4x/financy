@@ -2374,7 +2374,7 @@ export default {
   "AdminNav.entries": "Movimientos",
   "AdminEntries.title": "Movimientos",
   "AdminEntries.subtitle":
-    "Cómo registran sus movimientos los hogares. Solo recuentos y fechas: ningún importe ni nota.",
+    "Cómo registran sus movimientos los hogares. Solo recuentos y fechas: ningún importe ni concepto.",
   "AdminEntries.retry": "Reintentar",
   "AdminEntries.loading": "Cargando las cifras",
   "AdminEntries.none": "Aún no hay movimientos",
@@ -2407,7 +2407,7 @@ export default {
   "AdminNav.transfers": "Transferencias",
   "AdminTransfers.title": "Transferencias",
   "AdminTransfers.subtitle":
-    "Cómo mueven los hogares el dinero entre sus propias cuentas. Solo recuentos y fechas: ningún importe ni nota.",
+    "Cómo mueven los hogares el dinero entre sus propias cuentas. Solo recuentos y fechas: ningún importe ni concepto.",
   "AdminTransfers.retry": "Reintentar",
   "AdminTransfers.loading": "Cargando las cifras",
   "AdminTransfers.none": "Aún no hay transferencias",

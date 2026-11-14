@@ -135,7 +135,7 @@ describe("AdminTransfersScreen", () => {
 
     const intro = document.querySelector("[data-e2e=admin-transfers-intro]")
     expect(intro?.tagName).toBe("P")
-    expect(intro?.textContent).toContain("no amounts or notes")
+    expect(intro?.textContent).toContain("no amounts or memos")
   })
 
   it("shows an empty state instead of the lists when no household has a transfer", async () => {

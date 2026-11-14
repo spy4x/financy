@@ -2227,7 +2227,7 @@ export default {
   "AdminNav.entries": "Entries",
   "AdminEntries.title": "Entries",
   "AdminEntries.subtitle":
-    "How households use the ledger. Counts and dates only: no amounts or notes.",
+    "How households use the ledger. Counts and dates only: no amounts or memos.",
   "AdminEntries.retry": "Try again",
   "AdminEntries.loading": "Loading the counts",
   "AdminEntries.none": "No entries yet",
@@ -2251,7 +2251,7 @@ export default {
   "AdminNav.transfers": "Transfers",
   "AdminTransfers.title": "Transfers",
   "AdminTransfers.subtitle":
-    "How households move money between their own accounts. Counts and dates only: no amounts or notes.",
+    "How households move money between their own accounts. Counts and dates only: no amounts or memos.",
   "AdminTransfers.retry": "Try again",
   "AdminTransfers.loading": "Loading the counts",
   "AdminTransfers.none": "No transfers yet",

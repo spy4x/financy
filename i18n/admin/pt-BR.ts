@@ -2364,7 +2364,7 @@ export default {
   "AdminNav.entries": "Lançamentos",
   "AdminEntries.title": "Lançamentos",
   "AdminEntries.subtitle":
-    "Como as famílias usam o controle financeiro. Só números e datas: sem valores nem notas.",
+    "Como as famílias usam o controle financeiro. Só números e datas: sem valores nem descrições.",
   "AdminEntries.retry": "Tentar de novo",
   "AdminEntries.loading": "Carregando os números",
   "AdminEntries.none": "Nenhum lançamento ainda",
@@ -2397,7 +2397,7 @@ export default {
   "AdminNav.transfers": "Transferências",
   "AdminTransfers.title": "Transferências",
   "AdminTransfers.subtitle":
-    "Como as famílias movem dinheiro entre as próprias contas. Só números e datas: sem valores nem notas.",
+    "Como as famílias movem dinheiro entre as próprias contas. Só números e datas: sem valores nem descrições.",
   "AdminTransfers.retry": "Tentar de novo",
   "AdminTransfers.loading": "Carregando os números",
   "AdminTransfers.none": "Nenhuma transferência ainda",

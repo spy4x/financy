@@ -2390,7 +2390,7 @@ export default {
   "AdminNav.entries": "Opérations",
   "AdminEntries.title": "Opérations",
   "AdminEntries.subtitle":
-    "Comment les foyers enregistrent leurs opérations. Des décomptes et des dates seulement : ni montant ni note.",
+    "Comment les foyers enregistrent leurs opérations. Des décomptes et des dates seulement : ni montant ni libellé.",
   "AdminEntries.retry": "Réessayer",
   "AdminEntries.loading": "Chargement des chiffres",
   "AdminEntries.none": "Aucune opération pour l’instant",
@@ -2424,7 +2424,7 @@ export default {
   "AdminNav.transfers": "Virements",
   "AdminTransfers.title": "Virements",
   "AdminTransfers.subtitle":
-    "Comment les foyers déplacent leur argent entre leurs propres comptes. Des décomptes et des dates seulement : ni montant ni note.",
+    "Comment les foyers déplacent leur argent entre leurs propres comptes. Des décomptes et des dates seulement : ni montant ni libellé.",
   "AdminTransfers.retry": "Réessayer",
   "AdminTransfers.loading": "Chargement des chiffres",
   "AdminTransfers.none": "Aucun virement pour l’instant",

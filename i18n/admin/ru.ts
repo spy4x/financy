@@ -2441,7 +2441,8 @@ export default {
   },
   "AdminNav.entries": "Операции",
   "AdminEntries.title": "Операции",
-  "AdminEntries.subtitle": "Как семьи ведут учёт. Только количество и даты: без сумм и заметок.",
+  "AdminEntries.subtitle":
+    "Как семьи ведут учёт. Только количество и даты: без сумм и комментариев.",
   "AdminEntries.retry": "Повторить",
   "AdminEntries.loading": "Загружаем цифры",
   "AdminEntries.none": "Операций пока нет",
@@ -2477,7 +2478,7 @@ export default {
   "AdminNav.transfers": "Переводы",
   "AdminTransfers.title": "Переводы",
   "AdminTransfers.subtitle":
-    "Как семьи переводят деньги между своими счетами. Только количество и даты: без сумм и заметок.",
+    "Как семьи переводят деньги между своими счетами. Только количество и даты: без сумм и комментариев.",
   "AdminTransfers.retry": "Повторить",
   "AdminTransfers.loading": "Загружаем цифры",
   "AdminTransfers.none": "Переводов пока нет",
