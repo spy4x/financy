@@ -1,5 +1,5 @@
 import type postgres from "postgres"
-import { assertRoomFor } from "@domain/billing"
+import { assertRoomFor, type LimitKey } from "@domain/billing"
 import {
   GROUP_FILE_EVENTS,
   GroupError,
@@ -135,15 +135,20 @@ export class PostgresGroupPorter implements GroupFilePorter {
 
   /**
    * The file, checked whole, then counted against a new group's plan: a new group starts on the
-   * plan whose caps `allowances` holds, and the importer would be its owner.
+   * plan whose caps `allowances` holds, and the importer would be its owner. Aggregates under one
+   * cap count together, as entries and transfers do under `maxTransactions`.
    */
   private parse(file: unknown, allowances: MoveAllAllowances): ParsedGroupFile {
     const parsed = parseGroupFile(file, this.aggregates)
+    const counts = new Map<LimitKey, number>()
     for (const aggregate of this.aggregates) {
       if (!aggregate.limit) continue
       const count = parsed.entries.get(aggregate.kind)?.length ?? 0
-      const max = allowances[aggregate.limit] ?? null
-      if (count > 0) assertRoomFor(aggregate.limit, max, count - 1, GroupRole.OWNER)
+      counts.set(aggregate.limit, (counts.get(aggregate.limit) ?? 0) + count)
+    }
+    for (const [limit, count] of counts) {
+      const max = allowances[limit] ?? null
+      if (count > 0) assertRoomFor(limit, max, count - 1, GroupRole.OWNER)
     }
     return parsed
   }

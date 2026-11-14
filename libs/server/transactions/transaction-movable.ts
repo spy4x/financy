@@ -1,6 +1,6 @@
 import type postgres from "postgres"
-import { assertRoomFor } from "@domain/billing"
 import type { MovableAggregate, MoveAllContext } from "@server/groups/movable.ts"
+import { assertRoomForPlanTransactions } from "./plan-count.ts"
 
 /**
  * Moves every entry of the source household into the target, deleted ones included, in the move's
@@ -16,7 +16,7 @@ import type { MovableAggregate, MoveAllContext } from "@server/groups/movable.ts
  * Entries, accounts and categories move in separate statements, so this one defers the entries'
  * account and category keys to the move's commit (migration `2026_12_16_0009`) and must run before
  * the accounts and categories move. The target's plan cap, `maxTransactions`, counts its live
- * entries after the move, under the lock on the target that an entry write there waits for; a
+ * entries and live transfers together after the move ({@link assertRoomForPlanTransactions}); a
  * move that passes it is refused whole with `PLAN_LIMIT_REACHED`.
  */
 export async function moveAllTransactionRows(
@@ -38,16 +38,7 @@ export async function moveAllTransactionRows(
     WHERE group_id = ${fromGroupId}
     RETURNING deleted_at IS NULL AS live
   `
-  const allowance = context.allowances.maxTransactions ?? null
-  if (allowance !== null && moved.some((row) => row.live)) {
-    const [{ count }] = await transaction<{ count: number }[]>`
-      SELECT count(*)::int AS count FROM transactions
-      WHERE group_id = ${toGroupId} AND deleted_at IS NULL
-    `
-    // Every live entry in the target counts, so the room left is checked as if the last one moved
-    // alone: `count - 1` must be below the cap.
-    assertRoomFor("maxTransactions", allowance, count - 1, context.targetRole)
-  }
+  if (moved.some((row) => row.live)) await assertRoomForPlanTransactions(transaction, context)
   return moved.length
 }
 

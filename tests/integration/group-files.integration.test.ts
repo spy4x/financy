@@ -151,7 +151,42 @@ async function seed(sql: postgres.Sql) {
     converted: false,
   }, "Refund")
   await entry(entryIds[3], accountIds[0], categoryIds[0], 1, converted, "Binned", true)
-  return { owner, groupId, tagIds: [home, work], noteIds, accountIds, categoryIds, entryIds }
+  // A converted transfer, one whose received amount the person stated, and one in the trash.
+  const transferIds = [uuidV7(), uuidV7(), uuidV7()]
+  const transfer = (
+    id: string,
+    fromAccountId: string,
+    toAccountId: string,
+    amounts: { sent: number; received: number; converted: boolean },
+    memo: string,
+    deleted = false,
+  ) =>
+    sql`
+      INSERT INTO transfers (id, group_id, from_account_id, to_account_id, sent_amount,
+        received_amount, converted, memo, date, change_sequence, created_by_user_id,
+        updated_by_user_id, deleted_at)
+      VALUES (${id}, ${groupId}, ${fromAccountId}, ${toAccountId}, ${amounts.sent},
+        ${amounts.received}, ${amounts.converted}, ${memo}, '2026-11-03', 1, ${owner}, ${owner},
+        ${deleted ? new Date() : null})
+    `
+  const trip = { sent: 10000, received: 15000, converted: true }
+  await transfer(transferIds[0], accountIds[0], accountIds[1], trip, "Trip money")
+  await transfer(transferIds[1], accountIds[1], accountIds[0], {
+    sent: 300,
+    received: 199,
+    converted: false,
+  }, "Leftover yen")
+  await transfer(transferIds[2], accountIds[0], accountIds[1], trip, "Binned", true)
+  return {
+    owner,
+    groupId,
+    tagIds: [home, work],
+    noteIds,
+    accountIds,
+    categoryIds,
+    entryIds,
+    transferIds,
+  }
 }
 
 /** What the owner downloads, through the handler: the file's name, media type and pieces. */
@@ -244,12 +279,23 @@ async function contents(sql: postgres.Sql, groupId: string) {
     JOIN categories c ON c.id = e.category_id AND c.group_id = e.group_id
     WHERE e.group_id = ${groupId} AND e.deleted_at IS NULL ORDER BY e.memo
   `
+  // Transfers by the names of their accounts, as entries.
+  const transfers = await sql`
+    SELECT f.name AS from_account, t.name AS to_account, r.sent_amount::text AS sent_amount,
+      r.received_amount::text AS received_amount, r.converted, r.memo,
+      to_char(r.date, 'YYYY-MM-DD') AS date, r.created_at
+    FROM transfers r
+    JOIN accounts f ON f.id = r.from_account_id AND f.group_id = r.group_id
+    JOIN accounts t ON t.id = r.to_account_id AND t.group_id = r.group_id
+    WHERE r.group_id = ${groupId} AND r.deleted_at IS NULL ORDER BY r.memo
+  `
   return {
     notes: [...notes],
     tags: [...tags],
     accounts: [...accounts],
     categories: [...categories],
     entries: [...entries],
+    transfers: [...transfers],
   }
 }
 
@@ -262,11 +308,13 @@ async function counts(sql: postgres.Sql) {
       links: number
       accounts: number
       transactions: number
+      transfers: number
     }[]
   >`
     SELECT
       (SELECT count(*)::int FROM groups) AS groups,
       (SELECT count(*)::int FROM transactions) AS transactions,
+      (SELECT count(*)::int FROM transfers) AS transfers,
       (SELECT count(*)::int FROM accounts) AS accounts,
       (SELECT count(*)::int FROM notes) AS notes,
       (SELECT count(*)::int FROM tags) AS tags,
@@ -275,7 +323,7 @@ async function counts(sql: postgres.Sql) {
   return row
 }
 
-Deno.test("an export imported by another person gives the same notes, tags, accounts, category tree and entries under new ids", async () => {
+Deno.test("an export imported by another person gives the same notes, tags, accounts, category tree, entries and transfers under new ids", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
     const file = await exportAs(sql, source.groupId, source.owner) as {
@@ -306,6 +354,7 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
         ["accounts", 2],
         ["categories", 3],
         ["transactions", 3],
+        ["transfers", 2],
       ]),
     )
     expect(await contents(sql, copy)).toEqual(await contents(sql, source.groupId))
@@ -402,6 +451,29 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
       ],
     )
 
+    // Each live transfer keeps both amounts and its conversion flag as stored, and names the copy's
+    // own accounts; the one in the trash stays behind.
+    expect((await contents(sql, copy)).transfers.map(({ createdAt: _, ...row }) => row)).toEqual([
+      {
+        fromAccount: "Trip cash",
+        toAccount: "Main",
+        sentAmount: "300",
+        receivedAmount: "199",
+        converted: false,
+        memo: "Leftover yen",
+        date: "2026-11-03",
+      },
+      {
+        fromAccount: "Main",
+        toAccount: "Trip cash",
+        sentAmount: "10000",
+        receivedAmount: "15000",
+        converted: true,
+        memo: "Trip money",
+        date: "2026-11-03",
+      },
+    ])
+
     const [group] = await sql<
       { name: string; description: string; color: string; emoji: string; ownerUserId: number }[]
     >`
@@ -426,14 +498,16 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
       UNION ALL SELECT id FROM accounts WHERE group_id = ${copy}
       UNION ALL SELECT id FROM categories WHERE group_id = ${copy}
       UNION ALL SELECT id FROM transactions WHERE group_id = ${copy}
+      UNION ALL SELECT id FROM transfers WHERE group_id = ${copy}
     `
-    expect(ids).toHaveLength(13)
+    expect(ids).toHaveLength(15)
     const sourceIds = [
       ...source.noteIds,
       ...source.tagIds,
       ...source.accountIds,
       ...source.categoryIds,
       ...source.entryIds,
+      ...source.transferIds,
     ]
     for (const { id } of ids) {
       expect(sourceIds).not.toContain(id)
@@ -463,7 +537,8 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
           accounts: 2,
           categories: 3,
           transactions: 3,
-          count: 13,
+          transfers: 2,
+          count: 15,
         },
       },
     ])
@@ -675,6 +750,19 @@ Deno.test("a refused file, a file over the plan and a failure halfway write noth
       }),
     ).rejects.toMatchObject({ code: "PLAN_LIMIT_REACHED", entitlement: "maxTransactions" })
     expect(await counts(sql)).toEqual(before)
+    // Entries and transfers count together: three entries and two transfers each fit a cap of
+    // four, but not both.
+    await expect(
+      porter.importGroup({ file, name: null }, source.owner, {
+        maxNotes: null,
+        maxTransactions: 4,
+      }),
+    ).rejects.toMatchObject({
+      code: "PLAN_LIMIT_REACHED",
+      entitlement: "maxTransactions",
+      limit: 4,
+    })
+    expect(await counts(sql)).toEqual(before)
     // An aggregate that fails after the group and the tags are written takes them back with it.
     let reached = false
     const failing = portable({
@@ -777,6 +865,88 @@ Deno.test("an import refuses entries that name an account or a category the file
     const fixed = { ...file, aggregates: { ...file.aggregates, transactions: [expense] } }
     const result = await porter.importGroup({ file: fixed, name: null }, source.owner, NO_CAP)
     expect(result.parts.find((part) => part.kind === "transactions")?.count).toBe(1)
+  })
+})
+
+Deno.test("an import refuses transfers that name an account the file lacks, the same account twice, or two amounts in one currency that differ, and writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    const [main, cash] = source.accountIds
+    const trip = {
+      id: uuidV7(),
+      fromAccountId: main,
+      toAccountId: cash,
+      sentAmount: 10000,
+      receivedAmount: 15000,
+      converted: true,
+      memo: "",
+      date: "2026-11-03",
+      createdAt: "2026-11-03T10:00:00.000Z",
+      updatedAt: "2026-11-03T10:00:00.000Z",
+    }
+    // A second USD account, so a transfer in one currency has somewhere to go.
+    const savings = {
+      ...file.aggregates.accounts[0],
+      id: uuidV7(),
+      name: "Savings",
+      isDefault: false,
+    }
+    const oneCurrency = {
+      ...trip,
+      id: uuidV7(),
+      toAccountId: savings.id,
+      receivedAmount: 10000,
+      converted: false,
+    }
+    const transfers = [
+      trip,
+      { ...trip, id: uuidV7(), toAccountId: uuidV7() },
+      { ...trip, id: uuidV7(), toAccountId: main },
+      { ...oneCurrency, id: uuidV7(), receivedAmount: 9000 },
+      oneCurrency,
+    ]
+    const aggregates = {
+      ...file.aggregates,
+      accounts: [...file.aggregates.accounts, savings],
+      transfers,
+    }
+    const before = await counts(sql)
+    const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+
+    const refused = await porter.importGroup(
+      { file: { ...file, aggregates }, name: null },
+      source.owner,
+      NO_CAP,
+    ).then(() => null, (error) => error)
+
+    expect(refused).toBeInstanceOf(GroupImportError)
+    expect((refused as GroupImportError).total).toBe(3)
+    expect(
+      (refused as GroupImportError).problems.map((problem) =>
+        problem.kind === "invalid" && [problem.where, problem.place, problem.issue]
+      ),
+    ).toEqual([
+      ["Transfer 2", { part: "transfers", index: 2 }, { code: "notFound", field: "toAccountId" }],
+      [
+        "Transfer 3",
+        { part: "transfers", index: 3 },
+        { code: "sameAccount", field: "toAccountId" },
+      ],
+      [
+        "Transfer 4",
+        { part: "transfers", index: 4 },
+        { code: "mismatch", field: "receivedAmount" },
+      ],
+    ])
+    expect(await counts(sql)).toEqual(before)
+
+    // The same file without the broken transfers imports, both good ones with it.
+    const fixed = { ...file, aggregates: { ...aggregates, transfers: [trip, oneCurrency] } }
+    const result = await porter.importGroup({ file: fixed, name: null }, source.owner, NO_CAP)
+    expect(result.parts.find((part) => part.kind === "transfers")?.count).toBe(2)
   })
 })
 

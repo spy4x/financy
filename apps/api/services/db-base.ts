@@ -57,6 +57,8 @@ import { PostgresBudgetRepository } from "@server/budgets/postgres-budget-reposi
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
 import { transactionMovable } from "@server/transactions/transaction-movable.ts"
+import { transferMovable } from "@server/transfers/transfer-movable.ts"
+import { transferPortable } from "@server/transfers/transfer-portable.ts"
 import { transactionChanges } from "@server/transactions/transaction-changes.ts"
 import { transactionPortable } from "@server/transactions/transaction-portable.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
@@ -201,14 +203,16 @@ export interface UserTotp {
 /**
  * The aggregates "move all of a group's data" moves, in the order it moves them. A new aggregate
  * joins here (`docs/aggregate-lifecycle.md`, "Make it movable"): put one that other aggregates
- * point at before the ones that point at it. Entries and repeating rules are the exceptions: they
- * defer the keys to their accounts and categories to the move's commit, so they move before them
- * (`transaction-movable.ts`, `recurring-rule-movable.ts`).
+ * point at before the ones that point at it. Entries, transfers and repeating rules are the
+ * exceptions: they defer the keys to their accounts and categories to the move's commit, so they
+ * move before them (`transaction-movable.ts`, `transfer-movable.ts`,
+ * `recurring-rule-movable.ts`).
  */
 export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   tagMovable,
   noteMovable,
   transactionMovable,
+  transferMovable,
   recurringRuleMovable,
   accountMovable,
   categoryMovable,
@@ -225,6 +229,7 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   accountPortable,
   categoryPortable,
   transactionPortable,
+  transferPortable,
   householdPortable,
 ]
 
