@@ -173,7 +173,8 @@ export const GROUPS: TestGroup[] = [
     flags: [
       `--allow-read=.woodpecker/ci.yml,e2e,docs/browser-tests.md,docs/woodpecker-ci-setup.md`,
     ],
-    paths: [`tests/ci-browser-tests.test.ts`],
+    // ci-notes-off is Financy's: it holds the notes-off spec in the pull-request check.
+    paths: [`tests/ci-browser-tests.test.ts`, `tests/ci-notes-off.test.ts`],
   },
   // Reads every file git tracks (docs/ids.md), which `git ls-files` lists.
   {
