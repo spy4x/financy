@@ -305,6 +305,52 @@ describe("TransactionsScreen with transfers", () => {
     expect(has("[data-e2e=transfers-empty]")).toBe(true)
     expect(has("[data-e2e=transfer-new-empty]")).toBe(false)
   })
+
+  it("says a queued transfer across currencies is converted later, naming no received amount", async () => {
+    const queued = { ...atm, queued: true, receivedAmount: 0 }
+    await mount(<TransactionsScreen {...listDefaults} rows={[queued]} />)
+    expect(text(rowOf(atm.id)!.querySelector("[data-e2e=transfer-other-amount]")))
+      .toBe("Converted when back online")
+    expect(rowOf(atm.id)!.querySelector("a")!.getAttribute("aria-label"))
+      .toBe("Transfer of US$200.00 from Card to Wallet, Today")
+
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        rows={[queued]}
+        filters={{ ...NO_FILTERS, accountId: wallet.id }}
+      />,
+    )
+    expect(text(rowOf(atm.id)!.querySelector("[data-e2e=transfer-amount]"))).toBe("US$200.00")
+  })
+
+  it("explains a transfer whose account was deleted, links to pick another and discards it", async () => {
+    const discarded: string[] = []
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        rows={[atm, { ...topUp, queued: true, gone: true }, latte]}
+        onDiscard={(id) => {
+          discarded.push(id)
+          return Promise.resolve()
+        }}
+      />,
+    )
+    const row = rowOf(topUp.id)!
+    const message = row.querySelector("[data-e2e=transaction-conflict-message]")!
+    expect(text(message)).toBe(
+      "One of its accounts was deleted while you were offline. Pick another account, or discard this transfer.",
+    )
+    expect(row.querySelector("a")!.getAttribute("aria-describedby")).toBe(message.id)
+    expect(row.querySelector("[data-e2e=transaction-conflict-pick]")!.getAttribute("href"))
+      .toBe("/transfers/tr-top-up")
+    await click(row.querySelector("[data-e2e=transaction-conflict-discard]")!)
+    await click(document.querySelector("[data-e2e=transaction-discard-confirm]")!)
+    expect(discarded).toEqual([topUp.id])
+    // A transfer the server did not refuse shows no reason, link or Discard.
+    expect(rowOf(atm.id)!.querySelector("[data-e2e=transaction-conflict]")).toBe(null)
+    expect(rowOf(atm.id)!.querySelector("a")!.hasAttribute("aria-describedby")).toBe(false)
+  })
 })
 
 describe("TransferEditorScreen", () => {
@@ -390,7 +436,8 @@ describe("TransferEditorScreen", () => {
       .toBe("Your own rate: 1 USD = 0.925 EUR.")
   })
 
-  it("says offline that a transfer can only be read, with Save off and no Delete", async () => {
+  it("says offline that a change is saved once back online, and keeps Save and Delete", async () => {
+    let saved = 0
     await mount(
       <TransferEditorScreen
         {...editorDefaults}
@@ -398,13 +445,22 @@ describe("TransferEditorScreen", () => {
         value={{ ...savedAtm, memo: "Changed" }}
         dirty
         offline
+        onSave={() => saved++}
         onDelete={() => {}}
       />,
     )
-    expect(has("[data-e2e=transfer-offline]")).toBe(true)
-    expect((document.querySelector("[data-e2e=transfer-save]") as HTMLButtonElement).disabled)
-      .toBe(true)
-    expect(has("[data-e2e=transfer-editor-menu]")).toBe(false)
+    expect(text(document.querySelector("[data-e2e=transfer-offline]")))
+      .toContain("They are saved when you are back online.")
+    const save = document.querySelector("[data-e2e=transfer-save]") as HTMLButtonElement
+    expect(save.disabled).toBe(false)
+    await act(() => {
+      save.form!.dispatchEvent(
+        new window.Event("submit", { bubbles: true, cancelable: true }) as unknown as Event,
+      )
+    })
+    expect(saved).toBe(1)
+    await click(document.querySelector("[data-e2e=transfer-editor-menu]")!)
+    expect(has("[data-e2e=transfer-delete]")).toBe(true)
   })
 
   it("offers Delete transfer in a saved transfer's menu, and calls it", async () => {

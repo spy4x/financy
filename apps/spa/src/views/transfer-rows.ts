@@ -35,6 +35,7 @@ export function transferRow(
     date: transfer.date,
     author: personName(context.t, transfer.createdByUserId, context.youId, context.members),
     createdAt: transfer.createdAt,
+    queued: transfer.version === 0,
   }
 }
 

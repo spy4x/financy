@@ -73,8 +73,9 @@ export interface TransactionsScreenProps {
   /** The entry whose restore is in flight. */
   pendingId?: string | null
   /**
-   * Drops a queued entry the server refused (`TransactionRow.gone`) from this device, once the
-   * person confirms. A rejection keeps the row and says the discard failed.
+   * Drops a queued entry or transfer the server refused (`TransactionRow.gone`,
+   * `TransferRow.gone`) from this device, once the person confirms. A rejection keeps the row and
+   * says the discard failed.
    */
   onDiscard?: (id: string) => Promise<void>
   navigate?: Navigate
@@ -399,6 +400,7 @@ function TransactionsFilterBar(
 function Days(
   props: TransactionsScreenProps & { rows: ListRow[]; discard?: DiscardControl },
 ): JSX.Element {
+  const t = useAppText()
   const { locale } = useFormat()
   const accountId = props.filters.accountId
   return (
@@ -420,7 +422,20 @@ function Days(
                       today={props.today}
                       accountId={accountId}
                       navigate={props.navigate}
-                    />
+                      describedBy={row.gone ? `transfer-problem-${row.id}` : undefined}
+                    >
+                      {row.gone && (
+                        <Refused
+                          id={row.id}
+                          problem={`transfer-problem-${row.id}`}
+                          message={t.t(`TransferSync.accountGone`)}
+                          pickHref={TRANSFER_PATHS.transfer(row.id)}
+                          pickLabel={t.t(`Transactions.pickAccount`)}
+                          navigate={props.navigate}
+                          discard={props.discard}
+                        />
+                      )}
+                    </TransferListRow>
                   )
                   : (
                     <Row
@@ -523,54 +538,80 @@ function Row(
         </div>
       </Link>
       {row.gone && (
-        <div class="flex flex-col gap-2 px-4 pb-3 sm:px-6" data-e2e="transaction-conflict">
-          <p class="flex items-start gap-2 text-sm text-danger">
-            <IconExclamationCircle class="mt-px size-4 shrink-0" />
-            <span id={problem} data-e2e="transaction-conflict-message">
-              {t.t(
-                row.gone === "account"
-                  ? `TransactionSync.accountGone`
-                  : `TransactionSync.categoryGone`,
-              )}
-            </span>
-          </p>
-          <div class="flex flex-wrap gap-2">
-            <Button
-              href={TRANSACTION_PATHS.transaction(row.id, row.gone)}
-              navigate={navigate}
-              variant="secondary"
-              class="min-h-11 sm:min-h-9"
-              data-e2e="transaction-conflict-pick"
-            >
-              {t.t(
-                row.gone === "account" ? `Transactions.pickAccount` : `Transactions.pickCategory`,
-              )}
-            </Button>
-            {discard && (
-              <Button
-                type="button"
-                variant="outline"
-                class="min-h-11 sm:min-h-9"
-                data-e2e="transaction-conflict-discard"
-                onClick={(event) => discard.ask(row.id, event.currentTarget)}
-              >
-                {t.t(`Transactions.discard`)}
-              </Button>
-            )}
-          </div>
-          {discard?.failedId === row.id && (
-            <p
-              role="alert"
-              class="flex items-start gap-2 text-sm text-danger"
-              data-e2e="transaction-discard-failed"
-            >
-              <IconExclamationCircle class="mt-px size-4 shrink-0" />
-              {t.t(`Transactions.discardFailed`)}
-            </p>
+        <Refused
+          id={row.id}
+          problem={problem}
+          message={t.t(
+            row.gone === "account" ? `TransactionSync.accountGone` : `TransactionSync.categoryGone`,
           )}
-        </div>
+          pickHref={TRANSACTION_PATHS.transaction(row.id, row.gone)}
+          pickLabel={t.t(
+            row.gone === "account" ? `Transactions.pickAccount` : `Transactions.pickCategory`,
+          )}
+          navigate={navigate}
+          discard={discard}
+        />
       )}
     </li>
+  )
+}
+
+/**
+ * Under a queued entry's or transfer's row that the server refused because something it names is
+ * gone: the reason (`problem` is its id, for the row's link to name), a way to pick another one on
+ * its page, and Discard.
+ */
+function Refused(
+  { id, problem, message, pickHref, pickLabel, navigate, discard }: {
+    id: string
+    problem: string
+    message: string
+    pickHref: string
+    pickLabel: string
+    navigate?: Navigate
+    discard?: DiscardControl
+  },
+): JSX.Element {
+  const t = useAppText()
+  return (
+    <div class="flex flex-col gap-2 px-4 pb-3 sm:px-6" data-e2e="transaction-conflict">
+      <p class="flex items-start gap-2 text-sm text-danger">
+        <IconExclamationCircle class="mt-px size-4 shrink-0" />
+        <span id={problem} data-e2e="transaction-conflict-message">{message}</span>
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <Button
+          href={pickHref}
+          navigate={navigate}
+          variant="secondary"
+          class="min-h-11 sm:min-h-9"
+          data-e2e="transaction-conflict-pick"
+        >
+          {pickLabel}
+        </Button>
+        {discard && (
+          <Button
+            type="button"
+            variant="outline"
+            class="min-h-11 sm:min-h-9"
+            data-e2e="transaction-conflict-discard"
+            onClick={(event) => discard.ask(id, event.currentTarget)}
+          >
+            {t.t(`Transactions.discard`)}
+          </Button>
+        )}
+      </div>
+      {discard?.failedId === id && (
+        <p
+          role="alert"
+          class="flex items-start gap-2 text-sm text-danger"
+          data-e2e="transaction-discard-failed"
+        >
+          <IconExclamationCircle class="mt-px size-4 shrink-0" />
+          {t.t(`Transactions.discardFailed`)}
+        </p>
+      )}
+    </div>
   )
 }
 
@@ -692,7 +733,11 @@ function useDiscard(
     const { id, button } = asking
     setAsking(null)
     const page = button.closest(`main`) ?? button.ownerDocument
-    const links = [...page.querySelectorAll<HTMLElement>(`a[data-e2e=transaction-row]`)]
+    const links = [
+      ...page.querySelectorAll<HTMLElement>(
+        `a[data-e2e=transaction-row], a[data-e2e=transfer-row]`,
+      ),
+    ]
     const at = links.findIndex((link) => link.closest(`li`) === button.closest(`li`))
     setFocusAfter({
       id,
