@@ -25,7 +25,9 @@ import type {
   TransactionPayload,
   TransactionsCache,
 } from "./transactions-cache.ts"
-import type { TransfersCache } from "./transfers-cache.ts"
+import type { TransferEntry, TransferPayload, TransfersCache } from "./transfers-cache.ts"
+import { type TransfersCollection, transfersCollection } from "./transfers-collection.ts"
+import type { TransferItem } from "../state/transfers.ts"
 import { type TransactionsCollection, transactionsCollection } from "./transactions-collection.ts"
 import type { Message } from "@ui/message.ts"
 
@@ -40,8 +42,8 @@ import type { Message } from "@ui/message.ts"
  *   complete through (`offline:user:<id>:changes`), which the changes pull keeps in step
  *   (`device-copy.ts`);
  * - the queue of note writes (`offline:user:<id>:outbox`), of tag writes
- *   (`offline:user:<id>:tags-outbox`) and of entry writes
- *   (`offline:user:<id>:transactions-outbox`).
+ *   (`offline:user:<id>:tags-outbox`), of entry writes (`offline:user:<id>:transactions-outbox`)
+ *   and of transfer writes (`offline:user:<id>:transfers-outbox`).
  *
  * Stopping the layer for a sign-out deletes the read copies and the notes and tags. The sign-out
  * then deletes every database of the app, the queues included (`wipeDevice` in `modules.ts`).
@@ -67,6 +69,8 @@ export interface OfflineStorage {
   openQueue?(userId: number): OutboxStore<NotePayload, NoteItem>
   /** The entries queue of one user, when it is not the IndexedDB one. */
   openTransactionsQueue?(userId: number): OutboxStore<TransactionPayload, TransactionItem>
+  /** The transfers queue of one user, when it is not the IndexedDB one. */
+  openTransfersQueue?(userId: number): OutboxStore<TransferPayload, TransferItem>
 }
 
 /** The device copy and the queue of one signed-in user. */
@@ -96,8 +100,12 @@ export interface OfflineLayer {
   transactions: TransactionsCollection
   /** The queued entry writes, for the screen. */
   transactionEntries: Signal<readonly TransactionEntry[]>
-  /** The device's copy of the transfers, which are read-only offline. */
+  /** The device's copy of the transfers. */
   transfersCache: TransfersCache
+  /** The transfers queue and its overlay. */
+  transfers: TransfersCollection
+  /** The queued transfer writes, for the screen. */
+  transferEntries: Signal<readonly TransferEntry[]>
   /**
    * What the layer did without asking: a tag that will never exist was taken off queued notes.
    * Each is a key of the `app` catalog with its values; the screen shows it in the person's
@@ -242,10 +250,15 @@ export function startOffline(
     cache: transactionsCache,
     store: storage.openTransactionsQueue?.(userId),
   })
+  const transfersDefinition = transfersCollection({
+    userId,
+    cache: transfersCache,
+    store: storage.openTransfersQueue?.(userId),
+  })
   const collections = createCollections({
     // Parents first (ADR 003, section 5): a note names tags, so tags go out before notes. Entries
-    // name no queued parent.
-    collections: [tagsDefinition, definition, transactionsDefinition],
+    // and transfers name no queued parent.
+    collections: [tagsDefinition, definition, transactionsDefinition, transfersDefinition],
     calls: transport.calls,
     canSend: () => transport.canSend(),
     lock: withBrowserLock(userId),
@@ -263,6 +276,9 @@ export function startOffline(
   const transactions = collections.get(transactionsDefinition)
   const transactionEntries = signal<readonly TransactionEntry[]>([])
   transactions.outbox.subscribe((all) => transactionEntries.value = all)
+  const transfers = collections.get(transfersDefinition)
+  const transferEntries = signal<readonly TransferEntry[]>([])
+  transfers.outbox.subscribe((all) => transferEntries.value = all)
   const runner = createSyncRunner({ flush: collections.syncFlush })
   // The queue is read first, so the runner's first flush sends what an earlier visit left. A
   // layer that was stopped meanwhile (the person signed out) does not start its runner: nothing
@@ -285,6 +301,8 @@ export function startOffline(
     transactions,
     transactionEntries,
     transfersCache,
+    transfers,
+    transferEntries,
     notices,
     runner,
     loaded,
@@ -311,6 +329,7 @@ export async function stopOffline({ forget = false } = {}): Promise<void> {
   closing.entries.value = []
   closing.tagEntries.value = []
   closing.transactionEntries.value = []
+  closing.transferEntries.value = []
   closing.notices.value = []
   if (forget) await forgetCopies(closing.reads, closing.copy)
 }

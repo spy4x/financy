@@ -3,13 +3,14 @@ import type { SyncRunner, SyncRunnerState } from "@spy4x/realtime/sync-runner"
 import type { OfflineLayer } from "./index.ts"
 import { TAGS_COLLECTION } from "./tags-collection.ts"
 import { goneReference } from "./transactions-collection.ts"
+import { goneAccount } from "./transfers-collection.ts"
 
 /**
  * What a sign-out must know about the writes that have not reached the server: how many there are,
  * how many wait on the person's choice, and where that choice is made.
  */
 export interface UnsentCounts {
-  /** Every queued write (notes, tags and transaction entries), those that wait on a choice included. */
+  /** Every queued write (notes, tags, entries and transfers), those that wait on a choice included. */
   unsent: number
   /**
    * The writes that never send by themselves: the server refused them (a conflict), or they are
@@ -20,8 +21,8 @@ export interface UnsentCounts {
   reviewGroupId: string | null
   /**
    * Where that choice is made: the sync strip, for the first write that waits on a choice and that
-   * the strip shows; else the transactions list, when every such write is a transaction entry whose
-   * account or category was deleted (the strip leaves those to the list).
+   * the strip shows; else the transactions list, when every such write is an entry whose account
+   * or category was deleted, or a transfer whose account was (the strip leaves those to the list).
    */
   reviewAt: "strip" | "transactions"
 }
@@ -31,11 +32,12 @@ export function countUnsent(layer: OfflineLayer): UnsentCounts {
   const notes = layer.entries.value
   const tags = layer.tagEntries.value
   const transactions = layer.transactionEntries.value
-  const refused = [...tags, ...notes, ...transactions].filter((entry) =>
+  const transfers = layer.transferEntries.value
+  const refused = [...tags, ...notes, ...transactions, ...transfers].filter((entry) =>
     entry.status === "conflict"
   )
   // A write held back by a refused parent is still `pending` in its own queue, so it is not counted
-  // twice. Entries name no queued parent, so none is held.
+  // twice. Entries and transfers name no queued parent, so none is held.
   const held = layer.collections.waiting().filter((waiting) => waiting.onPerson)
     .map((waiting) =>
       (waiting.collection === TAGS_COLLECTION ? tags : notes).find((entry) =>
@@ -44,10 +46,13 @@ export function countUnsent(layer: OfflineLayer): UnsentCounts {
     )
     .filter((entry) => entry !== undefined)
   const stuck = [...refused, ...held]
-  const gone = new Set<unknown>(transactions.filter((entry) => goneReference(entry) !== null))
+  const gone = new Set<unknown>([
+    ...transactions.filter((entry) => goneReference(entry) !== null),
+    ...transfers.filter(goneAccount),
+  ])
   const onStrip = stuck.find((entry) => !gone.has(entry))
   return {
-    unsent: notes.length + tags.length + transactions.length,
+    unsent: notes.length + tags.length + transactions.length + transfers.length,
     conflicts: stuck.length,
     reviewGroupId: (onStrip ?? stuck[0])?.payload.groupId ?? null,
     reviewAt: onStrip || stuck.length === 0 ? "strip" : "transactions",

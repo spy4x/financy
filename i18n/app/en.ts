@@ -2419,6 +2419,15 @@ export default {
   "TransactionSync.gone": "This transaction was deleted while you were offline.",
   "TransactionSync.rejected": "The server did not accept this transaction.",
   "TransactionSync.version": "Someone changed this transaction while you were offline.",
+  "OfflineStatus.deletedTransfer": "Deleted transfer",
+  "OfflineStatus.transfer": "Transfer {line}",
+  "OfflineStatus.transferGone": "The transfer is no longer in this household.",
+  "OfflineStatus.youDeletedTransfer": "You deleted this transfer.",
+  "TransferSync.accountGone":
+    "One of its accounts was deleted while you were offline. Pick another account, or discard this transfer.",
+  "TransferSync.gone": "This transfer was deleted while you were offline.",
+  "TransferSync.rejected": "The server did not accept this transfer.",
+  "TransferSync.version": "Someone changed this transfer while you were offline.",
   "Transactions.title": "Transactions",
   "Transactions.add": "Add transaction",
   "Transactions.readOnly": "You can view transactions, but only editors can change them.",
@@ -2576,7 +2585,8 @@ export default {
   "TransferEditor.notFoundHint": "It may have been deleted, or it belongs to another household.",
   "TransferEditor.readOnly": "You can view this transfer, but only editors can change it.",
   "TransferEditor.readOnlyNew": "Only editors can add transfers to {household}.",
-  "TransferEditor.offline": "You can view transfers. To add or change one, go back online.",
+  "TransferEditor.offline":
+    "You can still add and change transfers. They are saved when you are back online.",
   "TransferEditor.needAccounts": "A transfer needs two accounts",
   "TransferEditor.needAccountsHint":
     "Add a second account, like cash or savings, to move money between them.",
