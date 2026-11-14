@@ -750,6 +750,8 @@ export default {
   "OnboardingCard.inviteTitle": "Convide alguém para o seu grupo",
   "OnboardingCard.inviteText":
     "A pessoa vê as mesmas notas em tempo real, com a função que você der a ela.",
+  "OnboardingCard.inviteTextPlain":
+    "A pessoa vê as mudanças do grupo em tempo real, com a função que você der a ela.",
   "OnboardingCard.inviteAction": "Convidar alguém",
   "OnboardingCard.notificationsTitle": "Ative as notificações",
   "OnboardingCard.notificationsText": "Fique sabendo das mudanças, mesmo com o app fechado.",
@@ -768,6 +770,8 @@ export default {
   "OnboardingCard.tourGroupsTitle": "Grupos",
   "OnboardingCard.tourGroupsText":
     "As notas ficam dentro de grupos. Crie grupos aqui, convide pessoas e escolha a função de cada uma.",
+  "OnboardingCard.tourGroupsTextPlain":
+    "Crie grupos aqui, convide pessoas e escolha a função de cada uma.",
   "OnboardingCard.tourNotificationsTitle": "Notificações",
   "OnboardingCard.tourNotificationsText":
     "O que aconteceu enquanto você estava fora, como um convite.",
@@ -810,6 +814,8 @@ export default {
   "OverviewScreen.choosePlan": "Escolher um plano",
   "OverviewScreen.allHidden": "Todos os widgets estão ocultos",
   "OverviewScreen.allHiddenText": "Escolha os que você quer ver.",
+  "OverviewScreen.noWidgets": "Nada para mostrar ainda",
+  "OverviewScreen.noWidgetsText": "Os widgets de {group} vão aparecer aqui.",
   "OverviewScreen.gridLabel": "Visão geral de {group}",
   "OverviewScreen.customiseText":
     "Escolha quais widgets aparecem e em que ordem. Seu layout vai junto para os seus outros dispositivos.",
@@ -1177,6 +1183,8 @@ export default {
     "Este endereço não leva a nenhuma página. Talvez tenha um erro de digitação, ou a página mudou de lugar.",
   "NotFound.signedOut": "Este endereço não leva a nenhuma página. Entre para acessar suas notas.",
   "NotFound.toNotes": "Ir para suas notas",
+  "NotFound.toOverview": "Ir para a visão geral",
+  "NotFound.signedOutPlain": "Este endereço não leva a nenhuma página. Entre para continuar.",
   "NotFound.signIn": "Entrar",
   "Notes.title": "Notas",
   "Notes.new": "Nova nota",
@@ -1393,6 +1401,8 @@ export default {
   "ProfileExport.asking": "Pedindo…",
   "ProfileExport.never":
     "Um ZIP com seu perfil, grupos e notas em arquivos JSON e CSV. Leva alguns minutos, e avisamos por e-mail quando estiver pronto.",
+  "ProfileExport.neverPlain":
+    "Um ZIP com seu perfil e grupos em arquivos JSON e CSV. Leva alguns minutos, e avisamos por e-mail quando estiver pronto.",
   "ProfileExport.download": "Baixar meus dados",
   "ProfileExport.preparing":
     "Preparando seu arquivo. Quando estiver pronto, avisamos por e-mail e por notificação.",
@@ -1774,6 +1784,7 @@ export default {
   "Search.openProfile": "Abrir perfil",
   "Search.downloadData": "Baixar meus dados",
   "Search.downloadDetail": "Um ZIP com seu perfil, grupos e notas",
+  "Search.downloadDetailPlain": "Um ZIP com seu perfil e grupos",
   "Search.changePicture": "Trocar foto do perfil",
   "Shortcuts.general": "Geral",
   "Shortcuts.goTo": "Ir para",

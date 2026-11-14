@@ -840,6 +840,7 @@ export default {
   "OnboardingCard.noteAction": "كتابة ملاحظة",
   "OnboardingCard.inviteTitle": "ادعُ شخصًا إلى مجموعتك",
   "OnboardingCard.inviteText": "سيرى الملاحظات نفسها مباشرة، بالدور الذي تمنحه إياه.",
+  "OnboardingCard.inviteTextPlain": "سيرى تغييرات المجموعة مباشرة، بالدور الذي تمنحه إياه.",
   "OnboardingCard.inviteAction": "دعوة شخص",
   "OnboardingCard.notificationsTitle": "فعّل الإشعارات",
   "OnboardingCard.notificationsText": "اعرف بالتغييرات فور حدوثها، حتى والتطبيق مغلق.",
@@ -857,6 +858,7 @@ export default {
   "OnboardingCard.tourGroupsTitle": "المجموعات",
   "OnboardingCard.tourGroupsText":
     "الملاحظات تعيش داخل المجموعات. أنشئ المجموعات من هنا، وادعُ الآخرين واختر أدوارهم.",
+  "OnboardingCard.tourGroupsTextPlain": "أنشئ المجموعات من هنا، وادعُ الآخرين واختر أدوارهم.",
   "OnboardingCard.tourNotificationsTitle": "الإشعارات",
   "OnboardingCard.tourNotificationsText": "ما حدث في غيابك، كدعوة جديدة مثلًا.",
   "OnboardingCard.tourProfileTitle": "الملف الشخصي",
@@ -899,6 +901,8 @@ export default {
   "OverviewScreen.choosePlan": "اختيار خطة",
   "OverviewScreen.allHidden": "كل الأدوات مخفية",
   "OverviewScreen.allHiddenText": "اختر الأدوات التي تريد رؤيتها.",
+  "OverviewScreen.noWidgets": "لا شيء لعرضه بعد",
+  "OverviewScreen.noWidgetsText": "ستظهر هنا أدوات {group}.",
   "OverviewScreen.gridLabel": "نظرة عامة على {group}",
   "OverviewScreen.customiseText":
     "اختر الأدوات التي تظهر لك وترتيبها. يتبعك هذا التخطيط إلى أجهزتك الأخرى.",
@@ -1284,6 +1288,8 @@ export default {
     "لا يؤدي هذا العنوان إلى أي صفحة. ربما فيه خطأ في الكتابة، أو نُقلت الصفحة.",
   "NotFound.signedOut": "لا يؤدي هذا العنوان إلى أي صفحة. سجّل الدخول للوصول إلى ملاحظاتك.",
   "NotFound.toNotes": "انتقل إلى ملاحظاتك",
+  "NotFound.toOverview": "انتقل إلى النظرة العامة",
+  "NotFound.signedOutPlain": "لا يؤدي هذا العنوان إلى أي صفحة. سجّل الدخول للمتابعة.",
   "NotFound.signIn": "تسجيل الدخول",
   "Notes.title": "الملاحظات",
   "Notes.new": "ملاحظة جديدة",
@@ -1517,6 +1523,8 @@ export default {
   "ProfileExport.asking": "جارٍ الطلب…",
   "ProfileExport.never":
     "ملف ZIP يضم ملفك الشخصي ومجموعاتك وملاحظاتك بصيغتي JSON وCSV. يستغرق تجهيزه بضع دقائق، وسنراسلك بالبريد حين يجهز.",
+  "ProfileExport.neverPlain":
+    "ملف ZIP يضم ملفك الشخصي ومجموعاتك بصيغتي JSON وCSV. يستغرق تجهيزه بضع دقائق، وسنراسلك بالبريد حين يجهز.",
   "ProfileExport.download": "تنزيل بياناتي",
   "ProfileExport.preparing": "نجهّز ملفك الآن. سنراسلك بالبريد ونرسل إشعارًا حين يجهز.",
   "ProfileExport.ready": "<hidden>ملفك جاهز. </hidden>جاهز: {size}، حتى <day></day>.",
@@ -1894,6 +1902,7 @@ export default {
   "Search.openProfile": "فتح الملف الشخصي",
   "Search.downloadData": "تنزيل بياناتي",
   "Search.downloadDetail": "ملف ZIP يضم ملفك الشخصي ومجموعاتك وملاحظاتك",
+  "Search.downloadDetailPlain": "ملف ZIP يضم ملفك الشخصي ومجموعاتك",
   "Search.changePicture": "تغيير صورة الملف الشخصي",
   "Shortcuts.general": "عام",
   "Shortcuts.goTo": "الانتقال إلى",

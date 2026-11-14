@@ -795,6 +795,8 @@ export default {
   "OnboardingCard.inviteTitle": "Пригласите кого-нибудь в группу",
   "OnboardingCard.inviteText":
     "Приглашённые будут видеть те же заметки в реальном времени — с той ролью, которую вы им дадите.",
+  "OnboardingCard.inviteTextPlain":
+    "Приглашённые будут видеть изменения в группе в реальном времени — с той ролью, которую вы им дадите.",
   "OnboardingCard.inviteAction": "Пригласить",
   "OnboardingCard.notificationsTitle": "Включите уведомления",
   "OnboardingCard.notificationsText": "Узнавайте об изменениях, даже когда приложение закрыто.",
@@ -813,6 +815,8 @@ export default {
   "OnboardingCard.tourGroupsTitle": "Группы",
   "OnboardingCard.tourGroupsText":
     "Заметки живут в группах. Здесь можно создавать группы, приглашать людей и назначать им роли.",
+  "OnboardingCard.tourGroupsTextPlain":
+    "Здесь можно создавать группы, приглашать людей и назначать им роли.",
   "OnboardingCard.tourNotificationsTitle": "Уведомления",
   "OnboardingCard.tourNotificationsText":
     "Что произошло, пока вас не было, — например, новые приглашения.",
@@ -856,6 +860,8 @@ export default {
   "OverviewScreen.choosePlan": "Выбрать тариф",
   "OverviewScreen.allHidden": "Все виджеты скрыты",
   "OverviewScreen.allHiddenText": "Выберите, какие показывать.",
+  "OverviewScreen.noWidgets": "Пока нечего показать",
+  "OverviewScreen.noWidgetsText": "Здесь появятся виджеты группы {group}.",
   "OverviewScreen.gridLabel": "Обзор группы {group}",
   "OverviewScreen.customiseText":
     "Выберите, какие виджеты показывать и в каком порядке. Настройка сохранится и на других ваших устройствах.",
@@ -1238,6 +1244,8 @@ export default {
     "По этому адресу нет страницы. Возможно, в нём опечатка или страница переехала.",
   "NotFound.signedOut": "По этому адресу нет страницы. Войдите, чтобы открыть свои заметки.",
   "NotFound.toNotes": "Перейти к заметкам",
+  "NotFound.toOverview": "Перейти к обзору",
+  "NotFound.signedOutPlain": "По этому адресу нет страницы. Войдите, чтобы продолжить.",
   "NotFound.signIn": "Войти",
   "Notes.title": "Заметки",
   "Notes.new": "Новая заметка",
@@ -1462,6 +1470,8 @@ export default {
   "ProfileExport.asking": "Запрашиваем…",
   "ProfileExport.never":
     "ZIP-архив с профилем, группами и заметками в файлах JSON и CSV. Подготовка займёт несколько минут — когда всё будет готово, пришлём письмо.",
+  "ProfileExport.neverPlain":
+    "ZIP-архив с профилем и группами в файлах JSON и CSV. Подготовка займёт несколько минут — когда всё будет готово, пришлём письмо.",
   "ProfileExport.download": "Скачать мои данные",
   "ProfileExport.preparing": "Готовим файл. Когда он будет готов, пришлём письмо и уведомление.",
   "ProfileExport.ready":
@@ -1851,6 +1861,7 @@ export default {
   "Search.openProfile": "Открыть профиль",
   "Search.downloadData": "Скачать мои данные",
   "Search.downloadDetail": "ZIP-архив с профилем, группами и заметками",
+  "Search.downloadDetailPlain": "ZIP-архив с профилем и группами",
   "Search.changePicture": "Сменить фото профиля",
   "Shortcuts.general": "Общие",
   "Shortcuts.goTo": "Переход",

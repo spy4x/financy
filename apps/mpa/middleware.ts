@@ -89,7 +89,8 @@ export async function securityHeadersMiddleware(config: MpaConfig) {
  * 3. tells the route its language, from the address alone (`pathLanguage`), and whether the
  *    newsletter is on, as `newsletter()` says. It is required, so a
  *    caller cannot leave the status out by accident: the website starts through
- *    {@link newsletterPageMiddleware}, and where analytics go, if anywhere;
+ *    {@link newsletterPageMiddleware}, whether the notes are on (`config.notes`, missing counts as
+ *    on), and where analytics go, if anywhere;
  * 4. answers a form it cannot read with the status `readFormBody` names (413, 408 or 400);
  * 5. answers any other error, the 404 of an unknown address included, with the error page inside
  *    the site's frame (`error-page.tsx`);
@@ -129,6 +130,7 @@ export function pageMiddleware(
     ctx.state.language = pathLanguage(pathname).language
     ctx.state.webAppOrigin = config.webAppOrigin
     ctx.state.spaOrigin = config.apiOrigin
+    ctx.state.demoAdminOrigin = config.demoAdminOrigin
     ctx.state.demoOrigin = config.demoOrigin
     ctx.state.api = createApi({
       apiUrl: config.apiUrl,
@@ -140,6 +142,7 @@ export function pageMiddleware(
       fetch,
     })
     ctx.state.newsletter = newsletter()
+    ctx.state.notes = config.notes !== false
     ctx.state.analytics = config.analytics
     let response: Response
     try {

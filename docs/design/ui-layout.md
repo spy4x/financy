@@ -72,7 +72,8 @@ screens were redesigned against these rules in October 2026.
     live, "Notifications" with its unread count, and the account: the avatar opening the library's
     `AccountMenu` (the name and address, which open the profile, then Keyboard shortcuts and Sign
     out; the theme is chosen on the profile). The admin's menu keeps the theme. The skip link
-    jumps past the rail into `<main>`. The admin's rail starts with Dashboard and has no switcher;
+    jumps past the rail into `<main>`. The admin's rail has no switcher: its top holds only Search
+    (Ctrl K), where the product's sits under the switcher, and its middle starts with Dashboard;
     a neutral "Admin" badge under the operator's avatar says where the operator is, and its tables
     use the wide column.
 12. **The rail's middle holds the daily destinations:** Overview, Transactions, Accounts,
@@ -82,7 +83,8 @@ screens were redesigned against these rules in October 2026.
     group's log and is left out when there is no selected group or the person may not read its
     log. The profile opens from the account menu's name and address only. Categories, Tags and
     Notes live in the account menu, on their `g` keys and in the search palette; Tags also in
-    Notes' "More actions".
+    Notes' "More actions". Tags and Notes are left out when the product turns the notes off
+    (`SPA_NOTES=false`).
     Below `md` the rail becomes a tab bar; its last tab is "Account" ("Admin" in the admin), the
     avatar with the unread count, opening a sheet with the groups, the destinations that did not
     fit, Notifications and the account, every row at least 44 px tall. Because the switcher is in

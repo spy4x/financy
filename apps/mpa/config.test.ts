@@ -19,7 +19,23 @@ describe("readMpaConfig", () => {
       apiUrl: "http://api:8000",
       webAppOrigin: "https://www.example.com",
       apiOrigin: "https://app.example.com",
+      notes: true,
     })
+  })
+
+  it("keeps the notes on unless NOTES is false, as the API reads it", () => {
+    expect(readMpaConfig(env(prod)).notes).toBe(true)
+    expect(readMpaConfig(env({ ...prod, NOTES: "" })).notes).toBe(true)
+    expect(readMpaConfig(env({ ...prod, NOTES: "0" })).notes).toBe(true)
+    expect(readMpaConfig(env({ ...prod, NOTES: "false" })).notes).toBe(false)
+  })
+
+  it("knows the admin app's origin only while the public demo is on", () => {
+    const demo = { ...prod, DEMO_MODE: "true", ADMIN_DOMAIN: "admin.example.com" }
+    expect(readMpaConfig(env(demo)).demoAdminOrigin).toBe("https://admin.example.com")
+    expect(readMpaConfig(env({ ...demo, DEMO_MODE: "1" })).demoAdminOrigin).toBeUndefined()
+    const { ADMIN_DOMAIN: _, ...noAdmin } = demo
+    expect(readMpaConfig(env(noAdmin)).demoAdminOrigin).toBeUndefined()
   })
 
   it("expects the browser at plain http in development", () => {

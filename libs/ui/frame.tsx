@@ -1,4 +1,4 @@
-import type { ComponentChildren, JSX } from "preact"
+import type { ComponentChildren, JSX, RefObject } from "preact"
 import { useRef } from "preact/hooks"
 import { canViewActivity } from "@domain/groups"
 import {
@@ -46,8 +46,8 @@ import { useAppText } from "./i18n.ts"
  * them all; the phone bar shows the first four and moves the rest into the Account sheet behind its
  * last slot, so the order puts the destinations used most first. Activity belongs to the selected group and
  * shows only while there is one whose log the person may read. Profile, Categories, Budgets, Tags
- * and Notes are in the account menu; Tags is in Notes' "More actions" too. Labels come from `t`,
- * the app's translator.
+ * and Notes are in the account menu (both left out with the notes off); Tags is in Notes' "More
+ * actions" too. Labels come from `t`, the app's translator.
  */
 export function navItems(
   activityGroupId: string | null,
@@ -117,6 +117,49 @@ export function displayName(user: FrameUser, fallback = "User"): string {
  */
 function searchEntry(slashKey: boolean, label: string): RailItem {
   return { key: "search", label, Icon: IconSearch, keyshortcuts: searchHotkeys(slashKey) }
+}
+
+/** The "Search" entries of {@link useSearchEntries}, and the ref of the palette's container. */
+export interface SearchEntries {
+  /** The container the palette is drawn in, once, inside the shell's page column. */
+  root: RefObject<HTMLDivElement>
+  /** The rail's cell. */
+  rail: JSX.Element
+  /** The phone Account sheet's row. */
+  sheet: JSX.Element
+}
+
+/**
+ * The "Search" entries a signed-in shell draws in its rail and in the phone's Account sheet, both
+ * opening the palette drawn inside `root` ({@link openSearch}). Choosing it in the sheet closes the
+ * sheet, which gives focus back to "Account", and then opens the palette; closing the palette
+ * gives focus back to "Account" again.
+ */
+export function useSearchEntries(slashKey: boolean, label: string): SearchEntries {
+  const root = useRef<HTMLDivElement>(null)
+  const sheetRow = useRef<HTMLDivElement>(null)
+  const item = searchEntry(slashKey, label)
+  const open = () => openSearch(root.current)
+  const openFromSheet = () => {
+    const sheet = sheetRow.current?.closest("dialog")
+    if (!sheet?.open) return open()
+    // The entry closes the sheet after this; the palette opens once it has, so the sheet's own
+    // close handler, which focuses "Account", runs first and the palette's field keeps focus.
+    sheet.addEventListener("close", open, { once: true })
+  }
+  return {
+    root,
+    rail: (
+      <div data-e2e="shell-search-rail">
+        <RailEntry item={item} place="rail" navigate={open} />
+      </div>
+    ),
+    sheet: (
+      <div ref={sheetRow} data-e2e="shell-search-sheet">
+        <RailEntry item={item} place="sheet" navigate={openFromSheet} />
+      </div>
+    ),
+  }
 }
 
 /** An app's keyboard shortcuts, as the frame draws them; see {@link ShortcutsList}. */
@@ -191,6 +234,7 @@ export function AppFrame(
     shortcuts,
     language,
     wide = false,
+    notes = true,
     children,
   }: {
     user: FrameUser
@@ -211,6 +255,8 @@ export function AppFrame(
     language?: AccountMenuLanguage
     /** Gives the page the wider column (64 rem), for a data table that needs it. */
     wide?: boolean
+    /** Whether the product keeps the notes example; off, no Notes or Tags entry shows. */
+    notes?: boolean
     children: ComponentChildren
   },
 ): JSX.Element {
@@ -221,17 +267,7 @@ export function AppFrame(
   // A person known only by the address would read it twice.
   const email = user.email && user.email !== name ? user.email : undefined
   const hasSearch = search !== undefined
-  const searchItem = searchEntry(shortcuts?.singleKeys ?? true, t.t("Frame.search"))
-  const searchRoot = useRef<HTMLDivElement>(null)
-  const sheetSearch = useRef<HTMLDivElement>(null)
-  const open = () => openSearch(searchRoot.current)
-  const openFromSheet = () => {
-    const sheet = sheetSearch.current?.closest("dialog")
-    if (!sheet?.open) return open()
-    // The entry closes the sheet after this; the palette opens once it has, so the sheet's own
-    // close handler, which focuses "Account", runs first and the palette's field keeps focus.
-    sheet.addEventListener("close", open, { once: true })
-  }
+  const searchEntries = useSearchEntries(shortcuts?.singleKeys ?? true, t.t("Frame.search"))
   return (
     <AppShell
       items={navItems(activityGroupId, t)}
@@ -242,22 +278,14 @@ export function AppFrame(
           place === "sheet"
             ? (
               <div class="flex flex-col gap-2">
-                {hasSearch && (
-                  <div ref={sheetSearch} data-e2e="shell-search-sheet">
-                    <RailEntry item={searchItem} place="sheet" navigate={openFromSheet} />
-                  </div>
-                )}
+                {hasSearch && searchEntries.sheet}
                 {groupPicker && <GroupSheet {...groupPicker} navigate={navigate} />}
               </div>
             )
             : (
               <div class="flex flex-col items-center gap-1">
                 {groupPicker && <GroupPicker {...groupPicker} navigate={navigate} />}
-                {hasSearch && (
-                  <div data-e2e="shell-search-rail">
-                    <RailEntry item={searchItem} place="rail" navigate={open} />
-                  </div>
-                )}
+                {hasSearch && searchEntries.rail}
               </div>
             ))
         : undefined}
@@ -270,8 +298,12 @@ export function AppFrame(
         items: [
           { label: t.t("Frame.categories"), href: CATEGORY_PATHS.list },
           { label: t.t("Frame.budgets"), href: BUDGET_PATHS.list },
-          { label: t.t("Frame.tags"), href: TAG_PATHS.list },
-          { label: t.t("Frame.notes"), href: NOTE_PATHS.list },
+          ...(notes
+            ? [
+              { label: t.t("Frame.tags"), href: TAG_PATHS.list },
+              { label: t.t("Frame.notes"), href: NOTE_PATHS.list },
+            ]
+            : []),
           ...shortcutsMenuItems(shortcuts, t.t("Frame.shortcuts")),
         ],
         signOut: { label: t.t("Frame.signOut"), onClick: onSignOut },
@@ -282,7 +314,7 @@ export function AppFrame(
       width={wide ? "wide" : "default"}
     >
       {children}
-      {hasSearch && <div ref={searchRoot}>{search}</div>}
+      {hasSearch && <div ref={searchEntries.root}>{search}</div>}
       {shortcuts && <ShortcutsList {...shortcuts} />}
     </AppShell>
   )

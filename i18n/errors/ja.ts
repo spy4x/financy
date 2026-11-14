@@ -110,6 +110,10 @@ export default {
   "Reason.CHANNEL_NOT_FOUND": "このチャンネルはもう存在しません。",
   "Reason.CURRENCY_KIND_MISMATCH":
     "暗号資産の口座には暗号資産だけを、暗号資産は暗号資産の口座にだけ入れられます。口座の種類に合う通貨を選んでください。",
+  "Reason.DEMO_ADMIN_ELSEWHERE":
+    "これはデモ用の管理者アカウントです。管理画面からログインしてください。",
+  "Reason.DEMO_REFUSED":
+    "公開デモでは使えません。実際のWebサイトが変わったり、実在の人にメールが届いたりするためです。",
   "Reason.FILE_CONTENT": "ファイルの中身が種類と一致しません。",
   "Reason.FILE_MISSING": "ファイルが届きませんでした。ファイルを選んで、もう一度お試しください。",
   "Reason.FILE_TOO_LARGE": "ファイルが大きすぎます。",

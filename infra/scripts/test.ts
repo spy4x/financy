@@ -109,6 +109,7 @@ export const GROUPS: TestGroup[] = [
       `tests/compose-admin.test.ts`,
       `tests/compose-runtime.test.ts`,
       `tests/compose-deno-dir.test.ts`,
+      `tests/compose-profiles.test.ts`,
     ],
   },
   {
@@ -116,6 +117,10 @@ export const GROUPS: TestGroup[] = [
       `--allow-read=infra/compose,infra/postgres,infra/envs/.env.example,infra/scripts/e2e-local.sh,.woodpecker/ci.yml,docs/handoff.md,docs/woodpecker-ci-setup.md`,
     ],
     paths: [`tests/compose-postgres.test.ts`],
+  },
+  {
+    flags: [`--allow-read=infra/compose,infra/configs/glitchtip-db.sql,infra/envs/.env.example`],
+    paths: [`tests/compose-errors.test.ts`],
   },
   {
     flags: [

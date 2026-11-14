@@ -96,6 +96,8 @@ export interface PaletteContext {
   benchmark: boolean
   /** Whether the browser offers to install the app now. */
   canInstall: boolean
+  /** Whether the notes example is on; left out, it is. Off, no command names notes or tags. */
+  notes?: boolean
 }
 
 /** The Go to commands: the rail's and the shortcuts' destinations, with the words that find them. */
@@ -145,13 +147,13 @@ const GO_TO: readonly {
   {
     id: "notes",
     key: `Frame.notes`,
-    href: () => NOTE_PATHS.list,
+    href: (context) => context.notes === false ? null : NOTE_PATHS.list,
     aliases: [`notes list`, `all notes`, `заметки`, `список заметок`],
   },
   {
     id: "tags",
     key: `Frame.tags`,
-    href: () => TAG_PATHS.list,
+    href: (context) => context.notes === false ? null : TAG_PATHS.list,
     aliases: [`labels`, `categories`, `метки`, `теги`, `ярлыки`],
   },
   {
@@ -184,7 +186,25 @@ const GO_TO: readonly {
 ]
 
 /** The words a first-time person tries for Theme and the profile sections, all under Settings. */
-const SETTINGS_ALIASES: readonly string[] = [`settings`, `настройки`]
+export const SETTINGS_ALIASES: readonly string[] = [`settings`, `настройки`]
+
+/** The words that find "Keyboard shortcuts". */
+export const SHORTCUTS_ALIASES: readonly string[] = [
+  `hotkeys`,
+  `keys`,
+  `keyboard`,
+  `горячие клавиши`,
+  `сочетания клавиш`,
+]
+
+/** The words that find "Sign out". */
+export const SIGN_OUT_ALIASES: readonly string[] = [
+  `log out`,
+  `logout`,
+  `sign off`,
+  `выйти`,
+  `выход`,
+]
 
 /** Extra words for each profile section, beyond its English name and description. */
 const SECTION_ALIASES: Record<ProfileSectionId, readonly string[]> = {
@@ -235,7 +255,7 @@ function kbdOf(shortcuts: readonly ShortcutRow[], key: string): string | undefin
  * The keys a row shows: the palette (preact-ui 14.4.0) draws one key press and throws on a
  * sequence such as `g n`, so a sequence is kept in `shortcut` only.
  */
-function shortcutKeys(keys: string | undefined): Pick<PaletteOption, "kbd" | "shortcut"> {
+export function shortcutKeys(keys: string | undefined): Pick<PaletteOption, "kbd" | "shortcut"> {
   return { kbd: keys?.includes(` `) ? undefined : keys, shortcut: keys }
 }
 
@@ -244,7 +264,7 @@ function shortcutKeys(keys: string | undefined): Pick<PaletteOption, "kbd" | "sh
  * them: This page, Go to, Create, Settings, Account. Go to comes before Create, so a typo that
  * fits both ("notse") finds the page first. A command the person cannot take is left out
  * ("New note" without a group they may write to, Activity while the rail hides it, "Install app"
- * while the browser offers no install); one that needs the server stays listed offline, with why
+ * while the browser offers no install, Notes, Tags, New note and New tag with the notes off); one that needs the server stays listed offline, with why
  * it cannot run. Each is found by its label, by its English label in every language, and by the
  * words a person would try, in English and Russian.
  *
@@ -289,7 +309,8 @@ export function paletteCommands(
     choice,
   })
   const page = (href: string) => ({ kind: "page", href }) as const
-  const inGroup: KeyedMessage | null = currentGroup?.canWrite
+  // New note and New tag need a group the person may write to, and the notes on.
+  const inGroup: KeyedMessage | null = currentGroup?.canWrite && context.notes !== false
     ? { key: `Search.inGroup`, values: { group: currentGroup.name } }
     : null
 
@@ -376,42 +397,8 @@ export function paletteCommands(
     )
   }
 
-  const current = context.theme
-  const themeRows = THEMES.map((theme): PaletteOption => ({
-    id: `theme-${theme}`,
-    label: themeName(t, theme),
-    aliases: [englishText(THEME_KEYS[theme]), ...THEME_ALIASES[theme]],
-    // Read when drawn: the palette keeps these rows while it stays open after a pick.
-    get state() {
-      return current() === theme ? t.t(`Search.current`) : undefined
-    },
-    keepOpen: true,
-    run: () => select({ kind: "theme", theme }),
-  }))
   const settings: PaletteOption[] = [
-    {
-      id: `action-theme`,
-      label: t.t(`Preferences.theme`),
-      aliases: [
-        englishText(`Preferences.theme`),
-        `dark`,
-        `light`,
-        `dark mode`,
-        `light mode`,
-        `night mode`,
-        `color scheme`,
-        `тема`,
-        `тёмная тема`,
-        `светлая тема`,
-        `ночной режим`,
-        ...SETTINGS_ALIASES,
-      ],
-      get state() {
-        return themeName(t, current())
-      },
-      group: heading.settings,
-      children: themeRows,
-    },
+    themeCommand(t, context.theme, heading.settings, (theme) => select({ kind: "theme", theme })),
     ...PROFILE_SECTIONS.map((section) =>
       command(
         `settings-${section}`,
@@ -430,7 +417,9 @@ export function paletteCommands(
       heading.settings,
       page(`${profilePath("account")}#${DATA_EXPORT_ANCHOR}`),
       {
-        detail: { key: `Search.downloadDetail` },
+        detail: {
+          key: context.notes === false ? `Search.downloadDetailPlain` : `Search.downloadDetail`,
+        },
         aliases: [
           `export my data`,
           `GDPR`,
@@ -452,7 +441,7 @@ export function paletteCommands(
       },
     ),
     command("shortcuts", `Frame.shortcuts`, heading.settings, { kind: "shortcuts" }, {
-      aliases: [`hotkeys`, `keys`, `keyboard`, `горячие клавиши`, `сочетания клавиш`],
+      aliases: SHORTCUTS_ALIASES,
       kbd: kbdOf(shortcuts, `Shortcuts.show`),
     }),
   ]
@@ -469,11 +458,59 @@ export function paletteCommands(
       })]
       : []),
     command("sign-out", `Frame.signOut`, heading.account, { kind: "sign-out" }, {
-      aliases: [`log out`, `logout`, `sign off`, `выйти`, `выход`],
+      aliases: SIGN_OUT_ALIASES,
     }),
   ]
 
   return [...thisPage, ...goTo, ...create, ...settings, ...account]
+}
+
+/**
+ * The Theme command under `group`: its badge names the theme chosen now, and its submenu's rows,
+ * System, Light and Dark, call `setTheme` at once and keep the palette open. `current` is read
+ * each time a row is drawn: the palette keeps the rows of its last search, so a theme picked with
+ * the palette open shows on them without a new search.
+ */
+export function themeCommand(
+  t: Translator<string>,
+  current: () => ThemePreference,
+  group: string,
+  setTheme: (theme: ThemePreference) => void,
+): CommandPaletteOption {
+  const rows = THEMES.map((theme): CommandPaletteOption => ({
+    id: `theme-${theme}`,
+    label: themeName(t, theme),
+    aliases: [englishText(THEME_KEYS[theme]), ...THEME_ALIASES[theme]],
+    // Read when drawn: the palette keeps these rows while it stays open after a pick.
+    get state() {
+      return current() === theme ? t.t(`Search.current`) : undefined
+    },
+    keepOpen: true,
+    run: () => setTheme(theme),
+  }))
+  return {
+    id: `action-theme`,
+    label: t.t(`Preferences.theme`),
+    aliases: [
+      englishText(`Preferences.theme`),
+      `dark`,
+      `light`,
+      `dark mode`,
+      `light mode`,
+      `night mode`,
+      `color scheme`,
+      `тема`,
+      `тёмная тема`,
+      `светлая тема`,
+      `ночной режим`,
+      ...SETTINGS_ALIASES,
+    ],
+    get state() {
+      return themeName(t, current())
+    },
+    group,
+    children: rows,
+  }
 }
 
 /**
