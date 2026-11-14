@@ -1,26 +1,47 @@
 # The public demo
 
-The template's own server runs a public demo of the product. Anyone opens it with one click as a
-guest ([guest accounts](guests.md)), or signs up with their own address, by password or with
-Google or GitHub, and starts in a workspace full of sample data: a
-group they own, and two groups of made-up people where they are an editor and a viewer. The
-database is wiped and seeded again every night at midnight Pacific time, so whatever visitors do
-lasts a day at most. Each visitor works in groups nobody else can see. The one shared account is
-the admin panel's public administrator, which the API limits ("Visitors try the admin panel too" below).
+The public demo lets anyone try the product. They open it with one click as a guest
+([guest accounts](guests.md)) and start in a workspace full of sample data: a group they own, and
+two groups of made-up people where they are an editor and a viewer. The database is wiped and
+seeded again every night at midnight Pacific time, so whatever visitors do lasts a day at most.
+Each visitor works in groups nobody else can see. Where mail, Google or GitHub are set up, visitors
+can also sign up with their own address, and where the admin panel runs, its public administrator
+is the one shared account, which the API limits ("Visitors try the admin panel too" below).
 
-It is off unless `DEMO_MODE=true`. A product started from the template never turns it on: its
-server holds real people's data.
+It is off unless `DEMO_MODE=true`, and never on in Financy's production, whose server holds real
+people's financial data. Financy's demo is a deployment of its own at demo.financy.dev, below.
 
-## Turning it on
+## Financy's demo
 
-Set `DEMO_MODE=true` in the server's env file (`infra/envs/.env.prod`, which `deno task deploy`
-copies). The worker, the SPA, the API and the website read it (`infra/compose/compose.shared.yml`);
-the API and the website need it only for the admin panel's public administrator.
+demo.financy.dev is a second Compose project, `financy-demo`, on the same server as production. Its
+env file is `infra/envs/.env.demo.age`, and `.woodpecker/deploy.yml` deploys it after production on
+every push to `main`, so the demo always runs the code production runs. The worker wipes and seeds
+it every night.
+
+Why it is safe next to production:
+
+- **Another database.** The project has its own directory on the server
+  (`/home/spy4x/ssd-2tb/apps/anton/financy-demo`), so its own data under `.volumes/`, and its own
+  Postgres, Valkey and file store on its own network ([several projects](several-projects.md)).
+- **Another env file, no shared secret.** Every password, key and secret in `.env.demo` was made
+  for the demo. Mail, billing, Google, GitHub, Telegram and analytics are off: it calls no provider
+  and mails nobody.
+- **`DEMO_MODE` stays off in production** (`.env.prod`). Only `.env.demo` turns it on, so the
+  nightly wipe never reaches real data.
+- **No admin panel and no website** (`COMPOSE_PROFILES=files`, `ADMIN_DOMAIN` empty): the API
+  answers 404 to the operator area on every host, so the admin sections below do not apply to it.
+
+Visitors enter as guests. Sign-up stays open, since `SIGN_UP=invite` turns guests off, but with no
+mail a password sign-up never gets its code.
+
+What the two projects share is the server, its Traefik and the `proxy` network
+([what the projects share](several-projects.md#what-the-projects-share)).
 
 ## A demo on its own host
 
 A product with real users keeps guests off its production app and runs the demo as a deployment
-of its own, with its own database. The website's try links then go to that demo:
+of its own, with its own database, as Financy does above. The website's try links then go to that
+demo:
 
 | Deployment | Env file lines                                                                          |
 | ---------- | --------------------------------------------------------------------------------------- |
