@@ -455,6 +455,18 @@ describe("the public website", () => {
     expect(html).toContain(`Transfers are not built yet`)
   })
 
+  it("lists transactions on the home page's Works today, not under Building now", async () => {
+    const { html } = await page("/")
+    const card = html.slice(html.indexOf(`data-e2e="home-status"`))
+    const building = card.indexOf(`Building now`)
+    const transactions = card.indexOf(`Income and expenses, with the original amount kept`)
+
+    expect(transactions).toBeGreaterThan(card.indexOf(`Works today`))
+    expect(transactions).toBeLessThan(building)
+    expect(card.indexOf(`Income and expenses`, building)).toBe(-1)
+    expect(card).not.toContain(`/issues/96"`)
+  })
+
   it("lists budgets on /features as built, right after transactions, and on the home page's Works today, not under Later", async () => {
     const { html } = await page("/features")
 
@@ -862,13 +874,13 @@ describe("the public website", () => {
 
     // Every language of a page carries the English page's date: the translation says the same.
     expect(lastmods["/de/subscribe"]).toBe("2026-11-04T00:00:00.000Z")
-    expect(lastmods["/ar"]).toBe("2026-11-06T00:00:00.000Z")
+    expect(lastmods["/ar"]).toBe("2026-11-14T00:00:00.000Z")
     expect(Object.values(lastmods)).not.toContain(undefined)
     const english = Object.fromEntries(
       Object.entries(lastmods).filter(([path]) => pathLanguage(path).language === "en"),
     )
     expect(english).toEqual({
-      "/": "2026-11-06T00:00:00.000Z",
+      "/": "2026-11-14T00:00:00.000Z",
       "/features": "2026-11-06T00:00:00.000Z",
       "/docs/api": "2026-10-23T00:00:00.000Z",
       // With no history to read, as under `deno test`, the guides and the changelog carry the day
