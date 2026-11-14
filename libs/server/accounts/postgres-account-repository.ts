@@ -86,9 +86,9 @@ async function assertWriterNow(
  * write of the same household wait, then count this one.
  *
  * The balance is computed here, in SQL, for one household: the starting balance plus the
- * account's live entries dated on or before the day asked (R9); transfers will add their sums to
- * {@link balanceOf}. An account's currency is fixed once an entry names it (R10), and an account
- * an entry names, live or in the trash, is archived rather than deleted.
+ * account's live entries and transfers dated on or before the day asked (R9, {@link balanceOf}).
+ * An account's currency is fixed once an entry or a transfer names it (R10), and an account an
+ * entry or a transfer names, live or in the trash, is archived rather than deleted.
  */
 export class PostgresAccountRepository implements AccountRepository {
   constructor(private readonly sql: postgres.Sql) {}
@@ -176,8 +176,8 @@ export class PostgresAccountRepository implements AccountRepository {
     return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
       const repository = new PostgresAccountRepository(transaction)
       await assertWriterNow(transaction, input.groupId, actorId)
-      // Under the household's lock no entry can be added in between: a currency change is refused
-      // while any entry, live or in the trash, names the account (R10).
+      // Under the household's lock no entry or transfer can be added in between: a currency change
+      // is refused while any entry or transfer, live or in the trash, names the account (R10).
       const current = await repository.usage(input)
       if (current?.hasEntries && current.currency !== input.currency) {
         throw new AccountError(
@@ -290,8 +290,8 @@ export class PostgresAccountRepository implements AccountRepository {
     return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
       const repository = new PostgresAccountRepository(transaction)
       await assertWriterNow(transaction, input.groupId, actorId)
-      // An entry, live or in the trash, keeps its account: the person archives it instead. A purge
-      // could not remove the row anyway while an entry names it.
+      // An entry or a transfer, live or in the trash, keeps its account: the person archives it
+      // instead. A purge could not remove the row anyway while either names it.
       const usage = await repository.usage(input)
       if (usage?.hasEntries) {
         throw new AccountError(
@@ -349,16 +349,21 @@ export class PostgresAccountRepository implements AccountRepository {
   }
 
   /**
-   * The live account a write names at the version it was edited at, and whether any entry names
-   * it; `null` otherwise, so the write itself answers not found or a version conflict.
+   * The live account a write names at the version it was edited at, and whether any entry or
+   * transfer names it, live or in the trash, on either side of a transfer; `null` otherwise, so the
+   * write itself answers not found or a version conflict.
    */
   private async usage(
     input: { groupId: string; id: string; expectedVersion: number },
   ): Promise<{ currency: string; hasEntries: boolean; hasRules: boolean } | null> {
     const row = (
       await this.sql<{ currency: string; hasEntries: boolean; hasRules: boolean }[]>`
-        SELECT accounts.currency, EXISTS (
-          SELECT 1 FROM transactions WHERE transactions.account_id = accounts.id
+        SELECT accounts.currency, (
+          EXISTS (SELECT 1 FROM transactions WHERE transactions.account_id = accounts.id) OR
+          EXISTS (
+            SELECT 1 FROM transfers
+            WHERE transfers.from_account_id = accounts.id OR transfers.to_account_id = accounts.id
+          )
         ) AS has_entries, EXISTS (
           SELECT 1 FROM recurring_rules WHERE recurring_rules.account_id = accounts.id
         ) AS has_rules
@@ -434,8 +439,9 @@ export class PostgresAccountRepository implements AccountRepository {
 
   /**
    * The balance of the `accounts` row in scope, as decimal text: the starting balance plus the
-   * account's live entries dated on or before `on` (`YYYY-MM-DD`), by default today in the
-   * household's time zone (R9, R14). Transfers add their sums here.
+   * account's live entries, minus what its live transfers sent and plus what they brought in (R5),
+   * all dated on or before `on` (`YYYY-MM-DD`), by default today in the household's time zone (R9,
+   * R14).
    */
   private balanceOf(on?: string) {
     const day = on === undefined
@@ -449,6 +455,14 @@ export class PostgresAccountRepository implements AccountRepository {
         SELECT sum(transactions.account_amount) FROM transactions
         WHERE transactions.account_id = accounts.id AND transactions.deleted_at IS NULL
           AND transactions.date <= ${day}
+      ), 0) - COALESCE((
+        SELECT sum(transfers.sent_amount) FROM transfers
+        WHERE transfers.from_account_id = accounts.id AND transfers.deleted_at IS NULL
+          AND transfers.date <= ${day}
+      ), 0) + COALESCE((
+        SELECT sum(transfers.received_amount) FROM transfers
+        WHERE transfers.to_account_id = accounts.id AND transfers.deleted_at IS NULL
+          AND transfers.date <= ${day}
       ), 0)
     )::text`
   }

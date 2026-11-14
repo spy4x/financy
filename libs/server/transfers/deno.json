@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "check": "deno check postgres-transfer-repository.ts purge-deleted-transfers.ts"
+  }
+}

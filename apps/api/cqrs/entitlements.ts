@@ -2,6 +2,7 @@ import { createPlanOf } from "../features/billing/config.ts"
 import { billingSetup } from "../services/billing.ts"
 import { db, sql } from "../services/db.ts"
 import { PostgresInvitationRepository } from "@server/groups/postgres-invitation-repository.ts"
+import { countPlanTransactions } from "@server/transactions/plan-count.ts"
 import { createEntitlementGate } from "./entitlement-gate.ts"
 import { ENTITLEMENT_NEEDS } from "./entitlement-needs.ts"
 
@@ -19,7 +20,7 @@ export const entitlementGate = createEntitlementGate(
       maxMembers: (groupId) => new PostgresInvitationRepository(sql).countMembers(groupId),
       maxAccounts: (groupId) => db.account.count(groupId),
       maxCategories: (groupId) => db.category.count(groupId),
-      maxTransactions: (groupId) => db.transaction.count(groupId),
+      maxTransactions: (groupId) => countPlanTransactions(sql, groupId),
       maxRecurringRules: (groupId) => db.recurringRule.count(groupId),
     },
   },

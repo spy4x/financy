@@ -726,7 +726,7 @@ export interface TransactionRepository {
    * restored.
    */
   listDeleted(groupId: string, limit: number): Promise<Transaction[]>
-  /** How many live entries the household holds: what the plan's `maxTransactions` counts. */
+  /** How many live entries the household holds; the plan's `maxTransactions` adds transfers. */
   count(groupId: string): Promise<number>
   /** The household's time zone, the one its days are cut in (R14). */
   timeZoneOf(groupId: string): Promise<string | null>
