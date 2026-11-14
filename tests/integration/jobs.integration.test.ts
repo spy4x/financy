@@ -867,6 +867,8 @@ function lane(sql: postgres.Sql, jobs: ReturnType<typeof recordingJobs>, index: 
     jobs,
     ...[undefined, undefined, undefined, undefined, undefined] as const,
     ...[undefined, undefined, undefined, undefined, undefined] as const,
+    // Financy's `rates`, which Seed's processor does not take.
+    undefined,
     OUTBOX_LANES[index],
   )
 }
