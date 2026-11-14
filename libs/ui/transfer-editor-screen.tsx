@@ -242,7 +242,11 @@ function Editor(props: Shown): JSX.Element {
   const across = from !== undefined && to !== undefined && from.currency !== to.currency
   const listed = (chosen: string | null) =>
     props.accounts.filter((account) => !account.archived || account.id === chosen)
-  const rate = across ? rateLine(t, { value, transfer, from, to, locale }) : ""
+  // Once the server said it has no rate, "converted when you save" is no longer true: the line
+  // returns only when both amounts are typed and it names the person's own rate.
+  const rate = across && !(errors.noRate && value.receivedAmount === null)
+    ? rateLine(t, { value, transfer, from, to, locale })
+    : ""
   const settledRate = useSettled(rate)
 
   // The first field still empty takes focus when the page opens: From, To, then the amount.
@@ -429,7 +433,7 @@ function Editor(props: Shown): JSX.Element {
                     id="transfer-received"
                     label={t.t(`TransferEditor.received`, { currency: to.currency })}
                     error={noRateText ?? messageText(t, errors.receivedAmount)}
-                    hint={t.t(`TransferEditor.receivedHint`, {
+                    hint={errors.noRate ? undefined : t.t(`TransferEditor.receivedHint`, {
                       date: dayLabel(value.date, locale),
                       account: to.name,
                     })}
@@ -454,9 +458,11 @@ function Editor(props: Shown): JSX.Element {
                   </Field>
                 </div>
                 {/* Seen at once; heard once typing stops, from the status line below. */}
-                <p class="text-sm text-muted" aria-hidden="true" data-e2e="transfer-rate">
-                  {rate}
-                </p>
+                {rate && (
+                  <p class="text-sm text-muted" aria-hidden="true" data-e2e="transfer-rate">
+                    {rate}
+                  </p>
+                )}
                 <p role="status" class="sr-only">{settledRate}</p>
               </div>
             )}

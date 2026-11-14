@@ -364,6 +364,25 @@ describe("TransferEditorScreen", () => {
     expect(document.activeElement?.id).toBe("transfer-sent")
   })
 
+  it("stops promising a conversion once the server has no rate, until both amounts are typed", async () => {
+    const noRate = { ...noErrors, noRate: true }
+    const value = { ...editorDefaults.value, sentAmount: 20000 }
+    await mount(<TransferEditorScreen {...editorDefaults} value={value} errors={noRate} />)
+    const field = document.querySelector("[data-e2e=transfer-received-field]")!
+    expect(text(field)).not.toContain("Leave it empty")
+    expect(has("[data-e2e=transfer-rate]")).toBe(false)
+
+    await mount(
+      <TransferEditorScreen
+        {...editorDefaults}
+        value={{ ...value, receivedAmount: 18500 }}
+        errors={noRate}
+      />,
+    )
+    expect(text(document.querySelector("[data-e2e=transfer-rate]")))
+      .toBe("Your own rate: 1 USD = 0.925 EUR.")
+  })
+
   it("says offline that a transfer can only be read, with Save off and no Delete", async () => {
     await mount(
       <TransferEditorScreen
