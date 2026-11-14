@@ -69,12 +69,11 @@ export interface StarterDataPlan {
 /**
  * Writes `plan.sampleData`, if any, creates the welcome note in the person's first group and
  * writes Financy's starter categories there, then sets `done_at`. With the notes off it does the
- * same without the note. The
- * note's id is the request's id, so a job that runs twice (a forced retry, a crash between the
- * note and the marker) adds one note: the second insert finds the first and does nothing. Once
- * `done_at` is set the job does not look at the notes again, so a note the person deleted stays
- * deleted. A person with no active group left, or whose group is at its plan's note cap, gets
- * nothing, and the request is closed.
+ * same without the note. The note's id is the request's id, so a job that runs twice (a forced
+ * retry, a crash between the note and the marker) adds one note: the second insert finds the first
+ * and does nothing. Once `done_at` is set the job does not look at the notes again, so a note the
+ * person deleted stays deleted. A person with no active group left gets nothing; a group at its
+ * plan's note cap gets the categories but no note. Either way the request is closed.
  */
 export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): JobHandler {
   const billing = new PostgresBillingRepository(sql)
