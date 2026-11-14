@@ -10,6 +10,8 @@ import { render, type VNode } from "preact"
 import { act } from "preact/test-utils"
 import { TransactionKind } from "@domain/transactions"
 import { createTranslator } from "@spy4x/platform/universal/i18n"
+import { FormatContext } from "@spy4x/preact-ui/format"
+import { createFormatters } from "@spy4x/time/format"
 import app from "@i18n/app/en.ts"
 import { TransactionsScreen, type TransactionsScreenProps } from "./transactions-screen.tsx"
 import {
@@ -62,11 +64,16 @@ afterEach(async () => {
   root = null
 })
 
+// A fixed locale: the default follows the machine, and CI's (en-US) writes US dollars as "$".
+const format = createFormatters({ locale: `en-GB`, timeZone: `UTC`, hourCycle: `h23` })
+
 async function mount(node: VNode): Promise<void> {
   if (root) await act(() => render(null, root!))
   root = document.createElement("div")
   document.body.append(root)
-  await act(() => render(node, root!))
+  await act(() =>
+    render(<FormatContext.Provider value={format}>{node}</FormatContext.Provider>, root!)
+  )
 }
 
 /** An element's text without the marks that isolate a name's direction. */
