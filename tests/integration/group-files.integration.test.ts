@@ -323,7 +323,7 @@ async function counts(sql: postgres.Sql) {
   return row
 }
 
-Deno.test("an export imported by another person gives the same notes, tags, accounts, category tree and entries under new ids", async () => {
+Deno.test("an export imported by another person gives the same notes, tags, accounts, category tree, entries and transfers under new ids", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
     const file = await exportAs(sql, source.groupId, source.owner) as {
