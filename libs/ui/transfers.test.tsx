@@ -387,6 +387,17 @@ describe("TransferEditorScreen", () => {
     expect(document.activeElement?.id).toBe("transfer-to")
   })
 
+  it("puts focus on an account field whose account was deleted, so another one is picked there", async () => {
+    await mount(
+      <TransferEditorScreen
+        {...editorDefaults}
+        transfer={atm}
+        value={{ ...savedAtm, toAccountId: "a-deleted" }}
+      />,
+    )
+    expect(document.activeElement?.id).toBe("transfer-to")
+  })
+
   it("asks for no received amount between accounts of one currency", async () => {
     await mount(
       <TransferEditorScreen
