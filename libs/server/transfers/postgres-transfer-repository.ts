@@ -24,6 +24,7 @@ import {
   lockActorRole,
   recordGroupChange,
 } from "@server/groups/group-change-log.ts"
+import { recordTombstones } from "@server/groups/group-changes.ts"
 import { amountOf } from "@server/accounts/postgres-account-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { countPlanTransactions } from "@server/transactions/plan-count.ts"
@@ -94,6 +95,23 @@ export class PostgresTransferRepository implements TransferRepository {
       WHERE group_id = ${groupId} AND deleted_at IS NULL
     `
     return count
+  }
+
+  /**
+   * The household's live transfers with `after < change_sequence <= through`, oldest change first:
+   * what the changes pull sends (`transfer-changes.ts`). A deleted transfer is left out; its
+   * tombstone tells a device it is gone.
+   */
+  async listChanged(groupId: string, after: number, through: number): Promise<Transfer[]> {
+    const rows = await this.sql<TransferRow[]>`
+      SELECT ${this.columns()} FROM transfers
+      WHERE group_id = ${groupId}
+        AND deleted_at IS NULL
+        AND change_sequence > ${after}
+        AND change_sequence <= ${through}
+      ORDER BY change_sequence, id
+    `
+    return rows.map(toTransfer)
   }
 
   async timeZoneOf(groupId: string): Promise<string | null> {
@@ -202,7 +220,15 @@ export class PostgresTransferRepository implements TransferRepository {
         RETURNING id
       `
       if (!row) return await repository.refuseStaleWrite(input.groupId, input.id)
-      return await repository.stamp(transaction, input, actorId, TRANSFER_EVENTS.deleted)
+      const deleted = await repository.stamp(transaction, input, actorId, TRANSFER_EVENTS.deleted)
+      await recordTombstones(
+        transaction,
+        input.groupId,
+        `transfers`,
+        [input.id],
+        deleted.changeSequence,
+      )
+      return deleted
     })
   }
 

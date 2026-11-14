@@ -59,6 +59,7 @@ import { categoryPortable } from "@server/categories/category-portable.ts"
 import { transactionMovable } from "@server/transactions/transaction-movable.ts"
 import { transactionChanges } from "@server/transactions/transaction-changes.ts"
 import { transactionPortable } from "@server/transactions/transaction-portable.ts"
+import { transferChanges } from "@server/transfers/transfer-changes.ts"
 import { PostgresHouseholdSettingsRepository } from "@server/money/postgres-household-settings-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresAttachmentRepository } from "@server/notes/postgres-attachment-repository.ts"
@@ -236,6 +237,7 @@ export const CHANGES_AGGREGATES: readonly ChangesAggregate[] = [
   tagChanges,
   noteChanges,
   transactionChanges,
+  transferChanges,
 ]
 
 /** `aggregates` as the notes switch leaves them: with the notes off, without `notesOwn`. */
