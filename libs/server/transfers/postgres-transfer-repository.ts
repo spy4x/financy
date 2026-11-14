@@ -89,6 +89,16 @@ export class PostgresTransferRepository implements TransferRepository {
     return row ? toTransfer(row) : null
   }
 
+  async listDeleted(groupId: string, limit: number): Promise<Transfer[]> {
+    const rows = await this.sql<TransferRow[]>`
+      SELECT ${this.columns()} FROM transfers
+      WHERE group_id = ${groupId} AND deleted_at IS NOT NULL
+      ORDER BY deleted_at DESC, id
+      LIMIT ${limit}
+    `
+    return rows.map(toTransfer)
+  }
+
   async count(groupId: string): Promise<number> {
     const [{ count }] = await this.sql<{ count: number }[]>`
       SELECT count(*)::int AS count FROM transfers
