@@ -2884,7 +2884,7 @@ export default {
     "Vous pouvez consulter ce virement, mais seuls les éditeurs peuvent le modifier.",
   "TransferEditor.readOnlyNew": "Seuls les éditeurs peuvent ajouter des virements à {household}.",
   "TransferEditor.offline":
-    "Vous pouvez toujours ajouter et modifier des virements. Ils sont enregistrés dès que la connexion revient.",
+    "Vous pouvez toujours ajouter et modifier des virements. Ils sont gardés sur cet appareil et envoyés dès que la connexion revient.",
   "TransferEditor.needAccounts": "Un virement nécessite deux comptes",
   "TransferEditor.needAccountsHint":
     "Ajoutez un deuxième compte, comme des espèces ou une épargne, pour déplacer de l’argent entre eux.",

@@ -2290,7 +2290,7 @@ export default {
   "TransferEditor.notFoundHint": "它可能已被删除，或属于另一个家庭。",
   "TransferEditor.readOnly": "你可以查看这笔转账，但只有编辑者可以更改。",
   "TransferEditor.readOnlyNew": "只有编辑者可以向{household}添加转账。",
-  "TransferEditor.offline": "你仍然可以添加和修改转账。联网后会自动保存。",
+  "TransferEditor.offline": "你仍然可以添加和修改转账。它们会保存在此设备上，联网后自动发送。",
   "TransferEditor.needAccounts": "转账需要两个账户",
   "TransferEditor.needAccountsHint": "再添加一个账户，比如现金或储蓄，就可以在它们之间转账。",
   "TransferEditor.from": "转出账户",

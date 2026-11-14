@@ -2504,7 +2504,7 @@ export default {
   "TransferEditor.readOnly": "この振替は見られますが、変更できるのは編集者だけです。",
   "TransferEditor.readOnlyNew": "{household}に振替を追加できるのは編集者だけです。",
   "TransferEditor.offline":
-    "振替の追加や変更は引き続きできます。オンラインに戻ったときに保存されます。",
+    "振替の追加や変更は引き続きできます。この端末に保存され、オンラインに戻ったときに送信されます。",
   "TransferEditor.needAccounts": "振替には口座が2つ必要です",
   "TransferEditor.needAccountsHint":
     "現金や貯蓄など、2つ目の口座を追加すると、口座の間でお金を移せます。",

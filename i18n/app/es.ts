@@ -2803,7 +2803,7 @@ export default {
     "Puedes ver esta transferencia, pero solo los editores pueden cambiarla.",
   "TransferEditor.readOnlyNew": "Solo los editores pueden añadir transferencias a {household}.",
   "TransferEditor.offline":
-    "Puedes seguir añadiendo y cambiando transferencias. Se guardan cuando vuelvas a tener conexión.",
+    "Puedes seguir añadiendo y cambiando transferencias. Se guardan en este dispositivo y se envían cuando vuelvas a tener conexión.",
   "TransferEditor.needAccounts": "Una transferencia necesita dos cuentas",
   "TransferEditor.needAccountsHint":
     "Añade una segunda cuenta, como efectivo o ahorros, para mover dinero entre ellas.",

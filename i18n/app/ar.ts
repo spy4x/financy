@@ -2945,7 +2945,8 @@ export default {
   "TransferEditor.notFoundHint": "ربما حُذف، أو أنه يخص أسرة أخرى.",
   "TransferEditor.readOnly": "يمكنك الاطلاع على هذا التحويل، لكن المحررين وحدهم يمكنهم تغييره.",
   "TransferEditor.readOnlyNew": "المحررون وحدهم يمكنهم إضافة تحويلات إلى {household}.",
-  "TransferEditor.offline": "لا يزال بإمكانك إضافة التحويلات وتغييرها. تُحفظ عند عودة الاتصال.",
+  "TransferEditor.offline":
+    "لا يزال بإمكانك إضافة التحويلات وتغييرها. تُحفظ على هذا الجهاز وتُرسل عند عودة الاتصال.",
   "TransferEditor.needAccounts": "التحويل يحتاج إلى حسابين",
   "TransferEditor.needAccountsHint": "أضف حسابًا ثانيًا، مثل النقد أو المدخرات، لتنقل المال بينهما.",
   "TransferEditor.from": "من حساب",

@@ -2586,7 +2586,7 @@ export default {
   "TransferEditor.readOnly": "You can view this transfer, but only editors can change it.",
   "TransferEditor.readOnlyNew": "Only editors can add transfers to {household}.",
   "TransferEditor.offline":
-    "You can still add and change transfers. They are saved when you are back online.",
+    "You can still add and change transfers. They are kept on this device and sent when you are back online.",
   "TransferEditor.needAccounts": "A transfer needs two accounts",
   "TransferEditor.needAccountsHint":
     "Add a second account, like cash or savings, to move money between them.",

@@ -2733,7 +2733,7 @@ export default {
     "Du kannst diese Umbuchung ansehen, aber nur Bearbeiter können sie ändern.",
   "TransferEditor.readOnlyNew": "Nur Bearbeiter können Umbuchungen zu {household} hinzufügen.",
   "TransferEditor.offline":
-    "Du kannst weiter Umbuchungen hinzufügen und ändern. Sie werden gespeichert, sobald du wieder online bist.",
+    "Du kannst weiter Umbuchungen hinzufügen und ändern. Sie bleiben auf diesem Gerät und werden gesendet, sobald du wieder online bist.",
   "TransferEditor.needAccounts": "Eine Umbuchung braucht zwei Konten",
   "TransferEditor.needAccountsHint":
     "Füge ein zweites Konto hinzu, etwa Bargeld oder Ersparnisse, um Geld zwischen ihnen zu verschieben.",

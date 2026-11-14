@@ -461,7 +461,7 @@ describe("TransferEditorScreen", () => {
       />,
     )
     expect(text(document.querySelector("[data-e2e=transfer-offline]")))
-      .toContain("They are saved when you are back online.")
+      .toContain("They are kept on this device and sent when you are back online.")
     const save = document.querySelector("[data-e2e=transfer-save]") as HTMLButtonElement
     expect(save.disabled).toBe(false)
     await act(() => {
