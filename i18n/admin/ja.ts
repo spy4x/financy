@@ -2157,7 +2157,7 @@ export default {
   "AdminCategories.categoryCount": { "other": "カテゴリ {count} 件" },
   "AdminNav.entries": "取引",
   "AdminEntries.title": "取引",
-  "AdminEntries.subtitle": "世帯ごとの記録の状況。件数と日付のみで、金額やメモは表示しません。",
+  "AdminEntries.subtitle": "世帯ごとの記録の状況。件数と日付のみで、金額や摘要は表示しません。",
   "AdminEntries.retry": "再試行",
   "AdminEntries.loading": "件数を読み込んでいます",
   "AdminEntries.none": "取引はまだありません",
@@ -2178,7 +2178,7 @@ export default {
   "AdminNav.transfers": "振替",
   "AdminTransfers.title": "振替",
   "AdminTransfers.subtitle":
-    "世帯ごとの口座間の振替の状況。件数と日付のみで、金額やメモは表示しません。",
+    "世帯ごとの口座間の振替の状況。件数と日付のみで、金額や摘要は表示しません。",
   "AdminTransfers.retry": "再試行",
   "AdminTransfers.loading": "件数を読み込んでいます",
   "AdminTransfers.none": "振替はまだありません",
