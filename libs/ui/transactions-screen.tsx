@@ -582,12 +582,15 @@ function Trash(
   const t = useAppText()
   const { locale } = useFormat()
   const canWrite = props.group!.canWrite
+  // A deleted transfer can arrive before the accounts are read; with neither account known it
+  // has no currency to show its amount in, so it waits until they are.
+  const rows = props.rows.filter((row) => !isTransfer(row) || row.fromCurrency !== ``)
   return (
     <>
       <p class="text-sm text-muted" data-e2e="transactions-deleted-hint">
         {t.t(`Transactions.deletedHint`, { days: TRANSACTION_RESTORE_DAYS })}
       </p>
-      {props.rows.length === 0
+      {rows.length === 0
         ? (
           <ListEmpty
             title={props.loading ? t.t(`Transactions.loading`) : t.t(`Transactions.deletedEmpty`)}
@@ -595,7 +598,7 @@ function Trash(
         )
         : (
           <ListCard dataE2E="transaction-trash">
-            {props.rows.map((row) => {
+            {rows.map((row) => {
               const transfer = isTransfer(row)
               const label = transfer
                 ? t.t(`TransferRow.what`, {

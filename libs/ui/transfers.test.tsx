@@ -336,6 +336,24 @@ describe("TransactionsScreen with transfers", () => {
     expect(restored).toEqual([atm.id])
   })
 
+  it("holds back a deleted transfer until its accounts are read, instead of crashing", async () => {
+    const unread = {
+      ...atm,
+      fromCurrency: "",
+      toCurrency: "",
+      deletedAt: "2026-11-13T10:00:00.000Z",
+    }
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        deleted={[unread, { ...latte, deletedAt: "2026-11-13T09:00:00.000Z" }]}
+        onRestore={() => {}}
+      />,
+    )
+    expect(rowOf(atm.id)).toBe(null)
+    expect(has(`[data-e2e=transaction-${latte.id}]`)).toBe(true)
+  })
+
   it("shows a viewer deleted transfers without Restore", async () => {
     await mount(
       <TransactionsScreen
