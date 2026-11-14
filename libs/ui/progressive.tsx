@@ -71,6 +71,17 @@ export const TRANSACTION_PATHS = {
     field ? `/transactions/${transactionId}?field=${field}` : `/transactions/${transactionId}`,
 } as const
 
+/**
+ * The transfer pages. A transfer has no list of its own: the transactions list shows it, so the
+ * rail and Back lead there.
+ */
+export const TRANSFER_PATHS = {
+  /** The create page. */
+  new: "/transfers/new",
+  /** One transfer's editor. */
+  transfer: (transferId: string) => `/transfers/${transferId}`,
+} as const
+
 export const ACCOUNT_PATHS = {
   /** The accounts by kind, each with its balance; archived ones behind "Show archived accounts". */
   list: "/accounts",

@@ -13,10 +13,12 @@ import { databasePrefix, type NotesCache } from "./notes-cache.ts"
 import type { TagsCache } from "./tags-cache.ts"
 import type { TransactionItem } from "../state/transactions.ts"
 import type { TransactionsCache } from "./transactions-cache.ts"
+import type { TransferItem } from "../state/transfers.ts"
+import type { TransfersCache } from "./transfers-cache.ts"
 import { byDate } from "../state/transaction-order.ts"
 
 /**
- * The device's copy of each group's notes, tags and entries, kept by the changes pull of
+ * The device's copy of each group's notes, tags, entries and transfers, kept by the changes pull of
  * `@spy4x/realtime/changes` (`docs/offline-data.md`, "Notes and tags: the changes pull"). One database per user
  * holds every group's rows and the sequence they are complete through, written together, so a
  * read after a pull asks the server only for what changed since the last one.
@@ -27,6 +29,7 @@ export interface ChangesRows {
   notes: NoteItem
   tags: TagItem
   transactions: TransactionItem
+  transfers: TransferItem
 }
 
 const stamps = {
@@ -54,6 +57,17 @@ const transactionRow = type({
   date: "string",
   deletedAt: "string | null",
 })
+const transferRow = type({
+  ...stamps,
+  fromAccountId: "string",
+  sentAmount: "number.integer",
+  toAccountId: "string",
+  receivedAmount: "number.integer",
+  converted: "boolean",
+  memo: "string",
+  date: "string",
+  deletedAt: "string | null",
+})
 
 /** How the pull checks each kind of row the server sends. */
 export const CHANGES_KINDS: ChangesKinds<ChangesRows> = {
@@ -62,6 +76,10 @@ export const CHANGES_KINDS: ChangesKinds<ChangesRows> = {
   transactions: {
     row: { assert: (value) => transactionRow.assert(value) as TransactionItem },
     id: (transaction) => transaction.id,
+  },
+  transfers: {
+    row: { assert: (value) => transferRow.assert(value) as TransferItem },
+    id: (transfer) => transfer.id,
   },
 }
 
@@ -86,6 +104,7 @@ export interface DeviceCopy {
   notes: NotesCache
   tags: TagsCache
   transactions: TransactionsCache
+  transfers: TransfersCache
 }
 
 /** What {@link deviceCopy} is built from. */
@@ -103,7 +122,7 @@ function byNewest(a: NoteItem, b: NoteItem): number {
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
 }
 
-const NO_ROWS = { notes: [], tags: [], transactions: [] }
+const NO_ROWS = { notes: [], tags: [], transactions: [], transfers: [] }
 
 /**
  * The copy behind the notes and tags views. A row a write answered with (`putNote`, `putTag`) is
@@ -196,6 +215,14 @@ export function deviceCopy({ copy, fetch, lock }: DeviceCopyOptions): DeviceCopy
       putTransaction: (transaction) => put("transactions", transaction),
       removeTransaction: (transactionId) => removeEverywhere("transactions", transactionId),
       clear: () => copy.clear(),
+    },
+    transfers: {
+      async readTransfers(groupId) {
+        known.add(groupId)
+        return (await copy.read("transfers", groupId)).sort(byDate)
+      },
+      putTransfer: (transfer) => put("transfers", transfer),
+      removeTransfer: (transferId) => removeEverywhere("transfers", transferId),
     },
   }
 }

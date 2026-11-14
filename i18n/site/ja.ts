@@ -550,7 +550,7 @@ export default {
   "HomeStatus.building": "開発中",
   "HomeStatus.accounts": "どの通貨でも使える口座",
   "HomeStatus.transactions": "元の金額を残したままの収入と支出",
-  "HomeStatus.transfers": "口座間の振替（通貨をまたいでも）",
+  "HomeStatus.transfers": "自分の口座間の振替（通貨をまたいでも）。両方の金額を記録",
   "HomeStatus.month": "今月のお金がひと目でわかる画面",
   "HomeStatus.later":
     "銀行明細の取り込みと有料クラウドはその後です：<plan>計画の全体を見る</plan>。",
@@ -596,8 +596,8 @@ export default {
     "Financy の現在：どの通貨でも使える口座と取引、月ごとの予算、ロール付きの世帯、リアルタイム同期、オフラインアプリ、エクスポート、9 言語、セルフホスト。",
   "Features.title": "Financy の機能：口座、世帯、同期、オフライン",
   "FeaturesHero.lead":
-    "Financy は作り直しの最中です。今日使えるもの：どの通貨でも使える口座、そのカテゴリ、取引、月ごとの予算、そしてそれを支える土台。ログイン、ロールによる共有、リアルタイムの更新、オフラインアプリ、エクスポート、9 言語、そしてあなた自身のサーバー。各セクションから、そのコードに飛べます。",
-  "FeaturesHero.note": "振替はまだできていません。<status>作り直しの進み具合を見る</status>。",
+    "Financy は作り直しの最中です。今日使えるもの：どの通貨でも使える口座、そのカテゴリ、取引、口座間の振替、月ごとの予算、そしてそれを支える土台。ログイン、ロールによる共有、リアルタイムの更新、オフラインアプリ、エクスポート、9 言語、そしてあなた自身のサーバー。各セクションから、そのコードに飛べます。",
+  "FeaturesHero.note": "月の概要はまだできていません。<status>作り直しの進み具合を見る</status>。",
   "HomeFaq.useAnswer":
     "まだです。ログイン、世帯、同期、どの通貨でも使える口座は動いています。取引はいま作っているところです。",
   "Catalog.title": "カタログ",
@@ -625,7 +625,7 @@ export default {
   "FeatureCategories.fact3": "閲覧者はカテゴリを読めます。変更できるのは編集者以上だけです",
   "FeatureCategories.code": "カテゴリのコードを読む",
   "FeatureTierSettled.lead":
-    "これらは動いていて、CI でテストされています。どの通貨の口座も、そのカテゴリも、取引も、月ごとの予算も使えます。振替は次に来ます。",
+    "これらは動いていて、CI でテストされています。どの通貨の口座も、そのカテゴリも、取引も、口座間の振替も、月ごとの予算も使えます。",
   "HomeStatus.categories": "1階層のサブカテゴリを持てるカテゴリ",
   "HomeStatus.budgets": "カテゴリごとの月の上限",
   "FeatureBudgets.nav": "予算",

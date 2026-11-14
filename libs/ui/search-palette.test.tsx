@@ -211,6 +211,7 @@ describe("SearchPalette", () => {
       "# Create",
       "New note | In Home",
       "New transaction | In Home",
+      "New transfer | In Home",
       "New category | In Home",
       "New tag | In Home",
       "New group",
@@ -460,6 +461,21 @@ describe("SearchPalette", () => {
       })
     }
     expect(picked).toEqual(Array(3).fill({ kind: "page", href: "/transactions/new" }))
+  })
+
+  it("finds New transfer by move money and withdrawal, and opens the new transfer", async () => {
+    const { picked } = await mount()
+    for (const query of ["move money", "withdrawal"]) {
+      await open()
+      await type(query)
+      const row = [...document.querySelectorAll("[role=option]")]
+        .find((candidate) => text(candidate).startsWith("New transfer"))
+      expect(row, query).toBeDefined()
+      await act(() => {
+        row!.dispatchEvent(new window.MouseEvent("click", { bubbles: true }) as unknown as Event)
+      })
+    }
+    expect(picked).toEqual(Array(2).fill({ kind: "page", href: "/transfers/new" }))
   })
 
   it("finds New category by subcategory and категория, Categories by категории, and Budgets by limits and бюджет", async () => {

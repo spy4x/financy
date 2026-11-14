@@ -574,7 +574,8 @@ export default {
   "HomeStatus.building": "En cours",
   "HomeStatus.accounts": "Des comptes dans n’importe quelle devise",
   "HomeStatus.transactions": "Revenus et dépenses, avec le montant d’origine conservé",
-  "HomeStatus.transfers": "Virements entre comptes, y compris entre devises",
+  "HomeStatus.transfers":
+    "Virements entre vos propres comptes, y compris entre devises, avec les deux montants conservés",
   "HomeStatus.month": "L’argent du mois en un coup d’œil",
   "HomeStatus.later":
     "L’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
@@ -622,9 +623,9 @@ export default {
     "Financy aujourd’hui : comptes et opérations en toute devise, budgets mensuels, foyers avec rôles, synchro, appli hors ligne, export, neuf langues.",
   "Features.title": "Fonctions de Financy : comptes, foyers, synchro",
   "FeaturesHero.lead":
-    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
+    "Financy est en cours de reconstruction. Ce qui fonctionne aujourd’hui : les comptes dans toutes les devises, leurs catégories, les opérations, les virements entre comptes et les budgets mensuels, et la base en dessous : connexion, accès partagé avec rôles, mises à jour en direct, une appli hors ligne, export, neuf langues et votre propre serveur. Chaque section renvoie à son code.",
   "FeaturesHero.note":
-    "Les virements ne sont pas encore là. <status>Voir où en est la reconstruction</status>.",
+    "Le résumé du mois n’est pas encore là. <status>Voir où en est la reconstruction</status>.",
   "HomeFaq.useAnswer":
     "Pas encore. La connexion, les foyers, la synchro et les comptes dans toutes les devises fonctionnent ; les opérations sont en cours.",
   "Catalog.title": "Catalogue",
@@ -653,7 +654,7 @@ export default {
     "Un lecteur voit les catégories ; seuls un éditeur ou plus les modifient",
   "FeatureCategories.code": "Lire le code source des catégories",
   "FeatureTierSettled.lead":
-    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises, leurs catégories, les opérations et les budgets mensuels sont là ; les virements viennent ensuite.",
+    "Ces parties fonctionnent et sont testées en CI. Les comptes dans toutes les devises, leurs catégories, les opérations, les virements entre comptes et les budgets mensuels sont là.",
   "HomeStatus.categories": "Des catégories avec un niveau de sous‑catégories",
   "HomeStatus.budgets": "Un plafond mensuel pour chaque catégorie",
   "FeatureBudgets.nav": "Budgets",

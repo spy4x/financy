@@ -437,7 +437,7 @@ describe("the public website", () => {
     )
     expect(html).toContain(`Categories, one level deep`)
     expect(html).toContain(
-      `Accounts in any currency, their categories, transactions and monthly budgets are here`,
+      `Accounts in any currency, their categories, transactions, transfers between accounts and monthly budgets are here`,
     )
     expect((await page("/")).html).toContain(`Categories with one level of subcategories`)
   })
@@ -454,7 +454,9 @@ describe("the public website", () => {
     expect(html).toContain(`Every expense and income, in the currency you paid`)
     expect(html).toContain(`/tree/main/libs/domain/transactions"`)
     expect(html).not.toContain(`Transactions are not built yet`)
-    expect(html).toContain(`Transfers are not built yet`)
+    expect(html).not.toContain(`Transfers are not built yet`)
+    expect(html).toContain(`The monthly overview is not built yet`)
+    expect(html).toContain(`transactions, transfers between accounts and monthly budgets`)
   })
 
   it("lists transactions on the home page's Works today, not under Building now", async () => {
@@ -467,6 +469,19 @@ describe("the public website", () => {
     expect(transactions).toBeLessThan(building)
     expect(card.indexOf(`Income and expenses`, building)).toBe(-1)
     expect(card).not.toContain(`/issues/96"`)
+  })
+
+  it("lists transfers on the home page's Works today, not under Building now", async () => {
+    const { html } = await page("/")
+    const card = html.slice(html.indexOf(`data-e2e="home-status"`))
+    const building = card.indexOf(`Building now`)
+    const transfers = card.indexOf(
+      `Transfers between your own accounts, across currencies, with both amounts kept`,
+    )
+
+    expect(transfers).toBeGreaterThan(card.indexOf(`Works today`))
+    expect(transfers).toBeLessThan(building)
+    expect(card).not.toContain(`/issues/97"`)
   })
 
   it("lists budgets on /features as built, right after transactions, and on the home page's Works today, not under Later", async () => {
@@ -925,7 +940,7 @@ describe("the public website", () => {
       ...Object.fromEntries(DOC_SLUGS.map((slug) => [`/docs/${slug}`, "2026-11-01T00:00:00.000Z"])),
       "/changelog": "2026-11-01T00:00:00.000Z",
       "/subscribe": "2026-11-04T00:00:00.000Z",
-      "/privacy": "2026-11-07T00:00:00.000Z",
+      "/privacy": "2026-11-14T00:00:00.000Z",
       "/terms": "2026-11-07T00:00:00.000Z",
     })
   })
@@ -967,6 +982,7 @@ describe("the public website", () => {
         `crypto holdings`,
         `every transaction: the amount, the currency, the date, the category, the memo, who added it`,
         `A deleted transaction is kept for 30 days so it can be restored, then removed for good`,
+        `Every transfer between your accounts: the two accounts, the amount sent and the amount`,
         `Categories, monthly budgets and recurring transactions`,
         `A bank statement you upload, until its import is saved or abandoned`,
         `your Telegram account&#39;s id`,

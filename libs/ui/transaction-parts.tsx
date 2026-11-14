@@ -67,12 +67,52 @@ export function categoryLabel(
   return parent ? `${parent.name} › ${category.name}` : category.name
 }
 
+/**
+ * One transfer as the transactions list shows it: money moved between two of the household's own
+ * accounts, each side in its account's currency.
+ */
+export interface TransferRow {
+  id: string
+  fromAccountId: string
+  fromAccountName: string
+  fromCurrency: string
+  /** Positive, in `fromCurrency`'s smallest unit. */
+  sentAmount: number
+  toAccountId: string
+  toAccountName: string
+  toCurrency: string
+  /** Positive, in `toCurrency`'s smallest unit. */
+  receivedAmount: number
+  /** The server converted the received amount at the date's rate. */
+  converted: boolean
+  memo: string
+  /** `YYYY-MM-DD`. */
+  date: string
+  /** "You", the member's name, or `undefined` while the members are not read. */
+  author?: string
+  createdAt: string
+}
+
+/** A row of the transactions list: an entry or a transfer. */
+export type ListRow = TransactionRow | TransferRow
+
+/** Whether a list row is a transfer. */
+export function isTransfer(row: ListRow): row is TransferRow {
+  return `fromAccountId` in row
+}
+
+/** The kind filter's value for transfers, `?kind=3`, next to Expense (1) and Income (2). */
+export const TRANSFERS_KIND = 3
+
+/** What the kind filter can hold: an entry kind or {@link TRANSFERS_KIND}. */
+export type ListKind = TransactionKind | typeof TRANSFERS_KIND
+
 /** The list's filters, as the address holds them. */
 export interface TransactionFilters {
   q: string
   accountId: string | null
   categoryId: string | null
-  kind: TransactionKind | null
+  kind: ListKind | null
   /** `YYYY-MM-DD` or `""`, inclusive. */
   from: string
   to: string
@@ -95,20 +135,31 @@ export function hasFilters(filters: TransactionFilters): boolean {
 
 /**
  * The rows the filters keep, in their order. The search looks in memos, ignoring case; a
- * category keeps its subcategories' entries too; the dates are inclusive.
+ * category keeps its subcategories' entries too; the dates are inclusive. A transfer has no
+ * category and is neither an expense nor an income, so a category filter, Expense and Income all
+ * leave it out; the account filter keeps it when either side is that account.
  */
-export function filterTransactions(
-  rows: readonly TransactionRow[],
+export function filterTransactions<Row extends ListRow>(
+  rows: readonly Row[],
   filters: TransactionFilters,
-): TransactionRow[] {
+): Row[] {
   const words = filters.q.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean)
   return rows.filter((row) => {
-    if (filters.accountId !== null && row.accountId !== filters.accountId) return false
-    if (
-      filters.categoryId !== null && row.categoryId !== filters.categoryId &&
-      row.categoryParentId !== filters.categoryId
-    ) return false
-    if (filters.kind !== null && row.kind !== filters.kind) return false
+    if (isTransfer(row)) {
+      if (filters.categoryId !== null) return false
+      if (filters.kind !== null && filters.kind !== TRANSFERS_KIND) return false
+      if (
+        filters.accountId !== null && row.fromAccountId !== filters.accountId &&
+        row.toAccountId !== filters.accountId
+      ) return false
+    } else {
+      if (filters.accountId !== null && row.accountId !== filters.accountId) return false
+      if (
+        filters.categoryId !== null && row.categoryId !== filters.categoryId &&
+        row.categoryParentId !== filters.categoryId
+      ) return false
+      if (filters.kind !== null && row.kind !== filters.kind) return false
+    }
     if (filters.from !== "" && row.date < filters.from) return false
     if (filters.to !== "" && row.date > filters.to) return false
     const memo = row.memo.toLocaleLowerCase()
@@ -117,8 +168,10 @@ export function filterTransactions(
 }
 
 /** The rows split by day, newest day first, keeping the rows' own order within a day. */
-export function byDay(rows: readonly TransactionRow[]): { date: string; rows: TransactionRow[] }[] {
-  const days: { date: string; rows: TransactionRow[] }[] = []
+export function byDay<Row extends { date: string }>(
+  rows: readonly Row[],
+): { date: string; rows: Row[] }[] {
+  const days: { date: string; rows: Row[] }[] = []
   for (const row of rows) {
     const last = days.at(-1)
     if (last?.date === row.date) last.rows.push(row)

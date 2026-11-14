@@ -351,7 +351,10 @@ export function AppShell(
         : <EmailBanner status={emailStore.status.value} navigate={navigate} />}
       connection={wsStatus}
       unreadCount={notificationsStore.unreadCount.value}
-      currentPath={routed ? location : undefined}
+      // A transfer has no rail item of its own: its pages light Transactions, where it is listed.
+      currentPath={routed
+        ? location.startsWith(`/transfers/`) ? TRANSACTION_PATHS.list : location
+        : undefined}
       navigate={navigate}
       onSignOut={onSignOut}
       language={languageChoice()}

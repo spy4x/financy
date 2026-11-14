@@ -21,6 +21,7 @@ import {
   SCREEN_PATHS,
   TAG_PATHS,
   TRANSACTION_PATHS,
+  TRANSFER_PATHS,
 } from "./progressive.tsx"
 import { PROFILE_SECTION_TEXT } from "./profile-screen.tsx"
 import { DATA_EXPORT_ANCHOR } from "./profile-export.tsx"
@@ -347,6 +348,13 @@ export function paletteCommands(
           kbd: kbdOf(shortcuts, `Shortcuts.newTransaction`),
         },
       )]
+      : []),
+    // Money between two of the household's own accounts; no key of its own.
+    ...(inGroup
+      ? [command("new-transfer", `Search.newTransfer`, heading.create, page(TRANSFER_PATHS.new), {
+        detail: inGroup,
+        aliases: [`move money`, `withdrawal`],
+      })]
       : []),
     ...(inGroup
       ? [command("new-category", `Search.newCategory`, heading.create, page(CATEGORY_PATHS.new), {

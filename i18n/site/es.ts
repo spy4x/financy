@@ -568,7 +568,8 @@ export default {
   "HomeStatus.building": "En construcción",
   "HomeStatus.accounts": "Cuentas en cualquier moneda",
   "HomeStatus.transactions": "Ingresos y gastos, con el importe original guardado",
-  "HomeStatus.transfers": "Transferencias entre cuentas, también entre monedas",
+  "HomeStatus.transfers":
+    "Transferencias entre tus propias cuentas, también entre monedas, con ambos importes guardados",
   "HomeStatus.month": "El dinero de este mes de un vistazo",
   "HomeStatus.later":
     "La importación de extractos bancarios y la nube de pago llegan después: <plan>ver el plan completo</plan>.",
@@ -618,9 +619,9 @@ export default {
     "Financy hoy: cuentas y movimientos en cualquier moneda, presupuestos mensuales, hogares con roles, sincronización, app sin conexión y nueve idiomas.",
   "Features.title": "Funciones de Financy: cuentas, hogares, sincronización",
   "FeaturesHero.lead":
-    "Financy se está reconstruyendo desde cero. Lo que funciona hoy: cuentas en cualquier moneda, sus categorías, movimientos y presupuestos mensuales, y la base que hay debajo: inicio de sesión, uso compartido con roles, cambios en tiempo real, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza al código que la hace.",
+    "Financy se está reconstruyendo desde cero. Lo que funciona hoy: cuentas en cualquier moneda, sus categorías, movimientos, transferencias entre cuentas y presupuestos mensuales, y la base que hay debajo: inicio de sesión, uso compartido con roles, cambios en tiempo real, una app sin conexión, exportación, nueve idiomas y tu propio servidor. Cada sección enlaza al código que la hace.",
   "FeaturesHero.note":
-    "Las transferencias aún no están. <status>Mira en qué punto va la reconstrucción</status>.",
+    "El resumen del mes aún no está. <status>Mira en qué punto va la reconstrucción</status>.",
   "HomeFaq.useAnswer":
     "Todavía no. El inicio de sesión, los hogares, la sincronización y las cuentas en cualquier moneda funcionan; los movimientos están en marcha.",
   "Catalog.title": "Catálogo",
@@ -649,7 +650,7 @@ export default {
     "Quien solo ve lee las categorías; solo un editor o superior las cambia",
   "FeatureCategories.code": "Ver el código de las categorías",
   "FeatureTierSettled.lead":
-    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda, sus categorías, los movimientos y los presupuestos mensuales ya están; las transferencias son lo siguiente.",
+    "Estas partes funcionan y se prueban en CI. Las cuentas en cualquier moneda, sus categorías, los movimientos, las transferencias entre cuentas y los presupuestos mensuales ya están.",
   "HomeStatus.categories": "Categorías con un nivel de subcategorías",
   "HomeStatus.budgets": "Un límite mensual para cada categoría",
   "FeatureBudgets.nav": "Presupuestos",
