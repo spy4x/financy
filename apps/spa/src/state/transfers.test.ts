@@ -248,7 +248,8 @@ describe("transfers store", () => {
 
     it("names the account the server no longer has, on its own side", async () => {
       const { store } = harness({
-        create: () => Promise.reject(refused("ACCOUNT_NOT_FOUND", { toAccountId: { code: "notFound" } })),
+        create: () =>
+          Promise.reject(refused("ACCOUNT_NOT_FOUND", { toAccountId: { code: "notFound" } })),
       })
       await store.open(groupId)
       store.startCreate({ ...blank, toAccountId: "a-vnd", sentAmount: 1 })
