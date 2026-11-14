@@ -6,6 +6,7 @@ import { PASSWORD_METHOD } from "@spy4x/server/auth/password"
 import { createPasswordHasher, type PasswordHasher } from "@spy4x/server/sign-in"
 import { randomBase64Url, sha256Hex } from "@spy4x/platform/tokens"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import { isoDateInTz } from "@spy4x/time/tz"
 import { DEV_ADMIN_EMAIL } from "@server/auth/demo-accounts.ts"
 import { type AuditEventInput, writeAuditEvent } from "@server/groups/audit.ts"
 import { PostgresInvitationRepository } from "@server/groups/postgres-invitation-repository.ts"
@@ -274,8 +275,8 @@ async function seedImport(
 }
 
 /**
- * Groups, their members, tags, accounts, categories, notes, promotions and pending invitations,
- * each at its time; with `notes` off, no tags, notes, attachments or notes import, and an imported
+ * Groups, their members, tags, accounts, categories, entries, notes, promotions and pending
+ * invitations, each at its time; with `notes` off, no tags, notes, attachments or notes import, and an imported
  * group's import counts no tags or notes. `idOf` answers `null` for someone without an account: such a member is left out, a row
  * they wrote goes to a stand-in ({@link withStandIns}), and a group with such an owner is skipped.
  * Answers each group's id, or `null` for a skipped one.
@@ -327,12 +328,16 @@ async function seedGroups(
         ),
         notes: notes.on ? group.notes.length : 0,
         tags: notes.on ? group.tags.length : 0,
+        transactions: group.entries.length,
       }
       await sql`UPDATE groups SET imported_at = ${created} WHERE id = ${groupId}`
       await sql`
         UPDATE audit_events SET event_kind = ${GROUP_FILE_EVENTS.imported},
           details = ${
-        sql.json({ ...items, count: items.accounts + items.categories + items.notes + items.tags })
+        sql.json({
+          ...items,
+          count: items.accounts + items.categories + items.notes + items.tags + items.transactions,
+        })
       }
         WHERE group_id = ${groupId} AND event_kind = ${GROUP_CREATED}
       `
@@ -385,8 +390,10 @@ async function seedGroups(
       await dateAudit(sql, id, when)
       tagIds.set(tag.name, id)
     }
+    const accountIds: string[] = []
     for (const [index, account] of content.accounts.entries()) {
       const id = uuidV7()
+      accountIds.push(id)
       const when = at(account.createdAgo)
       const author = writer(account.author)
       const { name, kind, currency, startingBalance } = account
@@ -404,6 +411,7 @@ async function seedGroups(
       await sql`UPDATE accounts SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
       await dateAudit(sql, id, when)
     }
+    const categoryIds = new Map<string, string>()
     for (const category of content.categories) {
       const when = at(category.createdAgo)
       const author = writer(category.author)
@@ -426,10 +434,34 @@ async function seedGroups(
         }
         await sql`UPDATE categories SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
         await dateAudit(sql, id, when)
+        categoryIds.set(name, id)
         return id
       }
       const parentId = await write(category, null)
       for (const child of category.children ?? []) await write(child, parentId)
+    }
+    // Each entry in its account's own currency, dated the day it was written in the group's zone.
+    for (const entry of content.entries) {
+      const id = uuidV7()
+      const when = at(entry.ago)
+      const { kind, amount, memo } = entry
+      // The demo seeds its households directly: no plan applies to what it writes.
+      await db.transaction.create(
+        {
+          id,
+          groupId,
+          accountId: accountIds[entry.account],
+          categoryId: categoryIds.get(entry.category)!,
+          kind,
+          amount,
+          currency: content.accounts[entry.account].currency,
+          memo,
+          date: isoDateInTz(when, group.timeZone),
+          allowance: null,
+        },
+        writer(entry.author),
+      )
+      await sql`UPDATE transactions SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
     }
     const fromFile: string[] = []
     for (const note of notes.on ? content.notes : []) {

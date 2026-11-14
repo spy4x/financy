@@ -48,6 +48,7 @@ import { buildPostgresOptions } from "@spy4x/server/db/postgres"
 import { requireDbConnection } from "@spy4x/server/db/testing"
 import { SessionStatus } from "@spy4x/server/sign-in"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import { isoDateInTz } from "@spy4x/time/tz"
 import { BILLING_AUDIT_EVENTS, BillingStatus, findPlan, PRO_PLAN_ID } from "@domain/billing"
 import { AuthAuditEventType } from "@domain/identity"
 import { DEFAULT_SUBSCRIBER_LIST } from "@domain/subscribers"
@@ -338,6 +339,38 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
     expect(counts.invitations).toBe(
       data.groups.reduce((sum, group) => sum + group.invitations.length, 0),
     )
+    // Every household's entries, counted per month of their date and per currency.
+    const expected: Record<string, number> = {}
+    for (const group of data.groups) {
+      for (const entry of group.entries) {
+        const day = isoDateInTz(new Date(NOW.getTime() - entry.ago * 60_000), group.timeZone)
+        const key = `${day.slice(0, 7)} ${group.accounts[entry.account].currency}`
+        expected[key] = (expected[key] ?? 0) + 1
+      }
+    }
+    const perMonth = await sql<{ month: string; currency: string; entries: number }[]>`
+      SELECT to_char(date, 'YYYY-MM') AS month, currency, COUNT(*)::int AS entries
+      FROM transactions GROUP BY 1, 2
+    `
+    expect(Object.fromEntries(perMonth.map((row) => [`${row.month} ${row.currency}`, row.entries])))
+      .toEqual(expected)
+    // The three latest months each hold entries in all three currencies.
+    const months = [...new Set(perMonth.map((row) => row.month))].sort().slice(-3)
+    expect(months).toHaveLength(3)
+    for (const month of months) {
+      const currencies = perMonth.filter((row) => row.month === month).map((row) => row.currency)
+      expect(currencies.sort()).toEqual([`EUR`, `USD`, `VND`])
+    }
+    // No entry is dated after its household's today or written before its account.
+    const [{ misplaced }] = await sql<{ misplaced: number }[]>`
+      SELECT COUNT(*)::int AS misplaced
+      FROM transactions t
+      JOIN groups g ON g.id = t.group_id
+      JOIN accounts a ON a.id = t.account_id
+      WHERE t.date > (now() AT TIME ZONE g.time_zone)::date OR t.created_at < a.created_at
+        OR t.currency <> a.currency
+    `
+    expect(misplaced).toBe(0)
     // The group the fake data marks imported has the date and a log that starts with the import.
     const imported = await sql<{ name: string; kinds: string[] }[]>`
       SELECT g.name,
@@ -1104,10 +1137,12 @@ Deno.test("with notes off, the demo seed writes every person and group but no no
     const [imported] = await sql<{ groupId: string; details: Record<string, number> }[]>`
       SELECT group_id, details FROM audit_events WHERE event_kind = 'group.imported'
     `
-    const [held] = await sql<{ accounts: number; categories: number }[]>`
+    const [held] = await sql<{ accounts: number; categories: number; transactions: number }[]>`
       SELECT
         (SELECT COUNT(*)::int FROM accounts WHERE group_id = ${imported.groupId}) AS accounts,
-        (SELECT COUNT(*)::int FROM categories WHERE group_id = ${imported.groupId}) AS categories
+        (SELECT COUNT(*)::int FROM categories WHERE group_id = ${imported.groupId}) AS categories,
+        (SELECT COUNT(*)::int FROM transactions WHERE group_id = ${imported.groupId})
+          AS transactions
     `
     expect(held.accounts).toBeGreaterThan(0)
     expect(imported.details).toEqual({
@@ -1115,7 +1150,8 @@ Deno.test("with notes off, the demo seed writes every person and group but no no
       tags: 0,
       accounts: held.accounts,
       categories: held.categories,
-      count: held.accounts + held.categories,
+      transactions: held.transactions,
+      count: held.accounts + held.categories + held.transactions,
     })
   })
 })
