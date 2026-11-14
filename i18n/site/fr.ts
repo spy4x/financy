@@ -574,7 +574,8 @@ export default {
   "HomeStatus.building": "En cours",
   "HomeStatus.accounts": "Des comptes dans n’importe quelle devise",
   "HomeStatus.transactions": "Revenus et dépenses, avec le montant d’origine conservé",
-  "HomeStatus.transfers": "Virements entre comptes, y compris entre devises",
+  "HomeStatus.transfers":
+    "Virements entre vos propres comptes, y compris entre devises, avec les deux montants conservés",
   "HomeStatus.month": "L’argent du mois en un coup d’œil",
   "HomeStatus.later":
     "L’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",

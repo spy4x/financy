@@ -559,7 +559,8 @@ export default {
   "HomeStatus.building": "Building now",
   "HomeStatus.accounts": "Accounts in any currency",
   "HomeStatus.transactions": "Income and expenses, with the original amount kept",
-  "HomeStatus.transfers": "Transfers between accounts, across currencies",
+  "HomeStatus.transfers":
+    "Transfers between your own accounts, across currencies, with both amounts kept",
   "HomeStatus.month": "This month's money at a glance",
   "HomeStatus.later":
     "Bank statement import and the paid cloud come later: <plan>see the whole plan</plan>.",

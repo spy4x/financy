@@ -564,7 +564,8 @@ export default {
   "HomeStatus.building": "Em construção",
   "HomeStatus.accounts": "Contas em qualquer moeda",
   "HomeStatus.transactions": "Receitas e despesas, com o valor original guardado",
-  "HomeStatus.transfers": "Transferências entre contas, também entre moedas",
+  "HomeStatus.transfers":
+    "Transferências entre suas próprias contas, também entre moedas, com os dois valores guardados",
   "HomeStatus.month": "O dinheiro do mês num relance",
   "HomeStatus.later":
     "A importação de extratos bancários e a nuvem paga vêm depois: <plan>veja o plano completo</plan>.",

@@ -554,7 +554,8 @@ export default {
   "HomeStatus.building": "В работе",
   "HomeStatus.accounts": "Счета в любой валюте",
   "HomeStatus.transactions": "Доходы и расходы с сохранением исходной суммы",
-  "HomeStatus.transfers": "Переводы между счетами, в том числе между валютами",
+  "HomeStatus.transfers":
+    "Переводы между вашими счетами, в том числе между валютами, с обеими суммами",
   "HomeStatus.month": "Деньги за месяц на одном экране",
   "HomeStatus.later": "Импорт банковских выписок и платное облако — позже: <plan>весь план</plan>.",
   "HomeWho.keeperTitle": "Тот, кто ведёт учёт",

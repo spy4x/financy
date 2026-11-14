@@ -543,7 +543,7 @@ export default {
   "HomeStatus.building": "قيد البناء الآن",
   "HomeStatus.accounts": "حسابات بأي عملة",
   "HomeStatus.transactions": "الدخل والمصروفات، مع حفظ المبلغ الأصلي",
-  "HomeStatus.transfers": "تحويلات بين الحسابات، وبين العملات أيضًا",
+  "HomeStatus.transfers": "تحويلات بين حساباتك، وبين العملات أيضًا، مع حفظ المبلغين",
   "HomeStatus.month": "أموال هذا الشهر في لمحة",
   "HomeStatus.later":
     "استيراد كشوف الحساب البنكية والسحابة المدفوعة يأتيان لاحقًا: <plan>اطّلع على الخطة كاملة</plan>.",

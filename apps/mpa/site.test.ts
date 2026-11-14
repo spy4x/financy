@@ -473,7 +473,9 @@ describe("the public website", () => {
     const { html } = await page("/")
     const card = html.slice(html.indexOf(`data-e2e="home-status"`))
     const building = card.indexOf(`Building now`)
-    const transfers = card.indexOf(`Transfers between accounts, across currencies`)
+    const transfers = card.indexOf(
+      `Transfers between your own accounts, across currencies, with both amounts kept`,
+    )
 
     expect(transfers).toBeGreaterThan(card.indexOf(`Works today`))
     expect(transfers).toBeLessThan(building)
