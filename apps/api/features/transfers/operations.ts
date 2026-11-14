@@ -7,6 +7,8 @@ import {
   transferDeletePayloadSchema,
   transferGetPayloadSchema,
   TransferGetQuery,
+  transferListDeletedPayloadSchema,
+  TransferListDeletedQuery,
   TransferRestoreCommand,
   transferRestorePayloadSchema,
   TransferUpdateCommand,
@@ -23,6 +25,7 @@ export interface TransferOperationDependencies {
   delete(command: TransferDeleteCommand): Promise<{ transfer: Transfer }>
   restore(command: TransferRestoreCommand): Promise<{ transfer: Transfer }>
   get(query: TransferGetQuery): Promise<{ transfer: Transfer }>
+  listDeleted(query: TransferListDeletedQuery): Promise<{ transfers: Transfer[] }>
 }
 
 /**
@@ -76,6 +79,13 @@ export function createTransferOperations(
       handle: async ({ actor, payload }) => {
         const input = parseTransferRequest(transferGetPayloadSchema, payload)
         return await dependencies.get(new TransferGetQuery({ actor, ...input }))
+      },
+    },
+    "transfer.listDeleted": {
+      kind: "query",
+      handle: async ({ actor, payload }) => {
+        const input = parseTransferRequest(transferListDeletedPayloadSchema, payload)
+        return await dependencies.listDeleted(new TransferListDeletedQuery({ actor, ...input }))
       },
     },
   }

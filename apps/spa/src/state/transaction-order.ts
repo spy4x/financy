@@ -13,3 +13,16 @@ export function byDate(
   if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1
   return a.id < b.id ? 1 : a.id > b.id ? -1 : 0
 }
+
+/**
+ * The order of the deleted list, entries and transfers together: the latest deleted first, as
+ * each list comes from the server. Both are ISO instants in UTC, so their text sorts as time.
+ */
+export function byDeletedAt(
+  a: { deletedAt?: string | null; id: string },
+  b: { deletedAt?: string | null; id: string },
+): number {
+  const [x, y] = [a.deletedAt ?? ``, b.deletedAt ?? ``]
+  if (x !== y) return x < y ? 1 : -1
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+}

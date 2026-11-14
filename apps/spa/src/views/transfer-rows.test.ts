@@ -2,6 +2,7 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { createTranslator } from "@spy4x/platform/universal/i18n"
 import app from "@i18n/app/en.ts"
+import { byDeletedAt } from "../state/transaction-order.ts"
 import type { TransferItem } from "../state/transfers.ts"
 import { transferRow, transferUndoText } from "./transfer-rows.ts"
 
@@ -39,6 +40,14 @@ describe("transferRow", () => {
     expect([row.fromAccountName, row.fromCurrency, row.toAccountName, row.toCurrency])
       .toEqual(["Card", "USD", "Wallet", "EUR"])
     expect(row.author).toBe("Anna")
+  })
+
+  it("keeps a deleted transfer's deletion time, so the deleted list dates and orders it", () => {
+    const deleted = transferRow({ ...transfer, deletedAt: "2026-11-14T10:00:00.000Z" }, context)
+    expect(deleted.deletedAt).toBe("2026-11-14T10:00:00.000Z")
+    const entry = { id: "e-1", deletedAt: "2026-11-10T10:00:00.000Z" }
+    expect([entry, deleted].sort(byDeletedAt).map((row) => row.id)).toEqual(["tr-1", "e-1"])
+    expect(transferRow(transfer, context).deletedAt).toBeNull()
   })
 
   it("calls an account the device does not know Unknown, in the other side's currency", () => {

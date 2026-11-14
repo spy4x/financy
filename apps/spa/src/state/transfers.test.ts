@@ -48,6 +48,7 @@ function harness(overrides: Partial<TransfersDependencies> = {}, list = [transfe
   let ids = 0
   const dependencies: TransfersDependencies = {
     fetchList: () => Promise.resolve(list),
+    fetchDeleted: () => Promise.resolve([]),
     create(input) {
       calls.push({ name: "create", input: { ...input } })
       return Promise.resolve({ transfer: transfer(input.id, { ...input, receivedAmount: 1 }) })
@@ -312,6 +313,76 @@ describe("transfers store", () => {
       await store.remove("x-1")
       expect(await store.undoDelete()).toBe(false)
       expect(store.listError.value).toBe(TRANSFER_MESSAGES.restoreOffline)
+    })
+  })
+
+  describe("the deleted list", () => {
+    const gone = transfer("x-2", { deletedAt: "2026-11-12T09:00:00.000Z", version: 2 })
+
+    it("reads the deleted transfers only while shown, and drops them when hidden", async () => {
+      let reads = 0
+      const { store } = harness({
+        fetchDeleted: (id) => {
+          reads++
+          expect(id).toBe(groupId)
+          return Promise.resolve([gone])
+        },
+      })
+      await store.open(groupId)
+      expect(reads).toBe(0)
+      expect(store.deleted.value).toBe(null)
+
+      await store.showDeleted(true)
+      expect(store.deleted.value?.map((item) => item.id)).toEqual(["x-2"])
+      await store.refresh()
+      expect(reads).toBe(2)
+
+      await store.showDeleted(false)
+      expect(store.deleted.value).toBe(null)
+      await store.refresh()
+      expect(reads).toBe(2)
+    })
+
+    it("moves a restored transfer from the deleted list to the live list", async () => {
+      const { store } = harness({ fetchDeleted: () => Promise.resolve([gone]) })
+      await store.open(groupId)
+      await store.showDeleted(true)
+
+      expect((await store.restore("x-2"))?.id).toBe("x-2")
+
+      expect(store.deleted.value).toEqual([])
+      expect(store.transfers.value.map((item) => item.id).sort()).toEqual(["x-1", "x-2"])
+    })
+
+    it("says a purged transfer is gone and reads the deleted list again without it", async () => {
+      let purged = false
+      const { store } = harness({
+        fetchDeleted: () => Promise.resolve(purged ? [] : [gone]),
+        restore: () => {
+          purged = true
+          return Promise.reject(refused("TRANSFER_NOT_FOUND"))
+        },
+      })
+      await store.open(groupId)
+      await store.showDeleted(true)
+
+      expect(await store.restore("x-2")).toBe(null)
+
+      expect(store.listError.value).toBe(TRANSFER_MESSAGES.gone)
+      expect(store.deleted.value).toEqual([])
+      expect(store.transfers.value.map((item) => item.id)).toEqual(["x-1"])
+    })
+
+    it("says the list could not load when the deleted transfers cannot be read", async () => {
+      const { store } = harness({
+        fetchDeleted: () => Promise.reject(new ConnectionLostError("offline")),
+      })
+      await store.open(groupId)
+
+      await store.showDeleted(true)
+
+      expect(store.listError.value).toBe(TRANSFER_MESSAGES.load)
+      expect(store.deleted.value).toEqual([])
     })
   })
 })

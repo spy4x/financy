@@ -2,11 +2,13 @@ import type { CommandHandler, QueryHandler } from "@spy4x/platform/cqrs"
 import {
   assertCanReadTransfers,
   assertCanWriteTransfers,
+  TRANSFER_DELETED_LIST_MAX,
   TransferCreateCommand,
   TransferDeleteCommand,
   TransferError,
   type TransferFields,
   TransferGetQuery,
+  TransferListDeletedQuery,
   type TransferRepository,
   type TransferRequestFields,
   TransferRestoreCommand,
@@ -148,5 +150,15 @@ export function createTransferGetHandler(
     const transfer = await transfers.get(data.groupId, data.id)
     if (!transfer) throw new TransferError("TRANSFER_NOT_FOUND", "Transfer not found")
     return { transfer }
+  }
+}
+
+/** The household's deleted transfers that can still be restored, for every member who reads. */
+export function createTransferListDeletedHandler(
+  { transfers, groups }: TransferHandlerDependencies,
+): QueryHandler<TransferListDeletedQuery> {
+  return async ({ data }) => {
+    assertCanReadTransfers(await groups.roleOf(data.groupId, data.actor.userId))
+    return { transfers: await transfers.listDeleted(data.groupId, TRANSFER_DELETED_LIST_MAX) }
   }
 }
