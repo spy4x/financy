@@ -1,6 +1,7 @@
 import { type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
 import {
+  convertMoney,
   currencyCode,
   currencyDecimals,
   type CustomCurrency,
@@ -62,6 +63,22 @@ export const accountCurrencyCode = currencyCode.or(coinCode)
  */
 export function amountDecimals(code: string): number {
   return COINS.find((coin) => coin.code === code)?.decimals ?? currencyDecimals(code)
+}
+
+/**
+ * `convertMoney` with each side's decimals from `amountDecimals`, so a coin is scaled by its own 8
+ * decimals and not by `Intl`'s guess of 2, which would put 0.5 BTC a million times off.
+ */
+export function convertAmount(
+  amount: number,
+  from: string,
+  to: string,
+  rate: ExchangeRate | null,
+): ReturnType<typeof convertMoney> {
+  return convertMoney(amount, from, to, rate, {
+    fromDecimals: amountDecimals(from),
+    toDecimals: amountDecimals(to),
+  })
 }
 
 /**

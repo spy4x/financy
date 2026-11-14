@@ -246,6 +246,9 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "Uma subcategoria só pode ficar dentro de uma categoria de primeiro nível do mesmo tipo.",
   "Reason.TRANSACTION_NOT_FOUND": "Este lançamento não existe mais.",
+  "Reason.TRANSFER_NOT_FOUND": "Esta transferência não existe mais.",
+  "Reason.TRANSFER_SAME_ACCOUNT":
+    "Uma transferência precisa de duas contas diferentes. Escolha outra.",
   "Reason.CATEGORY_KIND_MISMATCH":
     "Uma despesa precisa de uma categoria de despesas. Escolha outra.",
   "Reason.NO_RATE":

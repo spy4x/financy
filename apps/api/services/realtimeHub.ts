@@ -12,6 +12,7 @@ import { createPushOperations } from "../features/push/operations.ts"
 import { createAccountOperations } from "../features/accounts/operations.ts"
 import { createCategoryOperations } from "../features/categories/operations.ts"
 import { createTransactionOperations } from "../features/transactions/operations.ts"
+import { createTransferOperations } from "../features/transfers/operations.ts"
 import { createBudgetOperations } from "../features/budgets/operations.ts"
 import { createHouseholdOperations } from "../features/household/operations.ts"
 import { createRecurringRuleOperations } from "../features/recurring/operations.ts"
@@ -125,6 +126,13 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
     get: (query) => queryBus.execute(query),
     listDeleted: (query) => queryBus.execute(query),
     ledger: (query) => queryBus.execute(query),
+  }),
+  ...createTransferOperations({
+    create: (command) => commandBus.execute(command),
+    update: (command) => commandBus.execute(command),
+    delete: (command) => commandBus.execute(command),
+    restore: (command) => commandBus.execute(command),
+    get: (query) => queryBus.execute(query),
   }),
   ...createBudgetOperations({
     set: (command) => commandBus.execute(command),

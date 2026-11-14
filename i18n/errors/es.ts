@@ -252,6 +252,8 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "Una subcategoría solo puede ir dentro de una categoría de primer nivel del mismo tipo.",
   "Reason.TRANSACTION_NOT_FOUND": "Este movimiento ya no existe.",
+  "Reason.TRANSFER_NOT_FOUND": "Esta transferencia ya no existe.",
+  "Reason.TRANSFER_SAME_ACCOUNT": "Una transferencia necesita dos cuentas distintas. Elige otra.",
   "Reason.CATEGORY_KIND_MISMATCH": "Un gasto necesita una categoría de gastos. Elige otra.",
   "Reason.NO_RATE":
     "Todavía no hay tipo de cambio para esta fecha. Indica también el importe en la moneda de la cuenta.",

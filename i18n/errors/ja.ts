@@ -242,6 +242,8 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "サブカテゴリを置けるのは、同じ種類のトップレベルのカテゴリの下だけです。",
   "Reason.TRANSACTION_NOT_FOUND": "この取引はもう存在しません。",
+  "Reason.TRANSFER_NOT_FOUND": "この振替はもう存在しません。",
+  "Reason.TRANSFER_SAME_ACCOUNT": "振替には別々の口座が2つ必要です。別の口座を選んでください。",
   "Reason.CATEGORY_KIND_MISMATCH":
     "支出には支出カテゴリーが必要です。別のカテゴリーを選んでください。",
   "Reason.NO_RATE": "この日付の為替レートはまだありません。口座の通貨での金額も入力してください。",

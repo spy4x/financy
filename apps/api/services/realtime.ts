@@ -17,6 +17,7 @@ import { TagError, TagVersionConflictError } from "@domain/tags"
 import { AccountError, AccountVersionConflictError } from "@domain/accounts"
 import { CategoryError, CategoryVersionConflictError } from "@domain/categories"
 import { TransactionError, TransactionVersionConflictError } from "@domain/transactions"
+import { TransferError, TransferVersionConflictError } from "@domain/transfers"
 import { BudgetError, BudgetVersionConflictError } from "@domain/budgets"
 import { RecurringRuleError, RecurringRuleVersionConflictError } from "@domain/recurring"
 import { HouseholdError, HouseholdVersionConflictError } from "@domain/money"
@@ -118,6 +119,15 @@ export function toRequestError(error: unknown): RealtimeRequestError | null {
       ? { code: error.code, currentVersion: error.currentVersion }
       : { code: error.code }
     return new RealtimeRequestError(TRANSACTION_ERROR_CODES[error.code], error.message, details, {
+      reason: error.code,
+      fields: error.fields,
+    })
+  }
+  if (error instanceof TransferError) {
+    const details = error instanceof TransferVersionConflictError
+      ? { code: error.code, currentVersion: error.currentVersion }
+      : { code: error.code }
+    return new RealtimeRequestError(TRANSFER_ERROR_CODES[error.code], error.message, details, {
       reason: error.code,
       fields: error.fields,
     })
@@ -334,6 +344,21 @@ const TRANSACTION_ERROR_CODES: Record<
   NO_RATE: "conflict",
   ROLE_INSUFFICIENT: "forbidden",
   TRANSACTION_NOT_FOUND: "not_found",
+  VERSION_CONFLICT: "conflict",
+}
+
+const TRANSFER_ERROR_CODES: Record<
+  TransferError["code"],
+  "bad_request" | "forbidden" | "not_found" | "conflict"
+> = {
+  ACCOUNT_NOT_FOUND: "not_found",
+  GROUP_NOT_FOUND: "not_found",
+  ID_ALREADY_EXISTS: "conflict",
+  INVALID_REQUEST: "bad_request",
+  NO_RATE: "conflict",
+  ROLE_INSUFFICIENT: "forbidden",
+  TRANSFER_NOT_FOUND: "not_found",
+  TRANSFER_SAME_ACCOUNT: "bad_request",
   VERSION_CONFLICT: "conflict",
 }
 

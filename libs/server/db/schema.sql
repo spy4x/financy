@@ -1916,3 +1916,45 @@ CREATE TABLE coin_prices (
     CONSTRAINT coin_prices_coin_check CHECK (coin ~ '^[A-Z][A-Z0-9]{1,11}$'),
     CONSTRAINT coin_prices_price_check CHECK (price > 0)
 );
+
+-- Transfers (2026_12_21_0001_transfers.sql explains each column): money a household moves between
+-- two of its own accounts, one row with both sides, and no category.
+CREATE TABLE transfers (
+    id UUID PRIMARY KEY,
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    from_account_id UUID NOT NULL,
+    to_account_id UUID NOT NULL,
+    sent_amount BIGINT NOT NULL,
+    received_amount BIGINT NOT NULL,
+    converted BOOLEAN DEFAULT false NOT NULL,
+    memo VARCHAR(500) DEFAULT '' NOT NULL,
+    date DATE NOT NULL,
+    version INT4 DEFAULT 1 NOT NULL,
+    change_sequence BIGINT NOT NULL,
+    created_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
+    updated_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMPTZ(3),
+    CONSTRAINT transfers_from_account_fkey FOREIGN KEY (group_id, from_account_id)
+        REFERENCES accounts (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT transfers_to_account_fkey FOREIGN KEY (group_id, to_account_id)
+        REFERENCES accounts (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT transfers_accounts_differ_check CHECK (from_account_id <> to_account_id),
+    CONSTRAINT transfers_sent_amount_check CHECK (sent_amount BETWEEN 1 AND 9007199254740991),
+    CONSTRAINT transfers_received_amount_check
+        CHECK (received_amount BETWEEN 1 AND 9007199254740991),
+    CONSTRAINT transfers_memo_check CHECK (char_length(memo) <= 500),
+    CONSTRAINT transfers_version_check CHECK (version >= 1),
+    CONSTRAINT transfers_change_sequence_check CHECK (change_sequence >= 1)
+);
+
+-- An account's balance on a day, and whether a transfer names it (the currency lock, the delete
+-- check), on either side.
+CREATE INDEX idx_transfers_from_account_date ON transfers (from_account_id, date);
+CREATE INDEX idx_transfers_to_account_date ON transfers (to_account_id, date);
+CREATE INDEX idx_transfers_group_change_sequence ON transfers (group_id, change_sequence);
+-- The worker's purge of transfers deleted longer ago than the restore window.
+CREATE INDEX idx_transfers_deleted_at ON transfers (deleted_at) WHERE deleted_at IS NOT NULL;
+CREATE INDEX idx_transfers_created_by ON transfers (created_by_user_id);
+CREATE INDEX idx_transfers_updated_by ON transfers (updated_by_user_id);

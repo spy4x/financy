@@ -34,6 +34,7 @@ import type { TagErrorCode } from "@domain/tags"
 import type { AccountErrorCode } from "@domain/accounts"
 import type { CategoryErrorCode } from "@domain/categories"
 import type { TransactionErrorCode } from "@domain/transactions"
+import type { TransferErrorCode } from "@domain/transfers"
 import type { BudgetErrorCode } from "@domain/budgets"
 import type { RecurringRuleErrorCode } from "@domain/recurring"
 
@@ -97,6 +98,7 @@ export type ErrorReason =
   | AccountErrorCode
   | CategoryErrorCode
   | TransactionErrorCode
+  | TransferErrorCode
   | BudgetErrorCode
   | RecurringRuleErrorCode
 

@@ -263,6 +263,8 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "لا يمكن وضع الفئة الفرعية إلا تحت فئة من المستوى الأعلى من النوع نفسه.",
   "Reason.TRANSACTION_NOT_FOUND": "هذه المعاملة لم تعد موجودة.",
+  "Reason.TRANSFER_NOT_FOUND": "هذا التحويل لم يعد موجودًا.",
+  "Reason.TRANSFER_SAME_ACCOUNT": "يحتاج التحويل إلى حسابين مختلفين. اختر حسابًا آخر.",
   "Reason.CATEGORY_KIND_MISMATCH": "المصروف يحتاج إلى فئة مصروفات. اختر فئة أخرى.",
   "Reason.NO_RATE": "لا يوجد سعر صرف لهذا التاريخ بعد. أدخل المبلغ بعملة الحساب أيضًا.",
   "Reason.CURRENCY_LOCKED": "لهذا الحساب معاملات بالفعل، لذلك لا يمكن تغيير عملته.",

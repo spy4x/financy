@@ -205,6 +205,18 @@ import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.
 import { transactionLedgerHandler } from "@api/cqrs/query-handlers/transaction-ledger.ts"
 import { transactionListDeletedHandler } from "@api/cqrs/query-handlers/transaction-list-deleted.ts"
 import {
+  TransferCreateCommand,
+  TransferDeleteCommand,
+  TransferGetQuery,
+  TransferRestoreCommand,
+  TransferUpdateCommand,
+} from "@domain/transfers"
+import { transferCreateHandler } from "@api/cqrs/command-handlers/transfer-create.ts"
+import { transferUpdateHandler } from "@api/cqrs/command-handlers/transfer-update.ts"
+import { transferDeleteHandler } from "@api/cqrs/command-handlers/transfer-delete.ts"
+import { transferRestoreHandler } from "@api/cqrs/command-handlers/transfer-restore.ts"
+import { transferGetHandler } from "@api/cqrs/query-handlers/transfer-get.ts"
+import {
   BudgetMethodSetCommand,
   BudgetMonthQuery,
   BudgetMoveCommand,
@@ -388,6 +400,10 @@ commandBus.register(TransactionCreateCommand, transactionCreateHandler)
 commandBus.register(TransactionUpdateCommand, transactionUpdateHandler)
 commandBus.register(TransactionDeleteCommand, transactionDeleteHandler)
 commandBus.register(TransactionRestoreCommand, transactionRestoreHandler)
+commandBus.register(TransferCreateCommand, transferCreateHandler)
+commandBus.register(TransferUpdateCommand, transferUpdateHandler)
+commandBus.register(TransferDeleteCommand, transferDeleteHandler)
+commandBus.register(TransferRestoreCommand, transferRestoreHandler)
 commandBus.register(BudgetSetCommand, budgetSetHandler)
 commandBus.register(BudgetMethodSetCommand, budgetMethodSetHandler)
 commandBus.register(BudgetMoveCommand, budgetMoveHandler)
@@ -426,6 +442,7 @@ queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(TransactionGetQuery, transactionGetHandler)
 queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
 queryBus.register(TransactionListDeletedQuery, transactionListDeletedHandler)
+queryBus.register(TransferGetQuery, transferGetHandler)
 queryBus.register(BudgetMonthQuery, budgetMonthHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)

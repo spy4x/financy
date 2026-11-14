@@ -9,8 +9,8 @@ import {
   plainEntryProblem,
 } from "@domain/groups"
 import { CategoryKind } from "@domain/categories"
-import { accountCurrencyCode, amountDecimals } from "@domain/money"
-import { convertMoney, type ExchangeRate } from "@spy4x/platform/universal/money"
+import { accountCurrencyCode, convertAmount } from "@domain/money"
+import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { endOfMonth, parseIsoDate, shiftMonth, startOfMonth } from "@spy4x/time/date"
@@ -307,22 +307,6 @@ export type EntryRateLookup = (
   quote: string,
   date: string,
 ) => Promise<ExchangeRate | null>
-
-/**
- * `convertMoney` with each side's decimals from `amountDecimals`, so a coin is scaled by its own 8
- * decimals and not by `Intl`'s guess of 2, which would put 0.5 BTC a million times off.
- */
-function convertAmount(
-  amount: number,
-  from: string,
-  to: string,
-  rate: ExchangeRate | null,
-): ReturnType<typeof convertMoney> {
-  return convertMoney(amount, from, to, rate, {
-    fromDecimals: amountDecimals(from),
-    toDecimals: amountDecimals(to),
-  })
-}
 
 /**
  * Whether a category of `category` may hold an entry of `kind` (R7): an expense needs an expense
@@ -742,7 +726,7 @@ export interface TransactionRepository {
    * restored.
    */
   listDeleted(groupId: string, limit: number): Promise<Transaction[]>
-  /** How many live entries the household holds: what the plan's `maxTransactions` counts. */
+  /** How many live entries the household holds; the plan's `maxTransactions` adds transfers. */
   count(groupId: string): Promise<number>
   /** The household's time zone, the one its days are cut in (R14). */
   timeZoneOf(groupId: string): Promise<string | null>

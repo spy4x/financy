@@ -11,6 +11,7 @@ import { NoteCreateCommand, NoteMoveCommand, NoteRestoreCommand } from "@domain/
 import { CategoryArchiveCommand, CategoryCreateCommand } from "@domain/categories"
 import { AccountCreateCommand, AccountRestoreCommand } from "@domain/accounts"
 import { TransactionCreateCommand, TransactionRestoreCommand } from "@domain/transactions"
+import { TransferCreateCommand, TransferRestoreCommand } from "@domain/transfers"
 import { RecurringRuleCreateCommand, RecurringRuleRestoreCommand } from "@domain/recurring"
 import {
   BudgetMethod,
@@ -106,6 +107,20 @@ export const ENTITLEMENT_NEEDS: EntitlementNeeds = new Map([
   ),
   needsRoom(
     TransactionRestoreCommand,
+    "maxTransactions",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
+  ),
+  // A transfer added or restored takes a slot of the same cap: the plan counts entries and
+  // transfers together, so moving money is not a way around it. An edit or a delete passes.
+  needsRoom(
+    TransferCreateCommand,
+    "maxTransactions",
+    (command) => command.data.groupId,
+    (actor) => canMutateNotes(actor),
+  ),
+  needsRoom(
+    TransferRestoreCommand,
     "maxTransactions",
     (command) => command.data.groupId,
     (actor) => canMutateNotes(actor),

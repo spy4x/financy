@@ -34,6 +34,7 @@ COPY libs/domain/tags/deno.json ./libs/domain/tags/deno.json
 COPY libs/domain/accounts/deno.json ./libs/domain/accounts/deno.json
 COPY libs/domain/categories/deno.json ./libs/domain/categories/deno.json
 COPY libs/domain/transactions/deno.json ./libs/domain/transactions/deno.json
+COPY libs/domain/transfers/deno.json ./libs/domain/transfers/deno.json
 COPY libs/domain/budgets/deno.json ./libs/domain/budgets/deno.json
 COPY libs/domain/recurring/deno.json ./libs/domain/recurring/deno.json
 COPY libs/domain/money/deno.json ./libs/domain/money/deno.json
@@ -56,6 +57,7 @@ COPY libs/server/tags/deno.json ./libs/server/tags/deno.json
 COPY libs/server/accounts/deno.json ./libs/server/accounts/deno.json
 COPY libs/server/categories/deno.json ./libs/server/categories/deno.json
 COPY libs/server/transactions/deno.json ./libs/server/transactions/deno.json
+COPY libs/server/transfers/deno.json ./libs/server/transfers/deno.json
 COPY libs/server/budgets/deno.json ./libs/server/budgets/deno.json
 COPY libs/server/recurring/deno.json ./libs/server/recurring/deno.json
 COPY libs/server/money/deno.json ./libs/server/money/deno.json

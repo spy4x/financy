@@ -32,6 +32,7 @@ import { amountOf } from "@server/accounts/postgres-account-repository.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import type { GroupRole } from "@domain/groups"
 import { assertRoomFor } from "@domain/billing"
+import { countPlanTransactions } from "./plan-count.ts"
 
 /** A row as postgres.js reads it: the BIGINT columns come as decimal text, the date as text. */
 interface TransactionRow extends postgres.Row, Omit<Transaction, "accountAmount" | "amount"> {
@@ -377,9 +378,9 @@ export class PostgresTransactionRepository implements TransactionRepository {
   }
 
   /**
-   * Refuses a write that just added a live entry to a household past its plan's `allowance`. It
-   * runs after the write, under the lock on the household that every other entry write takes. No
-   * cap needs no count.
+   * Refuses a write that just added a live entry to a household past its plan's `allowance`, which
+   * counts entries and transfers together. It runs after the write, under the lock on the household
+   * that every other entry and transfer write takes. No cap needs no count.
    */
   private async assertRoom(
     groupId: string,
@@ -387,7 +388,12 @@ export class PostgresTransactionRepository implements TransactionRepository {
     role: GroupRole,
   ): Promise<void> {
     if (allowance === null) return
-    assertRoomFor("maxTransactions", allowance, (await this.count(groupId)) - 1, role)
+    assertRoomFor(
+      "maxTransactions",
+      allowance,
+      (await countPlanTransactions(this.sql, groupId)) - 1,
+      role,
+    )
   }
 
   /** An entry of the group, live or deleted. */

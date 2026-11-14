@@ -12,6 +12,8 @@ import { PostgresCategoryRepository } from "@server/categories/postgres-category
 import { TransactionError, TransactionKind } from "@domain/transactions"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
 import { RecurringRuleError } from "@domain/recurring"
+import { TransferError } from "@domain/transfers"
+import { PostgresTransferRepository } from "@server/transfers/postgres-transfer-repository.ts"
 import { PostgresRecurringRuleRepository } from "@server/recurring/postgres-recurring-rule-repository.ts"
 import {
   holdMemberChange,
@@ -231,6 +233,73 @@ for (const change of ["removal", "demotion"] as const) {
         expect((error as TransactionError).code).toBe(EXPECTED_CODE[change])
         const rows = await sql`
           SELECT memo, version, deleted_at IS NOT NULL AS deleted FROM transactions WHERE id = ${id}
+        `
+        expect(rows).toEqual(
+          write === "create"
+            ? []
+            : [{ memo: "", version: write === "restore" ? 2 : 1, deleted: write === "restore" }],
+        )
+      })
+    })
+  }
+}
+
+const TRANSFER_WRITES = ["create", "update", "delete", "restore"] as const
+
+for (const change of ["removal", "demotion"] as const) {
+  for (const write of TRANSFER_WRITES) {
+    Deno.test(`transfer ${write}: refused when a ${change} commits while the write waits`, async () => {
+      await withSchema(async (sql) => {
+        const { groupId, owner, editor } = await team(sql)
+        const accounts = new PostgresAccountRepository(sql)
+        const [fromAccountId, toAccountId] = [uuidV7(), uuidV7()]
+        for (const [id, name] of [[fromAccountId, "Card"], [toAccountId, "Cash"]]) {
+          await accounts.create({
+            groupId,
+            id,
+            name,
+            kind: AccountKind.BANK,
+            currency: "USD",
+            startingBalance: 0,
+            allowance: null,
+          }, owner)
+        }
+        const transfers = new PostgresTransferRepository(sql)
+        const id = uuidV7()
+        const fields = {
+          fromAccountId,
+          toAccountId,
+          sentAmount: 1234,
+          memo: "",
+          date: "2026-11-05",
+        }
+        if (write !== "create") {
+          await transfers.create({ groupId, id, ...fields, allowance: null }, editor)
+        }
+        if (write === "restore") {
+          await transfers.delete({ groupId, id, expectedVersion: 1 }, editor)
+        }
+
+        const held = await holdMemberChange(sql, groupId, owner, editor, change)
+        const at = { groupId, id, expectedVersion: 1 }
+        const writing = write === "create"
+          ? transfers.create({ groupId, id, ...fields, allowance: null }, editor)
+          : write === "update"
+          ? transfers.update({ ...at, ...fields, memo: "Late" }, editor)
+          : write === "delete"
+          ? transfers.delete(at, editor)
+          : transfers.restore({ groupId, id, allowance: null }, editor)
+        const outcome = writing.then(() => null, (error) => error)
+
+        expect(await stillWaiting(outcome)).toBe(true)
+        held.release()
+        await held.committed
+
+        const error = await outcome
+        expect(error).toBeInstanceOf(TransferError)
+        expect((error as TransferError).code).toBe(EXPECTED_CODE[change])
+        const rows = await sql`
+          SELECT memo, version, deleted_at IS NOT NULL AS deleted FROM transfers WHERE id = ${id}
         `
         expect(rows).toEqual(
           write === "create"
