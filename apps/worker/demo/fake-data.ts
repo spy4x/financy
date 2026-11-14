@@ -5,6 +5,7 @@ import { RATE_SOURCES } from "@domain/money"
 import type { TagColor } from "@domain/tags"
 import { AccountKind } from "@domain/accounts"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
+import { TransactionKind } from "@domain/transactions"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import recordedEcbRates from "../../../libs/server/money/fixtures/frankfurter-saturday-ecb.json" with {
   type: "json",
@@ -160,6 +161,21 @@ export const DEMO_CATEGORY_COUNT = DEMO_CATEGORIES.reduce(
   0,
 )
 
+/** One entry of a demo household, in its account's own currency, so it needs no rate. */
+export interface FakeEntry {
+  /** The account, by its index in the group's `accounts`. */
+  account: number
+  /** The category, by its name: every name in {@link DEMO_CATEGORIES} is unique. */
+  category: string
+  kind: TransactionKind
+  /** Above zero, in the account currency's smallest unit; the server signs it. */
+  amount: number
+  memo: string
+  author: FakeMember
+  /** When it was written; its date is that moment's day in the group's time zone. */
+  ago: number
+}
+
 export interface FakeGroup {
   name: string
   /** The zone the group's days are cut in: one of {@link DEMO_TIME_ZONES}, by its name. */
@@ -172,6 +188,8 @@ export interface FakeGroup {
   accounts: FakeAccount[]
   /** The household's categories, each with its children. */
   categories: FakeCategory[]
+  /** The household's entries, oldest first. */
+  entries: FakeEntry[]
   notes: FakeNote[]
   /** Pending invitations: tied to an address, or `null` for a link anyone may use. */
   invitations: { email: string | null; role: GroupRole; author: FakeMember; createdAgo: number }[]
@@ -619,6 +637,7 @@ function fakeGroup(
     tags,
     accounts,
     categories,
+    entries: [],
     notes,
     invitations,
     promotions,
@@ -673,6 +692,7 @@ export function withStandIns(
       ...category,
       author: as(category.author, writer),
     })),
+    entries: group.entries.map((entry) => ({ ...entry, author: as(entry.author, writer) })),
     notes: group.notes.map((note) => ({
       ...note,
       author: as(note.author, writer),
@@ -871,7 +891,9 @@ export function fakeDemoData(seed: number, now: Date): FakeDemoData {
   const newsletter = fakeNewsletter(tools, now, users, taken)
   const operator = fakeOperator(tools, now, users, subscriptions)
   addPasskeys(randomTools(seed + PASSKEY_SEED_OFFSET), users)
-  return { users, groups: [...groups, ...small], subscriptions, ...newsletter, operator }
+  const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
+  const all = [...groups, ...small].map((group) => withEntries(entryTools, group))
+  return { users, groups: all, subscriptions, ...newsletter, operator }
 }
 
 /** How many of a group's owner's notes {@link withImportedNotes} marks. */
@@ -932,6 +954,7 @@ export function fakeWorkspace(seed: number): FakeGroup[] {
   const people = Array.from({ length: FAKE_COUNTS.users }, (_, i) => i)
     .filter((i) => i !== VIDEO_PERSON_INDEX)
   const taken = new Set<string>()
+  const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
   return YOUR_ROLES.map(([index, role]) =>
     withSampleFiles(fakeGroup(
       tools,
@@ -942,7 +965,7 @@ export function fakeWorkspace(seed: number): FakeGroup[] {
       role,
       taken,
     ))
-  )
+  ).map((group) => withEntries(entryTools, group))
 }
 
 /** A photo and a PDF on the group's first note, and a photo on its second, named after them. */
@@ -957,6 +980,144 @@ function withSampleFiles(group: FakeGroup): FakeGroup {
     return { ...note, files }
   })
   return { ...group, notes }
+}
+
+/** Entries draw from a stream of their own, so adding them moved no other fake row. */
+const ENTRY_SEED_OFFSET = 333
+
+/** How many months of entries a demo household holds, each {@link ENTRY_MONTH} long. */
+export const ENTRY_MONTHS = 3
+
+/** One month of entries, in minutes. */
+export const ENTRY_MONTH = 30 * DAY
+
+/**
+ * What a demo household books each month: an account by index into {@link DEMO_ACCOUNTS}, a
+ * category of the right kind, how many entries (`per`, both ends included) and their amounts in
+ * steps of `step`. Each income comes first in its month and is more than its account spends in
+ * one, and each starting balance covers a month's spending, so no balance ever drops below zero,
+ * even in an account made mid-month that missed that month's income. The dollar card has no
+ * income: its starting balance covers all three months.
+ */
+const ENTRY_PLANS: readonly {
+  account: number
+  category: string
+  kind: TransactionKind
+  memos: readonly string[]
+  per: readonly [number, number]
+  amount: readonly [number, number]
+  step: number
+}[] = [
+  {
+    account: 0,
+    category: `Salary`,
+    kind: TransactionKind.INCOME,
+    memos: [`Monthly salary`],
+    per: [1, 1],
+    amount: [3_400_00, 4_100_00],
+    step: 100,
+  },
+  {
+    account: 0,
+    category: `Housing`,
+    kind: TransactionKind.EXPENSE,
+    memos: [`Rent`],
+    per: [1, 1],
+    amount: [1_150_00, 1_350_00],
+    step: 100,
+  },
+  {
+    account: 0,
+    category: `Groceries`,
+    kind: TransactionKind.EXPENSE,
+    memos: [`Supermarket`, `Farmers' market`, `Bakery`, `Weekly shop`],
+    per: [4, 6],
+    amount: [18_00, 95_00],
+    step: 1,
+  },
+  {
+    account: 1,
+    category: `Eating out`,
+    kind: TransactionKind.EXPENSE,
+    memos: [`Lunch`, `Coffee`, `Dinner out`],
+    per: [2, 3],
+    amount: [5_00, 32_00],
+    step: 1,
+  },
+  {
+    account: 1,
+    category: `Transport`,
+    kind: TransactionKind.EXPENSE,
+    memos: [`Taxi`, `Airport shuttle`],
+    per: [1, 1],
+    amount: [8_00, 25_00],
+    step: 1,
+  },
+  {
+    account: 2,
+    category: `Salary`,
+    kind: TransactionKind.INCOME,
+    memos: [`English lessons, paid in cash`],
+    per: [1, 1],
+    amount: [2_500_000, 4_000_000],
+    step: 50_000,
+  },
+  {
+    account: 2,
+    category: `Transport`,
+    kind: TransactionKind.EXPENSE,
+    memos: [`Grab ride`, `Fuel`, `Parking`],
+    per: [2, 3],
+    amount: [30_000, 150_000],
+    step: 1_000,
+  },
+  {
+    account: 2,
+    category: `Groceries`,
+    kind: TransactionKind.EXPENSE,
+    memos: [`Street market`, `Fruit`, `Rice and vegetables`],
+    per: [1, 3],
+    amount: [50_000, 300_000],
+    step: 1_000,
+  },
+]
+
+/**
+ * `group` with {@link ENTRY_MONTHS} months of entries by {@link ENTRY_PLANS}, each by a writer
+ * who was a member by then (the account's author when none was) and dropped when it would be
+ * older than its account, so a young household has only its last days. Every draw happens either
+ * way, so a group's age changes no other group's entries.
+ */
+function withEntries(tools: Tools, group: FakeGroup): FakeGroup {
+  const writers = [
+    ...(group.owner === `you` ? [] : [{ member: group.owner, joinedAgo: group.createdAgo }]),
+    ...group.members.filter((m) => m.member !== `you` && m.role >= GroupRole.EDITOR),
+  ]
+  const entries: FakeEntry[] = []
+  for (let month = 0; month < ENTRY_MONTHS; month++) {
+    for (const plan of ENTRY_PLANS) {
+      const account = group.accounts[plan.account]
+      for (let left = tools.int(plan.per[0], plan.per[1]); left > 0; left--) {
+        // Income comes in the month's first three days, spending after them.
+        const payday = (month + 1) * ENTRY_MONTH - 3 * DAY
+        const ago = plan.kind === TransactionKind.INCOME
+          ? tools.between(payday + 3 * DAY - 1, payday)
+          : tools.between(payday - 1, month * ENTRY_MONTH + 5)
+        const steps = tools.int(plan.amount[0] / plan.step, plan.amount[1] / plan.step)
+        const memo = tools.pick(plan.memos)
+        const share = tools.random()
+        if (ago >= account.createdAgo) continue
+        const able = writers.filter((writer) => writer.joinedAgo > ago)
+        const author = able.length > 0
+          ? able[Math.floor(share * able.length)].member
+          : account.author
+        const { category, kind } = plan
+        const amount = steps * plan.step
+        entries.push({ account: plan.account, category, kind, amount, memo, author, ago })
+      }
+    }
+  }
+  return { ...group, entries: entries.sort((a, b) => b.ago - a.ago) }
 }
 
 /** How many working days of exchange rates the demo holds. */

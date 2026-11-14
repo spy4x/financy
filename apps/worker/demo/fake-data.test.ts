@@ -3,9 +3,14 @@ import { expect } from "@std/expect"
 import { deviceName } from "@spy4x/net/user-agent"
 import { BillingStatus } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
+import { TransactionKind } from "@domain/transactions"
 import {
   DAY,
+  DEMO_ACCOUNTS,
+  DEMO_CATEGORIES,
   DEMO_TIME_ZONES,
+  ENTRY_MONTH,
+  ENTRY_MONTHS,
   FAKE_COUNTS,
   FAKE_PASSKEYS,
   FAKE_RATE_DAYS,
@@ -348,6 +353,7 @@ Deno.test("a visitor's sample groups on another day's population are written onl
           ? GroupRole.OWNER
           : group.members.find((m) => m.member === member)!.role
       const writers = [
+        ...content.entries.map((entry) => entry.author),
         ...content.tags.map((tag) => tag.author),
         ...content.notes.flatMap((note) => [note.author, ...(note.edit ? [note.edit.by] : [])]),
       ]
@@ -363,12 +369,96 @@ Deno.test("a visitor's sample groups on another day's population are written onl
       }
       expect(content.tags.length).toBe(group.tags.length)
       expect(content.notes.length).toBe(group.notes.length)
+      expect(content.entries.length).toBe(group.entries.length)
     }
   }
 })
 
 Deno.test("sample groups whose members all have accounts keep every author as drawn", () => {
   for (const group of fakeWorkspace(7)) expect(withStandIns(group, () => true)).toEqual(group)
+})
+
+/** Every group of the population and of a visitor's sample groups, on each of `seeds`. */
+function everyGroup(seeds: readonly number[] = [1, 7, 42, 20261020]): FakeGroup[] {
+  return seeds.flatMap((seed) => [
+    ...fakeDemoData(seed, NOW).groups,
+    ...fakeWorkspace(seed),
+  ])
+}
+
+Deno.test("a household older than three months has 10 to 25 entries in each month and entries in each of its three currencies", () => {
+  const old = everyGroup().filter((group) =>
+    Math.min(...group.accounts.map((account) => account.createdAgo)) > ENTRY_MONTHS * ENTRY_MONTH
+  )
+  expect(old.length).toBeGreaterThan(10)
+  for (const group of old) {
+    const perMonth = Array.from({ length: ENTRY_MONTHS }, () => 0)
+    for (const entry of group.entries) perMonth[Math.floor(entry.ago / ENTRY_MONTH)]++
+    for (const count of perMonth) {
+      expect(count).toBeGreaterThanOrEqual(10)
+      expect(count).toBeLessThanOrEqual(25)
+    }
+    const perCurrency = new Map<string, number>()
+    for (const entry of group.entries) {
+      const currency = group.accounts[entry.account].currency
+      perCurrency.set(currency, (perCurrency.get(currency) ?? 0) + 1)
+    }
+    expect([...perCurrency.keys()].sort()).toEqual([`EUR`, `USD`, `VND`])
+  }
+})
+
+Deno.test("every demo entry is a whole positive amount, after its account was made and its author joined, in a live category of its kind", () => {
+  const categories = new Map(
+    DEMO_CATEGORIES.flatMap((category) => [category, ...(category.children ?? [])])
+      .map((category) => [category.name, category]),
+  )
+  const parents = new Set(
+    DEMO_CATEGORIES.filter((category) => category.children).map((c) => c.name),
+  )
+  for (const group of everyGroup()) {
+    const joined = new Map(group.members.map((m) => [m.member, m.joinedAgo]))
+    joined.set(group.owner, group.createdAgo)
+    for (const entry of group.entries) {
+      const account = group.accounts[entry.account]
+      expect(entry.ago).toBeGreaterThan(0)
+      expect(entry.ago).toBeLessThan(account.createdAgo)
+      expect(entry.ago).toBeLessThan(ENTRY_MONTHS * ENTRY_MONTH)
+      expect(Number.isInteger(entry.amount)).toBe(true)
+      expect(entry.amount).toBeGreaterThan(0)
+      const category = categories.get(entry.category)!
+      expect(Number(category.kind)).toBe(Number(entry.kind))
+      expect(category.archived ?? false).toBe(false)
+      expect(parents.has(entry.category)).toBe(false)
+      expect(entry.author).not.toBe(`you`)
+      expect(joined.get(entry.author)!).toBeGreaterThan(entry.ago)
+    }
+    const times = group.entries.map((entry) => entry.ago)
+    expect(times).toEqual([...times].sort((a, b) => b - a))
+  }
+})
+
+Deno.test("a household younger than three months has entries only from its accounts' creation on", () => {
+  const young = everyGroup().filter((group) => group.accounts[0].createdAgo < ENTRY_MONTH)
+  expect(young.length).toBeGreaterThan(10)
+  expect(young.some((group) => group.entries.length > 0)).toBe(true)
+  for (const group of young) {
+    for (const entry of group.entries) {
+      expect(entry.ago).toBeLessThan(group.accounts[entry.account].createdAgo)
+    }
+  }
+})
+
+Deno.test("no demo account's balance ever drops below zero, on a hundred nights' seeds", () => {
+  expect(DEMO_ACCOUNTS.map((account) => account.currency)).toEqual([`EUR`, `USD`, `VND`])
+  for (const group of everyGroup(Array.from({ length: 100 }, (_, i) => i + 1))) {
+    const balances = group.accounts.map((account) => account.startingBalance)
+    for (const entry of group.entries) {
+      balances[entry.account] += entry.kind === TransactionKind.INCOME
+        ? entry.amount
+        : -entry.amount
+      expect(balances[entry.account]).toBeGreaterThanOrEqual(0)
+    }
+  }
 })
 
 Deno.test("the demo's exchange rates fill the working days before now and skip the weekend", () => {
