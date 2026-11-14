@@ -447,7 +447,7 @@ describe("TransferEditorScreen", () => {
       .toBe("Your own rate: 1 USD = 0.925 EUR.")
   })
 
-  it("says offline that a change is saved once back online, and keeps Save and Delete", async () => {
+  it("says offline that a change is sent once back online, and keeps Save and Delete", async () => {
     let saved = 0
     await mount(
       <TransferEditorScreen
