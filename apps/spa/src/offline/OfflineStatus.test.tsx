@@ -209,6 +209,58 @@ describe("OfflineStatus", () => {
     expect(root!.innerHTML).toBe("")
   })
 
+  /** A device whose queued edit of transfer x-2 met the server's newer version 3. */
+  async function transferConflict() {
+    const storage = createMemoryStorage()
+    const server = {
+      id: "x-2",
+      groupId: "g-1",
+      fromAccountId: "a-1",
+      toAccountId: "a-2",
+      sentAmount: 7000,
+      receivedAmount: 7000,
+      converted: false,
+      memo: "Theirs",
+      date: "2026-11-12",
+      version: 3,
+      changeSequence: "3",
+      createdByUserId: 7,
+      updatedByUserId: 8,
+      createdAt: "2026-11-12T08:00:00.000Z",
+      updatedAt: "2026-11-12T09:00:00.000Z",
+    }
+    await storage.of(7).transfersQueue.putEntry({
+      ...refusedTransfer("x-2", "Mine", `TransferSync.version`),
+      kind: "update",
+      baseVersion: 1,
+      conflict: { reason: "version", message: `TransferSync.version`, server },
+    })
+    await mountStrip(storage)
+    const click = (choice: string) =>
+      act(() => (root!.querySelector(`[data-conflict-choice=${choice}]`) as HTMLElement).click())
+    return { storage, click }
+  }
+
+  it("queues a transfer edit again over the server's version when the person keeps their own", async () => {
+    const { storage, click } = await transferConflict()
+
+    await click("mine")
+    await settle()
+
+    expect(await storage.of(7).transfersQueue.readOutbox()).toMatchObject([
+      { entityId: "x-2", status: "pending", baseVersion: 3 },
+    ])
+  })
+
+  it("drops a queued transfer edit when the person uses the server's", async () => {
+    const { storage, click } = await transferConflict()
+
+    await click("theirs")
+    await settle()
+
+    expect(await storage.of(7).transfersQueue.readOutbox()).toEqual([])
+  })
+
   it("leaves out entries refused for a deleted account or category, which the list handles", async () => {
     const storage = createMemoryStorage()
     const queue = storage.of(7).transactionsQueue
