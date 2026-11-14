@@ -65,6 +65,8 @@ interface Versioned {
 export interface TransfersDependencies {
   /** A household's live transfers, the latest date first. */
   fetchList(groupId: string): Promise<TransferItem[]>
+  /** A household's deleted transfers, the latest deleted first. Online only. */
+  fetchDeleted(groupId: string): Promise<TransferItem[]>
   create(
     input: { groupId: string; id: string } & TransferFields,
   ): Promise<{ transfer: TransferItem }>
@@ -189,6 +191,8 @@ export function createTransfersStore(
   const groupId = signal<string | null>(null)
   const transfers = signal<readonly TransferItem[]>([])
   const loaded = signal(false)
+  /** The deleted transfers while that view is shown, else `null`. */
+  const deleted = signal<readonly TransferItem[] | null>(null)
   const loading = signal(false)
   const listError = signal<Message | null>(null)
   const listPlan = signal<PlanRefusal | null>(null)
@@ -223,6 +227,7 @@ export function createTransfersStore(
       transfers.value = rows
       loaded.value = true
       listError.value = null
+      if (deleted.value !== null) await readDeleted(id)
     } catch (cause) {
       if (read !== reads || groupId.value !== id) return
       listError.value = describeError(cause, TRANSFER_MESSAGES.load)
@@ -238,6 +243,24 @@ export function createTransfersStore(
       groupId.value = nextGroupId
     }
     return refresh()
+  }
+
+  async function readDeleted(id: string): Promise<void> {
+    const rows = await dependencies.fetchDeleted(id)
+    if (groupId.value === id && deleted.value !== null) deleted.value = rows
+  }
+
+  /** Shows or hides the deleted transfers; showing them reads them from the server. */
+  async function showDeleted(show: boolean): Promise<void> {
+    const id = groupId.value
+    if (!show || id === null) return void (deleted.value = null)
+    if (deleted.value === null) deleted.value = []
+    listError.value = null
+    try {
+      await readDeleted(id)
+    } catch (cause) {
+      if (groupId.value === id) listError.value = describeError(cause, TRANSFER_MESSAGES.load)
+    }
   }
 
   /** Opens the editor for a new transfer with `value` filled in. */
@@ -477,6 +500,7 @@ export function createTransfersStore(
     listPlan.value = null
     try {
       const { transfer } = await dependencies.restore({ groupId: forGroup, id })
+      if (deleted.value) deleted.value = deleted.value.filter((other) => other.id !== id)
       if (undo.value?.id === id) undo.value = null
       if (groupId.value === forGroup) keep(transfer)
       return transfer
@@ -490,7 +514,10 @@ export function createTransfersStore(
         : cause instanceof RealtimeRequestError
         ? describeError(cause, TRANSFER_MESSAGES.restore)
         : TRANSFER_MESSAGES.restoreOffline
-      if (code === "TRANSFER_NOT_FOUND" && undo.value?.id === id) undo.value = null
+      if (code === "TRANSFER_NOT_FOUND") {
+        if (undo.value?.id === id) undo.value = null
+        if (deleted.value !== null) await readDeleted(forGroup).catch(() => {})
+      }
       return null
     } finally {
       pendingId.value = null
@@ -514,6 +541,7 @@ export function createTransfersStore(
     groupId.value = null
     transfers.value = []
     loaded.value = false
+    deleted.value = null
     loading.value = false
     listError.value = null
     listPlan.value = null
@@ -528,6 +556,7 @@ export function createTransfersStore(
     groupId,
     transfers,
     loaded,
+    deleted,
     byId,
     loading,
     listError,
@@ -540,6 +569,7 @@ export function createTransfersStore(
     unsaved,
     open,
     refresh,
+    showDeleted,
     startCreate,
     startEdit,
     change,
@@ -646,6 +676,13 @@ export const onlineTransfers: TransfersDependencies = {
       after = page.through
     }
     return rows.sort(byDate)
+  },
+  async fetchDeleted(groupId) {
+    const { transfers } = await callQuery<{ transfers: TransferItem[] }>(
+      "transfer.listDeleted",
+      { groupId },
+    )
+    return transfers
   },
   create: (input) => online(() => callCommand("transfer.create", input)),
   update: (input) => online(() => callCommand("transfer.update", input)),
