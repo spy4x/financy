@@ -354,12 +354,15 @@ function TransactionsFilterBar(
         clearLabel={t.t(`Transactions.clearFilters`)}
       />
       {
-        /* The date range sits under the menus at their height, with its labels beside the fields,
-          and the count closes the row. Each field shrinks instead of pushing a phone sideways. */
+        /* The date range sits under the menus. On a phone each label sits above its field, two
+          fields to a row, so "From date" never wraps; wider, the labels sit beside the fields at
+          the menus' height, and the count closes the row. */
       }
       <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
-        <div class="flex min-w-0 items-center gap-2">
-          <label for="transactions-from" class="text-muted">{t.t(`Transactions.from`)}</label>
+        <div class="grid w-full grid-flow-col grid-cols-2 grid-rows-[auto_auto] gap-x-3 gap-y-1 sm:flex sm:w-auto sm:min-w-0 sm:items-center sm:gap-2">
+          <label for="transactions-from" class="text-muted sm:whitespace-nowrap">
+            {t.t(`Transactions.from`)}
+          </label>
           <Input
             id="transactions-from"
             type="date"
@@ -370,7 +373,9 @@ function TransactionsFilterBar(
             onChange={(e) => change({ from: e.currentTarget.value })}
             data-e2e="transactions-from"
           />
-          <label for="transactions-to" class="text-muted">{t.t(`Transactions.to`)}</label>
+          <label for="transactions-to" class="text-muted sm:whitespace-nowrap">
+            {t.t(`Transactions.to`)}
+          </label>
           <Input
             id="transactions-to"
             type="date"
