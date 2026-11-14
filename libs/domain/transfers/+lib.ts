@@ -591,3 +591,53 @@ function messageOfReference(code: string): string {
   return `between accounts of one currency, the received amount is the sent amount, unconverted`
 }
 // #endregion Export file
+
+// #region Admin
+/** How many calendar months the operator's transfers page counts, the current one last. */
+export const ADMIN_TRANSFERS_MONTHS = 6
+
+/** How many households the operator's transfers page lists, the busiest in those months. */
+export const ADMIN_TRANSFERS_HOUSEHOLD_LIMIT = 20
+
+/** One calendar month of {@link AdminTransfersOverview}, by the transfers' own date. */
+export interface AdminTransfersMonth {
+  /** `YYYY-MM`. */
+  month: string
+  transfers: number
+  /** Households with at least one transfer in the month. */
+  households: number
+}
+
+/** One household of {@link AdminTransfersOverview}: its counts and its last transfer's day. */
+export interface AdminTransfersHousehold {
+  groupId: string
+  groupName: string
+  /** Every live transfer the household has, whatever its date. */
+  transfers: number
+  /** Transfers per month, aligned to {@link AdminTransfersOverview.months}. */
+  months: number[]
+  /** `YYYY-MM-DD`, the latest date among its live transfers. */
+  lastTransferDate: string
+}
+
+/**
+ * What the operator's transfers page shows: counts and dates only. Never an amount, a currency, a
+ * memo, an account or a person: they say how much a household moves and where. Deleted transfers
+ * count nowhere.
+ */
+export interface AdminTransfersOverview {
+  /** Live transfers across every household. */
+  transfers: number
+  /** Households with at least one live transfer. */
+  households: number
+  /** `YYYY-MM-DD`, the latest date among live transfers, or `null` when there are none. */
+  lastTransferDate: string | null
+  /** The last {@link ADMIN_TRANSFERS_MONTHS} calendar months in UTC, oldest first, each present. */
+  months: AdminTransfersMonth[]
+  /**
+   * At most {@link ADMIN_TRANSFERS_HOUSEHOLD_LIMIT} households: the most transfers in those months
+   * first, then the most transfers overall, then by id.
+   */
+  topHouseholds: AdminTransfersHousehold[]
+}
+// #endregion Admin

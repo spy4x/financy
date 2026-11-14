@@ -2384,4 +2384,38 @@ export default {
     "other": "{month}: {count} lançamentos",
   },
   "AdminEntries.householdLastEntry": "Último lançamento em {date}",
+  "AdminNav.transfers": "Transferências",
+  "AdminTransfers.title": "Transferências",
+  "AdminTransfers.subtitle":
+    "Como as famílias movem dinheiro entre as próprias contas. Só números e datas: sem valores nem notas.",
+  "AdminTransfers.retry": "Tentar de novo",
+  "AdminTransfers.loading": "Carregando os números",
+  "AdminTransfers.none": "Nenhuma transferência ainda",
+  "AdminTransfers.noneHint":
+    "Os números aparecem quando uma família fizer a primeira transferência.",
+  "AdminTransfers.keyNumbers": "Números principais",
+  "AdminTransfers.transfers": "Transferências",
+  "AdminTransfers.households": "Famílias",
+  "AdminTransfers.householdsHint": "Com pelo menos uma transferência",
+  "AdminTransfers.lastTransfer": "Última transferência",
+  "AdminTransfers.lastTransferHint": "Pela data da própria transferência",
+  "AdminTransfers.byMonth": "Últimos 6 meses",
+  "AdminTransfers.topHouseholds": "Famílias mais ativas",
+  "AdminTransfers.perMonth": "Transferências por mês",
+  "AdminTransfers.transferCount": {
+    "one": "{count} transferência",
+    "many": "{count} de transferências",
+    "other": "{count} transferências",
+  },
+  "AdminTransfers.householdCount": {
+    "one": "{count} família",
+    "many": "{count} de famílias",
+    "other": "{count} famílias",
+  },
+  "AdminTransfers.monthCount": {
+    "one": "{month}: {count} transferência",
+    "many": "{month}: {count} de transferências",
+    "other": "{month}: {count} transferências",
+  },
+  "AdminTransfers.householdLastTransfer": "Última transferência em {date}",
 } satisfies Catalog
