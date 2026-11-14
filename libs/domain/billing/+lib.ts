@@ -50,9 +50,10 @@ export type FeatureKey =
  *   account, and keeps reading, editing and exporting the ones it has.
  * - `maxCategories`: Financy's categories in the household that are in use; archived ones are not
  *   counted, so archiving one frees its slot. Sold at 0 or with no cap, like `maxAccounts`.
- * - `maxTransactions`: Financy's income and expense entries in the household that are not
- *   deleted. Sold at 0 or with no cap, like `maxAccounts`: without a paid plan a household adds no
- *   entry, and keeps reading, editing, deleting and exporting the ones it has.
+ * - `maxTransactions`: Financy's income and expense entries and its transfers in the household
+ *   that are not deleted, counted together. Sold at 0 or with no cap, like `maxAccounts`: without
+ *   a paid plan a household adds no entry or transfer, and keeps reading, editing, deleting and
+ *   exporting the ones it has.
  * - `maxRecurringRules`: Financy's repeating entries (their rules) in the household that are not
  *   deleted. Sold at 0 or with no cap, like `maxAccounts`.
  */

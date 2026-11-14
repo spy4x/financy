@@ -60,12 +60,19 @@ is `demo` (the default) or `pro`.
   types both amounts sets a manual rate, and the entry is not marked. An edit that keeps the
   account, amount, currency and date keeps the stored account amount, so a later rate never
   rewrites history. No rate for the date refuses the entry with `NO_RATE`.
+- **A transfer stores its received amount once, the same way.** Between two accounts in one
+  currency the received amount is the sent amount. Across currencies the person states both, or
+  the server fills the received amount at the rate of the transfer's date and marks it converted.
+  An edit recomputes it when the sent amount, the date or an account changes and the edit does not
+  state it. No rate refuses the transfer with `NO_RATE`.
 - **A balance needs no rate.** It is the starting balance plus the account amounts of the live
-  entries dated on or before the day asked, all in the account's currency.
+  entries, minus the live transfers' sent amounts out of the account and plus their received
+  amounts into it, dated on or before the day asked, all in the account's currency.
 - **The ledger converts each entry at its own date's rate.** An entry in the household's main
   currency counts its own amount; any other counts its account amount, converted into the main
   currency at the entry's date. A currency with no rate is left out of the totals and named in
-  `leftOut`.
+  `leftOut`. Transfers are not in the ledger: moving money between the household's accounts is
+  neither income nor spending.
 
 ## Rates before the first day
 
