@@ -7,7 +7,7 @@ import { UnsavedGuard } from "@spy4x/preact-ui/unsaved-guard"
 import { todayInTz } from "@spy4x/time/tz"
 import { canMutateNotes, groupTimeZone } from "@domain/groups"
 import { TransactionEditorScreen } from "@ui/transaction-editor-screen.tsx"
-import { readNext, TRANSACTION_PATHS } from "@ui/progressive.tsx"
+import { readNext, TRANSACTION_PATHS, TRANSFER_PATHS } from "@ui/progressive.tsx"
 import { useAppText } from "@ui/i18n.ts"
 import { accountsStore } from "../state/accounts.ts"
 import { categoriesStore } from "../state/categories.ts"
@@ -17,6 +17,7 @@ import { selectionStore } from "../state/selection.ts"
 import { sessionState } from "../state/session.ts"
 import { toasts } from "../state/toasts.ts"
 import { prefillEntry, transactionsStore } from "../state/transactions.ts"
+import { prefillTransfer, transferFromEntry, transfersStore } from "../state/transfers.ts"
 import { isSpaPath } from "./spa-paths.ts"
 import { personName } from "./note-people.ts"
 import {
@@ -159,6 +160,19 @@ export function TransactionEditorView(
         pending={store.pendingId.value !== null}
         backHref={back}
         focusField={field === "account" || field === "category" ? field : null}
+        onTransfer={transactionId === null && groupId && membership
+          ? () => {
+            const today = todayInTz(groupTimeZone(membership))
+            const carried = form
+              ? transferFromEntry(form, (id) => accountsStore.byId.value.get(id)?.currency)
+              : {}
+            store.closeForm()
+            void transfersStore.open(groupId)
+            transfersStore.startCreate(prefillTransfer(accountsStore.accounts.value, today))
+            transfersStore.change(carried)
+            navigate(TRANSFER_PATHS.new, { replace: true })
+          }
+          : undefined}
         recentCurrencies={accountsStore.currencies.value}
         offline={canWrite && !network.online.value}
         navigate={navigate}
@@ -179,19 +193,20 @@ export function TransactionEditorView(
   )
 }
 
-/** "Added by Anna, 12 Nov", or "Changed by …" once someone edited it. */
-function Stamp(
-  { entry, name, groupName }: {
+/** "Added by Anna, 12 Nov", or "Changed by …" once someone edited it: an entry's or a transfer's. */
+export function Stamp(
+  { entry, name, groupName, dataE2E = "transaction-stamp" }: {
     entry: { createdAt: string; updatedAt: string; version: number }
     name?: string
     groupName: string
+    dataE2E?: string
   },
 ) {
   const t = useAppText()
   if (name === undefined) return <>{groupName}</>
   const changed = entry.version > 1
   return (
-    <span data-e2e="transaction-stamp">
+    <span data-e2e={dataE2E}>
       <Rich
         parts={t.parts(changed ? `TransactionEditor.changedBy` : `TransactionEditor.addedBy`, {
           name,

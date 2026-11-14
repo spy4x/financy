@@ -211,6 +211,7 @@ describe("SearchPalette", () => {
       "# Create",
       "New note | In Home",
       "New transaction | In Home",
+      "New transfer | In Home",
       "New category | In Home",
       "New tag | In Home",
       "New group",

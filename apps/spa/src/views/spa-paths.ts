@@ -53,6 +53,9 @@ export const SPA_ROUTES = {
   // Before the transaction's page, or "new" would be read as a transaction's id.
   "/transactions/new": { open: false },
   "/transactions/:transactionId": { open: false },
+  // Before the transfer's page, or "new" would be read as a transfer's id.
+  "/transfers/new": { open: false },
+  "/transfers/:transferId": { open: false },
   "/categories": { open: false },
   // Before the category's page, or "new" would be read as a category's id.
   "/categories/new": { open: false },

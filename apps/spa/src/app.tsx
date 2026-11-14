@@ -24,6 +24,7 @@ import { accountsStore } from "./state/accounts.ts"
 import { budgetsStore } from "./state/budgets.ts"
 import { categoriesStore } from "./state/categories.ts"
 import { transactionsStore } from "./state/transactions.ts"
+import { transfersStore } from "./state/transfers.ts"
 import { householdTotalStore } from "./state/household-total.ts"
 import { householdSettingsStore } from "./state/household-settings.ts"
 import { selectionStore } from "./state/selection.ts"
@@ -76,6 +77,7 @@ import { CategoryEditorView } from "./views/CategoryEditorView.tsx"
 import { AccountEditorView } from "./views/AccountEditorView.tsx"
 import { TransactionsView } from "./views/TransactionsView.tsx"
 import { TransactionEditorView } from "./views/TransactionEditorView.tsx"
+import { TransferEditorView } from "./views/TransferEditorView.tsx"
 import { TagEditorView } from "./views/TagEditorView.tsx"
 import { ProfileView } from "./views/ProfileView.tsx"
 import { ApiTokenNewView } from "./views/ApiTokenNewView.tsx"
@@ -186,6 +188,10 @@ const PAGES: {
   "/transactions/new": () => <TransactionEditorView key="new" />,
   "/transactions/:transactionId": (params) => (
     <TransactionEditorView key={params.transactionId} transactionId={params.transactionId} />
+  ),
+  "/transfers/new": () => <TransferEditorView key="new" />,
+  "/transfers/:transferId": (params) => (
+    <TransferEditorView key={params.transferId} transferId={params.transferId} />
   ),
   "/categories": () => <CategoriesView />,
   "/categories/new": () => <CategoryEditorView key="new" />,
@@ -345,6 +351,7 @@ export function App() {
       accountsStore.reset()
       categoriesStore.reset()
       transactionsStore.reset()
+      transfersStore.reset()
       budgetsStore.reset()
       householdTotalStore.reset()
       householdSettingsStore.reset()
@@ -379,6 +386,7 @@ export function App() {
       },
       categories: categoriesStore,
       transactions: transactionsStore,
+      transfers: transfersStore,
       budgets: budgetsStore,
       // The main currency is read with the members of the group whose settings are open: a save
       // moves the group's sequence, and the same page shows both.

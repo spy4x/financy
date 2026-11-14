@@ -10,6 +10,7 @@ import { Stack } from "@spy4x/preact-ui/layout"
 import { Link } from "@spy4x/preact-ui/link"
 import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
 import { ConfirmDialog } from "@spy4x/preact-ui/confirm-dialog"
+import { DropdownItem } from "@spy4x/preact-ui/dropdown"
 import { IconExclamationCircle, IconPlus } from "@spy4x/preact-icons"
 import { relativeDayLabel } from "@spy4x/time/locale"
 import { formatMoney } from "@spy4x/platform/universal/money-core"
@@ -23,12 +24,17 @@ import {
   EntryAmount,
   filterTransactions,
   hasFilters,
+  isTransfer,
+  type ListKind,
+  type ListRow,
   type TransactionAccount,
   type TransactionCategory,
   type TransactionFilters,
   type TransactionRow,
+  TRANSFERS_KIND,
 } from "./transaction-parts.tsx"
-import { ACCOUNT_PATHS, type Navigate, TRANSACTION_PATHS } from "./progressive.tsx"
+import { TransferListRow } from "./transfer-parts.tsx"
+import { ACCOUNT_PATHS, type Navigate, TRANSACTION_PATHS, TRANSFER_PATHS } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 import { type Message, messageText } from "./message.ts"
 import { PlanRefusalNotice } from "./plan-refusal.tsx"
@@ -38,8 +44,8 @@ export interface TransactionsScreenProps {
   group: NotesGroup | null
   /** Shown under the page header: the offline status. */
   intro?: ComponentChildren
-  /** The household's live entries, newest first. */
-  rows: readonly TransactionRow[]
+  /** The household's live entries and transfers, newest first. */
+  rows: readonly ListRow[]
   /** The deleted entries while that view is shown, else `null`. */
   deleted: readonly TransactionRow[] | null
   accounts: readonly TransactionAccount[]
@@ -109,6 +115,12 @@ export function TransactionsScreen(props: TransactionsScreenProps): JSX.Element 
             navigate={navigate}
             dataE2E="transaction-new"
           />
+        )}
+        menuDataE2E="transactions-menu"
+        menu={canWrite && !trash && (
+          <DropdownItem href={TRANSFER_PATHS.new} navigate={navigate} dataE2E="transfer-new">
+            {t.t(`Transfers.new`)}
+          </DropdownItem>
         )}
       />
       <Stack>
@@ -195,6 +207,26 @@ function Empty(
               {t.t(`Transactions.clearSearch`)}
             </Button>
           }
+        />
+      </div>
+    )
+  }
+  if (props.filters.kind === TRANSFERS_KIND) {
+    return (
+      <div data-e2e="transfers-empty">
+        <ListEmpty
+          title={t.t(`Transfers.empty`)}
+          description={t.t(`Transfers.emptyHint`)}
+          action={canWrite && (
+            <Button
+              href={TRANSFER_PATHS.new}
+              navigate={navigate}
+              variant="secondary"
+              data-e2e="transfer-new-empty"
+            >
+              {t.t(`Transfers.new`)}
+            </Button>
+          )}
         />
       </div>
     )
@@ -303,9 +335,10 @@ function TransactionsFilterBar(
     options: [
       { value: String(TransactionKind.EXPENSE), label: t.t(`Transactions.expenses`) },
       { value: String(TransactionKind.INCOME), label: t.t(`Transactions.income`) },
+      { value: String(TRANSFERS_KIND), label: t.t(`Transactions.transfers`) },
     ],
     value: filters.kind === null ? null : String(filters.kind),
-    onChange: (kind) => change({ kind: kind === null ? null : Number(kind) as TransactionKind }),
+    onChange: (kind) => change({ kind: kind === null ? null : Number(kind) as ListKind }),
   })
   return (
     <div class="flex flex-col gap-3" data-e2e="transactions-filter-bar">
@@ -359,9 +392,10 @@ function TransactionsFilterBar(
 
 /** The entries under a heading per day: "Today", "Yesterday", then the date. */
 function Days(
-  props: TransactionsScreenProps & { rows: TransactionRow[]; discard?: DiscardControl },
+  props: TransactionsScreenProps & { rows: ListRow[]; discard?: DiscardControl },
 ): JSX.Element {
   const { locale } = useFormat()
+  const accountId = props.filters.accountId
   return (
     <>
       {byDay(props.rows).map((day) => {
@@ -372,15 +406,27 @@ function Days(
               {relativeDayLabel(day.date, props.today, locale)}
             </h2>
             <ListCard dataE2E="transaction-list">
-              {day.rows.map((row) => (
-                <Row
-                  key={row.id}
-                  row={row}
-                  today={props.today}
-                  navigate={props.navigate}
-                  discard={props.discard}
-                />
-              ))}
+              {day.rows.map((row) =>
+                isTransfer(row)
+                  ? (
+                    <TransferListRow
+                      key={row.id}
+                      row={row}
+                      today={props.today}
+                      accountId={accountId}
+                      navigate={props.navigate}
+                    />
+                  )
+                  : (
+                    <Row
+                      key={row.id}
+                      row={row}
+                      today={props.today}
+                      navigate={props.navigate}
+                      discard={props.discard}
+                    />
+                  )
+              )}
             </ListCard>
           </section>
         )
@@ -524,7 +570,9 @@ function Row(
 }
 
 /** The deleted entries with Restore, and when they go for good. */
-function Trash(props: TransactionsScreenProps & { rows: readonly TransactionRow[] }): JSX.Element {
+function Trash(
+  props: Omit<TransactionsScreenProps, "rows"> & { rows: readonly TransactionRow[] },
+): JSX.Element {
   const t = useAppText()
   const { locale } = useFormat()
   const canWrite = props.group!.canWrite

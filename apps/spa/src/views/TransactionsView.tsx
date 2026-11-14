@@ -9,7 +9,12 @@ import { canMutateNotes, groupTimeZone } from "@domain/groups"
 import { hasFinePointer, singleKeys } from "@platform/shortcuts.ts"
 import { TransactionKind } from "@domain/transactions"
 import { TransactionsScreen } from "@ui/transactions-screen.tsx"
-import type { TransactionFilters } from "@ui/transaction-parts.tsx"
+import {
+  type ListKind,
+  type ListRow,
+  type TransactionFilters,
+  TRANSFERS_KIND,
+} from "@ui/transaction-parts.tsx"
 import { useAppText } from "@ui/i18n.ts"
 import { accountsStore } from "../state/accounts.ts"
 import { categoriesStore } from "../state/categories.ts"
@@ -19,6 +24,8 @@ import { selectionStore } from "../state/selection.ts"
 import { sessionState } from "../state/session.ts"
 import { toasts } from "../state/toasts.ts"
 import { transactionsStore } from "../state/transactions.ts"
+import { byDate } from "../state/transaction-order.ts"
+import { transfersStore } from "../state/transfers.ts"
 import { discardGoneEntry, goneEntries, OfflineStatus } from "../modules.ts"
 import {
   amountInCategory,
@@ -27,6 +34,7 @@ import {
   transactionRow,
   transactionUndoText,
 } from "./transaction-rows.ts"
+import { transferRow, transferUndoText } from "./transfer-rows.ts"
 import { useUndoToast } from "./use-undo-toast.ts"
 
 const network = createOnlineStatus()
@@ -35,12 +43,19 @@ const text = (value: string | number | null) => String(value ?? "")
 /** A `YYYY-MM-DD` value from the address, or nothing for anything else. */
 const isDate = (value: string | null) =>
   value !== null && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : ""
+/** The kind filter's values in the address: Expense, Income and Transfers. */
+const KINDS: readonly (string | null)[] = [
+  String(TransactionKind.EXPENSE),
+  String(TransactionKind.INCOME),
+  String(TRANSFERS_KIND),
+]
 
 /**
  * Wires the transactions page to the stores for `/transactions`: the selected household's entries
  * from the device's copy, the accounts and categories that name them, and the members who added
- * them. The search and filters live in the address (`?q=`, `?account=`, `?category=`, `?kind=1|2`,
- * `?from=` and `?to=`), and `?deleted=1` shows the deleted entries.
+ * them, with the household's transfers among the entries by date. The search and filters live in
+ * the address (`?q=`, `?account=`, `?category=`, `?kind=1|2|3`, `?from=` and `?to=`), and
+ * `?deleted=1` shows the deleted entries.
  */
 export function TransactionsView() {
   const [, navigate] = useLocation()
@@ -52,6 +67,7 @@ export function TransactionsView() {
   useEffect(() => {
     if (!groupId) return
     void store.open(groupId)
+    void transfersStore.open(groupId)
     void accountsStore.open(groupId)
     void categoriesStore.open(groupId)
     void membersStore.open(groupId)
@@ -71,7 +87,7 @@ export function TransactionsView() {
       signal: kind,
       urlParam: "kind",
       initialValue: "",
-      parser: (value) => value === "1" || value === "2" ? value : "",
+      parser: (value) => KINDS.includes(value) ? value : "",
     },
     from: { signal: from, urlParam: "from", initialValue: "", parser: isDate },
     to: { signal: to, urlParam: "to", initialValue: "", parser: isDate },
@@ -80,7 +96,7 @@ export function TransactionsView() {
     q: text(q.value),
     accountId: text(account.value) || null,
     categoryId: text(category.value) || null,
-    kind: kind.value === "1" || kind.value === "2" ? Number(kind.value) as TransactionKind : null,
+    kind: KINDS.includes(text(kind.value)) ? Number(kind.value) as ListKind : null,
     from: text(from.value),
     to: text(to.value),
   }
@@ -104,6 +120,7 @@ export function TransactionsView() {
   }
   const rowContext = { ...context, t }
   useUndoToast(store, transactionUndoText(context, locale))
+  useUndoToast(transfersStore, transferUndoText(context, locale))
   const today = todayInTz(groupTimeZone(membership ?? {}))
   const gone = groupId ? goneEntries(groupId) : new Map()
   return (
@@ -115,10 +132,13 @@ export function TransactionsView() {
           onResolved={() => void store.refresh().catch(() => {})}
         />
       )}
-      rows={store.transactions.value.map((entry) => ({
-        ...transactionRow(entry, rowContext),
-        gone: gone.get(entry.id) ?? null,
-      }))}
+      rows={[
+        ...store.transactions.value.map((entry): ListRow => ({
+          ...transactionRow(entry, rowContext),
+          gone: gone.get(entry.id) ?? null,
+        })),
+        ...transfersStore.transfers.value.map((transfer) => transferRow(transfer, rowContext)),
+      ].sort(byDate)}
       deleted={showDeleted && canWrite
         ? (store.deleted.value ?? []).map((entry) => transactionRow(entry, rowContext))
         : null}
@@ -127,7 +147,7 @@ export function TransactionsView() {
       loading={store.loading.value || groupsStore.loading.value || groupId === null}
       loaded={store.loaded.value}
       offline={!network.online.value}
-      listError={store.listError.value}
+      listError={store.listError.value ?? transfersStore.listError.value}
       listPlan={store.listPlan.value}
       filters={filters}
       onFiltersChange={(next) => {

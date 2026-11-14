@@ -35,6 +35,7 @@ import {
   type TransactionAccount,
   type TransactionCategory,
   type TransactionRow,
+  TRANSFERS_KIND,
 } from "./transaction-parts.tsx"
 import { type Navigate, ScreenForm, TRANSACTION_PATHS } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
@@ -98,6 +99,11 @@ export interface TransactionEditorScreenProps {
   offline?: boolean
   /** The field that takes focus when the page opens instead of the amount: the one to fix. */
   focusField?: "account" | "category" | null
+  /**
+   * The create page's kind control chose Transfer: the view moves to the transfer editor with
+   * what was typed. Without it, the kind control offers Expense and Income only.
+   */
+  onTransfer?: () => void
   navigate?: Navigate
 }
 
@@ -154,11 +160,14 @@ type Shown = TransactionEditorScreenProps & {
   back: { href: string; label: string }
 }
 
-/** The kind's two segments. */
-function kindOptions(t: Translator<string>) {
+/** The kind's segments: Expense and Income, and Transfer when the page can move there. */
+function kindOptions(t: Translator<string>, transfer: boolean) {
   return [
     { value: String(TransactionKind.EXPENSE), label: t.t(`TransactionEditor.expense`) },
     { value: String(TransactionKind.INCOME), label: t.t(`TransactionEditor.income`) },
+    ...(transfer
+      ? [{ value: String(TRANSFERS_KIND), label: t.t(`TransactionEditor.transfer`) }]
+      : []),
   ]
 }
 
@@ -320,9 +329,12 @@ function Editor(props: Shown): JSX.Element {
               <div data-e2e="transaction-kind">
                 <SegmentedControl
                   ariaLabel={t.t(`TransactionEditor.kind`)}
-                  options={kindOptions(t)}
+                  options={kindOptions(t, transaction === null && props.onTransfer !== undefined)}
                   value={String(value.kind)}
-                  onChange={(kind) => change({ kind: Number(kind) as TransactionKind })}
+                  onChange={(kind) =>
+                    kind === String(TRANSFERS_KIND)
+                      ? props.onTransfer?.()
+                      : change({ kind: Number(kind) as TransactionKind })}
                 />
               </div>
             </div>
