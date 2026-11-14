@@ -285,7 +285,7 @@ export interface AppDbBaseOptions {
   userCache?: RowCache<User>
   /**
    * The notes switch (`NOTES`). Off, the changes pull, the group data move and a group's export
-   * and import leave notes and tags out, and sign-up queues no starter data. Defaults to on.
+   * and import leave notes and tags out. Sign-up queues the starter data either way. Defaults to on.
    */
   notes?: NotesSetup
 }
