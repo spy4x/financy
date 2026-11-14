@@ -114,6 +114,11 @@ merge is not done until its push pipeline, deploy included, is green on the Wood
 that push; a red deploy is fixed before the next merge. Release tags and images start with the
 rest of [#88](https://github.com/spy4x/financy/issues/88).
 
+The public demo runs at demo.financy.dev on the same server as a project of its own,
+`financy-demo`, with its own database and its own env file, `infra/envs/.env.demo.age`, which
+shares no secret with production; the same pipeline deploys it after production
+([docs/demo.md](docs/demo.md), "Financy's demo").
+
 Backups run nightly from the homelab's backup runner (`servers/home/configs/backup/financy.backup.ts`
 in spy4x/homelab). Uptime checks with alerts run on the cloud server's Gatus; metrics, logs and
 Grafana run in this project's `monitoring` profile, with Grafana on `127.0.0.1:13001` on the server.
@@ -130,5 +135,6 @@ billing every household would get everything for free.
   `Intl` only for a code the table lacks; a crypto currency passes its own `decimals`, at most 8.
 - A transaction keeps its original amount and currency next to the converted one, so a later rate
   change never rewrites history.
-- Once Financy runs in production, that server holds real people's financial data. Nothing on it
-  is disposable: there is no demo carve-out here.
+- Once Financy runs in production, its database holds real people's financial data. Nothing in it
+  is disposable: there is no demo carve-out here. Only the `financy-demo` project's database is
+  wiped.
