@@ -314,6 +314,54 @@ Deno.test("data export: lists the finance entries the person created, deleted on
   })
 })
 
+Deno.test("data export: lists the transfers the person created, deleted ones included, never another member's", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, editor, owner } = await team(sql)
+    const from = await account(sql, groupId, owner, `Shared wallet`)
+    const to = await account(sql, groupId, owner, `Shared savings`)
+    const transfer = async (userId: number, memo: string, deleted = false) => {
+      const id = uuidV7()
+      await sql`
+        INSERT INTO transfers (
+          id, group_id, from_account_id, to_account_id, sent_amount, received_amount, converted,
+          memo, date, change_sequence, created_by_user_id, deleted_at
+        ) VALUES (${id}, ${groupId}, ${from}, ${to}, 5000, 5000, false, ${memo}, '2026-11-03', 1,
+          ${userId}, ${deleted ? new Date() : null})
+      `
+      return id
+    }
+    const mine = await transfer(editor, `Editor's savings`)
+    const binned = await transfer(editor, `Editor's binned`, true)
+    await transfer(owner, `Owner's savings`)
+
+    const files = unzip(await buildDataExport(sql, editor, new Date()))
+
+    const rows: { id: string }[] = JSON.parse(files[`data.json`]).sections.finance_transfers
+    expect(rows.map((row) => row.id).sort()).toEqual([mine, binned].sort())
+    expect(rows.find((row) => row.id === mine)).toEqual({
+      id: mine,
+      groupId,
+      fromAccountId: from,
+      toAccountId: to,
+      sentAmount: `5000`,
+      receivedAmount: `5000`,
+      converted: false,
+      memo: `Editor's savings`,
+      date: `2026-11-03`,
+      createdAt: expect.stringMatching(/^\d{4}-/),
+      updatedAt: expect.stringMatching(/^\d{4}-/),
+      deletedAt: null,
+    })
+    expect(rows.find((row) => row.id === binned)).toMatchObject({
+      deletedAt: expect.stringMatching(/^\d{4}-/),
+    })
+    expect(Object.values(files).join(`\n`)).not.toContain(`Owner's savings`)
+    expect(files[`finance_transfers.csv`].split(`\r\n`)[0]).toBe(
+      `\uFEFFid,groupId,fromAccountId,toAccountId,sentAmount,receivedAmount,converted,memo,date,createdAt,updatedAt,deletedAt`,
+    )
+  })
+})
+
 Deno.test("data export: lists the files the person attached, never another person's or the stored key", async () => {
   await withSchema(async (sql) => {
     const { groupId, editor, owner } = await team(sql)

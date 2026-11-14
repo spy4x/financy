@@ -54,6 +54,8 @@ It holds only what is about the person or made by them, never another person's d
 - their linked Telegram account: its user id and when it was linked;
 - the groups they belong to, by name and role, never the other members;
 - the notes and tags they created in groups they still belong to, never the ones others wrote;
+- the finance accounts, categories, entries and transfers they created in households they still
+  belong to, deleted ones included, never the ones others made;
 - the files they attached to those notes: name, type, size and note, never the bytes or the
   stored key;
 - what they did in their groups, without the details that can name other people;

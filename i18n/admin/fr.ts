@@ -2411,4 +2411,38 @@ export default {
     "other": "{month} : {count} opérations",
   },
   "AdminEntries.householdLastEntry": "Dernière opération le {date}",
+  "AdminNav.transfers": "Virements",
+  "AdminTransfers.title": "Virements",
+  "AdminTransfers.subtitle":
+    "Comment les foyers déplacent leur argent entre leurs propres comptes. Des décomptes et des dates seulement : ni montant ni note.",
+  "AdminTransfers.retry": "Réessayer",
+  "AdminTransfers.loading": "Chargement des chiffres",
+  "AdminTransfers.none": "Aucun virement pour l’instant",
+  "AdminTransfers.noneHint":
+    "Les chiffres s’afficheront dès qu’un foyer fera son premier virement.",
+  "AdminTransfers.keyNumbers": "Chiffres clés",
+  "AdminTransfers.transfers": "Virements",
+  "AdminTransfers.households": "Foyers",
+  "AdminTransfers.householdsHint": "Avec au moins un virement",
+  "AdminTransfers.lastTransfer": "Dernier virement",
+  "AdminTransfers.lastTransferHint": "D’après la date du virement",
+  "AdminTransfers.byMonth": "6 derniers mois",
+  "AdminTransfers.topHouseholds": "Foyers les plus actifs",
+  "AdminTransfers.perMonth": "Virements par mois",
+  "AdminTransfers.transferCount": {
+    "one": "{count} virement",
+    "many": "{count} de virements",
+    "other": "{count} virements",
+  },
+  "AdminTransfers.householdCount": {
+    "one": "{count} foyer",
+    "many": "{count} de foyers",
+    "other": "{count} foyers",
+  },
+  "AdminTransfers.monthCount": {
+    "one": "{month} : {count} virement",
+    "many": "{month} : {count} de virements",
+    "other": "{month} : {count} virements",
+  },
+  "AdminTransfers.householdLastTransfer": "Dernier virement le {date}",
 } satisfies Catalog
