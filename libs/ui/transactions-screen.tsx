@@ -84,8 +84,8 @@ export interface TransactionsScreenProps {
 /**
  * A household's transactions at `/transactions`: newest first, under a heading per day, with memo
  * search and the account, category, kind and date filters in the address. Each row opens the
- * entry's page. `?deleted=1` shows the deleted entries with Restore instead. A viewer sees the
- * same list without "Add transaction" or the deleted view.
+ * entry's page. `?deleted=1` shows the deleted entries and transfers with Restore instead. A
+ * viewer sees the same list without "Add transaction" or the deleted view.
  */
 export function TransactionsScreen(props: TransactionsScreenProps): JSX.Element {
   const { group, navigate } = props

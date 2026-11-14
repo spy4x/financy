@@ -1,7 +1,7 @@
 /**
  * Transfers in a browser DOM (happy-dom): their rows in the transactions list, the Transfers
- * filter and its empty state, the ways in for an editor, and the transfer editor's fields, rate
- * line, missing rate, offline and read-only states, and its kind control.
+ * filter and its empty state, the deleted view, the ways in for an editor, and the transfer
+ * editor's fields, rate line, missing rate, offline and read-only states, and its kind control.
  */
 import { expect } from "@std/expect"
 import { afterAll, afterEach, beforeAll, describe, it } from "@std/testing/bdd"

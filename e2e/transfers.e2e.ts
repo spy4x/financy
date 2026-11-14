@@ -1,8 +1,9 @@
 /**
  * Transfers between a household's own accounts: one from euros to dong with both amounts, which
  * moves both balances, leaves the month's spending and income alone, shows under either account's
- * filter and reaches the partner's open list without a reload; its delete and Undo; and a transfer
- * whose date has no rate, which makes the received amount required.
+ * filter and reaches the partner's open list without a reload; its delete, its Undo, and its
+ * Restore from the deleted list once the toast is gone; and a transfer whose date has no rate,
+ * which makes the received amount required.
  */
 import { type APIRequestContext, type Page } from "@playwright/test"
 import { expect, test } from "./fixtures/stack.ts"
@@ -97,7 +98,7 @@ const rows = (page: Page) => page.locator("[data-e2e=transfer-row]")
 test.describe("transfers", () => {
   test.describe.configure({ timeout: 180_000 })
 
-  test("a transfer from euros to dong moves both balances, not the month, shows under both accounts and reaches the partner without a reload, and comes back on Undo after a delete", async ({ browser, request }) => {
+  test("a transfer from euros to dong moves both balances, not the month, shows under both accounts and reaches the partner without a reload, and comes back on Undo or from the deleted list after a delete", async ({ browser, request }) => {
     const owner = "e2e_transfers_owner@example.com"
     const partner = "e2e_transfers_partner@example.com"
     const baseURL = test.info().project.use.baseURL
@@ -211,6 +212,30 @@ test.describe("transfers", () => {
       await expect(rows(page)).toHaveCount(1)
       await expect(rows(partnerPage)).toHaveCount(1, { timeout: 5_000 })
       expect(partnerLoads).toBe(loadsBefore)
+
+      // Deleted again and the toast missed (a page load drops it): the deleted list brings the
+      // transfer back, and both balances with it.
+      await rows(page).click()
+      await page.locator("[data-e2e=transfer-editor-menu]").click()
+      await page.locator("[data-e2e=transfer-delete]").click()
+      await expect(page.locator("[data-e2e=transfer-undo-toast]")).toBeVisible()
+      await gotoApp(page, "/accounts", page.locator(`[data-e2e=account-${wallet}]`))
+      await expect(page.locator("[data-e2e=transfer-undo-toast]")).toHaveCount(0)
+      await expect(page.locator(`[data-e2e=account-${wallet}] [data-e2e=account-balance]`))
+        .toContainText("1,460.00")
+      await gotoApp(page, "/transactions", page.locator("[data-e2e=transactions-show-deleted]"))
+      await page.locator("[data-e2e=transactions-show-deleted]").click()
+      const trashed = page.locator("[data-e2e=transaction-trash] li[data-e2e^=transfer-]")
+      await expect(trashed).toHaveCount(1)
+      await expect(trashed.locator("[data-e2e=transfer-accounts]")).toContainText("Wallet")
+      await trashed.locator("[data-e2e=transaction-restore]").click()
+      await expect(page.locator("[data-e2e=transfer-restored]")).toContainText("Transfer restored")
+      await expect(trashed).toHaveCount(0)
+      await gotoApp(page, "/accounts", page.locator(`[data-e2e=account-${wallet}]`))
+      await expect(page.locator(`[data-e2e=account-${wallet}] [data-e2e=account-balance]`))
+        .toContainText("1,260.00")
+      await expect(page.locator(`[data-e2e=account-${cash}] [data-e2e=account-balance]`))
+        .toContainText("5,000,000")
     } finally {
       await ownerContext.close()
       await partnerContext.close()

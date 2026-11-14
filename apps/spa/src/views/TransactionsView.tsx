@@ -55,7 +55,7 @@ const KINDS: readonly (string | null)[] = [
  * from the device's copy, the accounts and categories that name them, and the members who added
  * them, with the household's transfers among the entries by date. The search and filters live in
  * the address (`?q=`, `?account=`, `?category=`, `?kind=1|2|3`, `?from=` and `?to=`), and
- * `?deleted=1` shows the deleted entries.
+ * `?deleted=1` shows the deleted entries and transfers.
  */
 export function TransactionsView() {
   const [, navigate] = useLocation()
