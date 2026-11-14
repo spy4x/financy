@@ -302,9 +302,9 @@ export default {
     "Financy today: accounts and transactions in any currency, monthly budgets, households with roles, sync, offline app, export, nine languages, self-hosting.",
   "FeaturesHero.title": "What Financy does today, and what comes next",
   "FeaturesHero.lead":
-    "Financy is being rebuilt. What works today: accounts in any currency, their categories, transactions and monthly budgets, and the ground under them: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
+    "Financy is being rebuilt. What works today: accounts in any currency, their categories, transactions, transfers between accounts and monthly budgets, and the ground under them: sign-in, shared access with roles, live updates, an offline app, export, nine languages and your own server. Each section links to its code.",
   "FeaturesHero.note":
-    "Transfers are not built yet. <status>See where the rebuild stands</status>.",
+    "The monthly overview is not built yet. <status>See where the rebuild stands</status>.",
   "FeaturesFaq.title": "Can Financy do that?",
   "FeatureSection.issue": "issue #{number}",
   "FeatureSection.forDevelopers": "For developers",
@@ -619,7 +619,7 @@ export default {
   "FeatureCategories.fact3": "A viewer reads the categories; only an editor or above changes them",
   "FeatureCategories.code": "Read the categories domain",
   "FeatureTierSettled.lead":
-    "These parts work and are tested in CI. Accounts in any currency, their categories, transactions and monthly budgets are here; transfers come next.",
+    "These parts work and are tested in CI. Accounts in any currency, their categories, transactions, transfers between accounts and monthly budgets are here.",
   "HomeStatus.categories": "Categories with one level of subcategories",
   "HomeStatus.budgets": "A monthly limit for each category",
   "FeatureBudgets.nav": "Budgets",

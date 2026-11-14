@@ -28,7 +28,7 @@ export const PRIVACY_HEAD = {
   title: `Privacy: what is kept about your household`,
   description: `What Financy's cloud stores about your household's money, who sees it, which ` +
     `companies handle it, how long it stays and how to delete it.`,
-  updated: `2026-11-07`,
+  updated: `2026-11-14`,
 } as const
 
 /** A group's heading inside a section: `LegalPage` styles `h2` only. */
@@ -68,7 +68,7 @@ export default define.page(function Privacy({ state }) {
       title="Privacy"
       headTitle={PRIVACY_HEAD.title}
       description={PRIVACY_HEAD.description}
-      updated="7 November 2026"
+      updated="14 November 2026"
       sections={PRIVACY_SECTIONS}
       lead={
         <TldrBox
@@ -153,6 +153,10 @@ export default define.page(function Privacy({ state }) {
           amount next to the original. A deleted transaction is kept for 30 days so it can be
           restored, then removed for good.
         </li>
+        <li>
+          Every transfer between your accounts: the two accounts, the amount sent and the amount
+          received, the date, the memo and who added it.
+        </li>
         <li>Categories, monthly budgets and recurring transactions.</li>
       </ul>
       <h3 class={GROUP}>Imports</h3>
@@ -179,10 +183,10 @@ export default define.page(function Privacy({ state }) {
 
       <h2 id="who-sees">Who can see your data</h2>
       <p>
-        Everyone in your household sees its accounts, transactions, categories and budgets. What
-        each member may change depends on their role, which the household's owner sets. Members see
-        each other's name, profile picture and role; the owner and admins also see each member's
-        email address and when they were last active.
+        Everyone in your household sees its accounts, transactions, transfers, categories and
+        budgets. What each member may change depends on their role, which the household's owner
+        sets. Members see each other's name, profile picture and role; the owner and admins also see
+        each member's email address and when they were last active.
       </p>
       <p>
         To run the service and answer support, the operators can see in the admin panel each

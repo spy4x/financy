@@ -71,6 +71,7 @@ const WORKS_TODAY = [
   `HomeStatus.accounts`,
   `HomeStatus.categories`,
   `HomeStatus.transactions`,
+  `HomeStatus.transfers`,
   `HomeStatus.budgets`,
   `HomeStatus.signIn`,
   `HomeStatus.groups`,
@@ -82,7 +83,6 @@ const WORKS_TODAY = [
 
 /** What is being built now, each with the issue that tracks it. */
 const BUILDING_NOW = [
-  { key: `HomeStatus.transfers`, issue: 97 },
   { key: `HomeStatus.month`, issue: 99 },
 ] as const
 

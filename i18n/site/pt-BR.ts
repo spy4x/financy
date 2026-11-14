@@ -614,9 +614,9 @@ export default {
     "Financy hoje: contas e lançamentos em qualquer moeda, orçamentos mensais, famílias com funções, sincronização, app offline, exportação, nove idiomas.",
   "Features.title": "Recursos do Financy: contas, famílias, sincronização",
   "FeaturesHero.lead":
-    "O Financy está sendo reconstruído. O que funciona hoje: contas em qualquer moeda, suas categorias, lançamentos e orçamentos mensais, e a base por trás delas: login, acesso compartilhado com funções, atualizações ao vivo, um app offline, exportação, nove idiomas e seu próprio servidor. Cada seção leva ao código dela.",
+    "O Financy está sendo reconstruído. O que funciona hoje: contas em qualquer moeda, suas categorias, lançamentos, transferências entre contas e orçamentos mensais, e a base por trás delas: login, acesso compartilhado com funções, atualizações ao vivo, um app offline, exportação, nove idiomas e seu próprio servidor. Cada seção leva ao código dela.",
   "FeaturesHero.note":
-    "Transferências ainda não existem. <status>Veja em que ponto está a reconstrução</status>.",
+    "O resumo do mês ainda não existe. <status>Veja em que ponto está a reconstrução</status>.",
   "HomeFaq.useAnswer":
     "Ainda não. Login, famílias, sincronização e contas em qualquer moeda funcionam; os lançamentos estão sendo feitos agora.",
   "Catalog.title": "Catálogo",
@@ -644,7 +644,7 @@ export default {
   "FeatureCategories.fact3": "Quem só vê lê as categorias; só um editor ou acima as altera",
   "FeatureCategories.code": "Ler o código das categorias",
   "FeatureTierSettled.lead":
-    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda, suas categorias, os lançamentos e os orçamentos mensais já estão aqui; as transferências vêm a seguir.",
+    "Estas partes funcionam e são testadas na CI. As contas em qualquer moeda, suas categorias, os lançamentos, as transferências entre contas e os orçamentos mensais já estão aqui.",
   "HomeStatus.categories": "Categorias com um nível de subcategorias",
   "HomeStatus.budgets": "Um limite mensal para cada categoria",
   "FeatureBudgets.nav": "Orçamentos",

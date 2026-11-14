@@ -612,9 +612,9 @@ export default {
     "Financy heute: Konten und Buchungen in jeder Währung, Monatsbudgets, Haushalte mit Rollen, Sync, Offline-App, Export, neun Sprachen, eigener Server.",
   "Features.title": "Financy-Funktionen: Konten, Haushalte, Sync, offline",
   "FeaturesHero.lead":
-    "Financy wird von Grund auf neu gebaut. Was heute funktioniert: Konten in jeder Währung, ihre Kategorien, Buchungen und Monatsbudgets, und das Fundament darunter: Anmeldung, Teilen mit Rollen, Änderungen in Echtzeit, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt den Code dahinter.",
+    "Financy wird von Grund auf neu gebaut. Was heute funktioniert: Konten in jeder Währung, ihre Kategorien, Buchungen, Umbuchungen und Monatsbudgets, und das Fundament darunter: Anmeldung, Teilen mit Rollen, Änderungen in Echtzeit, eine Offline-App, Export, neun Sprachen und dein eigener Server. Jeder Abschnitt verlinkt den Code dahinter.",
   "FeaturesHero.note":
-    "Umbuchungen gibt es noch nicht. <status>Sieh nach, wie weit der Neubau ist</status>.",
+    "Den Monatsüberblick gibt es noch nicht. <status>Sieh nach, wie weit der Neubau ist</status>.",
   "HomeFaq.useAnswer":
     "Noch nicht. Anmeldung, Haushalte, Synchronisierung und Konten in jeder Währung funktionieren; Buchungen werden gerade gebaut.",
   "Catalog.title": "Katalog",
@@ -643,7 +643,7 @@ export default {
     "Ein Betrachter liest die Kategorien; nur ein Bearbeiter oder höher ändert sie",
   "FeatureCategories.code": "Code der Kategorien lesen",
   "FeatureTierSettled.lead":
-    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung, ihre Kategorien, Buchungen und Monatsbudgets sind da; Umbuchungen kommen als Nächstes.",
+    "Diese Teile funktionieren und werden in CI getestet. Konten in jeder Währung, ihre Kategorien, Buchungen, Umbuchungen und Monatsbudgets sind da.",
   "HomeStatus.categories": "Kategorien mit einer Ebene Unterkategorien",
   "HomeStatus.budgets": "Ein Monatslimit für jede Kategorie",
   "FeatureBudgets.nav": "Budgets",
