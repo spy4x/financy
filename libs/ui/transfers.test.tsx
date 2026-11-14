@@ -305,6 +305,49 @@ describe("TransactionsScreen with transfers", () => {
     expect(has("[data-e2e=transfers-empty]")).toBe(true)
     expect(has("[data-e2e=transfer-new-empty]")).toBe(false)
   })
+
+  it("lists a deleted transfer next to a deleted entry with both accounts, its amount and a named Restore", async () => {
+    const restored: string[] = []
+    const deleted = [
+      { ...atm, deletedAt: "2026-11-13T10:00:00.000Z" },
+      { ...latte, deletedAt: "2026-11-13T09:00:00.000Z" },
+    ]
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        deleted={deleted}
+        onRestore={(id) => restored.push(id)}
+      />,
+    )
+    const row = rowOf(atm.id)!
+    expect([...row.querySelectorAll("[data-e2e=transfer-accounts] bdi")].map(text))
+      .toEqual(["Card", "Wallet"])
+    expect(text(row)).toContain("US$200.00")
+    expect(text(row)).toContain("Deleted")
+    // A deleted transfer has no page to open, and moving money is never income or spending.
+    expect(row.querySelector("a")).toBe(null)
+    expect(row.querySelector(".text-danger, .text-success")).toBe(null)
+    const restore = row.querySelector("[data-e2e=transaction-restore]")!
+    expect(restore.getAttribute("aria-label")).toBe("Restore US$200.00 from Card to Wallet")
+    expect(has(`[data-e2e=transaction-${latte.id}] [data-e2e=transaction-restore]`)).toBe(true)
+
+    await click(restore)
+
+    expect(restored).toEqual([atm.id])
+  })
+
+  it("shows a viewer deleted transfers without Restore", async () => {
+    await mount(
+      <TransactionsScreen
+        {...listDefaults}
+        group={viewerOfHome}
+        deleted={[{ ...atm, deletedAt: "2026-11-13T10:00:00.000Z" }]}
+        onRestore={() => {}}
+      />,
+    )
+    expect(rowOf(atm.id)).not.toBe(null)
+    expect(has("[data-e2e=transaction-restore]")).toBe(false)
+  })
 })
 
 describe("TransferEditorScreen", () => {
