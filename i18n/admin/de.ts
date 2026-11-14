@@ -2302,7 +2302,7 @@ export default {
   "AdminNav.entries": "Buchungen",
   "AdminEntries.title": "Buchungen",
   "AdminEntries.subtitle":
-    "Wie Haushalte ihre Finanzen erfassen. Nur Anzahlen und Daten: keine Beträge, keine Notizen.",
+    "Wie Haushalte ihre Finanzen erfassen. Nur Anzahlen und Daten: keine Beträge, keine Vermerke.",
   "AdminEntries.retry": "Erneut versuchen",
   "AdminEntries.loading": "Zahlen werden geladen",
   "AdminEntries.none": "Noch keine Buchungen",
@@ -2326,7 +2326,7 @@ export default {
   "AdminNav.transfers": "Umbuchungen",
   "AdminTransfers.title": "Umbuchungen",
   "AdminTransfers.subtitle":
-    "Wie Haushalte Geld zwischen ihren eigenen Konten bewegen. Nur Anzahlen und Daten: keine Beträge, keine Notizen.",
+    "Wie Haushalte Geld zwischen ihren eigenen Konten bewegen. Nur Anzahlen und Daten: keine Beträge, keine Vermerke.",
   "AdminTransfers.retry": "Erneut versuchen",
   "AdminTransfers.loading": "Zahlen werden geladen",
   "AdminTransfers.none": "Noch keine Umbuchungen",

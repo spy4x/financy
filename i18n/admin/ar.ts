@@ -2539,7 +2539,7 @@ export default {
   },
   "AdminNav.entries": "المعاملات",
   "AdminEntries.title": "المعاملات",
-  "AdminEntries.subtitle": "كيف تستخدم الأُسر السجل المالي. أعداد وتواريخ فقط: بلا مبالغ ولا ملاحظات.",
+  "AdminEntries.subtitle": "كيف تستخدم الأُسر السجل المالي. أعداد وتواريخ فقط: بلا مبالغ ولا بيان.",
   "AdminEntries.retry": "إعادة المحاولة",
   "AdminEntries.loading": "جارٍ تحميل الأعداد",
   "AdminEntries.none": "لا معاملات بعد",
@@ -2581,7 +2581,7 @@ export default {
   "AdminNav.transfers": "التحويلات",
   "AdminTransfers.title": "التحويلات",
   "AdminTransfers.subtitle":
-    "كيف تنقل الأُسر المال بين حساباتها الخاصة. أعداد وتواريخ فقط: بلا مبالغ ولا ملاحظات.",
+    "كيف تنقل الأُسر المال بين حساباتها الخاصة. أعداد وتواريخ فقط: بلا مبالغ ولا بيان.",
   "AdminTransfers.retry": "إعادة المحاولة",
   "AdminTransfers.loading": "جارٍ تحميل الأعداد",
   "AdminTransfers.none": "لا تحويلات بعد",

@@ -1133,7 +1133,7 @@ AdminEntries.none	84c62b11dc3735d7
 AdminEntries.noneHint	82e9dcdae20e7e97
 AdminEntries.perMonth	3e80186258c8daea
 AdminEntries.retry	d8b8392e2c542950
-AdminEntries.subtitle	96721871111572c5
+AdminEntries.subtitle	9dbbc79bf000169e
 AdminEntries.title	7cb76b4af12abb80
 AdminEntries.topHouseholds	fd200fb96b7bd104
 AdminFrame.codeHint	c8880d111c448d83
@@ -1721,7 +1721,7 @@ AdminTransfers.none	e3248fa6f0184329
 AdminTransfers.noneHint	b175ed63b2f33ee5
 AdminTransfers.perMonth	32e9fc0a7e4f8982
 AdminTransfers.retry	d8b8392e2c542950
-AdminTransfers.subtitle	56de321983c25600
+AdminTransfers.subtitle	836c842ff561bcbc
 AdminTransfers.title	c417cb88e3fdd02c
 AdminTransfers.topHouseholds	fd200fb96b7bd104
 AdminTransfers.transferCount	44d61ddf2c282781
