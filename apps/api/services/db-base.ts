@@ -50,6 +50,7 @@ import { accountMovable } from "@server/accounts/account-movable.ts"
 import { accountPortable } from "@server/accounts/account-portable.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
+import { PostgresTransferRepository } from "@server/transfers/postgres-transfer-repository.ts"
 import { PostgresRecurringRuleRepository } from "@server/recurring/postgres-recurring-rule-repository.ts"
 import { recurringRuleMovable } from "@server/recurring/recurring-rule-movable.ts"
 import { PostgresBudgetRepository } from "@server/budgets/postgres-budget-repository.ts"
@@ -396,6 +397,11 @@ export class AppDbBase extends DbServiceBase {
   /** The income and expense entries. Built per access, like `note`. */
   get transaction(): PostgresTransactionRepository {
     return new PostgresTransactionRepository(this.sql)
+  }
+
+  /** The transfers between a household's accounts. Built per access, like `note`. */
+  get transfer(): PostgresTransferRepository {
+    return new PostgresTransferRepository(this.sql)
   }
 
   /** The repeating entries' rules. Built per access, like `note`. */
