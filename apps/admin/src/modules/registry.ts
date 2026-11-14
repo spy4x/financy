@@ -21,6 +21,7 @@ import { newsletterModule } from "./newsletter/module.tsx"
 import { ratesModule } from "./rates/module.tsx"
 import { statsModule } from "./stats/module.tsx"
 import { systemModule } from "./system/module.tsx"
+import { transfersModule } from "./transfers/module.tsx"
 import type { AdminModule, AdminPersonTab } from "./types.ts"
 import { usersModule } from "./users/module.tsx"
 
@@ -32,6 +33,7 @@ export const ADMIN_MODULES: readonly AdminModule[] = [
   accountsModule,
   categoriesModule,
   entriesModule,
+  transfersModule,
   billingModule,
   newsletterModule,
   blogModule,
