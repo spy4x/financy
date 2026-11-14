@@ -107,6 +107,9 @@ tombstone of kind `transactions`, and with the notes off (`NOTES=false`) as well
 them in the same database, the latest date first (`offline/device-copy.ts`). The pull leaves out a
 kind the device does not know, rows and tombstones alike.
 
+Transfers come the same way: live ones in `upserts.transfers`, a deleted one as a tombstone of kind
+`transfers`. The SPA does not keep them yet, so its pull leaves them out as an unknown kind.
+
 ## Which answers count as "unreachable"
 
 The copy answers when there is no answer at all: no network, a failed connection, a closed socket.
