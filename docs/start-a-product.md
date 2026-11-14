@@ -208,9 +208,10 @@ there.
 `NOTES=false` turns the notes example off while its files stay as Seed has them, so later syncs
 merge cleanly. The API then answers 404 to every note, tag and attachment route and to the
 personal-token API (`/api/v1`), which serves notes only, and refuses their operations over the
-socket and `/api/call` as unknown ones. The changes pull, the admin app's group widgets and files
-and the Telegram bot's `/notes` leave them out too; moving a group's data leaves notes and tags
-where they are, and a new account gets no welcome note. A person's data export, a group's export
+socket and `/api/call` as unknown ones. The changes pull and the Telegram bot's `/notes` leave
+them out too, and the admin app's group page shows no note widgets and no Files tab
+([admin-modules.md](admin-modules.md#what-an-operator-may-see)); moving a group's data leaves
+notes and tags where they are, and a new account gets no welcome note. A person's data export, a group's export
 file and spreadsheets leave them out, and a group import skips them (the worker reads `NOTES` too,
 for the data export). The website reads it as well: `/docs/api`, the personal-token API's
 reference, answers 404 in every language, and no footer, docs card, guide, sitemap or `llms.txt`
@@ -223,8 +224,9 @@ accepted invitation open the overview, and the overview shows no note widgets. A
 first steps sit on the overview instead, with no note step and no tour stop on the notes, and "Download
 my data" names the profile and groups only. The app's billing screen shows no plan lines, but the
 plans in `libs/domain/billing/+lib.ts` still list notes and files (`features`, `limits`), and the
-website's pricing page shows them: write your own. The token screens still name notes for now
-([#1015](https://github.com/spy4x/seed/issues/1015)); so does the demo.
+website's pricing page shows them: write your own. The personal API tokens are hidden, since their
+API serves the notes only: the profile and the palette offer no API tokens, `/tokens/new` shows the
+not-found page and `/profile/api-tokens` opens the profile. The demo still names notes.
 
 Create the first operator on the server; it needs no mail
 ([The first operator](operator-access.md#the-first-operator)):

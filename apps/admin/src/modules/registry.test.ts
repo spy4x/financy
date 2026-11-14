@@ -53,3 +53,8 @@ it("marks Accounts with the bank icon and leaves the wallet to the brand", () =>
   expect(ADMIN_MODULES.find((module) => module.id === `accounts`)?.nav.Icon).toBe(IconBank)
   expect(ADMIN_MODULES.some((module) => module.nav.Icon === IconWallet)).toBe(false)
 })
+
+it("ignores an id the API lists that names no module, such as the notes", () => {
+  const ids = (on: string[]) => shownModules(ADMIN_MODULES, new Set(on)).map((module) => module.id)
+  expect(ids(["notes"])).toEqual(ids([]))
+})
