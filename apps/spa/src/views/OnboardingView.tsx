@@ -8,11 +8,13 @@ import { isGuestSession } from "../state/guest.ts"
 import { demoMode } from "../state/demo.ts"
 import { groupsStore } from "../state/groups.ts"
 import { canRename } from "@domain/groups"
+import { notesOn } from "../modules.ts"
 
 /**
- * The first-steps card above the notes list, where a new account lands. It reads the steps each
- * time the list opens, so a step the person did on another page is ticked when they come back,
- * and follows hints only while it is on the page. After Dismiss the card leaves
+ * The first-steps card under the page header of the page a new account lands on: the notes list,
+ * or the overview with the notes off (`SPA_NOTES=false`), where it has no note step. It reads the
+ * steps each time that page opens, so a step the person did on another page is ticked when they
+ * come back, and follows hints only while it is on the page. After Dismiss the card leaves
  * and focus moves to the page's `<h1>`, the element a route change moves focus to.
  *
  * In the public demo (docs/demo.md) the invitation step starts done: every account owns a sample
@@ -21,7 +23,7 @@ import { canRename } from "@domain/groups"
 export function OnboardingView({ store = onboardingStore }: { store?: typeof onboardingStore }) {
   const [, navigate] = useLocation()
   useEffect(() => {
-    // Without an answer there is no card; the next visit to the notes asks again.
+    // Without an answer there is no card; the next visit to the page asks again.
     void store.open().catch(() => {})
     // A tour left by following one of its links is closed, and still offered on the next visit.
     return store.close
@@ -38,6 +40,7 @@ export function OnboardingView({ store = onboardingStore }: { store?: typeof onb
       navigate={navigate}
       guest={isGuestSession()}
       canChooseCurrency={role !== undefined && canRename(role)}
+      notes={notesOn()}
       onDismiss={() => {
         // The card hides at once, before the server answers, so focus moves now.
         void store.dismiss()

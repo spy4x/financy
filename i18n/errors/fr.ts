@@ -126,6 +126,10 @@ export default {
   "Reason.CHANNEL_NOT_FOUND": "Ce canal n’existe plus.",
   "Reason.CURRENCY_KIND_MISMATCH":
     "Un compte crypto contient une cryptomonnaie, et seul un compte crypto le peut. Choisissez une devise adaptée au type de compte.",
+  "Reason.DEMO_ADMIN_ELSEWHERE":
+    "C’est le compte administrateur de la démo. Connectez-vous plutôt avec lui dans le panneau d’administration.",
+  "Reason.DEMO_REFUSED":
+    "Indisponible dans la démo publique : cette action modifierait le vrai site web ou enverrait des e-mails à de vraies personnes.",
   "Reason.FILE_CONTENT": "Le contenu de ce fichier ne correspond pas à son type.",
   "Reason.FILE_MISSING": "Aucun fichier n’est arrivé. Choisissez un fichier et réessayez.",
   "Reason.FILE_TOO_LARGE": "Ce fichier est trop volumineux.",

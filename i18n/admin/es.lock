@@ -1142,6 +1142,10 @@ AdminFrame.codeTitle	62fd9988e2dff052
 AdminFrame.comingSoon	a4ed4cab31b1d7ec
 AdminFrame.comingSoonBadge	4f7d64017689437e
 AdminFrame.continue	31fbef162594de01
+AdminFrame.demoEmail	969ccbd3cf6300ec
+AdminFrame.demoNote	847dd11f41e46a29
+AdminFrame.demoPassword	e7cf3ef4f17c3999
+AdminFrame.demoSignIn	b28fcc775b30f7ce
 AdminFrame.login	2a347f1933d48350
 AdminFrame.noAccess	9b1f0823459d06f7
 AdminFrame.noAccessDescription	f32a44c230cca297
@@ -1571,6 +1575,11 @@ AdminRates.sourceFallback	5ce564cd758c7718
 AdminRates.subtitle	8590f514c11ae232
 AdminRates.title	a1875e41932859d0
 AdminRates.weekend	67c3a593278f02b5
+AdminSearch.find	97de19ef66ae136c
+AdminSearch.findGroup	db9bb44e7f27025a
+AdminSearch.findUser	432bb2d5a8396821
+AdminSearch.off	ca7981b46ecf2c17
+AdminSearch.on	130011756125313c
 AdminShortcuts.addCategory	aafdf428fd0256ea
 AdminShortcuts.addChannel	a19c0adaf6a623f1
 AdminShortcuts.addItem	d1a0b329a72b8f16

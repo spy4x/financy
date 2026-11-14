@@ -273,7 +273,7 @@ export function languageAlternates(
 export interface SiteFrameProps {
   /**
    * The request's state: the website's own origin for canonical links, the SPA's for actions, and
-   * whether the footer offers the newsletter.
+   * whether the footer offers the newsletter and the API docs.
    */
   state: Pick<
     State,
@@ -281,6 +281,7 @@ export interface SiteFrameProps {
     | "spaOrigin"
     | "demoOrigin"
     | "newsletter"
+    | "notes"
     | "blog"
     | "blogLanguages"
     | "contactLinks"
@@ -407,7 +408,7 @@ export function SiteFrame(
             <p class="text-sm text-muted">{t.t(`SiteFooter.pitch`)}</p>
           </div>
         }
-        groups={footerGroups(t, href, blog, state.contactLinks ?? [])}
+        groups={footerGroups(t, href, blog, state.notes, state.contactLinks ?? [])}
         aside={state.newsletter && footerNewsletter ? <FooterNewsletter /> : undefined}
         bottom={
           <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -595,14 +596,15 @@ export function sectionLinks(
 
 /**
  * The footer's link columns: the product, the source, the person and rules behind it, and, once the
- * operator has added any, the contact links. The Blog link is there once a post is live. "Source
- * code" is on every page, so a copy run as a network service offers its source (AGPL-3.0, section
- * 13).
+ * operator has added any, the contact links. The Blog link is there once a post is live, and the
+ * API docs link while the notes are on. "Source code" is on every page, so a copy run as a network
+ * service offers its source (AGPL-3.0, section 13).
  */
 function footerGroups(
   t: Translator<string>,
   href: (path: string) => string,
   blog: boolean,
+  notes: boolean,
   contactLinks: readonly PublicContactLink[],
 ): SiteFooterGroup[] {
   const contact: SiteFooterGroup[] = contactLinks.length > 0
@@ -622,7 +624,7 @@ function footerGroups(
         { label: t.t(`SiteFooter.source`), href: REPOSITORY_URL, external: true },
         { label: t.t(`SiteFooter.issue`), href: `${REPOSITORY_URL}/issues`, external: true },
         { label: t.t(`SiteFooter.docs`), href: href(DOCS_PATH) },
-        { label: t.t(`SiteFooter.apiDocs`), href: href(API_DOCS_PATH) },
+        ...(notes ? [{ label: t.t(`SiteFooter.apiDocs`), href: href(API_DOCS_PATH) }] : []),
         { label: t.t(`SiteFooter.changelog`), href: href(CHANGELOG_PATH) },
         { label: t.t(`SiteFooter.status`), href: href(`/#status`) },
       ],

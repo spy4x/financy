@@ -1053,8 +1053,10 @@ NoGroup.title	d5b5c3a9272b6912
 NotFound.description	4c6af94bf2ad02b2
 NotFound.signIn	bfd402b2f6f38125
 NotFound.signedOut	5668f958176e3271
+NotFound.signedOutPlain	4bece2d5f88e86ee
 NotFound.title	a469ab4ca4e55bf5
 NotFound.toNotes	713d200133efbf1b
+NotFound.toOverview	257795dedb2c8802
 NoteAttachments.almostFull	6a89d7f682f03c77
 NoteAttachments.attach	e697cc1e45afa541
 NoteAttachments.cancel	19766ed6ccb2f4a3
@@ -1298,6 +1300,7 @@ OnboardingCard.goTo	2745d2702385bcbb
 OnboardingCard.goToHighlighted	dd4e9b3b30b69a80
 OnboardingCard.inviteAction	9b7639e8de286c00
 OnboardingCard.inviteText	a64a504ccf41a164
+OnboardingCard.inviteTextPlain	33f4394774d15a4a
 OnboardingCard.inviteTitle	0a46f5a639ca5571
 OnboardingCard.keep	125f55ebeeef85ad
 OnboardingCard.keepText	83776173b40175a0
@@ -1309,6 +1312,7 @@ OnboardingCard.notificationsText	adb691a79cf26ee0
 OnboardingCard.notificationsTitle	92dfd3632baeb6d4
 OnboardingCard.title	61e8d44ad423a4a0
 OnboardingCard.tourGroupsText	9c45c2c5941bbb4c
+OnboardingCard.tourGroupsTextPlain	42555dcc24ab1c0f
 OnboardingCard.tourGroupsTitle	39bbb719fa2b9d22
 OnboardingCard.tourNotificationsText	890a500ea9bc5aab
 OnboardingCard.tourNotificationsTitle	788011833a5a0f22
@@ -1345,6 +1349,8 @@ OverviewScreen.lastMonth	b27e31d9ef70625c
 OverviewScreen.loading	923a5c5101fe3b09
 OverviewScreen.missing	d5b5c3a9272b6912
 OverviewScreen.newNote	76ea482f843e76e4
+OverviewScreen.noWidgets	343caea0a933c477
+OverviewScreen.noWidgetsText	7b9da32cccf2901b
 OverviewScreen.period	399ebd40772219c5
 OverviewScreen.rangeTooLong	524bd30029f6996d
 OverviewScreen.reset	2e2a17849c24f8e9
@@ -1459,6 +1465,7 @@ ProfileExport.failed	c3bebddec4061a7f
 ProfileExport.label	ee5ef73aae180f3e
 ProfileExport.network	b6950e605658ac2b
 ProfileExport.never	d015807da76535f7
+ProfileExport.neverPlain	d8682fa96dd23ad6
 ProfileExport.prepareNew	83789bb2d6adef82
 ProfileExport.preparing	79ab75995d4cdd28
 ProfileExport.ready	2a342fd34a841b84
@@ -1625,6 +1632,7 @@ Search.create	4759498ac2a719c6
 Search.current	e0d1b68224bf0b31
 Search.downloadData	edbfbe26317edf70
 Search.downloadDetail	9ac1ea3828e84eac
+Search.downloadDetailPlain	cf3034c9dd4847af
 Search.empty	7057d2dc8544a7bd
 Search.emptyOnDevice	4909b534f1b33bd7
 Search.error	d11d89ec7e75ceee

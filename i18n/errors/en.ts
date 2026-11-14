@@ -127,6 +127,10 @@ export default {
   "Reason.CHANNEL_NOT_FOUND": "This channel no longer exists.",
   "Reason.CURRENCY_KIND_MISMATCH":
     "A crypto account holds a coin, and only a crypto account can. Pick a currency that fits its kind.",
+  "Reason.DEMO_ADMIN_ELSEWHERE":
+    "This is the demo's admin account. Sign in with it in the admin panel instead.",
+  "Reason.DEMO_REFUSED":
+    "Not available in the public demo: this would change the real website or email real people.",
   "Reason.FILE_CONTENT": "This file's contents don't match its type.",
   "Reason.FILE_MISSING": "No file came through. Choose a file and try again.",
   "Reason.FILE_TOO_LARGE": "This file is too large.",

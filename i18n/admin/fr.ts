@@ -1516,6 +1516,11 @@ export default {
   "AdminFrame.signInTitle": "Connexion opérateur",
   "AdminFrame.signInText":
     "Pour les personnes qui gèrent ce produit. Connectez-vous avec votre compte opérateur.",
+  "AdminFrame.demoNote":
+    "Ceci est la démo publique. Connectez-vous avec le compte administrateur de la démo pour faire le tour. Tout est réinitialisé chaque nuit.",
+  "AdminFrame.demoEmail": "Adresse e-mail",
+  "AdminFrame.demoPassword": "Mot de passe",
+  "AdminFrame.demoSignIn": "Se connecter en admin de la démo",
   "AdminFrame.codeTitle": "Saisissez votre code",
   "AdminFrame.codeText":
     "Ouvrez votre application d’authentification et saisissez les six chiffres affichés.",
@@ -2006,6 +2011,11 @@ export default {
   "AdminPreferences.clock24": "24 heures",
   "AdminPreferences.changed": "Modifié",
   "AdminPreferences.never": "Jamais",
+  "AdminSearch.find": "Recherche rapide",
+  "AdminSearch.findUser": "Chercher l’utilisateur « {query} »",
+  "AdminSearch.findGroup": "Chercher le groupe « {query} »",
+  "AdminSearch.on": "Activés",
+  "AdminSearch.off": "Désactivés",
   "AdminShortcuts.newPost": "Nouvel article",
   "AdminShortcuts.sharingChannels": "Aller aux canaux de partage",
   "AdminShortcuts.addChannel": "Ajouter un canal de partage",

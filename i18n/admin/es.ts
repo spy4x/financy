@@ -1508,6 +1508,11 @@ export default {
   "AdminFrame.signInTitle": "Acceso de operadores",
   "AdminFrame.signInText":
     "Para quienes gestionan este producto. Inicia sesión con tu cuenta de operador.",
+  "AdminFrame.demoNote":
+    "Esta es la demo pública. Inicia sesión con la cuenta de administración de la demo para echar un vistazo. Todo se restablece cada noche.",
+  "AdminFrame.demoEmail": "Correo electrónico",
+  "AdminFrame.demoPassword": "Contraseña",
+  "AdminFrame.demoSignIn": "Entrar como administrador de la demo",
   "AdminFrame.codeTitle": "Introduce tu código",
   "AdminFrame.codeText": "Abre tu app de autenticación e introduce los seis dígitos que muestra.",
   "AdminFrame.login": "Correo electrónico o nombre de usuario",
@@ -1993,6 +1998,11 @@ export default {
   "AdminPreferences.clock24": "24 horas",
   "AdminPreferences.changed": "Cambiado",
   "AdminPreferences.never": "Nunca",
+  "AdminSearch.find": "Búsqueda rápida",
+  "AdminSearch.findUser": "Buscar usuario «{query}»",
+  "AdminSearch.findGroup": "Buscar grupo «{query}»",
+  "AdminSearch.on": "Activado",
+  "AdminSearch.off": "Desactivado",
   "AdminShortcuts.newPost": "Nueva entrada",
   "AdminShortcuts.sharingChannels": "Ir a los canales de difusión",
   "AdminShortcuts.addChannel": "Añadir canal de difusión",
