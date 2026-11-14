@@ -130,6 +130,9 @@ Deno.test("transfers against Postgres", async (t) => {
 
         const first = await transfers.create({ ...fields, allowance: null }, h.editor)
         const retry = await transfers.create({ ...fields, allowance: null }, h.editor)
+        // Another member resending the same id and content is not a retry of theirs.
+        expect(await codeOf(transfers.create({ ...fields, allowance: null }, h.owner)))
+          .toBe("ID_ALREADY_EXISTS")
         await transfers.update({ ...fields, memo: "ATM", expectedVersion: 1 }, h.editor)
         await transfers.delete({ groupId: h.groupId, id, expectedVersion: 2 }, h.editor)
         const restored = await transfers.restore(
@@ -167,9 +170,6 @@ Deno.test("transfers against Postgres", async (t) => {
             transfers.create({ ...fields, sentAmount: 99, allowance: null }, h.editor),
           ),
         ).toBe("ID_ALREADY_EXISTS")
-        // Another member resending the same id is not a retry of theirs.
-        expect(await codeOf(transfers.create({ ...fields, allowance: null }, h.owner)))
-          .toBe("ID_ALREADY_EXISTS")
       },
     )
 
@@ -292,6 +292,39 @@ Deno.test("transfers against Postgres", async (t) => {
         )
         expect(sameCurrency).toMatchObject({ receivedAmount: 20000, converted: false })
         expect(await h.balances("2026-11-30")).toEqual({ Card: 80000, Cash: 20000, Yen: 0 })
+      },
+    )
+
+    await t.step(
+      "re-converts the received amount when an edit changes only the to account, to another currency",
+      async () => {
+        const h = await household()
+        const euro = await h.account("Euro", "EUR")
+        const first = await h.transfer({ toAccountId: h.yen.id })
+        expect(first).toMatchObject({ receivedAmount: 15000, converted: true })
+
+        // Same dollars, same day; only the to account moves from yen to euros (1.1 USD per euro).
+        const moved = await transfers.update(
+          {
+            groupId: h.groupId,
+            id: first.id,
+            fromAccountId: h.card.id,
+            toAccountId: euro.id,
+            sentAmount: 10000,
+            memo: "",
+            date: "2026-11-05",
+            expectedVersion: 1,
+          },
+          h.owner,
+        )
+
+        expect(moved).toMatchObject({ toAccountId: euro.id, receivedAmount: 9091, converted: true })
+        expect(await h.balances("2026-11-30")).toEqual({
+          Card: 90000,
+          Cash: 0,
+          Yen: 0,
+          Euro: 9091,
+        })
       },
     )
 

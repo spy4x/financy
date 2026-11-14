@@ -373,6 +373,48 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
         OR t.currency <> a.currency
     `
     expect(misplaced).toBe(0)
+    // Every household's transfers, counted per month of their date and per pair of currencies,
+    // with the received amount stored as the fake bank stated it.
+    const expectedTransfers: Record<string, number> = {}
+    const expectedAmounts: string[] = []
+    for (const group of data.groups) {
+      for (const transfer of group.transfers) {
+        const day = isoDateInTz(new Date(NOW.getTime() - transfer.ago * 60_000), group.timeZone)
+        const [from, to] = [group.accounts[transfer.from], group.accounts[transfer.to]]
+        const key = `${day.slice(0, 7)} ${from.currency}>${to.currency}`
+        expectedTransfers[key] = (expectedTransfers[key] ?? 0) + 1
+        expectedAmounts.push(`${transfer.sentAmount} ${transfer.receivedAmount}`)
+      }
+    }
+    const transfers = await sql<{ key: string; transfers: number }[]>`
+      SELECT to_char(t.date, 'YYYY-MM') || ' ' || f.currency || '>' || r.currency AS key,
+        COUNT(*)::int AS transfers
+      FROM transfers t
+      JOIN accounts f ON f.id = t.from_account_id
+      JOIN accounts r ON r.id = t.to_account_id
+      GROUP BY 1
+    `
+    expect(Object.fromEntries(transfers.map((row) => [row.key, row.transfers])))
+      .toEqual(expectedTransfers)
+    // Stated, never converted by the server: both sides exactly as drawn.
+    const amounts = await sql<{ amounts: string }[]>`
+      SELECT sent_amount || ' ' || received_amount AS amounts FROM transfers WHERE NOT converted
+    `
+    expect(amounts.map((row) => row.amounts).sort()).toEqual(expectedAmounts.sort())
+    expect(Object.keys(expectedTransfers).some((key) => key.endsWith(`EUR>USD`))).toBe(true)
+    expect(Object.keys(expectedTransfers).some((key) => key.endsWith(`USD>VND`))).toBe(true)
+    // No transfer is dated after its household's today or written before either account, and each
+    // was written on its date's day in the household's zone.
+    const [{ strays }] = await sql<{ strays: number }[]>`
+      SELECT COUNT(*)::int AS strays
+      FROM transfers t
+      JOIN groups g ON g.id = t.group_id
+      JOIN accounts f ON f.id = t.from_account_id
+      JOIN accounts r ON r.id = t.to_account_id
+      WHERE t.date > (now() AT TIME ZONE g.time_zone)::date OR t.created_at < f.created_at
+        OR t.created_at < r.created_at OR (t.created_at AT TIME ZONE g.time_zone)::date <> t.date
+    `
+    expect(strays).toBe(0)
     // The group the fake data marks imported has the date and a log that starts with the import.
     const imported = await sql<{ name: string; kinds: string[] }[]>`
       SELECT g.name,
@@ -1231,12 +1273,15 @@ Deno.test("with notes off, the demo seed writes every person and group but no no
     const [imported] = await sql<{ groupId: string; details: Record<string, number> }[]>`
       SELECT group_id, details FROM audit_events WHERE event_kind = 'group.imported'
     `
-    const [held] = await sql<{ accounts: number; categories: number; transactions: number }[]>`
+    const [held] = await sql<
+      { accounts: number; categories: number; transactions: number; transfers: number }[]
+    >`
       SELECT
         (SELECT COUNT(*)::int FROM accounts WHERE group_id = ${imported.groupId}) AS accounts,
         (SELECT COUNT(*)::int FROM categories WHERE group_id = ${imported.groupId}) AS categories,
         (SELECT COUNT(*)::int FROM transactions WHERE group_id = ${imported.groupId})
-          AS transactions
+          AS transactions,
+        (SELECT COUNT(*)::int FROM transfers WHERE group_id = ${imported.groupId}) AS transfers
     `
     expect(held.accounts).toBeGreaterThan(0)
     expect(imported.details).toEqual({
@@ -1245,7 +1290,8 @@ Deno.test("with notes off, the demo seed writes every person and group but no no
       accounts: held.accounts,
       categories: held.categories,
       transactions: held.transactions,
-      count: held.accounts + held.categories + held.transactions,
+      transfers: held.transfers,
+      count: held.accounts + held.categories + held.transactions + held.transfers,
     })
   })
 })

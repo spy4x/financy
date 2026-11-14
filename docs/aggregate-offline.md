@@ -65,7 +65,8 @@ Its `clear` ends the database, so a write in flight at sign-out cannot put the d
 A level 3 aggregate is read by the changes pull: a device asks only for what changed since its
 cursor ([offline-data.md](offline-data.md#notes-and-tags-the-changes-pull)). Notes and tags take
 part on both sides; copy them. Entries (`libs/server/transactions/transaction-changes.ts`,
-`offline/transactions-collection.ts`) do too.
+`offline/transactions-collection.ts`) do too. Transfers (`libs/server/transfers/transfer-changes.ts`)
+take part on the server side only, until the SPA gets a transfers view.
 
 1. **Server.** Write a `ChangesAggregate` beside the repository, as
    `libs/server/notes/note-changes.ts` does. It has a `kind` and two queries. `sequences` reads the

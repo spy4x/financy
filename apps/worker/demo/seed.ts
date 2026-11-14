@@ -286,8 +286,8 @@ async function seedImport(
 }
 
 /**
- * Groups, their members, tags, accounts, categories, entries, notes, promotions and pending
- * invitations, each at its time; with `notes` off, no tags, notes, attachments or notes import, and an imported
+ * Groups, their members, tags, accounts, categories, entries, transfers, notes, promotions and
+ * pending invitations, each at its time; with `notes` off, no tags, notes, attachments or notes import, and an imported
  * group's import counts no tags or notes. `idOf` answers `null` for someone without an account: such a member is left out, a row
  * they wrote goes to a stand-in ({@link withStandIns}), and a group with such an owner is skipped.
  * Answers each group's id, or `null` for a skipped one.
@@ -340,6 +340,7 @@ async function seedGroups(
         notes: notes.on ? group.notes.length : 0,
         tags: notes.on ? group.tags.length : 0,
         transactions: group.entries.length,
+        transfers: group.transfers.length,
       }
       await sql`UPDATE groups SET imported_at = ${created} WHERE id = ${groupId}`
       await sql`
@@ -347,7 +348,8 @@ async function seedGroups(
           details = ${
         sql.json({
           ...items,
-          count: items.accounts + items.categories + items.notes + items.tags + items.transactions,
+          count: items.accounts + items.categories + items.notes + items.tags + items.transactions +
+            items.transfers,
         })
       }
         WHERE group_id = ${groupId} AND event_kind = ${GROUP_CREATED}
@@ -473,6 +475,27 @@ async function seedGroups(
         writer(entry.author),
       )
       await sql`UPDATE transactions SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
+    }
+    // Both sides as the bank stated them: the demo's rates cover only its last days.
+    for (const transfer of content.transfers) {
+      const id = uuidV7()
+      const when = at(transfer.ago)
+      const { sentAmount, receivedAmount, memo } = transfer
+      await db.transfer.create(
+        {
+          id,
+          groupId,
+          fromAccountId: accountIds[transfer.from],
+          toAccountId: accountIds[transfer.to],
+          sentAmount,
+          receivedAmount,
+          memo,
+          date: isoDateInTz(when, group.timeZone),
+          allowance: null,
+        },
+        writer(transfer.author),
+      )
+      await sql`UPDATE transfers SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
     }
     const fromFile: string[] = []
     for (const note of notes.on ? content.notes : []) {

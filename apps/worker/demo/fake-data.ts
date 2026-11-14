@@ -176,6 +176,24 @@ export interface FakeEntry {
   ago: number
 }
 
+/**
+ * Money a demo household moves between two of its accounts, with both sides stated as the bank
+ * charged them, so the seed needs no rate even months back.
+ */
+export interface FakeTransfer {
+  /** The accounts, by their index in the group's `accounts`; never the same one. */
+  from: number
+  to: number
+  /** Above zero, in the from account currency's smallest unit. */
+  sentAmount: number
+  /** Above zero, in the to account currency's smallest unit. */
+  receivedAmount: number
+  memo: string
+  author: FakeMember
+  /** When it was written; its date is that moment's day in the group's time zone. */
+  ago: number
+}
+
 export interface FakeGroup {
   name: string
   /** The zone the group's days are cut in: one of {@link DEMO_TIME_ZONES}, by its name. */
@@ -190,6 +208,8 @@ export interface FakeGroup {
   categories: FakeCategory[]
   /** The household's entries, oldest first. */
   entries: FakeEntry[]
+  /** The household's transfers between its accounts, oldest first. */
+  transfers: FakeTransfer[]
   notes: FakeNote[]
   /** Pending invitations: tied to an address, or `null` for a link anyone may use. */
   invitations: { email: string | null; role: GroupRole; author: FakeMember; createdAgo: number }[]
@@ -638,6 +658,7 @@ function fakeGroup(
     accounts,
     categories,
     entries: [],
+    transfers: [],
     notes,
     invitations,
     promotions,
@@ -693,6 +714,10 @@ export function withStandIns(
       author: as(category.author, writer),
     })),
     entries: group.entries.map((entry) => ({ ...entry, author: as(entry.author, writer) })),
+    transfers: group.transfers.map((transfer) => ({
+      ...transfer,
+      author: as(transfer.author, writer),
+    })),
     notes: group.notes.map((note) => ({
       ...note,
       author: as(note.author, writer),
@@ -892,7 +917,10 @@ export function fakeDemoData(seed: number, now: Date): FakeDemoData {
   const operator = fakeOperator(tools, now, users, subscriptions)
   addPasskeys(randomTools(seed + PASSKEY_SEED_OFFSET), users)
   const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
-  const all = [...groups, ...small].map((group) => withEntries(entryTools, group))
+  const transferTools = randomTools(seed + TRANSFER_SEED_OFFSET)
+  const all = [...groups, ...small].map((group) =>
+    withTransfers(transferTools, withEntries(entryTools, group))
+  )
   return { users, groups: all, subscriptions, ...newsletter, operator }
 }
 
@@ -955,6 +983,7 @@ export function fakeWorkspace(seed: number): FakeGroup[] {
     .filter((i) => i !== VIDEO_PERSON_INDEX)
   const taken = new Set<string>()
   const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
+  const transferTools = randomTools(seed + TRANSFER_SEED_OFFSET)
   return YOUR_ROLES.map(([index, role]) =>
     withSampleFiles(fakeGroup(
       tools,
@@ -965,7 +994,7 @@ export function fakeWorkspace(seed: number): FakeGroup[] {
       role,
       taken,
     ))
-  ).map((group) => withEntries(entryTools, group))
+  ).map((group) => withTransfers(transferTools, withEntries(entryTools, group)))
 }
 
 /** A photo and a PDF on the group's first note, and a photo on its second, named after them. */
@@ -997,7 +1026,8 @@ export const ENTRY_MONTH = 30 * DAY
  * steps of `step`. Each income comes first in its month and is more than its account spends in
  * one, and each starting balance covers a month's spending, so no balance ever drops below zero,
  * even in an account made mid-month that missed that month's income. The dollar card has no
- * income: its starting balance covers all three months.
+ * income: the monthly top-up from euros pays for it ({@link withTransfers}). Both hold with the
+ * transfers counted as spending, so a month's spending in euros includes its top-up.
  */
 const ENTRY_PLANS: readonly {
   account: number
@@ -1089,10 +1119,7 @@ const ENTRY_PLANS: readonly {
  * way, so a group's age changes no other group's entries.
  */
 function withEntries(tools: Tools, group: FakeGroup): FakeGroup {
-  const writers = [
-    ...(group.owner === `you` ? [] : [{ member: group.owner, joinedAgo: group.createdAgo }]),
-    ...group.members.filter((m) => m.member !== `you` && m.role >= GroupRole.EDITOR),
-  ]
+  const authorAt = authorPicker(group)
   const entries: FakeEntry[] = []
   for (let month = 0; month < ENTRY_MONTHS; month++) {
     for (const plan of ENTRY_PLANS) {
@@ -1107,10 +1134,7 @@ function withEntries(tools: Tools, group: FakeGroup): FakeGroup {
         const memo = tools.pick(plan.memos)
         const share = tools.random()
         if (ago >= account.createdAgo) continue
-        const able = writers.filter((writer) => writer.joinedAgo > ago)
-        const author = able.length > 0
-          ? able[Math.floor(share * able.length)].member
-          : account.author
+        const author = authorAt(ago, share, account.author)
         const { category, kind } = plan
         const amount = steps * plan.step
         entries.push({ account: plan.account, category, kind, amount, memo, author, ago })
@@ -1118,6 +1142,69 @@ function withEntries(tools: Tools, group: FakeGroup): FakeGroup {
     }
   }
   return { ...group, entries: entries.sort((a, b) => b.ago - a.ago) }
+}
+
+/**
+ * Who writes a household's row `ago` minutes back: the writer at `share` (0 to 1) among the owner
+ * and editors who had joined by then, never `you`, or `fallback` when none had.
+ */
+function authorPicker(group: FakeGroup) {
+  const writers = [
+    ...(group.owner === `you` ? [] : [{ member: group.owner, joinedAgo: group.createdAgo }]),
+    ...group.members.filter((m) => m.member !== `you` && m.role >= GroupRole.EDITOR),
+  ]
+  return (ago: number, share: number, fallback: FakeMember): FakeMember => {
+    const able = writers.filter((writer) => writer.joinedAgo > ago)
+    return able.length > 0 ? able[Math.floor(share * able.length)].member : fallback
+  }
+}
+
+/** Transfers draw from a stream of their own, so adding them moved no other fake row. */
+const TRANSFER_SEED_OFFSET = 444
+
+/**
+ * `group` with {@link ENTRY_MONTHS} months of transfers, each month a top-up of the dollar card
+ * from the euro account at a bank rate of 1.05 to 1.12 dollars a euro, then one or two ATM
+ * withdrawals of dong cash from the card at 25,000 to 25,500 dong a dollar, so every transfer
+ * crosses currencies. The top-up lands after the month's euro income and the withdrawals after
+ * the top-up, and both fit the balances {@link ENTRY_PLANS} leaves, so no balance drops below
+ * zero. Authors and dropped rows as in {@link withEntries}: a transfer older than either of its
+ * accounts is dropped, and every draw happens either way.
+ */
+function withTransfers(tools: Tools, group: FakeGroup): FakeGroup {
+  const authorAt = authorPicker(group)
+  const transfers: FakeTransfer[] = []
+  const add = (
+    from: number,
+    to: number,
+    sentAmount: number,
+    receivedAmount: number,
+    memo: string,
+    ago: number,
+    share: number,
+  ) => {
+    const [source, target] = [group.accounts[from], group.accounts[to]]
+    if (ago >= source.createdAgo || ago >= target.createdAgo) return
+    const author = authorAt(ago, share, source.author)
+    transfers.push({ from, to, sentAmount, receivedAmount, memo, author, ago })
+  }
+  for (let month = 0; month < ENTRY_MONTHS; month++) {
+    // In the first half of the month's spending, after its income (ENTRY_PLANS).
+    const spendingFrom = (month + 1) * ENTRY_MONTH - 3 * DAY - 1
+    const topUpAgo = tools.between(spendingFrom, month * ENTRY_MONTH + 15 * DAY)
+    const euros = tools.int(35, 50) * 10_00
+    const dollarsPerEuro = tools.int(10_500, 11_200)
+    const topUp = Math.round(euros * dollarsPerEuro / 10_000)
+    add(0, 1, euros, topUp, `Top up travel card`, topUpAgo, tools.random())
+    for (let left = tools.int(1, 2); left > 0; left--) {
+      const ago = tools.between(topUpAgo - 1, month * ENTRY_MONTH + 5)
+      const dong = tools.int(2, 5) * 500_000
+      const dongPerDollar = tools.int(25_000, 25_500)
+      const cents = Math.ceil(dong * 100 / dongPerDollar)
+      add(1, 2, cents, dong, `ATM withdrawal`, ago, tools.random())
+    }
+  }
+  return { ...group, transfers: transfers.sort((a, b) => b.ago - a.ago) }
 }
 
 /** How many working days of exchange rates the demo holds. */
