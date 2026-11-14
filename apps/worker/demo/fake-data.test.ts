@@ -354,6 +354,7 @@ Deno.test("a visitor's sample groups on another day's population are written onl
           : group.members.find((m) => m.member === member)!.role
       const writers = [
         ...content.entries.map((entry) => entry.author),
+        ...content.transfers.map((transfer) => transfer.author),
         ...content.tags.map((tag) => tag.author),
         ...content.notes.flatMap((note) => [note.author, ...(note.edit ? [note.edit.by] : [])]),
       ]
@@ -370,6 +371,7 @@ Deno.test("a visitor's sample groups on another day's population are written onl
       expect(content.tags.length).toBe(group.tags.length)
       expect(content.notes.length).toBe(group.notes.length)
       expect(content.entries.length).toBe(group.entries.length)
+      expect(content.transfers.length).toBe(group.transfers.length)
     }
   }
 })
@@ -452,11 +454,85 @@ Deno.test("no demo account's balance ever drops below zero, on a hundred nights'
   expect(DEMO_ACCOUNTS.map((account) => account.currency)).toEqual([`EUR`, `USD`, `VND`])
   for (const group of everyGroup(Array.from({ length: 100 }, (_, i) => i + 1))) {
     const balances = group.accounts.map((account) => account.startingBalance)
-    for (const entry of group.entries) {
-      balances[entry.account] += entry.kind === TransactionKind.INCOME
-        ? entry.amount
-        : -entry.amount
-      expect(balances[entry.account]).toBeGreaterThanOrEqual(0)
+    // Entries and transfers in time order; a transfer's sent side leaves first.
+    const moves = [
+      ...group.entries.map((entry) => ({
+        ago: entry.ago,
+        sides: [{
+          account: entry.account,
+          amount: entry.kind === TransactionKind.INCOME ? entry.amount : -entry.amount,
+        }],
+      })),
+      ...group.transfers.map((transfer) => ({
+        ago: transfer.ago,
+        sides: [
+          { account: transfer.from, amount: -transfer.sentAmount },
+          { account: transfer.to, amount: transfer.receivedAmount },
+        ],
+      })),
+    ].sort((a, b) => b.ago - a.ago)
+    for (const { sides } of moves) {
+      for (const { account, amount } of sides) {
+        balances[account] += amount
+        expect(balances[account]).toBeGreaterThanOrEqual(0)
+      }
+    }
+  }
+})
+
+Deno.test("every demo transfer moves a whole positive amount between two of the household's accounts in different currencies, after both were made and its author joined", () => {
+  for (const group of everyGroup()) {
+    const joined = new Map(group.members.map((m) => [m.member, m.joinedAgo]))
+    joined.set(group.owner, group.createdAgo)
+    for (const transfer of group.transfers) {
+      const [from, to] = [group.accounts[transfer.from], group.accounts[transfer.to]]
+      expect(from.currency).not.toBe(to.currency)
+      expect(transfer.ago).toBeGreaterThan(0)
+      expect(transfer.ago).toBeLessThan(from.createdAgo)
+      expect(transfer.ago).toBeLessThan(to.createdAgo)
+      expect(transfer.ago).toBeLessThan(ENTRY_MONTHS * ENTRY_MONTH)
+      for (const amount of [transfer.sentAmount, transfer.receivedAmount]) {
+        expect(Number.isInteger(amount)).toBe(true)
+        expect(amount).toBeGreaterThan(0)
+      }
+      expect(transfer.author).not.toBe(`you`)
+      expect(joined.get(transfer.author)!).toBeGreaterThan(transfer.ago)
+    }
+    const times = group.transfers.map((transfer) => transfer.ago)
+    expect(times).toEqual([...times].sort((a, b) => b - a))
+  }
+})
+
+Deno.test("a household older than three months tops up its dollar card after its income and then draws dong cash from it, in each month", () => {
+  const old = everyGroup().filter((group) =>
+    Math.min(...group.accounts.map((account) => account.createdAgo)) > ENTRY_MONTHS * ENTRY_MONTH
+  )
+  expect(old.length).toBeGreaterThan(10)
+  for (const group of old) {
+    for (let month = 0; month < ENTRY_MONTHS; month++) {
+      const inMonth = group.transfers
+        .filter((transfer) => Math.floor(transfer.ago / ENTRY_MONTH) === month)
+      const routes = inMonth.map((transfer) => `${transfer.from}>${transfer.to}`)
+      // Oldest first, so the top-up comes before the withdrawals it pays for.
+      expect(routes[0]).toBe(`0>1`)
+      expect(routes.filter((route) => route === `0>1`)).toHaveLength(1)
+      expect(routes.filter((route) => route === `1>2`).length).toBeGreaterThanOrEqual(1)
+      expect(routes.filter((route) => route === `1>2`).length).toBeLessThanOrEqual(2)
+      expect(routes).toHaveLength(routes.filter((r) => r === `0>1` || r === `1>2`).length)
+      // The top-up lands after the month's income: in its spending days, not its first three.
+      expect(inMonth[0].ago).toBeLessThan((month + 1) * ENTRY_MONTH - 3 * DAY)
+    }
+  }
+})
+
+Deno.test("a household younger than a month has transfers only from both accounts' creation on", () => {
+  const young = everyGroup().filter((group) => group.accounts[0].createdAgo < ENTRY_MONTH)
+  expect(young.length).toBeGreaterThan(10)
+  expect(young.some((group) => group.transfers.length > 0)).toBe(true)
+  for (const group of young) {
+    for (const transfer of group.transfers) {
+      expect(transfer.ago).toBeLessThan(group.accounts[transfer.from].createdAgo)
+      expect(transfer.ago).toBeLessThan(group.accounts[transfer.to].createdAgo)
     }
   }
 })
