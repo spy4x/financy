@@ -261,6 +261,9 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "Une sous-catégorie ne peut aller que sous une catégorie de premier niveau du même type.",
   "Reason.TRANSACTION_NOT_FOUND": "Cette opération n’existe plus.",
+  "Reason.TRANSFER_NOT_FOUND": "Ce virement n’existe plus.",
+  "Reason.TRANSFER_SAME_ACCOUNT":
+    "Un virement demande deux comptes différents. Choisissez-en un autre.",
   "Reason.CATEGORY_KIND_MISMATCH":
     "Une dépense a besoin d’une catégorie de dépenses. Choisissez-en une autre.",
   "Reason.NO_RATE":

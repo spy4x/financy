@@ -121,6 +121,8 @@ const REASONS: Record<ErrorReason, true> = {
   TAG_NAME_TAKEN: true,
   TAG_NOT_FOUND: true,
   TRANSACTION_NOT_FOUND: true,
+  TRANSFER_NOT_FOUND: true,
+  TRANSFER_SAME_ACCOUNT: true,
   RECURRING_RULE_NOT_FOUND: true,
   TOKEN_INVALID: true,
   TOKEN_NOT_FOUND: true,

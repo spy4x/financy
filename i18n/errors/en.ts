@@ -238,6 +238,8 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "A subcategory can sit only under a top-level category of the same kind.",
   "Reason.TRANSACTION_NOT_FOUND": "This transaction no longer exists.",
+  "Reason.TRANSFER_NOT_FOUND": "This transfer no longer exists.",
+  "Reason.TRANSFER_SAME_ACCOUNT": "A transfer needs two different accounts. Pick another one.",
   "Reason.CATEGORY_KIND_MISMATCH": "An expense needs an expense category. Pick another one.",
   "Reason.NO_RATE":
     "There's no exchange rate for this date yet. Enter the amount in the account's currency too.",

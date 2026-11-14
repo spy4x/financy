@@ -260,6 +260,8 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "Подкатегория может быть только внутри категории верхнего уровня того же типа.",
   "Reason.TRANSACTION_NOT_FOUND": "Этой операции больше нет.",
+  "Reason.TRANSFER_NOT_FOUND": "Этого перевода больше нет.",
+  "Reason.TRANSFER_SAME_ACCOUNT": "Для перевода нужны два разных счёта. Выберите другой.",
   "Reason.CATEGORY_KIND_MISMATCH": "Для расхода нужна категория расходов. Выберите другую.",
   "Reason.NO_RATE": "На эту дату курса пока нет. Укажите сумму и в валюте счёта.",
   "Reason.CURRENCY_LOCKED": "По этому счёту уже есть операции, поэтому его валюту не поменять.",

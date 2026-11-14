@@ -261,6 +261,9 @@ export default {
   "Reason.CATEGORY_TREE_INVALID":
     "Eine Unterkategorie kann nur unter einer Kategorie der obersten Ebene derselben Art stehen.",
   "Reason.TRANSACTION_NOT_FOUND": "Diese Buchung gibt es nicht mehr.",
+  "Reason.TRANSFER_NOT_FOUND": "Diese Umbuchung gibt es nicht mehr.",
+  "Reason.TRANSFER_SAME_ACCOUNT":
+    "Eine Umbuchung braucht zwei verschiedene Konten. Wähle ein anderes.",
   "Reason.CATEGORY_KIND_MISMATCH":
     "Eine Ausgabe braucht eine Ausgabenkategorie. Wähle eine andere.",
   "Reason.NO_RATE":

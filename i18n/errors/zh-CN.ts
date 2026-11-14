@@ -214,6 +214,8 @@ export default {
   "Reason.CATEGORY_PARENT_ARCHIVED": "它的上级分类已归档。请先取消归档上级分类。",
   "Reason.CATEGORY_TREE_INVALID": "子分类只能放在同类型的顶级分类下。",
   "Reason.TRANSACTION_NOT_FOUND": "这笔交易已不存在。",
+  "Reason.TRANSFER_NOT_FOUND": "这笔转账已不存在。",
+  "Reason.TRANSFER_SAME_ACCOUNT": "转账需要两个不同的账户，请选择另一个。",
   "Reason.CATEGORY_KIND_MISMATCH": "支出需要选择支出分类，请选择其他分类。",
   "Reason.NO_RATE": "这个日期还没有汇率，请同时填写账户货币的金额。",
   "Reason.CURRENCY_LOCKED": "这个账户已有交易，无法再更改货币。",
