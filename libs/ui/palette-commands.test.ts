@@ -108,6 +108,19 @@ describe(`the palette's commands`, () => {
     expect(install?.choice).toEqual({ kind: `install` })
   })
 
+  it(`offer New transaction and New category with the notes off, but not New note or New tag`, () => {
+    const ids = (notes?: boolean) =>
+      paletteCommands(context({ notes }), () => {}).map((option) => option.id)
+    expect(ids()).toEqual(
+      expect.arrayContaining([`action-new-note`, `action-new-tag`, `action-new-transaction`]),
+    )
+    expect(ids(false)).toEqual(
+      expect.arrayContaining([`action-new-transaction`, `action-new-category`]),
+    )
+    expect(ids(false)).not.toContain(`action-new-note`)
+    expect(ids(false)).not.toContain(`action-new-tag`)
+  })
+
   it(`keep New group listed offline, dimmed with why it cannot run`, () => {
     const newGroup = (online: boolean) =>
       paletteCommands(context({ online }), () => {}).find((option) => option.label === `New group`)

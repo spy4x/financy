@@ -309,10 +309,12 @@ export function paletteCommands(
     choice,
   })
   const page = (href: string) => ({ kind: "page", href }) as const
-  // New note and New tag need a group the person may write to, and the notes on.
-  const inGroup: KeyedMessage | null = currentGroup?.canWrite && context.notes !== false
+  // Every New command but New group needs a group the person may write to.
+  const inGroup: KeyedMessage | null = currentGroup?.canWrite
     ? { key: `Search.inGroup`, values: { group: currentGroup.name } }
     : null
+  // New note and New tag need the notes on as well.
+  const notesInGroup = context.notes === false ? null : inGroup
 
   const thisPage = context.pageCommands.map((pageCommand): PaletteOption => ({
     id: `command-${pageCommand.id}`,
@@ -325,9 +327,9 @@ export function paletteCommands(
 
   const create: PaletteOption[] = [
     // The same dialog as `n`: the note is added without leaving the page.
-    ...(inGroup
+    ...(notesInGroup
       ? [command("new-note", `Search.newNote`, heading.create, { kind: "new-note" }, {
-        detail: inGroup,
+        detail: notesInGroup,
         aliases: [`add note`, `create note`, `write`, `новая заметка`, `создать заметку`],
         kbd: kbdOf(shortcuts, `Shortcuts.newNoteRow`),
       })]
@@ -351,9 +353,9 @@ export function paletteCommands(
         aliases: [`subcategory`, `категория`],
       })]
       : []),
-    ...(inGroup
+    ...(notesInGroup
       ? [command("new-tag", `Search.newTag`, heading.create, page(TAG_PATHS.new), {
-        detail: inGroup,
+        detail: notesInGroup,
         aliases: [`add tag`, `create tag`, `new label`, `новая метка`, `создать метку`],
       })]
       : []),
