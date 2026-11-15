@@ -168,7 +168,7 @@ function household() {
 }
 
 describe(`"Where did the money go?" read`, () => {
-  it("gives each category the ledger read's own figure for a month of EUR, USD and VND", async () => {
+  it("gives each category the ledger read's own figure for a month of EUR, USD and VND, named even when archived", async () => {
     const h = household()
     await h.add(eurAccount, "EUR", 300000, salary, TransactionKind.INCOME)
     await h.add(usdAccount, "USD", 5000, food)
