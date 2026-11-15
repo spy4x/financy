@@ -7,13 +7,16 @@ import {
   assertCanReadRecurringRules,
   assertCanWriteRecurringRules,
   assertRuleReferences,
+  dueOccurrences,
   isOccurrence,
   parseRecurrence,
   parseRecurringRuleRequest,
+  pauseReasonOf,
   RECURRING_COUNT_MAX,
   RECURRING_INTERVAL_MAX,
   RECURRING_RRULE_MAX_LENGTH,
   RECURRING_SKIPPED_MAX,
+  RecurringPauseReason,
   recurringRuleCreatePayloadSchema,
   recurringRuleUpdatePayloadSchema,
   skipDate,
@@ -295,5 +298,107 @@ describe(`skipping a date`, () => {
     expect(isOccurrence(lastDay, `2027-02-28`)).toBe(true)
     expect(isOccurrence(lastDay, `2027-03-31`)).toBe(true)
     expect(isOccurrence(lastDay, `2027-02-27`)).toBe(false)
+  })
+})
+
+describe(`the occurrences the job makes`, () => {
+  /** Rent on the last day of each month from January 2027, made through nothing yet. */
+  const lastDay = {
+    rrule: `FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=-1`,
+    startDate: `2027-01-01`,
+    endDate: null,
+    count: null,
+    skippedDates: [] as string[],
+    madeThrough: null,
+  }
+  const daily = { ...lastDay, rrule: `FREQ=DAILY;INTERVAL=1` }
+
+  it(`makes the last day of February in a common and a leap year, and 30 April`, () => {
+    expect(dueOccurrences(lastDay, `2027-04-30`)?.dates)
+      .toEqual([`2027-01-31`, `2027-02-28`, `2027-03-31`, `2027-04-30`])
+    expect(dueOccurrences({ ...lastDay, startDate: `2028-02-01` }, `2028-02-29`)?.dates)
+      .toEqual([`2028-02-29`])
+  })
+
+  it(`starts after the day it made through, and makes nothing until the next day is due`, () => {
+    const made = { ...lastDay, madeThrough: `2027-02-28` }
+    expect(dueOccurrences(made, `2027-03-31`)).toEqual({
+      dates: [`2027-03-31`],
+      through: `2027-03-31`,
+    })
+    expect(dueOccurrences(made, `2027-02-28`)).toBeNull()
+    expect(dueOccurrences(lastDay, `2026-12-31`)).toBeNull()
+  })
+
+  it(`covers today with no date when no occurrence falls before it`, () => {
+    expect(dueOccurrences(lastDay, `2027-01-30`)).toEqual({ dates: [], through: `2027-01-30` })
+  })
+
+  it(`starts at the start date when the rule moved its start past the day it made through`, () => {
+    const moved = { ...daily, startDate: `2027-03-10`, madeThrough: `2027-01-05` }
+    expect(dueOccurrences(moved, `2027-03-11`)?.dates).toEqual([`2027-03-10`, `2027-03-11`])
+  })
+
+  it(`leaves out skipped dates, and stops at the end date`, () => {
+    const rule = { ...daily, skippedDates: [`2027-01-02`], endDate: `2027-01-04` }
+    expect(dueOccurrences(rule, `2027-01-10`)).toEqual({
+      dates: [`2027-01-01`, `2027-01-03`, `2027-01-04`],
+      through: `2027-01-10`,
+    })
+  })
+
+  it(`counts the count from the start date, not from the day it made through`, () => {
+    const rule = { ...daily, count: 3, madeThrough: `2027-01-02` }
+    expect(dueOccurrences(rule, `2027-01-10`)?.dates).toEqual([`2027-01-03`])
+  })
+
+  it(`makes at most the cap in one run, then goes on from where it stopped`, () => {
+    const first = dueOccurrences(daily, `2027-12-31`, 100)!
+    expect(first.dates).toHaveLength(100)
+    expect(first.dates[0]).toBe(`2027-01-01`)
+    expect(first.through).toBe(`2027-04-10`)
+    const next = dueOccurrences({ ...daily, madeThrough: first.through }, `2027-12-31`, 100)!
+    expect(next.dates[0]).toBe(`2027-04-11`)
+  })
+
+  it(`steps a 1000-count daily rule that started decades ago in bounded runs`, () => {
+    const old = { ...daily, startDate: `1990-01-01`, count: 1000 }
+    const started = performance.now()
+    const first = dueOccurrences(old, `2026-11-15`)!
+    expect(first.dates).toHaveLength(100)
+    expect(first.through).toBe(`1990-04-10`)
+    const last = dueOccurrences({ ...old, madeThrough: `1992-09-25` }, `2026-11-15`)!
+    expect(last).toEqual({ dates: [`1992-09-26`], through: `2026-11-15` })
+    expect(performance.now() - started).toBeLessThan(5_000)
+  })
+
+  it(`throws on a repeat it cannot parse`, () => {
+    expect(refusalOf(() => dueOccurrences({ ...daily, rrule: `FREQ=NOPE` }, `2027-01-02`))?.code)
+      .toBe(`INVALID_REQUEST`)
+  })
+})
+
+describe(`why the job pauses a rule`, () => {
+  const live = { archived: false }
+  const archived = { archived: true }
+
+  it(`writes for an editor or above with a live account and category`, () => {
+    for (const role of [GroupRole.EDITOR, GroupRole.ADMIN, GroupRole.OWNER]) {
+      expect(pauseReasonOf(role, live, live)).toBeNull()
+    }
+  })
+
+  it(`pauses for an author who is gone or a viewer, before any other cause`, () => {
+    expect(pauseReasonOf(null, archived, archived)).toBe(RecurringPauseReason.AUTHOR_CANNOT_WRITE)
+    expect(pauseReasonOf(GroupRole.VIEWER, live, live))
+      .toBe(RecurringPauseReason.AUTHOR_CANNOT_WRITE)
+  })
+
+  it(`pauses for an archived or deleted account, then for an archived category`, () => {
+    expect(pauseReasonOf(GroupRole.EDITOR, archived, archived))
+      .toBe(RecurringPauseReason.ACCOUNT_ARCHIVED)
+    expect(pauseReasonOf(GroupRole.EDITOR, null, live)).toBe(RecurringPauseReason.ACCOUNT_ARCHIVED)
+    expect(pauseReasonOf(GroupRole.EDITOR, live, archived))
+      .toBe(RecurringPauseReason.CATEGORY_ARCHIVED)
   })
 })
