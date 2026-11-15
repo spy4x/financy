@@ -940,7 +940,7 @@ describe("the public website", () => {
       ...Object.fromEntries(DOC_SLUGS.map((slug) => [`/docs/${slug}`, "2026-11-01T00:00:00.000Z"])),
       "/changelog": "2026-11-01T00:00:00.000Z",
       "/subscribe": "2026-11-04T00:00:00.000Z",
-      "/privacy": "2026-11-14T00:00:00.000Z",
+      "/privacy": "2026-11-15T00:00:00.000Z",
       "/terms": "2026-11-07T00:00:00.000Z",
     })
   })
@@ -1030,6 +1030,14 @@ describe("the public website", () => {
     const { html } = await page("/privacy")
 
     expect(html).toContain(`a signed reference to the code we sent you (never the code itself)`)
+  })
+
+  it("says on the privacy page that the app's search runs on the device and sends nothing typed (#80)", async () => {
+    const { html } = await page("/privacy")
+
+    expect(html).toContain(
+      `The app&#39;s search looks through that copy on your device: what you type into it is never sent to Financy or anyone else.`,
+    )
   })
 
   it("states on the terms page the price in US dollars, the renewal, the 30-day money-back guarantee and that Financy gives no financial advice (#86)", async () => {

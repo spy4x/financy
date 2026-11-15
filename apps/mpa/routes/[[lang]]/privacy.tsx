@@ -28,7 +28,7 @@ export const PRIVACY_HEAD = {
   title: `Privacy: what is kept about your household`,
   description: `What Financy's cloud stores about your household's money, who sees it, which ` +
     `companies handle it, how long it stays and how to delete it.`,
-  updated: `2026-11-14`,
+  updated: `2026-11-15`,
 } as const
 
 /** A group's heading inside a section: `LegalPage` styles `h2` only. */
@@ -68,7 +68,7 @@ export default define.page(function Privacy({ state }) {
       title="Privacy"
       headTitle={PRIVACY_HEAD.title}
       description={PRIVACY_HEAD.description}
-      updated="14 November 2026"
+      updated="15 November 2026"
       sections={PRIVACY_SECTIONS}
       lead={
         <TldrBox
@@ -347,7 +347,8 @@ export default define.page(function Privacy({ state }) {
       <p>
         There are no advertising or tracking cookies. So that the app opens without a network, it
         keeps a copy of your household's data in your browser's own storage, with who is signed in
-        and the household you last chose.
+        and the household you last chose. The app's search looks through that copy on your device:
+        what you type into it is never sent to Financy or anyone else.
       </p>
 
       <h2 id="self-hosted">Self-hosting and the demo</h2>
