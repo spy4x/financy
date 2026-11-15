@@ -542,9 +542,10 @@ export interface Ledger {
   net: number | null
   /**
    * Each expense category with entries in the period, with its spending: its own entries less its
-   * refunds, a parent's including its children's (R13). Most spending first.
+   * refunds, a parent's including its children's (R13). Most spending first. `converted` when any
+   * of its rows counted, a child's included, needed a rate.
    */
-  categories: { categoryId: string; spending: number }[]
+  categories: { categoryId: string; spending: number; converted: boolean }[]
   /** The currencies left out for lack of a rate, by code (R8): both lists below, together. */
   leftOut: string[]
   /** The currencies whose income entries were left out for lack of a rate, by code. */
@@ -612,6 +613,7 @@ export async function summarizeLedger(
   let tooLarge = false
   let income = 0n
   const spentByCategory = new Map<string, bigint>()
+  const convertedCategories = new Set<string>()
   for (const row of rows) {
     const category = byId.get(row.categoryId)
     if (!category) continue
@@ -634,6 +636,7 @@ export async function summarizeLedger(
     const spent = -BigInt(result.value)
     for (const id of new Set([category.id, category.parentId ?? category.id])) {
       spentByCategory.set(id, (spentByCategory.get(id) ?? 0n) + spent)
+      if (rate) convertedCategories.add(id)
     }
   }
   const topLevel = [...spentByCategory].filter(([id]) => byId.get(id)?.parentId === null)
@@ -665,7 +668,11 @@ export async function summarizeLedger(
         ? -1
         : 1)
       )
-      .map(({ categoryId, spent }) => ({ categoryId, spending: Number(spent) })),
+      .map(({ categoryId, spent }) => ({
+        categoryId,
+        spending: Number(spent),
+        converted: convertedCategories.has(categoryId),
+      })),
     leftOut: [...new Set([...incomeLeftOut, ...spendingLeftOut])].sort(),
     incomeLeftOut: [...incomeLeftOut].sort(),
     spendingLeftOut: [...spendingLeftOut].sort(),
