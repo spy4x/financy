@@ -27,7 +27,7 @@ export const KEPT_TABLES: readonly string[] = [
   `subscriber_sends`,
   // The stored files to delete: the wipe queues every attachment and picture here for the clean-up.
   `file_deletions`,
-  // Rate history is shared public data the daily job fetched (#93), not any household's.
+  // Rate history is shared public data the daily job fetched, not any household's.
   `exchange_rates`,
   // The calls made to a paid rate source this month, so its monthly cap holds across wipes.
   `rate_source_calls`,
