@@ -17,6 +17,7 @@ export const ADMIN_GO_KEYS: Readonly<Record<string, string>> = {
   categories: "o",
   entries: "e",
   transfers: "x",
+  budgets: "v",
   billing: "b",
   newsletter: "m",
   blog: "p",
