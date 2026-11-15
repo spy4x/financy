@@ -96,7 +96,13 @@ async function seed(sql: postgres.Sql) {
   // A parent with a child, and an archived income category.
   const categories = new PostgresCategoryRepository(sql)
   const categoryIds = [uuidV7(), uuidV7(), uuidV7()]
-  const category = (id: string, name: string, kind: CategoryKind, parentId: string | null) =>
+  const category = (
+    id: string,
+    name: string,
+    kind: CategoryKind,
+    parentId: string | null,
+    aliases: string[] = [],
+  ) =>
     categories.create(
       {
         groupId,
@@ -106,11 +112,12 @@ async function seed(sql: postgres.Sql) {
         icon: "tag" as CategoryIcon,
         color: "#c2410c",
         parentId,
+        aliases,
         allowance: null,
       },
       owner,
     )
-  await category(categoryIds[0], "Food", CategoryKind.EXPENSE, null)
+  await category(categoryIds[0], "Food", CategoryKind.EXPENSE, null, ["Meals", "Еда"])
   await category(categoryIds[1], "Groceries", CategoryKind.EXPENSE, categoryIds[0])
   await category(categoryIds[2], "Bonus", CategoryKind.INCOME, null)
   await categories.archive(
@@ -266,7 +273,7 @@ async function contents(sql: postgres.Sql, groupId: string) {
     FROM accounts WHERE group_id = ${groupId} AND deleted_at IS NULL ORDER BY name
   `
   const categories = await sql<{ name: string; parent: string | null }[]>`
-    SELECT c.name, c.kind, c.icon, c.color, p.name AS parent, c.archived_at IS NOT NULL AS archived
+    SELECT c.name, c.kind, c.icon, c.color, c.aliases, p.name AS parent, c.archived_at IS NOT NULL AS archived
     FROM categories c LEFT JOIN categories p ON p.id = c.parent_id
     WHERE c.group_id = ${groupId} ORDER BY c.name
   `
@@ -382,13 +389,15 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
       },
     ])
 
-    // The child sits under the copy's own parent, and the archived category stays archived.
+    // The child sits under the copy's own parent, the archived category stays archived, and each
+    // keeps its aliases.
     expect((await contents(sql, copy)).categories).toEqual([
       {
         name: "Bonus",
         kind: CategoryKind.INCOME,
         icon: "tag",
         color: "#c2410c",
+        aliases: [],
         parent: null,
         archived: true,
       },
@@ -397,6 +406,7 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
         kind: CategoryKind.EXPENSE,
         icon: "tag",
         color: "#c2410c",
+        aliases: ["Meals", "Еда"],
         parent: null,
         archived: false,
       },
@@ -405,6 +415,7 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
         kind: CategoryKind.EXPENSE,
         icon: "tag",
         color: "#c2410c",
+        aliases: [],
         parent: "Food",
         archived: false,
       },
@@ -579,6 +590,28 @@ Deno.test("an export carries the group's time zone, and the import keeps it", as
       NO_CAP,
     )
     expect(result.group.timeZone).toBe("Asia/Tokyo")
+  })
+})
+
+Deno.test("a file exported before categories had aliases imports with none", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    const older = file.aggregates.categories.map(({ aliases: _, ...category }) => category)
+    const importer = await insertUser(sql)
+
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file: { ...file, aggregates: { ...file.aggregates, categories: older } }, name: null },
+      importer,
+      NO_CAP,
+    )
+
+    const aliases = await sql<{ aliases: string[] }[]>`
+      SELECT aliases FROM categories WHERE group_id = ${result.group.id}
+    `
+    expect(aliases.map((row) => row.aliases)).toEqual([[], [], []])
   })
 })
 

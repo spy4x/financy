@@ -23,6 +23,8 @@ const fields = {
   color: "#c2410c",
   parentId: null as string | null,
 }
+/** The fields a test may change: every editor field, aliases included. */
+type More = Partial<typeof fields & { aliases: string[] }>
 
 async function refusal(promise: Promise<unknown>): Promise<unknown> {
   return await promise.then(() => null, (error) => error)
@@ -55,8 +57,40 @@ async function fill(sql: postgres.Sql, groupId: string, userId: number, count: n
 Deno.test("categories against Postgres", async (t) => {
   await withSchema(async (sql) => {
     const categories = new PostgresCategoryRepository(sql)
-    const create = (userId: number, groupId: string, more: Partial<typeof fields> = {}) =>
+    const create = (userId: number, groupId: string, more: More = {}) =>
       categories.create({ groupId, id: uuidV7(), ...fields, ...more, allowance: null }, userId)
+
+    await t.step(
+      "stores a category's aliases, keeps them on an update without any, and replaces them on one with them",
+      async () => {
+        const { groupId, owner } = await team(sql)
+        const { category } = await create(owner, groupId, { aliases: ["Lidl", "Пятёрочка"] })
+        expect(category.aliases).toEqual(["Lidl", "Пятёрочка"])
+        const at = { groupId, id: category.id }
+
+        const kept = await categories.update({
+          ...at,
+          ...fields,
+          name: "Meals",
+          expectedVersion: 1,
+        }, owner)
+        expect(kept.aliases).toEqual(["Lidl", "Пятёрочка"])
+        const cleared = await categories.update(
+          { ...at, ...fields, aliases: [], expectedVersion: 2 },
+          owner,
+        )
+        expect(cleared.aliases).toEqual([])
+        const { category: plain } = await create(owner, groupId, { name: "Rent" })
+        expect(plain.aliases).toEqual([])
+        expect((await categories.get(groupId, category.id))?.aliases).toEqual([])
+        expect(
+          await refusal(sql`
+            UPDATE categories SET aliases = ${sql.array(Array.from({ length: 21 }, String))}::text[]
+            WHERE id = ${category.id}
+          `),
+        ).toMatchObject({ constraint_name: "categories_aliases_check" })
+      },
+    )
 
     await t.step(
       "every write moves the household's sequence once, and archiving a parent writes one audit row for it and its child (D2)",
@@ -330,15 +364,19 @@ Deno.test("categories against Postgres", async (t) => {
   })
 })
 
-Deno.test("the operator's categories read counts live and archived categories by kind and household, and carries no category name", async () => {
+Deno.test("the operator's categories read counts live and archived categories by kind and household, and carries no category name or alias", async () => {
   await withSchema(async (sql) => {
     const categories = new PostgresCategoryRepository(sql)
     const { groupId, owner } = await team(sql)
-    const add = (more: Partial<typeof fields>) =>
+    const add = (more: More) =>
       categories.create({ groupId, id: uuidV7(), ...fields, ...more, allowance: null }, owner)
-    const { category: therapy } = await add({ name: "Therapy" })
+    const { category: therapy } = await add({ name: "Therapy", aliases: ["Dr Weiss"] })
     await add({ name: "Sessions", parentId: therapy.id })
-    const { category: salary } = await add({ name: "Salary", kind: CategoryKind.INCOME })
+    const { category: salary } = await add({
+      name: "Salary",
+      kind: CategoryKind.INCOME,
+      aliases: ["Payday"],
+    })
     await categories.archive(
       { groupId, id: salary.id, archived: true, expectedVersion: 1, allowance: null },
       owner,
@@ -350,6 +388,7 @@ Deno.test("the operator's categories read counts live and archived categories by
       categories: 2,
       archived: 1,
       subcategories: 1,
+      withAliases: 1,
       households: 1,
       byKind: [{ kind: CategoryKind.EXPENSE, categories: 2 }],
       topHouseholds: [{ groupId, groupName: "Team", categories: 2 }],
@@ -357,6 +396,7 @@ Deno.test("the operator's categories read counts live and archived categories by
     const text = JSON.stringify(overview)
     expect(text).not.toContain("Therapy")
     expect(text).not.toContain("Salary")
+    expect(text).not.toContain("Dr Weiss")
     expect(text).not.toContain("utensils")
   })
 })
