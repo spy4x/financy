@@ -170,7 +170,7 @@ Deno.test("the operator's budgets read takes the latest change day in UTC from b
   await withSchema(async (sql) => {
     const home = await household(sql, "Home")
     const food = await home.category()
-    await home.budget(food, `2026-11`, AMOUNT, `2026-12-31T23:30:00-05:00`)
+    await home.budget(food, `2026-11`, AMOUNT, `2027-01-01T12:00:00Z`)
     // A household that only picked a method still shows, with no category, its method and day.
     const picked = await household(sql, "Picked")
     await picked.method(MONTH, BudgetMethod.ENVELOPES, `2027-01-02T10:00:00Z`)
@@ -185,7 +185,10 @@ Deno.test("the operator's budgets read takes the latest change day in UTC from b
       )
     `
 
-    const overview = await readAdminBudgets(sql, TODAY)
+    // A session far east of UTC: the days must still be UTC days.
+    const east = await sql.reserve()
+    await east`SET TIME ZONE 'Pacific/Kiritimati'`
+    const overview = await readAdminBudgets(east, TODAY).finally(() => east.release())
 
     expect(overview).toEqual({
       month: MONTH,
