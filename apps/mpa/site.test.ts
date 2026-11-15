@@ -236,11 +236,9 @@ describe("the public website", () => {
   })
 
   it("keeps every title within 60 characters and naming Financy once, and every description within 155", async () => {
-    // The docs and the changelog still describe Seed: #91 and #90 rewrite them.
+    // The changelog still describes Seed: #90 rewrites it.
     for (
-      const { path } of SITE_PAGES.filter(({ path }) =>
-        !path.startsWith("/docs") && path !== "/changelog"
-      )
+      const { path } of SITE_PAGES.filter(({ path }) => path !== "/changelog")
     ) {
       const { html } = await page(path)
       const title = html.match(/<title>([^<]*)<\/title>/)![1].replaceAll("&#39;", "'")
@@ -309,8 +307,8 @@ describe("the public website", () => {
   })
 
   it("marks the header's Docs as the current page on the docs index, and as its section on every guide", async () => {
-    const pages = [["/docs", "Docs", "page"], ["/docs/get-started", "Docs", "true"], [
-      "/de/docs/deploy",
+    const pages = [["/docs", "Docs", "page"], ["/docs/upgrade", "Docs", "true"], [
+      "/de/docs/backups",
       "Doku",
       "true",
     ]]
@@ -685,18 +683,18 @@ describe("the public website", () => {
     )
   })
 
-  it("leads /docs with Get started, then lists every published guide and the API reference in the four sections", async () => {
+  it("leads /docs with the self-hosting guide, then lists every published guide and the API reference in Financy's two sections", async () => {
     const { status, html } = await page("/docs")
 
     expect(status).toBe(200)
     expect(headingOne(html)).toBe("Financy docs")
     const groups = [...html.matchAll(/<h2 id="docs-[^"]*"[^>]*>([\s\S]*?)<\/h2>/g)]
       .map((m) => linkText(m[1]))
-    expect(groups).toEqual(["New to Financy?", "Get started", "Guides", "Concepts", "Reference"])
+    expect(groups).toEqual(["New to Financy?", "Self-hosting", "Reference"])
     const first = /<section[^>]*data-e2e="docs-first"[\s\S]*?<\/section>/.exec(html)![0]
-    expect(hrefOf(linkNamed(first, "Get started"))).toBe("/docs/get-started")
-    expect(html.indexOf(`href="/docs/get-started"`)).toBeLessThan(
-      html.indexOf(`href="/docs/products"`),
+    expect(hrefOf(linkNamed(first, "Self-host Financy"))).toBe("/docs/self-host")
+    expect(html.indexOf(`href="/docs/self-host"`)).toBeLessThan(
+      html.indexOf(`href="/docs/upgrade"`),
     )
     for (const slug of DOC_SLUGS) expect(html, slug).toContain(`href="/docs/${slug}"`)
     expect(html).toMatch(/<a href="\/docs\/api"[^>]*><span[^>]*>API reference<\/span>/)
@@ -714,7 +712,7 @@ describe("the public website", () => {
   })
 
   it("links the API reference from no footer and no docs card while the notes are off", async () => {
-    for (const path of ["/", "/pricing", "/docs", "/de/docs/deploy"]) {
+    for (const path of ["/", "/pricing", "/docs", "/de/docs/backups"]) {
       const { status, html } = await page(path, withoutNotes)
 
       expect(status, path).toBe(200)
@@ -726,26 +724,27 @@ describe("the public website", () => {
   })
 
   it("draws a guide with its trail, its TechArticle and its links pointed at the website", async () => {
-    const { status, html } = await page("/docs/deploy")
+    const { status, html } = await page("/docs/self-host")
 
     expect(status).toBe(200)
-    expect(headingOne(html)).toBe("Deploy to a server")
-    expect(html).toContain(`<link rel="canonical" href="${site}/docs/deploy"`)
+    expect(headingOne(html)).toBe("Self-host Financy")
+    expect(html).toContain(`<link rel="canonical" href="${site}/docs/self-host"`)
     const article = jsonLdGraph(html).find((entity) => isType(entity, "TechArticle"))
-    expect(article?.headline).toBe("Deploy to a server")
-    expect(html).toContain(`href="/docs/apps"`)
-    expect(html).not.toContain(`href="apps.md`)
+    expect(article?.headline).toBe("Self-host Financy")
+    expect(html).toContain(`href="/docs/backups"`)
+    expect(html).toContain(`href="${REPOSITORY_URL}/blob/main/docs/deploy.md#the-server"`)
+    expect(html).not.toContain(`href="backups.md`)
     expect(html).not.toContain("Also on the website")
   })
 
   it("draws a guide in English at a translated address, with its canonical in English", async () => {
-    const { status, html } = await page("/de/docs/deploy")
+    const { status, html } = await page("/de/docs/self-host")
 
     expect(status).toBe(200)
     expect(html).toContain(`data-e2e="english-only"`)
     expect(html).toMatch(/<div lang="en" dir="ltr"/)
-    expect(html).toContain(`<link rel="canonical" href="${site}/docs/deploy"`)
-    expect(html).toContain(`href="/de/docs/apps"`)
+    expect(html).toContain(`<link rel="canonical" href="${site}/docs/self-host"`)
+    expect(html).toContain(`href="/de/docs/backups"`)
   })
 
   it("answers 404 for an internal doc, as for an unknown one, with the way to the docs", async () => {
@@ -1233,7 +1232,7 @@ describe("the public website", () => {
     const text = await (await withoutNotes(new Request(`${site}/llms.txt`), info)).text()
 
     expect(text).not.toContain(`${site}/docs/api)`)
-    expect(text).toContain(`${site}/docs/deploy)`)
+    expect(text).toContain(`${site}/docs/self-host)`)
     expect(text).toContain(`${site}/terms)`)
   })
 
