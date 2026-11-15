@@ -240,6 +240,16 @@ describe(`categoryRecords`, () => {
       { id: `orphan`, label: `Tea`, detail: undefined, href: `/categories/orphan` },
     ])
   })
+
+  it(`passes a category's aliases for search to match, and none for a category without any`, () => {
+    const rows = categoryRecords([
+      category({ aliases: [`Lidl`, `Пятёрочка`] }),
+      category({ id: FOOD, name: `Food`, aliases: [] }),
+      category({ id: `old`, name: `Tea` }),
+    ], TEXT)
+
+    expect(rows.map((row) => row.aliases)).toEqual([[`Lidl`, `Пятёрочка`], undefined, undefined])
+  })
 })
 
 describe(`budgetRecords`, () => {

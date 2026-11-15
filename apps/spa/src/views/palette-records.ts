@@ -96,7 +96,7 @@ export function accountRecords(
 
 /**
  * Each category as a row opening its page: a subcategory names its parent under it, and an
- * archived one says so.
+ * archived one says so. Its aliases let search find it by the person's own words for it.
  */
 export function categoryRecords(
   categories: readonly CategoryItem[],
@@ -113,6 +113,7 @@ export function categoryRecords(
       label: category.name,
       detail: detail.length > 0 ? detail.join(` · `) : undefined,
       href: CATEGORY_PATHS.category(category.id),
+      aliases: category.aliases?.length ? category.aliases : undefined,
     }
   })
 }

@@ -66,6 +66,7 @@ export function CategoryEditorView({ categoryId = null }: { categoryId?: string 
     parentId: null,
     icon: DEFAULT_CATEGORY_ICON,
     color: COLOR_PRESETS[0].value,
+    aliases: [],
   }
   const groupLoading = !membership && (groupsStore.loading.value || groupId === null)
   const actions = canWrite ? categoryActions(t, store, toasts) : undefined
@@ -86,6 +87,7 @@ export function CategoryEditorView({ categoryId = null }: { categoryId?: string 
           parentId: value.parentId,
           icon: value.icon,
           color: value.color,
+          aliases: value.aliases ?? [],
         }}
         onChange={(next) => store.change(next)}
         errors={{

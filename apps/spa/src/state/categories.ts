@@ -27,6 +27,11 @@ export interface CategoryItem {
   kind: CategoryKind
   icon: CategoryIcon
   color: string
+  /**
+   * The person's other words for it, which search matches too. Missing from a device copy written
+   * before aliases existed, so read it as `category.aliases ?? []`.
+   */
+  aliases?: string[]
   archivedAt: string | null
   version: number
   changeSequence: string
@@ -83,13 +88,20 @@ export interface CategoryForm extends CategoryFields {
 
 export interface CategoryFormErrors {
   name: Message | null
+  aliases: Message | null
   parent: Message | null
   form: Message | null
   /** The household's plan refused the new category: it has no paid plan. */
   plan: PlanRefusal | null
 }
 
-const NO_ERRORS: CategoryFormErrors = { name: null, parent: null, form: null, plan: null }
+const NO_ERRORS: CategoryFormErrors = {
+  name: null,
+  aliases: null,
+  parent: null,
+  form: null,
+  plan: null,
+}
 
 /** What a new category starts from: the kind and the parent the link that opened it named. */
 export interface CategoryDraft {
@@ -121,6 +133,7 @@ function fieldsOf(category: CategoryItem): CategoryFields {
     parentId: category.parentId,
     icon: category.icon,
     color: category.color,
+    aliases: category.aliases ?? [],
   }
 }
 
@@ -131,7 +144,7 @@ function toForm(category: CategoryItem): CategoryForm {
 
 function sameFields(a: CategoryFields, b: CategoryFields): boolean {
   return a.name === b.name && a.kind === b.kind && a.parentId === b.parentId &&
-    a.icon === b.icon && a.color === b.color
+    a.icon === b.icon && a.color === b.color && a.aliases.join("\n") === b.aliases.join("\n")
 }
 
 /**
@@ -228,6 +241,7 @@ export function createCategoriesStore(
       parentId,
       icon: DEFAULT_CATEGORY_ICON,
       color: defaultColor(kind, parentId),
+      aliases: [],
     }
     draftId = dependencies.newId()
     form.value = { id: null, ...value, version: 0, base: value }
@@ -305,6 +319,7 @@ export function createCategoriesStore(
       parentId: current.parentId,
       icon: current.icon,
       color: current.color,
+      aliases: current.aliases,
     }
     saving.value = true
     formErrors.value = NO_ERRORS
@@ -347,10 +362,12 @@ export function createCategoriesStore(
         formErrors.value = { ...NO_ERRORS, plan: planRefusal(cause) }
       } else {
         const nameError = refusedField(cause, "name")
+        const aliasesError = refusedField(cause, "aliases")
         formErrors.value = {
           ...NO_ERRORS,
           name: nameError,
-          form: nameError ? null : describeError(
+          aliases: aliasesError,
+          form: nameError || aliasesError ? null : describeError(
             cause,
             current.id === null ? CATEGORY_MESSAGES.create : CATEGORY_MESSAGES.save,
           ),
