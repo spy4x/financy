@@ -2370,7 +2370,7 @@ export default {
   "AccountsTotal.title": "Всего",
   "AccountsTotal.about": "около {amount}",
   "AccountsTotal.rates": "По курсу на {date}",
-  "AccountsTotal.coins": "Курс криптовалют на {date}, данные предоставлены <link>CoinGecko</link>.",
+  "AccountsTotal.coins": "Цены криптовалют на {date}, данные предоставлены <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "Не учтён {count} счёт: для {currencies} пока нет курса.",
     "few": "Не учтены {count} счёта: для {currencies} пока нет курса.",
