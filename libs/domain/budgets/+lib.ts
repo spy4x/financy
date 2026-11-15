@@ -1099,3 +1099,45 @@ export function budgetMoveReferenceProblems(
   return problems
 }
 // #endregion Export file
+
+// #region Admin
+/** How many households the operator's budgets page lists, most categories with a limit first. */
+export const ADMIN_BUDGETS_HOUSEHOLD_LIMIT = 20
+
+/** One household of {@link AdminBudgetsOverview}: how it budgets this month, never with what. */
+export interface AdminBudgetsHousehold {
+  groupId: string
+  groupName: string
+  /** Live expense categories with a limit this month, as the household's budgets page counts. */
+  categories: number
+  /** The method in effect this month; a household that never switched uses monthly limits. */
+  method: BudgetMethod
+  /** `YYYY-MM-DD` in UTC, the latest change to its budgets or its method. */
+  lastChangeDate: string
+}
+
+/**
+ * What the operator's budgets page shows for the current calendar month in UTC: counts, methods and
+ * days only. Never an amount, a currency, a move, a category name or a person: they say how much a
+ * household plans to spend and on what.
+ *
+ * A category has a limit this month when it is a live expense category and, under monthly limits,
+ * its latest row at or before the month has an amount, or, under envelopes, the row of exactly the
+ * month has one: the same categories the household's own budgets page counts.
+ */
+export interface AdminBudgetsOverview {
+  /** `YYYY-MM`, the month counted. */
+  month: string
+  /** Households with at least one category with a limit this month. */
+  households: number
+  /** Categories with a limit this month, across every household. */
+  categories: number
+  /** Households whose method this month is envelopes. */
+  envelopeHouseholds: number
+  /**
+   * At most {@link ADMIN_BUDGETS_HOUSEHOLD_LIMIT} households that have ever set a budget or a
+   * method: the most categories with a limit first, then by id.
+   */
+  topHouseholds: AdminBudgetsHousehold[]
+}
+// #endregion Admin
