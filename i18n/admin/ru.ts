@@ -2487,6 +2487,8 @@ export default {
   "AdminCategories.categories": "Категории",
   "AdminCategories.archived": "В архиве",
   "AdminCategories.subcategories": "Подкатегории",
+  "AdminCategories.withAliases": "С другими названиями",
+  "AdminCategories.withAliasesHint": "Не в архиве, хотя бы с одним другим названием",
   "AdminCategories.households": "Семьи",
   "AdminCategories.householdsHint": "Хотя бы с одной категорией",
   "AdminCategories.byKind": "По типам",

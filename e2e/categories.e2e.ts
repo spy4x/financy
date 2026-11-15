@@ -177,7 +177,7 @@ test.describe("categories", () => {
     }
   })
 
-  test("a 60-character name leaves the editor without sideways scroll on a 390 px phone", async ({ page, request }) => {
+  test("a 60-character name and a long unbroken alias leave the editor without sideways scroll on a 390 px phone", async ({ page, request }) => {
     const owner = "e2e_categories_long_name@example.com"
     await cleanup(request, owner)
     try {
@@ -191,6 +191,14 @@ test.describe("categories", () => {
       await page.locator("[data-e2e=category-name-input]").fill(name)
       // The colour preview repeats the name, cut short to the field's width.
       await expect(page.locator("[data-e2e=color-field-preview] bdi")).toHaveText(name)
+      const aliases = page.locator("#category-aliases")
+      for (
+        const alias of ["Lidl", "Пятёрочка", "Hypermarché-Leclerc-Saint-Jean-de-Luz-Centre-Ville"]
+      ) {
+        await aliases.fill(alias)
+        await aliases.press("Enter")
+      }
+      await expect(page.locator("[data-e2e=category-aliases] li")).toHaveCount(3)
       expect(await page.evaluate(() => document.documentElement.scrollWidth))
         .toBeLessThanOrEqual(390)
     } finally {

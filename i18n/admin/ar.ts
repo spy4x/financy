@@ -2592,6 +2592,8 @@ export default {
   "AdminCategories.categories": "الفئات",
   "AdminCategories.archived": "مؤرشفة",
   "AdminCategories.subcategories": "الفئات الفرعية",
+  "AdminCategories.withAliases": "بأسماء أخرى",
+  "AdminCategories.withAliasesHint": "غير مؤرشفة، ولها اسم آخر واحد على الأقل",
   "AdminCategories.households": "الأُسر",
   "AdminCategories.householdsHint": "لديها فئة واحدة على الأقل",
   "AdminCategories.byKind": "حسب النوع",

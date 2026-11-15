@@ -137,6 +137,56 @@ describe("categories store", () => {
     expect(store.categories.value.some((c) => c.id === "new-1")).toBe(true)
   })
 
+  it("starts a new category with no aliases and sends the ones the person added", async () => {
+    const { store, calls } = harness()
+    await store.open(groupId)
+    store.startCreate()
+    expect(store.form.value?.aliases).toEqual([])
+    store.change({ ...store.form.value!, name: "Groceries", aliases: ["Lidl", "Aldi"] })
+    await store.save()
+    expect(calls[0].input).toMatchObject({ name: "Groceries", aliases: ["Lidl", "Aldi"] })
+  })
+
+  it("counts a change of aliases as unsaved, and sends the stored ones with an edit of another field", async () => {
+    const { store, calls } = harness()
+    await store.open(groupId)
+    store.categories.value = [item("food", { name: "Food", aliases: ["Lidl"] })]
+    store.startEdit("food")
+    expect(store.unsaved.value).toBe(false)
+    store.change({ ...store.form.value!, aliases: ["Lidl", "Aldi"] })
+    expect(store.unsaved.value).toBe(true)
+    store.revert()
+    expect(store.form.value?.aliases).toEqual(["Lidl"])
+    store.change({ ...store.form.value!, name: "Meals" })
+    await store.save()
+    expect(calls[0].input).toMatchObject({ name: "Meals", aliases: ["Lidl"] })
+  })
+
+  it("reads a category from an older device copy, which has no aliases, as having none", async () => {
+    const { store } = harness()
+    await store.open(groupId)
+    store.startEdit("food")
+    expect(store.form.value?.aliases).toEqual([])
+    expect(store.unsaved.value).toBe(false)
+  })
+
+  it("puts the server's alias refusal under the aliases field, not the form", async () => {
+    const { store } = harness({
+      create: () =>
+        Promise.reject(
+          Object.assign(new RealtimeRequestError("bad_request", "Refused", {}), {
+            fields: { aliases: { code: "maxItems", values: { rule: 20 } } },
+          }),
+        ),
+    })
+    await store.open(groupId)
+    store.startCreate()
+    store.change({ ...store.form.value!, name: "Groceries", aliases: ["Lidl"] })
+    expect(await store.save()).toBe(null)
+    expect(store.formErrors.value.aliases).toBeTruthy()
+    expect(store.formErrors.value.form).toBe(null)
+  })
+
   it("refuses an empty name without calling the server", async () => {
     const { store, calls } = harness()
     await store.open(groupId)

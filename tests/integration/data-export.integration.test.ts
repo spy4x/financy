@@ -246,10 +246,12 @@ Deno.test("data export: lists the finance accounts the person created, the kind 
   })
 })
 
-Deno.test("data export: lists the finance categories the person created, archived ones included, the kind as a word", async () => {
+Deno.test("data export: lists the finance categories the person created, archived ones included, the kind as a word and the aliases as a list", async () => {
   await withSchema(async (sql) => {
     const { groupId, editor } = await team(sql)
     const id = await category(sql, groupId, editor, `Side income`)
+    await sql`UPDATE categories SET aliases = ${sql.array([`Freelance`, `Side gig`])}::text[]
+      WHERE id = ${id}`
 
     const files = unzip(await buildDataExport(sql, editor, new Date()))
 
@@ -262,12 +264,15 @@ Deno.test("data export: lists the finance categories the person created, archive
         kind: `income`,
         icon: `wallet`,
         color: `#15803d`,
+        aliases: [`Freelance`, `Side gig`],
         archivedAt: expect.stringMatching(/^\d{4}-/),
       }),
     ])
     expect(files[`finance_categories.csv`].split(`\r\n`)[0]).toBe(
-      `\uFEFFid,groupId,parentId,name,kind,icon,color,archivedAt,createdAt,updatedAt`,
+      `\uFEFFid,groupId,parentId,name,kind,icon,color,aliases,archivedAt,createdAt,updatedAt`,
     )
+    expect(files[`finance_categories.csv`].split(`\r\n`)[1])
+      .toContain(`"[""Freelance"",""Side gig""]"`)
   })
 })
 

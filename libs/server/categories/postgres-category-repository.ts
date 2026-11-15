@@ -123,7 +123,8 @@ export class PostgresCategoryRepository implements CategoryRepository {
         if (
           taken.groupId === input.groupId && taken.createdByUserId === actorId &&
           taken.name === input.name && taken.kind === input.kind && taken.icon === input.icon &&
-          taken.color === input.color && taken.parentId === input.parentId
+          taken.color === input.color && taken.parentId === input.parentId &&
+          taken.aliases.join("\n") === (input.aliases ?? []).join("\n")
         ) {
           return { category: taken, created: false }
         }
@@ -134,11 +135,12 @@ export class PostgresCategoryRepository implements CategoryRepository {
       const inserted = (
         await transaction<{ id: string }[]>`
           INSERT INTO categories (
-            id, group_id, parent_id, name, kind, icon, color, change_sequence,
+            id, group_id, parent_id, name, kind, icon, color, aliases, change_sequence,
             created_by_user_id, updated_by_user_id
           ) VALUES (
             ${input.id}, ${input.groupId}, ${input.parentId}, ${input.name}, ${input.kind},
-            ${input.icon}, ${input.color}, 1, ${actorId}, ${actorId}
+            ${input.icon}, ${input.color}, ${transaction.array(input.aliases ?? [])}::text[], 1,
+            ${actorId}, ${actorId}
           )
           ON CONFLICT (id) DO NOTHING
           RETURNING id
@@ -172,6 +174,7 @@ export class PostgresCategoryRepository implements CategoryRepository {
         UPDATE categories
         SET name = ${input.name}, kind = ${input.kind}, icon = ${input.icon},
             color = ${input.color}, parent_id = ${input.parentId}, version = version + 1,
+            aliases = ${aliasesOrKept(transaction, input.aliases)},
             updated_by_user_id = ${actorId}, updated_at = CURRENT_TIMESTAMP
         WHERE id = ${input.id} AND group_id = ${input.groupId}
       `
@@ -329,6 +332,7 @@ export class PostgresCategoryRepository implements CategoryRepository {
       categories.icon,
       categories.color,
       categories.parent_id,
+      categories.aliases,
       categories.archived_at,
       categories.version,
       categories.change_sequence::text AS change_sequence,
@@ -338,4 +342,9 @@ export class PostgresCategoryRepository implements CategoryRepository {
       categories.updated_at
     `
   }
+}
+
+/** The new aliases of an update, or the stored ones when the command carried none. */
+function aliasesOrKept(sql: postgres.Sql, aliases: string[] | undefined) {
+  return aliases === undefined ? sql`aliases` : sql`${sql.array(aliases)}::text[]`
 }

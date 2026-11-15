@@ -148,6 +148,7 @@ describe("CategoryEditorView", () => {
         parentId: null,
         icon: food.icon,
         color: food.color,
+        aliases: [],
       })
     )
     await save()

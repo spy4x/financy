@@ -44,6 +44,7 @@ const overview: AdminCategoriesOverview = {
   categories: 7,
   archived: 2,
   subcategories: 3,
+  withAliases: 4,
   households: 1,
   byKind: [
     { kind: CategoryKind.EXPENSE, categories: 5 },
@@ -60,6 +61,7 @@ describe("AdminCategoriesScreen", () => {
     expect(stats).toContain("Categories7")
     expect(stats).toContain("Archived2")
     expect(stats).toContain("Subcategories3")
+    expect(stats).toContain("With aliases4")
     expect(text("[data-e2e=admin-categories-kinds]")).toContain("Expense5")
     expect(text("[data-e2e=admin-categories-kinds]")).toContain("Income2")
     const link = document.querySelector("[data-e2e=admin-categories-households] a")

@@ -2405,6 +2405,8 @@ export default {
   "AdminCategories.categories": "Categorias",
   "AdminCategories.archived": "Arquivadas",
   "AdminCategories.subcategories": "Subcategorias",
+  "AdminCategories.withAliases": "Com outros nomes",
+  "AdminCategories.withAliasesHint": "Não arquivadas, com pelo menos um outro nome",
   "AdminCategories.households": "Famílias",
   "AdminCategories.householdsHint": "Com pelo menos uma categoria",
   "AdminCategories.byKind": "Por tipo",

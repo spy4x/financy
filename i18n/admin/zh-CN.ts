@@ -2102,6 +2102,8 @@ export default {
   "AdminCategories.categories": "分类",
   "AdminCategories.archived": "已归档",
   "AdminCategories.subcategories": "子分类",
+  "AdminCategories.withAliases": "有别名",
+  "AdminCategories.withAliasesHint": "未归档，且至少有一个别名",
   "AdminCategories.households": "家庭",
   "AdminCategories.householdsHint": "至少有一个分类",
   "AdminCategories.byKind": "按类型",

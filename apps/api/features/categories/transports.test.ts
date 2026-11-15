@@ -6,6 +6,7 @@ import { CommandBus, QueryBus } from "@spy4x/platform/cqrs"
 import { FREE_PLAN_ID } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
 import {
+  CATEGORY_ALIAS_MAX,
   CATEGORY_MAX_PER_GROUP,
   CategoryArchiveCommand,
   CategoryCreateCommand,
@@ -496,17 +497,77 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
-    it("answers a retried create with the first category", async () => {
+    it("creates a category with no aliases when the payload has none, and with the cleaned ones when it has some", async () => {
       const s = stack()
       const as = open(s, OWNER)
 
-      await as.command("category.create", food)
-      const again = await as.command("category.create", food)
+      expect(await as.command("category.create", food)).toMatchObject({
+        kind: "server.result",
+        payload: { category: { id: foodId, aliases: [] } },
+      })
+      expect(
+        await as.command("category.create", { ...groceries, aliases: [" Lidl", "lidl", "Aldi"] }),
+      ).toMatchObject({
+        kind: "server.result",
+        payload: { category: { id: groceriesId, aliases: ["Lidl", "Aldi"] } },
+      })
+      as.shutdown()
+    })
+
+    it("keeps the stored aliases on an update without them, and replaces them on one with them", async () => {
+      const s = stack()
+      await s.categories.create(direct({ ...food, aliases: ["Lidl", "Aldi"] }), OWNER)
+      const as = open(s, OWNER)
+
+      expect(await as.command("category.update", { ...food, name: "Meals", version: 1 }))
+        .toMatchObject({
+          kind: "server.result",
+          payload: { category: { name: "Meals", aliases: ["Lidl", "Aldi"], version: 2 } },
+        })
+      expect(await as.command("category.update", { ...food, aliases: [], version: 2 }))
+        .toMatchObject({ kind: "server.result", payload: { category: { aliases: [] } } })
+      expect(s.categories.categories.get(foodId)?.aliases).toEqual([])
+      as.shutdown()
+    })
+
+    it("refuses too many, too long or unsafe aliases as a bad request and stores nothing", async () => {
+      const s = stack()
+      const as = open(s, OWNER)
+
+      const answers = [
+        await as.command("category.create", {
+          ...food,
+          aliases: Array.from({ length: CATEGORY_ALIAS_MAX + 1 }, () => "x".repeat(64)),
+        }),
+        await as.command("category.create", {
+          ...food,
+          aliases: Array.from({ length: CATEGORY_ALIAS_MAX + 1 }, (_, n) => `Shop ${n}`),
+        }),
+        await as.command("category.create", { ...food, aliases: ["x".repeat(61)] }),
+        await as.command("category.create", { ...food, aliases: ["a\u200bb"] }),
+        await as.command("category.create", { ...food, aliases: "Lidl" }),
+      ]
+
+      for (const answer of answers) {
+        expect(answer).toMatchObject(refused("bad_request", "INVALID_REQUEST"))
+      }
+      expect(s.categories.categories.size).toBe(0)
+      as.shutdown()
+    })
+
+    it("answers a retried create with the first category, and refuses the id with other aliases", async () => {
+      const s = stack()
+      const as = open(s, OWNER)
+
+      await as.command("category.create", { ...food, aliases: ["Lidl"] })
+      const again = await as.command("category.create", { ...food, aliases: ["Lidl"] })
 
       expect(again).toMatchObject({
         kind: "server.result",
         payload: { created: false, category: { id: foodId, version: 1 } },
       })
+      expect(await as.command("category.create", { ...food, aliases: ["Aldi"] }))
+        .toMatchObject({ kind: "server.error", details: { code: "ID_ALREADY_EXISTS" } })
       expect(s.categories.categories.size).toBe(1)
       as.shutdown()
     })

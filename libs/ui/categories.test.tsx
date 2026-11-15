@@ -262,6 +262,7 @@ const NEW_FORM: CategoryFields = {
   icon: "tag" as CategoryFields["icon"],
   color: "#2563eb",
   parentId: null,
+  aliases: [],
 }
 
 /** The editor with its form value held in state, as the app's store holds it. */
@@ -354,6 +355,54 @@ describe("CategoryEditorScreen", () => {
     expect(count("[data-e2e=category-save]")).toBe(0)
     expect(count("[data-e2e=category-name-input]")).toBe(0)
     expect(count("[data-e2e=category-read-only]")).toBe(1)
+  })
+
+  it("adds an alias typed into Also known as, with the hint under it, and names each remove button for the alias", async () => {
+    const seen: CategoryFields[] = []
+    await mount(
+      <Editor start={{ ...NEW_FORM, name: "Groceries", aliases: ["Aldi"] }} seen={seen} />,
+    )
+    const field = find("[data-e2e=category-aliases]")
+    expect(field.textContent).toContain("Also known as")
+    expect(field.textContent).toContain("Search finds the category by them too.")
+    const input = find<HTMLInputElement>("#category-aliases")
+    await act(() => {
+      input.value = "Lidl,"
+      input.dispatchEvent(new window.Event("input", { bubbles: true }) as unknown as Event)
+    })
+    expect(seen.at(-1)?.aliases).toEqual(["Aldi", "Lidl"])
+    const removes = [...field.querySelectorAll("button")].map((button) =>
+      (button.getAttribute("aria-label") ?? "").replace(/[\u2068\u2069]/g, "")
+    )
+    expect(removes).toEqual(["Remove alias Aldi", "Remove alias Lidl"])
+  })
+
+  it("puts an alias refusal under Also known as and marks the field invalid", async () => {
+    await mount(
+      <Editor
+        start={{ ...NEW_FORM, name: "Groceries" }}
+        errors={{ name: null, aliases: "Keep it to 20 items.", parent: null, form: null }}
+        seen={[]}
+      />,
+    )
+    expect(find("[data-e2e=category-aliases]").textContent).toContain("Keep it to 20 items.")
+    expect(find("#category-aliases").getAttribute("aria-invalid")).toBe("true")
+  })
+
+  it("shows a viewer the aliases as plain text, never as markup", async () => {
+    const markup = `<img src=x onerror="alert(1)">`
+    await mount(
+      <Editor
+        start={{ ...NEW_FORM, name: groceries.name, aliases: ["Lidl", markup] }}
+        category={groceries}
+        group={viewerOfHome}
+        seen={[]}
+      />,
+    )
+    const facts = find("[data-e2e=category-facts]")
+    expect(text(facts)).toContain("Also known as")
+    expect(text(facts)).toContain(markup)
+    expect(facts.querySelector("img")).toBe(null)
   })
 
   it("keeps Save off while offline and says changes wait", async () => {

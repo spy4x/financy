@@ -151,6 +151,42 @@ test.describe("search with no network", () => {
       await cleanup(request, user)
     }
   })
+
+  test("finds a category on this device by an alias set in its editor", async ({ browser, request }) => {
+    const user = "e2e_search_offline_alias@example.com"
+    await cleanup(request, user)
+    const context = await browser.newContext({ baseURL: test.info().project.use.baseURL })
+    try {
+      await signUp(request, user)
+      const page = await context.newPage()
+      await signIn(page, user, password)
+      const { categoryId } = await householdOnDevice(page, "Weekly shop")
+      const status = page.locator("[data-e2e=shell-ws-status]")
+      const row = page.locator(`[data-e2e=category-${categoryId}]`)
+      await row.locator("[data-e2e=category-name]").click()
+      await page.locator("#category-aliases").fill("Пятёрочка")
+      await page.locator("#category-aliases").press("Enter")
+      await page.locator("[data-e2e=category-save]").click()
+      await expect(page.locator("[data-e2e=category-save]")).toHaveCount(0)
+      // The list read again online, so the device's copy holds the alias.
+      await gotoApp(page, "/categories", status)
+      await expect(row).toBeVisible()
+
+      await context.setOffline(true)
+      await page.reload()
+      await expect(status).not.toHaveText("Online")
+      const palette = page.locator("[data-e2e=search]")
+      await page.locator("[data-e2e=shell-search-rail] button").click()
+      // Misspelled, as a person types it in a hurry: "е" for "ё", "а" for the second "о".
+      await palette.getByRole("combobox").pressSequentially("пятерачка")
+      await palette.getByRole("group", { name: "Categories", exact: true })
+        .getByRole("option").filter({ hasText: "Groceries" }).click()
+      await expect(page).toHaveURL(`/categories/${categoryId}`)
+    } finally {
+      await context.close()
+      await cleanup(request, user)
+    }
+  })
 })
 
 /** Runs one operation as the page's signed-in person, the way the app's HTTP transport does. */
@@ -229,5 +265,5 @@ async function householdOnDevice(page: Page, memo: string) {
   await gotoApp(page, page.url(), page.locator(`[data-e2e=transaction-${transactionId}]`))
   await expect(page.locator(`[data-e2e=transaction-${transactionId}]`)).toContainText("Wallet")
   await gotoApp(page, "/categories", status)
-  return { transactionId, accountId }
+  return { transactionId, accountId, categoryId }
 }

@@ -8,6 +8,7 @@ const overview: AdminCategoriesOverview = {
   categories: 3,
   archived: 1,
   subcategories: 1,
+  withAliases: 1,
   households: 1,
   byKind: [],
   topHouseholds: [],

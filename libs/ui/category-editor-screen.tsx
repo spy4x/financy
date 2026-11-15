@@ -15,6 +15,7 @@ import { Stack } from "@spy4x/preact-ui/layout"
 import { Notice } from "@spy4x/preact-ui/notice"
 import { PageHeader } from "@spy4x/preact-ui/page-header"
 import { SegmentedControl } from "@spy4x/preact-ui/segmented-control"
+import { TagInput } from "@spy4x/preact-ui/tag-input"
 import { isolate } from "@spy4x/preact-ui/bdi"
 import { CATEGORY_ICONS, ICONS } from "@spy4x/preact-icons/registry"
 import { isApplePlatform, matchesHotkey, parseHotkey } from "@spy4x/platform/browser/hotkeys"
@@ -43,6 +44,8 @@ import { PlanRefusalNotice } from "./plan-refusal.tsx"
 /** The errors of the category editor: per field, and for the form as a whole. */
 export interface CategoryFormErrors {
   name: Message | null
+  /** A refusal of the aliases: too many, too long, or a character that is not allowed. */
+  aliases?: Message | null
   parent: Message | null
   form: Message | null
   /** The household's plan refused the new category; shown with a way to the plan. */
@@ -77,8 +80,8 @@ export interface CategoryEditorScreenProps {
 }
 
 /**
- * One category on a page of its own, at `/categories/new` and `/categories/:id`: name, kind,
- * parent, icon and colour. The header previews the chip as the list will draw it. The tree rules
+ * One category on a page of its own, at `/categories/new` and `/categories/:id`: name, aliases,
+ * kind, parent, icon and colour. The header previews the chip as the list will draw it. The tree rules
  * show as locked fields with their reason under them: a subcategory takes its parent's kind, and a
  * parent with subcategories keeps its kind and stays at the top level. A viewer sees the fields as
  * facts.
@@ -287,6 +290,34 @@ function Editor(props: CategoryEditorScreenProps & { group: NotesGroup }): JSX.E
                     required
                   />
                 </Field>
+                <div data-e2e="category-aliases">
+                  <Field
+                    id="category-aliases"
+                    label={t.t(`CategoryEditor.aliases`)}
+                    hint={t.t(`CategoryEditor.aliasesHint`)}
+                    error={messageText(t, errors.aliases ?? null)}
+                  >
+                    {(wiring) => (
+                      <TagInput
+                        id={wiring.id}
+                        aria-describedby={wiring["aria-describedby"]}
+                        aria-invalid={Boolean(errors.aliases)}
+                        value={value.aliases}
+                        onChange={(aliases) => onChange?.({ ...value, aliases })}
+                        placeholder={t.t(`CategoryEditor.aliasesPlaceholder`)}
+                        tagsLabel={t.t(`CategoryEditor.aliases`)}
+                        removeLabel={(alias) =>
+                          t.t(`CategoryEditor.aliasRemove`, { alias: isolate(alias) })}
+                        addedMessage={(alias) =>
+                          t.t(`CategoryEditor.aliasAdded`, { alias: isolate(alias) })}
+                        removedMessage={(alias) =>
+                          t.t(`CategoryEditor.aliasRemoved`, { alias: isolate(alias) })}
+                        duplicateMessage={(alias) =>
+                          t.t(`CategoryEditor.aliasDuplicate`, { alias: isolate(alias) })}
+                      />
+                    )}
+                  </Field>
+                </div>
                 <fieldset
                   disabled={locks.kind !== null}
                   aria-describedby={locks.kind ? "category-kind-hint" : undefined}
@@ -464,6 +495,16 @@ function Facts(
       <FactList
         facts={[
           { label: t.t(`CategoryEditor.name`), value: <bdi>{value.name}</bdi> },
+          ...(value.aliases.length > 0
+            ? [{
+              label: t.t(`CategoryEditor.aliases`),
+              value: (
+                <span class="inline-flex flex-wrap gap-x-2">
+                  {value.aliases.map((alias) => <bdi key={alias}>{alias}</bdi>)}
+                </span>
+              ),
+            }]
+            : []),
           { label: t.t(`CategoryEditor.kind`), value: categoryKindName(t, value.kind) },
           {
             label: t.t(`CategoryEditor.parent`),

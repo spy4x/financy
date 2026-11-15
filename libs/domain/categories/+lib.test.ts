@@ -7,6 +7,7 @@ import {
   assertCategoryRoom,
   assertNoCategoryProblem,
   canCarryLimit,
+  CATEGORY_ALIAS_MAX,
   CATEGORY_MAX_PER_GROUP,
   CATEGORY_MAX_STORED,
   CATEGORY_NAME_MAX_LENGTH,
@@ -18,6 +19,7 @@ import {
   CategoryKind,
   type CategoryNode,
   categoryProblem,
+  categoryUpdatePayloadSchema,
   parentsFirst,
   parseCategoryExportEntry,
   parseCategoryRequest,
@@ -129,6 +131,72 @@ describe("parsing a category request", () => {
     }
     expect(parseCategoryRequest(categoryCreatePayloadSchema, { ...base, parentId: FOOD }).parentId)
       .toBe(FOOD)
+  })
+
+  it("leaves aliases out of a create or an update that has none, so a queued older command keeps them", () => {
+    expect("aliases" in parseCategoryRequest(categoryCreatePayloadSchema, base)).toBe(false)
+    expect(
+      "aliases" in parseCategoryRequest(categoryUpdatePayloadSchema, { ...base, version: 3 }),
+    ).toBe(false)
+  })
+
+  it("trims each alias, drops blank ones and keeps the first of two that fold alike", () => {
+    const parsed = parseCategoryRequest(categoryUpdatePayloadSchema, {
+      ...base,
+      version: 3,
+      aliases: ["  Lidl ", "", "   ", "Пятёрочка", "lidl", "ПЯТЕРОЧКА", "Café", "cafe"],
+    })
+
+    expect(parsed.aliases).toEqual(["Lidl", "Пятёрочка", "Café"])
+  })
+
+  it("takes an alias up to the longest name in characters and refuses a longer one", () => {
+    const alias = "🍞".repeat(CATEGORY_NAME_MAX_LENGTH)
+
+    expect(parseCategoryRequest(categoryCreatePayloadSchema, { ...base, aliases: [alias] }).aliases)
+      .toEqual([alias])
+    expect(
+      codeOf(() =>
+        parseCategoryRequest(categoryCreatePayloadSchema, { ...base, aliases: [alias + "🍞"] })
+      ),
+    ).toEqual({
+      code: "INVALID_REQUEST",
+      fields: { aliases: { code: "maxLength", values: { rule: CATEGORY_NAME_MAX_LENGTH } } },
+    })
+  })
+
+  it("refuses an alias with a control or an invisible character", () => {
+    for (const alias of ["a\u0000b", "a\nb", "a\u200bb", "a\u202eb"]) {
+      expect(
+        codeOf(() =>
+          parseCategoryRequest(categoryCreatePayloadSchema, { ...base, aliases: ["ok", alias] })
+        ),
+      ).toEqual({ code: "INVALID_REQUEST", fields: { aliases: { code: "unsafeCharacters" } } })
+    }
+  })
+
+  it("takes the most aliases and refuses one more by the count alone", () => {
+    const most = Array.from({ length: CATEGORY_ALIAS_MAX }, (_, i) => `alias ${i}`)
+
+    expect(parseCategoryRequest(categoryCreatePayloadSchema, { ...base, aliases: most }).aliases)
+      .toEqual(most)
+    // Not one of the 10 000 items is a string: the count refuses the list before any is read.
+    const huge = Array.from({ length: 10_000 }, () => 1)
+    for (const aliases of [[...most, "x".repeat(64)], huge]) {
+      expect(codeOf(() => parseCategoryRequest(categoryCreatePayloadSchema, { ...base, aliases })))
+        .toEqual({
+          code: "INVALID_REQUEST",
+          fields: { aliases: { code: "maxItems", values: { rule: CATEGORY_ALIAS_MAX } } },
+        })
+    }
+  })
+
+  it("takes only a list of text as aliases", () => {
+    for (const aliases of ["Lidl", [1], [null], null]) {
+      expect(
+        codeOf(() => parseCategoryRequest(categoryCreatePayloadSchema, { ...base, aliases })).code,
+      ).toBe("INVALID_REQUEST")
+    }
   })
 
   it("refuses a field the payload does not have", () => {
@@ -292,6 +360,19 @@ describe("a category in an export file", () => {
     expect(parseCategoryExportEntry(entry).color).toBe("#16a34a")
     expect(() => parseCategoryExportEntry({ ...entry, budget: 5 })).toThrow("does not have")
     expect(() => parseCategoryExportEntry({ ...entry, icon: "x" })).toThrow()
+  })
+
+  it("reads an older entry without aliases, and cleans and counts the aliases of a newer one", () => {
+    expect(parseCategoryExportEntry(entry).aliases).toBeUndefined()
+    expect(parseCategoryExportEntry({ ...entry, aliases: [" Lidl", "lidl", ""] }).aliases)
+      .toEqual(["Lidl"])
+    expect(() => parseCategoryExportEntry({ ...entry, aliases: [1] })).toThrow("alias")
+    expect(() =>
+      parseCategoryExportEntry({
+        ...entry,
+        aliases: Array.from({ length: CATEGORY_ALIAS_MAX + 1 }, () => 1),
+      })
+    ).toThrow(`at most ${CATEGORY_ALIAS_MAX} aliases`)
   })
 
   it("takes a file whose child comes before its parent", () => {
