@@ -1,19 +1,27 @@
+import { BUDGET_WIDGETS } from "@domain/budgets"
 import type { WidgetDefinition } from "@domain/groups"
 import { NOTE_WIDGET_IDS, NOTE_WIDGETS } from "@domain/notes"
 import { MONEY_WIDGETS } from "@domain/transactions"
+import { BUDGET_WIDGET_VIEWS } from "./budget-widgets.tsx"
 import { MONEY_WIDGET_VIEWS } from "./money-widgets.tsx"
 import { NOTE_WIDGET_VIEWS, type WidgetView } from "./note-widgets.tsx"
 
 /**
  * Every widget the group overview can show, in the default order: each aggregate's list, one after
- * the other, the household's money first. A new aggregate adds its list here and its drawings to
- * {@link OVERVIEW_VIEWS} (`docs/aggregate-extras.md`, "Add a widget to the overview").
+ * the other, the household's money first, then its budgets. A new aggregate adds its list here and
+ * its drawings to {@link OVERVIEW_VIEWS} (`docs/aggregate-extras.md`, "Add a widget to the
+ * overview").
  */
-export const OVERVIEW_WIDGETS: readonly WidgetDefinition[] = [...MONEY_WIDGETS, ...NOTE_WIDGETS]
+export const OVERVIEW_WIDGETS: readonly WidgetDefinition[] = [
+  ...MONEY_WIDGETS,
+  ...BUDGET_WIDGETS,
+  ...NOTE_WIDGETS,
+]
 
 /** How each widget of {@link OVERVIEW_WIDGETS} is drawn, by id. */
 export const OVERVIEW_VIEWS: Readonly<Record<string, WidgetView>> = {
   ...MONEY_WIDGET_VIEWS,
+  ...BUDGET_WIDGET_VIEWS,
   ...NOTE_WIDGET_VIEWS,
 }
 

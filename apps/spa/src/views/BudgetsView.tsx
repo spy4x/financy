@@ -13,29 +13,34 @@ import { billingStore } from "../state/billing.ts"
 import { budgetsStore } from "../state/budgets.ts"
 import { categoriesStore } from "../state/categories.ts"
 import { groupsStore } from "../state/groups.ts"
-import { selectionStore } from "../state/selection.ts"
 import { toasts } from "../state/toasts.ts"
 import { categoryRow } from "./CategoriesView.tsx"
+import { useLinkedGroup, useLinkedMonth } from "./linked-group.ts"
 
 /**
  * Wires the budgets page to its store for `/budgets`: one month of the selected household's
  * expense categories, the current month in the household's time zone first. Whoever may write
  * notes may change limits; a viewer reads them. The plan is read once per household, and while it
- * is unknown setting stays offered: the server refuses it if the plan does not allow it.
+ * is unknown setting stays offered: the server refuses it if the plan does not allow it. The
+ * overview's budgets card links here with its household (`useLinkedGroup`) and its month
+ * (`useLinkedMonth`), which opens that month once and leaves the address.
  */
 export function BudgetsView() {
   const [, navigate] = useLocation()
   const t = useAppText()
   const format = useFormat()
   const store = budgetsStore
-  const groupId = selectionStore.groupId.value
+  const groupId = useLinkedGroup()
+  // A month the overview's budgets card names: the household's first read below asks for it.
+  const linked = useLinkedMonth(groupId, (group, at) => void store.open(group, at))
   const membership = groupId
     ? groupsStore.groups.value.find((group) => group.id === groupId)
     : undefined
   const timeZone = groupTimeZone(membership ?? {})
   const [now] = useState(() => new Date())
   const thisMonth = currentPeriod(PeriodUnit.Month, { now, timeZone }).from.slice(0, 7)
-  const month = store.groupId.value === groupId && store.month.value ? store.month.value : thisMonth
+  const month = linked ??
+    (store.groupId.value === groupId && store.month.value ? store.month.value : thisMonth)
   // Once per household: a step to another month reads only that month, in `onMonth`.
   useEffect(() => {
     if (!groupId) return
