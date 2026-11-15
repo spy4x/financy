@@ -6,8 +6,8 @@ import { NOTE_WIDGET_VIEWS, type WidgetView } from "./note-widgets.tsx"
 
 /**
  * Every widget the group overview can show, in the default order: each aggregate's list, one after
- * the other, the household's money first. A new aggregate adds its list here and its drawings to {@link OVERVIEW_VIEWS}
- * (`docs/aggregate-extras.md`, "Add a widget to the overview").
+ * the other, the household's money first. A new aggregate adds its list here and its drawings to
+ * {@link OVERVIEW_VIEWS} (`docs/aggregate-extras.md`, "Add a widget to the overview").
  */
 export const OVERVIEW_WIDGETS: readonly WidgetDefinition[] = [...MONEY_WIDGETS, ...NOTE_WIDGETS]
 
