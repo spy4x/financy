@@ -10,7 +10,9 @@
     "jsr:@negrel/http-ece@0.7.0": "0.7.0",
     "jsr:@negrel/webpush@0.5.0": "0.5.0",
     "jsr:@simplewebauthn/server@14.0.3": "14.0.3",
+    "jsr:@spy4x/bank-statements@1.127.0": "1.127.0",
     "jsr:@spy4x/billing@1.127.0": "1.127.0",
+    "jsr:@spy4x/caldav@^1.127.0": "1.127.0",
     "jsr:@spy4x/email@1.127.0": "1.127.0",
     "jsr:@spy4x/email@^1.127.0": "1.127.0",
     "jsr:@spy4x/integrations@1.127.0": "1.127.0",
@@ -196,6 +198,15 @@
         "npm:reflect-metadata"
       ]
     },
+    "@spy4x/bank-statements@1.127.0": {
+      "integrity": "465faf6ae3972f6f2772ea3fde3402d55e6c8ad58cd0cdd5f5dbcc0257a6d0b3",
+      "dependencies": [
+        "jsr:@spy4x/caldav",
+        "jsr:@spy4x/platform@^1.127.0",
+        "jsr:@spy4x/time@^1.127.0",
+        "npm:arktype"
+      ]
+    },
     "@spy4x/billing@1.127.0": {
       "integrity": "7abcada45e99eb55c6e77bb405c389ad918238d20631326eb51d011e19f6eb66",
       "dependencies": [
@@ -203,6 +214,12 @@
         "jsr:@spy4x/net@^1.127.0",
         "jsr:@spy4x/platform@^1.127.0",
         "npm:arktype"
+      ]
+    },
+    "@spy4x/caldav@1.127.0": {
+      "integrity": "ff23135912dd76337f97292395eb2c94ec350047c7a871efee98ea17bd718c71",
+      "dependencies": [
+        "jsr:@spy4x/time@^1.127.0"
       ]
     },
     "@spy4x/email@1.127.0": {
@@ -2479,6 +2496,7 @@
       "jsr:@hono/hono@4.13.8",
       "jsr:@iuioiua/redis@1.1.10",
       "jsr:@libs/qrcode@3.1.0",
+      "jsr:@spy4x/bank-statements@1.127.0",
       "jsr:@spy4x/billing@1.127.0",
       "jsr:@spy4x/email@1.127.0",
       "jsr:@spy4x/integrations@1.127.0",

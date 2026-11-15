@@ -1,0 +1,10 @@
+!Type:Bank
+D01/02'26
+T1,250.00
+PExample Employer
+MJanuary salary
+^
+D1/15'26
+T-75.25
+PExample Pharmacy
+^

@@ -17,6 +17,8 @@ const READS = [
   `./libs/server/blog/seed-posts`,
   // Financy: the blog and demo integration tests load the Lighthouse fixture posts.
   `./apps/mpa/lighthouse/posts`,
+  // Financy: the bank statement import tests read their synthetic statements.
+  `./tests/integration/statements`,
 ]
 
 /** The `deno test` arguments for the task's arguments: flags pass through, no path → the folder. */

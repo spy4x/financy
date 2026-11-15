@@ -1,5 +1,6 @@
 import { type Type, type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
+import type { ImportKindLimits } from "@domain/imports"
 import type { Actor } from "@domain/identity"
 import {
   canMutateNotes,
@@ -41,6 +42,21 @@ export const TRANSACTION_AMOUNT_MAX = Number.MAX_SAFE_INTEGER
 
 /** How many deleted entries the deleted list shows at most, the latest deleted first. */
 export const TRANSACTION_DELETED_LIST_MAX = 200
+
+/** The longest bank reference an entry keeps, in characters (`transactions.bank_reference`). */
+export const TRANSACTION_BANK_REFERENCE_MAX_LENGTH = 255
+
+/**
+ * The bank statement import kind's limits: OFX and QFX, QIF, CAMT.053, MT940 and a CSV a built-in
+ * profile reads, at most 5 MiB and 5,000 rows, the most a check reviews. The server's kind
+ * (`libs/server/transactions/statement-import.ts`) and the import page both read them.
+ */
+export const BANK_STATEMENT_IMPORT_KIND: ImportKindLimits = {
+  id: `bank-statement`,
+  accept: [`.csv`, `.ofx`, `.qfx`, `.qif`, `.xml`, `.sta`, `.mt940`, `.txt`],
+  maxBytes: 5 * 1024 * 1024,
+  maxRows: 5_000,
+}
 
 /** The longest period the ledger reads at once, in days: a year, a leap year included. */
 export const LEDGER_MAX_DAYS = 366
