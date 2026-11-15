@@ -1,5 +1,5 @@
 import type postgres from "postgres"
-import { PlanError } from "@domain/billing"
+import { effectivePlanId, entitlementsOf, type Plan, PlanError, UNLIMITED } from "@domain/billing"
 import type { GroupRole } from "@domain/groups"
 import {
   dueOccurrences,
@@ -11,7 +11,6 @@ import {
 import { TransactionError, type TransactionKind } from "@domain/transactions"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { PostgresBillingRepository } from "../billing/postgres-billing-repository.ts"
-import { planLimitsOf, type PlanLimitsSetup } from "../billing/plan-limits.ts"
 import {
   GroupNotActiveError,
   lockActorRole,
@@ -31,7 +30,12 @@ const RULE_BATCH = 200
 export interface RecurringEntriesDeps {
   sql: postgres.Sql
   /** Whether billing is on, and the grace period: what decides a household's plan cap. */
-  billing: PlanLimitsSetup
+  billing: {
+    billingEnabled: boolean
+    graceDays: number
+    /** The plan catalog, `PLANS` unless a test passes its own. */
+    plans?: readonly Plan[]
+  }
   /** Told about each rule that stopped and the run's totals; never an amount or a memo. */
   log: (line: string) => void
   /** The clock; tests pass a fixed one. */
@@ -212,8 +216,7 @@ export async function makeRecurringEntries(
   /** Runs the rule's due dates; returns how it ended. */
   const runRule = async (rule: DueRule): Promise<Outcome | null> => {
     if (!allowances.has(rule.groupId)) {
-      const limits = await planLimitsOf(billing, rule.groupId, deps.billing, now)
-      allowances.set(rule.groupId, limits.maxTransactions)
+      allowances.set(rule.groupId, await entryAllowance(billing, rule.groupId, deps.billing, now))
     }
     const allowance = allowances.get(rule.groupId)!
     if (allowance === 0) return `blocked`
@@ -262,6 +265,22 @@ export async function makeRecurringEntries(
     if (rules.length < batch) return report
     after = rules[rules.length - 1].id
   }
+}
+
+/**
+ * A household's `maxTransactions` at `now`, mirroring the API's entitlement gate: no cap while
+ * billing is off, else the cap of the plan the household is on, the free plan's once a lapsed
+ * subscription's grace has ended.
+ */
+async function entryAllowance(
+  billing: PostgresBillingRepository,
+  groupId: string,
+  setup: RecurringEntriesDeps[`billing`],
+  now: Date,
+): Promise<number | null> {
+  if (!setup.billingEnabled) return UNLIMITED.limits.maxTransactions
+  const plan = effectivePlanId(await billing.get(groupId), now, setup.graceDays, setup.plans)
+  return entitlementsOf(plan, true, setup.plans).limits.maxTransactions
 }
 
 /** What {@link checkRule} found: an outcome that stops the step, or what the step may go on with. */

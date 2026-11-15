@@ -1,5 +1,12 @@
 import type postgres from "postgres"
 import {
+  effectivePlanId,
+  entitlementsOf,
+  type LimitKey,
+  type Plan,
+  UNLIMITED,
+} from "@domain/billing"
+import {
   IMPORT_EVENTS,
   IMPORT_SAMPLE_ROWS,
   ImportError,
@@ -8,7 +15,6 @@ import {
 } from "@domain/imports"
 import type { JobHandler } from "@server/jobs/jobs.ts"
 import { PostgresBillingRepository } from "../billing/postgres-billing-repository.ts"
-import { planLimitsOf, type PlanLimitsSetup } from "../billing/plan-limits.ts"
 import { assertMapping, checkRows, columnCount, type ImportKind } from "./import-kind.ts"
 import {
   announceImport,
@@ -24,8 +30,11 @@ export const IMPORT_STALE_MS = 24 * 60 * 60 * 1000
 const FAILURE_MAX = 500
 
 /** What the commit job needs to read the group's caps; billing off when `provider` is false. */
-export interface ImportJobSetup extends PlanLimitsSetup {
+export interface ImportJobSetup {
   kinds: readonly ImportKind[]
+  billingEnabled: boolean
+  graceDays: number
+  plans?: readonly Plan[]
 }
 
 /**
@@ -106,7 +115,7 @@ export function importCommitJob(sql: postgres.Sql, setup: ImportJobSetup): JobHa
           actorId: row.userId,
           role,
           changeSequence: sequence,
-          allowances: await planLimitsOf(billing, row.groupId, setup, new Date()),
+          allowances: await allowancesOf(billing, row.groupId, setup),
         })
         if (ids.length > 0) {
           await tx`
@@ -196,4 +205,15 @@ async function fail(tx: postgres.TransactionSql, id: string, text: string): Prom
       failure = ${Array.from(text).slice(0, FAILURE_MAX).join(``)}, failed_at = CURRENT_TIMESTAMP
     WHERE id = ${id}
   `
+}
+
+/** The group plan's caps, as the API's gate reads them: none while billing is off. */
+async function allowancesOf(
+  billing: PostgresBillingRepository,
+  groupId: string,
+  setup: ImportJobSetup,
+): Promise<Readonly<Record<LimitKey, number | null>>> {
+  if (!setup.billingEnabled) return UNLIMITED.limits
+  const plan = effectivePlanId(await billing.get(groupId), new Date(), setup.graceDays, setup.plans)
+  return entitlementsOf(plan, true, setup.plans).limits
 }
