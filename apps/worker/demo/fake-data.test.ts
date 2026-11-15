@@ -242,7 +242,7 @@ Deno.test("a household that names its place lives in that place's zone, in the p
     groups.find((g) => g.name === name)?.timeZone
   for (const groups of [fakeDemoData(1, NOW).groups, fakeWorkspace(1)]) {
     expect(zoneOf(groups, `Home in Da Nang`)).toBe(`Asia/Ho_Chi_Minh`)
-    expect(zoneOf(groups, `The Costas, Lisbon`)).toBe(`Europe/Lisbon`)
+    expect(zoneOf(groups, `Family in Lisbon`)).toBe(`Europe/Lisbon`)
   }
 })
 

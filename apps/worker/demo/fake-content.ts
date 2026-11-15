@@ -94,25 +94,25 @@ export const THEMES: readonly Theme[] = [
       {
         title: `Visa renewal`,
         body:
-          `Tom's work visa runs out in March. The agency needs the passport, two photos and the contract by mid-February.`,
+          `My work visa runs out in March. The agency needs the passport, two photos and the contract by mid-February.`,
       },
       {
         title: `How we split rent`,
         body:
-          `Rent comes out of the euro account. Linh pays the electricity and water in dong, so we call it even.`,
+          `Rent comes out of the euro account. My partner pays the electricity and water in dong, so we call it even.`,
       },
       {
         title: `Emergency fund`,
         body: `Goal: three months of costs in euros. Top it up first, before trips.`,
       },
       {
-        title: `Flights home at Tết`,
+        title: `Flights to Europe at Tết`,
         body: `Prices double after November. Book before the 15th from the travel card.`,
       },
     ],
   },
   {
-    name: `The Costas, Lisbon`,
+    name: `Family in Lisbon`,
     members: [2, 3],
     timeZone: `Europe/Lisbon`,
     tags: [
@@ -130,7 +130,7 @@ export const THEMES: readonly Theme[] = [
       {
         title: `NIF and residency`,
         body:
-          `Ana's residence card renewal is booked at AIMA for the 12th. Bring the proof of address.`,
+          `My residence card renewal is booked at AIMA for the 12th. Bring the proof of address.`,
       },
       {
         title: `Summer camp`,
@@ -270,12 +270,12 @@ export const THEMES: readonly Theme[] = [
       },
       {
         title: `House rules for money`,
-        body: `Pay rent to Minh by the 3rd. He sends it on to the owner.`,
+        body: `Pay rent to the landlord's agent by the 3rd.`,
       },
     ],
   },
   {
-    name: `The Nguyens`,
+    name: `Family in Hanoi`,
     members: [2, 3],
     tags: [
       { name: `school`, color: `#1d4ed8` },
@@ -285,7 +285,7 @@ export const THEMES: readonly Theme[] = [
     notes: [
       {
         title: `Tuition`,
-        body: `The second term is due in January, in dong. Grandma helps with Bao's part.`,
+        body: `The second term is due in January, in dong. Grandma helps with part of it.`,
       },
       {
         title: `Lunar New Year`,
