@@ -2,7 +2,9 @@ import type { ComponentChildren } from "preact"
 import { useEffect, useMemo, useRef } from "preact/hooks"
 import { useSignal } from "@preact/signals"
 import { matchRoute, useLocation, useRouter, useSearch } from "wouter-preact"
-import { canMutateNotes, canViewActivity } from "@domain/groups"
+import { useFormat } from "@spy4x/preact-ui/format"
+import { todayInTz } from "@spy4x/time/tz"
+import { canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
 import { pictureUrl, shownPictureId } from "@domain/identity"
 import {
   NOTE_PATHS,
@@ -23,6 +25,8 @@ import { notificationsStore } from "../state/notifications.ts"
 import { createNoteSearch } from "../state/search.ts"
 import { selectionStore } from "../state/selection.ts"
 import { newNoteStore } from "../state/new-note.ts"
+import { paletteData } from "../state/palette-data.ts"
+import { recordSources } from "./palette-records.ts"
 import { type ActionPages, pageCommands, runActionCommand, spaShortcutRows } from "./shortcuts.ts"
 import { spaRoutePaths } from "./spa-paths.ts"
 import { runChoice } from "./palette-choice.ts"
@@ -283,6 +287,15 @@ export function AppShell(
     // An open note belongs to the group just left.
     if (location.startsWith(`${NOTE_PATHS.list}/`)) navigate(NOTE_PATHS.list)
   }
+  useEffect(() => paletteData.watch(), [])
+  const { locale } = useFormat()
+  const today = todayInTz(groupTimeZone(current ?? {}))
+  // Made again only when the words, the region format, the day or the notes switch change, so the
+  // sources keep their mapped records between renders.
+  const records = useMemo(
+    () => recordSources(paletteData, { t, locale, today }, notes),
+    [t, locale, today, notes],
+  )
   const open = (choice: SearchChoice) =>
     runChoice(choice, {
       // The quick entry keeps the way back to the page it was opened on.
@@ -322,6 +335,7 @@ export function AppShell(
           guest={guest}
           benchmark={benchmarkOpen()}
           notes={notes}
+          records={records}
         />
       }
       shortcuts={{
