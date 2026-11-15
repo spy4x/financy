@@ -8,6 +8,7 @@ import { Rich } from "@spy4x/preact-ui/i18n"
 import { Input } from "@spy4x/preact-ui/input"
 import { Stack } from "@spy4x/preact-ui/layout"
 import { Link } from "@spy4x/preact-ui/link"
+import { MoneyDisplay } from "@spy4x/preact-ui/money-display"
 import { PageAction, PageHeader } from "@spy4x/preact-ui/page-header"
 import { ConfirmDialog } from "@spy4x/preact-ui/confirm-dialog"
 import { DropdownItem } from "@spy4x/preact-ui/dropdown"
@@ -33,7 +34,7 @@ import {
   type TransactionRow,
   TRANSFERS_KIND,
 } from "./transaction-parts.tsx"
-import { TransferListRow } from "./transfer-parts.tsx"
+import { moneyText, TransferAccounts, TransferListRow } from "./transfer-parts.tsx"
 import { ACCOUNT_PATHS, type Navigate, TRANSACTION_PATHS, TRANSFER_PATHS } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 import { type Message, messageText } from "./message.ts"
@@ -46,8 +47,8 @@ export interface TransactionsScreenProps {
   intro?: ComponentChildren
   /** The household's live entries and transfers, newest first. */
   rows: readonly ListRow[]
-  /** The deleted entries while that view is shown, else `null`. */
-  deleted: readonly TransactionRow[] | null
+  /** The deleted entries and transfers while that view is shown, else `null`. */
+  deleted: readonly ListRow[] | null
   accounts: readonly TransactionAccount[]
   categories: readonly TransactionCategory[]
   loading: boolean
@@ -70,7 +71,7 @@ export interface TransactionsScreenProps {
   newKey?: string
   onShowDeleted?: (show: boolean) => void
   onRestore?: (id: string) => void
-  /** The entry whose restore is in flight. */
+  /** The entry or transfer whose restore is in flight. */
   pendingId?: string | null
   /**
    * Drops a queued entry or transfer the server refused (`TransactionRow.gone`,
@@ -84,8 +85,8 @@ export interface TransactionsScreenProps {
 /**
  * A household's transactions at `/transactions`: newest first, under a heading per day, with memo
  * search and the account, category, kind and date filters in the address. Each row opens the
- * entry's page. `?deleted=1` shows the deleted entries with Restore instead. A viewer sees the
- * same list without "Add transaction" or the deleted view.
+ * entry's page. `?deleted=1` shows the deleted entries and transfers with Restore instead. A
+ * viewer sees the same list without "Add transaction" or the deleted view.
  */
 export function TransactionsScreen(props: TransactionsScreenProps): JSX.Element {
   const { group, navigate } = props
@@ -615,19 +616,22 @@ function Refused(
   )
 }
 
-/** The deleted entries with Restore, and when they go for good. */
+/** The deleted entries and transfers with Restore, and when they go for good. */
 function Trash(
-  props: Omit<TransactionsScreenProps, "rows"> & { rows: readonly TransactionRow[] },
+  props: Omit<TransactionsScreenProps, "rows"> & { rows: readonly ListRow[] },
 ): JSX.Element {
   const t = useAppText()
   const { locale } = useFormat()
   const canWrite = props.group!.canWrite
+  // A deleted transfer can arrive before the accounts are read; with neither account known it
+  // has no currency to show its amount in, so it waits until they are.
+  const rows = props.rows.filter((row) => !isTransfer(row) || row.fromCurrency !== ``)
   return (
     <>
       <p class="text-sm text-muted" data-e2e="transactions-deleted-hint">
         {t.t(`Transactions.deletedHint`, { days: TRANSACTION_RESTORE_DAYS })}
       </p>
-      {props.rows.length === 0
+      {rows.length === 0
         ? (
           <ListEmpty
             title={props.loading ? t.t(`Transactions.loading`) : t.t(`Transactions.deletedEmpty`)}
@@ -635,21 +639,32 @@ function Trash(
         )
         : (
           <ListCard dataE2E="transaction-trash">
-            {props.rows.map((row) => {
-              const label = t.t(`Transactions.amountInCategory`, {
-                amount: money(Math.abs(row.amount), row.currency, locale),
-                category: row.categoryName,
-              })
+            {rows.map((row) => {
+              const transfer = isTransfer(row)
+              const label = transfer
+                ? t.t(`TransferRow.what`, {
+                  amount: moneyText(row.sentAmount, row.fromCurrency, locale),
+                  from: row.fromAccountName,
+                  to: row.toAccountName,
+                })
+                : t.t(`Transactions.amountInCategory`, {
+                  amount: money(Math.abs(row.amount), row.currency, locale),
+                  category: row.categoryName,
+                })
               return (
                 <li
                   key={row.id}
                   class="flex min-h-14 items-center gap-3 px-4 py-3 sm:px-6"
-                  data-e2e={`transaction-${row.id}`}
+                  data-e2e={`${transfer ? `transfer` : `transaction`}-${row.id}`}
                 >
                   <div class="flex min-w-0 flex-1 flex-col gap-1">
-                    <span class="line-clamp-2 break-words font-medium">
-                      <bdi>{row.categoryName}</bdi>
-                    </span>
+                    {transfer
+                      ? <TransferAccounts row={row} />
+                      : (
+                        <span class="line-clamp-2 break-words font-medium">
+                          <bdi>{row.categoryName}</bdi>
+                        </span>
+                      )}
                     {row.deletedAt && (
                       <span class="text-sm text-muted">
                         <Rich
@@ -659,7 +674,17 @@ function Trash(
                       </span>
                     )}
                   </div>
-                  <EntryAmount amount={row.amount} currency={row.currency} class="shrink-0" />
+                  {transfer
+                    ? (
+                      <MoneyDisplay
+                        amount={row.sentAmount}
+                        currency={row.fromCurrency}
+                        decimals={amountDecimals(row.fromCurrency)}
+                        tone="plain"
+                        class="shrink-0 tabular-nums"
+                      />
+                    )
+                    : <EntryAmount amount={row.amount} currency={row.currency} class="shrink-0" />}
                   {canWrite && props.onRestore && (
                     <Button
                       type="button"

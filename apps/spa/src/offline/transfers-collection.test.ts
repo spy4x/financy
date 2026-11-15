@@ -84,6 +84,7 @@ function harness() {
   const restored: string[] = []
   const online: TransfersDependencies = {
     fetchList: () => Promise.reject(new Error("the layer reads the copy")),
+    fetchDeleted: () => Promise.resolve([]),
     create: () => Promise.reject(new Error("the layer queues it")),
     update: () => Promise.reject(new Error("the layer queues it")),
     delete: () => Promise.reject(new Error("the layer queues it")),

@@ -596,6 +596,40 @@ Deno.test("transfers against Postgres", async (t) => {
     )
 
     await t.step(
+      "lists only the household's deleted transfers, the latest deleted first, up to the limit",
+      async () => {
+        const h = await household()
+        const other = await household()
+        const [first, second, third] = [await h.transfer(), await h.transfer(), await h.transfer()]
+        const live = await h.transfer()
+        const theirs = await other.transfer()
+        for (const [transfer, ago] of [[first, 3], [second, 2], [third, 1]] as const) {
+          await transfers.delete(
+            { groupId: h.groupId, id: transfer.id, expectedVersion: 1 },
+            h.owner,
+          )
+          await sql`
+            UPDATE transfers SET deleted_at = now() - make_interval(hours => ${ago})
+            WHERE id = ${transfer.id}
+          `
+        }
+        await transfers.delete(
+          { groupId: other.groupId, id: theirs.id, expectedVersion: 1 },
+          other.owner,
+        )
+
+        const listed = await transfers.listDeleted(h.groupId, 2)
+
+        expect(listed.map((transfer) => transfer.id)).toEqual([third.id, second.id])
+        expect(listed[0].deletedAt).toBeInstanceOf(Date)
+        const all = (await transfers.listDeleted(h.groupId, 10)).map((transfer) => transfer.id)
+        expect(all).toEqual([third.id, second.id, first.id])
+        expect(all).not.toContain(live.id)
+        expect(all).not.toContain(theirs.id)
+      },
+    )
+
+    await t.step(
       `purges transfers deleted more than ${TRANSFER_RESTORE_DAYS} days ago, before the accounts' purge`,
       async () => {
         const h = await household()
@@ -626,6 +660,8 @@ Deno.test("transfers against Postgres", async (t) => {
           SELECT id FROM transfers WHERE group_id = ${h.groupId} ORDER BY id
         `
         expect(left.map((row) => row.id)).toEqual([recent.id, live.id].sort())
+        expect((await transfers.listDeleted(h.groupId, 10)).map((row) => row.id))
+          .toEqual([recent.id])
 
         // A deleted account whose old transfer is still in the trash goes in the same cleanup,
         // because the transfers are purged first.

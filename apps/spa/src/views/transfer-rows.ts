@@ -39,6 +39,7 @@ export function transferRow(
     // so one that waits for the server's rate is known by its received amount: `0`, which a saved
     // transfer never has (`queuedReceived`).
     queued: transfer.version === 0 || (transfer.converted && transfer.receivedAmount === 0),
+    deletedAt: transfer.deletedAt ?? null,
   }
 }
 

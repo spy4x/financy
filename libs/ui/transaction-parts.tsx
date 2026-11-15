@@ -98,6 +98,8 @@ export interface TransferRow {
    * the list for another account or a Discard.
    */
   gone?: boolean
+  /** When it was deleted, in the deleted view. */
+  deletedAt?: string | null
 }
 
 /** A row of the transactions list: an entry or a transfer. */

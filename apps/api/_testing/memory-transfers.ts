@@ -51,6 +51,17 @@ export class MemoryTransferRepository implements TransferRepository {
     return Promise.resolve(transfer && transfer.deletedAt === null ? transfer : null)
   }
 
+  listDeleted(groupId: string, limit: number): Promise<Transfer[]> {
+    const deleted = [...this.transfers.values()]
+      .filter((transfer) => transfer.groupId === groupId && transfer.deletedAt !== null)
+      // Every delete here is stamped at one instant, so the later write breaks the tie.
+      .sort((a, b) =>
+        b.deletedAt!.getTime() - a.deletedAt!.getTime() ||
+        Number(b.changeSequence) - Number(a.changeSequence)
+      )
+    return Promise.resolve(deleted.slice(0, limit))
+  }
+
   count(groupId: string): Promise<number> {
     return Promise.resolve(
       [...this.transfers.values()].filter((transfer) =>

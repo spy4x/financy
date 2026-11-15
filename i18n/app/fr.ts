@@ -2927,4 +2927,6 @@ export default {
   "TransferToasts.deletedTitle": "Virement supprimé",
   "TransferToasts.deleted": "{what} : supprimé.",
   "TransactionToasts.restored": "{what} : de retour dans la liste.",
+  "TransferToasts.restoredTitle": "Virement restauré",
+  "TransferToasts.restored": "{what} : de retour dans la liste.",
 } satisfies Catalog

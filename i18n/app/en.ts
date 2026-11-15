@@ -2627,4 +2627,6 @@ export default {
   "TransferToasts.saved": "{what} is saved.",
   "TransferToasts.deletedTitle": "Transfer deleted",
   "TransferToasts.deleted": "{what} is deleted.",
+  "TransferToasts.restoredTitle": "Transfer restored",
+  "TransferToasts.restored": "{what} is back in the list.",
 } satisfies Catalog

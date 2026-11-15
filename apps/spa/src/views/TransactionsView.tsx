@@ -24,7 +24,7 @@ import { selectionStore } from "../state/selection.ts"
 import { sessionState } from "../state/session.ts"
 import { toasts } from "../state/toasts.ts"
 import { transactionsStore } from "../state/transactions.ts"
-import { byDate } from "../state/transaction-order.ts"
+import { byDate, byDeletedAt } from "../state/transaction-order.ts"
 import { transfersStore } from "../state/transfers.ts"
 import {
   discardGoneEntry,
@@ -40,7 +40,7 @@ import {
   transactionRow,
   transactionUndoText,
 } from "./transaction-rows.ts"
-import { transferRow, transferUndoText } from "./transfer-rows.ts"
+import { transferRow, transferUndoText, transferWhat } from "./transfer-rows.ts"
 import { useUndoToast } from "./use-undo-toast.ts"
 
 const network = createOnlineStatus()
@@ -61,7 +61,7 @@ const KINDS: readonly (string | null)[] = [
  * from the device's copy, the accounts and categories that name them, and the members who added
  * them, with the household's transfers among the entries by date. The search and filters live in
  * the address (`?q=`, `?account=`, `?category=`, `?kind=1|2|3`, `?from=` and `?to=`), and
- * `?deleted=1` shows the deleted entries.
+ * `?deleted=1` shows the deleted entries and transfers.
  */
 export function TransactionsView() {
   const [, navigate] = useLocation()
@@ -110,6 +110,7 @@ export function TransactionsView() {
   const showDeleted = params.get("deleted") === "1"
   useEffect(() => {
     void store.showDeleted(showDeleted)
+    void transfersStore.showDeleted(showDeleted)
   }, [showDeleted, groupId])
 
   const membership = groupId
@@ -153,7 +154,12 @@ export function TransactionsView() {
         })),
       ].sort(byDate)}
       deleted={showDeleted && canWrite
-        ? (store.deleted.value ?? []).map((entry) => transactionRow(entry, rowContext))
+        ? [
+          ...(store.deleted.value ?? []).map((entry) => transactionRow(entry, rowContext)),
+          ...(transfersStore.deleted.value ?? []).map((transfer) =>
+            transferRow(transfer, rowContext)
+          ),
+        ].sort(byDeletedAt)
         : null}
       accounts={accounts}
       categories={categories}
@@ -161,7 +167,7 @@ export function TransactionsView() {
       loaded={store.loaded.value}
       offline={!network.online.value}
       listError={store.listError.value ?? transfersStore.listError.value}
-      listPlan={store.listPlan.value}
+      listPlan={store.listPlan.value ?? transfersStore.listPlan.value}
       filters={filters}
       onFiltersChange={(next) => {
         if (next.q !== undefined) q.value = next.q
@@ -190,6 +196,18 @@ export function TransactionsView() {
         })}
       onRestore={canWrite
         ? async (id) => {
+          if (transfersStore.deleted.value?.some((transfer) => transfer.id === id)) {
+            const restored = await transfersStore.restore(id)
+            if (!restored) return
+            toasts.success({
+              title: t.t(`TransferToasts.restoredTitle`),
+              body: t.t(`TransferToasts.restored`, {
+                what: transferWhat(t, transferRow(restored, rowContext), locale),
+              }),
+              dataE2E: "transfer-restored",
+            })
+            return
+          }
           const restored = await store.restore(id)
           if (!restored) return
           toasts.success({
@@ -201,7 +219,7 @@ export function TransactionsView() {
           })
         }
         : undefined}
-      pendingId={store.pendingId.value}
+      pendingId={store.pendingId.value ?? transfersStore.pendingId.value}
       onDiscard={canWrite
         ? async (id) => {
           // The id is an entry's or a transfer's; the other discard finds nothing and does nothing.

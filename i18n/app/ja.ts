@@ -2545,4 +2545,6 @@ export default {
   "TransferToasts.saved": "{what}を保存しました。",
   "TransferToasts.deletedTitle": "振替を削除しました",
   "TransferToasts.deleted": "{what}を削除しました。",
+  "TransferToasts.restoredTitle": "振替を復元しました",
+  "TransferToasts.restored": "{what}が一覧に戻りました。",
 } satisfies Catalog

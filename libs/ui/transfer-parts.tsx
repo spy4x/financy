@@ -62,6 +62,20 @@ export function transferRowName(
     })
 }
 
+/** "Card → Cash": the two accounts of a transfer, the arrow turned for right-to-left text. */
+export function TransferAccounts({ row }: { row: TransferRow }): JSX.Element {
+  return (
+    <span
+      class="flex min-w-0 flex-wrap items-center gap-x-2 break-words font-medium"
+      data-e2e="transfer-accounts"
+    >
+      <bdi>{row.fromAccountName}</bdi>
+      <IconArrowRight class="size-4 shrink-0 text-muted rtl:rotate-180" />
+      <bdi>{row.toAccountName}</bdi>
+    </span>
+  )
+}
+
 /**
  * A transfer in the transactions list, a link to its page: "Card → Cash", then the memo and who
  * added it. Its amount is neither income nor spending, so it is never green. With the list
@@ -101,14 +115,7 @@ export function TransferListRow(
         data-e2e="transfer-row"
       >
         <div class="flex min-w-0 flex-1 flex-col gap-1">
-          <span
-            class="flex min-w-0 flex-wrap items-center gap-x-2 break-words font-medium"
-            data-e2e="transfer-accounts"
-          >
-            <bdi>{row.fromAccountName}</bdi>
-            <IconArrowRight class="size-4 shrink-0 text-muted rtl:rotate-180" />
-            <bdi>{row.toAccountName}</bdi>
-          </span>
+          <TransferAccounts row={row} />
           {meta.length > 0 && (
             <span class="line-clamp-2 break-words text-sm text-muted" data-e2e="transfer-meta">
               {meta.map((part, index) => (
