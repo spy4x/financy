@@ -31,7 +31,8 @@ A pull request that changes only Markdown outside the product (the root `*.md` f
 `README.md`, `docs/**/*.md`, `i18n/*.md`, `.github/` and `.claude/`: `markdown_only` under
 `variables` in `ci.yml`) skips `integration`, `backup-restore`, `alert-rules`, `runtimes` and
 `e2e-smoke`, which cannot fail over such a change and took about 20 minutes. `check` still runs,
-and so do `lighthouse` and the images when their own lists name a changed file. `browser` runs
+and so does `lighthouse` when its own list names a changed file; the images only when one of
+their own files changed (below). `browser` runs
 only when a guide in `docs/*.md` changed (`internal_markdown`), because the website renders the
 guides and `e2e/mpa/docs.mpa.ts` tests them.
 
@@ -41,7 +42,13 @@ in the shared checkout are therefore commands of one step, `browser`, which runs
 `integration` (the reasons are in `ci.yml`). `lighthouse` is a stage of its own, because lab
 performance falls when another step shares the CPU.
 
-- `check` runs `deno task check`: format, lint, type check and unit tests.
+- `check` runs `deno task check`: format, lint, type check and unit tests. On a pull request, the
+  unit tests and `integration` run only the test files whose imports reach a file the pull request
+  changes, against the tip of its target branch, and the log says how many ran and how many were
+  skipped. A change the imports cannot show (`deno.lock`, a `deno.json`, `.woodpecker/`, the
+  migrations, `schema.sql`, fixtures, the test scripts: `RUN_ALL` in `infra/scripts/test.ts`), or
+  a git failure, runs them all. Test groups that read the source tree from disk or run a program
+  always run whole. A push to `main`, a tag and the nightly run test everything.
 - `secrets` scans commits for secrets with gitleaks, beside `check`, on every event. A pull request
   scans its own commits since it left the target branch, so a key added and then removed in the
   same pull request still fails it; every other event scans the whole history. The log
@@ -78,8 +85,11 @@ performance falls when another step shares the CPU.
 - `image-node`, `image-bun`, `image-mpa-node` and `image-mpa-bun` build the Node and Bun images of
   the API and the website with kaniko, pushing nothing. A push to `main` and a tag always build them,
   the nightly run never;
-  a pull request only when it changes a file that goes into an image: the `path` list under
-  `variables` in `ci.yml`, which follows `.dockerignore`.
+  a pull request only when it changes what decides whether an image builds: the four Dockerfiles,
+  `.dockerignore`, `deno.jsonc`, `deno.lock` and `ci.yml` (`image_when` under `variables` in
+  `ci.yml`). A source change that breaks a bundle is caught by the push to `main` after the merge
+  ([ringmaster#296](https://github.com/spy4x/ringmaster/issues/296)), to save CPU on the shared CI
+  host.
 - `e2e-smoke` runs the product's smoke set on every pull request (except one that changes only
   Markdown, above) and tag:
   `deno task e2e:local --smoke --max-failures=3`, the script a developer runs, against the Postgres
