@@ -7,6 +7,7 @@ import { CategoryKind } from "@domain/categories"
 import { GroupRole } from "@domain/groups"
 import { TransactionKind } from "@domain/transactions"
 import {
+  RecurringPauseReason,
   RecurringRuleCreateCommand,
   RecurringRuleDeleteCommand,
   RecurringRuleGetQuery,
@@ -367,6 +368,22 @@ for (const [via, open] of TRANSPORTS) {
       expect(await as.query(`recurring.list`, { groupId })).toMatchObject({
         kind: `server.result`,
         payload: { rules: [{ id: rule.id }] },
+      })
+      as.shutdown()
+    })
+
+    it(`answers a paused rule with the reason the job stored`, async () => {
+      const s = stack()
+      const rule = await existing(s)
+      s.rules.rules.set(rule.id, {
+        ...rule,
+        pausedReason: RecurringPauseReason.AUTHOR_CANNOT_WRITE,
+      })
+      const as = open(s, VIEWER)
+
+      expect(await as.query(`recurring.get`, { groupId, id: rule.id })).toMatchObject({
+        kind: `server.result`,
+        payload: { rule: { id: rule.id, pausedReason: RecurringPauseReason.AUTHOR_CANNOT_WRITE } },
       })
       as.shutdown()
     })

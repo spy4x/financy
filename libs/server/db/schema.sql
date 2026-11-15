@@ -1672,6 +1672,9 @@ CREATE TABLE transactions (
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMPTZ(3),
+    -- #219: the repeating rule and occurrence an entry was made for; see the migration.
+    recurring_rule_id UUID,
+    occurrence_date DATE,
     CONSTRAINT transactions_account_fkey FOREIGN KEY (group_id, account_id)
         REFERENCES accounts (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT transactions_category_fkey FOREIGN KEY (group_id, category_id)
@@ -1690,7 +1693,9 @@ CREATE TABLE transactions (
     CONSTRAINT transactions_currency_check CHECK (currency ~ '^[A-Z]{3}$'),
     CONSTRAINT transactions_memo_check CHECK (char_length(memo) <= 500),
     CONSTRAINT transactions_version_check CHECK (version >= 1),
-    CONSTRAINT transactions_change_sequence_check CHECK (change_sequence >= 1)
+    CONSTRAINT transactions_change_sequence_check CHECK (change_sequence >= 1),
+    CONSTRAINT transactions_occurrence_check
+        CHECK ((recurring_rule_id IS NULL) = (occurrence_date IS NULL))
 );
 
 -- An account's balance on a day, and whether it has entries (the currency lock, the delete check).
@@ -1704,6 +1709,9 @@ CREATE INDEX idx_transactions_group_change_sequence ON transactions (group_id, c
 CREATE INDEX idx_transactions_deleted_at ON transactions (deleted_at) WHERE deleted_at IS NOT NULL;
 CREATE INDEX idx_transactions_created_by ON transactions (created_by_user_id);
 CREATE INDEX idx_transactions_updated_by ON transactions (updated_by_user_id);
+-- The repeating job's key: one entry per rule and occurrence, a deleted one included.
+CREATE UNIQUE INDEX idx_transactions_recurring_occurrence
+    ON transactions (recurring_rule_id, occurrence_date) WHERE recurring_rule_id IS NOT NULL;
 
 -- #696: records brought in from a file (docs/imports.md); see the migration for the columns.
 CREATE TABLE imports (
