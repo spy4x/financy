@@ -53,7 +53,7 @@ const home = "019a0000-0000-7000-8000-000000000001"
 const flat = "019a0000-0000-7000-8000-000000000002"
 const overview: AdminBudgetsOverview = {
   month: `2026-11`,
-  households: 1,
+  households: 2,
   categories: 1234,
   envelopeHouseholds: 1,
   topHouseholds: [
@@ -80,7 +80,7 @@ describe("AdminBudgetsScreen", () => {
 
     expect(text("[data-e2e=admin-budgets-month]")).toBe("Month counted: November 2026, UTC")
     const stats = text("[data-e2e=admin-budgets-stats]")
-    expect(stats).toContain("Households with limits1")
+    expect(stats).toContain("Households with limits2")
     expect(stats).toContain("Categories with a limit1,234")
     expect(stats).toContain("On envelopes1")
     const rows = [...document.querySelectorAll("[data-e2e=admin-budgets-households] li")]
