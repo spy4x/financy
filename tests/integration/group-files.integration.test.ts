@@ -1061,7 +1061,67 @@ Deno.test("an export imported by another person gives the same budget limits, me
   })
 })
 
-Deno.test("an import refuses repeated budget months, budgets naming a missing or income category, and envelope moves naming a missing category, and writes nothing", async () => {
+Deno.test("an export imports when a category with a limit and an envelope move switched to income: the import skips those rows, as the reads ignore them", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    await seedBudgets(sql, source)
+    const { groupId, owner } = source
+    const categories = new PostgresCategoryRepository(sql)
+    const gifts = uuidV7()
+    const fields = {
+      groupId,
+      id: gifts,
+      name: "Gifts",
+      icon: "tag" as CategoryIcon,
+      color: "#c2410c",
+      parentId: null,
+    }
+    await categories.create({ ...fields, kind: CategoryKind.EXPENSE, allowance: null }, owner)
+    await sql`
+      INSERT INTO budgets (id, group_id, category_id, month, amount, currency, change_sequence,
+        created_by_user_id, updated_by_user_id)
+      VALUES (${uuidV7()}, ${groupId}, ${gifts}, '2026-11-01', 9000, 'EUR', 1, ${owner}, ${owner})
+    `
+    await sql`
+      INSERT INTO budget_moves (id, group_id, month, from_category_id, to_category_id, amount,
+        currency, change_sequence, created_by_user_id)
+      VALUES (${uuidV7()}, ${groupId}, '2026-11-01', ${source.categoryIds[0]}, ${gifts}, 700,
+        'EUR', 1, ${owner})
+    `
+    // The app allows the switch: Gifts has no entries, only a limit and an envelope move.
+    await categories.update({ ...fields, kind: CategoryKind.INCOME, expectedVersion: 1 }, owner)
+    const file = await exportAs(sql, groupId, owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    expect([file.aggregates.budgets.length, file.aggregates.budgetMoves.length]).toEqual([3, 2])
+
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file, name: null },
+      await insertUser(sql),
+      NO_CAP,
+    )
+    const [kind] = await sql<{ kind: CategoryKind }[]>`
+      SELECT kind FROM categories WHERE group_id = ${result.group.id} AND name = 'Gifts'
+    `
+    expect(kind).toEqual({ kind: CategoryKind.INCOME })
+    expect(await budgetContents(sql, result.group.id)).toEqual({
+      budgets: [
+        { category: "Food", month: "2026-10", amount: "40000", currency: "EUR" },
+        { category: "Groceries", month: "2026-11", amount: null, currency: null },
+      ],
+      methods: [{ month: "2026-11", method: 2 }],
+      moves: [{
+        fromCategory: "Food",
+        toCategory: "Groceries",
+        month: "2026-11",
+        amount: "2500",
+        currency: "EUR",
+      }],
+    })
+  })
+})
+
+Deno.test("an import refuses repeated budget months, budgets and envelope moves naming a missing category, and writes nothing", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
     await seedBudgets(sql, source)
@@ -1110,7 +1170,6 @@ Deno.test("an import refuses repeated budget months, budgets naming a missing or
       }),
     ).toEqual([
       ["Budget 2", { part: "budgets", index: 2 }, { code: "notFound", field: "categoryId" }],
-      ["Budget 3", { part: "budgets", index: 3 }, { code: "kindMismatch", field: "categoryId" }],
     ])
     expect(
       await refusedWith({ budgetMoves: [move, { ...move, id: uuidV7(), toCategoryId: uuidV7() }] }),

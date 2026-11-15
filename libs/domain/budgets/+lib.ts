@@ -1031,32 +1031,38 @@ function repeats<T>(entries: readonly T[], keyOf: (entry: T) => string): number[
 /** The category a budget file entry names, by its id in the file; `null` when the file has none. */
 export type BudgetFileCategory = (fileId: string) => { kind: CategoryKind } | null
 
-/**
- * What is wrong between a file's budget rows and the categories it holds, by index: a category
- * the file lacks, or an income category, which carries no limit.
- */
+/** What is wrong between a file's budget rows and its categories: one the file lacks, by index. */
 export function budgetReferenceProblems(
   budgets: readonly Pick<BudgetExportEntry, `categoryId`>[],
   category: BudgetFileCategory,
 ): BudgetFileProblem[] {
   const problems: BudgetFileProblem[] = []
   budgets.forEach((budget, index) => {
-    const found = category(budget.categoryId)
-    if (found === null) {
+    if (category(budget.categoryId) === null) {
       problems.push({
         index,
         problem: `its category is not among the file's categories`,
         issue: { code: `notFound`, field: `categoryId` },
       })
-    } else if (found.kind !== CategoryKind.EXPENSE) {
-      problems.push({
-        index,
-        problem: `its category is an income category, which has no budget`,
-        issue: { code: `kindMismatch`, field: `categoryId` },
-      })
     }
   })
   return problems
+}
+
+/**
+ * The rows all of whose categories are expense categories, the only kind a limit or an envelope
+ * move counts in. A category with no entries may switch to income while budget rows name it, so
+ * the app itself makes such rows; an import skips them instead of refusing the file, as the reads
+ * ignore them. A category the file lacks is a refusal of the reference checks, run before this.
+ */
+export function rowsInExpenseCategories<T>(
+  rows: readonly T[],
+  categoryIdsOf: (row: T) => readonly string[],
+  category: BudgetFileCategory,
+): T[] {
+  return rows.filter((row) =>
+    categoryIdsOf(row).every((id) => category(id)?.kind === CategoryKind.EXPENSE)
+  )
 }
 
 /** What is wrong between a file's envelope moves and its categories: one the file lacks, by index. */

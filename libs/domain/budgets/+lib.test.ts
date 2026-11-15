@@ -43,6 +43,7 @@ import {
   parseBudgetMethodExportEntry,
   parseBudgetMoveExportEntry,
   parseBudgetRequest,
+  rowsInExpenseCategories,
 } from "./+lib.ts"
 
 const groupId = "019a5b0e-1af5-7f04-8ae4-b1ee5d111002"
@@ -837,17 +838,33 @@ describe("budgets in a household's export file", () => {
       .toMatchObject([{ index: 1, issue: { code: "duplicate", field: "month" } }])
   })
 
-  it("names a budget whose category the file lacks or is an income category", () => {
+  it("names a budget whose category the file lacks, and not one whose category is an income category", () => {
     const missing = "019a5b0e-1af5-7f04-8ae4-b1ee5d119999"
     expect(
       budgetReferenceProblems(
         [budget, { categoryId: missing }, { categoryId: rent }],
         inFile,
       ).map(({ index, issue }) => ({ index, issue })),
-    ).toEqual([
-      { index: 1, issue: { code: "notFound", field: "categoryId" } },
-      { index: 2, issue: { code: "kindMismatch", field: "categoryId" } },
-    ])
+    ).toEqual([{ index: 1, issue: { code: "notFound", field: "categoryId" } }])
+  })
+
+  it("keeps only the rows whose every category is an expense category", () => {
+    const toIncome = { ...move, toCategoryId: rent }
+    const fromIncome = { ...move, fromCategoryId: rent }
+    expect(
+      rowsInExpenseCategories(
+        [move, toIncome, fromIncome],
+        (row) => [row.fromCategoryId, row.toCategoryId],
+        inFile,
+      ),
+    ).toEqual([move])
+    expect(
+      rowsInExpenseCategories(
+        [budget, { ...budget, categoryId: rent }],
+        (row) => [row.categoryId],
+        inFile,
+      ),
+    ).toEqual([budget])
   })
 
   it("names an envelope move whose from or to category the file lacks", () => {

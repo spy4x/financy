@@ -12,6 +12,7 @@ import {
   parseBudgetExportEntry,
   parseBudgetMethodExportEntry,
   parseBudgetMoveExportEntry,
+  rowsInExpenseCategories,
 } from "@domain/budgets"
 import { GROUP_IMPORT_PROBLEMS_MAX, GroupImportError } from "@domain/groups"
 import { portable, type PortableContext } from "@server/groups/portable.ts"
@@ -65,8 +66,8 @@ async function insertAll(
  * Budget rows in a household's export file: each category's limit from a month on, removed
  * limits included, in the currency it was set in. On import each row gets a new id and names the
  * new id of its category, which the registry writes before it. A row whose category the file
- * lacks or is an income category, or a second row for one category and month, refuses the whole
- * import. No plan cap counts them, and the plan's `budgets` feature gates only setting an amount,
+ * lacks, or a second row for one category and month, refuses the whole import; a row whose
+ * category is now an income category is skipped, as the reads ignore it. No plan cap counts them, and the plan's `budgets` feature gates only setting an amount,
  * so they import on any plan.
  */
 export const budgetPortable = portable<BudgetExportEntry>({
@@ -89,7 +90,8 @@ export const budgetPortable = portable<BudgetExportEntry>({
     if (budgets.length === 0) return ids
     const category = await categoriesOf(sql, context)
     refuse(`budgets`, `Budget`, budgetReferenceProblems(budgets, category))
-    const rows = budgets.map((budget) => {
+    const kept = rowsInExpenseCategories(budgets, (budget) => [budget.categoryId], category)
+    const rows = kept.map((budget) => {
       const id = uuidV7()
       ids.set(budget.id, id)
       return {
@@ -154,7 +156,8 @@ export const budgetMethodPortable = portable<BudgetMethodExportEntry>({
 /**
  * Envelope moves in a household's export file: money moved between two categories in a month, in
  * the currency it was made in. On import each gets a new id and names the new ids of its two
- * categories; one whose category the file lacks refuses the whole import.
+ * categories; one whose category the file lacks refuses the whole import, and one naming a
+ * category that is now an income category is skipped, as the move command refuses those.
  */
 export const budgetMovePortable = portable<BudgetMoveExportEntry>({
   kind: `budgetMoves`,
@@ -176,7 +179,12 @@ export const budgetMovePortable = portable<BudgetMoveExportEntry>({
     const category = await categoriesOf(sql, context)
     refuse(`budgetMoves`, `Budget move`, budgetMoveReferenceProblems(moves, category))
     const newCategory = (fileId: string) => context.newIdOf(`categories`, fileId)!
-    const rows = moves.map((move) => {
+    const kept = rowsInExpenseCategories(
+      moves,
+      (move) => [move.fromCategoryId, move.toCategoryId],
+      category,
+    )
+    const rows = kept.map((move) => {
       const id = uuidV7()
       ids.set(move.id, id)
       return {
