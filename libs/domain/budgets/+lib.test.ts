@@ -797,7 +797,7 @@ describe("budgets in a household's export file", () => {
     })
   })
 
-  it("refuses an amount without a currency, a currency without an amount, a zero amount and an unknown field", () => {
+  it("refuses an amount without a currency, a currency without an amount, a zero amount, an unknown field and a month that does not exist", () => {
     expect(() => parseBudgetExportEntry({ ...budget, currency: null })).toThrow(
       "the currency must be there exactly when the amount is",
     )
