@@ -226,6 +226,7 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       `kind`,
       `icon`,
       `color`,
+      `aliases`,
       `archivedAt`,
       `createdAt`,
       `updatedAt`,
@@ -233,7 +234,7 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
     rows: (sql, userId) =>
       sql`SELECT id, group_id, parent_id, name,
         CASE kind WHEN 1 THEN 'expense' ELSE 'income' END AS kind,
-        icon, color, archived_at, created_at, updated_at
+        icon, color, aliases, archived_at, created_at, updated_at
       FROM categories
       WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
       ORDER BY created_at, id`,

@@ -52,6 +52,7 @@ export class MemoryCategoryRepository implements CategoryRepository {
       const same = existing.groupId === input.groupId && existing.name === input.name &&
         existing.kind === input.kind && existing.icon === input.icon &&
         existing.color === input.color && existing.parentId === input.parentId &&
+        existing.aliases.join("\n") === (input.aliases ?? []).join("\n") &&
         existing.createdByUserId === actorId
       if (same) return Promise.resolve({ category: existing, created: false })
       throw new CategoryError("ID_ALREADY_EXISTS", "taken")
@@ -68,6 +69,7 @@ export class MemoryCategoryRepository implements CategoryRepository {
       icon: input.icon,
       color: input.color,
       parentId: input.parentId,
+      aliases: input.aliases ?? [],
       archivedAt: null,
       version: 1,
       changeSequence: String(this.#sequence++),
@@ -96,6 +98,7 @@ export class MemoryCategoryRepository implements CategoryRepository {
       icon: input.icon,
       color: input.color,
       parentId: input.parentId,
+      aliases: input.aliases ?? current.aliases,
       version: current.version + 1,
       changeSequence: String(this.#sequence++),
       updatedByUserId: actorId,

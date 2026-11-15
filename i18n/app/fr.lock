@@ -391,6 +391,13 @@ CategoriesView.unarchived	008599ad03ca7642
 CategoriesView.unarchivedTitle	db3c0e4d6a995684
 CategoriesView.unarchivedWithChildren	a20ef4cd21b02d61
 CategoriesView.undo	a8283ade31856f71
+CategoryEditor.aliasAdded	5ce272ff55f41122
+CategoryEditor.aliasDuplicate	c4612b3f2f3c2b03
+CategoryEditor.aliasRemove	466b072ab9d0d813
+CategoryEditor.aliasRemoved	7c9cac03039e4a99
+CategoryEditor.aliases	4f8c470505d11f7d
+CategoryEditor.aliasesHint	8a7cb1f907c334a0
+CategoryEditor.aliasesPlaceholder	661c2a1c2eaca2dd
 CategoryEditor.back	b8b1d894c6837252
 CategoryEditor.cancel	19766ed6ccb2f4a3
 CategoryEditor.clearParent	53557a708bfe87c3

@@ -1,6 +1,6 @@
 /**
  * The operator area's read over categories: counts per kind and per household. No category name,
- * icon or colour leaves here: a name says something personal about a household (product.md §5).
+ * alias, icon or colour leaves here: a name says something personal about a household (product.md §5).
  * Reads no environment and imports no singleton.
  *
  * @module
@@ -22,6 +22,8 @@ export async function readAdminCategories(sql: postgres.Sql): Promise<AdminCateg
         COUNT(*) FILTER (WHERE archived_at IS NULL)::int AS categories,
         COUNT(*) FILTER (WHERE archived_at IS NOT NULL)::int AS archived,
         COUNT(*) FILTER (WHERE archived_at IS NULL AND parent_id IS NOT NULL)::int AS subcategories,
+        COUNT(*) FILTER (WHERE archived_at IS NULL AND cardinality(aliases) > 0)::int
+          AS with_aliases,
         COUNT(DISTINCT group_id)::int AS households
       FROM categories
     `,

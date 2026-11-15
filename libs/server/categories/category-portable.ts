@@ -7,11 +7,11 @@ import {
 import { portable } from "@server/groups/portable.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
-/** Rows one statement writes: well under Postgres's 65,535 parameters at thirteen columns a row. */
+/** Rows one statement writes: well under Postgres's 65,535 parameters at fourteen columns a row. */
 const WRITE_BATCH = 1_000
 
 /**
- * Categories in a household's export file: what a person set (name, kind, icon, colour), where
+ * Categories in a household's export file: what a person set (name, kind, icon, colour, aliases), where
  * each sits and whether it was archived. Never a person or a version. Each gets a new id on
  * import, and a child names its parent's new id. A file's categories fit one household: the tree
  * rules of a write, sibling names, and at most `CATEGORY_MAX_PER_GROUP` in use. They count against
@@ -26,7 +26,7 @@ export const categoryPortable = portable<CategoryExportEntry>({
   check: categoryExportProblems,
   async *read(sql, groupId) {
     yield await sql<CategoryExportEntry[]>`
-      SELECT id, name, kind, icon, color, parent_id, archived_at IS NOT NULL AS archived,
+      SELECT id, name, kind, icon, color, aliases, parent_id, archived_at IS NOT NULL AS archived,
         created_at, updated_at
       FROM categories WHERE group_id = ${groupId}
       ORDER BY kind, parent_id NULLS FIRST, lower(name), id
@@ -44,6 +44,8 @@ export const categoryPortable = portable<CategoryExportEntry>({
       kind: category.kind,
       icon: category.icon,
       color: category.color,
+      // A file exported before aliases existed has none.
+      aliases: sql.array(category.aliases ?? []),
       archived_at: category.archived ? category.updatedAt : null,
       change_sequence: context.changeSequence,
       created_by_user_id: context.actorId,

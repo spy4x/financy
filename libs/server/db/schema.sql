@@ -1631,6 +1631,7 @@ CREATE TABLE categories (
     updated_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    aliases TEXT[] DEFAULT '{}' NOT NULL,
     CONSTRAINT categories_group_id_id_key UNIQUE (group_id, id),
     CONSTRAINT categories_parent_fkey FOREIGN KEY (group_id, parent_id)
         REFERENCES categories (group_id, id) ON DELETE RESTRICT,
@@ -1639,6 +1640,7 @@ CREATE TABLE categories (
     CONSTRAINT categories_kind_check CHECK (kind BETWEEN 1 AND 2),
     CONSTRAINT categories_icon_check CHECK (icon ~ '^[a-z0-9-]{1,40}$'),
     CONSTRAINT categories_color_check CHECK (color ~ '^#[0-9a-f]{6}$'),
+    CONSTRAINT categories_aliases_check CHECK (cardinality(aliases) <= 20),
     CONSTRAINT categories_version_check CHECK (version >= 1),
     CONSTRAINT categories_change_sequence_check CHECK (change_sequence >= 1)
 );
