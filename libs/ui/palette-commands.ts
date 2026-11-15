@@ -394,13 +394,13 @@ export function paletteCommands(
         aliases: [`add tag`, `create tag`, `new label`, `новая метка`, `создать метку`],
       })]
       : []),
-    ...(inGroup
+    ...(notesInGroup
       ? [command(
         "import-notes",
         `Search.importNotes`,
         heading.create,
         page(IMPORT_PATHS.new(NOTE_IMPORT_KIND.id)),
-        { detail: inGroup, aliases: [`import csv`, `upload notes`, `импорт заметок`] },
+        { detail: notesInGroup, aliases: [`import csv`, `upload notes`, `импорт заметок`] },
       )]
       : []),
     command("new-group", `Search.newGroup`, heading.create, page(GROUP_PATHS.new), {
