@@ -273,7 +273,7 @@ test.describe("group overview", () => {
           data,
         })
         expect(response.ok(), `${name}: ${await response.text()}`).toBe(true)
-        return await response.json()
+        return (await response.json()).result
       }
       const household = async (name: string) => {
         const groupId = uuidV7()
