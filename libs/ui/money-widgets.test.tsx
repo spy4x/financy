@@ -236,6 +236,33 @@ describe("the overview's money widgets", () => {
     )
   })
 
+  it("says about in the sentence when only the income, or only the spending, was converted", () => {
+    const figures = { income: 100000, spending: 88950, net: 11050, rateDate: "2026-11-14" }
+    const sentence = (parts: Partial<LedgerFigures>) =>
+      card(net, ledger({ ...figures, ...parts })).line("sentence")
+    expect(sentence({ incomeRateDate: "2026-11-14" })).toBe(
+      "You kept about €110.50 of €1,000.00 (11%).",
+    )
+    expect(sentence({ spendingRateDate: "2026-11-14" })).toBe(
+      "You kept about €110.50 of €1,000.00 (11%).",
+    )
+  })
+
+  it("writes no sentence when a currency was left out of the income or the spending", () => {
+    const noRateIncome = card(
+      net,
+      ledger({ spending: 120000, net: -120000, leftOut: ["USD"], incomeLeftOut: ["USD"] }),
+    )
+    expect(noRateIncome.line("sentence")).toBe(null)
+    expect(noRateIncome.line("left-out")).not.toBe(null)
+    const noRateSpending = card(
+      net,
+      ledger({ income: 300000, net: 300000, leftOut: ["VND"], spendingLeftOut: ["VND"] }),
+    )
+    expect(noRateSpending.line("sentence")).toBe(null)
+    expect(noRateSpending.line("left-out")).not.toBe(null)
+  })
+
   it("links each card to the same days' transactions, income, expenses or all, with a touch-sized target", () => {
     const month = ledger()
     const href = (id: string) => card(id, month).link.getAttribute("href")

@@ -64,7 +64,11 @@ export function moneyText(amount: number, currency: string, locale: string, sign
   return isolate(text)
 }
 
-/** "You kept … of … (11%)." and its variants: the Net card's sentence, or `null` with none. */
+/**
+ * "You kept … of … (11%)." and its variants: the Net card's sentence, or `null` with none. A
+ * currency left out of either side gets no sentence: "no income" or "100%" would be untrue, and the
+ * card's left-out line already says what is missing.
+ */
 export function netSentence(
   t: Translator<string>,
   ledger: LedgerFigures,
@@ -72,6 +76,7 @@ export function netSentence(
 ): string | null {
   const { income, spending, net } = ledger
   if (income === null || spending === null || net === null) return null
+  if (ledger.leftOut.length > 0) return null
   const about = ledger.rateDate !== null
   const money = (amount: number) => moneyText(amount, ledger.currency, locale)
   if (income === 0) {
