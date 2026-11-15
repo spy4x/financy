@@ -508,8 +508,8 @@ export function dueOccurrences(
   today: string,
   max: number = RECURRING_MAKE_MAX,
 ): DueOccurrences | null {
-  const next = rule.madeThrough === null ? rule.startDate : addDays(rule.madeThrough, 1)
-  const from = next < rule.startDate ? rule.startDate : next
+  // A day before the start date selects nothing, so a start moved past it needs no care here.
+  const from = rule.madeThrough === null ? rule.startDate : addDays(rule.madeThrough, 1)
   if (from > today) return null
   let through = today
   let found = occurrencesOf(rule, from, through, max)
