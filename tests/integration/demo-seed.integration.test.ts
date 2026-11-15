@@ -688,8 +688,8 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
     // A paid rate source's calls this month: its cap holds across the wipe.
     await sql`INSERT INTO rate_source_calls (source, month, calls) VALUES ('paid', date_trunc('month', now()), 3)`
     // Rate history next to the seed's sample rates: the ECB's real rate on a sample day, the
-    // fixture's rate on the fixture's own day, and the fixture's rate an earlier seed stored under
-    // the ECB's label on another day.
+    // fixture's rate on the fixture's own day, the fixture's rate an earlier seed stored under the
+    // ECB's label on one of its days, and a real ECB rate equal to the fixture's outside those days.
     const [sampleDay] = fakeRates(NOW).map((rate) => rate.date)
     const ecbRate = (rate: string, date: string) => ({
       id: uuidV7(),
@@ -705,6 +705,7 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
       sql([
         ecbRate(`1.1000`, sampleDay),
         ecbRate(`1.1172`, `2026-10-30`),
+        ecbRate(`1.1172`, `2026-11-02`),
         ecbRate(`1.1172`, `2026-10-14`),
       ])
     }
@@ -758,7 +759,7 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
     `
     expect(calls).toBe(3)
     // The sample rates and the earlier seed's copy under the ECB's label are gone; the real
-    // rates stay.
+    // rates stay, the one equal to a fixture value included.
     const rateRows = () =>
       sql<{ source: string; date: string; rate: string }[]>`
         SELECT source, to_char(rate_date, 'YYYY-MM-DD') AS date, rate::text AS rate
@@ -766,6 +767,7 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
       `
     expect(await rateRows()).toEqual([
       { source: RATE_SOURCES.ecb, date: sampleDay, rate: `1.1000` },
+      { source: RATE_SOURCES.ecb, date: `2026-10-14`, rate: `1.1172` },
       { source: RATE_SOURCES.ecb, date: `2026-10-30`, rate: `1.1172` },
     ])
 
@@ -774,7 +776,7 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
     const [{ after }] = await sql<{ after: number }[]>`SELECT min(id) AS after FROM users`
     expect(after).toBeGreaterThan(before)
     const reseeded = await rateRows()
-    expect(reseeded.filter((row) => row.source === RATE_SOURCES.ecb)).toHaveLength(2)
+    expect(reseeded.filter((row) => row.source === RATE_SOURCES.ecb)).toHaveLength(3)
     expect(reseeded.filter((row) => row.source === RATE_SOURCES.demo)).toHaveLength(
       fakeRates(NOW).length,
     )

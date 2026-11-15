@@ -194,7 +194,8 @@ updates the demo in the same PR:
   real rate for the same day still goes in, and a lookup takes it over the sample. The wipe
   deletes the `demo` rows and the seed writes them fresh, so the history keeps only real rates
   and the current sample days. The wipe also deletes the copies an earlier seed stored under the
-  ECB's label: ECB rows with the fixture's exact pair and rate on another day. A backfill's range
+  ECB's label: ECB rows with the fixture's exact pair and rate on another day in November 2026, the
+  only days the last such seed could have written. A backfill's range
   (`rate_backfill_requests`) is wiped with the job table that would run it, and the coin prices
   (`coin_prices`) are wiped too: the daily job fetches them again.
 - **The catalog is demo data**: the wipe empties its tables (its photos' files are queued with
