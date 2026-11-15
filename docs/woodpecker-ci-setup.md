@@ -13,6 +13,15 @@ only `check`, `secrets` and the four image steps: its pull request already ran t
 any other branch runs nothing: open a pull request to run the pipeline. This is the one list of
 CI's steps; other pages link here.
 
+A pull request whose title starts with `[WIP]` runs `.woodpecker/wip.yml` instead: `check` and
+`secrets` only, copies of `ci.yml`'s steps, reported as `ci/woodpecker/pr/wip`. Removing `[WIP]`
+from the title starts `ci.yml` without a new push (Woodpecker's `pull_request_metadata` event with
+the reason `edited`), and every later push runs it too; that run takes the same steps as a pull
+request. A commit pushed while the title starts with `[WIP]` has no `ci/woodpecker/pr/ci` status,
+which branch protection requires, so it cannot merge. Putting `[WIP]` back without a push runs
+nothing and keeps the earlier status, so it does not block a merge. Editing the body of a ready
+pull request is also `edited` and re-runs the whole pipeline; that is rare and accepted.
+
 ```
 check ──┬── integration      (Postgres and Valkey services) ──┐
         ├── backup-restore   (Postgres service)               │
@@ -43,7 +52,7 @@ performance falls when another step shares the CPU.
 
 - `check` runs `deno task check`: format, lint, type check and unit tests.
 - `secrets` scans commits for secrets with gitleaks, beside `check`, on every event. A pull request
-  scans its own commits since it left the target branch, so a key added and then removed in the
+  (and its title edit) scans its own commits since it left the target branch, so a key added and then removed in the
   same pull request still fails it; every other event scans the whole history. The log
   shows each finding with its value redacted. Run it locally with `gitleaks git . --redact` (every
   branch) or `gitleaks git . --redact --log-opts=origin/main..HEAD` (your branch, as CI does). To
@@ -169,8 +178,9 @@ branch runs the deploy. A failed deploy turns that push pipeline red; fix it bef
 2. Leave the repository's **Pipeline path** empty. Woodpecker then uses `.woodpecker/`. Setting it
    to another path (for example `infra/configs/`) hides the pipeline from every copy of the
    template.
-3. Check that a pull request shows the `check`, `secrets`, `integration`, `backup-restore`,
-   `alert-rules`, `browser` and `e2e-smoke` results (`gh pr checks <number>`).
+3. Check that a pull request without `[WIP]` in its title shows the `check`, `secrets`,
+   `integration`, `backup-restore`, `alert-rules`, `browser` and `e2e-smoke` results
+   (`gh pr checks <number>`).
 
 ## Releases
 
