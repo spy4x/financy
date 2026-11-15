@@ -32,7 +32,11 @@ It is frozen: it shows what Financy did, and nothing more is built on it.
 
 ## Quick start
 
-Financy runs and develops exactly like Seed: [docs/development.md](docs/development.md) has the
+To run Financy for your household on your own server, follow
+[docs/financy/self-host.md](docs/financy/self-host.md), also at
+[financy.dev/docs/self-host](https://financy.dev/docs/self-host).
+
+To develop it: Financy runs and develops exactly like Seed: [docs/development.md](docs/development.md) has the
 commands. How it keeps taking Seed's changes: [AGENTS.md](AGENTS.md).
 
 ## Licence
