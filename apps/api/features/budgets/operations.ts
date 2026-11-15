@@ -1,5 +1,6 @@
 import {
   type Budget,
+  BUDGET_WIDGET_OPERATION,
   BudgetMethodSetCommand,
   budgetMethodSetPayloadSchema,
   type BudgetMethodSetting,
@@ -11,7 +12,10 @@ import {
   budgetMovePayloadSchema,
   BudgetSetCommand,
   budgetSetPayloadSchema,
+  BudgetWidgetQuery,
+  type BudgetWidgetResult,
   parseBudgetRequest,
+  parseBudgetWidgetRequest,
 } from "@domain/budgets"
 import type { Actor } from "@domain/identity"
 import type { Operations } from "@spy4x/realtime/operations"
@@ -22,6 +26,8 @@ export interface BudgetOperationDependencies {
   setMethod(command: BudgetMethodSetCommand): Promise<{ method: BudgetMethodSetting }>
   move(command: BudgetMoveCommand): Promise<{ move: BudgetMove }>
   month(query: BudgetMonthQuery): Promise<{ budgets: BudgetMonth }>
+  /** The overview's budgets widget: the month the range ends in, as `month` reads it. */
+  widget(query: BudgetWidgetQuery): Promise<BudgetWidgetResult>
 }
 
 /**
@@ -66,6 +72,13 @@ export function createBudgetOperations(
         const input = parseBudgetRequest(budgetMonthPayloadSchema, payload)
         return await dependencies.month(new BudgetMonthQuery({ actor, ...input }))
       },
+    },
+    [BUDGET_WIDGET_OPERATION]: {
+      kind: "query",
+      handle: async ({ actor, payload }) =>
+        await dependencies.widget(
+          new BudgetWidgetQuery({ actor, ...parseBudgetWidgetRequest(payload) }),
+        ),
     },
   }
 }
