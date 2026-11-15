@@ -716,7 +716,8 @@ export async function summarizeLedgerMonths(
 // #region Overview widgets
 /*
  * The money widgets on the household overview: Net, Income and Spending for the range, each with
- * the period of the same length before it. Every member sees them, as every member reads the
+ * the period of the same length before it, and "Where did the money go?", the range's spending by
+ * category with no comparison. Every member sees them, as every member reads the
  * entries. They show the household's own figures, so the operator's group page draws none of them
  * (`operatorView: "never"`, product.md §5).
  */
@@ -726,6 +727,7 @@ export const MONEY_WIDGET_IDS = {
   net: "money.net",
   income: "money.income",
   spending: "money.spending",
+  categories: "money.categories",
 } as const
 
 /**
@@ -807,6 +809,84 @@ export function parseTransactionWidgetRequest(
 /** Net, Income and Spending: the range's ledger and the previous period's. */
 export class TransactionWidgetQuery implements Query<TransactionWidgetPayload, MoneyWidgetResult> {
   __resultType?: MoneyWidgetResult
+  constructor(public data: TransactionWidgetPayload) {}
+}
+
+/** The query operation of "Where did the money go?": the range's ledger, by category. */
+export const CATEGORY_WIDGET_OPERATION = "transaction.widget.categories"
+
+/** How many categories "Where did the money go?" names before "and N more". */
+export const CATEGORY_WIDGET_TOP = 5
+
+/**
+ * "Where did the money go?", full width: a ranked row per category. It comes after the budgets
+ * widget, so it has its own list.
+ */
+export const CATEGORY_WIDGETS: readonly WidgetDefinition[] = [{
+  id: MONEY_WIDGET_IDS.categories,
+  titleKey: "MoneyWidgets.categoriesTitle",
+  size: "full",
+  canView: canRead,
+  operation: CATEGORY_WIDGET_OPERATION,
+  operatorView: "never",
+}]
+
+/** One row of "Where did the money go?": a top-level category and its spending. */
+export interface CategoryWidgetRow {
+  categoryId: string
+  name: string
+  /** Above zero: its spending with its children's, refunds taken off, as the ledger reads it. */
+  spending: number
+}
+
+/**
+ * "Where did the money go?" for the range: the ledger's spending and its top-level categories that
+ * spent, most first. `spending` is `null` only when the ledger is `tooLarge`.
+ */
+export interface CategoryWidgetResult {
+  currency: string
+  spending: number | null
+  /** At most {@link CATEGORY_WIDGET_TOP} rows, in the ledger's order. */
+  top: CategoryWidgetRow[]
+  /** How many more top-level categories spent in the range. */
+  more: number
+  spendingLeftOut: string[]
+  spendingRateDate: string | null
+  tooLarge: boolean
+}
+
+/**
+ * The ledger's categories as "Where did the money go?" lists them: top-level ones only, since a
+ * parent's figure already holds its children's and shares must not count twice, and only those
+ * that spent. Names come from `categories`, the household's own, archived ones included; a
+ * category it lacks is not listed.
+ */
+export function categoryWidgetResult(
+  ledger: Ledger,
+  categories: readonly { id: string; name: string; parentId: string | null }[],
+): CategoryWidgetResult {
+  const byId = new Map(categories.map((category) => [category.id, category]))
+  const listed = ledger.categories.flatMap(({ categoryId, spending }) => {
+    const category = byId.get(categoryId)
+    return category && category.parentId === null && spending > 0
+      ? [{ categoryId, name: category.name, spending }]
+      : []
+  })
+  return {
+    currency: ledger.currency,
+    spending: ledger.spending,
+    top: listed.slice(0, CATEGORY_WIDGET_TOP),
+    more: Math.max(listed.length - CATEGORY_WIDGET_TOP, 0),
+    spendingLeftOut: ledger.spendingLeftOut,
+    spendingRateDate: ledger.spendingRateDate,
+    tooLarge: ledger.tooLarge,
+  }
+}
+
+/** "Where did the money go?": the range's ledger by top-level category, named. */
+export class TransactionCategoryWidgetQuery
+  implements Query<TransactionWidgetPayload, CategoryWidgetResult> {
+  __resultType?: CategoryWidgetResult
   constructor(public data: TransactionWidgetPayload) {}
 }
 // #endregion Overview widgets
