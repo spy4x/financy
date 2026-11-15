@@ -2194,6 +2194,8 @@ export default {
   "AdminCategories.categories": "カテゴリ",
   "AdminCategories.archived": "アーカイブ済み",
   "AdminCategories.subcategories": "サブカテゴリ",
+  "AdminCategories.withAliases": "別名あり",
+  "AdminCategories.withAliasesHint": "アーカイブされておらず、別名が1件以上あるカテゴリ",
   "AdminCategories.households": "世帯",
   "AdminCategories.householdsHint": "カテゴリが1件以上ある世帯",
   "AdminCategories.byKind": "種類別",
