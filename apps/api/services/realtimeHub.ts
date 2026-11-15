@@ -141,6 +141,7 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
     setMethod: (command) => commandBus.execute(command),
     move: (command) => commandBus.execute(command),
     month: (query) => queryBus.execute(query),
+    widget: (query) => queryBus.execute(query),
   }),
   ...createHouseholdOperations({
     updateSettings: (command) => commandBus.execute(command),

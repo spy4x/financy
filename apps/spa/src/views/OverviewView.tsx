@@ -9,6 +9,7 @@ import { canMutateNotes, type CountWidgetResult, GroupRole, groupTimeZone } from
 import { freePlanAllowsNothing, needsFirstPlan } from "@domain/billing"
 import { NOTE_WIDGET_IDS } from "@domain/notes"
 import { MONEY_WIDGET_IDS } from "@domain/transactions"
+import { BUDGET_WIDGET_IDS } from "@domain/budgets"
 import { OVERVIEW_DEFAULT_PRESET, OVERVIEW_PRESETS, OverviewScreen } from "@ui/overview-screen.tsx"
 import { OVERVIEW_VIEWS, overviewWidgets } from "@ui/overview-widgets.ts"
 import { GROUP_PATHS, OVERVIEW_PATHS, SCREEN_PATHS } from "@ui/progressive.tsx"
@@ -32,7 +33,11 @@ export const overviewPageActions = signal<{ openRange(): void; openCustomise(): 
 /** The `data-e2e` of the range picker's button, which `d` presses. */
 const RANGE_E2E = "overview-range"
 
-const MONEY_IDS: ReadonlySet<string> = new Set(Object.values(MONEY_WIDGET_IDS))
+/** The widgets of the household's own figures: its money and its budgets. */
+const MONEY_IDS: ReadonlySet<string> = new Set([
+  ...Object.values(MONEY_WIDGET_IDS),
+  ...Object.values(BUDGET_WIDGET_IDS),
+])
 
 /** The message under the Customise list when a change did not reach the server, by its key. */
 const SAVE_FAILED = `OverviewView.saveFailed`
@@ -168,7 +173,7 @@ export function OverviewView(
     ? (total.data as CountWidgetResult).current
     : null
   // "No notes yet" is about the page only while notes are all it shows: above the household's
-  // money it would call a page full of figures empty.
+  // money or budgets it would call a page full of figures empty.
   const showsMoney = shown.some((widget) => MONEY_IDS.has(widget.id))
   const isSelected = selectionStore.groupId.value === groupId
 

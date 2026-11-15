@@ -77,6 +77,9 @@ export const TRANSACTION_PATHS = {
  */
 export const LINKED_GROUP_PARAM = "group"
 
+/** The query parameter that names the month a link opens on a month's page: `?month=YYYY-MM`. */
+export const LINKED_MONTH_PARAM = "month"
+
 /**
  * The transfer pages. A transfer has no list of its own: the transactions list shows it, so the
  * rail and Back lead there.

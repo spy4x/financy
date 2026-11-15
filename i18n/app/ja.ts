@@ -2186,6 +2186,22 @@ export default {
   "MoneyWidgets.netLink": "この期間のすべての取引を見る",
   "MoneyWidgets.incomeLink": "収入の取引を見る",
   "MoneyWidgets.spendingLink": "支出の取引を見る",
+  "BudgetWidgets.title": "予算",
+  "BudgetWidgets.loading": "予算を読み込み中…",
+  "BudgetWidgets.error": "予算を読み込めませんでした。",
+  "BudgetWidgets.allOnTrack": {
+    "other": "{count}件の予算はすべて上限内です。",
+  },
+  "BudgetWidgets.oneOver": {
+    "other": "{count}件中{onTrack}件が上限内。{category}が{amount}超過しています。",
+  },
+  "BudgetWidgets.moreOver": {
+    "other":
+      "{count}件中{onTrack}件が上限内。{category}が{amount}超過、ほか{more}件も超過しています。",
+  },
+  "BudgetWidgets.none": "{month}の予算はありません。",
+  "BudgetWidgets.setLink": "予算を設定",
+  "BudgetWidgets.link": "{month}の予算を見る",
   "Accounts.back": "口座一覧に戻る",
   "Accounts.clearDefault": "メインから外す",
   "Accounts.defaultBadge": "メイン",

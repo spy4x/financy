@@ -1,7 +1,8 @@
 import type { ReadonlySignal } from "@preact/signals"
-import { useEffect } from "preact/hooks"
+import { useEffect, useRef } from "preact/hooks"
 import { useSearchParams } from "wouter-preact"
-import { LINKED_GROUP_PARAM } from "@ui/progressive.tsx"
+import { calendarMonth } from "@domain/budgets"
+import { LINKED_GROUP_PARAM, LINKED_MONTH_PARAM } from "@ui/progressive.tsx"
 import { groupsStore } from "../state/groups.ts"
 import { selectionStore } from "../state/selection.ts"
 
@@ -46,4 +47,36 @@ export function useLinkedGroup(dependencies: LinkedGroupDependencies = STORES): 
     }, { replace: true })
   }, [linked, member, waiting])
   return member ? linked : selection.groupId.value
+}
+
+/**
+ * The month a page's address names (`?month=YYYY-MM`, {@link LINKED_MONTH_PARAM}), on a page that
+ * shows one month of a household: the overview's budgets card links to the Budgets screen this
+ * way. Returns the named month while the address holds it, else `null`: the page's first read of a
+ * household asks for it. Once the household is known (no `?group=` left to choose), the parameter
+ * is dropped, so the page's own stepper moves on from there; an invalid month is dropped unread. A
+ * month named later, on a household the page has already read, is passed to `open`.
+ */
+export function useLinkedMonth(
+  groupId: string | null,
+  open: (groupId: string, month: string) => void,
+): string | null {
+  const [params, setParams] = useSearchParams()
+  const asked = params.get(LINKED_MONTH_PARAM)
+  const linked = asked !== null && calendarMonth.allows(asked) ? asked : null
+  const choosing = params.has(LINKED_GROUP_PARAM)
+  /** The household and month of the last run: a new household's first read asks for the month. */
+  const seen = useRef<{ groupId: string | null; asked: string | null } | null>(null)
+  useEffect(() => {
+    const later = seen.current?.groupId === groupId && seen.current.asked !== asked
+    seen.current = { groupId, asked }
+    if (asked === null || groupId === null || choosing) return
+    if (linked !== null && later) open(groupId, linked)
+    setParams((previous) => {
+      const next = new URLSearchParams(previous)
+      next.delete(LINKED_MONTH_PARAM)
+      return next
+    }, { replace: true })
+  }, [groupId, asked, choosing])
+  return linked
 }
