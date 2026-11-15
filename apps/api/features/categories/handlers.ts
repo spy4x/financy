@@ -53,6 +53,7 @@ export function createCategoryCreateHandler(
         icon: data.icon,
         color: data.color,
         parentId: data.parentId,
+        aliases: data.aliases ?? [],
         requestId: data.requestId,
       },
       data.actor.userId,
@@ -74,6 +75,8 @@ export function createCategoryUpdateHandler(
         icon: data.icon,
         color: data.color,
         parentId: data.parentId,
+        // Left out by a device that queued the command before aliases existed: keep the stored ones.
+        aliases: data.aliases,
         expectedVersion: data.version,
         requestId: data.requestId,
       },

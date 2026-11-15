@@ -1624,6 +1624,7 @@ CREATE TABLE categories (
     kind INT2 NOT NULL,
     icon VARCHAR(40) NOT NULL,
     color CHAR(7) NOT NULL,
+    aliases TEXT[] DEFAULT '{}' NOT NULL,
     archived_at TIMESTAMPTZ(3),
     version INT4 DEFAULT 1 NOT NULL,
     change_sequence BIGINT NOT NULL,
@@ -1639,6 +1640,7 @@ CREATE TABLE categories (
     CONSTRAINT categories_kind_check CHECK (kind BETWEEN 1 AND 2),
     CONSTRAINT categories_icon_check CHECK (icon ~ '^[a-z0-9-]{1,40}$'),
     CONSTRAINT categories_color_check CHECK (color ~ '^#[0-9a-f]{6}$'),
+    CONSTRAINT categories_aliases_check CHECK (cardinality(aliases) <= 20),
     CONSTRAINT categories_version_check CHECK (version >= 1),
     CONSTRAINT categories_change_sequence_check CHECK (change_sequence >= 1)
 );

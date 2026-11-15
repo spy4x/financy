@@ -26,6 +26,12 @@ import { type FieldErrors, fieldErrors } from "@spy4x/validation"
 export const CATEGORY_NAME_MAX_LENGTH = 60
 
 /**
+ * The most aliases one category carries. Each is at most {@link CATEGORY_NAME_MAX_LENGTH}
+ * characters, like the name; the database checks the count too.
+ */
+export const CATEGORY_ALIAS_MAX = 20
+
+/**
  * The most live categories one household holds. Archived ones are not counted: a category is never
  * deleted, so counting them would leave a full household no way out.
  */
@@ -112,6 +118,11 @@ export interface Category {
   color: string
   /** The parent's id, `null` for a top-level category. */
   parentId: string | null
+  /**
+   * The person's other words for it ("Lidl" for "Groceries"), which search matches as well as the
+   * name: trimmed, each once compared folded, at most {@link CATEGORY_ALIAS_MAX}. Empty for none.
+   */
+  aliases: string[]
   /** `null` while the category is in use; set once it is archived. */
   archivedAt: Date | null
   /** Starts at 1 and grows by one with every change; a change must name it. */
@@ -136,6 +147,9 @@ const categoryFields = {
   icon: iconField,
   color: colorField,
   parentId: parentField,
+  // Optional, so a device's command queued before aliases existed still goes through: a create
+  // without them makes none, an update without them keeps the stored ones.
+  "aliases?": "string[]",
 } as const
 const groupIdField = { groupId: UUID_PATTERN } as const
 const categoryIdField = { id: UUID_PATTERN } as const
@@ -178,19 +192,24 @@ export const categoryListPayloadSchema = type({ ...groupIdField, "+": "reject" }
 /**
  * Validates `value` against `schema`, then trims the name and checks its length in characters, so
  * an emoji counts as one. A name with a control or an invisible character is refused, as an
- * account's. Throws `CategoryError("INVALID_REQUEST")`.
+ * account's. Aliases are counted before anything else looks at them, then cleaned
+ * ({@link parseCategoryAliases}). Throws `CategoryError("INVALID_REQUEST")`.
  */
 export function parseCategoryRequest<S extends Type<object>>(
   schema: S,
   value: unknown,
 ): S["infer"] {
+  assertAliasCount(value)
   const result = schema(value)
   if (result instanceof type.errors) {
     throw new CategoryError("INVALID_REQUEST", result.summary, fieldErrors(result))
   }
-  const parsed = result as S["infer"] & { name?: string }
-  if (parsed.name === undefined) return parsed
-  const name = parsed.name.trim()
+  const parsed = result as S["infer"] & { name?: string; aliases?: string[] }
+  const cleaned = parsed.aliases === undefined
+    ? parsed
+    : { ...parsed, aliases: parseCategoryAliases(parsed.aliases) }
+  if (cleaned.name === undefined) return cleaned
+  const name = cleaned.name.trim()
   const length = Array.from(name).length
   if (length < 1 || length > CATEGORY_NAME_MAX_LENGTH) {
     throw new CategoryError(
@@ -210,7 +229,57 @@ export function parseCategoryRequest<S extends Type<object>>(
       { name: { code: "unsafeCharacters" } },
     )
   }
-  return { ...parsed, name }
+  return { ...cleaned, name }
+}
+
+/**
+ * Refuses more than {@link CATEGORY_ALIAS_MAX} aliases by the list's length alone, before any
+ * alias is looked at, so a payload of thousands costs one length read.
+ */
+function assertAliasCount(value: unknown): void {
+  const aliases = (value as { aliases?: unknown } | null)?.aliases
+  if (Array.isArray(aliases) && aliases.length > CATEGORY_ALIAS_MAX) {
+    throw new CategoryError(
+      "INVALID_REQUEST",
+      `A category can have at most ${CATEGORY_ALIAS_MAX} aliases`,
+      { aliases: { code: "maxItems", values: { rule: CATEGORY_ALIAS_MAX } } },
+    )
+  }
+}
+
+/**
+ * Cleans a category's aliases the way its name is cleaned: each trimmed, blanks dropped, and each
+ * kept once, compared folded, so "Lidl" and " lidl " are one alias and the first spelling stays.
+ * Throws `CategoryError("INVALID_REQUEST")` naming the `aliases` field for an alias longer than
+ * {@link CATEGORY_NAME_MAX_LENGTH} characters or one with a control or an invisible character.
+ * The caller counts them first.
+ */
+export function parseCategoryAliases(aliases: readonly string[]): string[] {
+  const kept: string[] = []
+  const seen = new Set<string>()
+  for (const raw of aliases) {
+    const alias = raw.trim()
+    if (alias === "") continue
+    if (Array.from(alias).length > CATEGORY_NAME_MAX_LENGTH) {
+      throw new CategoryError(
+        "INVALID_REQUEST",
+        `Each category alias must contain at most ${CATEGORY_NAME_MAX_LENGTH} characters`,
+        { aliases: { code: "maxLength", values: { rule: CATEGORY_NAME_MAX_LENGTH } } },
+      )
+    }
+    if (hasUnsafeTextCharacters(alias)) {
+      throw new CategoryError(
+        "INVALID_REQUEST",
+        "Category aliases must not contain control or invisible characters",
+        { aliases: { code: "unsafeCharacters" } },
+      )
+    }
+    const key = fold(alias)
+    if (seen.has(key)) continue
+    seen.add(key)
+    kept.push(alias)
+  }
+  return kept
 }
 // #endregion Request schemas
 
@@ -398,9 +467,19 @@ export interface CategoryFields {
   icon: CategoryIcon
   color: string
   parentId: string | null
+  aliases: string[]
 }
 
-export interface CategoryCreatePayload extends CategoryCommandBase, CategoryFields {}
+/**
+ * The fields a command carries. Aliases are optional: a create without them makes none, and an
+ * update without them keeps the stored ones, so a command an older device queued offline never
+ * wipes them.
+ */
+export interface CategoryCommandFields extends Omit<CategoryFields, "aliases"> {
+  aliases?: string[]
+}
+
+export interface CategoryCreatePayload extends CategoryCommandBase, CategoryCommandFields {}
 
 export interface CategoryWriteResult {
   category: Category
@@ -415,7 +494,7 @@ export class CategoryCreateCommand implements Command<CategoryCreatePayload, Cat
   constructor(public data: CategoryCreatePayload) {}
 }
 
-export interface CategoryUpdatePayload extends CategoryCommandBase, CategoryFields {
+export interface CategoryUpdatePayload extends CategoryCommandBase, CategoryCommandFields {
   /** The version the person edited; a category at any other version is not changed. */
   version: number
 }
@@ -486,9 +565,12 @@ interface CategoryAllowance {
   allowance: number | null
 }
 
-export interface CategoryCreateInput extends CategoryInputBase, CategoryFields, CategoryAllowance {}
+/** A create; `aliases` left out makes none. */
+export interface CategoryCreateInput
+  extends CategoryInputBase, CategoryCommandFields, CategoryAllowance {}
 
-export interface CategoryUpdateInput extends CategoryInputBase, CategoryFields {
+/** An update; `aliases` left out keeps the stored ones. */
+export interface CategoryUpdateInput extends CategoryInputBase, CategoryCommandFields {
   expectedVersion: number
 }
 
@@ -549,6 +631,8 @@ const CATEGORY_EXPORT_LABELS = {
   icon: "icon",
   color: "colour",
   parentId: "parent",
+  aliases: "aliases",
+  "aliases[]": "alias",
   archived: "archived flag",
   createdAt: "creation date",
   updatedAt: "last change date",
@@ -556,6 +640,7 @@ const CATEGORY_EXPORT_LABELS = {
 
 /** Checks one category of a file with the rules of a create. Throws `CategoryError`. */
 export function parseCategoryExportEntry(entry: unknown): CategoryExportEntry {
+  assertAliasCount(entry)
   const shape = categoryExportEntrySchema(entry)
   if (shape instanceof type.errors) {
     throw new CategoryError(
