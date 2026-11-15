@@ -70,11 +70,11 @@ test.describe("search", () => {
       await signUp(request, user)
       const page = await context.newPage()
       await signIn(page, user, password)
-      const roadmap = await groupWithNote(
+      const visa = await groupWithNote(
         page,
-        "Product team",
-        "Quarterly roadmap",
-        "Kickoff with the design team",
+        "Home in Da Nang",
+        "Visa renewal",
+        "Passport, two photos and the contract",
       )
       const garden = await groupWithNote(
         page,
@@ -82,7 +82,7 @@ test.describe("search", () => {
         "Garden notes",
         "Tomatoes by the fence",
       )
-      await openNotes(page, roadmap.groupId, "Quarterly roadmap")
+      await openNotes(page, visa.groupId, "Visa renewal")
 
       // Closed with Escape, it leaves no focus in the closed dialog: with nothing focused before,
       // focus is on the page's body once the close is handled, and otherwise it goes back where

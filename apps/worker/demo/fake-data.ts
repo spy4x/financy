@@ -209,7 +209,10 @@ export interface FakeBudget {
 
 export interface FakeGroup {
   name: string
-  /** The zone the group's days are cut in: one of {@link DEMO_TIME_ZONES}, by its name. */
+  /**
+   * The zone the group's days are cut in: its theme's own, else one of {@link DEMO_TIME_ZONES}
+   * by its name.
+   */
   timeZone: string
   owner: FakeMember
   createdAgo: number
@@ -565,8 +568,8 @@ function groupPeople(users: readonly FakeUser[]): number[] {
  * One themed group, with members joining over time, tags, notes by several writers, a promotion
  * and pending invitations. `joined` says when a person joined the product (`Infinity` when it does
  * not matter) and `maxAgo` how old the group may be. With `yourRole`, the new account is in it
- * with that role; as the owner, the first fake person becomes an admin, and the content is the
- * fake people's.
+ * with that role; as the owner, it takes the place of the fake owner, the first fake person drawn
+ * becomes an admin, and the content is the fake people's.
  */
 function fakeGroup(
   tools: Tools,
@@ -578,7 +581,10 @@ function fakeGroup(
   taken: Set<string>,
 ): FakeGroup {
   const { int, pick, chance, sample, between } = tools
-  const picked = sample(people, int(theme.members[0], theme.members[1]) + 1)
+  // The theme's member count leaves its owner out. When that owner is the new account, no fake
+  // owner is drawn, so its couple is the account and one partner.
+  const owners = yourRole === GroupRole.OWNER ? 0 : 1
+  const picked = sample(people, int(theme.members[0], theme.members[1]) + owners)
     .sort((a, b) => joined(b) - joined(a))
   const [ownerIndex, ...memberIndexes] = picked
   const createdAgo = Math.max(
@@ -586,9 +592,10 @@ function fakeGroup(
     Math.min(maxAgo, joined(ownerIndex) - int(30, 3 * DAY)),
   )
   const roles = [GroupRole.ADMIN, GroupRole.EDITOR, GroupRole.EDITOR, GroupRole.VIEWER]
-  const members: FakeGroup["members"] = memberIndexes.map((member) => ({
+  // The first member may write, so even a couple's notes come from both of them.
+  const members: FakeGroup["members"] = memberIndexes.map((member, index) => ({
     member,
-    role: pick(roles),
+    role: pick(index === 0 ? roles.filter((role) => role !== GroupRole.VIEWER) : roles),
     joinedAgo: between(Math.min(createdAgo - 5, joined(member)), 30, true),
   }))
   let owner: FakeMember = ownerIndex
@@ -625,8 +632,9 @@ function fakeGroup(
     author: lead,
     createdAgo: Math.max(tagsReady - index - 1, 10),
   }))
-  const notes = sample(theme.notes, theme.notes.length).map((note): FakeNote => {
-    const author = pick(writers)
+  // Each writer writes one of the first notes, so a household of few notes has several authors.
+  const notes = sample(theme.notes, theme.notes.length).map((note, index): FakeNote => {
+    const author = index < writers.length ? writers[index] : pick(writers)
     const createdAgo = between(Math.min(tagsReady - 1, joinedAgo(author)), 15)
     const by = pick(writers)
     const edit = chance(0.35)
@@ -665,7 +673,7 @@ function fakeGroup(
     .map((m) => ({ member: m.member, ago: between(m.joinedAgo - 1, 30) }))
   return {
     name: theme.name,
-    timeZone: demoTimeZone(theme.name),
+    timeZone: theme.timeZone ?? demoTimeZone(theme.name),
     owner,
     createdAgo,
     members,
@@ -687,9 +695,11 @@ export const DEMO_TIME_ZONES = [
   `America/New_York`,
   `America/Sao_Paulo`,
   `Europe/London`,
+  `Europe/Lisbon`,
   `Europe/Berlin`,
   `Asia/Dubai`,
   `Asia/Kolkata`,
+  `Asia/Ho_Chi_Minh`,
   `Asia/Singapore`,
   `Asia/Tokyo`,
 ] as const
@@ -1336,7 +1346,9 @@ export const FAKE_RATE_DAYS = 5
 /**
  * The demo's exchange rates: the ECB's recorded rates of one day (the fixture the rate tests use),
  * on each of the {@link FAKE_RATE_DAYS} working days before `now`, so a demo household converts
- * without the network. The daily job adds the real ones at 16:00 UTC.
+ * without the network. They are labelled {@link RATE_SOURCES}`.demo`, never as the ECB's: the
+ * daily job's real rates then never collide with them, and a lookup takes the ECB's on a day both
+ * have.
  */
 export function fakeRates(now: Date): ExchangeRate[] {
   const days: string[] = []
@@ -1352,7 +1364,7 @@ export function fakeRates(now: Date): ExchangeRate[] {
       quote: rate.quote,
       rate: String(rate.rate),
       date,
-      source: RATE_SOURCES.ecb,
+      source: RATE_SOURCES.demo,
     }))
   )
 }

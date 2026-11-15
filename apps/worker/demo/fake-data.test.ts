@@ -221,12 +221,12 @@ Deno.test("recent sign-ups share small groups, and the video's person edits in o
   expect(claire).toHaveLength(1)
 })
 
-Deno.test("Product team, which the admin video opens from the top of Groups, is the largest group", () => {
+Deno.test("the Hanoi house share, which the admin video opens from the top of Groups, is the largest group", () => {
   for (const seed of [1, 7, 42, 20261020, 20261023]) {
     const sizes = fakeDemoData(seed, NOW).groups.map((group) => [group.name, group.members.length])
     const largest = Math.max(...sizes.map(([, size]) => size as number))
     expect(sizes.filter(([, size]) => size === largest).map(([name]) => name)).toEqual([
-      `Product team`,
+      `Hanoi house share`,
     ])
   }
 })
@@ -241,6 +241,15 @@ Deno.test("every fake group has a time zone of its own, the same for the same na
   expect(new Set(values).size).toBeGreaterThan(1)
   for (const [name, zone] of Object.entries(zones(42))) {
     if (name in first) expect(zone).toBe(first[name])
+  }
+})
+
+Deno.test("a household that names its place lives in that place's zone, in the population and a new account's sample groups", () => {
+  const zoneOf = (groups: FakeGroup[], name: string) =>
+    groups.find((g) => g.name === name)?.timeZone
+  for (const groups of [fakeDemoData(1, NOW).groups, fakeWorkspace(1)]) {
+    expect(zoneOf(groups, `Home in Da Nang`)).toBe(`Asia/Ho_Chi_Minh`)
+    expect(zoneOf(groups, `Family in Lisbon`)).toBe(`Europe/Lisbon`)
   }
 })
 
@@ -329,12 +338,13 @@ Deno.test("a new account owns one sample group and is an editor and a viewer in 
   }
 })
 
-Deno.test("a new account's sample notes are written by several people over days", () => {
+Deno.test("a new account's sample notes are written over days, by several people in the households it joined", () => {
   for (const seed of [1, 20261019, 99]) {
     const groups = fakeWorkspace(seed, NOW)
     for (const group of groups) {
       const authors = new Set(group.notes.map((note) => note.author))
-      expect(authors.size).toBeGreaterThanOrEqual(2)
+      // Its own household is a couple, and the account writes nothing: the partner writes them.
+      expect(authors.size).toBeGreaterThanOrEqual(group.owner === `you` ? 1 : 2)
       expect(authors.has(`you`)).toBe(false)
       const times = group.notes.map((note) => note.createdAgo)
       expect(Math.max(...times) - Math.min(...times)).toBeGreaterThan(DAY)
@@ -344,6 +354,28 @@ Deno.test("a new account's sample notes are written by several people over days"
       group.notes.flatMap((note) => note.body.split(`\n`).filter(Boolean))
     )
     expect(new Set(lines).size).toBe(lines.length)
+  }
+})
+
+Deno.test("a new account's sample groups it joined have notes by two people or more on every seed", () => {
+  for (let seed = 1; seed <= 300; seed++) {
+    for (const group of fakeWorkspace(seed).filter((group) => group.owner !== `you`)) {
+      expect({ seed, group: group.name, many: new Set(group.notes.map((n) => n.author)).size > 1 })
+        .toEqual({ seed, group: group.name, many: true })
+    }
+  }
+})
+
+Deno.test("a new account's own household is the account and one partner, an admin who writes its notes", () => {
+  for (let seed = 1; seed <= 300; seed++) {
+    const own = fakeWorkspace(seed).find((group) => group.owner === `you`)!
+    const [partner] = own.members
+    expect({ seed, members: own.members.length, role: partner.role }).toEqual({
+      seed,
+      members: 1,
+      role: GroupRole.ADMIN,
+    })
+    expect(new Set(own.notes.map((note) => note.author))).toEqual(new Set([partner.member]))
   }
 })
 
@@ -583,9 +615,9 @@ Deno.test("the demo's exchange rates fill the working days before now and skip t
   expect(days).toEqual([`2026-10-19`, `2026-10-16`, `2026-10-15`, `2026-10-14`, `2026-10-13`])
   expect(days).toHaveLength(FAKE_RATE_DAYS)
   expect(rates.filter((rate) => rate.date === `2026-10-19`)).toEqual([
-    { base: `EUR`, quote: `GBP`, rate: `0.8338`, date: `2026-10-19`, source: `frankfurter:ECB` },
-    { base: `EUR`, quote: `JPY`, rate: `175.68`, date: `2026-10-19`, source: `frankfurter:ECB` },
-    { base: `EUR`, quote: `USD`, rate: `1.1172`, date: `2026-10-19`, source: `frankfurter:ECB` },
+    { base: `EUR`, quote: `GBP`, rate: `0.8338`, date: `2026-10-19`, source: `demo` },
+    { base: `EUR`, quote: `JPY`, rate: `175.68`, date: `2026-10-19`, source: `demo` },
+    { base: `EUR`, quote: `USD`, rate: `1.1172`, date: `2026-10-19`, source: `demo` },
   ])
 })
 
@@ -733,4 +765,8 @@ Deno.test("a household with no rent this month gets an electricity bill dated th
   expect(kept).toBeGreaterThan(10)
   expect(firstNight1st).toBeGreaterThan(10)
   expect(firstNightBills).toBeGreaterThan(firstNight1st * 0.9)
+})
+
+Deno.test("the demo's exchange rates are labelled as the demo's, never as the ECB's", () => {
+  expect(new Set(fakeRates(NOW).map((rate) => rate.source))).toEqual(new Set([`demo`]))
 })
