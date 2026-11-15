@@ -197,10 +197,13 @@ export class MemoryBudgetRepository implements BudgetRepository {
     return Promise.resolve(
       [...this.categoryMap]
         .filter(([, category]) =>
-          category.groupId === groupId && category.kind === CategoryKind.EXPENSE &&
-          !category.archived
+          category.groupId === groupId && category.kind === CategoryKind.EXPENSE
         )
-        .map(([id, category]) => ({ id, parentId: category.parentId ?? null })),
+        .map(([id, category]) => ({
+          id,
+          parentId: category.parentId ?? null,
+          archived: category.archived ?? false,
+        })),
     )
   }
 

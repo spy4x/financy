@@ -209,7 +209,11 @@ async function withEnvelopes(
   })
   const envelopes = await envelopeMonth({
     baseCurrency: read.baseCurrency,
-    categories: read.rows.map((row) => ({ id: row.categoryId, parentId: row.parentId })),
+    categories: read.rows.map((row) => ({
+      id: row.categoryId,
+      parentId: row.parentId,
+      archived: false,
+    })),
     months,
     assignments,
     moves,

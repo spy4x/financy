@@ -143,7 +143,7 @@ function stack() {
       allowance: null,
     }, OWNER)
   }
-  return { budgets, clock, operations, remove, spend }
+  return { budgets, categories, clock, operations, remove, spend }
 }
 
 type Stack = ReturnType<typeof stack>
@@ -387,6 +387,33 @@ for (const [via, open] of TRANSPORTS) {
 
       const month = await as.query("budget.month", { groupId, month: "2026-11" })
 
+      expect(rowOf(month, food)).toMatchObject({
+        limit: { amount: 20000, currency: "USD" },
+        source: BudgetLimitSource.CHILDREN,
+        spending: 5000,
+      })
+      as.shutdown()
+    })
+
+    it("leaves a child archived mid-month out of its parent's limit and spending when the limit comes from the children", async () => {
+      const s = stack()
+      const cafes = uuidV7()
+      s.categories.set(cafes, { groupId, kind: CategoryKind.EXPENSE, parentId: food })
+      const as = open(s, EDITOR)
+      await as.command("budget.set", limit({ categoryId: groceries, amount: 20000 }))
+      await as.command("budget.set", limit({ categoryId: cafes, amount: 10000 }))
+      await s.spend(groceries, 5000, "2026-11-06")
+      await s.spend(cafes, 4000, "2026-11-07")
+      s.categories.set(cafes, {
+        groupId,
+        kind: CategoryKind.EXPENSE,
+        parentId: food,
+        archived: true,
+      })
+
+      const month = await as.query("budget.month", { groupId, month: "2026-11" })
+
+      expect(rowOf(month, cafes)).toBeUndefined()
       expect(rowOf(month, food)).toMatchObject({
         limit: { amount: 20000, currency: "USD" },
         source: BudgetLimitSource.CHILDREN,
