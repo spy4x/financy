@@ -23,6 +23,8 @@ export interface PullDependencies {
   budgets?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The members of the group whose settings are open. */
   members: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
+  /** The import that is open, read again on its group's hint (`import.*` events ride on it). */
+  imports?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The inbox: its unread count, and its list while the page is open. */
   notifications: { refresh(): Promise<void> }
   /** The person's display preferences, which they may have changed on another device. */
@@ -62,6 +64,7 @@ export function createPull(dependencies: PullDependencies) {
     transfers,
     budgets,
     members,
+    imports,
     notifications,
     onboarding,
     preferences,
@@ -89,6 +92,7 @@ export function createPull(dependencies: PullDependencies) {
     const transactionsGroup = transactions?.groupId.value ?? null
     const transfersGroup = transfers?.groupId.value ?? null
     const budgetsGroup = budgets?.groupId.value ?? null
+    const importsGroup = imports?.groupId.value ?? null
     // A group hint is not about the inbox or the preferences; a start-up or a reconnect may have
     // missed one.
     if (!gap) {
@@ -107,6 +111,7 @@ export function createPull(dependencies: PullDependencies) {
       due(transfersGroup) ? transfers?.refresh() : undefined,
       due(budgetsGroup) ? budgets?.refresh() : undefined,
       due(membersGroup) ? members.refresh() : undefined,
+      due(importsGroup) ? imports?.refresh() : undefined,
     ])
   }
 }
@@ -130,8 +135,18 @@ export interface ChangeCheckDependencies extends PullDependencies {
  * reads moves the sequence again, so the next check reads the notes once more and never skips it.
  */
 export function createChangeCheck(dependencies: ChangeCheckDependencies) {
-  const { groups, notes, tags, accounts, categories, transactions, transfers, budgets, members } =
-    dependencies
+  const {
+    groups,
+    notes,
+    tags,
+    accounts,
+    categories,
+    transactions,
+    transfers,
+    budgets,
+    members,
+    imports,
+  } = dependencies
   const pull = createPull(dependencies)
   const stores = [
     ["notes", notes],
@@ -142,6 +157,7 @@ export function createChangeCheck(dependencies: ChangeCheckDependencies) {
     ...(transfers ? [["transfers", transfers] as const] : []),
     ...(budgets ? [["budgets", budgets] as const] : []),
     ["members", members],
+    ...(imports ? [["imports", imports] as const] : []),
   ] as const
   /** The group and the sequence each list was last read at. */
   const held = new Map<string, { groupId: string; sequence: string }>()

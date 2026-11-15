@@ -216,6 +216,7 @@ const ROUTES = [
   { method: "POST", path: "/admin/jobs/0199f0a0-0000-7000-8000-000000000002/cancel" },
   { method: "POST", path: "/admin/jobs/repeating/outbox.cleanup/run-now" },
   { method: "POST", path: "/admin/jobs/retry-failed" },
+  { method: "GET", path: "/admin/imports?status=failed&page=2" },
   { method: "GET", path: "/admin/blog/posts" },
   { method: "POST", path: "/admin/blog/posts/0199f0a0-0000-7000-8000-000000000001/publish" },
   { method: "POST", path: "/admin/blog/preview" },
@@ -359,6 +360,7 @@ describe("operator area routes", () => {
       "audit",
       "jobs",
       "rates",
+      "imports",
       "system",
       "api-tokens",
     ])
