@@ -9,7 +9,11 @@ import { Router } from "wouter-preact"
 import { BUDGET_WIDGET_IDS, BudgetMethod, type BudgetWidgetResult } from "@domain/budgets"
 import { GroupRole } from "@domain/groups"
 import { NOTE_WIDGET_IDS } from "@domain/notes"
-import { type LedgerFigures, MONEY_WIDGET_IDS } from "@domain/transactions"
+import {
+  type CategoryWidgetResult,
+  type LedgerFigures,
+  MONEY_WIDGET_IDS,
+} from "@domain/transactions"
 import { OVERVIEW_PATHS } from "@ui/progressive.tsx"
 import { groupsStore } from "../state/groups.ts"
 import { overviewStore } from "../state/overview.ts"
@@ -56,7 +60,21 @@ const NO_BUDGETS: BudgetWidgetResult = {
   categories: [],
 }
 
-/** Household A's overview, with B selected, its notes count 0 and its money and budgets loaded. */
+/** One category that spent, and one more behind "and N more". */
+const WHERE_IT_WENT: CategoryWidgetResult = {
+  currency: `EUR`,
+  spending: 1500,
+  top: [{ categoryId: `019a5b0e-1af5-7f04-8ae4-b1ee5d114001`, name: `Rent`, spending: 1000 }],
+  more: 1,
+  spendingLeftOut: [],
+  spendingRateDate: null,
+  tooLarge: false,
+}
+
+/**
+ * Household A's overview, with B selected, its notes count 0 and its money, budgets and where the
+ * money went loaded.
+ */
 function overviewOfA(): string {
   groupsStore.groups.value = [
     { id: A, name: `Home`, role: GroupRole.OWNER },
@@ -70,6 +88,7 @@ function overviewOfA(): string {
     [MONEY_WIDGET_IDS.income]: ready({ current: EMPTY, previous: null }),
     [MONEY_WIDGET_IDS.spending]: ready({ current: EMPTY, previous: null }),
     [BUDGET_WIDGET_IDS.month]: ready(NO_BUDGETS),
+    [MONEY_WIDGET_IDS.categories]: ready(WHERE_IT_WENT),
   }
   return renderToString(
     <Router ssrPath={OVERVIEW_PATHS.group(A)}>
@@ -86,19 +105,21 @@ describe("the overview with its money cards", () => {
     expect(html).not.toContain(`data-e2e="overview-empty-group"`)
   })
 
-  it("links each money card to the overview's household, not the selected one", () => {
+  it("links each money card and each category row to the overview's household, not the selected one", () => {
     const hrefs = [...overviewOfA().matchAll(/href="(\/transactions[^"]*)"/g)].map((m) => m[1])
 
-    expect(hrefs.length).toBe(3)
+    // Net, Income, Spending, the one category row and "and 1 more".
+    expect(hrefs.length).toBe(5)
     for (const href of hrefs) expect(href).toContain(`group=${A}`)
   })
 
-  it("puts the budgets card after the money cards, linked to the overview's household and month", () => {
+  it("puts the budgets card after the money cards and before where the money went, linked to the overview's household and month", () => {
     const html = overviewOfA()
     const at = (id: string) => html.indexOf(`data-e2e="overview-widget-${id}"`)
 
     expect(at(BUDGET_WIDGET_IDS.month)).toBeGreaterThan(at(MONEY_WIDGET_IDS.spending))
     expect(at(MONEY_WIDGET_IDS.spending)).toBeGreaterThan(-1)
+    expect(at(MONEY_WIDGET_IDS.categories)).toBeGreaterThan(at(BUDGET_WIDGET_IDS.month))
     expect(html).not.toContain(`data-e2e="overview-empty-group"`)
     expect([...html.matchAll(/href="(\/budgets[^"]*)"/g)].map((m) => m[1].replaceAll("&amp;", "&")))
       .toEqual([`/budgets?group=${A}&month=2026-11`])
