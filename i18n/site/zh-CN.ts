@@ -525,9 +525,9 @@ export default {
   "HomeWays.cloudTitle": "云服务",
   "HomeWays.cloudText": "尚未开放。同样的代码，免去自己维护服务器，按付费方案使用。",
   "HomeFaq.useQuestion": "现在能用 Financy 吗？",
-  "HomeFaq.currencyQuestion": "Financy 将支持哪些货币？",
+  "HomeFaq.currencyQuestion": "Financy 支持哪些货币？",
   "HomeFaq.currencyAnswer":
-    "Financy 将支持任意货币组合，包括加密货币。每笔交易都会在换算金额旁保留原始金额，合计以家庭的主货币显示。对于欧洲央行不覆盖的货币（例如加密货币），你可以在交易上自行填写汇率。正在开发中。",
+    "任意货币组合，另外还支持放在加密货币账户里的比特币和以太坊。每笔交易都会在换算金额旁保留原始金额，合计以家庭的主货币显示。加密货币通过从另一个账户转账转入，两边金额都会保留：付了多少、到账多少。合计按 CoinGecko 当天的价格计算，并注明日期。",
   "HomeFaq.ratesQuestion": "汇率从哪里来？",
   "HomeFaq.ratesAnswer":
     "来自欧洲央行，每个工作日通过免费公共服务 Frankfurter 获取。每个换算后的总额都会标明所用汇率的日期。没有汇率的货币会被列出并排除在总额之外，绝不会按 1 计算。正在开发中。",
@@ -539,10 +539,10 @@ export default {
   "SiteFooter.aboutHint": "（打开 antonshubin.com）",
   "FeatureAccounts.code": "阅读账户代码",
   "FeatureAccounts.fact1": "服务器在每次读取时计算余额，从不存储，因此余额不会偏差",
-  "FeatureAccounts.fact2": "金额是币种最小单位的整数：日元没有小数，第纳尔有三位",
+  "FeatureAccounts.fact2": "金额是币种最小单位的整数：日元没有小数，第纳尔有三位，比特币有八位",
   "FeatureAccounts.fact3": "查看者可以看到账户；只有编辑者及以上角色可以更改，由服务器检查",
   "FeatureAccounts.lead":
-    "现金、银行账户、银行卡、储蓄、资产和负债，各用自己的币种，按类型分组，并有一个默认账户。家庭里的每个人都能立即看到每次更改。",
+    "现金、银行账户、银行卡、储蓄、加密货币、资产和负债，各用自己的币种或加密货币，按类型分组，并有一个默认账户。家庭里的每个人都能立即看到每次更改。",
   "FeatureAccounts.nav": "账户",
   "FeatureAccounts.title": "每个账户都有自己的币种",
   "Features.description":

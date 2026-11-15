@@ -587,9 +587,9 @@ export default {
   "HomeWays.cloudText":
     "Ainda não abriu. O mesmo código, sem você precisar cuidar de servidor, num plano pago.",
   "HomeFaq.useQuestion": "Posso usar o Financy hoje?",
-  "HomeFaq.currencyQuestion": "Quais moedas ele vai aceitar?",
+  "HomeFaq.currencyQuestion": "Quais moedas ele aceita?",
   "HomeFaq.currencyAnswer":
-    "O Financy vai lidar com qualquer combinação de moedas, incluindo criptomoedas. Cada lançamento guarda o valor original ao lado do convertido, e os totais aparecem na moeda principal da família. Para uma moeda que o BCE não cobre, como uma criptomoeda, você informa a taxa no próprio lançamento. Em construção.",
+    "Qualquer combinação de moedas, além de Bitcoin e Ethereum em uma conta cripto. Cada lançamento guarda o valor original ao lado do convertido, e os totais aparecem na moeda principal da família. As criptomoedas entram com uma transferência de outra conta que guarda os dois valores, o que foi pago e o que entrou, e os totais as avaliam pelo preço de hoje da CoinGecko, com a data dele.",
   "HomeFaq.ratesQuestion": "De onde vêm as taxas de câmbio?",
   "HomeFaq.ratesAnswer":
     "Do Banco Central Europeu, buscadas a cada dia útil pelo Frankfurter, um serviço público e gratuito. Todo total convertido mostra a data das taxas que usou. Uma moeda sem taxa aparece pelo nome e fica fora do total; nunca conta como 1. Em construção.",
@@ -604,11 +604,11 @@ export default {
   "FeatureAccounts.fact1":
     "O servidor calcula cada saldo quando ele é lido e nunca o guarda, então ele não se desvia",
   "FeatureAccounts.fact2":
-    "Os valores são inteiros na menor unidade da moeda: o iene não tem nenhuma, o dinar tem três casas",
+    "Os valores são inteiros na menor unidade da moeda: o iene não tem nenhuma, o dinar tem três casas e o bitcoin, oito",
   "FeatureAccounts.fact3":
     "Quem só visualiza vê as contas; só editores ou acima as alteram, e o servidor confere",
   "FeatureAccounts.lead":
-    "Dinheiro, contas bancárias, cartões, poupança, ativos e dívidas, cada um na própria moeda, agrupados por tipo e com uma conta padrão. Toda a família vê cada mudança na hora.",
+    "Dinheiro, contas bancárias, cartões, poupança, cripto, ativos e dívidas, cada um na própria moeda ou criptomoeda, agrupados por tipo e com uma conta padrão. Toda a família vê cada mudança na hora.",
   "FeatureAccounts.nav": "Contas",
   "FeatureAccounts.title": "Cada conta na própria moeda",
   "Features.description":

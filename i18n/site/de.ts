@@ -586,9 +586,9 @@ export default {
   "HomeWays.cloudText":
     "Noch nicht gestartet. Derselbe Code, für dich betrieben, als bezahlter Tarif.",
   "HomeFaq.useQuestion": "Kann ich Financy heute schon nutzen?",
-  "HomeFaq.currencyQuestion": "Welche Währungen wird Financy unterstützen?",
+  "HomeFaq.currencyQuestion": "Welche Währungen unterstützt Financy?",
   "HomeFaq.currencyAnswer":
-    "Financy wird mit jeder Mischung von Währungen umgehen, auch mit Kryptowährungen. Jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten, und Summen erscheinen in der Hauptwährung des Haushalts. Für eine Währung, die die EZB nicht abdeckt, etwa Krypto, trägst du den Kurs direkt in der Buchung ein. Wird gerade gebaut.",
+    "Jede Mischung von Währungen, dazu Bitcoin und Ethereum in einem Krypto-Konto. Jede Buchung behält ihren ursprünglichen Betrag neben dem umgerechneten, und Summen erscheinen in der Hauptwährung des Haushalts. Kryptowährungen kommen per Umbuchung von einem anderen Konto dazu, mit beiden Beträgen: was bezahlt wurde und was ankam. Summen bewerten sie zum heutigen Kurs von CoinGecko, mit dessen Datum.",
   "HomeFaq.ratesQuestion": "Woher kommen die Wechselkurse?",
   "HomeFaq.ratesAnswer":
     "Von der Europäischen Zentralbank, an jedem Werktag über Frankfurter abgerufen, einen kostenlosen öffentlichen Dienst. Jede umgerechnete Summe zeigt das Datum der Kurse, mit denen sie gerechnet wurde. Eine Währung ohne Kurs wird genannt und aus der Summe herausgelassen, nie mit 1 gerechnet. Wird gerade gebaut.",
@@ -602,11 +602,11 @@ export default {
   "FeatureAccounts.fact1":
     "Der Server berechnet den Kontostand bei jedem Lesen und speichert ihn nirgends, deshalb weicht er nie ab",
   "FeatureAccounts.fact2":
-    "Beträge sind ganze Zahlen in der kleinsten Einheit der Währung: Der Yen hat keine, der Dinar drei Nachkommastellen",
+    "Beträge sind ganze Zahlen in der kleinsten Einheit der Währung: Der Yen hat keine, der Dinar drei Nachkommastellen, der Bitcoin acht",
   "FeatureAccounts.fact3":
     "Ein Betrachter sieht die Konten; ändern können sie nur Bearbeiter und höher, und der Server prüft das",
   "FeatureAccounts.lead":
-    "Bargeld, Bankkonten, Karten, Ersparnisse, Vermögenswerte und Schulden, jedes in seiner eigenen Währung, nach Art gruppiert und mit einem Standardkonto. Der ganze Haushalt sieht jede Änderung sofort.",
+    "Bargeld, Bankkonten, Karten, Ersparnisse, Krypto, Vermögenswerte und Schulden, jedes in seiner eigenen Währung oder Kryptowährung, nach Art gruppiert und mit einem Standardkonto. Der ganze Haushalt sieht jede Änderung sofort.",
   "FeatureAccounts.nav": "Konten",
   "FeatureAccounts.title": "Jedes Konto in seiner eigenen Währung",
   "Features.description":
