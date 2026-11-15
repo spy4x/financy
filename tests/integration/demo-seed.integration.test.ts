@@ -4,7 +4,7 @@ import { ImportStatus } from "@domain/imports"
 import { type Context, Hono } from "hono"
 import postgres from "postgres"
 import { GroupRole } from "@domain/groups"
-import { UserRole } from "@domain/identity"
+import { UserMFAStatus, UserRole } from "@domain/identity"
 import { DEV_ADMIN_EMAIL, PUBLIC_DEMO_ADMIN } from "@server/auth/demo-accounts.ts"
 import { OUTBOX_CLEANUP_JOB } from "@server/jobs/jobs.ts"
 import { WELCOME_NOTE_TITLE } from "@server/jobs/starter-data.ts"
@@ -15,6 +15,8 @@ import { createPostgresAuthStore } from "@spy4x/server/auth/postgres"
 import { createListCrypto, DEV_SUBSCRIBERS_SECRET } from "@server/subscribers/subscribers.ts"
 import { createPostgresSubscriberStore } from "@spy4x/server/subscribers/postgres"
 import { AppDbBase } from "../../apps/api/services/db-base.ts"
+import { createBudgetMonthHandler } from "../../apps/api/features/budgets/handlers.ts"
+import { BudgetBand, BudgetLimitSource, BudgetMonthQuery } from "@domain/budgets"
 import { createApiApp } from "../../apps/api/app.ts"
 import { PASSWORD_METHOD } from "@spy4x/server/auth/password"
 import { type AppAuthState, createSignIn } from "../../apps/api/services/sign-in.ts"
@@ -481,6 +483,46 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
       SELECT COUNT(*)::int AS rates FROM exchange_rates
     `
     expect(rates).toBe(fakeRates(NOW).length)
+    // Each household's budgets screen, read as the API reads it, shows one limit near and one over.
+    const db = new AppDbBase({ sql })
+    const month = createBudgetMonthHandler({
+      budgets: db.budget,
+      groups: {
+        roleOf: async (groupId, userId) =>
+          (await db.group.getForMember(groupId, userId))?.role ?? null,
+      },
+      settings: db.householdSettings,
+      ledger: (groupId, currency, from, to) => db.transaction.ledger(groupId, currency, from, to),
+      ledgerMonths: (groupId, currency, from, to) =>
+        db.transaction.ledgerMonths(groupId, currency, from, to),
+      rate: async (base, quote, date) => {
+        const lookup = await db.rates.lookup(base, quote, date)
+        return lookup.found ? lookup.rate : null
+      },
+      now: () => NOW,
+    })
+    const budgeted = await sql<{ groupId: string; userId: number }[]>`
+      SELECT b.group_id, MIN(m.user_id) AS user_id FROM budgets b
+      JOIN group_members m ON m.group_id = b.group_id
+      GROUP BY b.group_id
+    `
+    expect(budgeted).toHaveLength(data.groups.length)
+    for (const { groupId, userId } of budgeted) {
+      const { budgets } = await month(
+        new BudgetMonthQuery({
+          actor: { userId, userMfa: UserMFAStatus.NOT_CONFIGURED } as never,
+          groupId,
+        }),
+      )
+      const bands = budgets.rows.flatMap((row) =>
+        row.source === BudgetLimitSource.OWN ? [row.band] : []
+      )
+      expect(bands).toHaveLength(3)
+      expect(bands.filter((band) => band === BudgetBand.RED)).toHaveLength(1)
+      expect(bands.filter((band) => band === BudgetBand.YELLOW || band === BudgetBand.ORANGE))
+        .toHaveLength(1)
+      expect(bands.filter((band) => band === BudgetBand.GREEN)).toHaveLength(1)
+    }
   })
 })
 

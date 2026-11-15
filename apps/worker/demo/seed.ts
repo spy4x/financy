@@ -193,7 +193,7 @@ export async function seedWorkspace(
   const groupIds = await seedGroups(
     db,
     sql,
-    fakeWorkspace(dataSeed),
+    fakeWorkspace(dataSeed, now),
     idOf,
     at,
     false,
@@ -206,7 +206,7 @@ export async function seedWorkspace(
     firstAudit,
     groupIds.filter((id): id is string => id !== null),
   )
-  const owned = fakeWorkspace(dataSeed).findIndex((group) => group.owner === `you`)
+  const owned = fakeWorkspace(dataSeed, now).findIndex((group) => group.owner === `you`)
   const ownedId = groupIds[owned]
   if (ownedId) await db.group.select(userId, ownedId)
 }
@@ -286,7 +286,7 @@ async function seedImport(
 }
 
 /**
- * Groups, their members, tags, accounts, categories, entries, transfers, notes, promotions and
+ * Groups, their members, tags, accounts, categories, entries, transfers, budgets, notes, promotions and
  * pending invitations, each at its time; with `notes` off, no tags, notes, attachments or notes import, and an imported
  * group's import counts no tags or notes. `idOf` answers `null` for someone without an account: such a member is left out, a row
  * they wrote goes to a stand-in ({@link withStandIns}), and a group with such an owner is skipped.
@@ -496,6 +496,16 @@ async function seedGroups(
         writer(transfer.author),
       )
       await sql`UPDATE transfers SET created_at = ${when}, updated_at = ${when} WHERE id = ${id}`
+    }
+    // The limits start in the household's current month, the one its budgets screen opens on.
+    const month = isoDateInTz(at(0), group.timeZone).slice(0, 7)
+    for (const budget of content.budgets) {
+      const { amount, currency } = budget
+      const categoryId = categoryIds.get(budget.category)!
+      await db.budget.set(
+        { groupId, categoryId, month, amount, currency, expectedVersion: null },
+        writer(budget.author),
+      )
     }
     const fromFile: string[] = []
     for (const note of notes.on ? content.notes : []) {
