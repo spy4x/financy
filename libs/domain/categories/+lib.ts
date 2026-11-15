@@ -808,6 +808,8 @@ export interface AdminCategoriesOverview {
   archived: number
   /** Categories in use that sit under a parent. */
   subcategories: number
+  /** Categories in use with at least one alias. How many, never which aliases. */
+  withAliases: number
   /** Households with at least one category, archived ones included. */
   households: number
   /** One row per kind, in {@link CATEGORY_KINDS} order, categories in use. */

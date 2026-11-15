@@ -2217,6 +2217,8 @@ export default {
   "AdminCategories.categories": "Categories",
   "AdminCategories.archived": "Archived",
   "AdminCategories.subcategories": "Subcategories",
+  "AdminCategories.withAliases": "With aliases",
+  "AdminCategories.withAliasesHint": "In use, with at least one alias",
   "AdminCategories.households": "Households",
   "AdminCategories.householdsHint": "With at least one category",
   "AdminCategories.byKind": "By kind",

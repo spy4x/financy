@@ -33,7 +33,7 @@ export interface AdminCategoriesScreenProps {
 
 /**
  * How households use categories: how many there are, archived and nested, by kind, and the
- * households with the most. Counts only: never a category's name, icon or colour, since a name
+ * households with the most. Counts only: never a category's name, alias, icon or colour, since a name
  * like "Therapy" says something personal.
  */
 export function AdminCategoriesScreen(props: AdminCategoriesScreenProps): JSX.Element {
@@ -93,6 +93,12 @@ function Body(
           <Kpi
             label={t.t(`AdminCategories.subcategories`)}
             value={NUMBER.format(overview.subcategories)}
+            tone="neutral"
+          />
+          <Kpi
+            label={t.t(`AdminCategories.withAliases`)}
+            value={NUMBER.format(overview.withAliases)}
+            sub={t.t(`AdminCategories.withAliasesHint`)}
             tone="neutral"
           />
           <Kpi
