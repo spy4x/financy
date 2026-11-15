@@ -30,6 +30,9 @@ export const TRANSFER_MEMO_MAX_LENGTH = 500
 /** How long a deleted transfer waits to be restored before the worker removes it for good. */
 export const TRANSFER_RESTORE_DAYS = 30
 
+/** How many deleted transfers the deleted list shows at most, the latest deleted first. */
+export const TRANSFER_DELETED_LIST_MAX = 200
+
 /**
  * The largest amount of one side, in its currency's smallest unit. The columns are `BIGINT` with a
  * `CHECK` on the same bound, so an amount always crosses JSON as an exact number (R1, R3).
@@ -161,6 +164,8 @@ export const transferDeletePayloadSchema = type({
 export const transferRestorePayloadSchema = type({ ...groupIdField, ...idField, "+": "reject" })
 /** The `transfer.get` payload. */
 export const transferGetPayloadSchema = type({ ...groupIdField, ...idField, "+": "reject" })
+/** The `transfer.listDeleted` payload: the household whose deleted transfers are listed. */
+export const transferListDeletedPayloadSchema = type({ ...groupIdField, "+": "reject" })
 
 /**
  * Validates `value` against `schema`, then trims the memo and checks its length in characters, so
@@ -431,6 +436,21 @@ export class TransferGetQuery implements Query<TransferGetPayload, { transfer: T
   __resultType?: { transfer: Transfer }
   constructor(public data: TransferGetPayload) {}
 }
+
+export interface TransferListDeletedPayload {
+  actor: Actor
+  groupId: string
+}
+
+/**
+ * The household's deleted transfers that can still be restored, the latest deleted first, at most
+ * {@link TRANSFER_DELETED_LIST_MAX}.
+ */
+export class TransferListDeletedQuery
+  implements Query<TransferListDeletedPayload, { transfers: Transfer[] }> {
+  __resultType?: { transfers: Transfer[] }
+  constructor(public data: TransferListDeletedPayload) {}
+}
 // #endregion Commands and queries
 
 // #region Ports
@@ -471,6 +491,12 @@ export interface TransferRestoreInput extends TransferInputBase, TransferAllowan
 export interface TransferRepository {
   /** A live transfer of the group; `null` for a deleted one or another group's. */
   get(groupId: string, id: string): Promise<Transfer | null>
+  /**
+   * The household's deleted transfers, the latest deleted first, at most `limit`. The worker purges
+   * a transfer {@link TRANSFER_RESTORE_DAYS} days after its delete, so every one listed can be
+   * restored.
+   */
+  listDeleted(groupId: string, limit: number): Promise<Transfer[]>
   /** How many live transfers the household holds. */
   count(groupId: string): Promise<number>
   /** The household's time zone, the one its days are cut in (R14). */

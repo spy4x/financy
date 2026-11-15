@@ -208,6 +208,7 @@ import {
   TransferCreateCommand,
   TransferDeleteCommand,
   TransferGetQuery,
+  TransferListDeletedQuery,
   TransferRestoreCommand,
   TransferUpdateCommand,
 } from "@domain/transfers"
@@ -216,6 +217,7 @@ import { transferUpdateHandler } from "@api/cqrs/command-handlers/transfer-updat
 import { transferDeleteHandler } from "@api/cqrs/command-handlers/transfer-delete.ts"
 import { transferRestoreHandler } from "@api/cqrs/command-handlers/transfer-restore.ts"
 import { transferGetHandler } from "@api/cqrs/query-handlers/transfer-get.ts"
+import { transferListDeletedHandler } from "@api/cqrs/query-handlers/transfer-list-deleted.ts"
 import {
   BudgetMethodSetCommand,
   BudgetMonthQuery,
@@ -443,6 +445,7 @@ queryBus.register(TransactionGetQuery, transactionGetHandler)
 queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
 queryBus.register(TransactionListDeletedQuery, transactionListDeletedHandler)
 queryBus.register(TransferGetQuery, transferGetHandler)
+queryBus.register(TransferListDeletedQuery, transferListDeletedHandler)
 queryBus.register(BudgetMonthQuery, budgetMonthHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)

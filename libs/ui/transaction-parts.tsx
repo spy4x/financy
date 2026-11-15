@@ -91,6 +91,8 @@ export interface TransferRow {
   /** "You", the member's name, or `undefined` while the members are not read. */
   author?: string
   createdAt: string
+  /** When it was deleted, in the deleted view. */
+  deletedAt?: string | null
 }
 
 /** A row of the transactions list: an entry or a transfer. */

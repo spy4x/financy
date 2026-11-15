@@ -10,6 +10,10 @@
 # and only reviewed code on `main` runs the deploy. The repository stays untrusted: no volume, no
 # Docker socket, no privileged step.
 #
+# After production, the same step deploys the public demo (`infra/envs/.env.demo`, project
+# `financy-demo`, docs/demo.md) to its own directory on the same server, with the same two keys. A
+# failed production deploy stops the step, so the demo never runs ahead of production.
+#
 # Every runtime variable is written `$$`, so Woodpecker leaves it for the shell. The image is
 # pinned by digest.
 
@@ -42,3 +46,4 @@ steps:
       - deno install --frozen
       - deno task env:decrypt
       - deno task deploy
+      - deno task deploy infra/envs/.env.demo

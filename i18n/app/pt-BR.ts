@@ -2818,4 +2818,6 @@ export default {
   "TransferToasts.saved": "{what}: salva.",
   "TransferToasts.deletedTitle": "Transferência excluída",
   "TransferToasts.deleted": "{what}: excluída.",
+  "TransferToasts.restoredTitle": "Transferência restaurada",
+  "TransferToasts.restored": "{what}: de volta à lista.",
 } satisfies Catalog

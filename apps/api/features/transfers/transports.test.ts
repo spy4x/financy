@@ -6,10 +6,12 @@ import { FREE_PLAN_ID } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
+  TRANSFER_DELETED_LIST_MAX,
   TransferCreateCommand,
   TransferDeleteCommand,
   TransferError,
   TransferGetQuery,
+  TransferListDeletedQuery,
   TransferRestoreCommand,
   TransferUpdateCommand,
 } from "@domain/transfers"
@@ -30,6 +32,7 @@ import {
   createTransferCreateHandler,
   createTransferDeleteHandler,
   createTransferGetHandler,
+  createTransferListDeletedHandler,
   createTransferRestoreHandler,
   createTransferUpdateHandler,
 } from "./handlers.ts"
@@ -138,12 +141,14 @@ function stack({ cap = null as number | null, race = false } = {}) {
   const queries = new QueryBus()
   queries.use(createSessionGate([]))
   queries.register(TransferGetQuery, createTransferGetHandler(dependencies))
+  queries.register(TransferListDeletedQuery, createTransferListDeletedHandler(dependencies))
   const operations = createTransferOperations({
     create: (command) => commands.execute(command),
     update: (command) => commands.execute(command),
     delete: (command) => commands.execute(command),
     restore: (command) => commands.execute(command),
     get: (query) => queries.execute(query),
+    listDeleted: (query) => queries.execute(query),
   })
   return { transfers, operations, remove }
 }
@@ -534,6 +539,61 @@ for (const [via, open] of TRANSPORTS) {
       expect(await as.command("transfer.restore", { groupId, id: transfer.id })).toMatchObject(
         refused("not_found", "TRANSFER_NOT_FOUND"),
       )
+      as.shutdown()
+    })
+
+    it("lists the household's deleted transfers, the latest deleted first, to every member and never another household's", async () => {
+      const s = stack()
+      const first = await existing(s)
+      const second = await existing(s)
+      const live = await existing(s)
+      // The twin holds one foreign account, so the other household's transfer is moved there.
+      const created = await existing(s)
+      s.transfers.transfers.delete(created.id)
+      const foreign = { ...created, groupId: otherGroupId, deletedAt: new Date() }
+      s.transfers.transfers.set(foreign.id, foreign)
+      const editor = open(s, EDITOR)
+      await editor.command("transfer.delete", { groupId, id: first.id, version: 1 })
+      await editor.command("transfer.delete", { groupId, id: second.id, version: 1 })
+
+      for (const userId of [OWNER, EDITOR, VIEWER]) {
+        const as = open(s, userId)
+        const answer = payloadOf(await as.query("transfer.listDeleted", { groupId }))
+        const ids = (answer.transfers as { id: string }[]).map((transfer) => transfer.id)
+        expect(ids).toEqual([second.id, first.id])
+        expect(ids).not.toContain(live.id)
+        expect(ids).not.toContain(foreign.id)
+        as.shutdown()
+      }
+      editor.shutdown()
+    })
+
+    it("refuses a stranger's deleted list as a household that does not exist, and a payload that asks for more rows", async () => {
+      const s = stack()
+      const transfer = await existing(s)
+      const editor = open(s, EDITOR)
+      await editor.command("transfer.delete", { groupId, id: transfer.id, version: 1 })
+
+      expect(await open(s, STRANGER).query("transfer.listDeleted", { groupId })).toMatchObject(
+        refused("not_found", "GROUP_NOT_FOUND"),
+      )
+      expect(await editor.query("transfer.listDeleted", { groupId, limit: 1000 })).toMatchObject(
+        refused("bad_request", "INVALID_REQUEST"),
+      )
+      editor.shutdown()
+    })
+
+    it("lists at most TRANSFER_DELETED_LIST_MAX deleted transfers", async () => {
+      const s = stack()
+      for (let index = 0; index <= TRANSFER_DELETED_LIST_MAX; index++) {
+        const transfer = await existing(s)
+        await s.transfers.delete({ groupId, id: transfer.id, expectedVersion: 1 }, OWNER)
+      }
+      const as = open(s, VIEWER)
+
+      const answer = payloadOf(await as.query("transfer.listDeleted", { groupId }))
+
+      expect((answer.transfers as unknown[]).length).toBe(TRANSFER_DELETED_LIST_MAX)
       as.shutdown()
     })
 

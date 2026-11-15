@@ -2977,4 +2977,6 @@ export default {
   "TransferToasts.saved": "{what}: حُفظ.",
   "TransferToasts.deletedTitle": "حُذف التحويل",
   "TransferToasts.deleted": "{what}: حُذف.",
+  "TransferToasts.restoredTitle": "استُعيد التحويل",
+  "TransferToasts.restored": "{what}: عاد إلى القائمة.",
 } satisfies Catalog
