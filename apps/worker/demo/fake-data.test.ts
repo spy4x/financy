@@ -588,8 +588,12 @@ Deno.test("the demo's exchange rates fill the working days before now and skip t
   expect(days).toEqual([`2026-10-19`, `2026-10-16`, `2026-10-15`, `2026-10-14`, `2026-10-13`])
   expect(days).toHaveLength(FAKE_RATE_DAYS)
   expect(rates.filter((rate) => rate.date === `2026-10-19`)).toEqual([
-    { base: `EUR`, quote: `GBP`, rate: `0.8338`, date: `2026-10-19`, source: `frankfurter:ECB` },
-    { base: `EUR`, quote: `JPY`, rate: `175.68`, date: `2026-10-19`, source: `frankfurter:ECB` },
-    { base: `EUR`, quote: `USD`, rate: `1.1172`, date: `2026-10-19`, source: `frankfurter:ECB` },
+    { base: `EUR`, quote: `GBP`, rate: `0.8338`, date: `2026-10-19`, source: `demo` },
+    { base: `EUR`, quote: `JPY`, rate: `175.68`, date: `2026-10-19`, source: `demo` },
+    { base: `EUR`, quote: `USD`, rate: `1.1172`, date: `2026-10-19`, source: `demo` },
   ])
+})
+
+Deno.test("the demo's exchange rates are labelled as the demo's, never as the ECB's", () => {
+  expect(new Set(fakeRates(NOW).map((rate) => rate.source))).toEqual(new Set([`demo`]))
 })

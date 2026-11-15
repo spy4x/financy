@@ -1230,7 +1230,9 @@ export const FAKE_RATE_DAYS = 5
 /**
  * The demo's exchange rates: the ECB's recorded rates of one day (the fixture the rate tests use),
  * on each of the {@link FAKE_RATE_DAYS} working days before `now`, so a demo household converts
- * without the network. The daily job adds the real ones at 16:00 UTC.
+ * without the network. They are labelled {@link RATE_SOURCES}`.demo`, never as the ECB's: the
+ * daily job's real rates then never collide with them, and a lookup takes the ECB's on a day both
+ * have.
  */
 export function fakeRates(now: Date): ExchangeRate[] {
   const days: string[] = []
@@ -1246,7 +1248,7 @@ export function fakeRates(now: Date): ExchangeRate[] {
       quote: rate.quote,
       rate: String(rate.rate),
       date,
-      source: RATE_SOURCES.ecb,
+      source: RATE_SOURCES.demo,
     }))
   )
 }

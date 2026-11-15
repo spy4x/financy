@@ -189,8 +189,12 @@ updates the demo in the same PR:
 - **Rate history survives the wipe.** `exchange_rates` is shared public data the daily
   `rates.fetch` job writes (#93), not any household's, and references no table. `rate_source_calls`
   counts the calls made to a paid rate source each month, so its monthly cap holds across wipes.
-  The seed writes its fixture rates (`fakeRates`) only into an empty `exchange_rates`, so a day
-  the job missed is never filled with a made-up rate that would stay. A backfill's range
+  The seed writes sample rates (`fakeRates`, the ECB's recorded rates of one day) for the last 5
+  working days under the source `demo`, so a household converts before the job runs. The ECB's
+  real rate for the same day still goes in, and a lookup takes it over the sample. The wipe
+  deletes the `demo` rows and the seed writes them fresh, so the history keeps only real rates
+  and the current sample days. The wipe also deletes the copies an earlier seed stored under the
+  ECB's label: ECB rows with the fixture's exact pair and rate on another day. A backfill's range
   (`rate_backfill_requests`) is wiped with the job table that would run it, and the coin prices
   (`coin_prices`) are wiped too: the daily job fetches them again.
 - **The catalog is demo data**: the wipe empties its tables (its photos' files are queued with

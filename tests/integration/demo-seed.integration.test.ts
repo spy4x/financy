@@ -4,6 +4,7 @@ import { ImportStatus } from "@domain/imports"
 import { type Context, Hono } from "hono"
 import postgres from "postgres"
 import { GroupRole } from "@domain/groups"
+import { RATE_SOURCES } from "@domain/money"
 import { UserRole } from "@domain/identity"
 import { DEV_ADMIN_EMAIL, PUBLIC_DEMO_ADMIN } from "@server/auth/demo-accounts.ts"
 import { OUTBOX_CLEANUP_JOB } from "@server/jobs/jobs.ts"
@@ -631,7 +632,7 @@ Deno.test("the demo seed fails when sign-up refuses an account that does not exi
   })
 })
 
-Deno.test("the wipe empties every table but the kept ones, keeps the blog, its old addresses, its earlier versions, where it was shared, the contact links and the rate history, which the next seed leaves as it is, queues every stored file for deletion, and never reuses an id", async () => {
+Deno.test("the wipe empties every table but the kept ones, keeps the blog, its old addresses, its earlier versions, where it was shared, the contact links and the real rate history but not the sample rates or an earlier seed's copies of them, queues every stored file for deletion, and never reuses an id", async () => {
   await withSchema(async (sql) => {
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     await sql`INSERT INTO backup_status (target, succeeded_at) VALUES ('database', now())`
@@ -685,6 +686,28 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
     keys.push({ objectKey: `pictures/${picture}/480.webp` })
     // A paid rate source's calls this month: its cap holds across the wipe.
     await sql`INSERT INTO rate_source_calls (source, month, calls) VALUES ('paid', date_trunc('month', now()), 3)`
+    // Rate history next to the seed's sample rates: the ECB's real rate on a sample day, the
+    // fixture's rate on the fixture's own day, and the fixture's rate an earlier seed stored under
+    // the ECB's label on another day.
+    const [sampleDay] = fakeRates(NOW).map((rate) => rate.date)
+    const ecbRate = (rate: string, date: string) => ({
+      id: uuidV7(),
+      base: `EUR`,
+      quote: `USD`,
+      rate,
+      rate_date: date,
+      source: RATE_SOURCES.ecb,
+      fetched_at: NOW,
+    })
+    await sql`
+      INSERT INTO exchange_rates ${
+      sql([
+        ecbRate(`1.1000`, sampleDay),
+        ecbRate(`1.1172`, `2026-10-30`),
+        ecbRate(`1.1172`, `2026-10-14`),
+      ])
+    }
+    `
 
     const wiped = await wipeDatabase(sql)
     const queued = await sql<{ objectKey: string }[]>`SELECT object_key FROM file_deletions`
@@ -729,26 +752,31 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
         (SELECT COUNT(*)::int FROM blog_share_results) AS results
     `
     expect(shared).toEqual({ channels: SAMPLE_CHANNELS.length, shares: 2, results: 1 })
-    const [kept] = await sql<{ rates: number; calls: number }[]>`
-      SELECT (SELECT COUNT(*)::int FROM exchange_rates) AS rates,
-        (SELECT sum(calls)::int FROM rate_source_calls) AS calls
+    const [{ calls }] = await sql<{ calls: number }[]>`
+      SELECT sum(calls)::int AS calls FROM rate_source_calls
     `
-    expect(kept).toEqual({ rates: fakeRates(NOW).length, calls: 3 })
+    expect(calls).toBe(3)
+    // The sample rates and the earlier seed's copy under the ECB's label are gone; the real
+    // rates stay.
+    const rateRows = () =>
+      sql<{ source: string; date: string; rate: string }[]>`
+        SELECT source, to_char(rate_date, 'YYYY-MM-DD') AS date, rate::text AS rate
+        FROM exchange_rates ORDER BY source, rate, rate_date
+      `
+    expect(await rateRows()).toEqual([
+      { source: RATE_SOURCES.ecb, date: sampleDay, rate: `1.1000` },
+      { source: RATE_SOURCES.ecb, date: `2026-10-30`, rate: `1.1172` },
+    ])
 
-    // The kept rate history lacks a day, as when the daily job missed one: the seed's fixture rates
-    // never fill it, or they would stand in for the real rates for good.
-    await sql`DELETE FROM exchange_rates WHERE rate_date = (SELECT max(rate_date) FROM exchange_rates)`
-    const [{ rates }] = await sql<
-      { rates: number }[]
-    >`SELECT COUNT(*)::int AS rates FROM exchange_rates`
-
+    // The next seed writes the sample rates fresh, next to the real ones.
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     const [{ after }] = await sql<{ after: number }[]>`SELECT min(id) AS after FROM users`
     expect(after).toBeGreaterThan(before)
-    const [{ again }] = await sql<
-      { again: number }[]
-    >`SELECT COUNT(*)::int AS again FROM exchange_rates`
-    expect(again).toBe(rates)
+    const reseeded = await rateRows()
+    expect(reseeded.filter((row) => row.source === RATE_SOURCES.ecb)).toHaveLength(2)
+    expect(reseeded.filter((row) => row.source === RATE_SOURCES.demo)).toHaveLength(
+      fakeRates(NOW).length,
+    )
   })
 })
 

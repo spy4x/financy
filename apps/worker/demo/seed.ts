@@ -143,17 +143,12 @@ export async function seedDemo(
   if (options.subscribers) await writeNewsletter(sql, data, options.subscribers, at)
   // The shop's sample items, for a product that turns the catalog on (docs/catalog.md).
   await seedSampleCatalog(sql, at(0))
-  // A few days of recorded rates, so a demo household converts before the daily job runs. Only
-  // into an empty table: the wipe keeps the real history, and a fixture rate on a day the job
-  // missed would stand in for the real one for good.
-  const [{ hasRates }] = await sql<{ hasRates: boolean }[]>`
-    SELECT EXISTS (SELECT 1 FROM exchange_rates) AS has_rates
-  `
-  if (!hasRates) {
-    await new PostgresRateRepository(sql).insert(fakeRates(now), now, (rate, problem) => {
-      throw new Error(`the demo's rate ${rate.base}/${rate.quote} is refused: ${problem}`)
-    })
-  }
+  // A few days of recorded rates, so a demo household converts before the daily job runs. They
+  // carry the demo's own source label, so the ECB's real rate for the same day still goes in and
+  // wins the lookup, and the wipe deletes them before the next seed writes them fresh.
+  await new PostgresRateRepository(sql).insert(fakeRates(now), now, (rate, problem) => {
+    throw new Error(`the demo's rate ${rate.base}/${rate.quote} is refused: ${problem}`)
+  })
   if (admin) {
     await writeOperator(sql, admin.id, admin.created, data, userIds, subscriptions, at, notes)
     await writeDevelopmentBackup(sql, at)

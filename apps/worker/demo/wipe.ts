@@ -1,4 +1,8 @@
 import type postgres from "postgres"
+import { RATE_SOURCES } from "@domain/money"
+import recordedEcbRates from "../../../libs/server/money/fixtures/frankfurter-saturday-ecb.json" with {
+  type: "json",
+}
 
 /**
  * The tables the nightly wipe keeps: what is real survives, the rest goes. Every other table in the
@@ -27,7 +31,8 @@ export const KEPT_TABLES: readonly string[] = [
   `subscriber_sends`,
   // The stored files to delete: the wipe queues every attachment and picture here for the clean-up.
   `file_deletions`,
-  // Rate history is shared public data the daily job fetched, not any household's.
+  // Rate history is shared public data the daily job fetched, not any household's. Only the demo's
+  // sample rates in it are deleted, by {@link wipeDatabase}.
   `exchange_rates`,
   // The calls made to a paid rate source this month, so its monthly cap holds across wipes.
   `rate_source_calls`,
@@ -37,8 +42,8 @@ export const KEPT_TABLES: readonly string[] = [
 const LOCK_TIMEOUT = `30s`
 
 /**
- * Empties every table of the current schema except {@link KEPT_TABLES}, in one transaction, and
- * answers the tables it emptied. Identities are not restarted: a new row never gets an id an old
+ * Empties every table of the current schema except {@link KEPT_TABLES}, and deletes the demo's
+ * sample rates from the kept rate history, in one transaction, and answers the tables it emptied. Identities are not restarted: a new row never gets an id an old
  * row had, so nothing cached under an old id (the API caches users by id) can describe a new one.
  * Running it twice leaves the same empty tables.
  */
@@ -66,6 +71,26 @@ export async function wipeDatabase(sql: postgres.Sql): Promise<string[]> {
       INSERT INTO file_deletions (object_key)
       SELECT object_key FROM images UNION SELECT object_key FROM image_variants
       ON CONFLICT DO NOTHING
+    `
+    // The demo's sample rates go: the next seed writes them fresh for its own days, so the kept
+    // history holds only real rates and the current sample days.
+    await tx`DELETE FROM exchange_rates WHERE source = ${RATE_SOURCES.demo}`
+    // Earlier seeds stored the sample rates under the ECB's label, where the daily job's real rate
+    // for the same day could never replace them. Each is the fixture's rate copied onto another day.
+    // Idempotent: a second run finds none.
+    const ecb = recordedEcbRates
+    await tx`
+      DELETE FROM exchange_rates AS stored
+      USING unnest(
+        ${tx.array(ecb.map((rate) => rate.base))}::text[],
+        ${tx.array(ecb.map((rate) => rate.quote))}::text[],
+        ${tx.array(ecb.map((rate) => String(rate.rate)))}::numeric[]
+      ) AS fixture (base, quote, rate)
+      WHERE stored.source = ${RATE_SOURCES.ecb}
+        AND stored.base = fixture.base
+        AND stored.quote = fixture.quote
+        AND stored.rate = fixture.rate
+        AND stored.rate_date <> ${recordedEcbRates[0].date}::date
     `
     if (names.length > 0) {
       const quoted = names.map((name) => `"${name.replaceAll(`"`, `""`)}"`)
