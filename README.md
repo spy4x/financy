@@ -4,7 +4,7 @@
 
 **A finance tracker for a person or a family, in any mix of currencies.**
 
-[![CI](https://ci.antonshubin.com/api/badges/1/status.svg)](https://ci.antonshubin.com/repos/1)
+[![CI](https://ci.antonshubin.com/api/badges/1/status.svg?events=push,cron)](https://ci.antonshubin.com/repos/1)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 
 </div>
