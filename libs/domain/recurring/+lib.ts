@@ -80,6 +80,10 @@ export const RECURRING_RULE_EVENTS = {
   deleted: `recurring_rule.deleted`,
   restored: `recurring_rule.restored`,
   skipped: `recurring_rule.skipped`,
+  /** The job set or changed `pausedReason`; recorded under the household owner's id. */
+  paused: `recurring_rule.paused`,
+  /** The job cleared `pausedReason` without making an entry in the same change. */
+  resumed: `recurring_rule.resumed`,
 } as const
 
 export type RecurringRuleErrorCode =

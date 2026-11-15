@@ -26,6 +26,7 @@ import {
 import { EMAIL_CODE_MAIL_JOB } from "./email-code-mail.ts"
 import { RATES_BACKFILL_JOB, RATES_FETCH_JOB } from "./exchange-rates.ts"
 import { OUTBOX_CLEANUP_JOB } from "./jobs.ts"
+import { RECURRING_ENTRIES_JOB } from "./recurring-entries.ts"
 import { PASSWORD_RESET_MAIL_JOB } from "./password-reset-mail.ts"
 import { SIGN_IN_METHOD_MAIL_JOB } from "./sign-in-method-mail.ts"
 import { SIGN_UP_CODE_MAIL_JOB } from "./sign-up-code-mail.ts"
@@ -77,6 +78,7 @@ const QUEUED_KINDS = [
   ...Object.values(BLOG_POST_JOBS),
   IMPORT_READ_JOB,
   IMPORT_COMMIT_JOB,
+  RECURRING_ENTRIES_JOB,
 ]
 
 const noop = () => async () => {}
@@ -98,9 +100,9 @@ describe(`job registry`, () => {
     }
   })
 
-  it(`repeats the nightly cleanup at 03:00 UTC, the exchange rates at 16:00 UTC, the past rates and the sharing results hourly`, () => {
+  it(`repeats the nightly cleanup at 03:00 UTC, the exchange rates at 16:00 UTC, the past rates and the sharing results hourly, and the repeating entries every hour`, () => {
     expect(repeatSchedules(JOBS)).toEqual({
-      repeatEveryMs: {},
+      repeatEveryMs: { [RECURRING_ENTRIES_JOB]: 60 * 60_000 },
       repeatCron: {
         [OUTBOX_CLEANUP_JOB]: `0 3 * * *`,
         [RATES_FETCH_JOB]: `0 16 * * *`,
