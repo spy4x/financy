@@ -196,13 +196,17 @@ import {
   TransactionListDeletedQuery,
   TransactionRestoreCommand,
   TransactionUpdateCommand,
+  TransactionWidgetQuery,
 } from "@domain/transactions"
 import { transactionCreateHandler } from "@api/cqrs/command-handlers/transaction-create.ts"
 import { transactionUpdateHandler } from "@api/cqrs/command-handlers/transaction-update.ts"
 import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction-delete.ts"
 import { transactionRestoreHandler } from "@api/cqrs/command-handlers/transaction-restore.ts"
 import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.ts"
-import { transactionLedgerHandler } from "@api/cqrs/query-handlers/transaction-ledger.ts"
+import {
+  transactionLedgerHandler,
+  transactionWidgetHandler,
+} from "@api/cqrs/query-handlers/transaction-ledger.ts"
 import { transactionListDeletedHandler } from "@api/cqrs/query-handlers/transaction-list-deleted.ts"
 import {
   TransferCreateCommand,
@@ -443,6 +447,7 @@ queryBus.register(CategoryListQuery, categoryListHandler)
 queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(TransactionGetQuery, transactionGetHandler)
 queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
+queryBus.register(TransactionWidgetQuery, transactionWidgetHandler)
 queryBus.register(TransactionListDeletedQuery, transactionListDeletedHandler)
 queryBus.register(TransferGetQuery, transferGetHandler)
 queryBus.register(TransferListDeletedQuery, transferListDeletedHandler)

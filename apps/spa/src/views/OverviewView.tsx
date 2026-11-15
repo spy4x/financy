@@ -8,6 +8,7 @@ import { rangeFromSearch, rangeToSearch } from "@spy4x/preact-ui/date-range-sear
 import { canMutateNotes, type CountWidgetResult, GroupRole, groupTimeZone } from "@domain/groups"
 import { freePlanAllowsNothing, needsFirstPlan } from "@domain/billing"
 import { NOTE_WIDGET_IDS } from "@domain/notes"
+import { MONEY_WIDGET_IDS } from "@domain/transactions"
 import { OVERVIEW_DEFAULT_PRESET, OVERVIEW_PRESETS, OverviewScreen } from "@ui/overview-screen.tsx"
 import { OVERVIEW_VIEWS, overviewWidgets } from "@ui/overview-widgets.ts"
 import { GROUP_PATHS, OVERVIEW_PATHS, SCREEN_PATHS } from "@ui/progressive.tsx"
@@ -30,6 +31,8 @@ export const overviewPageActions = signal<{ openRange(): void; openCustomise(): 
 
 /** The `data-e2e` of the range picker's button, which `d` presses. */
 const RANGE_E2E = "overview-range"
+
+const MONEY_IDS: ReadonlySet<string> = new Set(Object.values(MONEY_WIDGET_IDS))
 
 /** The message under the Customise list when a change did not reach the server, by its key. */
 const SAVE_FAILED = `OverviewView.saveFailed`
@@ -164,6 +167,9 @@ export function OverviewView(
   const totalNow = total?.status === "ready" && endsToday
     ? (total.data as CountWidgetResult).current
     : null
+  // "No notes yet" is about the page only while notes are all it shows: above the household's
+  // money it would call a page full of figures empty.
+  const showsMoney = shown.some((widget) => MONEY_IDS.has(widget.id))
   const isSelected = selectionStore.groupId.value === groupId
 
   return (
@@ -207,7 +213,7 @@ export function OverviewView(
             }),
           () => {},
         )}
-      emptyGroup={totalNow === 0 && membership
+      emptyGroup={totalNow === 0 && !showsMoney && membership
         ? { canCreate: isSelected && canMutateNotes(membership.role) && !choosePlan }
         : null}
       choosePlanHref={choosePlan ? GROUP_PATHS.billing(groupId) : null}

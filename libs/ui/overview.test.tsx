@@ -16,14 +16,14 @@ import { createFormatters } from "@spy4x/time/format"
 import { createTranslator } from "@spy4x/platform/universal/i18n"
 import app from "@i18n/app/en.ts"
 import appRu from "@i18n/app/ru.ts"
-import { NOTE_WIDGET_IDS } from "@domain/notes"
+import { NOTE_WIDGET_IDS, NOTE_WIDGETS } from "@domain/notes"
 import {
   OverviewScreen,
   type OverviewScreenProps,
   type OverviewWidget,
   type OverviewWidgetLoad,
 } from "./overview-screen.tsx"
-import { OVERVIEW_VIEWS, OVERVIEW_WIDGETS } from "./overview-widgets.ts"
+import { NOTE_WIDGET_VIEWS } from "./note-widgets.tsx"
 import { AdminGroupOverview, type AdminOverviewWidget } from "./admin-group-overview.tsx"
 import { I18nContext } from "@spy4x/preact-ui/i18n"
 import type { WidgetView } from "./note-widgets.tsx"
@@ -94,11 +94,11 @@ function Harness(
   },
 ) {
   const [layout, setLayout] = useState<LayoutEntry[]>(
-    OVERVIEW_WIDGETS.map((widget) => ({ id: widget.id, hidden: false })),
+    NOTE_WIDGETS.map((widget) => ({ id: widget.id, hidden: false })),
   )
   const [customising, setCustomising] = useState(false)
   const widgets: OverviewWidget[] = layout.flatMap((entry) => {
-    const widget = OVERVIEW_WIDGETS.find((candidate) => candidate.id === entry.id)!
+    const widget = NOTE_WIDGETS.find((candidate) => candidate.id === entry.id)!
     return entry.hidden ? [] : [{ ...widget, load: loads[widget.id] }]
   })
   return (
@@ -113,7 +113,7 @@ function Harness(
         now={NOW}
         onRangeChange={() => {}}
         widgets={widgets}
-        views={OVERVIEW_VIEWS}
+        views={NOTE_WIDGET_VIEWS}
         onRetry={(id) => void seen.retried.push(id)}
         onHide={(id) => {
           seen.hidden.push(id)
@@ -121,7 +121,7 @@ function Harness(
         }}
         layout={layout.map((entry) => ({
           ...entry,
-          titleKey: OVERVIEW_WIDGETS.find((widget) => widget.id === entry.id)!.titleKey,
+          titleKey: NOTE_WIDGETS.find((widget) => widget.id === entry.id)!.titleKey,
         }))}
         customising={customising}
         onCustomise={() => setCustomising(true)}
@@ -260,6 +260,14 @@ describe("the group overview", () => {
       if (!fits) wrong.push(top)
     }
     expect(wrong).toEqual([])
+  })
+
+  it("stretches every card to its grid cell, so the cards of a row share one height", async () => {
+    await mount()
+
+    for (const id of [total, added, series]) {
+      expect(document.querySelector(card(id))!.classList.contains("h-full")).toBe(true)
+    }
   })
 
   it("draws an empty chart as one line at a number's height", async () => {
@@ -491,7 +499,7 @@ describe("the admin group page's overview widgets", () => {
             now={NOW}
             onRangeChange={() => {}}
             widgets={widgets}
-            views={OVERVIEW_VIEWS}
+            views={NOTE_WIDGET_VIEWS}
             onRetry={() => {}}
           />
         </FormatContext.Provider>,
@@ -502,7 +510,7 @@ describe("the admin group page's overview widgets", () => {
 
   /** The notes' widgets, ready, with the one named marked members-only. */
   const widgetsWith = (never: string[]): AdminOverviewWidget[] =>
-    OVERVIEW_WIDGETS.map((widget) => ({
+    NOTE_WIDGETS.map((widget) => ({
       ...widget,
       operatorView: never.includes(widget.id) ? "never" : widget.operatorView,
       load: READY[widget.id],
@@ -537,7 +545,7 @@ describe("the admin group page's overview widgets", () => {
   })
 
   it("keeps only the title and the reason when every widget is members-only", async () => {
-    await mountAdmin(widgetsWith(OVERVIEW_WIDGETS.map((widget) => widget.id)))
+    await mountAdmin(widgetsWith(NOTE_WIDGETS.map((widget) => widget.id)))
 
     expect(document.querySelectorAll("[data-widget-status]")).toHaveLength(0)
     expect(document.querySelector("[data-e2e=admin-group-overview-range]")).toBe(null)
@@ -572,7 +580,7 @@ describe("the group overview in another language", () => {
   it("shows no English outside the catalogs: an en-XA render of the page, its widgets' states and titles, and Customise is all pseudo-language or data", async () => {
     // The real widgets, so each title comes from its aggregate's definition, as in the apps.
     const widget = (id: string, load: OverviewWidgetLoad): OverviewWidget => ({
-      ...OVERVIEW_WIDGETS.find((candidate) => candidate.id === id)!,
+      ...NOTE_WIDGETS.find((candidate) => candidate.id === id)!,
       load,
     })
     const page = (props: Partial<OverviewScreenProps>) => (
@@ -595,7 +603,7 @@ describe("the group overview in another language", () => {
             views={{ [total]: VIEW, [added]: VIEW, [series]: VIEW }}
             onRetry={() => {}}
             onHide={() => {}}
-            layout={OVERVIEW_WIDGETS.map(({ id, titleKey }) => ({ id, hidden: false, titleKey }))}
+            layout={NOTE_WIDGETS.map(({ id, titleKey }) => ({ id, hidden: false, titleKey }))}
             customising
             onCustomise={() => {}}
             onCloseCustomise={() => {}}
@@ -634,7 +642,7 @@ describe("the group overview in another language", () => {
     expect(text).toContain(PSEUDO.t("OverviewScreen.asOf", { time: "10:00" }))
     // Each widget's name, on its card and in the Customise list.
     const customise = document.querySelector("[data-e2e=overview-customiser]")?.textContent ?? ""
-    for (const { id, titleKey } of OVERVIEW_WIDGETS) {
+    for (const { id, titleKey } of NOTE_WIDGETS) {
       expect(document.querySelector(card(id))?.textContent).toContain(PSEUDO.t(titleKey))
       expect(customise).toContain(PSEUDO.t(titleKey))
     }

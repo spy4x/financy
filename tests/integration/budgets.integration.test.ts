@@ -275,19 +275,23 @@ Deno.test("budgets against Postgres", async (t) => {
       },
     )
 
-    await t.step("lists only the household's live expense categories, by name", async () => {
-      const h = await household(sql)
-      const old = await h.category("Archived", CategoryKind.EXPENSE)
-      await h.categories.archive(
-        { groupId: h.groupId, id: old, expectedVersion: 1, archived: true, allowance: null },
-        h.owner,
-      )
+    await t.step(
+      "lists the household's expense categories by name, each marked archived or not",
+      async () => {
+        const h = await household(sql)
+        const old = await h.category("Archived", CategoryKind.EXPENSE)
+        await h.categories.archive(
+          { groupId: h.groupId, id: old, expectedVersion: 1, archived: true, allowance: null },
+          h.owner,
+        )
 
-      expect(await budgets.categories(h.groupId)).toEqual([
-        { id: h.food, parentId: null },
-        { id: h.groceries, parentId: h.food },
-      ])
-    })
+        expect(await budgets.categories(h.groupId)).toEqual([
+          { id: old, parentId: null, archived: true },
+          { id: h.food, parentId: null, archived: false },
+          { id: h.groceries, parentId: h.food, archived: false },
+        ])
+      },
+    )
 
     await t.step(
       "shows a parent's bar against its children's limits in two currencies, converted at the month's last day, over the real ledger (R13, R15)",

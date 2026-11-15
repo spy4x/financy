@@ -264,8 +264,8 @@ export class PostgresBudgetRepository implements BudgetRepository {
 
   async categories(groupId: string): Promise<BudgetCategory[]> {
     return await this.sql<BudgetCategory[]>`
-      SELECT id, parent_id FROM categories
-      WHERE group_id = ${groupId} AND kind = ${CategoryKind.EXPENSE} AND archived_at IS NULL
+      SELECT id, parent_id, archived_at IS NOT NULL AS archived FROM categories
+      WHERE group_id = ${groupId} AND kind = ${CategoryKind.EXPENSE}
       ORDER BY lower(name), id
     `
   }

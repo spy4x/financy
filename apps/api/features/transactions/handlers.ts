@@ -14,8 +14,9 @@ import {
   type TransactionRequestFields,
   TransactionRestoreCommand,
   TransactionUpdateCommand,
+  type TransactionWidgetQuery,
 } from "@domain/transactions"
-import { groupTimeZone } from "@domain/groups"
+import { groupTimeZone, overviewPeriods } from "@domain/groups"
 import type { HouseholdSettings } from "@domain/money"
 import type { GroupRoleLookup } from "@domain/notes"
 import { isoDateInTz } from "@spy4x/time/tz"
@@ -189,5 +190,39 @@ export function createTransactionLedgerHandler(
     assertCanReadTransactions(await groups.roleOf(data.groupId, data.actor.userId))
     const { baseCurrency } = await settings.get(data.groupId)
     return { ledger: await transactions.ledger(data.groupId, baseCurrency, data.from, data.to) }
+  }
+}
+
+/**
+ * Net, Income and Spending on the overview: the household's ledger for the range and, when the
+ * household has an entry dated on or before the previous period's first day, the ledger of that
+ * period, both through the repository's `ledger`. A stranger is told the household does not
+ * exist before anything is read.
+ */
+export function createTransactionWidgetHandler(
+  { transactions, groups, settings }: TransactionLedgerDependencies,
+): QueryHandler<TransactionWidgetQuery> {
+  return async ({ data }) => {
+    assertCanReadTransactions(await groups.roleOf(data.groupId, data.actor.userId))
+    const periods = overviewPeriods({ from: data.from, to: data.to })
+    if (!periods) throw new TransactionError("INVALID_REQUEST", "The range is invalid")
+    const { baseCurrency } = await settings.get(data.groupId)
+    const read = async (from: string, to: string) => {
+      const { categories: _categories, ...figures } = await transactions.ledger(
+        data.groupId,
+        baseCurrency,
+        from,
+        to,
+      )
+      return figures
+    }
+    const first = await transactions.firstDate(data.groupId)
+    const { current, previous } = periods
+    return {
+      current: await read(current.from, current.to),
+      previous: first !== null && first <= previous.from
+        ? await read(previous.from, previous.to)
+        : null,
+    }
   }
 }

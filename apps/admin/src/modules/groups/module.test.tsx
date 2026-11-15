@@ -153,13 +153,22 @@ const countTerms = () =>
   [...document.querySelectorAll(`[data-e2e=admin-group-counts] dt`)].map((term) => term.textContent)
 const noWidgetsCard = () =>
   document.querySelector(`[data-e2e=admin-group-overview] [data-e2e=overview-no-widgets]`)
+const membersOnly = () =>
+  document.querySelector(`[data-e2e=admin-group-overview-members-only]`)?.textContent ?? null
+/** Whether any of the household's money widgets (Net, Income, Spending) has a card or a figure. */
+const drawsMoney = () =>
+  document.querySelector(`[data-e2e^=overview-widget-money], [data-e2e^=money-widget]`) !== null
 
 describe(`one group's page in the admin app`, () => {
-  it(`asks for no widget and no files with the notes off, and shows the empty overview, no Files tab and no note counts`, async () => {
+  it(`asks for no widget and no files with the notes off, draws no money widget but says why, and shows no Files tab and no note counts`, async () => {
     const { paths } = await openGroup(new Set([`groups`]))
 
     expect(paths).toEqual([`/api/admin/groups/${GROUP_ID}`])
-    expect(noWidgetsCard()).not.toBe(null)
+    // The money widgets are the household's own figures: no card, no read, only the reason.
+    expect(drawsMoney()).toBe(false)
+    expect(membersOnly()).toBe(
+      `Every widget on this group's Overview page shows the group's own figures, so only its members can see them.`,
+    )
     expect(document.querySelectorAll(`[data-widget-status]`)).toHaveLength(0)
     expect(hasFilesTab()).toBe(false)
     expect(document.querySelector(`[role=tabpanel] [data-e2e=admin-group-members]`)).not.toBe(null)
@@ -173,6 +182,10 @@ describe(`one group's page in the admin app`, () => {
     expect(widgetIds(paths)).toEqual(NOTE_WIDGET_IDS)
     expect(asked(paths, `/files`)).toHaveLength(1)
     expect(noWidgetsCard()).toBe(null)
+    expect(drawsMoney()).toBe(false)
+    expect(membersOnly()).toBe(
+      `Widgets that show this group's own figures are visible to its members only.`,
+    )
     expect(hasFilesTab()).toBe(true)
     expect(countTerms()).toEqual(expect.arrayContaining([`Notes`, `Tags`, `Files`]))
   })
@@ -204,7 +217,8 @@ describe(`one group's page in the admin app`, () => {
     await settle()
 
     expect(paths).toEqual([`/api/admin/groups/${GROUP_ID}`])
-    expect(noWidgetsCard()).not.toBe(null)
+    expect(drawsMoney()).toBe(false)
+    expect(membersOnly()).not.toBe(null)
     expect(hasFilesTab()).toBe(false)
   })
 })

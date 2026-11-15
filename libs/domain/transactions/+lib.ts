@@ -7,11 +7,13 @@ import {
   type GroupImportIssue,
   type GroupRole,
   plainEntryProblem,
+  type WidgetDefinition,
 } from "@domain/groups"
 import { CategoryKind } from "@domain/categories"
 import { accountCurrencyCode, convertAmount } from "@domain/money"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
+import { isValidTimeZone } from "@spy4x/time/tz"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { endOfMonth, parseIsoDate, shiftMonth, startOfMonth } from "@spy4x/time/date"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
@@ -543,8 +545,21 @@ export interface Ledger {
    * refunds, a parent's including its children's (R13). Most spending first.
    */
   categories: { categoryId: string; spending: number }[]
-  /** The currencies left out for lack of a rate, by code (R8). */
+  /** The currencies left out for lack of a rate, by code (R8): both lists below, together. */
   leftOut: string[]
+  /** The currencies whose income entries were left out for lack of a rate, by code. */
+  incomeLeftOut: string[]
+  /** The currencies whose expenses or refunds were left out for lack of a rate, by code. */
+  spendingLeftOut: string[]
+  /**
+   * The newest date of a rate the sums used (R6), or `null` when every counted entry was in
+   * `currency` and nothing needed a rate.
+   */
+  rateDate: string | null
+  /** {@link rateDate} of the income entries alone: whether income is converted, and how lately. */
+  incomeRateDate: string | null
+  /** {@link rateDate} of the expenses and refunds alone. */
+  spendingRateDate: string | null
   tooLarge: boolean
 }
 
@@ -590,7 +605,10 @@ export async function summarizeLedger(
     if (!rates.has(key)) rates.set(key, lookupRate(code, currency, date))
     return rates.get(key)!
   }
-  const leftOut = new Set<string>()
+  const incomeLeftOut = new Set<string>()
+  const spendingLeftOut = new Set<string>()
+  let incomeRateDate: string | null = null
+  let spendingRateDate: string | null = null
   let tooLarge = false
   let income = 0n
   const spentByCategory = new Map<string, bigint>()
@@ -601,15 +619,18 @@ export async function summarizeLedger(
     const result = Number.isSafeInteger(row.amount)
       ? convertAmount(row.amount, row.currency, currency, rate)
       : { ok: false as const, error: "unsafe" as const }
+    const isIncome = category.kind === CategoryKind.INCOME
     if (!result.ok) {
       if (result.error === "unsafe") tooLarge = true
-      else leftOut.add(row.currency)
+      else (isIncome ? incomeLeftOut : spendingLeftOut).add(row.currency)
       continue
     }
-    if (category.kind === CategoryKind.INCOME) {
+    if (isIncome) {
+      incomeRateDate = newer(incomeRateDate, rate?.date ?? null)
       income += BigInt(result.value)
       continue
     }
+    spendingRateDate = newer(spendingRateDate, rate?.date ?? null)
     const spent = -BigInt(result.value)
     for (const id of new Set([category.id, category.parentId ?? category.id])) {
       spentByCategory.set(id, (spentByCategory.get(id) ?? 0n) + spent)
@@ -645,9 +666,19 @@ export async function summarizeLedger(
         : 1)
       )
       .map(({ categoryId, spent }) => ({ categoryId, spending: Number(spent) })),
-    leftOut: [...leftOut].sort(),
+    leftOut: [...new Set([...incomeLeftOut, ...spendingLeftOut])].sort(),
+    incomeLeftOut: [...incomeLeftOut].sort(),
+    spendingLeftOut: [...spendingLeftOut].sort(),
+    rateDate: newer(incomeRateDate, spendingRateDate),
+    incomeRateDate,
+    spendingRateDate,
     tooLarge,
   }
+}
+
+/** The later of two calendar days, either of which may be missing. */
+function newer(a: string | null, b: string | null): string | null {
+  return a === null || (b !== null && b > a) ? b : a
 }
 
 /**
@@ -681,6 +712,104 @@ export async function summarizeLedgerMonths(
   }
 }
 // #endregion Ledger
+
+// #region Overview widgets
+/*
+ * The money widgets on the household overview: Net, Income and Spending for the range, each with
+ * the period of the same length before it. Every member sees them, as every member reads the
+ * entries. They show the household's own figures, so the operator's group page draws none of them
+ * (`operatorView: "never"`, product.md §5).
+ */
+
+/** The money widgets' ids. A saved layout keeps them: never rename one. */
+export const MONEY_WIDGET_IDS = {
+  net: "money.net",
+  income: "money.income",
+  spending: "money.spending",
+} as const
+
+/**
+ * The one query operation the three money widgets share: each reads the same two ledgers and draws
+ * its own figure from them, so no widget sums on its own.
+ */
+export const MONEY_WIDGET_OPERATION = "transaction.widget.ledger"
+
+/** The money widgets, in their default order: Net is the answer, Income and Spending explain it. */
+export const MONEY_WIDGETS: readonly WidgetDefinition[] = [
+  moneyWidget(MONEY_WIDGET_IDS.net, "MoneyWidgets.netTitle"),
+  moneyWidget(MONEY_WIDGET_IDS.income, "MoneyWidgets.incomeTitle"),
+  moneyWidget(MONEY_WIDGET_IDS.spending, "MoneyWidgets.spendingTitle"),
+]
+
+function moneyWidget(id: string, titleKey: string): WidgetDefinition {
+  return {
+    id,
+    titleKey,
+    size: "stat",
+    canView: canRead,
+    operation: MONEY_WIDGET_OPERATION,
+    operatorView: "never",
+  }
+}
+
+/** A ledger as a money widget gets it: its sums, without the categories it does not draw. */
+export type LedgerFigures = Omit<Ledger, "categories">
+
+/**
+ * A money widget's answer: the range's ledger, and the ledger of the period before it. `previous`
+ * is `null` when the household has no entry dated on or before that period's first day, so a
+ * comparison would set the range against a period it had not started recording.
+ */
+export interface MoneyWidgetResult {
+  current: LedgerFigures
+  previous: LedgerFigures | null
+}
+
+/** The money widget payload: the overview's widget payload, as every widget gets it. */
+export const transactionWidgetPayloadSchema = type({
+  groupId: UUID_PATTERN,
+  from: calendarDate,
+  to: calendarDate,
+  timeZone: "string <= 64",
+  "+": "reject",
+})
+
+/** What the money widget query carries. */
+export interface TransactionWidgetPayload {
+  actor: Actor
+  groupId: string
+  from: string
+  to: string
+  /**
+   * The zone the page cut "today" in, the household's. Checked and otherwise unused: an entry's
+   * own calendar date decides its day (R14), so the sums do not depend on it.
+   */
+  timeZone: string
+}
+
+/**
+ * A money widget payload as the handler needs it. Throws `TransactionError("INVALID_REQUEST")` for
+ * a payload that fails the schema, a range that does not run forward or is longer than a year, and
+ * a zone the runtime does not know.
+ */
+export function parseTransactionWidgetRequest(
+  value: unknown,
+): Omit<TransactionWidgetPayload, "actor"> {
+  const request = parseTransactionRequest(transactionWidgetPayloadSchema, value)
+  if (!isValidTimeZone(request.timeZone)) {
+    throw new TransactionError("INVALID_REQUEST", "The time zone is unknown", {
+      timeZone: { code: "timeZone" },
+    })
+  }
+  return request
+}
+
+/** Net, Income and Spending: the range's ledger and the previous period's. */
+export class TransactionWidgetQuery implements Query<TransactionWidgetPayload, MoneyWidgetResult> {
+  __resultType?: MoneyWidgetResult
+  constructor(public data: TransactionWidgetPayload) {}
+}
+// #endregion Overview widgets
 
 // #region Ports
 interface TransactionInputBase {
@@ -730,6 +859,8 @@ export interface TransactionRepository {
   count(groupId: string): Promise<number>
   /** The household's time zone, the one its days are cut in (R14). */
   timeZoneOf(groupId: string): Promise<string | null>
+  /** The date of the household's oldest live entry, or `null` when it has none. */
+  firstDate(groupId: string): Promise<string | null>
   /**
    * Throws `ID_ALREADY_EXISTS` when the id holds a different entry, the refusals of
    * {@link assertEntryReferences} and {@link deriveAmounts}, and a `PlanError` when the plan's
