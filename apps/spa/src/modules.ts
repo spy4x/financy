@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals"
+import { type ReadonlySignal, signal } from "@preact/signals"
 import { ConnectionLostError, type GapReport } from "@spy4x/realtime"
 import { type CallPort, type RetryOptions, sendCommand, sendQuery } from "@spy4x/realtime/calls"
 import { createOnlineStatus } from "@spy4x/preact-signals/online"
@@ -56,6 +56,7 @@ import { canCallAs, createAppCallPort } from "./state/realtime-call.ts"
 import type { SessionState, SessionUser } from "./state/session.ts"
 import type { NoteItem } from "./state/notes.ts"
 import type { TagItem } from "./state/tags.ts"
+import type { TransactionItem } from "./state/transactions.ts"
 import { toasts } from "./state/toasts.ts"
 
 /**
@@ -692,6 +693,40 @@ export async function discardGoneTransfer(id: string): Promise<void> {
   const layer = offlineLayer()
   const entry = layer?.transferEntries.value.find((queued) => queued.entityId === id)
   if (layer && entry && goneAccount(entry)) await layer.transfers.outbox.useTheirs(entry)
+}
+
+/** Changes when the device's copy opens or closes, so a screen that read it reads it again. */
+export const deviceCopyChanged: ReadonlySignal<unknown> = activeLayer
+
+/**
+ * A household's entries, and its tags while the notes are on, as this device holds them, with the
+ * queued writes over them, as the lists show them. It asks the server nothing: with no copy, or
+ * when the device cannot read it, the lists are empty.
+ */
+export async function deviceEntries(
+  groupId: string,
+): Promise<{ transactions: TransactionItem[]; tags: TagItem[] }> {
+  const layer = offlineLayer()
+  if (!layer) return { transactions: [], tags: [] }
+  const read = async <T>(rows: () => Promise<T[]>): Promise<T[]> => {
+    try {
+      return await rows()
+    } catch {
+      return []
+    }
+  }
+  const [transactions, tags] = await Promise.all([
+    read(async () =>
+      await layer.transactions.overlay(
+        await layer.transactionsCache.readTransactions(groupId),
+        groupId,
+      )
+    ),
+    notes
+      ? read(async () => await layer.tags.overlay(await layer.tagsCache.readTags(groupId), groupId))
+      : [],
+  ])
+  return { transactions, tags }
 }
 
 /** The local data the benchmark page measures (`BenchmarkLocalData`). */
