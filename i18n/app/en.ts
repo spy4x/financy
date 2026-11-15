@@ -1750,8 +1750,8 @@ export default {
   "MoneyWidgets.about": "about {amount}",
   "MoneyWidgets.rates": "Converted at each day's exchange rate, the latest from {date}",
   "MoneyWidgets.netLeftOut": {
-    "one": "Leaves out transactions in {currencies}: no exchange rate for it yet.",
-    "other": "Leaves out transactions in {currencies}: no exchange rate for them yet.",
+    "one": "Leaves out income and spending in {currencies}: no exchange rate for it yet.",
+    "other": "Leaves out income and spending in {currencies}: no exchange rate for them yet.",
   },
   "MoneyWidgets.incomeLeftOut": {
     "one": "Leaves out income in {currencies}: no exchange rate for it yet.",

@@ -155,7 +155,7 @@ describe("the overview's money widgets", () => {
     expect(net0.figure).toBe(null)
     expect(net0.line("sentence")).toBe(null)
     expect(net0.line("left-out")).toBe(
-      "Leaves out transactions in THB: no exchange rate for it yet.",
+      "Leaves out income and spending in THB: no exchange rate for it yet.",
     )
   })
 

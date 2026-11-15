@@ -1897,7 +1897,7 @@ export default {
   "MoneyWidgets.about": "约 {amount}",
   "MoneyWidgets.rates": "按每日汇率换算，最新汇率为 {date}",
   "MoneyWidgets.netLeftOut": {
-    "other": "未计入 {currencies} 的交易：暂无汇率。",
+    "other": "未计入 {currencies} 的收入和支出：暂无汇率。",
   },
   "MoneyWidgets.incomeLeftOut": {
     "other": "未计入 {currencies} 的收入：暂无汇率。",

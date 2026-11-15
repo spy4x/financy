@@ -2075,7 +2075,7 @@ export default {
   "MoneyWidgets.about": "約{amount}",
   "MoneyWidgets.rates": "各日の為替レートで換算（最新は{date}）",
   "MoneyWidgets.netLeftOut": {
-    "other": "{currencies}の為替レートがまだないため、その取引は含まれていません。",
+    "other": "{currencies}の為替レートがまだないため、その収入と支出は含まれていません。",
   },
   "MoneyWidgets.incomeLeftOut": {
     "other": "{currencies}の為替レートがまだないため、その収入は含まれていません。",

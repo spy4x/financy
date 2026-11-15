@@ -2267,8 +2267,8 @@ export default {
   "MoneyWidgets.about": "rund {amount}",
   "MoneyWidgets.rates": "Umgerechnet zum Wechselkurs des jeweiligen Tages, zuletzt vom {date}",
   "MoneyWidgets.netLeftOut": {
-    "one": "Ohne Buchungen in {currencies}: noch kein Wechselkurs dafür.",
-    "other": "Ohne Buchungen in {currencies}: noch keine Wechselkurse dafür.",
+    "one": "Ohne Einnahmen und Ausgaben in {currencies}: noch kein Wechselkurs dafür.",
+    "other": "Ohne Einnahmen und Ausgaben in {currencies}: noch keine Wechselkurse dafür.",
   },
   "MoneyWidgets.incomeLeftOut": {
     "one": "Ohne Einnahmen in {currencies}: noch kein Wechselkurs dafür.",

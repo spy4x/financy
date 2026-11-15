@@ -2385,11 +2385,11 @@ export default {
   "MoneyWidgets.rates": "Converti au taux de change de chaque jour, le plus récent du {date}",
   "MoneyWidgets.netLeftOut": {
     "one":
-      "Opérations en {currencies} non incluses : pas encore de taux de change pour cette devise.",
+      "Revenus et dépenses en {currencies} non inclus : pas encore de taux de change pour cette devise.",
     "many":
-      "Opérations en {currencies} non incluses : pas encore de taux de change pour ces devises.",
+      "Revenus et dépenses en {currencies} non inclus : pas encore de taux de change pour ces devises.",
     "other":
-      "Opérations en {currencies} non incluses : pas encore de taux de change pour ces devises.",
+      "Revenus et dépenses en {currencies} non inclus : pas encore de taux de change pour ces devises.",
   },
   "MoneyWidgets.incomeLeftOut": {
     "one": "Revenus en {currencies} non inclus : pas encore de taux de change pour cette devise.",
