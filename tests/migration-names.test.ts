@@ -133,6 +133,7 @@ const ON_MAIN: readonly string[] = [
   "2026_12_20_0001_coin_prices.sql",
   "2026_12_21_0001_transfers.sql",
   "2026_12_22_0001_budgets_deferrable_keys.sql",
+  "2026_12_23_0001_import_options_review_choices.sql",
   "2026_12_24_0001_category_aliases.sql",
 ]
 

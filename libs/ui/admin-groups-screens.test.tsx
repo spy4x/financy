@@ -637,6 +637,16 @@ describe(`one group in the admin app`, () => {
     expect(activity.textContent).toContain(`By an operator`)
   })
 
+  it(`draws each tab's focus ring inside the tab, where the sideways-scrolling row cannot cut it`, async () => {
+    await mount(<AdminGroupScreen {...groupProps([])} />)
+    expect(document.querySelector(`[role=tablist]`)?.className).toContain(`overflow-x-auto`)
+    for (const tab of document.querySelectorAll(`[role=tab]`)) {
+      expect(tab.className).toContain(`focus-visible:ring-inset`)
+      expect(tab.className).toContain(`focus-visible:ring-offset-0`)
+      expect(tab.className).not.toContain(`focus-visible:ring-offset-2`)
+    }
+  })
+
   it(`leaves the Files tab out with the notes off, and shows Members for a files address`, async () => {
     await mount(<AdminGroupScreen {...groupProps([], { tab: `files`, notes: false })} />)
 
@@ -1022,6 +1032,15 @@ describe(`the group page's palette commands`, () => {
       adminGroupPageCommands(ADMIN_ENGLISH, page, () => {}).map((command) => command.id)
     expect(ids({ shown: true, notes: false })).not.toContain(`group-tab-files`)
     expect(ids({ shown: false, notes: true })).toEqual([])
+  })
+
+  it(`offers no Files with files off, and offers it when the page leaves files out`, () => {
+    const ids = (files?: boolean) =>
+      adminGroupPageCommands(ADMIN_ENGLISH, { shown: true, notes: true, files }, () => {})
+        .map((command) => command.id)
+    expect(ids(false)).not.toContain(`group-tab-files`)
+    expect(ids(false)).toContain(`group-tab-members`)
+    expect(ids()).toContain(`group-tab-files`)
   })
 })
 

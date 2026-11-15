@@ -6,13 +6,16 @@
  * @module
  */
 import type { CommandPaletteOption } from "@spy4x/preact-ui/command-palette"
+import { isolate } from "@spy4x/preact-ui/bdi"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import type { ThemePreference } from "@domain/identity"
+import { NOTE_IMPORT_KIND } from "@domain/notes"
 import {
   ACCOUNT_PATHS,
   BUDGET_PATHS,
   CATEGORY_PATHS,
   GROUP_PATHS,
+  IMPORT_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
   profilePath,
@@ -26,6 +29,9 @@ import {
 import { PROFILE_SECTION_TEXT } from "./profile-screen.tsx"
 import { DATA_EXPORT_ANCHOR } from "./profile-export.tsx"
 import { PICTURE_BUTTON_ID, pictureRule } from "./profile-picture.tsx"
+import { ACCOUNT_DELETE_BUTTON_ID } from "./account-delete.tsx"
+import { TOTP_DISABLE_BUTTON_ID } from "./profile-security.tsx"
+import { END_OTHERS_BUTTON_ID } from "./signed-in-devices.tsx"
 import { THEME_KEYS, themeName } from "./preferences.tsx"
 import type { ShortcutRow } from "./shortcuts.tsx"
 import { englishText, type KeyedMessage, messageText } from "./message.ts"
@@ -52,6 +58,14 @@ export type SearchChoice =
   | { kind: "sign-out" }
   /** Ask the browser to install the app, as the install offer's button does. */
   | { kind: "install" }
+  /**
+   * Make a note, tag or group with the typed text as its title or name: open its create form with
+   * the text filled in, or, with `now` (Ctrl Enter, ⌘Enter), create it and open it.
+   */
+  | { kind: "quick-create"; entity: QuickCreateEntity; title: string; now?: boolean }
+
+/** What a quick-create row makes. */
+export type QuickCreateEntity = "note" | "tag" | "group"
 
 /** A command of the open page that the palette lists, such as "Change date range". */
 export interface PageCommand {
@@ -97,11 +111,18 @@ export interface PaletteContext {
   benchmark: boolean
   /** Whether the browser offers to install the app now. */
   canInstall: boolean
+  /** Whether two-factor sign-in is on: "Turn off two-factor sign-in" is listed only then. */
+  twoFactor?: boolean
   /**
    * Whether the notes example is on; left out, it is. Off, no command names notes or tags, and
    * Settings has no API tokens, whose API serves the notes only.
    */
   notes?: boolean
+  /**
+   * Whether files are on; left out, they are. Off, "Download your data" and "Change profile
+   * picture" are not listed, since the server can neither build an export nor keep a picture.
+   */
+  files?: boolean
 }
 
 /** The Go to commands: the rail's and the shortcuts' destinations, with the words that find them. */
@@ -268,9 +289,12 @@ export function shortcutKeys(keys: string | undefined): Pick<PaletteOption, "kbd
  * them: This page, Go to, Create, Settings, Account. Go to comes before Create, so a typo that
  * fits both ("notse") finds the page first. A command the person cannot take is left out
  * ("New note" without a group they may write to, Activity while the rail hides it, "Install app"
- * while the browser offers no install, Notes, Tags, New note, New tag and API tokens with the notes off); one that needs the server stays listed offline, with why
- * it cannot run. Each is found by its label, by its English label in every language, and by the
- * words a person would try, in English and Russian.
+ * while the browser offers no install, Notes, Tags, New note, New tag, Import notes and API tokens
+ * with the notes off, Download my data and Change profile picture with files off); one that needs
+ * the server ({@link SERVER_ONLY}: Import notes, New group, Keep your account, Download my data,
+ * Change profile picture, Delete my account, Turn off two-factor sign-in, Sign out of all other
+ * devices) stays listed offline, dimmed, with why it cannot run. Each is found by its label, by its
+ * English label in every language, and by the words a person would try, in English and Russian.
  *
  * @param context The app's state.
  * @param select Runs a choice made inside a submenu, which keeps the palette open.
@@ -279,7 +303,7 @@ export function paletteCommands(
   context: PaletteContext,
   select: (choice: SearchChoice) => void,
 ): PaletteOption[] {
-  const { t, currentGroup, online, shortcuts } = context
+  const { t, currentGroup, shortcuts } = context
   const heading = {
     page: t.t(`Shortcuts.page`),
     create: t.t(`Search.create`),
@@ -370,13 +394,18 @@ export function paletteCommands(
         aliases: [`add tag`, `create tag`, `new label`, `новая метка`, `создать метку`],
       })]
       : []),
-    {
-      ...command("new-group", `Search.newGroup`, heading.create, page(GROUP_PATHS.new), {
-        aliases: [`add group`, `create group`, `new team`, `новая группа`, `создать группу`],
-      }),
-      // Made on the server: listed offline too, so the person learns why it does nothing.
-      disabledReason: online ? undefined : t.t(`Search.needsConnection`),
-    },
+    ...(notesInGroup
+      ? [command(
+        "import-notes",
+        `Search.importNotes`,
+        heading.create,
+        page(IMPORT_PATHS.new(NOTE_IMPORT_KIND.id)),
+        { detail: notesInGroup, aliases: [`import csv`, `upload notes`, `импорт заметок`] },
+      )]
+      : []),
+    command("new-group", `Search.newGroup`, heading.create, page(GROUP_PATHS.new), {
+      aliases: [`add group`, `create group`, `new team`, `новая группа`, `создать группу`],
+    }),
   ]
 
   const goTo: PaletteOption[] = GO_TO.flatMap((entry) => {
@@ -424,35 +453,38 @@ export function paletteCommands(
         },
       )
     ),
-    command(
-      "download-data",
-      `Search.downloadData`,
-      heading.settings,
-      page(`${profilePath("account")}#${DATA_EXPORT_ANCHOR}`),
-      {
-        detail: {
-          key: context.notes === false ? `Search.downloadDetailPlain` : `Search.downloadDetail`,
+    // Both need the file store: with files off each could only fail.
+    ...(context.files === false ? [] : [
+      command(
+        "download-data",
+        `Search.downloadData`,
+        heading.settings,
+        page(`${profilePath("account")}#${DATA_EXPORT_ANCHOR}`),
+        {
+          detail: {
+            key: context.notes === false ? `Search.downloadDetailPlain` : `Search.downloadDetail`,
+          },
+          aliases: [
+            `export my data`,
+            `GDPR`,
+            `archive`,
+            `takeout`,
+            `скачать данные`,
+            `экспорт данных`,
+          ],
         },
-        aliases: [
-          `export my data`,
-          `GDPR`,
-          `archive`,
-          `takeout`,
-          `скачать данные`,
-          `экспорт данных`,
-        ],
-      },
-    ),
-    command(
-      "change-picture",
-      `Search.changePicture`,
-      heading.settings,
-      page(`${profilePath("account")}#${PICTURE_BUTTON_ID}`),
-      {
-        detail: pictureRule(context.locale),
-        aliases: [`avatar`, `photo`, `upload picture`, `фото`, `аватар`],
-      },
-    ),
+      ),
+      command(
+        "change-picture",
+        `Search.changePicture`,
+        heading.settings,
+        page(`${profilePath("account")}#${PICTURE_BUTTON_ID}`),
+        {
+          detail: pictureRule(context.locale),
+          aliases: [`avatar`, `photo`, `upload picture`, `фото`, `аватар`],
+        },
+      ),
+    ]),
     command("shortcuts", `Frame.shortcuts`, heading.settings, { kind: "shortcuts" }, {
       aliases: SHORTCUTS_ALIASES,
       kbd: kbdOf(shortcuts, `Shortcuts.show`),
@@ -470,12 +502,58 @@ export function paletteCommands(
         aliases: [`add to home screen`, `pwa`, `desktop app`, `установить приложение`],
       })]
       : []),
+    // The three risky account commands never act: each opens its section's own confirmation, which
+    // keeps every check it has (password, current code, the server's rules).
+    command(
+      "delete-account",
+      `AccountDelete.title`,
+      heading.account,
+      page(`${profilePath("danger-zone")}#${ACCOUNT_DELETE_BUTTON_ID}`),
+      { aliases: [`delete account`, `close account`, `remove account`, `удалить аккаунт`] },
+    ),
+    ...(context.twoFactor && !context.guest
+      ? [command(
+        "turn-off-two-factor",
+        `Search.turnOffTwoFactor`,
+        heading.account,
+        page(`${profilePath("security")}#${TOTP_DISABLE_BUTTON_ID}`),
+        {
+          aliases: [
+            `disable 2fa`,
+            `turn off 2fa`,
+            `two-factor`,
+            `authenticator`,
+            `отключить двухфакторную`,
+            `выключить 2fa`,
+          ],
+        },
+      )]
+      : []),
+    // The palette does not know whether other devices are signed in: the list is read on the
+    // profile only. Listed always; with no other device, the section opens without a dialog.
+    command(
+      "end-other-sessions",
+      `SignedInDevices.signOutOthers`,
+      heading.account,
+      page(`${profilePath("security")}#${END_OTHERS_BUTTON_ID}`),
+      {
+        aliases: [
+          `end other sessions`,
+          `sign out everywhere`,
+          `log out other devices`,
+          `выйти на других устройствах`,
+          `завершить другие сеансы`,
+        ],
+      },
+    ),
     command("sign-out", `Frame.signOut`, heading.account, { kind: "sign-out" }, {
       aliases: SIGN_OUT_ALIASES,
     }),
   ]
 
-  return [...thisPage, ...goTo, ...create, ...settings, ...account]
+  return [...thisPage, ...goTo, ...create, ...settings, ...account].map((option) =>
+    SERVER_ONLY.has(option.id) ? needsServer(context, option) : option
+  )
 }
 
 /**
@@ -528,12 +606,87 @@ export function themeCommand(
 
 /**
  * What a pick asks for: a group row's Ctrl Enter (⌘Enter) opens the group's settings instead of
- * switching to it; every other choice is the same either way.
+ * switching to it, and a quick-create row's creates the item at once instead of opening its form;
+ * every other choice is the same either way.
  */
 export function pickedChoice(choice: SearchChoice, alternative: boolean): SearchChoice {
-  return alternative && choice.kind === "switch-group"
-    ? { kind: "group-settings", groupId: choice.groupId }
-    : choice
+  if (!alternative) return choice
+  if (choice.kind === "switch-group") return { kind: "group-settings", groupId: choice.groupId }
+  if (choice.kind === "quick-create") return { ...choice, now: true }
+  return choice
+}
+
+/** The most characters of the query a row repeats: a quick-create row, the search's hint row. */
+const QUOTED_MAX = 40
+
+/**
+ * `query` trimmed and cut to {@link QUOTED_MAX} characters, an emoji counting as one. A cut ends in
+ * "…" right after the last word kept, never after a space.
+ */
+export function quoted(query: string): string {
+  const characters = Array.from(query.trim())
+  return characters.length > QUOTED_MAX
+    ? `${characters.slice(0, QUOTED_MAX).join("").trimEnd()}…`
+    : characters.join("")
+}
+
+/**
+ * The Create rows that make something from what was typed: `New note: "…"`, `New tag: "…"` and
+ * `New group: "…"`, with the whole trimmed query as the title or name. None for a query that is
+ * empty or only spaces. They are built from the query, never matched against it, so any text gets
+ * them. Who may create follows the plain New note, New tag and New group commands: a note or tag
+ * needs a group the person may write to and the notes on; a group needs the server, so offline its
+ * row stays listed, dimmed, with why. The label shows the text capped by {@link quoted} and
+ * isolated, so a long or right-to-left query neither overflows the row nor reorders the label.
+ */
+export function quickCreateRows(context: PaletteContext, query: string): PaletteOption[] {
+  const { t, currentGroup } = context
+  const title = query.trim()
+  if (title === "") return []
+  const writable = currentGroup?.canWrite && context.notes !== false ? currentGroup : null
+  const row = (entity: QuickCreateEntity, key: string): PaletteOption => ({
+    id: `quick-create-${entity}`,
+    label: t.t(`Search.withText`, { label: t.t(key), text: isolate(quoted(title)) }),
+    group: t.t(`Search.create`),
+    choice: { kind: "quick-create", entity, title },
+  })
+  const detail = writable ? t.t(`Search.inGroup`, { group: writable.name }) : undefined
+  return [
+    ...(writable
+      ? [{ ...row("note", `Search.newNote`), detail }, { ...row("tag", `Search.newTag`), detail }]
+      : []),
+    needsServer(context, row("group", `Search.newGroup`)),
+  ]
+}
+
+/**
+ * The commands only the server can carry out: each makes or changes something there, or opens a
+ * section whose one action calls it. Going to a page and the settings that read the device's data
+ * work offline; so do New note and New tag, queued until the connection is back, and Sign out,
+ * which signs this page out at once and ends the server's session later.
+ */
+const SERVER_ONLY = new Set(
+  [
+    `import-notes`,
+    `new-group`,
+    `keep`,
+    `download-data`,
+    `change-picture`,
+    `delete-account`,
+    `turn-off-two-factor`,
+    `end-other-sessions`,
+  ].map((id) => `action-${id}`),
+)
+
+/**
+ * `option` as the server must run it: offline it stays listed but dimmed, with why, so the person
+ * learns why it does nothing instead of finding it missing.
+ */
+function needsServer(context: PaletteContext, option: PaletteOption): PaletteOption {
+  return {
+    ...option,
+    disabledReason: context.online ? undefined : context.t.t(`Search.needsConnection`),
+  }
 }
 
 /**

@@ -16,6 +16,7 @@ function harness(
     groupsAfterRead: string[]
     settings?: string | null
     budgets?: string | null
+    importing?: string | null
   },
 ) {
   const calls: string[] = []
@@ -46,6 +47,10 @@ function harness(
     members: {
       groupId: signal(options.settings ?? null),
       refresh: () => Promise.resolve(void calls.push("members")),
+    },
+    imports: {
+      groupId: signal(options.importing ?? null),
+      refresh: () => Promise.resolve(void calls.push("imports")),
     },
     notifications: { refresh: () => Promise.resolve(void inbox.push("notifications")) },
     onboarding: { hint: () => Promise.resolve(void onboarding.push("onboarding")) },
@@ -154,6 +159,17 @@ describe("the pull after a hint", () => {
     await other.pull({ groupId: "home" })
     expect(other.calls).not.toContain("budgets")
   })
+
+  it("reads the open import again for its group's hint only", async () => {
+    const own = harness({ open: null, importing: "team", groupsAfterRead: ["home", "team"] })
+    await own.pull({ groupId: "team" })
+    expect(own.calls).toEqual(["flush", "selection", "groups", "imports"])
+
+    const other = harness({ open: null, importing: "team", groupsAfterRead: ["home", "team"] })
+    await other.pull({ groupId: "home" })
+    expect(other.calls).not.toContain("imports")
+  })
+
   it("reads the unread count again for this person's own hint, for a start-up and a reconnect", async () => {
     const own = harness({ open: null, groupsAfterRead: ["home"] })
     await own.pull({ groupId: userChangeGroupId(USER) })
@@ -178,6 +194,7 @@ function checkHarness(
   open: string | null,
   settings: string | null = null,
   budgets: string | null = null,
+  importing: string | null = null,
 ) {
   const calls: string[] = []
   const sequences: Record<string, string> = { home: "1", team: "5" }
@@ -206,6 +223,10 @@ function checkHarness(
     members: {
       groupId: signal(settings),
       refresh: () => Promise.resolve(void calls.push("members")),
+    },
+    imports: {
+      groupId: signal(importing),
+      refresh: () => Promise.resolve(void calls.push("imports")),
     },
     notifications: { refresh: () => Promise.resolve(void calls.push("notifications")) },
   })
@@ -255,6 +276,15 @@ describe("the change check of a page with no socket", () => {
 
     expect(await run(false)).toEqual(["flush", "groups", "budgets"])
     expect(await run(false)).toEqual(["flush", "groups"])
+  })
+
+  it("reads the open import again once its group's sequence moved, without a socket", async () => {
+    const { run, sequences } = checkHarness(null, null, null, "team")
+    await run(true)
+    expect(await run(false)).toEqual(["flush", "groups"])
+    sequences.team = "6"
+
+    expect(await run(false)).toEqual(["flush", "groups", "imports"])
   })
 
   it("leaves the notes alone when another group's sequence moved", async () => {
