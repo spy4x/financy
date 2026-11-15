@@ -1,6 +1,7 @@
 import type { JSX } from "preact"
 import { Card } from "@spy4x/preact-ui/card"
 import { useFormat } from "@spy4x/preact-ui/format"
+import { Rich } from "@spy4x/preact-ui/i18n"
 import { formatMoney } from "@spy4x/platform/universal/money"
 import type { HouseholdTotal } from "@domain/accounts"
 import { useAppText } from "./i18n.ts"
@@ -12,12 +13,16 @@ export interface AccountsTotalProps {
 
 const HEADING = `accounts-total-heading`
 
+/** CoinGecko, the coin price source, whose terms ask for its credit line where a price shows. */
+const COINGECKO_URL = `https://www.coingecko.com`
+
 /**
  * The household's total at the top of `/accounts`: every account converted to the base currency.
- * It reads "about" with the oldest rate date when any account needed a rate, and is exact without
- * one. A currency with no rate is left out and named. A negative total keeps the surrounding
- * colour: a household with a mortgage is not in error. The amount is one text node, so a screen
- * reader says it whole. While it loads, a bar holds the card's height so the list does not jump.
+ * It reads "about" with the oldest rate date when any account needed a rate, and with the coin
+ * price date and CoinGecko's credit line when a coin was valued; it is exact without either. A
+ * currency with no rate is left out and named. A negative total keeps the surrounding colour: a
+ * household with a mortgage is not in error. The amount is one text node, so a screen reader says
+ * it whole. While it loads, a bar holds the card's height so the list does not jump.
  */
 export function AccountsTotal({ total }: AccountsTotalProps): JSX.Element {
   const t = useAppText()
@@ -40,7 +45,7 @@ export function AccountsTotal({ total }: AccountsTotalProps): JSX.Element {
   )
 }
 
-/** The amount, the rate date and what was left out, in the person's region format. */
+/** The amount, the rate and coin price dates, and what was left out, in the region format. */
 function TotalText({ total }: { total: HouseholdTotal }): JSX.Element {
   const t = useAppText()
   const format = useFormat()
@@ -48,6 +53,7 @@ function TotalText({ total }: { total: HouseholdTotal }): JSX.Element {
     ? null
     : formatMoney(total.amount, total.currency, format.locale)
   const leftOut = total.leftOut.reduce((sum, item) => sum + item.accounts, 0)
+  const approximate = total.rateDate !== null || total.coinPriceDate !== null
   return (
     <>
       {amount !== null && (
@@ -55,12 +61,28 @@ function TotalText({ total }: { total: HouseholdTotal }): JSX.Element {
           class="text-2xl font-semibold tabular-nums sm:text-3xl"
           data-e2e="accounts-total-amount"
         >
-          {total.rateDate === null ? amount : t.t(`AccountsTotal.about`, { amount })}
+          {approximate ? t.t(`AccountsTotal.about`, { amount }) : amount}
         </p>
       )}
       {amount !== null && total.rateDate !== null && (
         <p class="text-sm text-muted" data-e2e="accounts-total-rates">
           {t.t(`AccountsTotal.rates`, { date: format.utc().date(total.rateDate) })}
+        </p>
+      )}
+      {amount !== null && total.coinPriceDate !== null && (
+        <p class="text-sm text-muted" data-e2e="accounts-total-coins">
+          <Rich
+            parts={t.parts(`AccountsTotal.coins`, {
+              date: format.utc().date(total.coinPriceDate),
+            })}
+            tags={{
+              link: (part) => (
+                <a href={COINGECKO_URL} target="_blank" rel="noopener" class="pc-link">
+                  {part}
+                </a>
+              ),
+            }}
+          />
         </p>
       )}
       {total.tooLarge && (

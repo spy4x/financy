@@ -106,6 +106,34 @@ describe("the household total card", () => {
     expect(count("[data-e2e=accounts-total-rates]")).toBe(0)
   })
 
+  it("reads 'about' with the coin price date and CoinGecko's credit line when a coin was valued", async () => {
+    await mount(<AccountsScreen {...screen} total={{ ...exact, coinPriceDate: "2026-11-05" }} />)
+
+    expect(text("[data-e2e=accounts-total-amount]")).toBe("about €12,345.67")
+    expect(text("[data-e2e=accounts-total-coins]")).toBe(
+      "Coin prices of 5 Nov 2026. Data provided by CoinGecko.",
+    )
+    const link = document.querySelector("[data-e2e=accounts-total-coins] a")!
+    expect(link.getAttribute("href")).toBe("https://www.coingecko.com")
+    expect(link.getAttribute("rel")).toBe("noopener")
+    expect(link.textContent).toBe("CoinGecko")
+    expect(count("[data-e2e=accounts-total-rates]")).toBe(0)
+  })
+
+  it("shows no coin price line when no coin was valued, or when no number is shown", async () => {
+    await mount(<AccountsScreen {...screen} total={{ ...exact, rateDate: "2026-11-06" }} />)
+    expect(count("[data-e2e=accounts-total-coins]")).toBe(0)
+    await act(() => render(null, root!))
+
+    await mount(
+      <AccountsScreen
+        {...screen}
+        total={{ ...exact, amount: null, tooLarge: true, coinPriceDate: "2026-11-05" }}
+      />,
+    )
+    expect(count("[data-e2e=accounts-total-coins]")).toBe(0)
+  })
+
   it("shows a negative total with its minus sign and not in the danger colour", async () => {
     await mount(<AccountsScreen {...screen} total={{ ...exact, amount: -50_000 }} />)
 

@@ -2058,6 +2058,7 @@ export default {
   "AccountsTotal.title": "合計",
   "AccountsTotal.about": "約{amount}",
   "AccountsTotal.rates": "{date}時点の為替レートで換算",
+  "AccountsTotal.coins": "{date}時点の暗号資産価格。データ提供：<link>CoinGecko</link>。",
   "AccountsTotal.leftOut": {
     "other": "{currencies}の為替レートがまだないため、口座{count}件は含まれていません。",
   },

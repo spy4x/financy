@@ -2248,6 +2248,7 @@ export default {
   "AccountsTotal.title": "Gesamt",
   "AccountsTotal.about": "rund {amount}",
   "AccountsTotal.rates": "Zu den Wechselkursen vom {date}",
+  "AccountsTotal.coins": "Kryptokurse vom {date}. Daten bereitgestellt von <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "{count} Konto fehlt in der Summe: noch kein Wechselkurs für {currencies}.",
     "other": "{count} Konten fehlen in der Summe: noch kein Wechselkurs für {currencies}.",
