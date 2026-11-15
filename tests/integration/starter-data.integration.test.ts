@@ -3,8 +3,10 @@ import { expect } from "@std/expect"
 import postgres from "postgres"
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
 import { createOutboxProcessor } from "@server/jobs/wiring.ts"
+import { type JobDeps, JOBS } from "@server/jobs/registry.ts"
 import {
   scheduleStarterData,
+  STARTER_DATA_JOB,
   starterDataJob,
   WELCOME_NOTE_TITLE,
 } from "@server/jobs/starter-data.ts"
@@ -18,7 +20,7 @@ import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { expectVersion7Ids } from "./ids.ts"
 import { TEST_FREE_PLAN, TEST_PLANS, testLimits } from "../../libs/domain/billing/test-plans.ts"
 import { AppDbBase } from "../../apps/api/services/db-base.ts"
-import { NOTES_OFF } from "@server/notes/setup.ts"
+import { NOTES_OFF, NOTES_ON, type NotesSetup } from "@server/notes/setup.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import { Hono } from "hono"
@@ -291,18 +293,60 @@ Deno.test("the welcome note is written after the sample data, so the page hears 
   })
 })
 
-Deno.test("with the notes off, sign-up queues no starter data, so no welcome note is made", async () => {
+Deno.test("with the notes off, sign-up still queues the starter data, and the job writes the sample data and no note", async () => {
+  // A product without the notes example (NOTES=false) writes its own starter data in this job.
   await withSchema(async (sql) => {
     const { userId, groupId } = await signedUpPerson(sql)
+    const sampled: number[] = []
+    const sampleData = async (id: number) => {
+      sampled.push(id)
+    }
 
     await new AppDbBase({ sql, notes: NOTES_OFF }).begin((tx) => tx.starterData.queue(userId))
-    const result = await createOutboxProcessor(sql, mailOff(sql)).drainOnce()
-
-    expect(result.failed).toBe(0)
-    expect(await sql`SELECT 1 FROM starter_data_requests`).toHaveLength(0)
+    expect(await sql`SELECT 1 FROM starter_data_requests WHERE user_id = ${userId}`)
+      .toHaveLength(1)
     expect(await sql`SELECT 1 FROM outbox_events WHERE aggregate_type = ${JOB_AGGREGATE}`)
-      .toHaveLength(0)
+      .toHaveLength(1)
+
+    const [request] = await sql<{ id: string }[]>`SELECT id FROM starter_data_requests`
+    // The registry's handler, as the worker builds it, reads the notes switch from its deps.
+    const job = JOBS.find((definition) => definition.kind === STARTER_DATA_JOB)!
+    const deps = { sql, provider: null, graceDays: 0, notes: NOTES_OFF, sampleData }
+    await job.handler(deps as unknown as JobDeps)(eventOf(request.id))
+
+    expect(sampled).toEqual([userId])
     expect(await notesOf(sql, groupId)).toEqual([])
+    expect(await sql`SELECT 1 FROM tags`).toHaveLength(0)
+    expect(await sql`SELECT 1 FROM note_attachments`).toHaveLength(0)
+    expect(await sql`SELECT 1 FROM starter_data_requests WHERE done_at IS NULL`).toHaveLength(0)
+  })
+})
+
+// Financy: its starter categories do not depend on the notes switch, unlike Seed's welcome note.
+Deno.test("with the notes off and no sample data, the job writes the starter categories and no note, and closes the request", async () => {
+  await withSchema(async (sql) => {
+    const { userId, groupId } = await signedUpPerson(sql)
+    const requestId = await requestFor(sql, userId)
+
+    await starterDataJob(sql, { notes: NOTES_OFF })(eventOf(requestId))
+
+    expect(await notesOf(sql, groupId)).toEqual([])
+    expect(await categoriesOf(sql, groupId)).toHaveLength(14)
+    expect(await sql`SELECT 1 FROM starter_data_requests WHERE done_at IS NULL`).toHaveLength(0)
+  })
+})
+
+Deno.test("with the notes off and no group left, the job closes the request and writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const { userId, groupId } = await signedUpPerson(sql)
+    await sql`UPDATE groups SET deleted_at = now() WHERE id = ${groupId}`
+    const requestId = await requestFor(sql, userId)
+
+    await starterDataJob(sql, { notes: NOTES_OFF })(eventOf(requestId))
+
+    expect(await sql`SELECT 1 FROM notes`).toHaveLength(0)
+    expect(await sql`SELECT 1 FROM categories`).toHaveLength(0)
+    expect(await sql`SELECT 1 FROM starter_data_requests WHERE done_at IS NULL`).toHaveLength(0)
   })
 })
 
@@ -400,68 +444,104 @@ Deno.test("a starter category refused on the first run keeps the ids after it, s
   })
 })
 
+/**
+ * Signs a person up on a German page through the API's sign-up, with the worker draining after each
+ * call, both with `notes` as the API and the worker read it. Answers the person's first group.
+ */
+async function signUpInGerman(sql: postgres.Sql, notes: NotesSetup): Promise<string> {
+  const sent: EmailMessage[] = []
+  const sender = {
+    send(message: EmailMessage) {
+      sent.push(message)
+      return Promise.resolve({ ok: true as const, id: String(sent.length) })
+    },
+  } as unknown as EmailSender
+  const worker = createOutboxProcessor(
+    sql,
+    { ...mailOff(sql), sender },
+    null,
+    null,
+    0,
+    true,
+    null,
+    undefined,
+    // The ten optional dependencies between the job list and the notes switch, all defaults.
+    ...[undefined, undefined, undefined, undefined, undefined] as const,
+    ...[undefined, undefined, undefined, undefined, undefined] as const,
+    notes,
+  )
+  const signIn = createSignIn({
+    db: new AppDbBase({ sql, notes }),
+    pepper: "integration-test-only-pepper-0123456789",
+    cookieSecret: "integration-test-only-cookie-secret-0123456789",
+    secureCookie: false,
+    sessionMinutes: 60,
+    totpIssuer: "example.test",
+  })
+  // The page's two calls, over one cookie jar: the request on a German page, then its code.
+  const app = new Hono<APIContext>()
+  app.use(signIn.auth.parseAuth)
+  app.post(
+    "/request",
+    async (c) =>
+      c.json({ ok: await signIn.requestSignUp(c, "anna@example.com", "Passw0rd!", null, "de") }),
+  )
+  app.post("/verify", async (c) => {
+    const result = await signIn.completeSignUp(c, (await c.req.json()).code)
+    return c.json(
+      result.outcome === SignUpOutcome.Created ? { userId: result.signedIn.user.id } : result,
+    )
+  })
+  let cookie = ""
+  const call = async (path: string, body: unknown = {}) => {
+    const response = await app.request(`http://local${path}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", cookie },
+      body: JSON.stringify(body),
+    })
+    cookie = response.headers.getSetCookie().map((line) => line.split(";")[0]).join("; ")
+    return await response.json()
+  }
+
+  expect(await call("/request")).toEqual({ ok: true })
+  await worker.drainOnce()
+  const code = sent.findLast((mail) => mail.to === "anna@example.com")!.text!.split("\n\n")[1]
+  const { userId } = await call("/verify", { code: code.trim() })
+  expect(typeof userId).toBe("number")
+  // Nothing saved a language for the person: only the sign-up page named one.
+  expect(await sql`SELECT 1 FROM user_preferences WHERE user_id = ${userId} AND version > 0`)
+    .toHaveLength(0)
+  await worker.drainOnce()
+
+  const [{ groupId }] = await sql<{ groupId: string }[]>`
+    SELECT group_id FROM group_members WHERE user_id = ${userId}
+  `
+  const creators = await sql`
+    SELECT DISTINCT created_by_user_id FROM categories WHERE group_id = ${groupId}
+  `
+  expect(creators.map((row) => row.createdByUserId)).toEqual([userId])
+  return groupId
+}
+
 Deno.test("the starter categories are named in the sign-up page's language, by the person", async () => {
   await withSchema(async (sql) => {
-    const sent: EmailMessage[] = []
-    const sender = {
-      send(message: EmailMessage) {
-        sent.push(message)
-        return Promise.resolve({ ok: true as const, id: String(sent.length) })
-      },
-    } as unknown as EmailSender
-    const worker = createOutboxProcessor(sql, { ...mailOff(sql), sender })
-    const signIn = createSignIn({
-      db: new AppDbBase({ sql }),
-      pepper: "integration-test-only-pepper-0123456789",
-      cookieSecret: "integration-test-only-cookie-secret-0123456789",
-      secureCookie: false,
-      sessionMinutes: 60,
-      totpIssuer: "example.test",
-    })
-    // The page's two calls, over one cookie jar: the request on a German page, then its code.
-    const app = new Hono<APIContext>()
-    app.use(signIn.auth.parseAuth)
-    app.post(
-      "/request",
-      async (c) =>
-        c.json({ ok: await signIn.requestSignUp(c, "anna@example.com", "Passw0rd!", null, "de") }),
-    )
-    app.post("/verify", async (c) => {
-      const result = await signIn.completeSignUp(c, (await c.req.json()).code)
-      return c.json(
-        result.outcome === SignUpOutcome.Created ? { userId: result.signedIn.user.id } : result,
-      )
-    })
-    let cookie = ""
-    const call = async (path: string, body: unknown = {}) => {
-      const response = await app.request(`http://local${path}`, {
-        method: "POST",
-        headers: { "content-type": "application/json", cookie },
-        body: JSON.stringify(body),
-      })
-      cookie = response.headers.getSetCookie().map((line) => line.split(";")[0]).join("; ")
-      return await response.json()
-    }
+    const groupId = await signUpInGerman(sql, NOTES_ON)
 
-    expect(await call("/request")).toEqual({ ok: true })
-    await worker.drainOnce()
-    const code = sent.findLast((mail) => mail.to === "anna@example.com")!.text!.split("\n\n")[1]
-    const { userId } = await call("/verify", { code: code.trim() })
-    expect(typeof userId).toBe("number")
-    // Nothing saved a language for the person: only the sign-up page named one.
-    expect(await sql`SELECT 1 FROM user_preferences WHERE user_id = ${userId} AND version > 0`)
-      .toHaveLength(0)
-    await worker.drainOnce()
-
-    const [{ groupId }] = await sql<{ groupId: string }[]>`
-      SELECT group_id FROM group_members WHERE user_id = ${userId}
-    `
     const names = (await categoriesOf(sql, groupId)).map(({ name }) => name)
     expect(names).toContain("Lebensmittel")
     expect(names).not.toContain("Groceries")
-    const creators = await sql`
-      SELECT DISTINCT created_by_user_id FROM categories WHERE group_id = ${groupId}
-    `
-    expect(creators.map((row) => row.createdByUserId)).toEqual([userId])
+    expect((await notesOf(sql, groupId)).map((note) => note.title)).toEqual([WELCOME_NOTE_TITLE])
+  })
+})
+
+Deno.test("with the notes off, sign-up still gives the starter categories in the sign-up page's language, and no note", async () => {
+  await withSchema(async (sql) => {
+    const groupId = await signUpInGerman(sql, NOTES_OFF)
+
+    const names = (await categoriesOf(sql, groupId)).map(({ name }) => name)
+    expect(names).toHaveLength(14)
+    expect(names).toContain("Lebensmittel")
+    expect(names).not.toContain("Groceries")
+    expect(await notesOf(sql, groupId)).toEqual([])
   })
 })

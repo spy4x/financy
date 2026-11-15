@@ -8,6 +8,7 @@ import { readMailReader } from "../mail/reader.ts"
 import { translatorFor } from "../mail/mail.ts"
 import { PostgresBillingRepository } from "../billing/postgres-billing-repository.ts"
 import { PostgresNoteRepository } from "../notes/postgres-note-repository.ts"
+import { NOTES_ON, type NotesSetup } from "../notes/setup.ts"
 import { enqueueJob, type JobHandler } from "./jobs.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
@@ -61,16 +62,18 @@ export interface StarterDataPlan {
    * allows no note gives a new group nothing, so it starts empty.
    */
   plans?: readonly Plan[]
+  /** The notes example's switch (`readNotesSetup`), left out on. Off, there is no welcome note. */
+  notes?: NotesSetup
 }
 
 /**
- * Writes `plan.sampleData`, if any, and creates the welcome note in the person's first group, then
- * sets `done_at`. The note's id is the
- * request's id, so a job that runs twice (a forced retry, a crash between the note and the marker)
- * adds one note: the second insert finds the first and does nothing. Once `done_at` is set the job
- * does not look at the notes again, so a note the person deleted stays deleted. A person with no
- * active group left, or whose group is at its plan's note cap, gets nothing, and the request is
- * closed.
+ * Writes `plan.sampleData`, if any, creates the welcome note in the person's first group and
+ * writes Financy's starter categories there, then sets `done_at`. With the notes off it does the
+ * same without the note. The note's id is the request's id, so a job that runs twice (a forced
+ * retry, a crash between the note and the marker) adds one note: the second insert finds the first
+ * and does nothing. Once `done_at` is set the job does not look at the notes again, so a note the
+ * person deleted stays deleted. A person with no active group left gets nothing; a group at its
+ * plan's note cap gets the categories but no note. Either way the request is closed.
  */
 export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): JobHandler {
   const billing = new PostgresBillingRepository(sql)
@@ -82,6 +85,8 @@ export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): J
     `
     if (!request || request.doneAt) return
     await plan.sampleData?.(request.userId)
+    // Financy writes its starter categories into this group, so it is looked up with the notes
+    // off too; only the welcome note depends on the switch.
     const [group] = await sql<{ id: string }[]>`
       SELECT groups.id
       FROM group_members
@@ -91,7 +96,7 @@ export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): J
       ORDER BY groups.created_at, groups.id
       LIMIT 1
     `
-    if (group) {
+    if (group && (plan.notes ?? NOTES_ON).on) {
       try {
         // The cap the API's gate would apply: none while billing is off.
         const allowance = plan.billingEnabled
@@ -121,6 +126,8 @@ export function starterDataJob(sql: postgres.Sql, plan: StarterDataPlan = {}): J
         // nothing to seed, and a retry would only meet the same answer.
         if (!(error instanceof NoteError || error instanceof PlanError)) throw error
       }
+    }
+    if (group) {
       await writeStarterCategories(sql, group.id, request, event.aggregateId)
     }
     await sql`UPDATE starter_data_requests SET done_at = now() WHERE id = ${event.aggregateId}`

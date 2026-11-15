@@ -285,7 +285,7 @@ export interface AppDbBaseOptions {
   userCache?: RowCache<User>
   /**
    * The notes switch (`NOTES`). Off, the changes pull, the group data move and a group's export
-   * and import leave notes and tags out, and sign-up queues no starter data. Defaults to on.
+   * and import leave notes and tags out. Sign-up queues the starter data either way. Defaults to on.
    */
   notes?: NotesSetup
 }
@@ -587,16 +587,15 @@ export class AppDbBase extends DbServiceBase {
    * access, like `group`: `queue` belongs inside the sign-up's `begin()`.
    */
   get starterData() {
-    const { sql, notes } = this
+    const sql = this.sql
     return {
       /**
-       * Writes the marker row and queues the worker job that creates the welcome note, with the
-       * sign-up page's `language` for the starter categories. With the notes off it does nothing:
-       * the worker does not read `NOTES`.
+       * Writes the marker row and queues the worker job that writes the starter data, with the
+       * sign-up page's `language` for the starter categories, with the notes on or off: the job
+       * reads `NOTES` itself and skips only the welcome note.
        */
-      queue: async (userId: number, language: string | null = null): Promise<void> => {
-        if (notes.on) await scheduleStarterData(sql, userId, language)
-      },
+      queue: (userId: number, language: string | null = null): Promise<void> =>
+        scheduleStarterData(sql, userId, language),
     }
   }
 
