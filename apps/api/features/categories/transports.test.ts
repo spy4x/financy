@@ -551,17 +551,19 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
-    it("answers a retried create with the first category", async () => {
+    it("answers a retried create with the first category, and refuses the id with other aliases", async () => {
       const s = stack()
       const as = open(s, OWNER)
 
-      await as.command("category.create", food)
-      const again = await as.command("category.create", food)
+      await as.command("category.create", { ...food, aliases: ["Lidl"] })
+      const again = await as.command("category.create", { ...food, aliases: ["Lidl"] })
 
       expect(again).toMatchObject({
         kind: "server.result",
         payload: { created: false, category: { id: foodId, version: 1 } },
       })
+      expect(await as.command("category.create", { ...food, aliases: ["Aldi"] }))
+        .toMatchObject({ kind: "server.error", details: { code: "ID_ALREADY_EXISTS" } })
       expect(s.categories.categories.size).toBe(1)
       as.shutdown()
     })

@@ -346,10 +346,10 @@ Deno.test("categories against Postgres", async (t) => {
     )
 
     await t.step(
-      "a retried create is answered with the first category and stores one row",
+      "a retried create is answered with the first category and stores one row, and one with another name or other aliases is refused",
       async () => {
         const { groupId, owner } = await team(sql)
-        const input = { groupId, id: uuidV7(), ...fields, allowance: null }
+        const input = { groupId, id: uuidV7(), ...fields, aliases: ["Lidl"], allowance: null }
 
         const first = await categories.create(input, owner)
         const again = await categories.create(input, owner)
@@ -357,6 +357,8 @@ Deno.test("categories against Postgres", async (t) => {
         expect([first.created, again.created]).toEqual([true, false])
         expect(again.category.id).toBe(first.category.id)
         expect(await refusal(categories.create({ ...input, name: "Other" }, owner)))
+          .toMatchObject({ code: "ID_ALREADY_EXISTS" })
+        expect(await refusal(categories.create({ ...input, aliases: ["Aldi"] }, owner)))
           .toMatchObject({ code: "ID_ALREADY_EXISTS" })
         expect(await categories.list(groupId)).toHaveLength(1)
       },
