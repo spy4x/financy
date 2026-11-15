@@ -997,7 +997,7 @@ async function budgetContents(sql: postgres.Sql, groupId: string) {
     FROM budget_moves m
     JOIN categories f ON f.id = m.from_category_id AND f.group_id = m.group_id
     JOIN categories t ON t.id = m.to_category_id AND t.group_id = m.group_id
-    WHERE m.group_id = ${groupId} ORDER BY m.month
+    WHERE m.group_id = ${groupId} ORDER BY m.month, f.name, t.name
   `
   return { budgets: [...budgets], methods: [...methods], moves: [...moves] }
 }
@@ -1061,7 +1061,7 @@ Deno.test("an export imported by another person gives the same budget limits, me
   })
 })
 
-Deno.test("an export imports when a category with a limit and an envelope move switched to income: the import skips those rows, as the reads ignore them", async () => {
+Deno.test("an export imports when a category with a limit and an envelope move switched to income: the import skips the limit, which the reads ignore, and keeps the move, whose expense side still counts", async () => {
   await withSchema(async (sql) => {
     const source = await seed(sql)
     await seedBudgets(sql, source)
@@ -1110,13 +1110,22 @@ Deno.test("an export imports when a category with a limit and an envelope move s
         { category: "Groceries", month: "2026-11", amount: null, currency: null },
       ],
       methods: [{ month: "2026-11", method: 2 }],
-      moves: [{
-        fromCategory: "Food",
-        toCategory: "Groceries",
-        month: "2026-11",
-        amount: "2500",
-        currency: "EUR",
-      }],
+      moves: [
+        {
+          fromCategory: "Food",
+          toCategory: "Gifts",
+          month: "2026-11",
+          amount: "700",
+          currency: "EUR",
+        },
+        {
+          fromCategory: "Food",
+          toCategory: "Groceries",
+          month: "2026-11",
+          amount: "2500",
+          currency: "EUR",
+        },
+      ],
     })
   })
 })

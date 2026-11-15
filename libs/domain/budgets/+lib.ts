@@ -1050,10 +1050,11 @@ export function budgetReferenceProblems(
 }
 
 /**
- * The rows all of whose categories are expense categories, the only kind a limit or an envelope
- * move counts in. A category with no entries may switch to income while budget rows name it, so
- * the app itself makes such rows; an import skips them instead of refusing the file, as the reads
- * ignore them. A category the file lacks is a refusal of the reference checks, run before this.
+ * The rows all of whose categories are expense categories, the only kind a limit counts in. A
+ * category with no entries may switch to income while limits name it, so the app itself makes
+ * such rows; an import skips those limits instead of refusing the file, as the reads ignore them.
+ * Envelope moves never pass through here: the read counts each side that is still an expense
+ * category. A category the file lacks is a refusal of the reference checks, run before this.
  */
 export function rowsInExpenseCategories<T>(
   rows: readonly T[],

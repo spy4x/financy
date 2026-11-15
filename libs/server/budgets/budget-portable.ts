@@ -67,8 +67,8 @@ async function insertAll(
  * limits included, in the currency it was set in. On import each row gets a new id and names the
  * new id of its category, which the registry writes before it. A row whose category the file
  * lacks, or a second row for one category and month, refuses the whole import; a row whose
- * category is now an income category is skipped, as the reads ignore it. No plan cap counts them, and the plan's `budgets` feature gates only setting an amount,
- * so they import on any plan.
+ * category is now an income category is skipped, as the reads ignore it. No plan cap counts them,
+ * and the plan's `budgets` feature gates only setting an amount, so they import on any plan.
  */
 export const budgetPortable = portable<BudgetExportEntry>({
   kind: `budgets`,
@@ -156,8 +156,9 @@ export const budgetMethodPortable = portable<BudgetMethodExportEntry>({
 /**
  * Envelope moves in a household's export file: money moved between two categories in a month, in
  * the currency it was made in. On import each gets a new id and names the new ids of its two
- * categories; one whose category the file lacks refuses the whole import, and one naming a
- * category that is now an income category is skipped, as the move command refuses those.
+ * categories; one whose category the file lacks refuses the whole import. One naming a category
+ * that is now an income category is kept: the budget read counts each side that is still an
+ * expense category, so dropping it would change that side's envelope.
  */
 export const budgetMovePortable = portable<BudgetMoveExportEntry>({
   kind: `budgetMoves`,
@@ -179,12 +180,7 @@ export const budgetMovePortable = portable<BudgetMoveExportEntry>({
     const category = await categoriesOf(sql, context)
     refuse(`budgetMoves`, `Budget move`, budgetMoveReferenceProblems(moves, category))
     const newCategory = (fileId: string) => context.newIdOf(`categories`, fileId)!
-    const kept = rowsInExpenseCategories(
-      moves,
-      (move) => [move.fromCategoryId, move.toCategoryId],
-      category,
-    )
-    const rows = kept.map((move) => {
+    const rows = moves.map((move) => {
       const id = uuidV7()
       ids.set(move.id, id)
       return {
