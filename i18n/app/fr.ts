@@ -2530,6 +2530,22 @@ export default {
   "MoneyWidgets.netLink": "Voir toutes les opérations de cette période",
   "MoneyWidgets.incomeLink": "Voir les opérations de revenus",
   "MoneyWidgets.spendingLink": "Voir les opérations de dépenses",
+  "MoneyWidgets.categoriesTitle": "Où est passé l’argent",
+  "MoneyWidgets.categoriesLoading": "Chargement de où est passé l’argent…",
+  "MoneyWidgets.categoriesError": "Impossible de charger où est passé l’argent.",
+  "MoneyWidgets.categoriesTop":
+    "La plus grosse part est allée à {category} : {share} de vos dépenses.",
+  "MoneyWidgets.categoriesTopAbout":
+    "La plus grosse part est allée à {category} : environ {share} de vos dépenses.",
+  "MoneyWidgets.categoriesShareTiny": "moins de 1 %",
+  "MoneyWidgets.categoriesColumnCategory": "Catégorie",
+  "MoneyWidgets.categoriesColumnSpent": "Dépensé",
+  "MoneyWidgets.categoriesColumnShare": "Part",
+  "MoneyWidgets.categoriesMore": {
+    "one": "Et {count} autre catégorie",
+    "many": "Et {count} autres catégories",
+    "other": "Et {count} autres catégories",
+  },
   "BudgetWidgets.title": "Budgets",
   "BudgetWidgets.loading": "Chargement des budgets…",
   "BudgetWidgets.error": "Impossible de charger les budgets.",
