@@ -45,7 +45,12 @@ import {
   createImportUndoHandler,
   type ImportHandlerDependencies,
 } from "../../apps/api/features/imports/handlers.ts"
-import { team, withSchema } from "./group-team.ts"
+import { Hono } from "hono"
+import type { APIContext } from "../../apps/api/_types.ts"
+import { apiError } from "../../apps/api/_testing/api-error.ts"
+import { buildAuthData } from "../../apps/api/_testing/fake-auth.ts"
+import { createImportsRoute } from "../../apps/api/routes/imports.ts"
+import { holdMemberChange, stillWaiting, team, withSchema } from "./group-team.ts"
 
 /**
  * The bank statement import against a real Postgres built from schema.sql: a preview that writes
@@ -64,7 +69,7 @@ const FIXTURES = new URL(`./statements/`, import.meta.url)
 const actor = (userId: number) => ({ userId }) as Actor
 const job = (id: string) => ({ id: uuidV7(), aggregateId: id }) as OutboxEvent
 
-async function fixture(name: string): Promise<Uint8Array> {
+async function fixture(name: string): Promise<Uint8Array<ArrayBuffer>> {
   return await Deno.readFile(new URL(name, FIXTURES))
 }
 
@@ -506,3 +511,153 @@ Deno.test("statement imports: the admin list shows the kind and the counts, and 
     }
   })
 })
+
+// #region The route
+// Imports travel over HTTP only, never the socket or `/api/call`: a file is an upload
+// (`apps/api/routes/imports.ts`). These run the route on the real handlers and this database.
+
+/** The imports route as `userId` sees it, on the real handlers over this database. */
+function route(sql: postgres.Sql, userId: number) {
+  const api = handlers(sql)
+  const hono = new Hono<APIContext>()
+  hono.use(`*`, async (c, next) => {
+    c.set(`requestId`, `req-statement-1`)
+    c.set(`auth`, buildAuthData({ user: { id: userId } }))
+    await next()
+  })
+  hono.route(
+    `/groups/:groupId/imports`,
+    createImportsRoute({
+      create: api.create,
+      list: () => Promise.reject(new Error(`not used`)),
+      get: api.get,
+      check: api.check,
+      commit: api.commit,
+      undo: api.undo,
+    }),
+  )
+  return hono
+}
+
+/** POSTs `file` as a bank statement for the household's account, as `userId`. */
+async function post(
+  sql: postgres.Sql,
+  h: Household,
+  userId: number,
+  file: Uint8Array<ArrayBuffer>,
+  options: Record<string, string> = h.options,
+) {
+  const query = new URLSearchParams({
+    kind: `bank-statement`,
+    name: `statement.ofx`,
+    options: JSON.stringify(options),
+  })
+  return await route(sql, userId).request(
+    `http://local/groups/${h.groupId}/imports?${query}`,
+    {
+      method: `POST`,
+      headers: {
+        cookie: `sessionIdToken=1:token`,
+        origin: `http://local`,
+        "sec-fetch-site": `same-origin`,
+      },
+      body: file,
+    },
+  )
+}
+
+async function importCount(sql: postgres.Sql): Promise<number> {
+  const [{ count }] = await sql<{ count: number }[]>`SELECT count(*)::int FROM imports`
+  return count
+}
+
+Deno.test("statement route: an editor's upload answers 201; a viewer is refused for the role", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const file = await fixture(`statement.ofx`)
+
+    const viewer = await post(sql, h, h.viewer, file)
+    expect([viewer.status, (await apiError(viewer)).reason]).toEqual([403, `ROLE_INSUFFICIENT`])
+    expect(await importCount(sql)).toBe(0)
+
+    const editor = await post(sql, h, h.editor, file)
+    expect(editor.status).toBe(201)
+    expect(await importCount(sql)).toBe(1)
+  })
+})
+
+Deno.test("statement route: a removed member's upload answers that the group is not found", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await sql`DELETE FROM group_members WHERE group_id = ${h.groupId} AND user_id = ${h.editor}`
+
+    const response = await post(sql, h, h.editor, await fixture(`statement.ofx`))
+    expect([response.status, (await apiError(response)).reason]).toEqual([404, `GROUP_NOT_FOUND`])
+    expect(await importCount(sql)).toBe(0)
+  })
+})
+
+Deno.test("statement route: an upload racing the uploader's removal waits for it, then stores nothing", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const file = await fixture(`statement.ofx`)
+    const removal = await holdMemberChange(sql, h.groupId, h.owner, h.editor, `removal`)
+
+    const upload = post(sql, h, h.editor, file)
+    expect(await stillWaiting(upload)).toBe(true)
+    removal.release()
+    await removal.committed
+
+    const response = await upload
+    expect([response.status, (await apiError(response)).reason]).toEqual([404, `GROUP_NOT_FOUND`])
+    expect(await importCount(sql)).toBe(0)
+  })
+})
+
+Deno.test("statement route: a save racing the uploader's removal waits for it, then saves no entry", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const read = await uploaded(sql, h, await fixture(`statement.ofx`))
+    await handlers(sql).commit(
+      new ImportCommitCommand({
+        actor: actor(h.editor),
+        groupId: h.groupId,
+        importId: read.id,
+        mapping: MAPPING,
+      }),
+    )
+    const removal = await holdMemberChange(sql, h.groupId, h.owner, h.editor, `removal`)
+
+    const save = importCommitJob(sql, NO_BILLING)(job(read.id))
+    expect(await stillWaiting(save)).toBe(true)
+    removal.release()
+    await removal.committed
+    await save
+
+    expect(await entries(sql, h.groupId)).toEqual([])
+    const [row] = await sql<{ status: ImportStatus }[]>`
+      SELECT status FROM imports WHERE id = ${read.id}
+    `
+    expect(row.status).toBe(ImportStatus.FAILED)
+  })
+})
+
+Deno.test("statement route: an account of another household answers not found, naming the account", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const other = await household(sql)
+
+    const response = await post(sql, h, h.editor, await fixture(`statement.ofx`), {
+      ...h.options,
+      accountId: other.bank,
+    })
+    const error = await apiError(response)
+    expect([response.status, error.reason, error.message]).toEqual([
+      404,
+      `ITEM_NOT_FOUND`,
+      `Account not found`,
+    ])
+    expect(await importCount(sql)).toBe(0)
+  })
+})
+// #endregion The route
