@@ -1,7 +1,14 @@
 import { type Type, type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
 import type { Actor } from "@domain/identity"
-import { canMutateNotes, canRead, canRename, type GroupRole } from "@domain/groups"
+import {
+  canMutateNotes,
+  canRead,
+  canRename,
+  type GroupImportIssue,
+  type GroupRole,
+  plainEntryProblem,
+} from "@domain/groups"
 import { CategoryKind } from "@domain/categories"
 import type { EntryRateLookup, Ledger } from "@domain/transactions"
 import { convertMoney, currencyCode } from "@spy4x/platform/universal/money"
@@ -862,3 +869,223 @@ export interface BudgetRepository {
   timeZoneOf(groupId: string): Promise<string | null>
 }
 // #endregion Ports
+
+// #region Export file
+/**
+ * One budget row in a household's export file: its category, by its id in the same file, the
+ * month it starts in and its amount and currency, `null` together for a removed limit. Never a
+ * person or a version.
+ */
+export const budgetExportEntrySchema = type({
+  id: UUID_PATTERN,
+  categoryId: UUID_PATTERN,
+  month: calendarMonth,
+  amount: type(`1 <= number.integer <= ${BUDGET_AMOUNT_MAX}`).or(`null`),
+  currency: currencyCode.or(`null`),
+  createdAt: `string.date.iso.parse`,
+  updatedAt: `string.date.iso.parse`,
+  "+": `reject`,
+})
+export type BudgetExportEntry = typeof budgetExportEntrySchema.infer
+
+/** One budgeting method row in a household's export file: the method from its month on. */
+export const budgetMethodExportEntrySchema = type({
+  id: UUID_PATTERN,
+  month: calendarMonth,
+  method: type.enumerated(BudgetMethod.LIMITS, BudgetMethod.ENVELOPES),
+  createdAt: `string.date.iso.parse`,
+  updatedAt: `string.date.iso.parse`,
+  "+": `reject`,
+})
+export type BudgetMethodExportEntry = typeof budgetMethodExportEntrySchema.infer
+
+/**
+ * One envelope move in a household's export file: money moved between two categories, by their
+ * ids in the same file, in one month, in the currency it was made in. Never a person.
+ */
+export const budgetMoveExportEntrySchema = type({
+  id: UUID_PATTERN,
+  month: calendarMonth,
+  fromCategoryId: UUID_PATTERN,
+  toCategoryId: UUID_PATTERN,
+  amount: type(`1 <= number.integer <= ${BUDGET_AMOUNT_MAX}`),
+  currency: currencyCode,
+  createdAt: `string.date.iso.parse`,
+  "+": `reject`,
+})
+export type BudgetMoveExportEntry = typeof budgetMoveExportEntrySchema.infer
+
+/** What a refusal calls each field of a budget file entry. */
+const BUDGET_EXPORT_LABELS = {
+  id: `id`,
+  categoryId: `category`,
+  fromCategoryId: `from category`,
+  toCategoryId: `to category`,
+  month: `month`,
+  method: `method`,
+  amount: `amount`,
+  currency: `currency`,
+  createdAt: `creation date`,
+  updatedAt: `last change date`,
+}
+
+/** `schema`'s reading of `entry`, or `BudgetError("INVALID_REQUEST")` in plain words. */
+function parseBudgetFileEntry<S extends Type<object>>(
+  schema: S,
+  noun: string,
+  entry: unknown,
+): S["infer"] {
+  const shape = schema(entry)
+  if (shape instanceof type.errors) {
+    throw new BudgetError(
+      `INVALID_REQUEST`,
+      plainEntryProblem(shape, noun, BUDGET_EXPORT_LABELS),
+      fieldErrors(shape),
+    )
+  }
+  return shape as S["infer"]
+}
+
+/**
+ * Checks one budget row of a file with the rules of a set: a whole amount above zero, or none,
+ * with a currency exactly when it has an amount. Throws `BudgetError`.
+ */
+export function parseBudgetExportEntry(entry: unknown): BudgetExportEntry {
+  const budget = parseBudgetFileEntry(budgetExportEntrySchema, `budget`, entry)
+  if ((budget.amount === null) !== (budget.currency === null)) {
+    throw new BudgetError(
+      `INVALID_REQUEST`,
+      `the currency must be there exactly when the amount is`,
+      { currency: { code: `mismatch` } },
+    )
+  }
+  return budget
+}
+
+/** Checks one budgeting method row of a file. Throws `BudgetError`. */
+export function parseBudgetMethodExportEntry(entry: unknown): BudgetMethodExportEntry {
+  return parseBudgetFileEntry(budgetMethodExportEntrySchema, `budget method`, entry)
+}
+
+/**
+ * Checks one envelope move of a file with the rules of a move: an amount above zero, into another
+ * envelope than it comes from. Throws `BudgetError`.
+ */
+export function parseBudgetMoveExportEntry(entry: unknown): BudgetMoveExportEntry {
+  const move = parseBudgetFileEntry(budgetMoveExportEntrySchema, `budget move`, entry)
+  if (move.fromCategoryId === move.toCategoryId) {
+    throw new BudgetError(`INVALID_REQUEST`, `it moves money into the envelope it comes from`, {
+      toCategoryId: { code: `same` },
+    })
+  }
+  return move
+}
+
+/** A problem a file's budget entries have, by index, for the import's check. */
+export interface BudgetFileProblem {
+  index: number
+  problem: string
+  issue: GroupImportIssue
+}
+
+/**
+ * What is wrong across a file's budget rows: a second row for the same category and month, which
+ * a household cannot hold.
+ */
+export function budgetExportProblems(
+  budgets: readonly Pick<BudgetExportEntry, `categoryId` | `month`>[],
+): BudgetFileProblem[] {
+  return repeats(budgets, (budget) => `${budget.categoryId} ${budget.month}`).map((index) => ({
+    index,
+    problem: `another budget in the file has the same category and month`,
+    issue: { code: `duplicate`, field: `month` },
+  }))
+}
+
+/**
+ * What is wrong across a file's budgeting method rows: a second row for the same month, which a
+ * household cannot hold.
+ */
+export function budgetMethodExportProblems(
+  methods: readonly Pick<BudgetMethodExportEntry, `month`>[],
+): BudgetFileProblem[] {
+  return repeats(methods, (method) => method.month).map((index) => ({
+    index,
+    problem: `another budget method in the file has the same month`,
+    issue: { code: `duplicate`, field: `month` },
+  }))
+}
+
+/** The indexes of the entries whose key an earlier entry already had. */
+function repeats<T>(entries: readonly T[], keyOf: (entry: T) => string): number[] {
+  const seen = new Set<string>()
+  const found: number[] = []
+  entries.forEach((entry, index) => {
+    const key = keyOf(entry)
+    if (seen.has(key)) found.push(index)
+    seen.add(key)
+  })
+  return found
+}
+
+/** The category a budget file entry names, by its id in the file; `null` when the file has none. */
+export type BudgetFileCategory = (fileId: string) => { kind: CategoryKind } | null
+
+/** What is wrong between a file's budget rows and its categories: one the file lacks, by index. */
+export function budgetReferenceProblems(
+  budgets: readonly Pick<BudgetExportEntry, `categoryId`>[],
+  category: BudgetFileCategory,
+): BudgetFileProblem[] {
+  const problems: BudgetFileProblem[] = []
+  budgets.forEach((budget, index) => {
+    if (category(budget.categoryId) === null) {
+      problems.push({
+        index,
+        problem: `its category is not among the file's categories`,
+        issue: { code: `notFound`, field: `categoryId` },
+      })
+    }
+  })
+  return problems
+}
+
+/**
+ * The rows all of whose categories are expense categories, the only kind a limit counts in. A
+ * category with no entries may switch to income while limits name it, so the app itself makes
+ * such rows; an import skips those limits instead of refusing the file, as the reads ignore them.
+ * Envelope moves never pass through here: the read counts each side that is still an expense
+ * category. A category the file lacks is a refusal of the reference checks, run before this.
+ */
+export function rowsInExpenseCategories<T>(
+  rows: readonly T[],
+  categoryIdsOf: (row: T) => readonly string[],
+  category: BudgetFileCategory,
+): T[] {
+  return rows.filter((row) =>
+    categoryIdsOf(row).every((id) => category(id)?.kind === CategoryKind.EXPENSE)
+  )
+}
+
+/** What is wrong between a file's envelope moves and its categories: one the file lacks, by index. */
+export function budgetMoveReferenceProblems(
+  moves: readonly Pick<BudgetMoveExportEntry, `fromCategoryId` | `toCategoryId`>[],
+  category: BudgetFileCategory,
+): BudgetFileProblem[] {
+  const problems: BudgetFileProblem[] = []
+  moves.forEach((move, index) => {
+    const field = category(move.fromCategoryId) === null
+      ? `fromCategoryId`
+      : category(move.toCategoryId) === null
+      ? `toCategoryId`
+      : null
+    if (field !== null) {
+      problems.push({
+        index,
+        problem: `its category is not among the file's categories`,
+        issue: { code: `notFound`, field },
+      })
+    }
+  })
+  return problems
+}
+// #endregion Export file

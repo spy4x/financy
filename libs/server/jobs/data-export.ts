@@ -41,9 +41,9 @@ data.json holds everything in one file. Each CSV file holds one kind of row: the
 section of data.json with its name. Dates and times are ISO 8601 in UTC. CSV files are UTF-8 with a
 header row.
 
-Finance accounts, categories, entries and transfers are the ones you created in the groups you
-belong to. Other people's accounts, entries and transfers, and their names and addresses, are not
-here.
+Finance accounts, categories, entries, transfers and budgets are the ones you created in the
+groups you belong to. Other people's accounts, entries, transfers and budgets, and their names and
+addresses, are not here.
 An amount is a whole number in its currency's smallest unit: 1234 in USD is 12.34.
 `
 
