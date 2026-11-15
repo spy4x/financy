@@ -556,6 +556,10 @@ export interface Ledger {
    * `currency` and nothing needed a rate.
    */
   rateDate: string | null
+  /** {@link rateDate} of the income entries alone: whether income is converted, and how lately. */
+  incomeRateDate: string | null
+  /** {@link rateDate} of the expenses and refunds alone. */
+  spendingRateDate: string | null
   tooLarge: boolean
 }
 
@@ -603,7 +607,8 @@ export async function summarizeLedger(
   }
   const incomeLeftOut = new Set<string>()
   const spendingLeftOut = new Set<string>()
-  let rateDate: string | null = null
+  let incomeRateDate: string | null = null
+  let spendingRateDate: string | null = null
   let tooLarge = false
   let income = 0n
   const spentByCategory = new Map<string, bigint>()
@@ -620,11 +625,12 @@ export async function summarizeLedger(
       else (isIncome ? incomeLeftOut : spendingLeftOut).add(row.currency)
       continue
     }
-    if (rate && (rateDate === null || rate.date > rateDate)) rateDate = rate.date
     if (isIncome) {
+      incomeRateDate = newer(incomeRateDate, rate?.date ?? null)
       income += BigInt(result.value)
       continue
     }
+    spendingRateDate = newer(spendingRateDate, rate?.date ?? null)
     const spent = -BigInt(result.value)
     for (const id of new Set([category.id, category.parentId ?? category.id])) {
       spentByCategory.set(id, (spentByCategory.get(id) ?? 0n) + spent)
@@ -663,9 +669,16 @@ export async function summarizeLedger(
     leftOut: [...new Set([...incomeLeftOut, ...spendingLeftOut])].sort(),
     incomeLeftOut: [...incomeLeftOut].sort(),
     spendingLeftOut: [...spendingLeftOut].sort(),
-    rateDate,
+    rateDate: newer(incomeRateDate, spendingRateDate),
+    incomeRateDate,
+    spendingRateDate,
     tooLarge,
   }
+}
+
+/** The later of two calendar days, either of which may be missing. */
+function newer(a: string | null, b: string | null): string | null {
+  return a === null || (b !== null && b > a) ? b : a
 }
 
 /**

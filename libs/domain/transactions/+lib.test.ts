@@ -434,6 +434,8 @@ describe("the ledger summary", () => {
       incomeLeftOut: [],
       spendingLeftOut: [],
       rateDate: null,
+      incomeRateDate: null,
+      spendingRateDate: null,
       tooLarge: false,
     })
   })
@@ -537,9 +539,13 @@ describe("the ledger summary", () => {
       lookupFrom({}),
     )
 
-    expect(converted.rateDate).toBe("2026-11-05")
-    expect(plain.rateDate).toBeNull()
-    expect(rateless.rateDate).toBeNull()
+    expect(converted).toMatchObject({
+      rateDate: "2026-11-05",
+      incomeRateDate: "2026-11-04",
+      spendingRateDate: "2026-11-05",
+    })
+    expect(plain).toMatchObject({ rateDate: null, incomeRateDate: null, spendingRateDate: null })
+    expect(rateless).toMatchObject({ rateDate: null, spendingRateDate: null })
   })
 
   it("converts a coin row by its 8 decimals, and names a coin with no price", async () => {
