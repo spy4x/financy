@@ -50,7 +50,8 @@ const LOCK_TIMEOUT = `30s`
 /**
  * Empties every table of the current schema except {@link KEPT_TABLES}, and deletes the demo's
  * sample rates from the kept rate history, in one transaction, and answers the tables it emptied.
- * Identities are not restarted: a new row never gets an id an old row had, so nothing cached under an old id (the API caches users by id) can describe a new one.
+ * Identities are not restarted: a new row never gets an id an old row had, so nothing cached
+ * under an old id (the API caches users by id) can describe a new one.
  * Running it twice leaves the same empty tables.
  */
 export async function wipeDatabase(sql: postgres.Sql): Promise<string[]> {
