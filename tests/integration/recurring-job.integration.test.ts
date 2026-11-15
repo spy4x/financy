@@ -213,6 +213,22 @@ Deno.test(`the repeating entries job against Postgres`, async (t) => {
       expect(await state(rule.id)).toEqual({ madeThrough: `2027-01-03`, pausedReason: null })
     })
 
+    await step(`makes each due entry once when two runs overlap`, async () => {
+      const h = await household()
+      const rule = await h.rule({ rrule: `FREQ=DAILY;INTERVAL=1` })
+
+      await Promise.all([run(`2027-01-05T12:00:00Z`), run(`2027-01-05T12:00:00Z`)])
+
+      expect(await datesOf(rule.id)).toEqual([
+        `2027-01-01`,
+        `2027-01-02`,
+        `2027-01-03`,
+        `2027-01-04`,
+        `2027-01-05`,
+      ])
+      expect((await state(rule.id)).madeThrough).toBe(`2027-01-05`)
+    })
+
     await step(
       `makes one entry when a crash left the entry written and made_through behind`,
       async () => {
