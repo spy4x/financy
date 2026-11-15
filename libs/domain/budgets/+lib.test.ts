@@ -80,7 +80,14 @@ const LEDGER_CATEGORIES: LedgerCategory[] = [
   { id: cafes, kind: CategoryKind.EXPENSE, parentId: food },
   { id: rent, kind: CategoryKind.EXPENSE, parentId: null },
 ]
-const CATEGORIES: BudgetCategory[] = LEDGER_CATEGORIES.map(({ id, parentId }) => ({ id, parentId }))
+const CATEGORIES: BudgetCategory[] = LEDGER_CATEGORIES.map(({ id, parentId }) => ({
+  id,
+  parentId,
+  archived: false,
+}))
+/** {@link CATEGORIES} with the given ones archived. */
+const archiving = (...ids: string[]): BudgetCategory[] =>
+  CATEGORIES.map((category) => ({ ...category, archived: ids.includes(category.id) }))
 
 /**
  * The month's readers over `rows`, through the real ledger summary, and the rate lookups made.
@@ -317,17 +324,77 @@ describe("a month of bars", () => {
       {
         ...november({}),
         categories: [
-          { id: rent, parentId: null },
-          { id: groceries, parentId: food },
-          { id: food, parentId: null },
-          { id: orphan, parentId: "019a5b0e-1af5-7f04-8ae4-b1ee5d114098" },
-          { id: cafes, parentId: food },
+          { id: rent, parentId: null, archived: false },
+          { id: groceries, parentId: food, archived: false },
+          { id: food, parentId: null, archived: false },
+          { id: orphan, parentId: "019a5b0e-1af5-7f04-8ae4-b1ee5d114098", archived: false },
+          { id: cafes, parentId: food, archived: false },
         ],
       },
       readers([]),
     )
 
     expect(month.rows.map((row) => row.categoryId)).toEqual([rent, food, groceries, cafes, orphan])
+  })
+
+  it("leaves an archived child out of a parent whose limit comes from its children, limit and spending alike", async () => {
+    const month = await budgetMonth(
+      {
+        ...november({ [groceries]: eur(30000), [cafes]: eur(20000) }),
+        categories: archiving(cafes),
+      },
+      readers([spent(groceries, 5000), spent(cafes, 4000), spent(food, 1000)]),
+    )
+
+    expect(month.rows.map((row) => row.categoryId)).toEqual([food, groceries, rent])
+    expect(month.rows[0]).toMatchObject({
+      categoryId: food,
+      limit: eur(30000),
+      source: BudgetLimitSource.CHILDREN,
+      spending: 6000,
+      percent: 20,
+    })
+  })
+
+  it("keeps an archived child's spending in a parent with its own limit", async () => {
+    const month = await budgetMonth(
+      {
+        ...november({ [food]: eur(50000), [groceries]: eur(30000) }),
+        categories: archiving(cafes),
+      },
+      readers([spent(groceries, 5000), spent(cafes, 4000), spent(food, 1000)]),
+    )
+
+    expect(month.rows[0]).toMatchObject({
+      categoryId: food,
+      limit: eur(50000),
+      source: BudgetLimitSource.OWN,
+      spending: 10000,
+    })
+  })
+
+  it("keeps an archived child's spending in a parent with no limit, and never takes its limit", async () => {
+    const month = await budgetMonth(
+      { ...november({ [cafes]: eur(20000) }), categories: archiving(cafes) },
+      readers([spent(groceries, 5000), spent(cafes, 4000), spent(food, 1000)]),
+    )
+
+    expect(month.rows[0]).toMatchObject({
+      categoryId: food,
+      limit: null,
+      source: null,
+      spending: 10000,
+    })
+  })
+
+  it("draws a live child of an archived parent on its own, with its own spending", async () => {
+    const month = await budgetMonth(
+      { ...november({ [groceries]: eur(30000) }), categories: archiving(food) },
+      readers([spent(groceries, 5000), spent(cafes, 4000), spent(food, 1000)]),
+    )
+
+    expect(month.rows.map((row) => row.categoryId)).toEqual([groceries, cafes, rent])
+    expect(month.rows[0]).toMatchObject({ parentId: food, spending: 5000, percent: 16 })
   })
 
   it("counts the month's expenses less its refunds, and shows a bar with no limit in the base currency (R15)", async () => {

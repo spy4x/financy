@@ -392,10 +392,12 @@ export interface BudgetLimit {
   currency: string
 }
 
-/** A live expense category, as the month lists it. */
+/** An expense category, as the month lists it. */
 export interface BudgetCategory {
   id: string
   parentId: string | null
+  /** An archived category gets no bar; it only takes its spending out of a parent's roll-up. */
+  archived: boolean
 }
 
 /** One category's bar for one month. */
@@ -406,8 +408,9 @@ export interface BudgetRow {
   limit: BudgetLimit | null
   source: BudgetLimitSource | null
   /**
-   * The month's expenses less refunds in the category, a parent's with its children's (R13), in
-   * {@link currency}; `null` only when the sum is past the safe range.
+   * The month's expenses less refunds in the category, a parent's with its children's (R13), less
+   * its archived children's when its limit comes from its children, in {@link currency}; `null`
+   * only when the sum is past the safe range.
    */
   spending: number | null
   /** The limit's currency, or the household's base currency when there is no limit. */
@@ -524,14 +527,15 @@ async function childrenLimit(
 }
 
 /**
- * One month of bars (R13, R15). `categories` are the household's live expense categories in the
- * order to show them; each parent is followed by its children, and a child whose parent is not
- * listed stands on its own. `limits` holds each category's limit in effect that month. A bar with
+ * One month of bars (R13, R15). `categories` are the household's expense categories in the order
+ * to show them; only the live ones get a bar, each parent followed by its children, and a child
+ * whose parent is not live stands on its own. `limits` holds each category's limit in effect that month. A bar with
  * no limit shows spending in `baseCurrency`. Spending comes from the household's ledger, read once
  * per currency the bars need, so refunds lower it and a parent's includes its children's; a
  * month's limit never carries what an earlier month left unspent. A parent without its own limit
- * compares with its children's, converted at the rate of the month's last day, or of `today`
- * while the month runs.
+ * compares with its live children's, converted at the rate of the month's last day, or of `today`
+ * while the month runs, and so its spending leaves out its archived children's entries: limit and
+ * spending cover the same children. A parent with its own limit, or with none, keeps them all.
  */
 export async function budgetMonth(
   input: {
@@ -547,11 +551,12 @@ export async function budgetMonth(
 ): Promise<BudgetMonth> {
   const { baseCurrency, categories, limits } = input
   const rateDate = input.to < input.today ? input.to : input.today
-  const listed = new Set(categories.map((category) => category.id))
-  const tops = categories.filter((category) =>
+  const live = categories.filter((category) => !category.archived)
+  const listed = new Set(live.map((category) => category.id))
+  const tops = live.filter((category) =>
     category.parentId === null || !listed.has(category.parentId)
   )
-  const childrenOf = (id: string) => categories.filter((category) => category.parentId === id)
+  const childrenOf = (id: string) => live.filter((category) => category.parentId === id)
   const ordered = tops.flatMap((top) => [top, ...childrenOf(top.id)])
 
   const bars = await Promise.all(ordered.map(async (category) => {
@@ -572,9 +577,14 @@ export async function budgetMonth(
   const rows = bars.map(({ category, limit, source, leftOut }): BudgetRow => {
     const currency = limit?.currency ?? baseCurrency
     const ledger = ledgers.get(currency)!
+    const spentIn = (id: string) =>
+      ledger.categories.find((entry) => entry.categoryId === id)?.spending ?? 0
+    const archivedChildren = source === BudgetLimitSource.CHILDREN
+      ? categories.filter((child) => child.archived && child.parentId === category.id)
+      : []
     const spending = ledger.tooLarge
       ? null
-      : ledger.categories.find((entry) => entry.categoryId === category.id)?.spending ?? 0
+      : archivedChildren.reduce((sum, child) => sum - spentIn(child.id), spentIn(category.id))
     const band = limit && spending !== null ? budgetBand(spending, limit.amount) : null
     return {
       categoryId: category.id,
@@ -863,7 +873,7 @@ export interface BudgetRepository {
   moveTotalsIn(groupId: string, from: string, to: string): Promise<BudgetMoveTotal[]>
   /** Each category's latest row at or before `month` (`YYYY-MM`), rows with no amount included. */
   limitsAt(groupId: string, month: string): Promise<Budget[]>
-  /** The household's live expense categories, by name. */
+  /** The household's expense categories, archived ones included, by name. */
   categories(groupId: string): Promise<BudgetCategory[]>
   /** The household's time zone, the one its months are cut in (R14). */
   timeZoneOf(groupId: string): Promise<string | null>
