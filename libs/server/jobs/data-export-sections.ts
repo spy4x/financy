@@ -298,6 +298,60 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       ORDER BY created_at, id`,
   },
   {
+    // The budget rows the person created, in households they still belong to: a category's limit
+    // from `month` (YYYY-MM) on, in `currency`'s smallest unit as decimal text, both empty for a
+    // removed limit. The category is an id from the list above or another member's.
+    name: `finance_budgets`,
+    columns: [
+      `id`,
+      `groupId`,
+      `categoryId`,
+      `month`,
+      `amount`,
+      `currency`,
+      `createdAt`,
+      `updatedAt`,
+    ],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, category_id, to_char(month, 'YYYY-MM') AS month,
+        amount::text AS amount, currency, created_at, updated_at
+      FROM budgets
+      WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
+    // The budgeting methods the person switched to, in households they still belong to: 1 is
+    // monthly limits and 2 envelopes, from `month` (YYYY-MM) on.
+    name: `finance_budget_methods`,
+    columns: [`id`, `groupId`, `month`, `method`, `createdAt`, `updatedAt`],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, to_char(month, 'YYYY-MM') AS month, method, created_at, updated_at
+      FROM budget_methods
+      WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
+    // The money the person moved between envelopes, in households they still belong to:
+    // `amount` in `currency`'s smallest unit, as decimal text, in `month` (YYYY-MM).
+    name: `finance_budget_moves`,
+    columns: [
+      `id`,
+      `groupId`,
+      `month`,
+      `fromCategoryId`,
+      `toCategoryId`,
+      `amount`,
+      `currency`,
+      `createdAt`,
+    ],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, to_char(month, 'YYYY-MM') AS month, from_category_id,
+        to_category_id, amount::text AS amount, currency, created_at
+      FROM budget_moves
+      WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
     // What the person did in their groups, by kind and id. `details` and the person acted on are
     // left out: they can name other people.
     name: `group_activity`,
