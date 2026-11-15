@@ -364,6 +364,91 @@ Deno.test("data export: lists the transfers the person created, deleted ones inc
   })
 })
 
+Deno.test("data export: lists the budget limits, methods and envelope moves the person set, never another member's or a former household's", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, editor, owner } = await team(sql)
+    const left = uuidV7()
+    // A household the editor never joined or has left: only the owner belongs to it.
+    await sql`
+      INSERT INTO groups (id, name, owner_user_id) VALUES (${left}, 'Former household', ${owner})
+    `
+    const expense = async (inGroup: string, name: string) => {
+      const id = uuidV7()
+      await sql`
+        INSERT INTO categories (id, group_id, name, kind, icon, color, change_sequence)
+        VALUES (${id}, ${inGroup}, ${name}, 1, 'tag', '#c2410c', 1)
+      `
+      return id
+    }
+    const food = await expense(groupId, `Food`)
+    const fun = await expense(groupId, `Fun`)
+    const elsewhere = await expense(left, `Food`)
+    const elsewhereFun = await expense(left, `Fun`)
+    const budget = async (inGroup: string, categoryId: string, month: string, userId: number) => {
+      const id = uuidV7()
+      await sql`
+        INSERT INTO budgets (id, group_id, category_id, month, amount, currency, change_sequence,
+          created_by_user_id)
+        VALUES (${id}, ${inGroup}, ${categoryId}, ${month}, 40000, 'EUR', 1, ${userId})
+      `
+      return id
+    }
+    const mine = await budget(groupId, food, `2026-11-01`, editor)
+    await budget(groupId, food, `2026-12-01`, owner)
+    await budget(left, elsewhere, `2026-11-01`, editor)
+    const method = uuidV7()
+    await sql`
+      INSERT INTO budget_methods (id, group_id, month, method, change_sequence, created_by_user_id)
+      VALUES (${method}, ${groupId}, '2026-11-01', 2, 1, ${editor}),
+        (${uuidV7()}, ${groupId}, '2026-12-01', 1, 1, ${owner}),
+        (${uuidV7()}, ${left}, '2026-11-01', 2, 1, ${editor})
+    `
+    const move = uuidV7()
+    await sql`
+      INSERT INTO budget_moves (id, group_id, month, from_category_id, to_category_id, amount,
+        currency, change_sequence, created_by_user_id)
+      VALUES (${move}, ${groupId}, '2026-11-01', ${food}, ${fun}, 2500, 'EUR', 1, ${editor}),
+        (${uuidV7()}, ${groupId}, '2026-11-01', ${fun}, ${food}, 100, 'EUR', 1, ${owner}),
+        (${uuidV7()}, ${left}, '2026-11-01', ${elsewhere}, ${elsewhereFun}, 300, 'EUR', 1, ${editor})
+    `
+
+    const files = unzip(await buildDataExport(sql, editor, new Date()))
+
+    const sections = JSON.parse(files[`data.json`]).sections
+    expect(sections.finance_budgets).toEqual([{
+      id: mine,
+      groupId,
+      categoryId: food,
+      month: `2026-11`,
+      amount: `40000`,
+      currency: `EUR`,
+      createdAt: expect.stringMatching(/^\d{4}-/),
+      updatedAt: expect.stringMatching(/^\d{4}-/),
+    }])
+    expect(sections.finance_budget_methods).toEqual([{
+      id: method,
+      groupId,
+      month: `2026-11`,
+      method: 2,
+      createdAt: expect.stringMatching(/^\d{4}-/),
+      updatedAt: expect.stringMatching(/^\d{4}-/),
+    }])
+    expect(sections.finance_budget_moves).toEqual([{
+      id: move,
+      groupId,
+      month: `2026-11`,
+      fromCategoryId: food,
+      toCategoryId: fun,
+      amount: `2500`,
+      currency: `EUR`,
+      createdAt: expect.stringMatching(/^\d{4}-/),
+    }])
+    expect(files[`finance_budgets.csv`].split(`\r\n`)[0]).toBe(
+      `﻿id,groupId,categoryId,month,amount,currency,createdAt,updatedAt`,
+    )
+  })
+})
+
 Deno.test("data export: lists the files the person attached, never another person's or the stored key", async () => {
   await withSchema(async (sql) => {
     const { groupId, editor, owner } = await team(sql)

@@ -224,6 +224,93 @@ async function rulesOf(sql: postgres.Sql, groupId: string) {
   ]
 }
 
+/**
+ * Inserts a budget row of `categoryId` from `month` (`YYYY-MM-01`) into `groupId`: 400.00 EUR, or
+ * a removed limit when `amount` is `null`; created by `userId`; answers its id.
+ */
+async function insertBudget(
+  sql: postgres.Sql,
+  groupId: string,
+  categoryId: string,
+  month: string,
+  userId: number,
+  amount: number | null = 40000,
+): Promise<string> {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO budgets (id, group_id, category_id, month, amount, currency, change_sequence,
+      created_by_user_id, updated_by_user_id)
+    VALUES (${id}, ${groupId}, ${categoryId}, ${month}, ${amount}, ${
+    amount === null ? null : "EUR"
+  },
+      1, ${userId}, ${userId})
+  `
+  return id
+}
+
+/** A group's budget rows by id. */
+async function budgetsOf(sql: postgres.Sql, groupId: string) {
+  return [
+    ...await sql`
+      SELECT id, category_id, to_char(month, 'YYYY-MM') AS month, amount::text AS amount, currency,
+        created_by_user_id, updated_by_user_id, version, change_sequence::text AS change_sequence
+      FROM budgets WHERE group_id = ${groupId} ORDER BY id
+    `,
+  ]
+}
+
+/** Inserts 25.00 EUR moved from `fromCategoryId` to `toCategoryId` in November 2026; its id. */
+async function insertBudgetMove(
+  sql: postgres.Sql,
+  groupId: string,
+  refs: { fromCategoryId: string; toCategoryId: string },
+  userId: number,
+): Promise<string> {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO budget_moves (id, group_id, month, from_category_id, to_category_id, amount,
+      currency, change_sequence, created_by_user_id)
+    VALUES (${id}, ${groupId}, '2026-11-01', ${refs.fromCategoryId}, ${refs.toCategoryId}, 2500,
+      'EUR', 1, ${userId})
+  `
+  return id
+}
+
+/** A group's envelope moves by id. */
+async function budgetMovesOf(sql: postgres.Sql, groupId: string) {
+  return [
+    ...await sql`
+      SELECT id, from_category_id, to_category_id, amount::text AS amount, created_by_user_id,
+        change_sequence::text AS change_sequence
+      FROM budget_moves WHERE group_id = ${groupId} ORDER BY id
+    `,
+  ]
+}
+
+/** Inserts the budgeting method `method` (1 limits, 2 envelopes) from `month`; answers its id. */
+async function insertBudgetMethod(
+  sql: postgres.Sql,
+  groupId: string,
+  month: string,
+  method: number,
+  userId: number,
+): Promise<string> {
+  const id = uuidV7()
+  await sql`
+    INSERT INTO budget_methods (id, group_id, month, method, change_sequence, created_by_user_id,
+      updated_by_user_id)
+    VALUES (${id}, ${groupId}, ${month}, ${method}, 1, ${userId}, ${userId})
+  `
+  return id
+}
+
+/** The ids of a group's budgeting method rows. */
+async function budgetMethodIdsOf(sql: postgres.Sql, groupId: string): Promise<string[]> {
+  return (await sql<{ id: string }[]>`
+    SELECT id FROM budget_methods WHERE group_id = ${groupId} ORDER BY id
+  `).map((row) => row.id)
+}
+
 /** Inserts a tag named `name` into `groupId`, created by `userId`; answers its id. */
 async function insertTag(
   sql: postgres.Sql,
@@ -447,6 +534,8 @@ Deno.test("moving all of a group's data", async (t) => {
             transactions: 0,
             transfers: 0,
             recurringRules: 0,
+            budgets: 0,
+            budgetMoves: 0,
             tags: 4,
             notes: 1,
           },
@@ -979,6 +1068,100 @@ Deno.test("moving all of a group's data", async (t) => {
     )
 
     await t.step(
+      "moves every budget limit and envelope move with the categories they name, ids and authors kept",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { owner, editor, from, to } = await seed(sql, [])
+        const food = await insertCategory(sql, from, "Food", editor)
+        const fun = await insertCategory(sql, from, "Fun", editor)
+        const limit = await insertBudget(sql, from, food, "2026-10-01", owner)
+        const removed = await insertBudget(sql, from, food, "2026-11-01", owner, null)
+        const move = await insertBudgetMove(
+          sql,
+          from,
+          { fromCategoryId: food, toCategoryId: fun },
+          owner,
+        )
+        const stampedWith = String(await sequenceOf(sql, to))
+
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result).toMatchObject({
+          moved: 5,
+          counts: { budgets: 2, budgetMoves: 1, categories: 2 },
+        })
+        expect(await budgetsOf(sql, from)).toEqual([])
+        expect(await budgetMovesOf(sql, from)).toEqual([])
+        const moved = {
+          categoryId: food,
+          createdByUserId: owner,
+          updatedByUserId: editor,
+          version: 2,
+          changeSequence: stampedWith,
+        }
+        expect(await budgetsOf(sql, to)).toEqual([
+          { id: limit, ...moved, month: "2026-10", amount: "40000", currency: "EUR" },
+          { id: removed, ...moved, month: "2026-11", amount: null, currency: null },
+        ])
+        expect(await budgetMovesOf(sql, to)).toEqual([
+          {
+            id: move,
+            fromCategoryId: food,
+            toCategoryId: fun,
+            amount: "2500",
+            createdByUserId: owner,
+            changeSequence: stampedWith,
+          },
+        ])
+      },
+    )
+
+    await t.step(
+      "leaves each household's budgeting method rows where they are, even when both have one for the same month",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to } = await seed(sql, [])
+        const food = await insertCategory(sql, from, "Food", editor)
+        await insertBudget(sql, from, food, "2026-11-01", editor)
+        const sourceMethod = await insertBudgetMethod(sql, from, "2026-11-01", 2, editor)
+        const targetMethod = await insertBudgetMethod(sql, to, "2026-11-01", 1, editor)
+
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result.counts).toMatchObject({ budgets: 1, categories: 1 })
+        expect(await budgetMethodIdsOf(sql, to)).toEqual([targetMethod])
+        expect(await budgetMethodIdsOf(sql, from)).toEqual([sourceMethod])
+      },
+    )
+
+    await t.step(
+      "a refused category move leaves every budget row and envelope move in the source",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to } = await seed(sql, [])
+        const food = await insertCategory(sql, from, "Food", editor)
+        const fun = await insertCategory(sql, from, "Fun", editor)
+        await insertCategory(sql, to, "Food", editor)
+        const limit = await insertBudget(sql, from, food, "2026-11-01", editor)
+        const move = await insertBudgetMove(
+          sql,
+          from,
+          { fromCategoryId: food, toCategoryId: fun },
+          editor,
+        )
+
+        const refused = await refusal(
+          app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP),
+        )
+
+        expect(refused).toMatchObject({ code: "CATEGORY_NAME_TAKEN" })
+        expect((await budgetsOf(sql, from)).map((row) => row.id)).toEqual([limit])
+        expect((await budgetMovesOf(sql, from)).map((row) => row.id)).toEqual([move])
+        expect(await budgetsOf(sql, to)).toEqual([])
+      },
+    )
+
+    await t.step(
       "with the notes off, moving a group's data leaves its notes and tags where they were",
       async () => {
         const off = new AppDbBase({ sql, notes: NOTES_OFF }).groupData
@@ -1015,6 +1198,8 @@ Deno.test("moving all of a group's data", async (t) => {
             transactions: 0,
             transfers: 0,
             recurringRules: 0,
+            budgets: 0,
+            budgetMoves: 0,
           },
         })
         expect(await accountsOf(sql, from)).toEqual([])

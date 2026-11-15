@@ -310,12 +310,15 @@ async function counts(sql: postgres.Sql) {
       accounts: number
       transactions: number
       transfers: number
+      budgetRows: number
     }[]
   >`
     SELECT
       (SELECT count(*)::int FROM groups) AS groups,
       (SELECT count(*)::int FROM transactions) AS transactions,
       (SELECT count(*)::int FROM transfers) AS transfers,
+      (SELECT count(*)::int FROM budgets) + (SELECT count(*)::int FROM budget_methods) +
+        (SELECT count(*)::int FROM budget_moves) AS budget_rows,
       (SELECT count(*)::int FROM accounts) AS accounts,
       (SELECT count(*)::int FROM notes) AS notes,
       (SELECT count(*)::int FROM tags) AS tags,
@@ -948,6 +951,244 @@ Deno.test("an import refuses transfers that name an account the file lacks, the 
     const fixed = { ...file, aggregates: { ...aggregates, transfers: [trip, oneCurrency] } }
     const result = await porter.importGroup({ file: fixed, name: null }, source.owner, NO_CAP)
     expect(result.parts.find((part) => part.kind === "transfers")?.count).toBe(2)
+  })
+})
+
+/**
+ * Gives the seeded household a 400.00 EUR limit on Food from October, a removed limit on
+ * Groceries from November, envelopes from November, and 25.00 EUR moved from Food to Groceries.
+ */
+async function seedBudgets(sql: postgres.Sql, source: Awaited<ReturnType<typeof seed>>) {
+  const { groupId, owner } = source
+  const [food, groceries] = source.categoryIds
+  await sql`
+    INSERT INTO budgets (id, group_id, category_id, month, amount, currency, change_sequence,
+      created_by_user_id, updated_by_user_id)
+    VALUES (${uuidV7()}, ${groupId}, ${food}, '2026-10-01', 40000, 'EUR', 1, ${owner}, ${owner}),
+      (${uuidV7()}, ${groupId}, ${groceries}, '2026-11-01', NULL, NULL, 1, ${owner}, ${owner})
+  `
+  await sql`
+    INSERT INTO budget_methods (id, group_id, month, method, change_sequence, created_by_user_id,
+      updated_by_user_id)
+    VALUES (${uuidV7()}, ${groupId}, '2026-11-01', 2, 1, ${owner}, ${owner})
+  `
+  await sql`
+    INSERT INTO budget_moves (id, group_id, month, from_category_id, to_category_id, amount,
+      currency, change_sequence, created_by_user_id)
+    VALUES (${uuidV7()}, ${groupId}, '2026-11-01', ${food}, ${groceries}, 2500, 'EUR', 1, ${owner})
+  `
+}
+
+/** A household's budget rows, methods and envelope moves, with categories by name. */
+async function budgetContents(sql: postgres.Sql, groupId: string) {
+  const budgets = await sql`
+    SELECT c.name AS category, to_char(b.month, 'YYYY-MM') AS month, b.amount::text AS amount,
+      b.currency
+    FROM budgets b JOIN categories c ON c.id = b.category_id AND c.group_id = b.group_id
+    WHERE b.group_id = ${groupId} ORDER BY b.month
+  `
+  const methods = await sql`
+    SELECT to_char(month, 'YYYY-MM') AS month, method FROM budget_methods
+    WHERE group_id = ${groupId} ORDER BY month
+  `
+  const moves = await sql`
+    SELECT f.name AS from_category, t.name AS to_category, to_char(m.month, 'YYYY-MM') AS month,
+      m.amount::text AS amount, m.currency
+    FROM budget_moves m
+    JOIN categories f ON f.id = m.from_category_id AND f.group_id = m.group_id
+    JOIN categories t ON t.id = m.to_category_id AND t.group_id = m.group_id
+    WHERE m.group_id = ${groupId} ORDER BY m.month, f.name, t.name
+  `
+  return { budgets: [...budgets], methods: [...methods], moves: [...moves] }
+}
+
+Deno.test("an export imported by another person gives the same budget limits, methods and envelope moves under new ids, naming the copy's categories", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    await seedBudgets(sql, source)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    expect(file.aggregates.budgets.map(({ month, amount, currency }) => ({
+      month,
+      amount,
+      currency,
+    }))).toEqual([
+      { month: "2026-10", amount: 40000, currency: "EUR" },
+      { month: "2026-11", amount: null, currency: null },
+    ])
+
+    const importer = await insertUser(sql)
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file, name: null },
+      importer,
+      NO_CAP,
+    )
+    const copy = result.group.id
+
+    const parts = new Map(result.parts.map((part) => [part.kind, part.count]))
+    expect([parts.get("budgets"), parts.get("budgetMethods"), parts.get("budgetMoves")]).toEqual(
+      [2, 1, 1],
+    )
+    expect(await budgetContents(sql, copy)).toEqual({
+      budgets: [
+        { category: "Food", month: "2026-10", amount: "40000", currency: "EUR" },
+        { category: "Groceries", month: "2026-11", amount: null, currency: null },
+      ],
+      methods: [{ month: "2026-11", method: 2 }],
+      moves: [{
+        fromCategory: "Food",
+        toCategory: "Groceries",
+        month: "2026-11",
+        amount: "2500",
+        currency: "EUR",
+      }],
+    })
+    expect(await budgetContents(sql, copy)).toEqual(await budgetContents(sql, source.groupId))
+    const ids = await sql<{ id: string; createdByUserId: number }[]>`
+      SELECT id, created_by_user_id FROM budgets WHERE group_id = ${copy}
+      UNION ALL SELECT id, created_by_user_id FROM budget_methods WHERE group_id = ${copy}
+      UNION ALL SELECT id, created_by_user_id FROM budget_moves WHERE group_id = ${copy}
+    `
+    const fileIds = ["budgets", "budgetMethods", "budgetMoves"].flatMap((kind) =>
+      file.aggregates[kind].map((entry) => entry.id)
+    )
+    expect(ids).toHaveLength(4)
+    for (const row of ids) {
+      expect(fileIds).not.toContain(row.id)
+      expect(row.createdByUserId).toBe(importer)
+    }
+  })
+})
+
+Deno.test("an export imports when a category with a limit and an envelope move switched to income: the import skips the limit, which the reads ignore, and keeps the move, whose expense side still counts", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    await seedBudgets(sql, source)
+    const { groupId, owner } = source
+    const categories = new PostgresCategoryRepository(sql)
+    const gifts = uuidV7()
+    const fields = {
+      groupId,
+      id: gifts,
+      name: "Gifts",
+      icon: "tag" as CategoryIcon,
+      color: "#c2410c",
+      parentId: null,
+    }
+    await categories.create({ ...fields, kind: CategoryKind.EXPENSE, allowance: null }, owner)
+    await sql`
+      INSERT INTO budgets (id, group_id, category_id, month, amount, currency, change_sequence,
+        created_by_user_id, updated_by_user_id)
+      VALUES (${uuidV7()}, ${groupId}, ${gifts}, '2026-11-01', 9000, 'EUR', 1, ${owner}, ${owner})
+    `
+    await sql`
+      INSERT INTO budget_moves (id, group_id, month, from_category_id, to_category_id, amount,
+        currency, change_sequence, created_by_user_id)
+      VALUES (${uuidV7()}, ${groupId}, '2026-11-01', ${source.categoryIds[0]}, ${gifts}, 700,
+        'EUR', 1, ${owner})
+    `
+    // The app allows the switch: Gifts has no entries, only a limit and an envelope move.
+    await categories.update({ ...fields, kind: CategoryKind.INCOME, expectedVersion: 1 }, owner)
+    const file = await exportAs(sql, groupId, owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    expect([file.aggregates.budgets.length, file.aggregates.budgetMoves.length]).toEqual([3, 2])
+
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file, name: null },
+      await insertUser(sql),
+      NO_CAP,
+    )
+    const [kind] = await sql<{ kind: CategoryKind }[]>`
+      SELECT kind FROM categories WHERE group_id = ${result.group.id} AND name = 'Gifts'
+    `
+    expect(kind).toEqual({ kind: CategoryKind.INCOME })
+    expect(await budgetContents(sql, result.group.id)).toEqual({
+      budgets: [
+        { category: "Food", month: "2026-10", amount: "40000", currency: "EUR" },
+        { category: "Groceries", month: "2026-11", amount: null, currency: null },
+      ],
+      methods: [{ month: "2026-11", method: 2 }],
+      moves: [
+        {
+          fromCategory: "Food",
+          toCategory: "Gifts",
+          month: "2026-11",
+          amount: "700",
+          currency: "EUR",
+        },
+        {
+          fromCategory: "Food",
+          toCategory: "Groceries",
+          month: "2026-11",
+          amount: "2500",
+          currency: "EUR",
+        },
+      ],
+    })
+  })
+})
+
+Deno.test("an import refuses repeated budget months, budgets and envelope moves naming a missing category, and writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    await seedBudgets(sql, source)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    const [budget] = file.aggregates.budgets
+    const [method] = file.aggregates.budgetMethods
+    const [move] = file.aggregates.budgetMoves
+    const bonus = source.categoryIds[2]
+    const before = await counts(sql)
+    const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+    const refusedWith = async (aggregates: Record<string, unknown>) => {
+      const refused = await porter.importGroup(
+        { file: { ...file, aggregates: { ...file.aggregates, ...aggregates } }, name: null },
+        source.owner,
+        NO_CAP,
+      ).then(() => null, (error) => error)
+      expect(refused).toBeInstanceOf(GroupImportError)
+      expect(await counts(sql)).toEqual(before)
+      return (refused as GroupImportError).problems.map((problem) =>
+        problem.kind === "invalid" && [problem.where, problem.place, problem.issue]
+      )
+    }
+
+    expect(
+      await refusedWith({
+        budgets: [...file.aggregates.budgets, { ...budget, id: uuidV7() }],
+        budgetMethods: [method, { ...method, id: uuidV7(), method: 1 }],
+      }),
+    ).toEqual([
+      ["Budget 3", { part: "budgets", index: 3 }, { code: "duplicate", field: "month" }],
+      [
+        "Budget method 2",
+        { part: "budgetMethods", index: 2 },
+        { code: "duplicate", field: "month" },
+      ],
+    ])
+    expect(
+      await refusedWith({
+        budgets: [
+          budget,
+          { ...budget, id: uuidV7(), categoryId: uuidV7() },
+          { ...budget, id: uuidV7(), categoryId: bonus },
+        ],
+      }),
+    ).toEqual([
+      ["Budget 2", { part: "budgets", index: 2 }, { code: "notFound", field: "categoryId" }],
+    ])
+    expect(
+      await refusedWith({ budgetMoves: [move, { ...move, id: uuidV7(), toCategoryId: uuidV7() }] }),
+    ).toEqual([
+      [
+        "Budget move 2",
+        { part: "budgetMoves", index: 2 },
+        { code: "notFound", field: "toCategoryId" },
+      ],
+    ])
   })
 })
 
