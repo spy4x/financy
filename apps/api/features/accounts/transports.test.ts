@@ -115,6 +115,8 @@ function stack() {
               }
               : { found: false, reason: "no-rate" },
           ),
+        // One bitcoin buys €60,000; no other coin has a price.
+        coinPrices: () => Promise.resolve([{ coin: "BTC", price: "60000", date: "2026-11-05" }]),
       },
       today: () => "2026-11-06",
     }),
@@ -333,7 +335,35 @@ for (const [via, open] of TRANSPORTS) {
             amount: 987 + 500 + 1_000,
             currency: "EUR",
             rateDate: "2026-11-06",
+            coinPriceDate: null,
             leftOut: [],
+            tooLarge: false,
+          },
+        },
+      })
+      as.shutdown()
+    })
+
+    it("values a coin account at today's coin price in the total and names an unpriced coin", async () => {
+      const s = stack()
+      const coin = { ...input, kind: AccountKind.CRYPTO, name: "Wallet" }
+      // 0.5 BTC at €60,000 is €30,000.
+      await s.accounts.create({ ...coin, currency: "BTC", startingBalance: 50_000_000 }, OWNER)
+      await s.accounts.create(
+        { ...coin, id: secondAccountId, currency: "ETH", startingBalance: 100_000_000 },
+        OWNER,
+      )
+      const as = open(s, VIEWER)
+
+      expect(await as.query("account.total", { groupId })).toEqual({
+        kind: "server.result",
+        payload: {
+          total: {
+            amount: 3_000_000,
+            currency: "EUR",
+            rateDate: null,
+            coinPriceDate: "2026-11-05",
+            leftOut: [{ currency: "ETH", accounts: 1 }],
             tooLarge: false,
           },
         },

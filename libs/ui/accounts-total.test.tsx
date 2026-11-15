@@ -83,6 +83,7 @@ const exact: HouseholdTotal = {
   amount: 1_234_567,
   currency: "EUR",
   rateDate: null,
+  coinPriceDate: null,
   leftOut: [],
   tooLarge: false,
 }
