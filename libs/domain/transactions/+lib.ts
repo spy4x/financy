@@ -844,15 +844,24 @@ export interface CategoryWidgetRow {
   name: string
   /** Above zero: its spending with its children's, refunds taken off, as the ledger reads it. */
   spending: number
+  /** Whether any of its rows, a child's included, needed a rate. */
+  converted: boolean
 }
 
 /**
- * "Where did the money go?" for the range: the ledger's spending and its top-level categories that
- * spent, most first. `spending` is `null` only when the ledger is `tooLarge`.
+ * "Where did the money go?" for the range: the ledger's top-level categories that spent, most
+ * first, and their sum.
  */
 export interface CategoryWidgetResult {
   currency: string
-  spending: number | null
+  /**
+   * The shares' denominator: the spending of every top-level category that spent, listed or in
+   * `more`. A net-refunded category is not in it, so it can be above the ledger's `spending`.
+   * `null` only when `tooLarge`.
+   */
+  total: number | null
+  /** Whether any spending in {@link total} needed a rate. */
+  converted: boolean
   /** At most {@link CATEGORY_WIDGET_TOP} rows, in the ledger's order. */
   top: CategoryWidgetRow[]
   /** How many more top-level categories spent in the range. */
@@ -873,20 +882,23 @@ export function categoryWidgetResult(
   categories: readonly { id: string; name: string; parentId: string | null }[],
 ): CategoryWidgetResult {
   const byId = new Map(categories.map((category) => [category.id, category]))
-  const listed = ledger.categories.flatMap(({ categoryId, spending }) => {
+  const listed = ledger.categories.flatMap(({ categoryId, spending, converted }) => {
     const category = byId.get(categoryId)
     return category && category.parentId === null && spending > 0
-      ? [{ categoryId, name: category.name, spending }]
+      ? [{ categoryId, name: category.name, spending, converted }]
       : []
   })
+  const sum = listed.reduce((total, row) => total + BigInt(row.spending), 0n)
+  const tooLarge = ledger.tooLarge || sum > BigInt(Number.MAX_SAFE_INTEGER)
   return {
     currency: ledger.currency,
-    spending: ledger.spending,
+    total: tooLarge ? null : Number(sum),
+    converted: listed.some((row) => row.converted),
     top: listed.slice(0, CATEGORY_WIDGET_TOP),
     more: Math.max(listed.length - CATEGORY_WIDGET_TOP, 0),
     spendingLeftOut: ledger.spendingLeftOut,
     spendingRateDate: ledger.spendingRateDate,
-    tooLarge: ledger.tooLarge,
+    tooLarge,
   }
 }
 

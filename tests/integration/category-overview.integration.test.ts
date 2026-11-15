@@ -148,8 +148,8 @@ Deno.test(`"Where did the money go?" read against Postgres`, async (t) => {
 
         // 55.00 USD at 1.1 is 50.00 EUR; 2,800,000 VND at 28,000 is 100.00 EUR.
         expect(result.top).toEqual([
-          { categoryId: h.rent.id, name: "Rent", spending: 10000 },
-          { categoryId: h.food.id, name: "Food", spending: 5000 + 1200 },
+          { categoryId: h.rent.id, name: "Rent", spending: 10000, converted: true },
+          { categoryId: h.food.id, name: "Food", spending: 5000 + 1200, converted: true },
         ])
         for (const row of result.top) {
           expect(row.spending).toBe(
@@ -158,7 +158,8 @@ Deno.test(`"Where did the money go?" read against Postgres`, async (t) => {
         }
         expect(result).toMatchObject({
           currency: "EUR",
-          spending: ledger.spending,
+          total: 10000 + 5000 + 1200,
+          converted: true,
           more: 0,
           spendingRateDate: "2026-11-05",
           spendingLeftOut: [],
@@ -189,8 +190,30 @@ Deno.test(`"Where did the money go?" read against Postgres`, async (t) => {
           h.owner,
         )
 
-        expect(before.top).toEqual([{ categoryId: h.rent.id, name: "Rent", spending: 3500 }])
+        expect(before.top).toEqual([{
+          categoryId: h.rent.id,
+          name: "Rent",
+          spending: 3500,
+          converted: false,
+        }])
         expect(await h.read()).toEqual(before)
+      },
+    )
+
+    await t.step(
+      "totals only the categories that spent, so a refund-only category never lifts a share past 100%",
+      async () => {
+        const h = await household()
+        await h.add(h.eur.id, "EUR", 2000, h.rent.id)
+        await h.add(h.eur.id, "EUR", 1500, h.food.id, TransactionKind.INCOME)
+
+        const result = await h.read()
+
+        expect((await h.ledger()).spending).toBe(500)
+        expect(result.top).toEqual([
+          { categoryId: h.rent.id, name: "Rent", spending: 2000, converted: false },
+        ])
+        expect(result.total).toBe(2000)
       },
     )
 
@@ -209,7 +232,7 @@ Deno.test(`"Where did the money go?" read against Postgres`, async (t) => {
       )
 
       expect((await h.read()).top).toEqual([
-        { categoryId: h.rent.id, name: "Rent", spending: 5000 },
+        { categoryId: h.rent.id, name: "Rent", spending: 5000, converted: false },
       ])
     })
 
@@ -221,8 +244,13 @@ Deno.test(`"Where did the money go?" read against Postgres`, async (t) => {
 
       const result = await h.read()
 
-      expect(result.top).toEqual([{ categoryId: h.food.id, name: "Food", spending: 1200 }])
-      expect(result.spending).toBe(1200)
+      expect(result.top).toEqual([{
+        categoryId: h.food.id,
+        name: "Food",
+        spending: 1200,
+        converted: false,
+      }])
+      expect(result.total).toBe(1200)
     })
 
     await t.step("tells a stranger the household does not exist", async () => {

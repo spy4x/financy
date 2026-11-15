@@ -168,7 +168,7 @@ function household() {
 }
 
 describe(`"Where did the money go?" read`, () => {
-  it("gives each category the ledger read's own figure for a month of EUR, USD and VND, named even when archived", async () => {
+  it("gives each category the ledger read's own figure for a month of EUR, USD and VND, named even when archived, each marked converted or not", async () => {
     const h = household()
     await h.add(eurAccount, "EUR", 300000, salary, TransactionKind.INCOME)
     await h.add(usdAccount, "USD", 5000, food)
@@ -186,11 +186,12 @@ describe(`"Where did the money go?" read`, () => {
     // 2,000,000 VND at 0.000035 is 70.00 EUR; 50.00 USD at 0.9 is 45.00 EUR.
     expect(result).toEqual({
       currency: "EUR",
-      spending: ledger.spending,
+      total: 12700,
+      converted: true,
       top: [
-        { categoryId: rent, name: "Rent", spending: 7000 },
-        { categoryId: food, name: "Food", spending: 4500 },
-        { categoryId: travel, name: "Travel", spending: 1200 },
+        { categoryId: rent, name: "Rent", spending: 7000, converted: true },
+        { categoryId: food, name: "Food", spending: 4500, converted: true },
+        { categoryId: travel, name: "Travel", spending: 1200, converted: false },
       ],
       more: 0,
       spendingLeftOut: [],
@@ -209,8 +210,30 @@ describe(`"Where did the money go?" read`, () => {
 
     const result = await h.read()
 
-    expect(result.top).toEqual([{ categoryId: food, name: "Food", spending: 3500 }])
-    expect(result.spending).toBe(3500)
+    expect(result.top).toEqual([{
+      categoryId: food,
+      name: "Food",
+      spending: 3500,
+      converted: false,
+    }])
+    expect(result.total).toBe(3500)
+  })
+
+  it("totals only the categories that spent, so a refund-only category never lifts a share past 100%", async () => {
+    const h = household()
+    await h.add(eurAccount, "EUR", 2000, rent)
+    await h.add(eurAccount, "EUR", 1500, food, TransactionKind.INCOME)
+
+    const result = await h.read()
+
+    expect((await h.ledger()).spending).toBe(500)
+    expect(result.top).toEqual([{
+      categoryId: rent,
+      name: "Rent",
+      spending: 2000,
+      converted: false,
+    }])
+    expect(result.total).toBe(2000)
   })
 
   it("shows a child's spending under its parent only", async () => {
@@ -220,8 +243,13 @@ describe(`"Where did the money go?" read`, () => {
 
     const result = await h.read()
 
-    expect(result.top).toEqual([{ categoryId: food, name: "Food", spending: 5000 }])
-    expect(result.spending).toBe(5000)
+    expect(result.top).toEqual([{
+      categoryId: food,
+      name: "Food",
+      spending: 5000,
+      converted: false,
+    }])
+    expect(result.total).toBe(5000)
   })
 
   it(`lists the top ${CATEGORY_WIDGET_TOP} by spending, ties by id, and counts the rest as more`, async () => {
@@ -248,7 +276,12 @@ describe(`"Where did the money go?" read`, () => {
 
     const result = await h.read()
 
-    expect(result.top).toEqual([{ categoryId: food, name: "Food", spending: 1200 }])
+    expect(result.top).toEqual([{
+      categoryId: food,
+      name: "Food",
+      spending: 1200,
+      converted: false,
+    }])
     expect(result.spendingLeftOut).toEqual(["THB"])
     expect(result.spendingRateDate).toBeNull()
   })
@@ -272,8 +305,13 @@ describe(`"Where did the money go?" read`, () => {
 
     const result = await h.read()
 
-    expect(result.top).toEqual([{ categoryId: food, name: "Food", spending: 1200 }])
-    expect(result.spending).toBe(1200)
+    expect(result.top).toEqual([{
+      categoryId: food,
+      name: "Food",
+      spending: 1200,
+      converted: false,
+    }])
+    expect(result.total).toBe(1200)
   })
 
   it("reads only the range: no previous period", async () => {
