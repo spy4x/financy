@@ -2543,6 +2543,34 @@ export default {
   "MoneyWidgets.netLink": "Все операции за этот период",
   "MoneyWidgets.incomeLink": "Операции доходов",
   "MoneyWidgets.spendingLink": "Операции расходов",
+  "BudgetWidgets.title": "Бюджеты",
+  "BudgetWidgets.loading": "Загружаем бюджеты…",
+  "BudgetWidgets.error": "Не удалось загрузить бюджеты.",
+  "BudgetWidgets.allOnTrack": {
+    "one": "{count} бюджет, в пределах лимита.",
+    "few": "Все {count} бюджета в пределах лимитов.",
+    "many": "Все {count} бюджетов в пределах лимитов.",
+    "other": "Все {count} бюджета в пределах лимитов.",
+  },
+  "BudgetWidgets.oneOver": {
+    "one": "В пределах лимита {onTrack} из {count} бюджета; {category}: превышение на {amount}.",
+    "few": "В пределах лимита {onTrack} из {count} бюджетов; {category}: превышение на {amount}.",
+    "many": "В пределах лимита {onTrack} из {count} бюджетов; {category}: превышение на {amount}.",
+    "other": "В пределах лимита {onTrack} из {count} бюджета; {category}: превышение на {amount}.",
+  },
+  "BudgetWidgets.moreOver": {
+    "one":
+      "В пределах лимита {onTrack} из {count} бюджета; {category}: превышение на {amount}, и ещё {more}.",
+    "few":
+      "В пределах лимита {onTrack} из {count} бюджетов; {category}: превышение на {amount}, и ещё {more}.",
+    "many":
+      "В пределах лимита {onTrack} из {count} бюджетов; {category}: превышение на {amount}, и ещё {more}.",
+    "other":
+      "В пределах лимита {onTrack} из {count} бюджета; {category}: превышение на {amount}, и ещё {more}.",
+  },
+  "BudgetWidgets.none": "На {month} бюджетов нет.",
+  "BudgetWidgets.setLink": "Задать бюджет",
+  "BudgetWidgets.link": "Бюджеты за {month}",
   "Accounts.back": "К счетам",
   "Accounts.clearDefault": "Сделать не основным",
   "Accounts.defaultBadge": "Основной",

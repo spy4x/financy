@@ -2445,6 +2445,30 @@ export default {
   "MoneyWidgets.netLink": "Ver todos os lançamentos deste período",
   "MoneyWidgets.incomeLink": "Ver lançamentos de receita",
   "MoneyWidgets.spendingLink": "Ver lançamentos de despesa",
+  "BudgetWidgets.title": "Orçamentos",
+  "BudgetWidgets.loading": "Carregando os orçamentos…",
+  "BudgetWidgets.error": "Não foi possível carregar os orçamentos.",
+  "BudgetWidgets.allOnTrack": {
+    "one": "{count} orçamento, dentro do limite.",
+    "many": "Todos os {count} orçamentos dentro do limite.",
+    "other": "Todos os {count} orçamentos dentro do limite.",
+  },
+  "BudgetWidgets.oneOver": {
+    "one": "{onTrack} de {count} orçamento dentro do limite; {category} passou {amount}.",
+    "many": "{onTrack} de {count} orçamentos dentro do limite; {category} passou {amount}.",
+    "other": "{onTrack} de {count} orçamentos dentro do limite; {category} passou {amount}.",
+  },
+  "BudgetWidgets.moreOver": {
+    "one":
+      "{onTrack} de {count} orçamento dentro do limite; {category} passou {amount}, e mais {more}.",
+    "many":
+      "{onTrack} de {count} orçamentos dentro do limite; {category} passou {amount}, e mais {more}.",
+    "other":
+      "{onTrack} de {count} orçamentos dentro do limite; {category} passou {amount}, e mais {more}.",
+  },
+  "BudgetWidgets.none": "Nenhum orçamento para {month}.",
+  "BudgetWidgets.setLink": "Definir um orçamento",
+  "BudgetWidgets.link": "Ver orçamentos de {month}",
   "Accounts.back": "Voltar às contas",
   "Accounts.clearDefault": "Deixar de usar como padrão",
   "Accounts.defaultBadge": "Padrão",
