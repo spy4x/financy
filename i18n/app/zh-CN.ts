@@ -754,7 +754,7 @@ export default {
   "GuestScreens.tryFromSignIn": "你会在这个浏览器中得到一个全新的空账号。",
   "GuestScreens.tryFromSignInDemo": "你会得到一个带示例数据的新账号，随便体验。",
   "GuestScreens.demoWipe":
-    "你正在公开演示中使用访客账号。这里的所有内容每晚{time}都会重置，添加了登录方式也一样。不妨还是添加一种，体验一下保留账号的流程。",
+    "这是一个使用示例数据的公开演示。这里的所有内容每晚{time}都会清空，添加了登录方式也一样。不妨还是添加一种，体验一下保留账号的流程。",
   "GuestScreens.banner":
     "这个账号只存在于这个浏览器中。一旦清除浏览器数据，它就没了。添加一种登录方式来保留它。",
   "GuestScreens.hide": "隐藏此消息",
@@ -1663,9 +1663,10 @@ export default {
   },
   "AccountDelete.deleting": "正在删除…",
   "AccountDelete.blocked": "你拥有的一些群组仍有其他人在使用或付费。请先逐一处理，然后再回来。",
-  "AuthScreen.demoNote": "这是一个每晚重置的公开演示。新账号自带示例数据，可以随意探索。",
+  "AuthScreen.demoNote":
+    "这是一个使用示例数据的公开演示，每晚都会清空，请不要输入任何真实信息。新账号自带几个示例家庭，可以随意探索。",
   "AuthScreen.demoGuestNote":
-    "这是一个每晚重置的公开演示。每个新账号（无论是否为访客账号）都自带示例数据，可以随意探索。",
+    "这是一个使用示例数据的公开演示，每晚都会清空，请不要输入任何真实信息。每个新账号（无论是否为访客账号）都自带几个示例家庭，可以随意探索。",
   "AuthScreen.tryFirst": "先试用一下，或者用邮箱注册。",
   "AuthScreen.invitedTitle": "你收到了群组邀请",
   "AuthScreen.invitedSignIn": "登录后即可查看邀请并加入。",

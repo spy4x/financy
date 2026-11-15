@@ -926,7 +926,7 @@ export default {
   "GuestScreens.tryFromSignInDemo":
     "Du bekommst ein neues Benutzerkonto mit Beispieldaten zum Ausprobieren.",
   "GuestScreens.demoWipe":
-    "Du nutzt ein Gastkonto in einer öffentlichen Demo. Hier wird jede Nacht um {time} alles zurückgesetzt, auch mit Anmeldemethode. Füge trotzdem eine hinzu, um zu sehen, wie das Behalten eines Benutzerkontos funktioniert.",
+    "Das ist eine öffentliche Demo mit Beispieldaten. Hier wird jede Nacht um {time} alles gelöscht, auch wenn du eine Anmeldemethode hinzufügst. Füge trotzdem eine hinzu, um zu sehen, wie das Behalten eines Benutzerkontos funktioniert.",
   "GuestScreens.banner":
     "Dieses Benutzerkonto gibt es nur in diesem Browser. Werden die Browserdaten gelöscht, ist es weg. Füge eine Anmeldemethode hinzu, um es zu behalten.",
   "GuestScreens.hide": "Diese Meldung ausblenden",
@@ -1997,9 +1997,9 @@ export default {
   "AccountDelete.blocked":
     "Dir gehören Gruppen, die andere noch nutzen oder für die noch bezahlt wird. Kläre zuerst jede davon und komm dann zurück.",
   "AuthScreen.demoNote":
-    "Das ist eine öffentliche Demo, die jede Nacht zurückgesetzt wird. Neue Benutzerkonten bekommen Beispieldaten zum Ausprobieren.",
+    "Das ist eine öffentliche Demo mit Beispieldaten. Alles wird jede Nacht gelöscht, gib also nichts Echtes ein. Neue Benutzerkonten starten mit Beispielhaushalten zum Ausprobieren.",
   "AuthScreen.demoGuestNote":
-    "Das ist eine öffentliche Demo, die jede Nacht zurückgesetzt wird. Jedes neue Benutzerkonto, ob Gast oder nicht, bekommt Beispieldaten zum Ausprobieren.",
+    "Das ist eine öffentliche Demo mit Beispieldaten. Alles wird jede Nacht gelöscht, gib also nichts Echtes ein. Jedes neue Benutzerkonto, ob Gast oder nicht, startet mit Beispielhaushalten zum Ausprobieren.",
   "AuthScreen.tryFirst":
     "Probier die App erst aus oder registriere dich mit deiner E-Mail-Adresse.",
   "AuthScreen.invitedTitle": "Du bist in eine Gruppe eingeladen",

@@ -193,8 +193,8 @@ AuthScreen.codeTitle	62fd9988e2dff052
 AuthScreen.continue	31fbef162594de01
 AuthScreen.continueWith	9fa94be7fa6aace0
 AuthScreen.createAccount	798ca2ce18bf2038
-AuthScreen.demoGuestNote	3c3e4f7bdf41bdca
-AuthScreen.demoNote	cec53c8ba6974027
+AuthScreen.demoGuestNote	a8a26b9f519ef870
+AuthScreen.demoNote	f5b8f7a7e91d3ac9
 AuthScreen.email	969ccbd3cf6300ec
 AuthScreen.emailSignInCode	d6687d2b32178d9e
 AuthScreen.emailSignUpCode	58bd5a1e69ade1ae
@@ -954,7 +954,7 @@ GuestScreens.createInstead	3e813e794177914d
 GuestScreens.delete	f9ffbce43309e64e
 GuestScreens.deleteAndSwitch	fc3988c4212f8439
 GuestScreens.deleteHint	4c0300bc16a80a88
-GuestScreens.demoWipe	e8d4da922f797384
+GuestScreens.demoWipe	26f04e6e299454ca
 GuestScreens.didNotWork	d010a8621f3358d1
 GuestScreens.done	11a6767d5674c7e4
 GuestScreens.email	969ccbd3cf6300ec
@@ -1009,7 +1009,7 @@ GuestScreens.takenRest	b79cb662a419ba5d
 GuestScreens.terms	fa9aea9a5166e001
 GuestScreens.tryAgain	d8b8392e2c542950
 GuestScreens.tryFromSignIn	35e01029df913975
-GuestScreens.tryFromSignInDemo	8ca906a0102a6c3e
+GuestScreens.tryFromSignInDemo	4906f9794548b0b8
 GuestScreens.tryLine	e41ca85a32821fab
 GuestScreens.tryNow	addb776b173a84f2
 GuestScreens.tryTitle	f9c92b54d085e8e6
