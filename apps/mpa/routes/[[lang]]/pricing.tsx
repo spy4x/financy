@@ -23,6 +23,7 @@ import {
   machineText,
   PERSON_JSON_LD,
   REPOSITORY_URL,
+  SELF_HOST_GUIDE,
   SITE_AUTHOR,
   siteBreadcrumbsJsonLd,
   SiteFrame,
@@ -189,7 +190,7 @@ function PricingPlans({ spaOrigin }: { spaOrigin: string }): JSX.Element {
               <p>
                 <a
                   class={`inline-flex items-center gap-1 ${NOTE_LINK}`}
-                  href={href(`/docs/deploy`)}
+                  href={href(SELF_HOST_GUIDE)}
                 >
                   {t.t(`PricingSelfHost.deploy`)}
                   <IconArrowRight class="size-4 rtl:-scale-x-100" aria-hidden="true" />

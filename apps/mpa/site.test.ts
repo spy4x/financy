@@ -170,8 +170,21 @@ function element(html: string, tag: string): string | undefined {
   return html.match(new RegExp(`<${tag}\\b[\\s\\S]*?</${tag}>`))?.[0]
 }
 
+/** The home hero's buttons in order: each one's `data-e2e`, address and look (`Button`'s fill). */
+function heroActions(html: string): [string, string | undefined, string][] {
+  return [...html.matchAll(/<a\b[^>]*data-e2e="(home-(?:self-host|notify|github))"[^>]*>/g)]
+    .map(([tag, name]) => {
+      const look = tag.includes(`bg-accent-900`)
+        ? `primary`
+        : tag.includes(`border-control`)
+        ? `outline`
+        : `other`
+      return [name, hrefOf(tag), look]
+    })
+}
+
 describe("the public website", () => {
-  it("answers the home page with what Financy is as its heading, the notify and GitHub links and its head tags", async () => {
+  it("answers the home page with what Financy is as its heading, self-hosting first, then Get notified, and its head tags", async () => {
     const { status, html } = await page("/")
     const main = element(html, "main")!
 
@@ -179,8 +192,12 @@ describe("the public website", () => {
     expect(headingOne(html)).toBe(
       "Financy is a free, open-source (AGPL\u20113.0) finance tracker for a person or a family, in any mix of currencies: self-host it, or wait for the paid cloud.",
     )
-    expect(hrefOf(linkNamed(main, "Get notified"))).toBe("#newsletter")
-    expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
+    expect(heroActions(html)).toEqual([
+      ["home-self-host", "/docs/self-host", "primary"],
+      ["home-notify", "#newsletter", "outline"],
+    ])
+    expect(hrefOf(linkNamed(main, "Read the self-hosting guide"))).toBe("/docs/self-host")
+    expect(linkNamed(main, "Follow the build on GitHub")).toBeUndefined()
     expect(html).toContain(`<title>Financy: self-hosted multi-currency finance tracker</title>`)
     expect(html).toContain(`<link rel="canonical" href="${site}/"`)
     expect(metaContent(html, "og:url")).toBe(`${site}/`)
@@ -201,23 +218,31 @@ describe("the public website", () => {
     }
   })
 
-  it("answers the home page with GitHub as its only action while the newsletter is off", async () => {
+  it("answers the home page with self-hosting first and GitHub second while the newsletter is off", async () => {
     const { html } = await page("/", withoutNewsletter)
     const main = element(html, "main")!
 
     expect(linkNamed(html, "Get notified")).toBeUndefined()
     expect(main).not.toContain(`id="newsletter"`)
-    expect(hrefOf(linkNamed(main, "Follow the build on GitHub"))).toBe(REPOSITORY_URL)
+    expect(heroActions(html)).toEqual([
+      ["home-self-host", "/docs/self-host", "primary"],
+      ["home-github", REPOSITORY_URL, "outline"],
+    ])
   })
 
-  it("labels the header button just GitHub, in every language, while the newsletter is off", async () => {
+  it("leads the hero's and the header's self-host buttons to the guide in the page's language", async () => {
     for (const language of SITE_LANGUAGES) {
-      const { html } = await page(localePath(language, "/"), withoutNewsletter)
-      const button = element(html, "header")!
-        .match(/<a\b[^>]*data-e2e="site-github"[^>]*>([\s\S]*?)<\/a>/)
+      for (const app of [handler, withoutNewsletter]) {
+        const { html } = await page(localePath(language, "/"), app)
+        const guide = localePath(language, "/docs/self-host")
+        const button = element(html, "header")!
+          .match(/<a\b[^>]*data-e2e="site-self-host"[^>]*>([\s\S]*?)<\/a>/)
 
-      expect(hrefOf(button?.[0]), language).toBe(REPOSITORY_URL)
-      expect(linkText(button?.[1] ?? ""), language).toBe("GitHub")
+        expect(hrefOf(button?.[0]), language).toBe(guide)
+        expect(linkText(button?.[1] ?? ""), language)
+          .toBe(siteTranslator(language).t(`HeaderAction.selfHost`))
+        expect(heroActions(html)[0], language).toEqual(["home-self-host", guide, "primary"])
+      }
     }
   })
 
@@ -265,10 +290,10 @@ describe("the public website", () => {
     }
   })
 
-  it("opens the website's deploy guide from Read the deploy guide on /pricing", async () => {
+  it("opens the self-hosting guide from Read the deploy guide on /pricing", async () => {
     const { html } = await page("/pricing")
 
-    expect(hrefOf(linkNamed(html, "Read the deploy guide"))).toBe("/docs/deploy")
+    expect(hrefOf(linkNamed(html, "Read the deploy guide"))).toBe("/docs/self-host")
   })
 
   it("starts every page with a link that skips to the main content, then one header, main and footer", async () => {
@@ -287,7 +312,7 @@ describe("the public website", () => {
     }
   })
 
-  it("leads the header to every section of the site and the newsletter, and links no sign-in", async () => {
+  it("leads the header to every section of the site and the self-hosting guide, and links no sign-in", async () => {
     const { html } = await page("/")
     const header = element(html, "header")!
     const footer = element(html, "footer")!
@@ -298,7 +323,7 @@ describe("the public website", () => {
       ["Features", "/features"],
       ["Docs", "/docs"],
       ["GitHub", REPOSITORY_URL],
-      ["Get notified", "/#newsletter"],
+      ["Self-host", "/docs/self-host"],
     ]))
     expect(nav.map(([name]) => name)).not.toContain("Pricing")
     expect(linkNamed(header, "Sign in")).toBeUndefined()
@@ -1279,18 +1304,21 @@ describe("the public website", () => {
     expect(html).not.toContain("/analytics.js")
   })
 
-  it("names the notify links of the header and the hero, the hero's GitHub link and the newsletter form for Umami", async () => {
+  it("names the self-host links of the header and the hero, the hero's notify and GitHub links and the newsletter form for Umami", async () => {
     const { html } = await page("/", withAnalytics)
+    const umami = (source: string, e2e: string) => {
+      const tag = source.match(new RegExp(`<a[^>]*data-e2e="${e2e}"[^>]*>`))?.[0] ?? ``
+      return [
+        tag.match(/data-umami-event="([^"]*)"/)?.[1],
+        tag.match(/data-umami-event-from="([^"]*)"/)?.[1],
+      ]
+    }
 
-    const header = html.match(/<a[^>]*data-e2e="site-notify"[^>]*>/)?.[0]
-    expect(header).toContain(`data-umami-event="notify"`)
-    expect(header).toContain(`data-umami-event-from="header"`)
-    const hero = html.match(/<a[^>]*data-e2e="home-notify"[^>]*>/)?.[0]
-    expect(hero).toContain(`data-umami-event="notify"`)
-    expect(hero).toContain(`data-umami-event-from="hero"`)
-    const github = html.match(/<a[^>]*data-e2e="home-github"[^>]*>/)?.[0]
-    expect(github).toContain(`data-umami-event="github"`)
-    expect(github).toContain(`data-umami-event-from="hero"`)
+    expect(umami(html, `site-self-host`)).toEqual([`self-host`, `header`])
+    expect(umami(html, `home-self-host`)).toEqual([`self-host`, `hero`])
+    expect(umami(html, `home-notify`)).toEqual([`notify`, `hero`])
+    const withoutForm = siteWith(() => false, { ...config, analytics: UMAMI })
+    expect(umami((await page("/", withoutForm)).html, `home-github`)).toEqual([`github`, `hero`])
     expect(html.match(/<form[^>]*data-e2e="home-subscribe"[^>]*>/)?.[0]).toContain(
       `data-analytics-submit="newsletter-subscribe"`,
     )
