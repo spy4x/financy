@@ -72,6 +72,12 @@ export const TRANSACTION_PATHS = {
 } as const
 
 /**
+ * The query parameter that names the household a link opens, on a page that otherwise shows the
+ * selected one (the transactions list): `?group=<id>` selects that household first.
+ */
+export const LINKED_GROUP_PARAM = "group"
+
+/**
  * The transfer pages. A transfer has no list of its own: the transactions list shows it, so the
  * rail and Back lead there.
  */

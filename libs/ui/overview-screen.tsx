@@ -23,7 +23,7 @@ import {
 } from "@spy4x/platform/universal/i18n"
 import app from "@i18n/app/en.ts"
 import { type OverviewPeriods, overviewPeriods } from "@domain/groups"
-import type { WidgetView } from "./note-widgets.tsx"
+import type { WidgetDrawContext, WidgetView } from "./note-widgets.tsx"
 import { type Navigate, NOTE_PATHS, SCREEN_PATHS } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 
@@ -350,6 +350,8 @@ export function OverviewScreen(props: OverviewScreenProps): JSX.Element {
                     now={props.now}
                     onRetry={props.onRetry}
                     onHide={hide}
+                    groupId={group.id}
+                    navigate={navigate}
                   />
                 )}
             </>
@@ -467,6 +469,10 @@ export interface OverviewGridProps {
   onRetry: (id: string) => void
   /** Offers "Hide widget" in each card's menu. Left out, the cards have no menu. */
   onHide?: (id: string) => void
+  /** The group the overview is about: a widget's link opens its pages. Left out on the operator's. */
+  groupId?: string
+  /** Follows a widget's link without a page load. */
+  navigate?: Navigate
 }
 
 /** The widgets' cards in their order: numbers share a row, a chart takes one. Nothing for a bad range. */
@@ -493,6 +499,7 @@ export function OverviewGrid(props: OverviewGridProps): JSX.Element | null {
             t={t}
             onRetry={() => props.onRetry(widget.id)}
             onHide={onHide && (() => onHide(widget.id))}
+            link={{ groupId: props.groupId, navigate: props.navigate }}
           />
         ),
       }))}
@@ -502,7 +509,7 @@ export function OverviewGrid(props: OverviewGridProps): JSX.Element | null {
 
 /** One widget's card: its state from the load, its drawing from the view. */
 function OverviewWidgetCard(
-  { widget, view, periods, endsToday, format, t, onRetry, onHide }: {
+  { widget, view, periods, endsToday, format, t, onRetry, onHide, link }: {
     widget: OverviewWidget
     view: WidgetView
     periods: OverviewPeriods
@@ -511,11 +518,18 @@ function OverviewWidgetCard(
     t: Translator<string>
     onRetry: () => void
     onHide?: () => void
+    link: Pick<WidgetDrawContext, "groupId" | "navigate">
   },
 ): JSX.Element {
   const { load } = widget
   const drawing = load.status === "ready"
-    ? view.draw(load.data, { periods, endsToday, format, days: inLanguage(format, t.language) })
+    ? view.draw(load.data, {
+      periods,
+      endsToday,
+      format,
+      days: inLanguage(format, t.language),
+      ...link,
+    })
     : null
   const savedAt = load.status === "ready" ? load.savedAt : null
   return (

@@ -1,11 +1,12 @@
 import type { JSX } from "preact"
 import { isolate } from "@spy4x/preact-ui/bdi"
+import { Link } from "@spy4x/preact-ui/link"
 import { WidgetStat } from "@spy4x/preact-ui/widget-card"
 import { formatMoneyParts } from "@spy4x/platform/universal/money"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { type LedgerFigures, MONEY_WIDGET_IDS, type MoneyWidgetResult } from "@domain/transactions"
 import { previousPeriodName, type WidgetDrawContext, type WidgetView } from "./note-widgets.tsx"
-import { TRANSACTION_PATHS } from "./progressive.tsx"
+import { LINKED_GROUP_PARAM, TRANSACTION_PATHS } from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 
 /**
@@ -43,9 +44,14 @@ function sideOf(side: Side, ledger: LedgerFigures): SideFigures {
 /** The kind filter of the transactions list each card links to: `?kind=2` income, `1` expense. */
 const LINK_KIND: Record<Side, string | null> = { net: null, income: "2", spending: "1" }
 
-/** The transactions list for `side` over the range's days. */
-export function moneyLinkHref(side: Side, range: { from: string; to: string }): string {
+/** The transactions list of household `groupId` (else the selected one) for `side` over the range. */
+export function moneyLinkHref(
+  side: Side,
+  range: { from: string; to: string },
+  groupId?: string,
+): string {
   const query = new URLSearchParams()
+  if (groupId) query.set(LINKED_GROUP_PARAM, groupId)
   const kind = LINK_KIND[side]
   if (kind) query.set(`kind`, kind)
   query.set(`from`, range.from)
@@ -223,13 +229,14 @@ export function MoneyBody(
             lines={lines}
           />
         )}
-      <a
-        href={moneyLinkHref(side, periods.current)}
+      <Link
+        href={moneyLinkHref(side, periods.current, context.groupId)}
+        navigate={context.navigate}
         class="pc-link inline-flex min-h-11 items-center self-start text-sm sm:min-h-9"
         data-e2e="money-widget-link"
       >
         {t.t(keys.link)}
-      </a>
+      </Link>
     </div>
   )
 }

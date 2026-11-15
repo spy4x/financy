@@ -7,6 +7,8 @@
 import { expect } from "@std/expect"
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd"
 import { Window } from "happy-dom"
+import { render } from "preact"
+import { act } from "preact/test-utils"
 import { renderToString } from "preact-render-to-string"
 import { I18nContext } from "@spy4x/preact-ui/i18n"
 import { createFormatters } from "@spy4x/time/format"
@@ -18,10 +20,11 @@ import type { WidgetDrawContext } from "./note-widgets.tsx"
 import { ENGLISH } from "./i18n-testing.ts"
 
 const window = new Window({ url: "http://app.localhost/" })
-const own = { document: globalThis.document }
+const own = { document: globalThis.document, location: globalThis.location }
 
 beforeAll(() => {
-  Object.assign(globalThis, { document: window.document })
+  // A link reads the page's origin when it is clicked.
+  Object.assign(globalThis, { document: window.document, location: window.location })
 })
 
 afterAll(async () => {
@@ -33,6 +36,7 @@ const NOVEMBER = { from: "2026-11-01", to: "2026-11-30" }
 const CONTEXT: WidgetDrawContext = {
   periods: overviewPeriods(NOVEMBER)!,
   endsToday: true,
+  groupId: "g-a",
   format: createFormatters({ locale: "en-GB", timeZone: "UTC", hourCycle: null }),
 }
 const { net, income, spending } = MONEY_WIDGET_IDS
@@ -263,12 +267,33 @@ describe("the overview's money widgets", () => {
     expect(noRateSpending.line("left-out")).not.toBe(null)
   })
 
-  it("links each card to the same days' transactions, income, expenses or all, with a touch-sized target", () => {
+  it("follows a card's link through the app's navigate, not a page load", async () => {
+    const opened: string[] = []
+    const drawing = MONEY_WIDGET_VIEWS[income].draw(
+      { current: ledger(), previous: null },
+      { ...CONTEXT, navigate: (href) => opened.push(href) },
+    )
+    const root = document.createElement("div")
+    document.body.append(root)
+    await act(() =>
+      render(<I18nContext.Provider value={ENGLISH}>{drawing.content}</I18nContext.Provider>, root)
+    )
+    const click = new window.MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+
+    root.querySelector("[data-e2e=money-widget-link]")!.dispatchEvent(click as unknown as Event)
+
+    expect(opened).toEqual(["/transactions?group=g-a&kind=2&from=2026-11-01&to=2026-11-30"])
+    expect(click.defaultPrevented).toBe(true)
+    await act(() => render(null, root))
+    root.remove()
+  })
+
+  it("links each card to the overview's household's transactions of the same days, income, expenses or all, with a touch-sized target", () => {
     const month = ledger()
     const href = (id: string) => card(id, month).link.getAttribute("href")
-    expect(href(income)).toBe("/transactions?kind=2&from=2026-11-01&to=2026-11-30")
-    expect(href(spending)).toBe("/transactions?kind=1&from=2026-11-01&to=2026-11-30")
-    expect(href(net)).toBe("/transactions?from=2026-11-01&to=2026-11-30")
+    expect(href(income)).toBe("/transactions?group=g-a&kind=2&from=2026-11-01&to=2026-11-30")
+    expect(href(spending)).toBe("/transactions?group=g-a&kind=1&from=2026-11-01&to=2026-11-30")
+    expect(href(net)).toBe("/transactions?group=g-a&from=2026-11-01&to=2026-11-30")
     expect(card(net, month).link.className.split(" ")).toEqual(
       expect.arrayContaining(["min-h-11", "sm:min-h-9"]),
     )

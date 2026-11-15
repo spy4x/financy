@@ -20,7 +20,6 @@ import { accountsStore } from "../state/accounts.ts"
 import { categoriesStore } from "../state/categories.ts"
 import { groupsStore } from "../state/groups.ts"
 import { membersStore } from "../state/members.ts"
-import { selectionStore } from "../state/selection.ts"
 import { sessionState } from "../state/session.ts"
 import { toasts } from "../state/toasts.ts"
 import { transactionsStore } from "../state/transactions.ts"
@@ -41,6 +40,7 @@ import {
   transactionUndoText,
 } from "./transaction-rows.ts"
 import { transferRow, transferUndoText, transferWhat } from "./transfer-rows.ts"
+import { useLinkedGroup } from "./linked-group.ts"
 import { useUndoToast } from "./use-undo-toast.ts"
 
 const network = createOnlineStatus()
@@ -61,14 +61,16 @@ const KINDS: readonly (string | null)[] = [
  * from the device's copy, the accounts and categories that name them, and the members who added
  * them, with the household's transfers among the entries by date. The search and filters live in
  * the address (`?q=`, `?account=`, `?category=`, `?kind=1|2|3`, `?from=` and `?to=`), and
- * `?deleted=1` shows the deleted entries and transfers.
+ * `?deleted=1` shows the deleted entries and transfers. `?group=` opens a household other than the
+ * selected one (`useLinkedGroup`).
  */
 export function TransactionsView() {
   const [, navigate] = useLocation()
   const t = useAppText()
   const { locale } = useFormat()
   const store = transactionsStore
-  const groupId = selectionStore.groupId.value
+  // The overview names its household in the link (`?group=`), which may not be the selected one.
+  const groupId = useLinkedGroup()
   useEffect(() => network.watch(), [])
   useEffect(() => {
     if (!groupId) return

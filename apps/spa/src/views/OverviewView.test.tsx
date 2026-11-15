@@ -69,4 +69,11 @@ describe("the overview with its money cards", () => {
     expect(html).toContain(`data-e2e="overview-widget-${MONEY_WIDGET_IDS.net}"`)
     expect(html).not.toContain(`data-e2e="overview-empty-group"`)
   })
+
+  it("links each money card to the overview's household, not the selected one", () => {
+    const hrefs = [...overviewOfA().matchAll(/href="(\/transactions[^"]*)"/g)].map((m) => m[1])
+
+    expect(hrefs.length).toBe(3)
+    for (const href of hrefs) expect(href).toContain(`group=${A}`)
+  })
 })
