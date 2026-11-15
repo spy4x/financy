@@ -1755,7 +1755,8 @@ CREATE TABLE import_records (
 -- Number.MAX_SAFE_INTEGER, so it crosses JSON as an exact number; `currency` is an ISO 4217 code,
 -- null exactly when the amount is. The category key includes group_id, so a budget can never name
 -- another household's category (R17); it is NO ACTION, like the entries' key, so a group's delete
--- removes its budgets together with its categories.
+-- removes its budgets together with its categories. 2026_12_22_0001_budgets_deferrable_keys.sql
+-- says why the key is deferrable.
 CREATE TABLE budgets (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -1770,7 +1771,7 @@ CREATE TABLE budgets (
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT budgets_category_fkey FOREIGN KEY (group_id, category_id)
-        REFERENCES categories (group_id, id),
+        REFERENCES categories (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT budgets_group_category_month_key UNIQUE (group_id, category_id, month),
     CONSTRAINT budgets_month_check CHECK (EXTRACT(DAY FROM month) = 1),
     CONSTRAINT budgets_amount_check CHECK (amount BETWEEN 1 AND 9007199254740991),
@@ -1819,7 +1820,7 @@ CREATE INDEX idx_budget_methods_updated_by ON budget_methods (updated_by_user_id
 -- household's main currency when the move was made, above zero and within
 -- Number.MAX_SAFE_INTEGER. Both category keys include group_id, so a move can never name another
 -- household's category (R17); they are NO ACTION, like the budgets' key, so a group's delete
--- removes its moves together with its categories.
+-- removes its moves together with its categories. Both keys are deferrable, as the budgets' is.
 CREATE TABLE budget_moves (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -1832,9 +1833,9 @@ CREATE TABLE budget_moves (
     created_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT budget_moves_from_category_fkey FOREIGN KEY (group_id, from_category_id)
-        REFERENCES categories (group_id, id),
+        REFERENCES categories (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT budget_moves_to_category_fkey FOREIGN KEY (group_id, to_category_id)
-        REFERENCES categories (group_id, id),
+        REFERENCES categories (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT budget_moves_month_check CHECK (EXTRACT(DAY FROM month) = 1),
     CONSTRAINT budget_moves_categories_check CHECK (from_category_id <> to_category_id),
     CONSTRAINT budget_moves_amount_check CHECK (amount BETWEEN 1 AND 9007199254740991),
