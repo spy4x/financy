@@ -135,6 +135,10 @@ not save its rows twice. The notes kind uses none of them.
 join table, not a column on each aggregate, so a product adds a kind without changing its
 aggregate's table. Its rows go when the import goes; the records stay.
 
+A kind may also stamp its records with the import's id, as the bank statement kind does with
+`transactions.import_batch_id`, so its undo can check that each id it is handed is its own. The
+undo still takes its ids from `import_records`.
+
 ## Add a kind
 
 1. Write the kind with `importKind` from `libs/server/imports/import-kind.ts`. Use
@@ -172,3 +176,34 @@ text file." A row needs a title; its body is optional. Undo moves the batch's no
 
 With `NOTES=false` (docs/start-a-product.md) the API and the worker leave this kind out: an upload
 of `kind=notes` is refused, and a notes import made before the switch fails when its job runs.
+
+## The bank statement kind
+
+Financy's `bank-statement` kind (`libs/server/transactions/statement-import.ts`) turns a bank's
+export into entries of one account. `@spy4x/bank-statements` reads the file: CSV in a built-in bank
+layout, OFX or QFX, QIF, CAMT.053 and MT940, at most 5 MiB and 5,000 entries. The format comes
+from the bytes, never the file name.
+
+- **Upload options.** `accountId`, `expenseCategoryId` and `incomeCategoryId`, all three required.
+  An account or category of another household is "not found"; an expense category that is not an
+  expense category, an income category that is not an income category, or a crypto account is
+  refused.
+- **Refused files.** A PDF, a file in no known format, a CSV whose header matches no built-in
+  layout in full, a statement whose balances do not add up, and one without entries are refused
+  in words. A refusal names line numbers only, never a cell, because the admin panel shows it.
+- **Each row.** A statement in another currency than the account's is refused, and so is an
+  amount with more decimals than the account's currency has (QIF names no currency, so its
+  amounts are read in the account's). Money in becomes income, money out an expense. The payee
+  and the memo are joined into the entry's memo, cut at 500 characters. The bank's own reference
+  goes into `transactions.bank_reference`.
+- **Review.** A row is skipped as "Saved before" when a live entry of the account has its
+  reference, or else the same date, amount and memo; each stored entry matches one row, so two
+  equal rows in one file are both saved the first time. A row is skipped as "Matches a transfer"
+  when a live transfer into or out of the account has its amount within 3 days.
+- **Choices.** `category` per row; without one, a row takes the upload's expense or income
+  category by its sign. An income may take an expense category, as a refund.
+- **Save.** The entries carry the import's id in `transactions.import_batch_id`. A household with
+  no room left on its plan, a lapsed plan included, saves none and the import fails in words.
+- **Undo.** Moves exactly this batch's live entries to the deleted list, with their tombstones.
+
+An export leaves both new columns out; a move between households keeps them.
