@@ -249,7 +249,7 @@ test.describe("group overview", () => {
     }
   })
 
-  test("where the money went shows a long category name whole and a long dong amount on a phone, without sideways scrolling, and a row opens that category's transactions of its own household", async ({ page, request }) => {
+  test("where the money went shows a long category name whole and a long dong amount on a phone, without sideways scrolling, and a row opens that category's transactions of its own household, and hides every share while a currency has no rate", async ({ page, request }) => {
     test.setTimeout(120_000)
     const email = `e2e-overview-categories-${uuidV7().slice(-8)}@example.com`
     try {
@@ -371,6 +371,39 @@ test.describe("group overview", () => {
       await expect(page.getByText("Supplies of Home")).toBeVisible()
       await expect(page.getByText("Rice of Home")).toBeVisible()
       await expect(page.getByText("Rent of Home")).toHaveCount(0)
+
+      // Lari has no rate to dong here, so the card counts what it can and shows no share.
+      const lariAccount = uuidV7()
+      await call(`account.create`, {
+        groupId: home,
+        id: lariAccount,
+        name: "Lari",
+        kind: 1,
+        currency: "GEL",
+        startingBalance: 0,
+      })
+      await call(`transaction.create`, {
+        groupId: home,
+        id: uuidV7(),
+        accountId: lariAccount,
+        categoryId: rent,
+        kind: 1,
+        amount: 30000,
+        currency: "GEL",
+        memo: "Rent in lari",
+      })
+      await page.goto(`/overview/${home}`)
+      await expect(card.locator(`[data-e2e=category-widget-left-out]`)).toHaveText(
+        "Leaves out spending in ⁨GEL⁩: no exchange rate for it yet.",
+      )
+      await expect(card.locator(`[data-e2e=category-widget-sentence]`)).toHaveText(
+        `Most of the spending we could count went to ⁨${longName}⁩.`,
+      )
+      await expect(card).not.toContainText(/\d%/)
+      await card.scrollIntoViewIfNeeded()
+      await page.screenshot({
+        path: test.info().outputPath(`overview-categories-left-out-390.png`),
+      })
     } finally {
       const response = await request.post(`${appBase}/api/test/cleanup-user`, {
         data: { login: email },
