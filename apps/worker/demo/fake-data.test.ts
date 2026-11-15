@@ -1,10 +1,12 @@
 /// <reference lib="deno.ns" />
 import { expect } from "@std/expect"
 import { deviceName } from "@spy4x/net/user-agent"
+import { AccountKind } from "@domain/accounts"
 import { BillingStatus } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
 import { TransactionKind } from "@domain/transactions"
 import {
+  BTC_PURCHASE,
   DAY,
   DEMO_ACCOUNTS,
   DEMO_CATEGORIES,
@@ -451,7 +453,7 @@ Deno.test("a household younger than three months has entries only from its accou
 })
 
 Deno.test("no demo account's balance ever drops below zero, on a hundred nights' seeds", () => {
-  expect(DEMO_ACCOUNTS.map((account) => account.currency)).toEqual([`EUR`, `USD`, `VND`])
+  expect(DEMO_ACCOUNTS.map((account) => account.currency)).toEqual([`EUR`, `USD`, `VND`, `BTC`])
   for (const group of everyGroup(Array.from({ length: 100 }, (_, i) => i + 1))) {
     const balances = group.accounts.map((account) => account.startingBalance)
     // Entries and transfers in time order; a transfer's sent side leaves first.
@@ -513,6 +515,7 @@ Deno.test("a household older than three months tops up its dollar card after its
       const inMonth = group.transfers
         .filter((transfer) => Math.floor(transfer.ago / ENTRY_MONTH) === month)
       const routes = inMonth.map((transfer) => `${transfer.from}>${transfer.to}`)
+        .filter((route) => route !== `0>3`)
       // Oldest first, so the top-up comes before the withdrawals it pays for.
       expect(routes[0]).toBe(`0>1`)
       expect(routes.filter((route) => route === `0>1`)).toHaveLength(1)
@@ -522,6 +525,29 @@ Deno.test("a household older than three months tops up its dollar card after its
       // The top-up lands after the month's income: in its spending days, not its first three.
       expect(inMonth[0].ago).toBeLessThan((month + 1) * ENTRY_MONTH - 3 * DAY)
     }
+  }
+})
+
+Deno.test("a household whose euro account had the latest month's income buys 0.01 BTC for 600 euros into its bitcoin wallet once, and no other one does", () => {
+  expect(DEMO_ACCOUNTS[3]).toMatchObject({ kind: AccountKind.CRYPTO, currency: `BTC` })
+  expect([BTC_PURCHASE.euros, BTC_PURCHASE.satoshi]).toEqual([600_00, 1_000_000])
+  const groups = everyGroup()
+  const buyers = groups.filter((group) => group.accounts[0].createdAgo > ENTRY_MONTH)
+  expect(buyers.length).toBeGreaterThan(10)
+  expect(buyers.length).toBeLessThan(groups.length)
+  for (const group of groups) {
+    const purchases = group.transfers.filter((transfer) => transfer.to === 3)
+    if (!buyers.includes(group)) {
+      expect(purchases).toEqual([])
+      continue
+    }
+    expect(purchases).toHaveLength(1)
+    expect(purchases[0]).toMatchObject({
+      from: 0,
+      sentAmount: BTC_PURCHASE.euros,
+      receivedAmount: BTC_PURCHASE.satoshi,
+      ago: BTC_PURCHASE.ago,
+    })
   }
 })
 
