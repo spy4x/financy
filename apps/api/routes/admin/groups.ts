@@ -389,7 +389,10 @@ export interface AdminWidgets {
   >
 }
 
-/** Every aggregate's widgets and readers: the notes' are the only ones so far. */
+/**
+ * Every aggregate's `counts` widgets and their readers: the notes' are the only ones so far. The
+ * household's money widgets are members-only (`"never"`), so they have neither here.
+ */
 export const ADMIN_WIDGETS: AdminWidgets = {
   definitions: NOTE_WIDGETS,
   readers: NOTE_WIDGET_READERS,

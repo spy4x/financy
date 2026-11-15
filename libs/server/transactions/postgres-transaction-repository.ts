@@ -159,6 +159,14 @@ export class PostgresTransactionRepository implements TransactionRepository {
     return row?.timeZone ?? null
   }
 
+  async firstDate(groupId: string): Promise<string | null> {
+    const [row] = await this.sql<{ first: string | null }[]>`
+      SELECT to_char(min(date), 'YYYY-MM-DD') AS first FROM transactions
+      WHERE group_id = ${groupId} AND deleted_at IS NULL
+    `
+    return row?.first ?? null
+  }
+
   async create(input: TransactionCreateInput, actorId: number): Promise<TransactionWriteResult> {
     return await this.sql.begin(async (transaction: postgres.TransactionSql) => {
       const repository = new PostgresTransactionRepository(transaction, this.rates)

@@ -16,6 +16,7 @@ import {
   TransactionListDeletedQuery,
   TransactionRestoreCommand,
   TransactionUpdateCommand,
+  TransactionWidgetQuery,
 } from "@domain/transactions"
 import { createSessionGate } from "../../cqrs/session-gate.ts"
 import { createEntitlementGate } from "../../cqrs/entitlement-gate.ts"
@@ -38,6 +39,7 @@ import {
   createTransactionListDeletedHandler,
   createTransactionRestoreHandler,
   createTransactionUpdateHandler,
+  createTransactionWidgetHandler,
 } from "./handlers.ts"
 import { createTransactionOperations } from "./operations.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
@@ -118,13 +120,12 @@ function stack() {
   queries.use(createSessionGate([]))
   queries.register(TransactionGetQuery, createTransactionGetHandler(dependencies))
   queries.register(TransactionListDeletedQuery, createTransactionListDeletedHandler(dependencies))
-  queries.register(
-    TransactionLedgerQuery,
-    createTransactionLedgerHandler({
-      ...dependencies,
-      settings: { get: () => Promise.resolve({ baseCurrency: "USD" }) },
-    }),
-  )
+  const ledgerDependencies = {
+    ...dependencies,
+    settings: { get: () => Promise.resolve({ baseCurrency: "USD" }) },
+  }
+  queries.register(TransactionLedgerQuery, createTransactionLedgerHandler(ledgerDependencies))
+  queries.register(TransactionWidgetQuery, createTransactionWidgetHandler(ledgerDependencies))
   const operations = createTransactionOperations({
     create: (command) => commands.execute(command),
     update: (command) => commands.execute(command),
@@ -133,6 +134,7 @@ function stack() {
     get: (query) => queries.execute(query),
     listDeleted: (query) => queries.execute(query),
     ledger: (query) => queries.execute(query),
+    widget: (query) => queries.execute(query),
   })
   /** Takes the member out of the household, as the owner's removal does. */
   const remove = (group: string, user: number) => delete memberships[`${group}:${user}`]
@@ -481,6 +483,12 @@ for (const [via, open] of TRANSPORTS) {
       const answers = [
         await as.query("transaction.get", { groupId, id: entry.id }),
         await as.query("transaction.ledger", { groupId, from: "2026-11-01", to: "2026-11-30" }),
+        await as.query("transaction.widget.ledger", {
+          groupId,
+          from: "2026-11-01",
+          to: "2026-11-30",
+          timeZone: "UTC",
+        }),
         ...await Promise.all(writes(entry.id).map(([name, payload]) => as.command(name, payload))),
       ]
 

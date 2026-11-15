@@ -263,7 +263,8 @@ describe("the first steps with the notes off", () => {
     // Under the page header and above the page's content, as above the notes list.
     const at = (e2e: string) => off.indexOf(`data-e2e="${e2e}"`)
     expect(at(`page-header`)).toBeLessThan(at(`onboarding`))
-    expect(at(`onboarding`)).toBeLessThan(at(`overview-no-widgets`))
+    // With the notes off the household's money widgets are the page's content.
+    expect(at(`onboarding`)).toBeLessThan(at(`overview-widget-money.net`))
     expect(off).not.toContain(ENGLISH.t(`OnboardingCard.noteTitle`))
     expect(off).not.toContain(ENGLISH.t(`OnboardingCard.inviteText`))
     expect(off).toContain(ENGLISH.t(`OnboardingCard.inviteTextPlain`))

@@ -24,10 +24,12 @@ import {
   testSessionGuards,
 } from "../../_testing/mutation-requests.ts"
 import { createAdminRoute } from "./+routes.ts"
+import { MONEY_WIDGETS } from "@domain/transactions"
 import {
   ADMIN_GROUP_FILE_CROSS_SITE,
   ADMIN_GROUP_FILE_NOT_FOUND,
   ADMIN_GROUP_NOT_FOUND,
+  ADMIN_WIDGETS,
   type AdminGroupsService,
   createAdminGroups,
   createAdminGroupsRoutes,
@@ -746,6 +748,22 @@ describe(`admin group widgets: what the operator may read`, () => {
   it(`answers 404 for a reader whose widget has no definition, reading nothing`, async () => {
     const { app, reads } = buildWidgetApp([], [`test.orphan`])
     expect((await ask(app, `test.orphan`)).status).toBe(404)
+    expect(reads).toEqual([])
+  })
+
+  it(`answers 404 for the household's money widgets, reading nothing even when a reader is wired`, async () => {
+    const moneyIds = MONEY_WIDGETS.map((definition) => definition.id)
+    // The operator's own list has no reader for them, and no money widget is a counts one.
+    expect(moneyIds.filter((id) => Object.hasOwn(ADMIN_WIDGETS.readers, id))).toEqual([])
+    const { app, reads } = buildWidgetApp(
+      [...ADMIN_WIDGETS.definitions, ...MONEY_WIDGETS],
+      moneyIds,
+    )
+    for (const id of moneyIds) {
+      const response = await ask(app, id)
+      expect(response.status).toBe(404)
+      expect((await apiError(response)).message).toBe(ADMIN_GROUP_NOT_FOUND)
+    }
     expect(reads).toEqual([])
   })
 })

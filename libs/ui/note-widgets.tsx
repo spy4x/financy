@@ -8,6 +8,7 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import type { CountWidgetResult, OverviewPeriods, SeriesWidgetResult } from "@domain/groups"
 import { NOTE_WIDGET_IDS } from "@domain/notes"
 import { useAppText } from "./i18n.ts"
+import type { Navigate } from "./progressive.tsx"
 
 /** What a widget's drawing knows besides its data. */
 export interface WidgetDrawContext {
@@ -21,6 +22,13 @@ export interface WidgetDrawContext {
    * line writes them. Left out, the region format's, in UTC.
    */
   days?: Formatters
+  /**
+   * The group the overview is about, so a widget's link opens that group's pages and not the
+   * selected one's. Left out on the operator's page, which draws no link to a group's pages.
+   */
+  groupId?: string
+  /** Follows a widget's link without a page load; left out, a link is an ordinary one. */
+  navigate?: Navigate
 }
 
 /** A widget drawn from its data: what its card shows when the data has arrived. */
