@@ -246,7 +246,7 @@ export const statementImportKind = importKind<StatementValue>({
     for (let start = 0; start < rows.length; start += WRITE_BATCH) {
       await tx`INSERT INTO transactions ${tx(rows.slice(start, start + WRITE_BATCH))}`
     }
-    // A household whose plan lapsed has no room (#87): it keeps reading, but adds nothing.
+    // A household whose plan lapsed has no room: it keeps reading, but adds nothing.
     const cap = context.allowances.maxTransactions
     if (cap !== null && rows.length > 0) {
       const used = await countPlanTransactions(tx, context.groupId) - 1
