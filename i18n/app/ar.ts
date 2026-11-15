@@ -2432,6 +2432,8 @@ export default {
   "AccountsTotal.title": "الإجمالي",
   "AccountsTotal.about": "حوالي {amount}",
   "AccountsTotal.rates": "بأسعار الصرف في {date}",
+  "AccountsTotal.coins":
+    "أسعار العملات المشفرة في {date}. البيانات مقدمة من <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "zero": "لا يشمل الإجمالي أي حساب: لا يتوفر بعد سعر صرف لـ {currencies}.",
     "one": "لا يشمل الإجمالي حسابًا واحدًا: لا يتوفر بعد سعر صرف لـ {currencies}.",

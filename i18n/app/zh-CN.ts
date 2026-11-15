@@ -1880,6 +1880,7 @@ export default {
   "AccountsTotal.title": "合计",
   "AccountsTotal.about": "约 {amount}",
   "AccountsTotal.rates": "按 {date} 的汇率计算",
+  "AccountsTotal.coins": "按 {date} 的加密货币价格计算。数据由 <link>CoinGecko</link> 提供。",
   "AccountsTotal.leftOut": {
     "other": "未计入 {count} 个账户：{currencies} 暂无汇率。",
   },

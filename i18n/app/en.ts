@@ -1732,6 +1732,7 @@ export default {
   "AccountsTotal.title": "Total",
   "AccountsTotal.about": "about {amount}",
   "AccountsTotal.rates": "At the exchange rates of {date}",
+  "AccountsTotal.coins": "Coin prices of {date}. Data provided by <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "Leaves out {count} account: no exchange rate for {currencies} yet.",
     "other": "Leaves out {count} accounts: no exchange rate for {currencies} yet.",
