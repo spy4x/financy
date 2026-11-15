@@ -383,6 +383,7 @@ Deno.test("data export: lists the budget limits, methods and envelope moves the 
     const food = await expense(groupId, `Food`)
     const fun = await expense(groupId, `Fun`)
     const elsewhere = await expense(left, `Food`)
+    const elsewhereFun = await expense(left, `Fun`)
     const budget = async (inGroup: string, categoryId: string, month: string, userId: number) => {
       const id = uuidV7()
       await sql`
@@ -399,14 +400,16 @@ Deno.test("data export: lists the budget limits, methods and envelope moves the 
     await sql`
       INSERT INTO budget_methods (id, group_id, month, method, change_sequence, created_by_user_id)
       VALUES (${method}, ${groupId}, '2026-11-01', 2, 1, ${editor}),
-        (${uuidV7()}, ${groupId}, '2026-12-01', 1, 1, ${owner})
+        (${uuidV7()}, ${groupId}, '2026-12-01', 1, 1, ${owner}),
+        (${uuidV7()}, ${left}, '2026-11-01', 2, 1, ${editor})
     `
     const move = uuidV7()
     await sql`
       INSERT INTO budget_moves (id, group_id, month, from_category_id, to_category_id, amount,
         currency, change_sequence, created_by_user_id)
       VALUES (${move}, ${groupId}, '2026-11-01', ${food}, ${fun}, 2500, 'EUR', 1, ${editor}),
-        (${uuidV7()}, ${groupId}, '2026-11-01', ${fun}, ${food}, 100, 'EUR', 1, ${owner})
+        (${uuidV7()}, ${groupId}, '2026-11-01', ${fun}, ${food}, 100, 'EUR', 1, ${owner}),
+        (${uuidV7()}, ${left}, '2026-11-01', ${elsewhere}, ${elsewhereFun}, 300, 'EUR', 1, ${editor})
     `
 
     const files = unzip(await buildDataExport(sql, editor, new Date()))
