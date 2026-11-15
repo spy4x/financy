@@ -70,11 +70,15 @@ Use the first tag the second command prints in place of `v0.1.0`.
    | `PROXY_HTTP_HOST_PORT`  | `80`                                                    |
    | `COMPOSE_PROFILES`      | `files`                                                 |
    | `TIMEZONE`              | Your IANA time zone, such as `Europe/Berlin`.           |
+   | `SMTP_*`                | All five: your mail provider's SMTP account.            |
 
 3. Give every secret a value of its own, as the secrets table in
    [The env file](../deploy.md#the-env-file) says. The deploy refuses a secret left as in the
    example, and names it.
-4. Keep a copy of `infra/envs/.env.prod` in your password manager. It holds the only copy of the
+4. Mail is required: Financy emails a code to everyone who signs up, signs in with a password or
+   resets one. Without the five `SMTP_*` values that code never arrives, so nobody can make an
+   account.
+5. Keep a copy of `infra/envs/.env.prod` in your password manager. It holds the only copy of the
    secrets and the key of the file store, and no backup saves it.
 
 What a household leaves out:
@@ -88,8 +92,6 @@ What a household leaves out:
   administrator as [Give operators access](../operator-access.md#the-first-operator) says.
 - **Monitoring** is optional too: add `monitoring` to `COMPOSE_PROFILES` for Grafana, metrics and
   logs on the server.
-- **Mail.** Without the `SMTP_*` values Financy works, but sends no password reset links. Set all
-  five to have them.
 
 Exchange rates work with no setting: [Exchange rates](exchange-rates.md) says where they come from
 and what a key adds.
