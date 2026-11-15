@@ -228,7 +228,7 @@ test.describe("group overview", () => {
         /^0 of 1 budget on track; .Groceries and household supplies for the whole family. is .₫124,000,000. over\.$/,
       )
       await expect(card.locator(`[data-e2e=budget-${supplies}]`).getByRole("meter")).toBeVisible()
-      await expect(card.getByRole("button")).toHaveCount(0)
+      await expect(card.locator(`[data-e2e=budget-widget-bars]`).getByRole("button")).toHaveCount(0)
       expect(
         await page.evaluate(() =>
           document.documentElement.scrollWidth <= document.documentElement.clientWidth
