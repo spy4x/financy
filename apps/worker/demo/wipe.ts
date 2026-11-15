@@ -1,31 +1,36 @@
 import type postgres from "postgres"
 
 /**
- * The tables the nightly wipe keeps: the migration history, so the schema is not migrated again,
- * the backup service's last good backup (`infra/backup/backup.sh`), which is about the server, not
- * the demo, the blog's posts, their old addresses and the contact links, which are the
- * product's website's own, not demo data, the newsletter's subscribers, the replay guard of those
- * who left and the send log, because the website's sign-up is real too (the seed replaces only its
- * own fake rows on domains reserved for examples), and the queue of stored files to delete, which
- * the wipe fills with every attachment's object and profile picture so the nightly clean-up empties
- * the file store too. Every other table in the schema is emptied, a new one included, so a table
- * added later needs no change here unless it must survive the wipe (docs/demo.md). A kept table
- * must not reference an emptied one: `TRUNCATE ... CASCADE` would empty it too.
+ * The tables the nightly wipe keeps: what is real survives, the rest goes. Every other table in the
+ * schema is emptied, a new one included, so a table added later needs no change here unless it
+ * must survive the wipe (docs/demo.md). A kept table must not reference an emptied one:
+ * `TRUNCATE ... CASCADE` would empty it too.
  */
 export const KEPT_TABLES: readonly string[] = [
+  // The schema's history, so the schema is not migrated again.
   `migrations`,
+  // The server's last good backup (`infra/backup/backup.sh`): about the server, not the demo.
   `backup_status`,
+  // The website's blog, its old addresses, earlier versions and where it was shared: real posts.
   `blog_posts`,
   `blog_slug_redirects`,
   `blog_post_revisions`,
   `blog_channels`,
   `blog_post_shares`,
   `blog_share_results`,
+  // The website's real contact channels.
   `contact_links`,
+  // The website's sign-up is real: its subscribers, the replay guard of those who left and the send
+  // log. The seed replaces only its own fake rows, on domains reserved for examples.
   `subscribers`,
   `subscriber_unsubscribes`,
   `subscriber_sends`,
+  // The stored files to delete: the wipe queues every attachment and picture here for the clean-up.
   `file_deletions`,
+  // Rate history is shared public data the daily job fetched (#93), not any household's.
+  `exchange_rates`,
+  // The calls made to a paid rate source this month, so its monthly cap holds across wipes.
+  `rate_source_calls`,
 ]
 
 /** How long the wipe waits for a lock before it gives up, instead of stalling the worker. */

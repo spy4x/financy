@@ -630,7 +630,7 @@ Deno.test("the demo seed fails when sign-up refuses an account that does not exi
   })
 })
 
-Deno.test("the wipe empties every table but the kept ones, keeps the blog, its old addresses, its earlier versions, where it was shared and the contact links, queues every stored file for deletion, and never reuses an id", async () => {
+Deno.test("the wipe empties every table but the kept ones, keeps the blog, its old addresses, its earlier versions, where it was shared, the contact links and the rate history, which the next seed leaves as it is, queues every stored file for deletion, and never reuses an id", async () => {
   await withSchema(async (sql) => {
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     await sql`INSERT INTO backup_status (target, succeeded_at) VALUES ('database', now())`
@@ -682,6 +682,8 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
       VALUES (${`pictures/${picture}/480.webp`}, ${picture}, 'image/webp', 480, 480)
     `
     keys.push({ objectKey: `pictures/${picture}/480.webp` })
+    // A paid rate source's calls this month: its cap holds across the wipe.
+    await sql`INSERT INTO rate_source_calls (source, month, calls) VALUES ('paid', date_trunc('month', now()), 3)`
 
     const wiped = await wipeDatabase(sql)
     const queued = await sql<{ objectKey: string }[]>`SELECT object_key FROM file_deletions`
@@ -727,9 +729,20 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
     `
     expect(shared).toEqual({ channels: SAMPLE_CHANNELS.length, shares: 2, results: 1 })
 
+    // The kept rate history lacks a day, as when the daily job missed one: the seed's fixture rates
+    // never fill it, or they would stand in for the real rates for good.
+    await sql`DELETE FROM exchange_rates WHERE rate_date = (SELECT max(rate_date) FROM exchange_rates)`
+    const [{ rates }] = await sql<
+      { rates: number }[]
+    >`SELECT COUNT(*)::int AS rates FROM exchange_rates`
+
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     const [{ after }] = await sql<{ after: number }[]>`SELECT min(id) AS after FROM users`
     expect(after).toBeGreaterThan(before)
+    const [{ again }] = await sql<
+      { again: number }[]
+    >`SELECT COUNT(*)::int AS again FROM exchange_rates`
+    expect(again).toBe(rates)
   })
 })
 
