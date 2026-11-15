@@ -534,6 +534,8 @@ function OverviewWidgetCard(
   const savedAt = load.status === "ready" ? load.savedAt : null
   return (
     <WidgetCard
+      // Fills its grid cell, so the cards of a row share one height and their figures line up.
+      class="h-full"
       title={t.t(widget.titleKey)}
       // An empty chart is one line: it takes a number's height, not the chart's.
       size={drawing?.status === "empty" ? "stat" : widget.size}

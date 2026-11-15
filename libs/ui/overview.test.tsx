@@ -262,6 +262,14 @@ describe("the group overview", () => {
     expect(wrong).toEqual([])
   })
 
+  it("stretches every card to its grid cell, so the cards of a row share one height", async () => {
+    await mount()
+
+    for (const id of [total, added, series]) {
+      expect(document.querySelector(card(id))!.classList.contains("h-full")).toBe(true)
+    }
+  })
+
   it("draws an empty chart as one line at a number's height", async () => {
     await mount({
       ...READY,
