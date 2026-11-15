@@ -602,10 +602,11 @@ Deno.test("a visitor still gets the group they own when the population is of ano
   })
 })
 
-Deno.test("a visitor gets tags and notes in the group they own when its first member with an account today is a viewer or an editor", async () => {
-  // Day 5's population and day 6's sample groups: a viewer is the first such member, who may not
-  // write tags. Day 2's and day 3's: an editor, who may not invite.
-  for (const today of [2, 5]) {
+Deno.test("a visitor gets tags and notes in the group they own when its partner has an account in another day's population", async () => {
+  // Day 18's population and day 19's sample groups: the partner of the visitor's own household is
+  // in both. Who stands in for a writer without an account is checked for 300 days in
+  // fake-data.test.ts.
+  for (const today of [18]) {
     await withSchema(async (sql) => {
       await seedDemo(new AppDbBase({ sql }), sql, { ...OPTIONS, dataSeed: today })
       const userId = await signUpVisitor(sql, "late@example.net")
@@ -1252,24 +1253,25 @@ Deno.test("the development seed adds the operator's refund, blocks and a recent 
   })
 })
 
-Deno.test("a visitor's sample groups have notes by several people on different days", async () => {
+Deno.test("a visitor's sample groups have notes on different days, by several people in the ones it joined and by the partner in its own", async () => {
   await withSchema(async (sql) => {
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     const userId = await signUpVisitor(sql, "visitor@example.net")
     await drainJobs(sql)
 
-    const groups = await sql<{ authors: number; days: number }[]>`
-      SELECT
+    const groups = await sql<{ role: number; authors: number; days: number }[]>`
+      SELECT m.role,
         COUNT(DISTINCT e.actor_user_id)::int AS authors,
         (EXTRACT(EPOCH FROM max(e.created_at) - min(e.created_at)) / 86400)::float8 AS days
       FROM audit_events e JOIN group_members m ON m.group_id = e.group_id AND m.user_id = ${userId}
       JOIN groups g ON g.id = e.group_id
       WHERE g.name <> 'Personal' AND e.event_kind = 'note.created'
-      GROUP BY e.group_id
+      GROUP BY e.group_id, m.role
     `
     expect(groups.length).toBeGreaterThan(0)
     for (const group of groups) {
-      expect(group.authors).toBeGreaterThanOrEqual(2)
+      if (group.role === GroupRole.OWNER) expect(group.authors).toBe(1)
+      else expect(group.authors).toBeGreaterThanOrEqual(2)
       expect(group.days).toBeGreaterThan(1)
     }
   })

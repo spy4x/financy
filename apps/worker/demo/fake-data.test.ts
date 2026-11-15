@@ -331,12 +331,13 @@ Deno.test("a new account owns one sample group and is an editor and a viewer in 
   }
 })
 
-Deno.test("a new account's sample notes are written by several people over days", () => {
+Deno.test("a new account's sample notes are written over days, by several people in the households it joined", () => {
   for (const seed of [1, 20261019, 99]) {
     const groups = fakeWorkspace(seed)
     for (const group of groups) {
       const authors = new Set(group.notes.map((note) => note.author))
-      expect(authors.size).toBeGreaterThanOrEqual(2)
+      // Its own household is a couple, and the account writes nothing: the partner writes them.
+      expect(authors.size).toBeGreaterThanOrEqual(group.owner === `you` ? 1 : 2)
       expect(authors.has(`you`)).toBe(false)
       const times = group.notes.map((note) => note.createdAgo)
       expect(Math.max(...times) - Math.min(...times)).toBeGreaterThan(DAY)
@@ -349,12 +350,25 @@ Deno.test("a new account's sample notes are written by several people over days"
   }
 })
 
-Deno.test("a new account's sample groups have notes by two people or more on every seed, the couple's too", () => {
+Deno.test("a new account's sample groups it joined have notes by two people or more on every seed", () => {
   for (let seed = 1; seed <= 300; seed++) {
-    for (const group of fakeWorkspace(seed)) {
+    for (const group of fakeWorkspace(seed).filter((group) => group.owner !== `you`)) {
       expect({ seed, group: group.name, many: new Set(group.notes.map((n) => n.author)).size > 1 })
         .toEqual({ seed, group: group.name, many: true })
     }
+  }
+})
+
+Deno.test("a new account's own household is the account and one partner, an admin who writes its notes", () => {
+  for (let seed = 1; seed <= 300; seed++) {
+    const own = fakeWorkspace(seed).find((group) => group.owner === `you`)!
+    const [partner] = own.members
+    expect({ seed, members: own.members.length, role: partner.role }).toEqual({
+      seed,
+      members: 1,
+      role: GroupRole.ADMIN,
+    })
+    expect(new Set(own.notes.map((note) => note.author))).toEqual(new Set([partner.member]))
   }
 })
 

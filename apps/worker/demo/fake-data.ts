@@ -555,8 +555,8 @@ function groupPeople(users: readonly FakeUser[]): number[] {
  * One themed group, with members joining over time, tags, notes by several writers, a promotion
  * and pending invitations. `joined` says when a person joined the product (`Infinity` when it does
  * not matter) and `maxAgo` how old the group may be. With `yourRole`, the new account is in it
- * with that role; as the owner, the first fake person becomes an admin, and the content is the
- * fake people's.
+ * with that role; as the owner, it takes the place of the fake owner, the first fake person drawn
+ * becomes an admin, and the content is the fake people's.
  */
 function fakeGroup(
   tools: Tools,
@@ -568,7 +568,10 @@ function fakeGroup(
   taken: Set<string>,
 ): FakeGroup {
   const { int, pick, chance, sample, between } = tools
-  const picked = sample(people, int(theme.members[0], theme.members[1]) + 1)
+  // The theme's member count leaves its owner out. When that owner is the new account, no fake
+  // owner is drawn, so its couple is the account and one partner.
+  const owners = yourRole === GroupRole.OWNER ? 0 : 1
+  const picked = sample(people, int(theme.members[0], theme.members[1]) + owners)
     .sort((a, b) => joined(b) - joined(a))
   const [ownerIndex, ...memberIndexes] = picked
   const createdAgo = Math.max(
