@@ -12,10 +12,11 @@ import { useAppText } from "./i18n.ts"
 
 /**
  * "Where did the money go?" on the household overview: a sentence naming the category that spent
- * most, then a ranked row per top-level category with its amount and its share of spending. The
- * figures are the ledger read's (`CategoryWidgetResult`), never a sum made here. Every bar has one
- * colour, so none reads as good or bad; a converted figure says "about" and names its newest rate
- * date, and a currency with no rate is named, never counted as zero.
+ * most, then a ranked row per top-level category with its amount and its share of the categories'
+ * spending. The figures are the ledger read's (`CategoryWidgetResult`), never a sum made here.
+ * Every bar has one colour, so none reads as good or bad; a converted figure says "about" and the
+ * newest rate date is named, and a currency with no rate is named, never counted as zero, and
+ * hides every share.
  */
 
 /**
@@ -52,9 +53,17 @@ export function shareText(t: Translator<string>, percent: number, locale: string
 }
 
 /**
- * "Most went to Rent: 34% of your spending." and its "about" variant, or `null` with none: no
- * category spent, a currency is left out (a share of part of the spending would be untrue), or
- * spending is not above zero.
+ * Whether the card shows shares: not while a currency is left out, since a share of part of the
+ * spending would be untrue, and not when the total is missing or not above zero.
+ */
+function sharesShown(result: CategoryWidgetResult): boolean {
+  return result.spendingLeftOut.length === 0 && result.total !== null && result.total > 0
+}
+
+/**
+ * "Most went to Rent: 34% of the spending in your categories." and its "about" variant; while a
+ * currency is left out, "Most of the spending we could count went to Rent." with no share. `null`
+ * when no category spent.
  */
 export function categorySentence(
   t: Translator<string>,
@@ -62,13 +71,15 @@ export function categorySentence(
   locale: string,
 ): string | null {
   const [first] = result.top
-  if (!first || result.spendingLeftOut.length > 0) return null
-  const percent = shareOf(first.spending, result.spending)
+  if (!first) return null
+  const category = isolate(first.name)
+  if (result.spendingLeftOut.length > 0) {
+    return t.t(`MoneyWidgets.categoriesTopCounted`, { category })
+  }
+  const percent = shareOf(first.spending, result.total)
   if (percent === null) return null
-  const key = result.spendingRateDate === null
-    ? `MoneyWidgets.categoriesTop`
-    : `MoneyWidgets.categoriesTopAbout`
-  return t.t(key, { category: isolate(first.name), share: shareText(t, percent, locale) })
+  const key = result.converted ? `MoneyWidgets.categoriesTopAbout` : `MoneyWidgets.categoriesTop`
+  return t.t(key, { category, share: shareText(t, percent, locale) })
 }
 
 const LINK_CLASS = `pc-link inline-flex min-h-11 items-center self-start text-sm sm:min-h-9`
@@ -86,13 +97,13 @@ export function CategoryBody(
   const t = useAppText()
   const { locale } = context.format
   const range = context.periods.current
-  const about = result.spendingRateDate !== null
-  const tooLarge = result.tooLarge || result.spending === null
+  const tooLarge = result.tooLarge || result.total === null
+  const shares = sharesShown(result)
   const lines: JSX.Element[] = []
-  if (!tooLarge && result.top.length > 0 && about) {
+  if (!tooLarge && result.top.length > 0 && result.converted && result.spendingRateDate) {
     lines.push(
       <p class="text-sm text-muted" data-e2e="category-widget-rates">
-        {t.t(`MoneyWidgets.rates`, { date: rateDay(context, result.spendingRateDate!) })}
+        {t.t(`MoneyWidgets.rates`, { date: rateDay(context, result.spendingRateDate) })}
       </p>,
     )
   }
@@ -122,9 +133,12 @@ export function CategoryBody(
   }
   const shown = tooLarge ? [] : result.top
   const sentence = tooLarge ? null : categorySentence(t, result, locale)
+  // `RankedBars` formats a row's amount by its value alone, so "about" is looked up by value: a
+  // converted row says it, and an exact row says it only if a converted row has the very same sum.
+  const converted = new Set(shown.filter((row) => row.converted).map((row) => row.spending))
   const amount = (value: number) => {
     const text = moneyText(value, result.currency, locale)
-    return about ? t.t(`MoneyWidgets.about`, { amount: text }) : text
+    return converted.has(value) ? t.t(`MoneyWidgets.about`, { amount: text }) : text
   }
   return (
     <div class="flex min-w-0 flex-col gap-2">
@@ -150,7 +164,8 @@ export function CategoryBody(
             data={shown.map((row): RankedBarRow => ({
               label: row.name,
               value: row.spending,
-              values: [shareOf(row.spending, result.spending)],
+              // `RankedBars` needs its share column; while shares are hidden it prints "–".
+              values: [shares ? shareOf(row.spending, result.total) : null],
               href: categoryLinkHref(row.categoryId, range, context.groupId),
             }))}
           />

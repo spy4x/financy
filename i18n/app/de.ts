@@ -2394,15 +2394,19 @@ export default {
   "MoneyWidgets.netLink": "Alle Buchungen in diesem Zeitraum ansehen",
   "MoneyWidgets.incomeLink": "Buchungen der Einnahmen ansehen",
   "MoneyWidgets.spendingLink": "Buchungen der Ausgaben ansehen",
-  "MoneyWidgets.categoriesTitle": "Wohin das Geld ging",
+  "MoneyWidgets.categoriesTitle": "Wohin ist das Geld gegangen?",
   "MoneyWidgets.categoriesLoading": "Wird geladen, wohin das Geld ging…",
   "MoneyWidgets.categoriesError": "Konnte nicht geladen werden, wohin das Geld ging.",
-  "MoneyWidgets.categoriesTop": "Am meisten ging an {category}: {share} deiner Ausgaben.",
-  "MoneyWidgets.categoriesTopAbout": "Am meisten ging an {category}: etwa {share} deiner Ausgaben.",
+  "MoneyWidgets.categoriesTop":
+    "Am meisten ging an {category}: {share} der Ausgaben in deinen Kategorien.",
+  "MoneyWidgets.categoriesTopAbout":
+    "Am meisten ging an {category}: rund {share} der Ausgaben in deinen Kategorien.",
+  "MoneyWidgets.categoriesTopCounted":
+    "Von den Ausgaben, die wir erfassen konnten, ging das meiste an {category}.",
   "MoneyWidgets.categoriesShareTiny": "weniger als 1 %",
   "MoneyWidgets.categoriesColumnCategory": "Kategorie",
   "MoneyWidgets.categoriesColumnSpent": "Ausgegeben",
-  "MoneyWidgets.categoriesColumnShare": "Anteil",
+  "MoneyWidgets.categoriesColumnShare": "Anteil an allen Kategorien",
   "MoneyWidgets.categoriesMore": {
     "one": "Und {count} weitere Kategorie",
     "other": "Und {count} weitere Kategorien",

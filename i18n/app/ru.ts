@@ -2543,15 +2543,18 @@ export default {
   "MoneyWidgets.netLink": "Все операции за этот период",
   "MoneyWidgets.incomeLink": "Операции доходов",
   "MoneyWidgets.spendingLink": "Операции расходов",
-  "MoneyWidgets.categoriesTitle": "Куда ушли деньги",
+  "MoneyWidgets.categoriesTitle": "Куда ушли деньги?",
   "MoneyWidgets.categoriesLoading": "Загружаем, куда ушли деньги…",
   "MoneyWidgets.categoriesError": "Не удалось загрузить, куда ушли деньги.",
-  "MoneyWidgets.categoriesTop": "Больше всего — {category}: {share} ваших расходов.",
-  "MoneyWidgets.categoriesTopAbout": "Больше всего — {category}: около {share} ваших расходов.",
+  "MoneyWidgets.categoriesTop": "Больше всего — {category}: {share} расходов по вашим категориям.",
+  "MoneyWidgets.categoriesTopAbout":
+    "Больше всего — {category}: около {share} расходов по вашим категориям.",
+  "MoneyWidgets.categoriesTopCounted":
+    "Больше всего из расходов, которые удалось учесть, — {category}.",
   "MoneyWidgets.categoriesShareTiny": "менее 1 %",
   "MoneyWidgets.categoriesColumnCategory": "Категория",
   "MoneyWidgets.categoriesColumnSpent": "Потрачено",
-  "MoneyWidgets.categoriesColumnShare": "Доля",
+  "MoneyWidgets.categoriesColumnShare": "Доля от всех категорий",
   "MoneyWidgets.categoriesMore": {
     "one": "И ещё {count} категория",
     "few": "И ещё {count} категории",

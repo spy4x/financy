@@ -2465,16 +2465,19 @@ export default {
   "MoneyWidgets.netLink": "Ver todos los movimientos de este periodo",
   "MoneyWidgets.incomeLink": "Ver movimientos de ingresos",
   "MoneyWidgets.spendingLink": "Ver movimientos de gastos",
-  "MoneyWidgets.categoriesTitle": "En qué se fue el dinero",
+  "MoneyWidgets.categoriesTitle": "¿En qué se fue el dinero?",
   "MoneyWidgets.categoriesLoading": "Cargando en qué se fue el dinero…",
   "MoneyWidgets.categoriesError": "No se pudo cargar en qué se fue el dinero.",
-  "MoneyWidgets.categoriesTop": "Lo que más se llevó fue {category}: {share} de tus gastos.",
+  "MoneyWidgets.categoriesTop":
+    "Lo que más se llevó fue {category}: {share} del gasto en tus categorías.",
   "MoneyWidgets.categoriesTopAbout":
-    "Lo que más se llevó fue {category}: cerca del {share} de tus gastos.",
+    "Lo que más se llevó fue {category}: cerca del {share} del gasto en tus categorías.",
+  "MoneyWidgets.categoriesTopCounted":
+    "Del gasto que pudimos contar, lo que más se llevó fue {category}.",
   "MoneyWidgets.categoriesShareTiny": "menos del 1 %",
   "MoneyWidgets.categoriesColumnCategory": "Categoría",
   "MoneyWidgets.categoriesColumnSpent": "Gastado",
-  "MoneyWidgets.categoriesColumnShare": "Parte",
+  "MoneyWidgets.categoriesColumnShare": "Parte del total de categorías",
   "MoneyWidgets.categoriesMore": {
     "one": "Y {count} categoría más",
     "many": "Y {count} categorías más",

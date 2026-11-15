@@ -63,8 +63,14 @@ const NO_BUDGETS: BudgetWidgetResult = {
 /** One category that spent, and one more behind "and N more". */
 const WHERE_IT_WENT: CategoryWidgetResult = {
   currency: `EUR`,
-  spending: 1500,
-  top: [{ categoryId: `019a5b0e-1af5-7f04-8ae4-b1ee5d114001`, name: `Rent`, spending: 1000 }],
+  total: 1500,
+  converted: false,
+  top: [{
+    categoryId: `019a5b0e-1af5-7f04-8ae4-b1ee5d114001`,
+    name: `Rent`,
+    spending: 1000,
+    converted: false,
+  }],
   more: 1,
   spendingLeftOut: [],
   spendingRateDate: null,

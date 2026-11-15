@@ -342,7 +342,7 @@ test.describe("group overview", () => {
       const card = page.locator(`[data-e2e="overview-widget-money.categories"]`)
       // 128,000,000 of 168,000,000 is 76%, rounded down; Rice counts under its parent only.
       await expect(card.locator(`[data-e2e=category-widget-sentence]`)).toHaveText(
-        `Most went to ⁨${longName}⁩: 76% of your spending.`,
+        `Most went to ⁨${longName}⁩: 76% of the spending in your categories.`,
       )
       const rows = card.locator(`[data-e2e=category-widget-rows] tbody tr`)
       await expect(rows).toHaveCount(2)

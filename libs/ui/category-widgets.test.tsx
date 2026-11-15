@@ -44,15 +44,16 @@ const CONTEXT: WidgetDrawContext = {
 }
 const ID = (n: number) => `019a5b0e-1af5-7f04-8ae4-b1ee5d1140${String(n).padStart(2, "0")}`
 
-function row(n: number, name: string, spending: number): CategoryWidgetRow {
-  return { categoryId: ID(n), name, spending }
+function row(n: number, name: string, spending: number, converted = false): CategoryWidgetRow {
+  return { categoryId: ID(n), name, spending, converted }
 }
 
 /** A month in EUR with nothing converted and nothing left out, changed by `extra`. */
 function result(extra: Partial<CategoryWidgetResult> = {}): CategoryWidgetResult {
   return {
     currency: "EUR",
-    spending: 100000,
+    total: 100000,
+    converted: false,
     top: [row(1, "Rent", 40000), row(2, "Food", 30000), row(3, "Travel", 20000)],
     more: 0,
     spendingLeftOut: [],
@@ -102,7 +103,7 @@ describe(`the overview's "Where did the money go?" widget`, () => {
   it("names the category that spent most and its share, then a row per category with amount and share", () => {
     const c = card(result())
 
-    expect(c.line("sentence")).toBe("Most went to Rent: 40% of your spending.")
+    expect(c.line("sentence")).toBe("Most went to Rent: 40% of the spending in your categories.")
     expect(c.rows.map(({ name, cells }) => ({ name, cells }))).toEqual([
       { name: "Rent", cells: ["€400.00", "40%"] },
       { name: "Food", cells: ["€300.00", "30%"] },
@@ -125,7 +126,7 @@ describe(`the overview's "Where did the money go?" widget`, () => {
 
   it("writes a sliver of spending as less than 1%, rounded down, never as 0%", () => {
     const c = card(result({
-      spending: 1_000_000,
+      total: 1_000_000,
       top: [row(1, "Rent", 995_000), row(2, "Stamps", 5_000)],
     }))
 
@@ -136,7 +137,7 @@ describe(`the overview's "Where did the money go?" widget`, () => {
 
   it("draws the five it gets, then 'And N more categories' to the range's expenses", () => {
     const top = [1, 2, 3, 4, 5].map((n) => row(n, `Category ${n}`, 1000 * (6 - n)))
-    const c = card(result({ spending: 20000, top, more: 3 }))
+    const c = card(result({ total: 20000, top, more: 3 }))
 
     expect(c.rows).toHaveLength(5)
     expect(c.more?.textContent).toBe("And 3 more categories")
@@ -146,28 +147,55 @@ describe(`the overview's "Where did the money go?" widget`, () => {
     expect(card(result({ more: 1 })).more?.textContent).toBe("And 1 more category")
   })
 
-  it("says about, on the sentence and every amount, and names the rate date when it converted", () => {
-    const c = card(result({ spendingRateDate: "2026-11-14" }))
+  it("says about only on the rows that were converted, and on the sentence, with the rate date", () => {
+    const c = card(result({
+      converted: true,
+      spendingRateDate: "2026-11-14",
+      top: [row(1, "Rent", 40000), row(2, "Food", 30000, true), row(3, "Travel", 20000)],
+    }))
 
-    expect(c.line("sentence")).toBe("Most went to Rent: about 40% of your spending.")
-    expect(c.rows[0].cells[0]).toBe("about €400.00")
+    expect(c.line("sentence")).toBe(
+      "Most went to Rent: about 40% of the spending in your categories.",
+    )
+    expect(c.rows.map((r) => r.cells[0])).toEqual(["€400.00", "about €300.00", "€200.00"])
     expect(c.line("rates")).toBe(
       "Converted at each day's exchange rate, the latest from 14 Nov",
     )
   })
 
-  it("names a currency with no rate under the rows and drops the sentence a part would make untrue", () => {
+  it("says no about and names no rate date when no listed spending was converted", () => {
+    const c = card(result({ spendingRateDate: "2026-11-14" }))
+
+    expect(c.line("sentence")).toBe("Most went to Rent: 40% of the spending in your categories.")
+    expect(c.rows[0].cells[0]).toBe("€400.00")
+    expect(c.line("rates")).toBeNull()
+  })
+
+  it("never shows a share past 100% when a refund-only category leaves the total", () => {
+    // Rent spent €20.00 and Food was only refunded €15.00: the total holds Rent's alone.
+    const c = card(result({ total: 2000, top: [row(1, "Rent", 2000)] }))
+
+    expect(c.line("sentence")).toBe("Most went to Rent: 100% of the spending in your categories.")
+    expect(c.rows[0].cells).toEqual(["€20.00", "100%"])
+  })
+
+  it("hides every share while a currency is left out, and names the top of what it could count", () => {
     const c = card(result({ spendingLeftOut: ["THB"] }))
 
     expect(c.line("left-out")).toBe(
       "Leaves out spending in THB: no exchange rate for it yet.",
     )
-    expect(c.line("sentence")).toBeNull()
-    expect(c.rows).toHaveLength(3)
+    expect(c.line("sentence")).toBe("Most of the spending we could count went to Rent.")
+    expect(c.rows.map((r) => r.cells)).toEqual([
+      ["€400.00", "–"],
+      ["€300.00", "–"],
+      ["€200.00", "–"],
+    ])
+    expect(c.root.textContent).not.toMatch(/\d%/)
   })
 
   it("shows no number at all when every entry lacked a rate", () => {
-    const c = card(result({ spending: 0, top: [], spendingLeftOut: ["THB", "USD"] }))
+    const c = card(result({ total: 0, top: [], spendingLeftOut: ["THB", "USD"] }))
 
     expect(c.rows).toEqual([])
     expect(c.line("none")).toBeNull()
@@ -178,7 +206,7 @@ describe(`the overview's "Where did the money go?" widget`, () => {
   })
 
   it("says the spending is too large to show, with no row or sentence", () => {
-    const c = card(result({ spending: null, top: [], tooLarge: true }))
+    const c = card(result({ total: null, top: [], tooLarge: true }))
 
     expect(c.line("too-large")).toBe("The spending is too large to show.")
     expect(c.rows).toEqual([])
@@ -186,7 +214,7 @@ describe(`the overview's "Where did the money go?" widget`, () => {
   })
 
   it("says there was no spending in the range when no category spent", () => {
-    const c = card(result({ spending: 0, top: [] }))
+    const c = card(result({ total: 0, top: [] }))
 
     expect(c.line("none")).toBe("No spending in this range")
     expect(c.line("sentence")).toBeNull()
@@ -197,7 +225,7 @@ describe(`the overview's "Where did the money go?" widget`, () => {
     const name = "Household repairs, garden tools and everything for the summer house"
     const c = card(result({
       currency: "VND",
-      spending: 123_456_789_000,
+      total: 123_456_789_000,
       top: [row(1, name, 123_456_789_000)],
     }))
 
