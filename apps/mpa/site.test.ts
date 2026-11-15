@@ -372,9 +372,7 @@ describe("the public website", () => {
       // What a reader hears or a crawler reads: the text, and the alt, title, label and meta words.
       const words = [...html.matchAll(/\b(?:alt|title|aria-label|content)="([^"]*)"/g)]
         .map((match) => match[1])
-      // "Product team" is the name of a sample group the admin panel video shows.
-      const text = [html.replace(/<[^>]+>/g, " "), ...words].join(" ")
-        .replaceAll("Product team", " ").replace(/\s+/g, " ")
+      const text = [html.replace(/<[^>]+>/g, " "), ...words].join(" ").replace(/\s+/g, " ")
 
       expect(text, path).not.toMatch(/second factor/i)
       expect(text, path).not.toMatch(/\b(?:teams?|seats?)\b/i)
