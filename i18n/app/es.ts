@@ -2302,6 +2302,8 @@ export default {
   "AccountsTotal.title": "Total",
   "AccountsTotal.about": "aprox. {amount}",
   "AccountsTotal.rates": "Con los tipos de cambio del {date}",
+  "AccountsTotal.coins":
+    "Precios de las criptomonedas del {date}. Datos proporcionados por <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "No incluye {count} cuenta: aún no hay tipo de cambio para {currencies}.",
     "many": "No incluye {count} cuentas: aún no hay tipo de cambio para {currencies}.",

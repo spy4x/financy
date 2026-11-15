@@ -10,6 +10,7 @@ const totalOf = (amount: number): HouseholdTotal => ({
   amount,
   currency: "EUR",
   rateDate: null,
+  coinPriceDate: null,
   leftOut: [],
   tooLarge: false,
 })

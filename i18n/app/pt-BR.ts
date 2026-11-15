@@ -2283,6 +2283,8 @@ export default {
   "AccountsTotal.title": "Total",
   "AccountsTotal.about": "cerca de {amount}",
   "AccountsTotal.rates": "Pelas cotações de {date}",
+  "AccountsTotal.coins":
+    "Preços das criptomoedas de {date}. Dados fornecidos por <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "Fica de fora {count} conta: ainda não há cotação para {currencies}.",
     "many": "Ficam de fora {count} contas: ainda não há cotação para {currencies}.",

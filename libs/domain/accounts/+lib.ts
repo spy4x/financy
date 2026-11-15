@@ -8,13 +8,15 @@ import {
   type GroupRole,
   plainEntryProblem,
 } from "@domain/groups"
-import { accountCurrencyCode, isCoin } from "@domain/money"
 import {
-  convertMoney,
-  type ExchangeRate,
-  type Money,
-  sumMoney,
-} from "@spy4x/platform/universal/money"
+  accountCurrencyCode,
+  COIN_PRICE_SOURCE,
+  type CoinPrice,
+  convertAmount,
+  ECB_BASE,
+  isCoin,
+} from "@domain/money"
+import { crossRate, type ExchangeRate, type Money, sumMoney } from "@spy4x/platform/universal/money"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
@@ -442,7 +444,12 @@ export interface HouseholdTotal {
   currency: string
   /** The oldest rate date the total used, `YYYY-MM-DD`; `null` when no account needed a rate. */
   rateDate: string | null
-  /** The currencies with no rate, by code, each with its account count. */
+  /**
+   * The oldest coin price date the total used, `YYYY-MM-DD`; `null` when no coin was valued. A
+   * coin is valued at today's stored price, never a past one, so the total says which day.
+   */
+  coinPriceDate: string | null
+  /** The currencies and coins with no rate or price, by code, each with its account count. */
   leftOut: LeftOutCurrency[]
   tooLarge: boolean
 }
@@ -457,28 +464,79 @@ export class AccountTotalQuery implements Query<AccountTotalPayload, { total: Ho
   constructor(public data: AccountTotalPayload) {}
 }
 
+/** The rate that values one account in the base currency, and the dates the total names. */
+interface AccountRate {
+  rate: ExchangeRate
+  /** The fiat rate's date, the euro leg's for a coin; `null` for a coin in a euro household. */
+  rateDate: string | null
+  coinPriceDate: string | null
+}
+
 /**
- * Sums `accounts` in `currency`. Each balance is converted with its currency's rate in `rates` and
- * rounded once to the base currency's smallest unit, half away from zero (`convertMoney`); then the
- * integers are added. An account whose currency has no rate (missing from `rates`, or `null`) is
- * left out and named, never counted as 0 or at a rate of 1. A conversion past the safe bound makes
- * the whole total `tooLarge`, as a sum past it does.
+ * The rate of `code` to `currency`, or `null` when there is none. A coin's is its stored euro
+ * price, crossed with the euro's rate to `currency` (`rates` under `EUR`) when the base is not the
+ * euro; either one missing is no rate.
+ */
+function accountRate(
+  code: string,
+  currency: string,
+  rates: ReadonlyMap<string, ExchangeRate | null>,
+  coinPrices: ReadonlyMap<string, CoinPrice | null>,
+): AccountRate | null {
+  if (!isCoin(code)) {
+    const rate = rates.get(code) ?? null
+    return rate && { rate, rateDate: rate.date, coinPriceDate: null }
+  }
+  const price = coinPrices.get(code)
+  if (!price) return null
+  const inEuro: ExchangeRate = {
+    base: code,
+    quote: ECB_BASE,
+    rate: price.price,
+    date: price.date,
+    source: COIN_PRICE_SOURCE,
+  }
+  if (currency === ECB_BASE) return { rate: inEuro, rateDate: null, coinPriceDate: price.date }
+  const euroLeg = rates.get(ECB_BASE)
+  const crossed = euroLeg ? crossRate(inEuro, euroLeg) : null
+  return crossed?.ok
+    ? { rate: crossed.value, rateDate: euroLeg!.date, coinPriceDate: price.date }
+    : null
+}
+
+/** The older of two `YYYY-MM-DD` dates, either of which may be missing. */
+function older(a: string | null, b: string | null): string | null {
+  return a === null || (b !== null && b < a) ? b : a
+}
+
+/**
+ * Sums `accounts` in `currency`. Each balance is converted with its currency's rate in `rates`, or
+ * a coin's stored price in `coinPrices` (crossed with `rates`' `EUR` rate for a base other than the
+ * euro), and rounded once to the base currency's smallest unit by each side's own decimals, half
+ * away from zero (`convertAmount`); then the integers are added. An account with no rate or price
+ * (missing, or `null`) is left out and named, never counted as 0 or at a rate of 1. A conversion
+ * past the safe bound makes the whole total `tooLarge`, as a sum past it does.
  */
 export function householdTotal(
   accounts: readonly { currency: string; balance: number }[],
   currency: string,
   rates: ReadonlyMap<string, ExchangeRate | null>,
+  coinPrices: ReadonlyMap<string, CoinPrice | null> = new Map(),
 ): HouseholdTotal {
   const converted: Money[] = []
   const leftOut = new Map<string, number>()
   let rateDate: string | null = null
+  let coinPriceDate: string | null = null
   let tooLarge = false
   for (const account of accounts) {
-    const rate = account.currency === currency ? null : rates.get(account.currency) ?? null
-    const result = convertMoney(account.balance, account.currency, currency, rate)
+    const found = account.currency === currency
+      ? null
+      : accountRate(account.currency, currency, rates, coinPrices)
+    const result = convertAmount(account.balance, account.currency, currency, found?.rate ?? null)
     if (result.ok) {
       converted.push({ amount: result.value, currency })
-      if (rate && (rateDate === null || rate.date < rateDate)) rateDate = rate.date
+      rateDate = older(rateDate, found?.rateDate ?? null)
+      coinPriceDate = older(coinPriceDate, found?.coinPriceDate ?? null)
     } else if (result.error === `unsafe`) {
       tooLarge = true
     } else {
@@ -491,6 +549,7 @@ export function householdTotal(
     amount: tooLarge || !sum.ok || converted.length === 0 ? null : sum.value,
     currency,
     rateDate,
+    coinPriceDate,
     leftOut: [...leftOut].sort(([a], [b]) => a.localeCompare(b)).map(([code, count]) => ({
       currency: code,
       accounts: count,
