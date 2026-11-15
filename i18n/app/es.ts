@@ -2322,9 +2322,12 @@ export default {
   "MoneyWidgets.about": "aprox. {amount}",
   "MoneyWidgets.rates": "Convertido al tipo de cambio de cada día, el más reciente del {date}",
   "MoneyWidgets.netLeftOut": {
-    "one": "No incluye ingresos y gastos en {currencies}: aún no hay tipo de cambio para esa moneda.",
-    "many": "No incluye ingresos y gastos en {currencies}: aún no hay tipo de cambio para esas monedas.",
-    "other": "No incluye ingresos y gastos en {currencies}: aún no hay tipo de cambio para esas monedas.",
+    "one":
+      "No incluye ingresos y gastos en {currencies}: aún no hay tipo de cambio para esa moneda.",
+    "many":
+      "No incluye ingresos y gastos en {currencies}: aún no hay tipo de cambio para esas monedas.",
+    "other":
+      "No incluye ingresos y gastos en {currencies}: aún no hay tipo de cambio para esas monedas.",
   },
   "MoneyWidgets.incomeLeftOut": {
     "one": "No incluye ingresos en {currencies}: aún no hay tipo de cambio para esa moneda.",

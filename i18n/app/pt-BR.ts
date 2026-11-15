@@ -2303,9 +2303,12 @@ export default {
   "MoneyWidgets.about": "cerca de {amount}",
   "MoneyWidgets.rates": "Convertido pela cotação de cada dia, a mais recente de {date}",
   "MoneyWidgets.netLeftOut": {
-    "one": "Ficam de fora receitas e despesas em {currencies}: ainda não há cotação para essa moeda.",
-    "many": "Ficam de fora receitas e despesas em {currencies}: ainda não há cotação para essas moedas.",
-    "other": "Ficam de fora receitas e despesas em {currencies}: ainda não há cotação para essas moedas.",
+    "one":
+      "Ficam de fora receitas e despesas em {currencies}: ainda não há cotação para essa moeda.",
+    "many":
+      "Ficam de fora receitas e despesas em {currencies}: ainda não há cotação para essas moedas.",
+    "other":
+      "Ficam de fora receitas e despesas em {currencies}: ainda não há cotação para essas moedas.",
   },
   "MoneyWidgets.incomeLeftOut": {
     "one": "Ficam de fora receitas em {currencies}: ainda não há cotação para essa moeda.",
