@@ -196,7 +196,10 @@ export interface FakeTransfer {
 
 export interface FakeGroup {
   name: string
-  /** The zone the group's days are cut in: one of {@link DEMO_TIME_ZONES}, by its name. */
+  /**
+   * The zone the group's days are cut in: its theme's own, else one of {@link DEMO_TIME_ZONES}
+   * by its name.
+   */
   timeZone: string
   owner: FakeMember
   createdAgo: number
@@ -571,9 +574,10 @@ function fakeGroup(
     Math.min(maxAgo, joined(ownerIndex) - int(30, 3 * DAY)),
   )
   const roles = [GroupRole.ADMIN, GroupRole.EDITOR, GroupRole.EDITOR, GroupRole.VIEWER]
-  const members: FakeGroup["members"] = memberIndexes.map((member) => ({
+  // The first member may write, so even a couple's notes come from both of them.
+  const members: FakeGroup["members"] = memberIndexes.map((member, index) => ({
     member,
-    role: pick(roles),
+    role: pick(index === 0 ? roles.filter((role) => role !== GroupRole.VIEWER) : roles),
     joinedAgo: between(Math.min(createdAgo - 5, joined(member)), 30, true),
   }))
   let owner: FakeMember = ownerIndex
@@ -610,8 +614,9 @@ function fakeGroup(
     author: lead,
     createdAgo: Math.max(tagsReady - index - 1, 10),
   }))
-  const notes = sample(theme.notes, theme.notes.length).map((note): FakeNote => {
-    const author = pick(writers)
+  // Each writer writes one of the first notes, so a household of few notes has several authors.
+  const notes = sample(theme.notes, theme.notes.length).map((note, index): FakeNote => {
+    const author = index < writers.length ? writers[index] : pick(writers)
     const createdAgo = between(Math.min(tagsReady - 1, joinedAgo(author)), 15)
     const by = pick(writers)
     const edit = chance(0.35)
@@ -650,7 +655,7 @@ function fakeGroup(
     .map((m) => ({ member: m.member, ago: between(m.joinedAgo - 1, 30) }))
   return {
     name: theme.name,
-    timeZone: demoTimeZone(theme.name),
+    timeZone: theme.timeZone ?? demoTimeZone(theme.name),
     owner,
     createdAgo,
     members,
@@ -671,9 +676,11 @@ export const DEMO_TIME_ZONES = [
   `America/New_York`,
   `America/Sao_Paulo`,
   `Europe/London`,
+  `Europe/Lisbon`,
   `Europe/Berlin`,
   `Asia/Dubai`,
   `Asia/Kolkata`,
+  `Asia/Ho_Chi_Minh`,
   `Asia/Singapore`,
   `Asia/Tokyo`,
 ] as const

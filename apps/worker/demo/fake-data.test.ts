@@ -212,12 +212,12 @@ Deno.test("recent sign-ups share small groups, and the video's person edits in o
   expect(claire).toHaveLength(1)
 })
 
-Deno.test("Product team, which the admin video opens from the top of Groups, is the largest group", () => {
+Deno.test("the Hanoi house share, which the admin video opens from the top of Groups, is the largest group", () => {
   for (const seed of [1, 7, 42, 20261020, 20261023]) {
     const sizes = fakeDemoData(seed, NOW).groups.map((group) => [group.name, group.members.length])
     const largest = Math.max(...sizes.map(([, size]) => size as number))
     expect(sizes.filter(([, size]) => size === largest).map(([name]) => name)).toEqual([
-      `Product team`,
+      `Hanoi house share`,
     ])
   }
 })
@@ -232,6 +232,15 @@ Deno.test("every fake group has a time zone of its own, the same for the same na
   expect(new Set(values).size).toBeGreaterThan(1)
   for (const [name, zone] of Object.entries(zones(42))) {
     if (name in first) expect(zone).toBe(first[name])
+  }
+})
+
+Deno.test("a household that names its place lives in that place's zone, in the population and a new account's sample groups", () => {
+  const zoneOf = (groups: FakeGroup[], name: string) =>
+    groups.find((g) => g.name === name)?.timeZone
+  for (const groups of [fakeDemoData(1, NOW).groups, fakeWorkspace(1)]) {
+    expect(zoneOf(groups, `Home in Da Nang`)).toBe(`Asia/Ho_Chi_Minh`)
+    expect(zoneOf(groups, `The Costas, Lisbon`)).toBe(`Europe/Lisbon`)
   }
 })
 
@@ -335,6 +344,15 @@ Deno.test("a new account's sample notes are written by several people over days"
       group.notes.flatMap((note) => note.body.split(`\n`).filter(Boolean))
     )
     expect(new Set(lines).size).toBe(lines.length)
+  }
+})
+
+Deno.test("a new account's sample groups have notes by two people or more on every seed, the couple's too", () => {
+  for (let seed = 1; seed <= 300; seed++) {
+    for (const group of fakeWorkspace(seed)) {
+      expect({ seed, group: group.name, many: new Set(group.notes.map((n) => n.author)).size > 1 })
+        .toEqual({ seed, group: group.name, many: true })
+    }
   }
 })
 
