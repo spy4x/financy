@@ -729,6 +729,11 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
         (SELECT COUNT(*)::int FROM blog_share_results) AS results
     `
     expect(shared).toEqual({ channels: SAMPLE_CHANNELS.length, shares: 2, results: 1 })
+    const [kept] = await sql<{ rates: number; calls: number }[]>`
+      SELECT (SELECT COUNT(*)::int FROM exchange_rates) AS rates,
+        (SELECT sum(calls)::int FROM rate_source_calls) AS calls
+    `
+    expect(kept).toEqual({ rates: fakeRates(NOW).length, calls: 3 })
 
     // The kept rate history lacks a day, as when the daily job missed one: the seed's fixture rates
     // never fill it, or they would stand in for the real rates for good.
