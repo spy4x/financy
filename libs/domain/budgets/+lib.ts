@@ -820,7 +820,7 @@ export async function envelopeMonth(
 
 // #region Overview widget
 /*
- * The budgets widget on the household overview (#281): one calendar month's bars and a sentence
+ * The budgets widget on the household overview: one calendar month's bars and a sentence
  * over them. Its figures are `budget.month`'s for that month, read through the same handler, so
  * the overview and the Budgets screen never disagree. Every member reads budgets, so every member
  * sees it; they are the household's own figures, so the operator's group page draws none of them.
