@@ -830,8 +830,7 @@ export default {
   "GuestScreens.noAccount": "アカウントをお持ちでないですか？",
   "GuestScreens.tryWithout": "アカウントなしで試す",
   "GuestScreens.tryFromSignIn": "このブラウザに、まっさらな新しいアカウントが作られます。",
-  "GuestScreens.tryFromSignInDemo":
-    "自由に試せるサンプルデータ入りの新しいアカウントが作られます。",
+  "GuestScreens.tryFromSignInDemo": "見て回れるサンプルデータ入りの新しいアカウントが作られます。",
   "GuestScreens.demoWipe":
     "これはサンプルデータ入りの公開デモです。ここのデータは、ログイン方法を追加しても毎晩{time}にすべて消去されます。それでも、アカウントを残す流れを試すために追加してみてください。",
   "GuestScreens.banner":

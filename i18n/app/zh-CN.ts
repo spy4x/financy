@@ -752,7 +752,7 @@ export default {
   "GuestScreens.noAccount": "还没有账号？",
   "GuestScreens.tryWithout": "免账号试用",
   "GuestScreens.tryFromSignIn": "你会在这个浏览器中得到一个全新的空账号。",
-  "GuestScreens.tryFromSignInDemo": "你会得到一个带示例数据的新账号，随便体验。",
+  "GuestScreens.tryFromSignInDemo": "你会得到一个带示例数据的新账号，供你探索。",
   "GuestScreens.demoWipe":
     "这是一个使用示例数据的公开演示。这里的所有内容每晚{time}都会清空，添加了登录方式也一样。不妨还是添加一种，体验一下保留账号的流程。",
   "GuestScreens.banner":

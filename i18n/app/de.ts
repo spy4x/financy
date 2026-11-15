@@ -924,7 +924,7 @@ export default {
   "GuestScreens.tryWithout": "Ohne Benutzerkonto ausprobieren",
   "GuestScreens.tryFromSignIn": "Du bekommst ein neues, leeres Benutzerkonto in diesem Browser.",
   "GuestScreens.tryFromSignInDemo":
-    "Du bekommst ein neues Benutzerkonto mit Beispieldaten zum Ausprobieren.",
+    "Du bekommst ein neues Benutzerkonto mit Beispieldaten zum Erkunden.",
   "GuestScreens.demoWipe":
     "Das ist eine öffentliche Demo mit Beispieldaten. Hier wird jede Nacht um {time} alles gelöscht, auch wenn du eine Anmeldemethode hinzufügst. Füge trotzdem eine hinzu, um zu sehen, wie das Behalten eines Benutzerkontos funktioniert.",
   "GuestScreens.banner":
