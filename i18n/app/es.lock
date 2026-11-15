@@ -316,6 +316,15 @@ BudgetDialog.title	d1a49d63284d0fd0
 BudgetRemove.confirm	a21627c6bf0bf717
 BudgetRemove.message	19b41c87608d1a0a
 BudgetRemove.title	5a3c68775c14150d
+BudgetWidgets.allOnTrack	fa186513a482c946
+BudgetWidgets.error	b1ec669f596551ea
+BudgetWidgets.link	9dcc0559dbeb3d4b
+BudgetWidgets.loading	8fbce32e49c1ed8b
+BudgetWidgets.moreOver	fe2ba3d1a02074af
+BudgetWidgets.none	e4414e76d78cd743
+BudgetWidgets.oneOver	4b02c8583939cbc8
+BudgetWidgets.setLink	9d10afc151bedab5
+BudgetWidgets.title	a1a06e046b0b9ad3
 Budgets.changeLimitOn	e45da265a77b7cf7
 Budgets.childrenSum	18a19fcbb2ffd509
 Budgets.emptyAction	aafdf428fd0256ea

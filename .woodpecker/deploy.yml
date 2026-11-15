@@ -2,6 +2,11 @@
 # `.woodpecker/deploy.yml.example`; docs/woodpecker-ci-setup.md in Seed, "Deploy on every push to
 # main", lists the four repository secrets it needs.
 #
+# On a push to `main`, `ci.yml` runs only `check`, `secrets` and the four image builds, so the
+# deploy waits only for those, minutes rather than the 40 the slow steps took. The slow steps run
+# in the nightly cron run (docs/woodpecker-ci-setup.md, "The nightly run"), which never deploys:
+# this workflow runs on the push event only.
+#
 # The step runs `deno task deploy`, as a developer would: it decrypts the env files with the
 # repository's age key, copies the files to the server over SSH and starts them there, where the
 # images are built. It holds the age key and an SSH key that can run Docker on the server, which

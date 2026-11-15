@@ -227,11 +227,12 @@ import {
   BudgetMonthQuery,
   BudgetMoveCommand,
   BudgetSetCommand,
+  BudgetWidgetQuery,
 } from "@domain/budgets"
 import { budgetSetHandler } from "@api/cqrs/command-handlers/budget-set.ts"
 import { budgetMethodSetHandler } from "@api/cqrs/command-handlers/budget-method-set.ts"
 import { budgetMoveHandler } from "@api/cqrs/command-handlers/budget-move.ts"
-import { budgetMonthHandler } from "@api/cqrs/query-handlers/budget-month.ts"
+import { budgetMonthHandler, budgetWidgetHandler } from "@api/cqrs/query-handlers/budget-month.ts"
 import {
   ImportCheckQuery,
   ImportCommitCommand,
@@ -452,6 +453,7 @@ queryBus.register(TransactionListDeletedQuery, transactionListDeletedHandler)
 queryBus.register(TransferGetQuery, transferGetHandler)
 queryBus.register(TransferListDeletedQuery, transferListDeletedHandler)
 queryBus.register(BudgetMonthQuery, budgetMonthHandler)
+queryBus.register(BudgetWidgetQuery, budgetWidgetHandler)
 queryBus.register(HouseholdSettingsQuery, createHouseholdSettingsHandler(householdDependencies))
 queryBus.register(BillingGetQuery, billingGetHandler)
 queryBus.register(BillingTrialQuery, billingTrialHandler)

@@ -11,6 +11,7 @@ import {
   BudgetMonthQuery,
   BudgetMoveCommand,
   BudgetSetCommand,
+  BudgetWidgetQuery,
 } from "@domain/budgets"
 import { CategoryKind } from "@domain/categories"
 import { GroupRole } from "@domain/groups"
@@ -37,6 +38,7 @@ import {
   createBudgetMonthHandler,
   createBudgetMoveHandler,
   createBudgetSetHandler,
+  createBudgetWidgetHandler,
 } from "./handlers.ts"
 import { createBudgetOperations } from "./operations.ts"
 
@@ -120,11 +122,17 @@ function stack() {
   const queries = new QueryBus()
   queries.use(createSessionGate([]))
   queries.register(BudgetMonthQuery, createBudgetMonthHandler(dependencies))
+  // The widget's own scenarios are in `widgets.test.ts`; here it only meets the transports.
+  queries.register(
+    BudgetWidgetQuery,
+    createBudgetWidgetHandler({ ...dependencies, categories: { list: () => Promise.resolve([]) } }),
+  )
   const operations = createBudgetOperations({
     set: (command) => commands.execute(command),
     setMethod: (command) => commands.execute(command),
     move: (command) => commands.execute(command),
     month: (query) => queries.execute(query),
+    widget: (query) => queries.execute(query),
   })
   /** Takes the member out of the household, as the owner's removal does. */
   const remove = (group: string, user: number) => delete memberships[`${group}:${user}`]
@@ -496,20 +504,23 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
-    it("answers a stranger and a removed member as if the household did not exist (R16)", async () => {
+    it("answers a stranger and a removed member as if the household did not exist, on the overview's budgets widget too (R16)", async () => {
       const s = stack()
       const stranger = open(s, STRANGER)
       const editor = open(s, EDITOR)
       s.remove(groupId, EDITOR)
 
+      const widget = { groupId, from: "2026-11-01", to: "2026-11-30", timeZone: "UTC" }
       const answers = [
         await stranger.command("budget.set", limit()),
         await stranger.query("budget.month", { groupId }),
+        await stranger.query("budget.widget.month", widget),
         await editor.command("budget.set", limit()),
         await editor.query("budget.month", { groupId }),
+        await editor.query("budget.widget.month", widget),
       ]
 
-      expect(answers).toMatchObject(Array(4).fill(refused("not_found", "GROUP_NOT_FOUND")))
+      expect(answers).toMatchObject(Array(6).fill(refused("not_found", "GROUP_NOT_FOUND")))
       expect(s.budgets.writes).toBe(0)
       stranger.shutdown()
       editor.shutdown()

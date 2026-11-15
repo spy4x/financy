@@ -10,7 +10,8 @@ import {
   AdminJobState,
   UserRole,
 } from "@domain/identity"
-import { JOB_AGGREGATE, JOB_AGGREGATE_ID } from "@server/jobs/jobs.ts"
+import { JOB_AGGREGATE, JOB_AGGREGATE_ID, OUTBOX_CLEANUP_JOB } from "@server/jobs/jobs.ts"
+import { JOBS } from "@server/jobs/registry.ts"
 import { readJob, readJobPhotos } from "@server/jobs/admin-jobs.ts"
 import { PostgresCatalog } from "@server/catalog/postgres-catalog.ts"
 import { catalogPhotoObjectKey } from "@domain/catalog"
@@ -30,6 +31,9 @@ import { applyMigrations } from "./migrations.ts"
  * Needs `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME` (recipe in docs/handoff.md). It fails when
  * they are missing rather than skipping.
  */
+
+/** Only the nightly cleanup: other repeating jobs (the hourly repeating entries) run at once. */
+const CLEANUP_ONLY = JOBS.filter((job) => job.kind === OUTBOX_CLEANUP_JOB)
 
 async function withSchema(body: (sql: postgres.Sql) => Promise<void>): Promise<void> {
   const settings = buildPostgresOptions(requireDbConnection())
@@ -289,7 +293,7 @@ Deno.test("jobs: the nightly cleanup run now, or cancelled and restarted, waits 
           available_at > now() AS ahead
         FROM outbox_events WHERE event_kind = 'outbox.cleanup' AND processed_at IS NULL
       `
-    await startRepeatingJobs(sql)
+    await startRepeatingJobs(sql, new Date(), CLEANUP_ONLY)
     expect(await waiting()).toEqual([{ id: expect.any(String), at3: true, ahead: true }])
 
     await db.begin((tx) => tx.adminJobs.runRepeatingNow("outbox.cleanup", op, null))
@@ -300,7 +304,7 @@ Deno.test("jobs: the nightly cleanup run now, or cancelled and restarted, waits 
     // Cancelled before it ran, the chain starts again at the worker's next start.
     expect(await db.begin((tx) => tx.adminJobs.cancel(next.id, op, null)))
       .toBe(AdminJobActionOutcome.Done)
-    await startRepeatingJobs(sql)
+    await startRepeatingJobs(sql, new Date(), CLEANUP_ONLY)
     const [restarted] = await waiting()
     expect(restarted).toEqual({ id: expect.any(String), at3: true, ahead: true })
 

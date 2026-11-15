@@ -181,36 +181,54 @@ export class PostgresTransactionRepository implements TransactionRepository {
         }
         throw new TransactionError("ID_ALREADY_EXISTS", "Transaction id is already in use")
       }
-      const references = await repository.references(input)
-      assertEntryReferences(input.kind, references)
-      const amounts = await deriveAmounts(input, references.account.currency, null, repository.rate)
-      // The id is the primary key: another household's entry under it inserts nothing.
-      const inserted = (
-        await transaction<{ id: string }[]>`
-          INSERT INTO transactions (
-            id, group_id, account_id, category_id, kind, account_amount, amount, currency,
-            converted, memo, date, change_sequence, created_by_user_id, updated_by_user_id
-          ) VALUES (
-            ${input.id}, ${input.groupId}, ${input.accountId}, ${input.categoryId}, ${input.kind},
-            ${amounts.accountAmount}, ${amounts.amount}, ${input.currency}, ${amounts.converted},
-            ${input.memo}, ${input.date}::date, 1, ${actorId}, ${actorId}
-          )
-          ON CONFLICT (id) DO NOTHING
-          RETURNING id
-        `
-      )[0]
-      if (!inserted) {
+      const created = await repository.writeNew(input, actorId, role, null)
+      if (!created) {
         throw new TransactionError("ID_ALREADY_EXISTS", "Transaction id is already in use")
       }
-      await repository.assertRoom(input.groupId, input.allowance, role)
-      const created = await repository.stamp(
-        transaction,
-        input,
-        actorId,
-        TRANSACTION_EVENTS.created,
-      )
       return { transaction: created, created: true }
     })
+  }
+
+  /**
+   * Writes a new entry: checks its account and category ({@link assertEntryReferences}), derives
+   * its stored amounts at its own date's rate ({@link deriveAmounts}), inserts it, checks the plan's
+   * room under the household's lock and records its change on the group. Call it on a repository
+   * built over a transaction in which the caller already locked the group and read the actor's
+   * `role` (`lockActorRole`), as {@link create} and the repeating job do.
+   *
+   * `occurrence` links an entry the repeating job makes to its rule and date. Returns `null` when
+   * the insert hit a unique key instead: the id is taken, or the occurrence was made already.
+   */
+  async writeNew(
+    input: TransactionCreateInput,
+    actorId: number,
+    role: GroupRole,
+    occurrence: { ruleId: string; date: string } | null,
+  ): Promise<Transaction | null> {
+    const transaction = this.sql as postgres.TransactionSql
+    const references = await this.references(input)
+    assertEntryReferences(input.kind, references)
+    const amounts = await deriveAmounts(input, references.account.currency, null, this.rate)
+    // The id is the primary key: another household's entry under it inserts nothing.
+    const inserted = (
+      await transaction<{ id: string }[]>`
+        INSERT INTO transactions (
+          id, group_id, account_id, category_id, kind, account_amount, amount, currency,
+          converted, memo, date, change_sequence, created_by_user_id, updated_by_user_id,
+          recurring_rule_id, occurrence_date
+        ) VALUES (
+          ${input.id}, ${input.groupId}, ${input.accountId}, ${input.categoryId}, ${input.kind},
+          ${amounts.accountAmount}, ${amounts.amount}, ${input.currency}, ${amounts.converted},
+          ${input.memo}, ${input.date}::date, 1, ${actorId}, ${actorId},
+          ${occurrence?.ruleId ?? null}, ${occurrence?.date ?? null}::date
+        )
+        ON CONFLICT DO NOTHING
+        RETURNING id
+      `
+    )[0]
+    if (!inserted) return null
+    await this.assertRoom(input.groupId, input.allowance, role)
+    return await this.stamp(transaction, input, actorId, TRANSACTION_EVENTS.created)
   }
 
   async update(input: TransactionUpdateInput, actorId: number): Promise<Transaction> {

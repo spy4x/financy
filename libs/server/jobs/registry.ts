@@ -72,6 +72,7 @@ import {
   ratesFetchJob,
 } from "./exchange-rates.ts"
 import type { RatesSetup } from "../money/rates-setup.ts"
+import { RECURRING_ENTRIES_JOB, recurringEntriesJob } from "./recurring-entries.ts"
 import { type JobHandler, OUTBOX_CLEANUP_JOB } from "./jobs.ts"
 import {
   PASSWORD_RESET_MAIL_JOB,
@@ -457,6 +458,18 @@ export const JOBS: readonly JobDefinition[] = [
     label: `Exchange rates`,
     repeat: { cron: RATES_FETCH_CRON },
     handler: ({ sql, mail, rates }) => ratesFetchJob({ sql, setup: rates ?? null, log: mail.log }),
+  }),
+  // Idempotent: the unique key on rule and date makes a rerun write no entry twice.
+  defineJob({
+    kind: RECURRING_ENTRIES_JOB,
+    label: `Repeating entries`,
+    repeat: { everyMs: 60 * 60_000 },
+    handler: ({ sql, mail, provider, graceDays, plans }) =>
+      recurringEntriesJob({
+        sql,
+        billing: { billingEnabled: provider !== null, graceDays, plans },
+        log: mail.log,
+      }),
   }),
   // Free calls only, and idempotent: a rerun skips the stored rates and finds no request to fill.
   defineJob({
