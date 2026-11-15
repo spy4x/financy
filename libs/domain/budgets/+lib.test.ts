@@ -22,19 +22,26 @@ import {
   BudgetBand,
   budgetBand,
   type BudgetCategory,
+  budgetExportProblems,
   type BudgetLimit,
   BudgetLimitSource,
   BudgetMethod,
   budgetMethodAt,
+  budgetMethodExportProblems,
   budgetMethodSetPayloadSchema,
   budgetMonth,
   budgetMonthPayloadSchema,
   budgetMovePayloadSchema,
+  budgetMoveReferenceProblems,
   type BudgetMoveTotal,
+  budgetReferenceProblems,
   budgetSetPayloadSchema,
   ENVELOPE_RUN_MAX_MONTHS,
   envelopeMonth,
   envelopeRunStart,
+  parseBudgetExportEntry,
+  parseBudgetMethodExportEntry,
+  parseBudgetMoveExportEntry,
   parseBudgetRequest,
 } from "./+lib.ts"
 
@@ -749,5 +756,110 @@ describe("a month of envelopes", () => {
       available: null,
     })
     expect(month.readyToAssign).toBeNull()
+  })
+})
+
+describe("budgets in a household's export file", () => {
+  const stamps = { createdAt: "2026-11-05T10:00:00.000Z", updatedAt: "2026-11-05T10:00:00.000Z" }
+  const budget = {
+    id: "019a5b0e-1af5-7f04-8ae4-b1ee5d115001",
+    categoryId: food,
+    month: "2026-11",
+    amount: 40000,
+    currency: "EUR",
+    ...stamps,
+  }
+  const move = {
+    id: "019a5b0e-1af5-7f04-8ae4-b1ee5d115002",
+    month: "2026-11",
+    fromCategoryId: food,
+    toCategoryId: groceries,
+    amount: 2500,
+    currency: "EUR",
+    createdAt: stamps.createdAt,
+  }
+  const kinds: Record<string, CategoryKind> = {
+    [food]: CategoryKind.EXPENSE,
+    [groceries]: CategoryKind.EXPENSE,
+    [rent]: CategoryKind.INCOME,
+  }
+  const inFile = (fileId: string) => kinds[fileId] ? { kind: kinds[fileId] } : null
+
+  it("reads a limit and a removed limit with their dates", () => {
+    expect(parseBudgetExportEntry(budget)).toEqual({
+      ...budget,
+      createdAt: new Date(stamps.createdAt),
+      updatedAt: new Date(stamps.updatedAt),
+    })
+    expect(parseBudgetExportEntry({ ...budget, amount: null, currency: null })).toMatchObject({
+      amount: null,
+      currency: null,
+    })
+  })
+
+  it("refuses an amount without a currency, a currency without an amount, a zero amount and an unknown field", () => {
+    expect(() => parseBudgetExportEntry({ ...budget, currency: null })).toThrow(
+      "the currency must be there exactly when the amount is",
+    )
+    expect(() => parseBudgetExportEntry({ ...budget, amount: null })).toThrow(
+      "the currency must be there exactly when the amount is",
+    )
+    expect(() => parseBudgetExportEntry({ ...budget, amount: 0 })).toThrow("the amount")
+    expect(() => parseBudgetExportEntry({ ...budget, version: 2 })).toThrow("does not have")
+    expect(() => parseBudgetExportEntry({ ...budget, month: "2026-13" })).toThrow("the month")
+  })
+
+  it("reads a method row and refuses a method it does not know", () => {
+    const method = { id: budget.id, month: "2026-11", method: BudgetMethod.ENVELOPES, ...stamps }
+    expect(parseBudgetMethodExportEntry(method)).toMatchObject({ method: BudgetMethod.ENVELOPES })
+    expect(() => parseBudgetMethodExportEntry({ ...method, method: 3 })).toThrow("the method")
+  })
+
+  it("reads an envelope move and refuses one into the envelope it comes from", () => {
+    expect(parseBudgetMoveExportEntry(move)).toMatchObject({
+      amount: 2500,
+      toCategoryId: groceries,
+    })
+    expect(() => parseBudgetMoveExportEntry({ ...move, toCategoryId: food })).toThrow(
+      "into the envelope it comes from",
+    )
+  })
+
+  it("names a second budget row for one category and month, and a second method row for one month", () => {
+    const later = { ...budget, month: "2026-12" }
+    expect(budgetExportProblems([budget, later, budget, { ...budget, categoryId: groceries }]))
+      .toEqual([{
+        index: 2,
+        problem: "another budget in the file has the same category and month",
+        issue: { code: "duplicate", field: "month" },
+      }])
+    expect(budgetMethodExportProblems([{ month: "2026-11" }, { month: "2026-11" }]))
+      .toMatchObject([{ index: 1, issue: { code: "duplicate", field: "month" } }])
+  })
+
+  it("names a budget whose category the file lacks or is an income category", () => {
+    const missing = "019a5b0e-1af5-7f04-8ae4-b1ee5d119999"
+    expect(
+      budgetReferenceProblems(
+        [budget, { categoryId: missing }, { categoryId: rent }],
+        inFile,
+      ).map(({ index, issue }) => ({ index, issue })),
+    ).toEqual([
+      { index: 1, issue: { code: "notFound", field: "categoryId" } },
+      { index: 2, issue: { code: "kindMismatch", field: "categoryId" } },
+    ])
+  })
+
+  it("names an envelope move whose from or to category the file lacks", () => {
+    const missing = "019a5b0e-1af5-7f04-8ae4-b1ee5d119999"
+    expect(
+      budgetMoveReferenceProblems(
+        [move, { ...move, fromCategoryId: missing }, { ...move, toCategoryId: missing }],
+        inFile,
+      ).map(({ index, issue }) => ({ index, issue })),
+    ).toEqual([
+      { index: 1, issue: { code: "notFound", field: "fromCategoryId" } },
+      { index: 2, issue: { code: "notFound", field: "toCategoryId" } },
+    ])
   })
 })

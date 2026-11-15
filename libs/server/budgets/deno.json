@@ -1,5 +1,5 @@
 {
   "tasks": {
-    "check": "deno check postgres-budget-repository.ts budget-movable.ts"
+    "check": "deno check postgres-budget-repository.ts budget-movable.ts budget-portable.ts"
   }
 }
