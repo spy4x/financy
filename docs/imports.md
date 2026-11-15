@@ -197,8 +197,10 @@ from the bytes, never the file name.
   and the memo are joined into the entry's memo, cut at 500 characters. The bank's own reference
   goes into `transactions.bank_reference`.
 - **Review.** A row is skipped as "Saved before" when a live entry of the account has its
-  reference, or else the same date, amount and memo; each stored entry matches one row, so two
-  equal rows in one file are both saved the first time. A row is skipped as "Matches a transfer"
+  reference, or else the same date, amount and memo. A row with a reference matches that way only
+  an entry without one (typed by hand, or brought back from an export), since another reference
+  is another payment. Each stored entry matches one row, so two equal rows in one file are both
+  saved the first time. A row is skipped as "Matches a transfer"
   when a live transfer into or out of the account has its amount within 3 days.
 - **Choices.** `category` per row; without one, a row takes the upload's expense or income
   category by its sign. An income may take an expense category, as a refund.
