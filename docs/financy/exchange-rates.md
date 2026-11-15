@@ -1,5 +1,7 @@
 # Exchange rates
 
+> Also on the website: [financy.dev/docs/exchange-rates](https://financy.dev/docs/exchange-rates).
+
 A household keeps one main currency. Its totals convert every other currency into it with the
 rate of the day the money moved. This guide is for the person who runs a Financy server: where
 rates come from, what it costs, and what to check when a rate is missing.
