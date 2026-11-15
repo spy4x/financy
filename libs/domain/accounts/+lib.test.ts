@@ -1,6 +1,7 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { GroupRole } from "@domain/groups"
+import type { CoinPrice } from "@domain/money"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
   ACCOUNT_MAX_PER_GROUP,
@@ -231,6 +232,7 @@ describe("the household total in its base currency", () => {
       amount: 6_250 + 11_431 + 309,
       currency: "EUR",
       rateDate: "2026-11-05",
+      coinPriceDate: null,
       leftOut: [],
       tooLarge: false,
     })
@@ -281,6 +283,7 @@ describe("the household total in its base currency", () => {
       amount: 5_000,
       currency: "EUR",
       rateDate: null,
+      coinPriceDate: null,
       leftOut: [{ currency: "AMD", accounts: 1 }, { currency: "GEL", accounts: 2 }],
       tooLarge: false,
     })
@@ -308,6 +311,7 @@ describe("the household total in its base currency", () => {
       amount: 12_300,
       currency: "EUR",
       rateDate: null,
+      coinPriceDate: null,
       leftOut: [],
       tooLarge: false,
     })
@@ -337,5 +341,98 @@ describe("the household total in its base currency", () => {
 
     expect(total.amount).toBeNull()
     expect(total.tooLarge).toBe(true)
+  })
+})
+
+describe("the household total with coins at today's price", () => {
+  const eur = (quote: string, rate: string, date: string): ExchangeRate => ({
+    base: "EUR",
+    quote,
+    rate,
+    date,
+    source: "frankfurter:ECB",
+  })
+  const price = (coin: string, euros: string, date: string): CoinPrice => ({
+    coin,
+    price: euros,
+    date,
+  })
+  // 0.5 BTC is stored as 50,000,000 satoshi: the coin's own 8 decimals.
+  const halfBitcoin = { currency: "BTC", balance: 50_000_000 }
+  const btc = new Map([["BTC", price("BTC", "60000.5", "2026-11-06")]])
+
+  it("values 0.5 BTC by its 8 decimals at the stored euro price and names the price date", () => {
+    const total = householdTotal([halfBitcoin], "EUR", new Map(), btc)
+
+    // 0.5 × €60,000.50 = €30,000.25.
+    expect(total).toEqual({
+      amount: 3_000_025,
+      currency: "EUR",
+      rateDate: null,
+      coinPriceDate: "2026-11-06",
+      leftOut: [],
+      tooLarge: false,
+    })
+  })
+
+  it("crosses the euro price with the euro's rate for another base, and names both dates", () => {
+    const total = householdTotal(
+      [halfBitcoin],
+      "USD",
+      new Map([["EUR", eur("USD", "1.25", "2026-11-05")]]),
+      btc,
+    )
+
+    // €30,000.25 × 1.25 = $37,500.3125, so 3,750,031 cents.
+    expect(total.amount).toBe(3_750_031)
+    expect(total.rateDate).toBe("2026-11-05")
+    expect(total.coinPriceDate).toBe("2026-11-06")
+    expect(total.leftOut).toEqual([])
+  })
+
+  it("leaves out and names a coin with no stored price, never counting it as 0", () => {
+    const total = householdTotal(
+      [halfBitcoin, halfBitcoin, { currency: "EUR", balance: 1_000 }],
+      "EUR",
+      new Map(),
+      new Map([["BTC", null]]),
+    )
+
+    expect(total.amount).toBe(1_000)
+    expect(total.coinPriceDate).toBeNull()
+    expect(total.leftOut).toEqual([{ currency: "BTC", accounts: 2 }])
+  })
+
+  it("leaves out a priced coin when the base currency has no rate to the euro", () => {
+    const total = householdTotal([halfBitcoin], "USD", new Map([["EUR", null]]), btc)
+
+    expect(total.amount).toBeNull()
+    expect(total.rateDate).toBeNull()
+    expect(total.coinPriceDate).toBeNull()
+    expect(total.leftOut).toEqual([{ currency: "BTC", accounts: 1 }])
+  })
+
+  it("names the oldest coin price date and the oldest rate date apart, with coins and fiat mixed", () => {
+    const total = householdTotal(
+      [
+        // 2 ETH at €2,000 = €4,000.
+        { currency: "ETH", balance: 200_000_000 },
+        halfBitcoin,
+        // ¥16,000 / 160 = €100.
+        { currency: "JPY", balance: 16_000 },
+      ],
+      "EUR",
+      new Map([["JPY", eur("JPY", "160", "2026-11-05")]]),
+      new Map([...btc, ["ETH", price("ETH", "2000", "2026-11-04")]]),
+    )
+
+    expect(total).toEqual({
+      amount: 3_000_025 + 400_000 + 10_000,
+      currency: "EUR",
+      rateDate: "2026-11-05",
+      coinPriceDate: "2026-11-04",
+      leftOut: [],
+      tooLarge: false,
+    })
   })
 })

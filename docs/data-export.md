@@ -10,6 +10,8 @@ data". The file is built in the background and kept for a few days
 ([#229](https://github.com/spy4x/seed/issues/229)).
 
 **You need:** the file store running, with its settings in the env file ([files.md](files.md)).
+With files off (`FILES=false`, [files.md](files.md#without-files)), asking for an export or
+downloading one answers 409 with the reason `FILES_OFF`; the newest export still reads.
 
 ## What happens
 
@@ -56,6 +58,8 @@ It holds only what is about the person or made by them, never another person's d
 - the notes and tags they created in groups they still belong to, never the ones others wrote;
 - the finance accounts, categories, entries and transfers they created in households they still
   belong to, deleted ones included, never the ones others made;
+- the budget limits, budgeting methods and envelope moves they set in households they still belong
+  to, never the ones others set;
 - the files they attached to those notes: name, type, size and note, never the bytes or the
   stored key;
 - what they did in their groups, without the details that can name other people;
@@ -99,8 +103,8 @@ A new table that holds a person's data adds a section to the export.
 ## When it fails
 
 The worker needs the file store's settings: `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`,
-`S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY`. Without them it warns at start. The export job then
-fails and is retried, so the request reads as failed after a day.
+`S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY`. Without them, and without `FILES=false`, it warns at
+start. The export job then fails and is retried, so the request reads as failed after a day.
 
 ## In the admin panel
 

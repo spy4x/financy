@@ -16,7 +16,13 @@ import {
   assertKindFitsCurrency,
   householdTotal,
 } from "@domain/accounts"
-import type { HouseholdSettings, RateLookup } from "@domain/money"
+import {
+  type CoinPrice,
+  ECB_BASE,
+  type HouseholdSettings,
+  isCoin,
+  type RateLookup,
+} from "@domain/money"
 import type { GroupRoleLookup } from "@domain/notes"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 
@@ -184,8 +190,14 @@ export function createAccountGetHandler(
 /** What the total needs besides the accounts: the base currency, the rates and today's date. */
 export interface AccountTotalDependencies extends AccountHandlerDependencies {
   settings: { get(groupId: string): Promise<HouseholdSettings> }
-  /** The rate on `date` or the latest earlier one, from any source (`PostgresRateRepository`). */
-  rates: { lookup(base: string, quote: string, date: string): Promise<RateLookup> }
+  /**
+   * The rate on `date` or the latest earlier one, from any source, and today's coin prices
+   * (`PostgresRateRepository`).
+   */
+  rates: {
+    lookup(base: string, quote: string, date: string): Promise<RateLookup>
+    coinPrices(): Promise<CoinPrice[]>
+  }
   /** Today, `YYYY-MM-DD` in UTC: the day the rates are looked up for. */
   today(): string
 }
@@ -194,6 +206,11 @@ export interface AccountTotalDependencies extends AccountHandlerDependencies {
  * `account.total`: every member reads the household's total in its base currency. Each currency
  * other than the base is looked up once, at the latest rate on or before today; the conversion and
  * the sum are `householdTotal`'s. Deleted accounts are not in the list, archived ones are.
+ *
+ * A coin is valued at its stored price of today, in euros, crossed with the euro's rate when the
+ * base is another currency. Only the total reads coin prices: `rates.lookup` stays fiat-only,
+ * because transactions and transfers store what it returns, and today's coin price must never be
+ * written into history.
  */
 export function createAccountTotalHandler(
   { accounts, groups, settings, rates, today }: AccountTotalDependencies,
@@ -205,12 +222,21 @@ export function createAccountTotalHandler(
       settings.get(data.groupId),
     ])
     const date = today()
-    const foreign = [...new Set(listed.map((account) => account.currency))]
+    const held = [...new Set(listed.map((account) => account.currency))]
+    const coins = held.some(isCoin)
+    // A coin's price is in euros, so a coin in a household of another base needs the euro's rate.
+    const foreign = [
+      ...new Set([...held.filter((code) => !isCoin(code)), ...coins ? [ECB_BASE] : []]),
+    ]
       .filter((code) => code !== baseCurrency)
-    const found = await Promise.all(foreign.map(async (code) => {
-      const lookup = await rates.lookup(code, baseCurrency, date)
-      return [code, lookup.found ? lookup.rate : null] as [string, ExchangeRate | null]
-    }))
-    return { total: householdTotal(listed, baseCurrency, new Map(found)) }
+    const [found, prices] = await Promise.all([
+      Promise.all(foreign.map(async (code) => {
+        const lookup = await rates.lookup(code, baseCurrency, date)
+        return [code, lookup.found ? lookup.rate : null] as [string, ExchangeRate | null]
+      })),
+      coins ? rates.coinPrices() : [],
+    ])
+    const coinPrices = new Map(prices.map((price) => [price.coin, price]))
+    return { total: householdTotal(listed, baseCurrency, new Map(found), coinPrices) }
   }
 }

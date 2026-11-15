@@ -163,6 +163,11 @@ export default defineConfig({
   // Docker skips it, and its last folder stays `.vite`: @spy4x/preact-theme's Vite plugin finds
   // pre-bundled files by their "/.vite/deps/" path.
   cacheDir: fromFileUrl(new URL("../../node_modules/.cache/spa/.vite", import.meta.url)),
+  build: {
+    // Maps for the error tracker, which turns a minified stack trace back into source lines. Hidden:
+    // no bundle names its map, and dockerfile.prod uploads the maps and keeps them out of nginx.
+    sourcemap: `hidden`,
+  },
   optimizeDeps: {
     // These come in through the Deno plugin's resolver, which the dev server's dependency scan
     // does not follow: tailwind-merge (through the JSR package @spy4x/preact-cn) and

@@ -3,9 +3,14 @@ import type { Catalog } from "@spy4x/platform/universal/i18n"
 export default {
   "AppShell.attachFiles": "Прикрепить файлы к заметке",
   "AppShell.copyNoteLink": "Скопировать ссылку на заметку",
+  "AppShell.deleteGroup": "Удалить группу",
   "AppShell.deleteNote": "Удалить заметку",
+  "AppShell.deleteTag": "Удалить метку",
   "AppShell.duplicateNote": "Дублировать заметку",
+  "AppShell.exportGroup": "Экспортировать группу",
+  "AppShell.leaveGroup": "Выйти из группы",
   "AppShell.moveNote": "Перенести заметку в другую группу",
+  "AppShell.transferGroup": "Передать права владельца группы",
   "AttachmentMessages.load": "Не удалось загрузить файлы",
   "AttachmentMessages.type":
     "Файл {name} нельзя прикрепить: подходят только изображения JPEG, PNG, WebP, GIF и файлы PDF.",
@@ -2365,6 +2370,7 @@ export default {
   "AccountsTotal.title": "Всего",
   "AccountsTotal.about": "около {amount}",
   "AccountsTotal.rates": "По курсу на {date}",
+  "AccountsTotal.coins": "Цены криптовалют на {date}, данные предоставлены <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "Не учтён {count} счёт: для {currencies} пока нет курса.",
     "few": "Не учтены {count} счёта: для {currencies} пока нет курса.",

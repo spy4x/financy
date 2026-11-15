@@ -3,9 +3,14 @@ import type { Catalog } from "@spy4x/platform/universal/i18n"
 export default {
   "AppShell.attachFiles": "このメモにファイルを添付",
   "AppShell.copyNoteLink": "このメモのリンクをコピー",
+  "AppShell.deleteGroup": "このグループを削除",
   "AppShell.deleteNote": "このメモを削除",
+  "AppShell.deleteTag": "このタグを削除",
   "AppShell.duplicateNote": "このメモを複製",
+  "AppShell.exportGroup": "このグループをエクスポート",
+  "AppShell.leaveGroup": "このグループを退出",
   "AppShell.moveNote": "このメモを別のグループに移動",
+  "AppShell.transferGroup": "このグループのオーナー権限を譲渡",
   "AttachmentMessages.load": "ファイルを読み込めませんでした",
   "AttachmentMessages.type":
     "{name}は添付できません。添付できるのはJPEG、PNG、WebP、GIFの画像とPDFファイルのみです。",
@@ -2053,6 +2058,7 @@ export default {
   "AccountsTotal.title": "合計",
   "AccountsTotal.about": "約{amount}",
   "AccountsTotal.rates": "{date}時点の為替レートで換算",
+  "AccountsTotal.coins": "{date}時点の暗号資産価格。データ提供：<link>CoinGecko</link>。",
   "AccountsTotal.leftOut": {
     "other": "{currencies}の為替レートがまだないため、口座{count}件は含まれていません。",
   },

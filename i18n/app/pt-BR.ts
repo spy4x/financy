@@ -3,9 +3,14 @@ import type { Catalog } from "@spy4x/platform/universal/i18n"
 export default {
   "AppShell.attachFiles": "Anexar arquivos a esta nota",
   "AppShell.copyNoteLink": "Copiar o link desta nota",
+  "AppShell.deleteGroup": "Excluir este grupo",
   "AppShell.deleteNote": "Excluir esta nota",
+  "AppShell.deleteTag": "Excluir esta etiqueta",
   "AppShell.duplicateNote": "Duplicar esta nota",
+  "AppShell.exportGroup": "Exportar este grupo",
+  "AppShell.leaveGroup": "Sair deste grupo",
   "AppShell.moveNote": "Mover esta nota para outro grupo",
+  "AppShell.transferGroup": "Transferir a propriedade deste grupo",
   "AttachmentMessages.load": "Não foi possível carregar os arquivos",
   "AttachmentMessages.type":
     "Não dá para anexar {name}. Só são aceitas imagens JPEG, PNG, WebP e GIF e arquivos PDF.",
@@ -2278,6 +2283,8 @@ export default {
   "AccountsTotal.title": "Total",
   "AccountsTotal.about": "cerca de {amount}",
   "AccountsTotal.rates": "Pelas cotações de {date}",
+  "AccountsTotal.coins":
+    "Preços das criptomoedas de {date}. Dados fornecidos por <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "Fica de fora {count} conta: ainda não há cotação para {currencies}.",
     "many": "Ficam de fora {count} contas: ainda não há cotação para {currencies}.",

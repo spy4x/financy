@@ -54,6 +54,8 @@ import { PostgresTransferRepository } from "@server/transfers/postgres-transfer-
 import { PostgresRecurringRuleRepository } from "@server/recurring/postgres-recurring-rule-repository.ts"
 import { recurringRuleMovable } from "@server/recurring/recurring-rule-movable.ts"
 import { PostgresBudgetRepository } from "@server/budgets/postgres-budget-repository.ts"
+import { budgetMovable, budgetMoveMovable } from "@server/budgets/budget-movable.ts"
+import { budgetPortables } from "@server/budgets/budget-portable.ts"
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
 import { transactionMovable } from "@server/transactions/transaction-movable.ts"
@@ -204,10 +206,10 @@ export interface UserTotp {
 /**
  * The aggregates "move all of a group's data" moves, in the order it moves them. A new aggregate
  * joins here (`docs/aggregate-lifecycle.md`, "Make it movable"): put one that other aggregates
- * point at before the ones that point at it. Entries, transfers and repeating rules are the
- * exceptions: they defer the keys to their accounts and categories to the move's commit, so they
- * move before them (`transaction-movable.ts`, `transfer-movable.ts`,
- * `recurring-rule-movable.ts`).
+ * point at before the ones that point at it. Entries, transfers, repeating rules, budget rows and
+ * envelope moves are the exceptions: they defer the keys to their accounts and categories to the
+ * move's commit, so they move before them (`transaction-movable.ts`, `transfer-movable.ts`,
+ * `recurring-rule-movable.ts`, `budget-movable.ts`).
  */
 export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   tagMovable,
@@ -215,6 +217,8 @@ export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   transactionMovable,
   transferMovable,
   recurringRuleMovable,
+  budgetMovable,
+  budgetMoveMovable,
   accountMovable,
   categoryMovable,
 ]
@@ -229,6 +233,7 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   notePortable,
   accountPortable,
   categoryPortable,
+  ...budgetPortables,
   transactionPortable,
   transferPortable,
   householdPortable,

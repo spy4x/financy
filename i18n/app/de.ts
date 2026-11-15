@@ -3,9 +3,14 @@ import type { Catalog } from "@spy4x/platform/universal/i18n"
 export default {
   "AppShell.attachFiles": "Dateien an diese Notiz anhängen",
   "AppShell.copyNoteLink": "Link zu dieser Notiz kopieren",
+  "AppShell.deleteGroup": "Diese Gruppe löschen",
   "AppShell.deleteNote": "Diese Notiz löschen",
+  "AppShell.deleteTag": "Diesen Tag löschen",
   "AppShell.duplicateNote": "Diese Notiz duplizieren",
+  "AppShell.exportGroup": "Diese Gruppe exportieren",
+  "AppShell.leaveGroup": "Diese Gruppe verlassen",
   "AppShell.moveNote": "Diese Notiz in eine andere Gruppe verschieben",
+  "AppShell.transferGroup": "Inhaberschaft dieser Gruppe übertragen",
   "AttachmentMessages.load": "Die Dateien konnten nicht geladen werden",
   "AttachmentMessages.type":
     "{name} kann nicht angehängt werden. Erlaubt sind nur Bilder (JPEG, PNG, WebP, GIF) und PDF-Dateien.",
@@ -2243,6 +2248,8 @@ export default {
   "AccountsTotal.title": "Gesamt",
   "AccountsTotal.about": "rund {amount}",
   "AccountsTotal.rates": "Zu den Wechselkursen vom {date}",
+  "AccountsTotal.coins":
+    "Kryptopreise vom {date}. Daten bereitgestellt von <link>CoinGecko</link>.",
   "AccountsTotal.leftOut": {
     "one": "{count} Konto fehlt in der Summe: noch kein Wechselkurs für {currencies}.",
     "other": "{count} Konten fehlen in der Summe: noch kein Wechselkurs für {currencies}.",

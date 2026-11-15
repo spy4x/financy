@@ -2,7 +2,9 @@ import type { ComponentChildren } from "preact"
 import { useEffect, useMemo, useRef } from "preact/hooks"
 import { useSignal } from "@preact/signals"
 import { matchRoute, useLocation, useRouter, useSearch } from "wouter-preact"
-import { canMutateNotes, canViewActivity } from "@domain/groups"
+import { useFormat } from "@spy4x/preact-ui/format"
+import { todayInTz } from "@spy4x/time/tz"
+import { canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
 import { pictureUrl, shownPictureId } from "@domain/identity"
 import {
   NOTE_PATHS,
@@ -23,7 +25,9 @@ import { notificationsStore } from "../state/notifications.ts"
 import { createNoteSearch } from "../state/search.ts"
 import { selectionStore } from "../state/selection.ts"
 import { newNoteStore } from "../state/new-note.ts"
-import { pageCommands, runNoteCommand, spaShortcutRows } from "./shortcuts.ts"
+import { paletteData } from "../state/palette-data.ts"
+import { recordSources } from "./palette-records.ts"
+import { type ActionPages, pageCommands, runActionCommand, spaShortcutRows } from "./shortcuts.ts"
 import { spaRoutePaths } from "./spa-paths.ts"
 import { runChoice } from "./palette-choice.ts"
 import { hasFinePointer, singleKeys, useShortcuts } from "@platform/shortcuts.ts"
@@ -55,14 +59,28 @@ import { overviewPageActions } from "./OverviewView.tsx"
 import { themeStore } from "../state/theme.ts"
 import { install } from "../install.ts"
 import { noteEditorPageActions } from "./NoteEditorView.tsx"
+import { tagEditorPageActions } from "./TagEditorView.tsx"
+import { groupEditorPageActions } from "./GroupEditorView.tsx"
 import { useAppText } from "@ui/i18n.ts"
+
+/**
+ * The open note, tag or group page's palette actions. With the notes off (`notes`), no note or tag
+ * page offers any.
+ */
+function actionPages(notes: boolean): ActionPages {
+  return {
+    noteEditor: notes ? noteEditorPageActions.value : null,
+    tagEditor: notes ? tagEditorPageActions.value : null,
+    groupEditor: groupEditorPageActions.value,
+  }
+}
 
 /** Runs the page command `id` of `pageCommands` on the open page. */
 function runPageCommand(id: string): void {
   const actions = overviewPageActions.value
   if (id === "overview-range") actions?.openRange()
   if (id === "overview-customise") actions?.openCustomise()
-  runNoteCommand(id, noteEditorPageActions.value)
+  runActionCommand(id, actionPages(notesOn()))
   if (id === "benchmark-run") benchmarkPageActions.value?.run()
   if (id === "benchmark-copy") benchmarkPageActions.value?.copy()
 }
@@ -269,6 +287,15 @@ export function AppShell(
     // An open note belongs to the group just left.
     if (location.startsWith(`${NOTE_PATHS.list}/`)) navigate(NOTE_PATHS.list)
   }
+  useEffect(() => paletteData.watch(), [])
+  const { locale } = useFormat()
+  const today = todayInTz(groupTimeZone(current ?? {}))
+  // Made again only when the words, the region format, the day or the notes switch change, so the
+  // sources keep their mapped records between renders.
+  const records = useMemo(
+    () => recordSources(paletteData, { t, locale, today }, notes),
+    [t, locale, today, notes],
+  )
   const open = (choice: SearchChoice) =>
     runChoice(choice, {
       // The quick entry keeps the way back to the page it was opened on.
@@ -297,7 +324,7 @@ export function AppShell(
           pageCommands={pageCommands(t, {
             overview: Boolean(overviewPageActions.value),
             benchmark: Boolean(benchmarkPageActions.value),
-            noteEditor: notes ? noteEditorPageActions.value : null,
+            ...actionPages(notes),
           }, rows)}
           onSelect={(choice) => void open(choice)}
           theme={themeStore.preference.value}
@@ -308,6 +335,7 @@ export function AppShell(
           guest={guest}
           benchmark={benchmarkOpen()}
           notes={notes}
+          records={records}
         />
       }
       shortcuts={{
