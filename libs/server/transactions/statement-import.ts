@@ -394,7 +394,8 @@ async function categoryKinds(
 
 /**
  * Marks the rows a save leaves out, in file order. A row is saved before when a live entry in the
- * account matches it: by bank reference when the row has one, else by date, amount and memo. Each
+ * account matches it: by bank reference first, then by date, amount and memo, where a row with a
+ * reference only matches an entry without one (typed by hand, or brought back from an export). Each
  * stored entry matches one row only, so two equal rows in one file (two coffees on a day) are both
  * saved the first time and both skipped the next. A row left after that is skipped when it matches
  * a side of a live transfer of the account, the same amount within three days; each side matches
@@ -419,24 +420,37 @@ async function reviewStatement(
     WHERE group_id = ${groupId} AND account_id = ${options.accountId} AND deleted_at IS NULL
       AND (bank_reference = ANY(${references}::text[]) OR date BETWEEN ${from}::date AND ${to}::date)
   `
-  const byKey = new Counter()
+  // Entries with a reference, keyed by it, and the date-amount-memo keys of the rest of each kind.
   const keysOfReference = new Map<string, string[]>()
+  const referenced = new Counter()
+  const unreferenced = new Counter()
   for (const entry of entries) {
-    byKey.add(entry.key)
-    if (entry.reference === null) continue
+    if (entry.reference === null) {
+      unreferenced.add(entry.key)
+      continue
+    }
+    referenced.add(entry.key)
     const keys = keysOfReference.get(entry.reference) ?? []
     keys.push(entry.key)
     keysOfReference.set(entry.reference, keys)
   }
   const skips: (string | null)[] = values.map((value) => {
-    if (value.reference !== null) {
-      const key = keysOfReference.get(value.reference)?.pop()
-      if (key === undefined) return null
-      // The entry this row matched by reference matches no other row by its date and memo.
-      byKey.take(key)
-      return SKIP_SAVED_BEFORE
-    }
-    return byKey.take(keyOf(value)) ? SKIP_SAVED_BEFORE : null
+    if (value.reference === null) return null
+    const key = keysOfReference.get(value.reference)?.pop()
+    if (key === undefined) return null
+    // The entry this row matched by its reference matches no other row by its date and memo.
+    referenced.take(key)
+    return SKIP_SAVED_BEFORE
+  })
+  values.forEach((value, index) => {
+    if (skips[index] !== null) return
+    const key = keyOf(value)
+    // A row with a reference never matches an entry with another one: that is another payment.
+    // It may match an entry without one, typed by hand or brought back from an export.
+    const saved = value.reference === null
+      ? referenced.take(key) || unreferenced.take(key)
+      : unreferenced.take(key)
+    if (saved) skips[index] = SKIP_SAVED_BEFORE
   })
   const sides = await tx<{ day: number; amount: string }[]>`
     SELECT (date - DATE '1970-01-01') AS day,

@@ -330,6 +330,28 @@ Deno.test("statement imports: a bank's reference finds the saved entry even afte
   })
 })
 
+Deno.test("statement imports: a row with a reference matches an entry without one by date, amount and memo, never one with another reference", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const file = await fixture(`statement.ofx`)
+    await imported(sql, h, file)
+    // The first entry lost its reference, as one brought back from an export does; the second
+    // carries another bank's reference, so it is another payment that looks the same.
+    await sql`
+      UPDATE transactions SET bank_reference = NULL
+      WHERE group_id = ${h.groupId} AND bank_reference = 'OFX-0001'
+    `
+    await sql`
+      UPDATE transactions SET bank_reference = 'OTHER-0002'
+      WHERE group_id = ${h.groupId} AND bank_reference = 'OFX-0002'
+    `
+
+    const again = await uploaded(sql, h, file)
+    const reviews = (await preview(sql, h, again.id)).reviews!
+    expect(reviews.map((review) => review.skip)).toEqual([SKIP_SAVED_BEFORE, null])
+  })
+})
+
 Deno.test("statement imports: a file with one of two equal rows saved before saves only the other", async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
