@@ -1624,7 +1624,6 @@ CREATE TABLE categories (
     kind INT2 NOT NULL,
     icon VARCHAR(40) NOT NULL,
     color CHAR(7) NOT NULL,
-    aliases TEXT[] DEFAULT '{}' NOT NULL,
     archived_at TIMESTAMPTZ(3),
     version INT4 DEFAULT 1 NOT NULL,
     change_sequence BIGINT NOT NULL,
@@ -1632,6 +1631,7 @@ CREATE TABLE categories (
     updated_by_user_id INT4 REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    aliases TEXT[] DEFAULT '{}' NOT NULL,
     CONSTRAINT categories_group_id_id_key UNIQUE (group_id, id),
     CONSTRAINT categories_parent_fkey FOREIGN KEY (group_id, parent_id)
         REFERENCES categories (group_id, id) ON DELETE RESTRICT,
