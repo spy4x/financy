@@ -144,4 +144,108 @@ test.describe("group overview", () => {
       expect.soft(response.status(), await response.text()).toBe(200)
     }
   })
+
+  test("the budgets card names a long category far over in dong on a phone, without sideways scrolling, and opens that month's Budgets screen of its own household", async ({ page, request }) => {
+    test.setTimeout(120_000)
+    const email = `e2e-overview-budgets-${uuidV7().slice(-8)}@example.com`
+    try {
+      const signUp = await signUpWithCode(request, `${appBase}/api/auth/password/sign-up`, {
+        headers,
+        data: { email, password },
+      })
+      expect(signUp.ok(), await signUp.text()).toBe(true)
+      await page.setViewportSize({ width: 390, height: 844 })
+      await signIn(page, email, password)
+
+      /** Runs one operation as the signed-in person, the way the app's HTTP transport does. */
+      const call = async (name: string, data: unknown) => {
+        const me = await page.request.get(`${appBase}/api/auth/me`)
+        const response = await page.request.post(`${appBase}/api/call/${name}`, {
+          headers: {
+            ...headers,
+            "x-realtime-user": String((await me.json()).id),
+            "idempotency-key": uuidV7(),
+          },
+          data,
+        })
+        expect(response.ok(), `${name}: ${await response.text()}`).toBe(true)
+      }
+      const household = async (name: string) => {
+        const groupId = uuidV7()
+        const created = await page.request.post(`${appBase}/api/groups`, {
+          headers,
+          data: { id: groupId, name },
+        })
+        expect(created.status(), await created.text()).toBe(201)
+        await payForGroup(page.request, appBase, groupId)
+        return groupId
+      }
+      const home = await household("Home")
+      const accountId = uuidV7()
+      const supplies = uuidV7()
+      await call(`account.create`, {
+        groupId: home,
+        id: accountId,
+        name: "Ví",
+        kind: 1,
+        currency: "VND",
+        startingBalance: 0,
+      })
+      await call(`category.create`, {
+        groupId: home,
+        id: supplies,
+        name: "Groceries and household supplies for the whole family",
+        kind: 1,
+        icon: "shopping-cart",
+        color: "#c2410c",
+        parentId: null,
+      })
+      const month = new Date().toISOString().slice(0, 7)
+      await call(`budget.set`, {
+        groupId: home,
+        categoryId: supplies,
+        month,
+        amount: 1_000_000,
+        currency: "VND",
+        expectedVersion: null,
+      })
+      await call(`transaction.create`, {
+        groupId: home,
+        id: uuidV7(),
+        accountId,
+        categoryId: supplies,
+        kind: 1,
+        amount: 125_000_000,
+        currency: "VND",
+        memo: "Supplies of Home",
+      })
+      const work = await household("Work")
+      await call(`group.select`, { groupId: work })
+
+      await page.goto(`/overview/${home}`)
+      const card = page.locator(`[data-e2e="overview-widget-budgets.month"]`)
+      await expect(card.locator(`[data-e2e=budget-widget-sentence]`)).toHaveText(
+        /^0 of 1 budget on track; .Groceries and household supplies for the whole family. is .₫124,000,000. over\.$/,
+      )
+      await expect(card.locator(`[data-e2e=budget-${supplies}]`).getByRole("meter")).toBeVisible()
+      await expect(card.getByRole("button")).toHaveCount(0)
+      expect(
+        await page.evaluate(() =>
+          document.documentElement.scrollWidth <= document.documentElement.clientWidth
+        ),
+      ).toBe(true)
+      await card.scrollIntoViewIfNeeded()
+      await page.screenshot({ path: test.info().outputPath(`overview-budgets-390.png`) })
+
+      await card.getByRole("link", { name: /^See budgets for / }).click()
+      await expect(page).toHaveURL(/\/budgets\??$/)
+      await expect(page.locator(`[data-e2e=budget-${supplies}]`).getByRole("meter"))
+        .toContainText("₫125,000,000 of ₫1,000,000")
+    } finally {
+      const response = await request.post(`${appBase}/api/test/cleanup-user`, {
+        data: { login: email },
+      })
+      expect.soft(response.status(), await response.text()).toBe(200)
+    }
+  })
 })
