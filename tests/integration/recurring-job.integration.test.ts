@@ -287,6 +287,32 @@ Deno.test(`the repeating entries job against Postgres`, async (t) => {
     )
 
     await step(
+      `makes other households' entries when one household's zone is unknown to Postgres or Intl`,
+      async () => {
+        const utc = await household()
+        const utcRule = await utc.rule()
+        // Intl knows this old name; Postgres 18 refuses it.
+        const legacy = await household()
+        const legacyRule = await legacy.rule()
+        await sql`UPDATE groups SET time_zone = 'US/Pacific-New' WHERE id = ${legacy.groupId}`
+        const unknown = await household()
+        const unknownRule = await unknown.rule()
+        await sql`UPDATE groups SET time_zone = 'Nowhere/Atlantis' WHERE id = ${unknown.groupId}`
+        lines.length = 0
+
+        const report = await run(`2027-01-01T20:00:00Z`)
+
+        expect(report.unexpected).toBe(0)
+        expect(await datesOf(utcRule.id)).toEqual([`2027-01-01`])
+        expect(await datesOf(legacyRule.id)).toEqual([`2027-01-01`])
+        expect(await datesOf(unknownRule.id)).toEqual([])
+        expect(lines).toEqual([
+          `recurring entries: group ${unknown.groupId} skipped for this run: its time zone is not known`,
+        ])
+      },
+    )
+
+    await step(
       `converts a USD rule paid from a EUR account at each occurrence's own date's rate (R4, R6)`,
       async () => {
         const h = await household(`UTC`, `EUR`)

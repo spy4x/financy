@@ -10,6 +10,7 @@ import {
 } from "@domain/recurring"
 import { TransactionError, type TransactionKind } from "@domain/transactions"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import { isoDateInTz } from "@spy4x/time/tz"
 import { PostgresBillingRepository } from "../billing/postgres-billing-repository.ts"
 import {
   GroupNotActiveError,
@@ -230,9 +231,10 @@ export async function makeRecurringEntries(
     return await finish(rule, due.through)
   }
 
+  const days = await householdDays(sql, now, log)
   let after: string | null = null
   while (true) {
-    const rules: DueRule[] = await readDueRules(sql, now, after, batch)
+    const rules: DueRule[] = await readDueRules(sql, days, after, batch)
     for (const rule of rules) {
       if (blocked.has(rule.groupId)) {
         report.blocked++
@@ -371,14 +373,63 @@ async function stampRule(
   `
 }
 
+/** Each time zone's date at the run's `now`: zones and dates at the same index. */
+interface ZoneDays {
+  zones: string[]
+  dates: string[]
+}
+
 /**
- * Live rules of live households whose next day to cover has begun in the household's time zone at
- * `now`, after `after` in id order, at most `limit`. A rule past its end date, made through it,
- * is left out; a rule past its count is read once a day and made through today.
+ * The date at `now` in each time zone of a household with live rules, computed here rather than in
+ * SQL: Postgres refuses some names the groups' validator accepts, and one such zone in the due-rules
+ * query would fail the run for every household. A zone `Intl` refuses too is left out, so its
+ * households make nothing this run, and each is logged by id.
+ */
+async function householdDays(
+  sql: postgres.Sql,
+  now: Date,
+  log: (line: string) => void,
+): Promise<ZoneDays> {
+  const rows = await sql<{ timeZone: string }[]>`
+    SELECT DISTINCT groups.time_zone FROM groups
+    WHERE groups.deleted_at IS NULL AND EXISTS (
+      SELECT 1 FROM recurring_rules AS rules
+      WHERE rules.group_id = groups.id AND rules.deleted_at IS NULL
+    )
+  `
+  const days: ZoneDays = { zones: [], dates: [] }
+  const refused: string[] = []
+  for (const { timeZone } of rows) {
+    try {
+      days.dates.push(isoDateInTz(now, timeZone))
+      days.zones.push(timeZone)
+    } catch {
+      refused.push(timeZone)
+    }
+  }
+  if (refused.length > 0) {
+    const groups = await sql<{ id: string }[]>`
+      SELECT id FROM groups WHERE deleted_at IS NULL AND time_zone = ANY(${
+      sql.array(refused)
+    }::text[])
+      ORDER BY id
+    `
+    for (const { id } of groups) {
+      log(`recurring entries: group ${id} skipped for this run: its time zone is not known`)
+    }
+  }
+  return days
+}
+
+/**
+ * Live rules of live households whose next day to cover has begun in the household's time zone
+ * (its date in `days`), after `after` in id order, at most `limit`. A household whose zone `days`
+ * lacks is left out. A rule past its end date, made through it, is left out; a rule past its count
+ * is read once a day and made through today.
  */
 async function readDueRules(
   sql: postgres.Sql,
-  now: Date,
+  days: ZoneDays,
   after: string | null,
   limit: number,
 ): Promise<DueRule[]> {
@@ -399,9 +450,8 @@ async function readDueRules(
       to_char(day.today, 'YYYY-MM-DD') AS today
     FROM recurring_rules AS rules
     INNER JOIN groups ON groups.id = rules.group_id AND groups.deleted_at IS NULL
-    CROSS JOIN LATERAL (
-      SELECT (${now}::timestamptz AT TIME ZONE groups.time_zone)::date AS today
-    ) AS day
+    INNER JOIN unnest(${sql.array(days.zones)}::text[], ${sql.array(days.dates)}::date[])
+      AS day (zone, today) ON day.zone = groups.time_zone
     WHERE rules.deleted_at IS NULL
       AND COALESCE(rules.made_through, rules.start_date - 1) < day.today
       AND (rules.end_date IS NULL OR COALESCE(rules.made_through, rules.start_date - 1) < rules.end_date)
