@@ -1077,9 +1077,9 @@ export default {
   "GuestScreens.tryFromSignIn":
     "Vous obtiendrez un nouveau compte utilisateur vide dans ce navigateur.",
   "GuestScreens.tryFromSignInDemo":
-    "Vous obtiendrez un nouveau compte utilisateur avec des données d’exemple pour tester.",
+    "Vous obtiendrez un nouveau compte utilisateur avec des données d’exemple à explorer.",
   "GuestScreens.demoWipe":
-    "Vous utilisez un compte invité sur une démo publique. Tout est réinitialisé chaque nuit à {time}, même avec une méthode de connexion. Ajoutez-en une quand même pour voir comment fonctionne la conservation d’un compte utilisateur.",
+    "Ceci est une démo publique avec des données d’exemple. Tout y est effacé chaque nuit à {time}, même si vous ajoutez une méthode de connexion. Ajoutez-en une quand même pour voir comment fonctionne la conservation d’un compte utilisateur.",
   "GuestScreens.banner":
     "Ce compte utilisateur n’existe que dans ce navigateur. Si les données du navigateur sont effacées, il disparaît. Ajoutez une méthode de connexion pour le garder.",
   "GuestScreens.hide": "Masquer ce message",
@@ -2213,9 +2213,9 @@ export default {
   "AccountDelete.blocked":
     "Vous êtes propriétaire de groupes que d’autres personnes utilisent ou paient encore. Réglez d’abord la situation de chacun, puis revenez.",
   "AuthScreen.demoNote":
-    "Ceci est une démo publique réinitialisée chaque nuit. Les nouveaux comptes utilisateurs contiennent des données d’exemple à explorer.",
+    "Ceci est une démo publique avec des données d’exemple. Tout est effacé chaque nuit, alors ne saisissez rien de réel. Les nouveaux comptes utilisateurs démarrent avec des foyers d’exemple à explorer.",
   "AuthScreen.demoGuestNote":
-    "Ceci est une démo publique réinitialisée chaque nuit. Chaque nouveau compte utilisateur, invité ou non, contient des données d’exemple à explorer.",
+    "Ceci est une démo publique avec des données d’exemple. Tout est effacé chaque nuit, alors ne saisissez rien de réel. Chaque nouveau compte utilisateur, invité ou non, démarre avec des foyers d’exemple à explorer.",
   "AuthScreen.tryFirst":
     "Essayez d’abord l’application, ou créez un compte avec votre adresse e-mail.",
   "AuthScreen.invitedTitle": "Vous êtes invité dans un groupe",

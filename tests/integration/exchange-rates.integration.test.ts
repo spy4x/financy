@@ -190,6 +190,25 @@ Deno.test("rates sent to clients: the latest ECB rate of each currency, never a 
   })
 })
 
+Deno.test("the demo's sample rates: a lookup and the rates sent to clients take the ECB's on a day both have, and the sample rate on a day only it has", async () => {
+  await withSchema(async (sql) => {
+    await storeRates(sql, [
+      rate(`USD`, `1.1172`, `2026-10-30`, RATE_SOURCES.demo),
+      rate(`USD`, `1.1000`, `2026-10-30`),
+      rate(`GBP`, `0.8338`, `2026-10-30`, RATE_SOURCES.demo),
+    ])
+    const rates = new PostgresRateRepository(sql)
+    expect(await rates.lookup(`EUR`, `USD`, `2026-10-30`)).toEqual({
+      found: true,
+      rate: rate(`USD`, `1.1000`, `2026-10-30`),
+    })
+    expect(await rates.latestEcbRates([`USD`, `GBP`])).toEqual([
+      rate(`GBP`, `0.8338`, `2026-10-30`, RATE_SOURCES.demo),
+      rate(`USD`, `1.1000`, `2026-10-30`),
+    ])
+  })
+})
+
 Deno.test("rates.fetch: the recorded ECB reply stores one row per currency, a rerun adds none", async () => {
   await withSchema(async (sql) => {
     const fake = fakeFetch({ [ECB_HOST]: fixture(`frankfurter-saturday-ecb.json`) })

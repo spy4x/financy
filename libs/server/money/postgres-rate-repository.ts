@@ -175,7 +175,9 @@ export class PostgresRateRepository implements HouseholdRateReader {
 
   /**
    * The latest ECB rate of each of `currencies` against the euro, with its date. Only the ECB's:
-   * a fallback rate never leaves the server.
+   * a fallback rate never leaves the server. The public demo's sample rates, which are the ECB's
+   * recorded ones under the demo's label, count too, so a demo household converts before the daily
+   * job has run; on a day both have, the ECB's is taken.
    */
   async latestEcbRates(currencies: readonly string[]): Promise<ExchangeRate[]> {
     const quotes = [...new Set(currencies)].filter((code) => code !== ECB_BASE)
@@ -184,8 +186,10 @@ export class PostgresRateRepository implements HouseholdRateReader {
       SELECT DISTINCT ON (quote)
         base, quote, rate::text AS rate, to_char(rate_date, 'YYYY-MM-DD') AS date, source
       FROM exchange_rates
-      WHERE base = ${ECB_BASE} AND source = ${RATE_SOURCES.ecb} AND quote IN ${this.sql(quotes)}
-      ORDER BY quote, rate_date DESC
+      WHERE base = ${ECB_BASE}
+        AND source IN (${RATE_SOURCES.ecb}, ${RATE_SOURCES.demo})
+        AND quote IN ${this.sql(quotes)}
+      ORDER BY quote, rate_date DESC, (source = ${RATE_SOURCES.ecb}) DESC
     `
   }
 

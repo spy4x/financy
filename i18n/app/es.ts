@@ -1047,7 +1047,7 @@ export default {
   "GuestScreens.tryFromSignInDemo":
     "Tendrás una cuenta de usuario nueva con datos de ejemplo para explorar.",
   "GuestScreens.demoWipe":
-    "Estás usando una cuenta de invitado en una demo pública. Todo se reinicia cada noche a las {time}, aunque añadas un método de inicio de sesión. Añade uno de todos modos para ver cómo funciona conservar una cuenta de usuario.",
+    "Esta es una demo pública con datos de ejemplo. Todo se borra cada noche a las {time}, aunque añadas un método de inicio de sesión. Añade uno de todos modos para ver cómo funciona conservar una cuenta de usuario.",
   "GuestScreens.banner":
     "Esta cuenta de usuario solo existe en este navegador. Si se borran los datos del navegador, se pierde. Añade un método de inicio de sesión para conservarla.",
   "GuestScreens.hide": "Ocultar este mensaje",
@@ -2157,9 +2157,9 @@ export default {
   "AccountDelete.blocked":
     "Tienes grupos que otras personas todavía usan o pagan. Resuelve cada uno primero y luego vuelve.",
   "AuthScreen.demoNote":
-    "Esta es una demo pública que se reinicia cada noche. Las cuentas de usuario nuevas traen datos de ejemplo para explorar.",
+    "Esta es una demo pública con datos de ejemplo. Se borra cada noche, así que no introduzcas nada real. Las cuentas de usuario nuevas empiezan con hogares de ejemplo para explorar.",
   "AuthScreen.demoGuestNote":
-    "Esta es una demo pública que se reinicia cada noche. Todas las cuentas de usuario nuevas, de invitado o no, traen datos de ejemplo para explorar.",
+    "Esta es una demo pública con datos de ejemplo. Se borra cada noche, así que no introduzcas nada real. Todas las cuentas de usuario nuevas, de invitado o no, empiezan con hogares de ejemplo para explorar.",
   "AuthScreen.tryFirst": "Prueba la app primero o regístrate con tu correo electrónico.",
   "AuthScreen.invitedTitle": "Te invitaron a un grupo",
   "AuthScreen.invitedSignIn": "Inicia sesión para ver la invitación y unirte.",

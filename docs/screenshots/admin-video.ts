@@ -352,9 +352,9 @@ async function signInAndWarmUp(page: Page): Promise<void> {
   await page.getByRole("link", { name: PERSON.name }).click()
   await page.getByRole("heading", { level: 1, name: PERSON.name }).waitFor({ timeout: 120_000 })
   // The list opens on the newest groups; the one the video opens is found by name.
-  await page.goto(`/groups?q=${encodeURIComponent("Product team")}`)
-  await page.getByRole("link", { name: "Product team" }).click()
-  await page.getByRole("heading", { level: 1, name: "Product team" }).waitFor({ timeout: 120_000 })
+  await page.goto(`/groups?q=${encodeURIComponent("Hanoi house share")}`)
+  await page.getByRole("link", { name: "Hanoi house share" }).click()
+  await page.getByRole("heading", { level: 1, name: "Hanoi house share" }).waitFor({ timeout: 120_000 })
   await page.waitForLoadState("networkidle")
   // So is a customer's billing page.
   await page.goto("/billing")
@@ -375,7 +375,7 @@ const SCREENS = [
 ] as const
 
 /** The seeded customer the Billing shot opens: the one whose history holds a refund. */
-const CUSTOMER = "Design studio"
+const CUSTOMER = "Studio Mar, two partners"
 
 const H = VIEWPORT.height
 /** The caption bar's height: a zoom centres its region in the frame above it. */
@@ -663,7 +663,7 @@ async function play(
   await clickLike(page, pointer, page.getByRole("link", { name: "Groups" }), H)
   await page.getByRole("heading", { level: 1, name: "Groups" }).waitFor()
   await page.goto(`/groups?sort=${encodeURIComponent("memberCount:desc")}`)
-  await page.locator("table tbody tr").first().getByRole("link", { name: "Product team" }).waitFor()
+  await page.locator("table tbody tr").first().getByRole("link", { name: "Hanoi house share" }).waitFor()
   await moveLike(page, pointer, { x: 900, y: 120 })
   await shot("Every group, its owner and its members", async () => {
     // The largest groups, from their names to their member counts.
@@ -675,8 +675,8 @@ async function play(
     // A hard cut to the one the operator opens: no stretch of the list at 1× in between.
     await cut(async () => {
       await unzoom(page)
-      await clickLike(page, pointer, page.getByRole("link", { name: "Product team" }), H)
-      await page.getByRole("heading", { level: 1, name: "Product team" }).waitFor()
+      await clickLike(page, pointer, page.getByRole("link", { name: "Hanoi house share" }), H)
+      await page.getByRole("heading", { level: 1, name: "Hanoi house share" }).waitFor()
       // The group's overview widgets come before its tabs, so the page scrolls them to the top.
       await page.locator("[data-e2e=admin-group-members] > li").nth(3).waitFor()
       await page.locator("[data-e2e=admin-group-tab]").first().evaluate((tab) =>

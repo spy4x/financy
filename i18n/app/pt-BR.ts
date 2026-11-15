@@ -1043,7 +1043,7 @@ export default {
   "GuestScreens.tryFromSignInDemo":
     "Você recebe uma conta de usuário nova com dados de exemplo para explorar.",
   "GuestScreens.demoWipe":
-    "Você está usando uma conta de visitante em uma demonstração pública. Tudo aqui é apagado toda noite às {time}, mesmo com uma forma de entrar. Adicione uma assim mesmo para ver como funciona manter a conta de usuário.",
+    "Esta é uma demonstração pública com dados de exemplo. Tudo aqui é apagado toda noite às {time}, mesmo se você adicionar uma forma de entrar. Adicione uma assim mesmo para ver como funciona manter a conta de usuário.",
   "GuestScreens.banner":
     "Esta conta de usuário só existe neste navegador. Se os dados do navegador forem apagados, ela some. Adicione uma forma de entrar para não perdê-la.",
   "GuestScreens.hide": "Ocultar esta mensagem",
@@ -2140,9 +2140,9 @@ export default {
   "AccountDelete.blocked":
     "Você é dono de grupos que outras pessoas ainda usam ou pagam. Resolva cada um deles primeiro e depois volte aqui.",
   "AuthScreen.demoNote":
-    "Esta é uma demonstração pública, apagada toda noite. Contas de usuário novas já vêm com dados de exemplo para explorar.",
+    "Esta é uma demonstração pública com dados de exemplo. Tudo é apagado toda noite, então não coloque nada real. Contas de usuário novas já começam com famílias de exemplo para explorar.",
   "AuthScreen.demoGuestNote":
-    "Esta é uma demonstração pública, apagada toda noite. Toda conta de usuário nova, de visitante ou não, já vem com dados de exemplo para explorar.",
+    "Esta é uma demonstração pública com dados de exemplo. Tudo é apagado toda noite, então não coloque nada real. Toda conta de usuário nova, de visitante ou não, já começa com famílias de exemplo para explorar.",
   "AuthScreen.tryFirst": "Experimente o app primeiro ou crie uma conta com seu e-mail.",
   "AuthScreen.invitedTitle": "Você foi convidado para um grupo",
   "AuthScreen.invitedSignIn": "Entre para ver o convite e participar.",
