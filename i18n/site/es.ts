@@ -591,9 +591,9 @@ export default {
   "HomeWays.cloudText":
     "Aún no está abierta. El mismo código, sin que tengas que mantener un servidor, en un plan de pago.",
   "HomeFaq.useQuestion": "¿Puedo usar Financy hoy?",
-  "HomeFaq.currencyQuestion": "¿Qué monedas admitirá?",
+  "HomeFaq.currencyQuestion": "¿Qué monedas admite?",
   "HomeFaq.currencyAnswer":
-    "Financy manejará cualquier combinación de monedas, criptomonedas incluidas. Cada movimiento guarda su importe original junto al convertido, y los totales se muestran en la moneda principal del hogar. Para una moneda que el BCE no cubre, como una criptomoneda, indicas el tipo de cambio en el propio movimiento. En construcción.",
+    "Cualquier combinación de monedas, además de Bitcoin y Ethereum en una cuenta cripto. Cada movimiento guarda su importe original junto al convertido, y los totales se muestran en la moneda principal del hogar. Las criptomonedas llegan con una transferencia desde otra cuenta que guarda ambos importes, lo que se pagó y lo que entró, y los totales las valoran al precio de hoy de CoinGecko, con su fecha.",
   "HomeFaq.ratesQuestion": "¿De dónde salen los tipos de cambio?",
   "HomeFaq.ratesAnswer":
     "Del Banco Central Europeo: los consultamos cada día hábil a través de Frankfurter, un servicio público y gratuito. Cada total convertido muestra la fecha de los tipos que usó. Una moneda sin tipo de cambio aparece nombrada y queda fuera del total; nunca se cuenta como 1. En construcción.",
@@ -608,11 +608,11 @@ export default {
   "FeatureAccounts.fact1":
     "El servidor calcula el saldo en cada lectura y no lo guarda en ningún sitio, así que nunca se desvía",
   "FeatureAccounts.fact2":
-    "Los importes son enteros en la unidad más pequeña de la moneda: el yen no tiene, el dinar tiene tres decimales",
+    "Los importes son enteros en la unidad más pequeña de la moneda: el yen no tiene, el dinar tiene tres decimales y el bitcoin, ocho",
   "FeatureAccounts.fact3":
     "Un lector ve las cuentas; solo los editores y roles superiores pueden cambiarlas, y el servidor lo comprueba",
   "FeatureAccounts.lead":
-    "Efectivo, cuentas bancarias, tarjetas, ahorros, activos y deudas, cada una en su moneda, agrupadas por tipo y con una predeterminada. Todo el hogar ve cada cambio al momento.",
+    "Efectivo, cuentas bancarias, tarjetas, ahorros, cripto, activos y deudas, cada una en su moneda o criptomoneda, agrupadas por tipo y con una predeterminada. Todo el hogar ve cada cambio al momento.",
   "FeatureAccounts.nav": "Cuentas",
   "FeatureAccounts.title": "Cada cuenta en su propia moneda",
   "Features.description":

@@ -596,9 +596,9 @@ export default {
   "HomeWays.cloudTitle": "Le cloud",
   "HomeWays.cloudText": "Pas encore ouvert. Le même code, sans serveur à gérer, en offre payante.",
   "HomeFaq.useQuestion": "Puis-je utiliser Financy aujourd’hui ?",
-  "HomeFaq.currencyQuestion": "Quelles devises gérera-t-il ?",
+  "HomeFaq.currencyQuestion": "Quelles devises gère-t-il ?",
   "HomeFaq.currencyAnswer":
-    "Financy gérera n’importe quel mélange de devises, cryptomonnaies comprises. Chaque opération garde son montant d’origine à côté du montant converti, et les totaux s’affichent dans la devise principale du foyer. Pour une devise que la BCE ne couvre pas, comme une cryptomonnaie, vous saisissez le taux directement sur l’opération. En cours de construction.",
+    "N’importe quel mélange de devises, plus le Bitcoin et l’Ethereum sur un compte crypto. Chaque opération garde son montant d’origine à côté du montant converti, et les totaux s’affichent dans la devise principale du foyer. Les cryptomonnaies arrivent par un virement depuis un autre compte, qui garde les deux montants : ce qui a été payé et ce qui est arrivé. Les totaux les valorisent au prix du jour de CoinGecko, avec sa date.",
   "HomeFaq.ratesQuestion": "D’où viennent les taux de change ?",
   "HomeFaq.ratesAnswer":
     "De la Banque centrale européenne, récupérés chaque jour ouvré via Frankfurter, un service public et gratuit. Chaque total converti affiche la date des taux utilisés. Une devise sans taux est signalée et laissée hors du total, jamais comptée à 1. En cours de construction.",
@@ -612,11 +612,11 @@ export default {
   "FeatureAccounts.fact1":
     "Le serveur calcule chaque solde à la lecture et ne le stocke jamais, donc il ne peut pas dériver",
   "FeatureAccounts.fact2":
-    "Les montants sont des entiers dans la plus petite unité de la devise : le yen n’en a pas, le dinar en a trois",
+    "Les montants sont des entiers dans la plus petite unité de la devise : le yen n’en a pas, le dinar en a trois, le bitcoin huit",
   "FeatureAccounts.fact3":
     "Un lecteur voit les comptes ; seuls les éditeurs et au-dessus les modifient, et le serveur le vérifie",
   "FeatureAccounts.lead":
-    "Espèces, comptes bancaires, cartes, épargne, actifs et dettes, chacun dans sa devise, regroupés par type, avec un compte par défaut. Tout le foyer voit chaque modification aussitôt.",
+    "Espèces, comptes bancaires, cartes, épargne, crypto, actifs et dettes, chacun dans sa devise ou sa cryptomonnaie, regroupés par type, avec un compte par défaut. Tout le foyer voit chaque modification aussitôt.",
   "FeatureAccounts.nav": "Comptes",
   "FeatureAccounts.title": "Chaque compte dans sa propre devise",
   "Features.description":
