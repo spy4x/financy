@@ -24,6 +24,7 @@ import {
   testSessionGuards,
 } from "../../_testing/mutation-requests.ts"
 import { createAdminRoute } from "./+routes.ts"
+import { BUDGET_WIDGETS } from "@domain/budgets"
 import { MONEY_WIDGETS } from "@domain/transactions"
 import {
   ADMIN_GROUP_FILE_CROSS_SITE,
@@ -751,12 +752,12 @@ describe(`admin group widgets: what the operator may read`, () => {
     expect(reads).toEqual([])
   })
 
-  it(`answers 404 for the household's money widgets, reading nothing even when a reader is wired`, async () => {
-    const moneyIds = MONEY_WIDGETS.map((definition) => definition.id)
-    // The operator's own list has no reader for them, and no money widget is a counts one.
+  it(`answers 404 for the household's money and budgets widgets, reading nothing even when a reader is wired`, async () => {
+    const moneyIds = [...MONEY_WIDGETS, ...BUDGET_WIDGETS].map((definition) => definition.id)
+    // The operator's own list has no reader for them, and none of them is a counts one.
     expect(moneyIds.filter((id) => Object.hasOwn(ADMIN_WIDGETS.readers, id))).toEqual([])
     const { app, reads } = buildWidgetApp(
-      [...ADMIN_WIDGETS.definitions, ...MONEY_WIDGETS],
+      [...ADMIN_WIDGETS.definitions, ...MONEY_WIDGETS, ...BUDGET_WIDGETS],
       moneyIds,
     )
     for (const id of moneyIds) {

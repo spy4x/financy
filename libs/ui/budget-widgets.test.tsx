@@ -145,7 +145,9 @@ describe("the overview's budgets widget", () => {
     expect(OVERVIEW_WIDGETS.slice(0, MONEY_WIDGETS.length + 1).map((widget) => widget.id))
       .toEqual([...MONEY_WIDGETS.map((widget) => widget.id), BUDGET_WIDGET_IDS.month])
     expect(BUDGET_WIDGETS).toMatchObject([{ size: "full", operatorView: "never" }])
-    expect(OVERVIEW_VIEWS[BUDGET_WIDGET_IDS.month]).toBe(BUDGET_WIDGET_VIEWS[BUDGET_WIDGET_IDS.month])
+    expect(OVERVIEW_VIEWS[BUDGET_WIDGET_IDS.month]).toBe(
+      BUDGET_WIDGET_VIEWS[BUDGET_WIDGET_IDS.month],
+    )
   })
 
   it("names its month and says every budget is on track, at exactly its limit too", () => {
