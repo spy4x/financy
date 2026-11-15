@@ -324,4 +324,69 @@ test.describe("accounts", () => {
       await cleanup(request, user)
     }
   })
+
+  test("0.01 BTC bought for €600 with a transfer from a euro account shows in the total at today's coin price, with its date and CoinGecko's credit", async ({ browser, request }) => {
+    const user = "e2e_accounts_crypto_buy@example.com"
+    await cleanup(request, user)
+    const context = await browser.newContext({ baseURL: test.info().project.use.baseURL })
+    try {
+      // No development stack has a CoinGecko key: the price is stored the way the daily fetch would.
+      const today = new Date().toISOString().slice(0, 10)
+      const priced = await request.post(`${apiBase}/api/test/coin-price`, {
+        data: { coin: "BTC", price: "60000", date: today },
+      })
+      expect(priced.status(), await priced.text()).toBe(200)
+      await signUp(request, user)
+      const page = await context.newPage()
+      await signInOnline(page, user)
+      const groupId = await household(page, request, "Coin purchase")
+      await openAccounts(page, "Coin purchase")
+
+      await createAccount(page, { name: "Euros", currency: "EUR", balance: "1000" })
+      await page.locator("[data-e2e=account-new]").click()
+      await expect(page).toHaveURL("/accounts/new")
+      await page.locator("[data-e2e=account-kind]").selectOption({ label: "Crypto" })
+      await fillAccount(page, { name: "Bitcoin", currency: "BTC", balance: "0" })
+      await saveAndBack(page)
+      const ids = Object.fromEntries(
+        (await serverAccounts(page, groupId)).map((account) => [account.name, account.id]),
+      )
+
+      // The purchase: a transfer with both amounts, from the list's More actions menu.
+      const nav = page.getByRole("navigation", { name: "Main navigation" })
+      await nav.getByRole("link", { name: "Transactions" }).click()
+      await page.locator("[data-e2e=transactions-menu]").click()
+      await page.locator("[data-e2e=transfer-new]").click()
+      await expect(page).toHaveURL("/transfers/new")
+      await page.locator("#transfer-from").selectOption(ids.Euros)
+      await page.locator("#transfer-to").selectOption(ids.Bitcoin)
+      await expect(page.locator("label[for=transfer-received]")).toContainText("BTC")
+      await page.locator("[data-e2e=transfer-sent-field] input[type=text]").fill("600")
+      await page.locator("[data-e2e=transfer-received-field] input[type=text]").fill("0.01")
+      await page.locator("[data-e2e=transfer-save]").click()
+      await expect(page).toHaveURL("/transactions")
+
+      await nav.getByRole("link", { name: "Accounts" }).click()
+      await expect(page).toHaveURL("/accounts")
+      const balance = (name: string) =>
+        page.locator("li", { has: page.getByRole("link", { name, exact: true }) })
+          .locator("[data-e2e=account-balance]")
+      await expect(balance("Euros")).toContainText("400.00")
+      await expect(balance("Bitcoin")).toContainText("0.01000000")
+      // €400.00 and 0.01 BTC at €60,000.00: about €1,000.00, at the price of today.
+      await expect(page.locator("[data-e2e=accounts-total-amount]")).toHaveText("about €1,000.00")
+      const [year, , day] = today.split("-")
+      const coins = page.locator("[data-e2e=accounts-total-coins]")
+      await expect(coins).toHaveText(
+        new RegExp(
+          `^Coin prices of \\D*${Number(day)}\\D.*${year}\\. Data provided by CoinGecko\\.$`,
+        ),
+      )
+      await expect(coins.getByRole("link", { name: "CoinGecko" }))
+        .toHaveAttribute("href", "https://www.coingecko.com")
+    } finally {
+      await context.close()
+      await cleanup(request, user)
+    }
+  })
 })

@@ -7,7 +7,10 @@ import { PASSWORD_METHOD } from "@spy4x/server/auth/password"
 import { normalizeEmail } from "@spy4x/server/auth"
 import { authEmailSchema, authLoginSchema, UserRole } from "@domain/identity"
 import { GroupRole } from "@domain/groups"
+import { coinCode } from "@domain/money"
+import { calendarDate } from "@domain/transactions"
 import { recordAccessChange } from "@server/groups/group-change-log.ts"
+import { storeCoinPrice } from "@server/money/coin-prices.ts"
 import { type } from "arktype"
 import type { Sql, Transaction } from "@spy4x/server/db"
 import type { AppDbBase } from "@api/services/db-base.ts"
@@ -81,6 +84,10 @@ export interface DevRouteDeps {
  * `GET /free-plan` answers `{ allowsNothing }`: whether billing is on and the free plan allows
  * nothing. The e2e sign-up fixture then puts each new group on the paid plan, so the specs run on
  * any product's catalog.
+ *
+ * `POST /coin-price` with `{ coin, price, date }` stores that euro price as the listed coin's only
+ * price, as the daily fetch does with a CoinGecko key, which no development stack has. The e2e
+ * specs value a coin account this way.
  */
 export function createDevRoute(deps: DevRouteDeps) {
   return new Hono<APIContext>()
@@ -199,7 +206,29 @@ export function createDevRoute(deps: DevRouteDeps) {
       if (!mail) return errorResponse(c, `not_found`, { message: "No mail for this address" })
       return c.json({ subject: mail.subject, text: mail.textBody })
     })
+    .post("/coin-price", async (c) => {
+      if (!deps.isDev) return errorResponse(c, `forbidden`, { message: "Not allowed" })
+      let body: unknown = null
+      try {
+        body = await readApiJson(c)
+      } catch (_error) {
+        body = null
+      }
+      const validation = validate(coinPriceSchema, body)
+      if (validation.error) {
+        return validationResponse(c, validation.error.details)
+      }
+      await storeCoinPrice(deps.sql, validation.data, new Date())
+      return c.json({ success: true })
+    })
 }
+
+/** The body of `POST /coin-price`: a listed coin, its euro price as a decimal, and its day. */
+const coinPriceSchema = type({
+  coin: coinCode,
+  price: /^\d{1,12}(\.\d{1,12})?$/,
+  date: calendarDate,
+})
 
 /** The password key of `login`, an address or an older account's username, normalised first. */
 function findPasswordKey(deps: DevRouteDeps, login: string) {
