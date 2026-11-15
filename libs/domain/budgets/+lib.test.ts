@@ -1070,10 +1070,10 @@ describe("how a month's budgets stand", () => {
   it("puts the most over first by share of its limit when the over ones are in different currencies", () => {
     const vnd = { limit: { amount: 1_000_000, currency: "VND" }, currency: "VND" }
     const standing = budgetStanding(
-      month([limitRow(rent, 1_500_000, 1_000_000, vnd), limitRow(food, 600, 500)]),
+      month([limitRow(rent, 1_100_000, 1_000_000, vnd), limitRow(food, 600, 500)]),
     )
-    // 150% of its limit before 120%, though 500,000 VND is the larger number.
-    expect(standing.over.map((item) => item.categoryId)).toEqual([rent, food])
+    // 120% of its limit before 110%, though 100,000 VND is the larger number.
+    expect(standing.over.map((item) => item.categoryId)).toEqual([food, rent])
   })
 
   it("leaves out rows with no limit, and a parent whose limit is its children's sum", () => {
