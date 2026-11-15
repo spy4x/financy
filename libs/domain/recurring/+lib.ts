@@ -84,6 +84,8 @@ export const RECURRING_RULE_EVENTS = {
   paused: `recurring_rule.paused`,
   /** The job cleared `pausedReason` without making an entry in the same change. */
   resumed: `recurring_rule.resumed`,
+  /** The job moved `madeThrough` forward without making an entry in the same change. */
+  advanced: `recurring_rule.advanced`,
 } as const
 
 export type RecurringRuleErrorCode =

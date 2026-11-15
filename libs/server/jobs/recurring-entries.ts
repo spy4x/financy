@@ -124,7 +124,8 @@ export function recurringEntriesJob(deps: RecurringEntriesDeps): JobHandler {
  * - The entry is written as the author through the entries' own path (`writeNew`): references,
  *   conversion at the occurrence's own date, the plan's room, the change pushed to the household's
  *   tabs. The unique key on rule and date turns a second write of a date into nothing.
- * - `made_through` moves forward to the date, and only forward, in the same transaction.
+ * - `made_through` moves forward to the date, and only forward, in the same transaction. Every
+ *   move is a change of the rule: the entry's when one was written, else one of its own.
  *
  * A household whose plan allows no entries (read-only) or is full writes nothing this run, and is
  * not paused. Once every date of the run is made, the rule is made through the run's last day.
@@ -174,45 +175,48 @@ export async function makeRecurringEntries(
         checked.role,
         { ruleId: rule.id, date },
       )
-      // The entry's change carries the rule's new `made_through` and cleared pause too.
-      await tx`
+      // The entry's change carries the rule's new `made_through` and cleared pause too. An entry
+      // that existed already brings no change, so the rule records one of its own.
+      const [moved] = await tx`
         UPDATE recurring_rules
         SET made_through = ${date}::date, paused_reason = NULL,
             change_sequence = COALESCE(${entry?.changeSequence ?? null}::bigint, change_sequence)
         WHERE id = ${rule.id} AND group_id = ${rule.groupId}
           AND (made_through IS NULL OR made_through < ${date}::date)
+        RETURNING id
       `
-      if (entry === null && checked.pausedReason !== null) await resumed(tx, rule)
+      if (entry === null && moved) await stampRule(tx, rule, ruleEvent(checked.pausedReason))
       return entry === null ? `existed` : `made`
     })
 
   /**
-   * Moves `made_through` to `through` once every date before it is made. A rule that was not
-   * paused needs no lock: no entry is written, and the version guard skips a rule changed since.
-   * A paused one is checked again, and its pause cleared once the cause is gone.
+   * Moves `made_through` to `through` once every date before it is made, as a change of the rule's
+   * own, so a device pulls the rule again. A rule that was not paused takes only the household's
+   * lock, which the change needs: no entry is written, and the version guard skips a rule changed
+   * since. A paused one is checked again, and its pause cleared once the cause is gone.
    */
-  const finish = async (rule: DueRule, through: string): Promise<Outcome> => {
-    if (rule.pausedReason === null) {
-      await sql`
-        UPDATE recurring_rules SET made_through = ${through}::date
+  const finish = async (rule: DueRule, through: string): Promise<Outcome> =>
+    await sql.begin(async (tx: postgres.TransactionSql): Promise<Outcome> => {
+      let pausedReason: number | null = null
+      if (rule.pausedReason === null) {
+        await lockGroup(tx, rule.groupId)
+      } else {
+        const checked = await checkRule(tx, rule)
+        if (checked.outcome !== null) return checked.outcome
+        pausedReason = checked.pausedReason
+      }
+      const [moved] = await tx`
+        UPDATE recurring_rules
+        SET made_through = ${through}::date,
+            paused_reason = ${rule.pausedReason === null ? tx`paused_reason` : null}
         WHERE id = ${rule.id} AND group_id = ${rule.groupId} AND deleted_at IS NULL
           AND version = ${rule.version}
           AND (made_through IS NULL OR made_through < ${through}::date)
+        RETURNING id
       `
-      return `made`
-    }
-    return await sql.begin(async (tx: postgres.TransactionSql): Promise<Outcome> => {
-      const checked = await checkRule(tx, rule)
-      if (checked.outcome !== null) return checked.outcome
-      await tx`
-        UPDATE recurring_rules SET made_through = ${through}::date, paused_reason = NULL
-        WHERE id = ${rule.id} AND group_id = ${rule.groupId}
-          AND (made_through IS NULL OR made_through < ${through}::date)
-      `
-      if (checked.pausedReason !== null) await resumed(tx, rule)
+      if (moved) await stampRule(tx, rule, ruleEvent(pausedReason))
       return `made`
     })
-  }
 
   /** Runs the rule's due dates; returns how it ended. */
   const runRule = async (rule: DueRule): Promise<Outcome | null> => {
@@ -357,9 +361,12 @@ async function lockGroup(tx: postgres.TransactionSql, groupId: string): Promise<
   return null
 }
 
-/** Pushes a rule whose pause was cleared without an entry to carry the change. */
-async function resumed(tx: postgres.TransactionSql, rule: DueRule): Promise<void> {
-  await stampRule(tx, rule, RECURRING_RULE_EVENTS.resumed)
+/**
+ * The change kind of a rule the job moved forward without an entry to carry the change: `resumed`
+ * when that also cleared its pause, else `advanced`.
+ */
+function ruleEvent(pausedReason: number | null): string {
+  return pausedReason === null ? RECURRING_RULE_EVENTS.advanced : RECURRING_RULE_EVENTS.resumed
 }
 
 /**
