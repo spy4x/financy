@@ -18,9 +18,11 @@ import {
   occurrencesBetween,
   parseRrule,
   type Rrule,
+  RruleErrorCode,
   RruleFreq,
   RruleWeekday,
 } from "@spy4x/time/rrule"
+import { addDays } from "@spy4x/time/tz"
 import type { FieldErrors } from "@spy4x/validation"
 
 /**
@@ -31,7 +33,9 @@ import type { FieldErrors } from "@spy4x/validation"
  * end date or count. Every member reads a household's rules and an editor or above writes them.
  *
  * Changing a rule changes only the entries it has not made yet; deleting it keeps the entries it
- * made. This step stores the rules; the job that makes their entries is spy4x/financy#219.
+ * made. The hourly job `recurring.make-entries` (`libs/server/jobs/recurring-entries.ts`) makes
+ * each occurrence's entry once its day has begun in the household's time zone, as the rule's
+ * author, and pauses a rule it cannot write for ({@link RecurringPauseReason}).
  * `docs/aggregates.md` walks through the files.
  */
 
@@ -49,6 +53,25 @@ export const RECURRING_COUNT_MAX = 1000
 
 /** The most dates one rule skips. */
 export const RECURRING_SKIPPED_MAX = 500
+
+/**
+ * The most entries the job makes for one rule in one run. A rule that started long ago catches up
+ * over several runs, so it never holds the job up.
+ */
+export const RECURRING_MAKE_MAX = 100
+
+/**
+ * Why the job stopped making a rule's entries, stored as `paused_reason`. The job sets it and clears
+ * it once the cause is gone, then makes the dates it missed.
+ */
+export enum RecurringPauseReason {
+  /** The rule's author was removed, left, deleted their account, or became a viewer. */
+  AUTHOR_CANNOT_WRITE = 1,
+  /** The rule's account is archived, or deleted. */
+  ACCOUNT_ARCHIVED = 2,
+  /** The rule's category is archived. */
+  CATEGORY_ARCHIVED = 3,
+}
 
 /** The outbox event kinds a rule change is recorded under, on the group's change log. */
 export const RECURRING_RULE_EVENTS = {
@@ -121,7 +144,7 @@ export interface RecurringRule {
   skippedDates: string[]
   /** The last day the job made entries through; `null` until it first runs. */
   madeThrough: string | null
-  /** Why the job stopped making entries; `null` while it runs. Set only by the job. */
+  /** Why the job stopped making entries ({@link RecurringPauseReason}); `null` while it runs. */
   pausedReason: number | null
   /** Starts at 1 and grows by one with every change; a change or delete must name it. */
   version: number
@@ -426,21 +449,97 @@ export function isOccurrence(
   rule: Pick<RecurringRule, `rrule` | `startDate` | `endDate` | `count`>,
   date: string,
 ): boolean {
+  const found = occurrencesOf(rule, date, date, 1)
+  return found !== null && found.success && found.output.length === 1
+}
+
+/**
+ * The occurrences of `rule` from `from` to `to`, both included, as `occurrencesBetween` answers
+ * them; `null` for a repeat that does not parse. Its end date and count bound the series, and the
+ * count counts from the start date.
+ */
+function occurrencesOf(
+  rule: Pick<RecurringRule, `rrule` | `startDate` | `endDate` | `count`>,
+  from: string,
+  to: string,
+  limit: number,
+): ReturnType<typeof occurrencesBetween> | null {
   const parsed = parseRrule(rule.rrule)
-  if (!parsed.success) return false
+  if (!parsed.success) return null
   const series: Rrule = { ...parsed.output }
   if (rule.count !== null) series.count = rule.count
   if (rule.endDate !== null) {
     series.until = { kind: IcalDateKind.Date, date: rule.endDate }
   }
-  const day = new Date(`${date}T00:00:00Z`)
-  const found = occurrencesBetween(series, {
+  return occurrencesBetween(series, {
     start: { kind: IcalDateKind.Date, date: rule.startDate },
-    from: day,
-    to: day,
-    limit: 1,
+    from: new Date(`${from}T00:00:00Z`),
+    to: new Date(`${to}T00:00:00Z`),
+    limit,
   })
-  return found.success && found.output.length === 1
+}
+
+/** What the job makes of one rule in one run: see {@link dueOccurrences}. */
+export interface DueOccurrences {
+  /** The dates to make an entry for, in order: occurrences that are not skipped. */
+  dates: string[]
+  /** The last day this run covers: once every date is made, the rule is made through it. */
+  through: string
+}
+
+/**
+ * The occurrences of `rule` the job makes on `today` (the household's date): those after its
+ * `madeThrough` (or from its start) through today, without its skipped dates, and at most `max` of
+ * them. `null` when nothing is due: the next day to cover is after today.
+ *
+ * A repeat makes at most one entry a day, so when more than `max` occurrences are due, the run
+ * covers the `max` days from the first one due and the next run goes on from there. A repeat that
+ * does not parse, or that the series cannot step, throws `RecurringRuleError("INVALID_REQUEST")`.
+ */
+export function dueOccurrences(
+  rule: Pick<
+    RecurringRule,
+    `rrule` | `startDate` | `endDate` | `count` | `skippedDates` | `madeThrough`
+  >,
+  today: string,
+  max: number = RECURRING_MAKE_MAX,
+): DueOccurrences | null {
+  const next = rule.madeThrough === null ? rule.startDate : addDays(rule.madeThrough, 1)
+  const from = next < rule.startDate ? rule.startDate : next
+  if (from > today) return null
+  let through = today
+  let found = occurrencesOf(rule, from, through, max)
+  if (found !== null && !found.success && found.error.code === RruleErrorCode.SearchLimit) {
+    const window = addDays(from, max - 1)
+    if (window < through) through = window
+    found = occurrencesOf(rule, from, through, max)
+  }
+  if (found === null || !found.success) {
+    throw new RecurringRuleError(`INVALID_REQUEST`, `The repeat cannot be stepped`)
+  }
+  const dates = found.output
+    .map((value) => value.date)
+    .filter((date) => !rule.skippedDates.includes(date))
+  return { dates, through }
+}
+
+/**
+ * Why the job may not write a rule's entry now, or `null` when it may: the author's role in the
+ * household (`null` once they are removed, left or deleted their account) must be one that writes
+ * entries, its account live and not archived (`null` once it is deleted) and its category not
+ * archived. The author is checked first, as that pause needs a person, not a setting, to lift it.
+ */
+export function pauseReasonOf(
+  authorRole: GroupRole | null,
+  account: { archived: boolean } | null,
+  category: { archived: boolean },
+): RecurringPauseReason | null {
+  if (authorRole === null || !canMutateNotes(authorRole)) {
+    return RecurringPauseReason.AUTHOR_CANNOT_WRITE
+  }
+  if (account === null || account.archived) return RecurringPauseReason.ACCOUNT_ARCHIVED
+  if (category.archived) return RecurringPauseReason.CATEGORY_ARCHIVED
+  return null
 }
 
 /**
