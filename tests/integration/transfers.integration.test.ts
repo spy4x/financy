@@ -548,6 +548,114 @@ Deno.test("transfers against Postgres", async (t) => {
       },
     )
 
+    /** A BTC crypto account in `h`'s household, empty unless `startingBalance` says otherwise. */
+    async function wallet(h: Awaited<ReturnType<typeof household>>, startingBalance = 0) {
+      return (await accounts.create({
+        groupId: h.groupId,
+        id: uuidV7(),
+        name: "Bitcoin",
+        kind: AccountKind.CRYPTO,
+        currency: "BTC",
+        startingBalance,
+        allowance: null,
+      }, h.owner)).account
+    }
+
+    await t.step(
+      "buys 0.01 BTC for 600 EUR as a transfer: both balances move and spending stays as it was (R11)",
+      async () => {
+        const h = await household()
+        const euro = await h.account("Euro", "EUR", 100000)
+        const btc = await wallet(h)
+        const ledger = () => transactions.ledger(h.groupId, "EUR", "2026-11-01", "2026-11-30")
+        const before = await ledger()
+
+        const bought = await h.transfer({
+          fromAccountId: euro.id,
+          toAccountId: btc.id,
+          sentAmount: 60000,
+          receivedAmount: 1_000_000,
+        })
+
+        expect(bought).toMatchObject({
+          sentAmount: 60000,
+          receivedAmount: 1_000_000,
+          converted: false,
+        })
+        const balances = await h.balances("2026-11-30")
+        expect([balances.Euro, balances.Bitcoin]).toEqual([100000 - 60000, 1_000_000])
+        const after = await ledger()
+        expect(after).toEqual(before)
+        expect(after).toMatchObject({ income: 0, spending: 0 })
+      },
+    )
+
+    await t.step(
+      "locks a crypto account's coin once a transfer or an entry names it (R10)",
+      async () => {
+        for (const namedBy of ["transfer", "entry"]) {
+          const h = await household()
+          const euro = await h.account("Euro", "EUR", 100000)
+          const btc = await wallet(h, 1_000_000)
+          if (namedBy === "transfer") {
+            await h.transfer({
+              fromAccountId: euro.id,
+              toAccountId: btc.id,
+              sentAmount: 60000,
+              receivedAmount: 1_000_000,
+            })
+          } else {
+            const fees = (await new PostgresCategoryRepository(sql).create({
+              groupId: h.groupId,
+              id: uuidV7(),
+              name: "Fees",
+              kind: CategoryKind.EXPENSE,
+              icon: "receipt" as CategoryIcon,
+              color: "#c2410c",
+              parentId: null,
+              allowance: null,
+            }, h.owner)).category.id
+            await transactions.create({
+              groupId: h.groupId,
+              id: uuidV7(),
+              accountId: btc.id,
+              categoryId: fees,
+              kind: TransactionKind.EXPENSE,
+              amount: 1000,
+              currency: "BTC",
+              memo: "Network fee",
+              date: "2026-11-05",
+              allowance: null,
+            }, h.owner)
+          }
+          const toEther = {
+            groupId: h.groupId,
+            id: btc.id,
+            expectedVersion: 1,
+            name: btc.name,
+            kind: AccountKind.CRYPTO,
+            currency: "ETH",
+            startingBalance: btc.startingBalance,
+          }
+          expect(await codeOf(accounts.update(toEther, h.owner))).toBe("CURRENCY_LOCKED")
+          expect((await accounts.get(h.groupId, btc.id))?.currency).toBe("BTC")
+        }
+        // A coin account nothing names yet can still change its coin.
+        const h = await household()
+        const btc = await wallet(h)
+        const changed = await accounts.update({
+          groupId: h.groupId,
+          id: btc.id,
+          expectedVersion: 1,
+          name: btc.name,
+          kind: AccountKind.CRYPTO,
+          currency: "ETH",
+          startingBalance: 0,
+        }, h.owner)
+        expect(changed).toMatchObject({ currency: "ETH" })
+      },
+    )
+
     await t.step(
       "counts entries and transfers together against the plan's transaction cap",
       async () => {
