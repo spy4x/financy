@@ -894,9 +894,9 @@ export default {
   "GuestScreens.noAccount": "No account yet?",
   "GuestScreens.tryWithout": "Try it without an account",
   "GuestScreens.tryFromSignIn": "You'll get a fresh, empty account in this browser.",
-  "GuestScreens.tryFromSignInDemo": "You'll get a fresh account with demo data to play with.",
+  "GuestScreens.tryFromSignInDemo": "You'll get a new account with sample data to explore.",
   "GuestScreens.demoWipe":
-    "You're using a guest account on a public demo. Everything here resets every night at {time}, even with a sign-in method. Add one anyway to see how keeping an account works.",
+    "This is a public demo with sample data. Everything here is wiped every night at {time}, even if you add a sign-in method. Add one anyway to see how keeping an account works.",
   "GuestScreens.banner":
     "This account lives only in this browser. If the browser's data is cleared, it's gone. Add a sign-in method to keep it.",
   "GuestScreens.hide": "Hide this message",
@@ -2052,9 +2052,9 @@ export default {
   "AccountDelete.blocked":
     "You own groups that other people still use or pay for. Sort out each one first, then come back.",
   "AuthScreen.demoNote":
-    "This is a public demo that resets every night. New accounts come with demo data to explore.",
+    "This is a public demo with sample data. It's wiped every night, so don't enter anything real. New accounts start with sample households to explore.",
   "AuthScreen.demoGuestNote":
-    "This is a public demo that resets every night. Every new account, guest or not, comes with demo data to explore.",
+    "This is a public demo with sample data. It's wiped every night, so don't enter anything real. Every new account, guest or not, starts with sample households to explore.",
   "AuthScreen.tryFirst": "Try the app first, or sign up with your email.",
   "AuthScreen.invitedTitle": "You're invited to a group",
   "AuthScreen.invitedSignIn": "Sign in to see the invitation and join.",

@@ -84,11 +84,13 @@ export function convertAmount(
 /**
  * The sources a rate row names, as the ts-libs clients name themselves: the ECB through
  * Frankfurter, and the paid fallback (exchangerate-api.com). A fallback rate never leaves the
- * server: its provider's terms forbid serving it through an API.
+ * server: its provider's terms forbid serving it through an API. `demo` labels the public demo's
+ * sample rates, which the nightly reset replaces, so a real rate is never stored under their label.
  */
 export const RATE_SOURCES = {
   ecb: "frankfurter:ECB",
   fallback: "exchangerate-api",
+  demo: "demo",
 } as const
 
 /** CoinGecko, which prices the listed coins: its id as the ts-libs client names itself. */

@@ -4,6 +4,7 @@ import { ImportStatus } from "@domain/imports"
 import { type Context, Hono } from "hono"
 import postgres from "postgres"
 import { GroupRole } from "@domain/groups"
+import { RATE_SOURCES } from "@domain/money"
 import { UserRole } from "@domain/identity"
 import { DEV_ADMIN_EMAIL, PUBLIC_DEMO_ADMIN } from "@server/auth/demo-accounts.ts"
 import { OUTBOX_CLEANUP_JOB } from "@server/jobs/jobs.ts"
@@ -601,10 +602,11 @@ Deno.test("a visitor still gets the group they own when the population is of ano
   })
 })
 
-Deno.test("a visitor gets tags and notes in the group they own when its first member with an account today is a viewer or an editor", async () => {
-  // Day 5's population and day 6's sample groups: a viewer is the first such member, who may not
-  // write tags. Day 2's and day 3's: an editor, who may not invite.
-  for (const today of [2, 5]) {
+Deno.test("a visitor gets tags and notes in the group they own when its partner has an account in another day's population", async () => {
+  // Day 18's population and day 19's sample groups: the partner of the visitor's own household is
+  // in both. Who stands in for a writer without an account is checked for 300 days in
+  // fake-data.test.ts.
+  for (const today of [18]) {
     await withSchema(async (sql) => {
       await seedDemo(new AppDbBase({ sql }), sql, { ...OPTIONS, dataSeed: today })
       const userId = await signUpVisitor(sql, "late@example.net")
@@ -631,7 +633,7 @@ Deno.test("the demo seed fails when sign-up refuses an account that does not exi
   })
 })
 
-Deno.test("the wipe empties every table but the kept ones, keeps the blog, its old addresses, its earlier versions, where it was shared and the contact links, queues every stored file for deletion, and never reuses an id", async () => {
+Deno.test("the wipe empties every table but the kept ones, keeps the blog, its old addresses, its earlier versions, where it was shared, the contact links and the real rate history but not the sample rates or an earlier seed's copies of them, queues every stored file for deletion, and never reuses an id", async () => {
   await withSchema(async (sql) => {
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     await sql`INSERT INTO backup_status (target, succeeded_at) VALUES ('database', now())`
@@ -683,6 +685,31 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
       VALUES (${`pictures/${picture}/480.webp`}, ${picture}, 'image/webp', 480, 480)
     `
     keys.push({ objectKey: `pictures/${picture}/480.webp` })
+    // A paid rate source's calls this month: its cap holds across the wipe.
+    await sql`INSERT INTO rate_source_calls (source, month, calls) VALUES ('paid', date_trunc('month', now()), 3)`
+    // Rate history next to the seed's sample rates: the ECB's real rate on a sample day, the
+    // fixture's rate on the fixture's own day, the fixture's rate an earlier seed stored under the
+    // ECB's label on one of its days, and a real ECB rate equal to the fixture's outside those days.
+    const [sampleDay] = fakeRates(NOW).map((rate) => rate.date)
+    const ecbRate = (rate: string, date: string) => ({
+      id: uuidV7(),
+      base: `EUR`,
+      quote: `USD`,
+      rate,
+      rate_date: date,
+      source: RATE_SOURCES.ecb,
+      fetched_at: NOW,
+    })
+    await sql`
+      INSERT INTO exchange_rates ${
+      sql([
+        ecbRate(`1.1000`, sampleDay),
+        ecbRate(`1.1172`, `2026-10-30`),
+        ecbRate(`1.1172`, `2026-11-02`),
+        ecbRate(`1.1172`, `2026-10-14`),
+      ])
+    }
+    `
 
     const wiped = await wipeDatabase(sql)
     const queued = await sql<{ objectKey: string }[]>`SELECT object_key FROM file_deletions`
@@ -727,10 +754,32 @@ Deno.test("the wipe empties every table but the kept ones, keeps the blog, its o
         (SELECT COUNT(*)::int FROM blog_share_results) AS results
     `
     expect(shared).toEqual({ channels: SAMPLE_CHANNELS.length, shares: 2, results: 1 })
+    const [{ calls }] = await sql<{ calls: number }[]>`
+      SELECT sum(calls)::int AS calls FROM rate_source_calls
+    `
+    expect(calls).toBe(3)
+    // The sample rates and the earlier seed's copy under the ECB's label are gone; the real
+    // rates stay, the one equal to a fixture value included.
+    const rateRows = () =>
+      sql<{ source: string; date: string; rate: string }[]>`
+        SELECT source, to_char(rate_date, 'YYYY-MM-DD') AS date, rate::text AS rate
+        FROM exchange_rates ORDER BY source, rate, rate_date
+      `
+    expect(await rateRows()).toEqual([
+      { source: RATE_SOURCES.ecb, date: sampleDay, rate: `1.1000` },
+      { source: RATE_SOURCES.ecb, date: `2026-10-14`, rate: `1.1172` },
+      { source: RATE_SOURCES.ecb, date: `2026-10-30`, rate: `1.1172` },
+    ])
 
+    // The next seed writes the sample rates fresh, next to the real ones.
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     const [{ after }] = await sql<{ after: number }[]>`SELECT min(id) AS after FROM users`
     expect(after).toBeGreaterThan(before)
+    const reseeded = await rateRows()
+    expect(reseeded.filter((row) => row.source === RATE_SOURCES.ecb)).toHaveLength(3)
+    expect(reseeded.filter((row) => row.source === RATE_SOURCES.demo)).toHaveLength(
+      fakeRates(NOW).length,
+    )
   })
 })
 
@@ -1206,24 +1255,25 @@ Deno.test("the development seed adds the operator's refund, blocks and a recent 
   })
 })
 
-Deno.test("a visitor's sample groups have notes by several people on different days", async () => {
+Deno.test("a visitor's sample groups have notes on different days, by several people in the ones it joined and by the partner in its own", async () => {
   await withSchema(async (sql) => {
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     const userId = await signUpVisitor(sql, "visitor@example.net")
     await drainJobs(sql)
 
-    const groups = await sql<{ authors: number; days: number }[]>`
-      SELECT
+    const groups = await sql<{ role: number; authors: number; days: number }[]>`
+      SELECT m.role,
         COUNT(DISTINCT e.actor_user_id)::int AS authors,
         (EXTRACT(EPOCH FROM max(e.created_at) - min(e.created_at)) / 86400)::float8 AS days
       FROM audit_events e JOIN group_members m ON m.group_id = e.group_id AND m.user_id = ${userId}
       JOIN groups g ON g.id = e.group_id
       WHERE g.name <> 'Personal' AND e.event_kind = 'note.created'
-      GROUP BY e.group_id
+      GROUP BY e.group_id, m.role
     `
     expect(groups.length).toBeGreaterThan(0)
     for (const group of groups) {
-      expect(group.authors).toBeGreaterThanOrEqual(2)
+      if (group.role === GroupRole.OWNER) expect(group.authors).toBe(1)
+      else expect(group.authors).toBeGreaterThanOrEqual(2)
       expect(group.days).toBeGreaterThan(1)
     }
   })
