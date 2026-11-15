@@ -539,6 +539,10 @@ for (const [via, open] of TRANSPORTS) {
           ...food,
           aliases: Array.from({ length: CATEGORY_ALIAS_MAX + 1 }, () => "x".repeat(64)),
         }),
+        await as.command("category.create", {
+          ...food,
+          aliases: Array.from({ length: CATEGORY_ALIAS_MAX + 1 }, (_, n) => `Shop ${n}`),
+        }),
         await as.command("category.create", { ...food, aliases: ["x".repeat(61)] }),
         await as.command("category.create", { ...food, aliases: ["a\u200bb"] }),
         await as.command("category.create", { ...food, aliases: "Lidl" }),
