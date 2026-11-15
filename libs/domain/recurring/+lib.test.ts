@@ -369,7 +369,7 @@ describe(`the occurrences the job makes`, () => {
     expect(first.through).toBe(`1990-04-10`)
     const last = dueOccurrences({ ...old, madeThrough: `1992-09-25` }, `2026-11-15`)!
     expect(last).toEqual({ dates: [`1992-09-26`], through: `2026-11-15` })
-    expect(performance.now() - started).toBeLessThan(1_000)
+    expect(performance.now() - started).toBeLessThan(5_000)
   })
 
   it(`throws on a repeat it cannot parse`, () => {

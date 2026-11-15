@@ -69,7 +69,13 @@ The worker writes the first run when it starts (`startRepeatingJobs`), once per 
 its next matching minute. After each run, whether it succeeded or was given up, it writes the next
 one. So a repeating job has one waiting row at a time. The nightly cleanup (`outbox.cleanup`) runs
 at `0 3 * * *`, and the blog's sharing results read (`blog.share-results`, [blog.md](blog.md#sharing-results))
-at `17 * * * *`.
+at `17 * * * *`. The repeating entries (`recurring.make-entries`, `libs/server/jobs/recurring-entries.ts`)
+run every hour: each run makes the entries of repeating rules whose day has begun in their
+household's time zone, at most 100 per rule, as the rule's author. A unique key on the rule and the
+date makes a rerun write nothing twice. A rule whose author can no longer write, or whose account
+or category is archived, is paused with its reason, and a read-only or full household writes
+nothing that run; the missed dates are made once the cause is gone. A rule stopped by a missing
+rate is logged and tried again the next hour; only an error the job does not expect fails the run.
 
 ## Failures
 
