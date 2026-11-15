@@ -36,6 +36,7 @@ them to it: `apps/admin/src/modules/registry.test.ts` and `apps/api/routes/admin
 | `audit`         | `/audit`                                                    | `/audit*`              |
 | `jobs`          | `/jobs`, `/jobs/:id`                                        | `/jobs*`               |
 | `rates`         | `/rates`                                                    | `GET /rates`           |
+| `imports`       | `/imports`                                                  | `GET /imports`         |
 | `system`        | `/system`                                                   | `/system*`             |
 | `api-tokens`    | `/api-tokens`                                               | `/api-tokens*`         |
 
