@@ -220,11 +220,11 @@ export default {
   "FeatureAccounts.nav": "Accounts",
   "FeatureAccounts.title": "Every account in its own currency",
   "FeatureAccounts.lead":
-    "Cash, bank accounts, cards, savings, assets and debts, each in its own currency, grouped by kind, with one default. Everyone in the household sees a change at once.",
+    "Cash, bank accounts, cards, savings, crypto, assets and debts, each in its own currency or coin, grouped by kind, with one default. Everyone in the household sees a change at once.",
   "FeatureAccounts.fact1":
     "The server works each balance out when it is read and never stores it, so it cannot drift",
   "FeatureAccounts.fact2":
-    "Amounts are whole numbers in the currency's smallest unit: a yen has none, a dinar has three",
+    "Amounts are whole numbers in the currency's smallest unit: a yen has none, a dinar has three, a bitcoin eight",
   "FeatureAccounts.fact3":
     "A viewer reads the accounts; only an editor or above changes them, checked on the server",
   "FeatureAccounts.code": "Read the accounts domain",
@@ -583,9 +583,9 @@ export default {
   "HomeFaq.useQuestion": "Can I use Financy today?",
   "HomeFaq.useAnswer":
     "Not yet. Sign-in, households, sync and accounts in any currency work; transactions are being built now.",
-  "HomeFaq.currencyQuestion": "Which currencies will it handle?",
+  "HomeFaq.currencyQuestion": "Which currencies does it handle?",
   "HomeFaq.currencyAnswer":
-    "Financy will handle any mix of currencies, crypto included. Each transaction keeps its original amount next to the converted one, and totals show in the household's main currency. For a currency the ECB doesn't cover, such as crypto, you enter the rate on the transaction. Being built now.",
+    "Any mix of currencies, plus Bitcoin and Ethereum held in a crypto account. Each transaction keeps its original amount next to the converted one, and totals show in the household's main currency. Coins arrive with a transfer from another account that keeps both amounts, what was paid and what came in, and totals value them at today's CoinGecko price, with its date.",
   "HomeFaq.ratesQuestion": "Where do the exchange rates come from?",
   "HomeFaq.ratesAnswer":
     "From the European Central Bank, fetched each working day through Frankfurter, a free public service. Every converted total shows the date of the rates it used. A currency with no rate is named and left out of the total, never counted as 1. Being built now.",

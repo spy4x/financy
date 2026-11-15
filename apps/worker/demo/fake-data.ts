@@ -108,12 +108,14 @@ export interface FakeAccount {
 
 /**
  * The accounts every demo household starts with, in three currencies with different smallest
- * units: euro and dollar cents, and whole dong, which has none.
+ * units (euro and dollar cents, and whole dong, which has none) and a bitcoin wallet in satoshi,
+ * 100,000,000 to the coin, funded by a purchase from euros ({@link withTransfers}).
  */
 export const DEMO_ACCOUNTS: readonly Omit<FakeAccount, "author" | "createdAgo">[] = [
   { name: `Everyday account`, kind: AccountKind.BANK, currency: `EUR`, startingBalance: 248_350 },
   { name: `Travel card`, kind: AccountKind.CARD, currency: `USD`, startingBalance: 52_000 },
   { name: `Cash in Hanoi`, kind: AccountKind.CASH, currency: `VND`, startingBalance: 1_500_000 },
+  { name: `Bitcoin wallet`, kind: AccountKind.CRYPTO, currency: `BTC`, startingBalance: 0 },
 ]
 
 /** One category of a demo household, with its children; `archived` ones show under "Show archived". */
@@ -1159,6 +1161,9 @@ function authorPicker(group: FakeGroup) {
   }
 }
 
+/** The demo's coin purchase: 0.01 BTC in satoshi for 600.00 euros in cents, two weeks ago. */
+export const BTC_PURCHASE = { euros: 600_00, satoshi: 1_000_000, ago: 14 * DAY } as const
+
 /** Transfers draw from a stream of their own, so adding them moved no other fake row. */
 const TRANSFER_SEED_OFFSET = 444
 
@@ -1169,7 +1174,9 @@ const TRANSFER_SEED_OFFSET = 444
  * crosses currencies. The top-up lands after the month's euro income and the withdrawals after
  * the top-up, and both fit the balances {@link ENTRY_PLANS} leaves, so no balance drops below
  * zero. Authors and dropped rows as in {@link withEntries}: a transfer older than either of its
- * accounts is dropped, and every draw happens either way.
+ * accounts is dropped, and every draw happens either way. A household whose euro account had the
+ * latest month's income also buys 0.01 BTC for 600 euros two weeks ago with no draw, so the rows
+ * above stay as they were; that month's euro spending, the purchase included, fits its income.
  */
 function withTransfers(tools: Tools, group: FakeGroup): FakeGroup {
   const authorAt = authorPicker(group)
@@ -1203,6 +1210,9 @@ function withTransfers(tools: Tools, group: FakeGroup): FakeGroup {
       const cents = Math.ceil(dong * 100 / dongPerDollar)
       add(1, 2, cents, dong, `ATM withdrawal`, ago, tools.random())
     }
+  }
+  if (group.accounts[0].createdAgo > ENTRY_MONTH) {
+    add(0, 3, BTC_PURCHASE.euros, BTC_PURCHASE.satoshi, `Bitcoin purchase`, BTC_PURCHASE.ago, 0)
   }
   return { ...group, transfers: transfers.sort((a, b) => b.ago - a.ago) }
 }

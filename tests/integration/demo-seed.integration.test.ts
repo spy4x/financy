@@ -403,6 +403,7 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
     expect(amounts.map((row) => row.amounts).sort()).toEqual(expectedAmounts.sort())
     expect(Object.keys(expectedTransfers).some((key) => key.endsWith(`EUR>USD`))).toBe(true)
     expect(Object.keys(expectedTransfers).some((key) => key.endsWith(`USD>VND`))).toBe(true)
+    expect(Object.keys(expectedTransfers).some((key) => key.endsWith(`EUR>BTC`))).toBe(true)
     // No transfer is dated after its household's today or written before either account, and each
     // was written on its date's day in the household's zone.
     const [{ strays }] = await sql<{ strays: number }[]>`
@@ -520,7 +521,7 @@ Deno.test("a visitor who signs up to the demo gets sample groups once and opens 
           : group.members.find((m) => m.member === "you")!.role,
         notes: group.notes.length,
         tags: group.tags.length,
-        currencies: ["EUR", "USD", "VND"],
+        currencies: ["BTC", "EUR", "USD", "VND"],
       })),
     ])
     expect(workspace.selected).toBe(owned.name)
