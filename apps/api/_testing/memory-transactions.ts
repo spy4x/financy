@@ -68,6 +68,14 @@ export class MemoryTransactionRepository implements TransactionRepository {
     )
   }
 
+  firstDate(groupId: string): Promise<string | null> {
+    const dates = [...this.transactions.values()]
+      .filter((entry) => entry.groupId === groupId && entry.deletedAt === null)
+      .map((entry) => entry.date)
+      .sort()
+    return Promise.resolve(dates[0] ?? null)
+  }
+
   timeZoneOf(groupId: string): Promise<string | null> {
     return Promise.resolve(this.references.timeZones.get(groupId) ?? "UTC")
   }

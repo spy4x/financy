@@ -126,6 +126,7 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
     get: (query) => queryBus.execute(query),
     listDeleted: (query) => queryBus.execute(query),
     ledger: (query) => queryBus.execute(query),
+    widget: (query) => queryBus.execute(query),
   }),
   ...createTransferOperations({
     create: (command) => commandBus.execute(command),

@@ -1,6 +1,9 @@
 import {
   type Ledger,
+  MONEY_WIDGET_OPERATION,
+  type MoneyWidgetResult,
   parseTransactionRequest,
+  parseTransactionWidgetRequest,
   type Transaction,
   TransactionCreateCommand,
   transactionCreatePayloadSchema,
@@ -16,6 +19,7 @@ import {
   transactionRestorePayloadSchema,
   TransactionUpdateCommand,
   transactionUpdatePayloadSchema,
+  TransactionWidgetQuery,
   type TransactionWriteResult,
 } from "@domain/transactions"
 import type { Actor } from "@domain/identity"
@@ -30,6 +34,8 @@ export interface TransactionOperationDependencies {
   get(query: TransactionGetQuery): Promise<{ transaction: Transaction }>
   listDeleted(query: TransactionListDeletedQuery): Promise<{ transactions: Transaction[] }>
   ledger(query: TransactionLedgerQuery): Promise<{ ledger: Ledger }>
+  /** The money widgets' query, which the overview asks once per widget. */
+  widget(query: TransactionWidgetQuery): Promise<MoneyWidgetResult>
 }
 
 /**
@@ -97,6 +103,13 @@ export function createTransactionOperations(
         const input = parseTransactionRequest(transactionLedgerPayloadSchema, payload)
         return await dependencies.ledger(new TransactionLedgerQuery({ actor, ...input }))
       },
+    },
+    [MONEY_WIDGET_OPERATION]: {
+      kind: "query",
+      handle: async ({ actor, payload }) =>
+        await dependencies.widget(
+          new TransactionWidgetQuery({ actor, ...parseTransactionWidgetRequest(payload) }),
+        ),
     },
   }
 }

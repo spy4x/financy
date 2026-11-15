@@ -431,6 +431,9 @@ describe("the ledger summary", () => {
         { categoryId: groceries, spending: 4000 },
       ],
       leftOut: [],
+      incomeLeftOut: [],
+      spendingLeftOut: [],
+      rateDate: null,
       tooLarge: false,
     })
   })
@@ -488,6 +491,55 @@ describe("the ledger summary", () => {
 
     expect(ledger.spending).toBe(1000)
     expect(ledger.leftOut).toEqual(["THB"])
+  })
+
+  it("names a rateless currency under the side it affects: income, or spending with refunds", async () => {
+    const ledger = await summarizeLedger(
+      [
+        { categoryId: salary, currency: "THB", date: "2026-11-02", amount: 50000 },
+        { categoryId: rent, currency: "VND", date: "2026-11-02", amount: -50000 },
+        { categoryId: groceries, currency: "USD", date: "2026-11-03", amount: 700 },
+      ],
+      categories,
+      period,
+      lookupFrom({}),
+    )
+
+    expect(ledger.incomeLeftOut).toEqual(["THB"])
+    expect(ledger.spendingLeftOut).toEqual(["USD", "VND"])
+    expect(ledger.leftOut).toEqual(["THB", "USD", "VND"])
+  })
+
+  it("names the newest rate date the sums used, and none when nothing was converted (R6)", async () => {
+    const lookup: EntryRateLookup = (base, quote, date) =>
+      // The rate of the 5th is the newest one there is: a later entry is converted at it.
+      Promise.resolve(rate(base, quote, "0.9", date > "2026-11-05" ? "2026-11-05" : date))
+    const converted = await summarizeLedger(
+      [
+        { categoryId: rent, currency: "USD", date: "2026-11-03", amount: -1000 },
+        { categoryId: rent, currency: "USD", date: "2026-11-09", amount: -1000 },
+        { categoryId: salary, currency: "USD", date: "2026-11-04", amount: 1000 },
+      ],
+      categories,
+      period,
+      lookup,
+    )
+    const plain = await summarizeLedger(
+      [{ categoryId: rent, currency: "EUR", date: "2026-11-09", amount: -1000 }],
+      categories,
+      period,
+      lookup,
+    )
+    const rateless = await summarizeLedger(
+      [{ categoryId: rent, currency: "THB", date: "2026-11-09", amount: -1000 }],
+      categories,
+      period,
+      lookupFrom({}),
+    )
+
+    expect(converted.rateDate).toBe("2026-11-05")
+    expect(plain.rateDate).toBeNull()
+    expect(rateless.rateDate).toBeNull()
   })
 
   it("converts a coin row by its 8 decimals, and names a coin with no price", async () => {
