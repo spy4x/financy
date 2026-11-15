@@ -292,14 +292,23 @@ type Checked =
 
 /**
  * Locks the household and reads the author's role in it, then locks the rule row, in the order
- * every rule write takes them. A rule deleted, changed or moved since the run read it is `stale`.
+ * every rule write takes them. An author an admin blocked writes nothing, like one with no role:
+ * their row is read under a share lock, so a block that commits first is seen, and one that comes
+ * later waits for this write. A rule deleted, changed or moved since the run read it is `stale`.
  * A cause to pause ({@link pauseReasonOf}) stores the reason, pushing the change only when it is
  * new, and answers `paused`.
  */
 async function checkRule(tx: postgres.TransactionSql, rule: DueRule): Promise<Checked> {
-  const role = rule.createdByUserId === null
+  const author = rule.createdByUserId
+  let role = author === null
     ? await lockGroup(tx, rule.groupId)
-    : await lockActorRole(tx, rule.groupId, rule.createdByUserId)
+    : await lockActorRole(tx, rule.groupId, author)
+  if (role !== null) {
+    const [user] = await tx<{ blocked: boolean }[]>`
+      SELECT blocked_at IS NOT NULL AS blocked FROM users WHERE id = ${author} FOR SHARE
+    `
+    if (user?.blocked !== false) role = null
+  }
   const current = (
     await tx<{ version: number; madeThrough: string | null; pausedReason: number | null }[]>`
       SELECT version, to_char(made_through, 'YYYY-MM-DD') AS made_through, paused_reason

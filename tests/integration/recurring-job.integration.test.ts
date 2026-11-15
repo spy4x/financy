@@ -554,6 +554,26 @@ Deno.test(`the repeating entries job against Postgres`, async (t) => {
       }
     })
 
+    await step(
+      `pauses the rule of a blocked author, and makes it once they are unblocked`,
+      async () => {
+        const h = await household()
+        const rule = await h.rule()
+        await sql`UPDATE users SET blocked_at = CURRENT_TIMESTAMP WHERE id = ${h.editor}`
+
+        await run(`2027-01-01T12:00:00Z`)
+
+        expect(await datesOf(rule.id)).toEqual([])
+        expect((await state(rule.id)).pausedReason).toBe(RecurringPauseReason.AUTHOR_CANNOT_WRITE)
+
+        await sql`UPDATE users SET blocked_at = NULL WHERE id = ${h.editor}`
+        await run(`2027-01-01T13:00:00Z`)
+
+        expect(await datesOf(rule.id)).toEqual([`2027-01-01`])
+        expect((await state(rule.id)).pausedReason).toBeNull()
+      },
+    )
+
     for (const change of [`removal`, `demotion`] as const) {
       await step(
         `writes nothing when the author's ${change} commits while the job waits`,
