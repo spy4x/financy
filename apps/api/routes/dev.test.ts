@@ -59,12 +59,13 @@ Deno.test("the coin price route stores a listed coin's euro price for its day", 
   expect(statements[0].slice(0, 3)).toEqual([`BTC`, `60000`, `2026-11-15`])
 })
 
-Deno.test("the coin price route refuses a coin not listed, a price not a decimal and a date the calendar lacks", async () => {
+Deno.test("the coin price route refuses a coin not listed, a price not a positive decimal and a date the calendar lacks", async () => {
   const { statements, post } = coinPriceRoute()
   for (
     const body of [
       { coin: `DOGE`, price: `1`, date: `2026-11-15` },
       { coin: `BTC`, price: `-1`, date: `2026-11-15` },
+      { coin: `BTC`, price: `0.00`, date: `2026-11-15` },
       { coin: `BTC`, price: `1`, date: `2026-02-30` },
     ]
   ) {

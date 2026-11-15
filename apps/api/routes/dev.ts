@@ -226,7 +226,8 @@ export function createDevRoute(deps: DevRouteDeps) {
 /** The body of `POST /coin-price`: a listed coin, its euro price as a decimal, and its day. */
 const coinPriceSchema = type({
   coin: coinCode,
-  price: /^\d{1,12}(\.\d{1,12})?$/,
+  // Positive only: `coin_prices` refuses zero, which would answer 500.
+  price: /^(?!0+(\.0+)?$)\d{1,12}(\.\d{1,12})?$/,
   date: calendarDate,
 })
 
