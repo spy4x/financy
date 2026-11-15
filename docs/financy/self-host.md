@@ -75,8 +75,8 @@ Use the first tag the second command prints in place of `v0.1.0`.
 3. Give every secret a value of its own, as the secrets table in
    [The env file](../deploy.md#the-env-file) says. The deploy refuses a secret left as in the
    example, and names it.
-4. Mail is required: Financy emails a code to everyone who signs up, signs in with a password or
-   resets one. Without the five `SMTP_*` values that code never arrives, so nobody can make an
+4. Mail is required: Financy emails a code to everyone who signs up, signs in by emailed code or
+   resets a password. Without the five `SMTP_*` values that code never arrives, so nobody can make an
    account.
 5. Keep a copy of `infra/envs/.env.prod` in your password manager. It holds the only copy of the
    secrets and the key of the file store, and no backup saves it.
