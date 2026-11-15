@@ -94,4 +94,129 @@ test.describe("search with no network", () => {
       await cleanup(request, user)
     }
   })
+
+  test("finds a transaction and an account on this device and sends nothing typed", async ({ browser, request }) => {
+    const user = "e2e_search_offline_records@example.com"
+    await cleanup(request, user)
+    const context = await browser.newContext({ baseURL: test.info().project.use.baseURL })
+    try {
+      await signUp(request, user)
+      const page = await context.newPage()
+      await signIn(page, user, password)
+      const { transactionId, accountId } = await householdOnDevice(page, "Пятёрочка")
+
+      await context.setOffline(true)
+      await page.reload()
+      await expect(page.locator("[data-e2e=shell-ws-status]")).not.toHaveText("Online")
+
+      // Every request the page starts while the person types, with its address and body.
+      const sent: string[] = []
+      page.on("request", (sentRequest) => {
+        sent.push(`${decodeURIComponent(sentRequest.url())} ${sentRequest.postData() ?? ""}`)
+      })
+      const palette = page.locator("[data-e2e=search]")
+      const field = palette.getByRole("combobox")
+      // Misspelled: "е" for "ё", and "а" for the second "о".
+      const query = "пятерачка"
+      await page.locator("[data-e2e=shell-search-rail] button").click()
+      await field.pressSequentially(query)
+      const row = palette.getByRole("group", { name: "Transactions", exact: true })
+        .getByRole("option").filter({ hasText: "Пятёрочка" })
+      await expect(row).toContainText("Wallet")
+      // Not even the first letters of it: each keystroke ran a search.
+      expect(sent.filter((line) => line.toLowerCase().includes(query.slice(0, 3)))).toEqual([])
+      await row.click()
+      await expect(page).toHaveURL(`/transactions/${transactionId}`)
+
+      sent.length = 0
+      await page.locator("[data-e2e=shell-search-rail] button").click()
+      await field.pressSequentially("walet")
+      await palette.getByRole("group", { name: "Accounts", exact: true })
+        .getByRole("option").filter({ hasText: "Wallet" }).click()
+      await expect(page).toHaveURL(`/accounts/${accountId}`)
+      expect(sent.filter((line) => line.toLowerCase().includes("wal"))).toEqual([])
+    } finally {
+      await context.close()
+      await cleanup(request, user)
+    }
+  })
 })
+
+/** Runs one operation as the page's signed-in person, the way the app's HTTP transport does. */
+async function call(page: Page, name: string, data: unknown) {
+  const me = await page.request.get(`${apiBase}/api/auth/me`)
+  expect(me.ok(), await me.text()).toBe(true)
+  const response = await page.request.post(`${apiBase}/api/call/${name}`, {
+    headers: {
+      ...headers,
+      "x-realtime-user": String((await me.json()).id),
+      "idempotency-key": uuidV7(),
+    },
+    data,
+  })
+  expect(response.ok(), `${name}: ${await response.text()}`).toBe(true)
+  return (await response.json()).result
+}
+
+/**
+ * Selects a new paid household with the account Wallet, the category Groceries and one expense
+ * with `memo`, opens its transactions so the device keeps them, its accounts and its categories,
+ * then leaves for the categories page, which reads no transactions: the palette must find the
+ * entry in the device's copy.
+ */
+async function householdOnDevice(page: Page, memo: string) {
+  const groupId = uuidV7()
+  const group = await page.request.post(`${apiBase}/api/groups`, {
+    headers,
+    data: { id: groupId, name: "Home money" },
+  })
+  expect(group.status(), await group.text()).toBe(201)
+  await payForGroup(page.request, apiBase, groupId)
+  const accountId = uuidV7()
+  await call(page, `account.create`, {
+    groupId,
+    id: accountId,
+    name: "Wallet",
+    kind: 1,
+    currency: "EUR",
+    startingBalance: 0,
+  })
+  const categoryId = uuidV7()
+  await call(page, `category.create`, {
+    groupId,
+    id: categoryId,
+    name: "Groceries",
+    kind: 1,
+    icon: "shopping-cart",
+    color: "#16a34a",
+    parentId: null,
+  })
+  const transactionId = uuidV7()
+  await call(page, `transaction.create`, {
+    groupId,
+    id: transactionId,
+    accountId,
+    categoryId,
+    kind: 1,
+    amount: 1234,
+    currency: "EUR",
+    memo,
+    date: new Date().toISOString().slice(0, 10),
+  })
+  const selected = await page.request.put(`${apiBase}/api/groups/selected`, {
+    headers,
+    data: { groupId },
+  })
+  expect(selected.ok(), await selected.text()).toBe(true)
+  const status = page.locator("[data-e2e=shell-ws-status]")
+  await gotoApp(page, "/transactions", status)
+  await expect(status).toHaveText("Online")
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready
+  })
+  // One more load under the worker's control, so everything the page needs is cached.
+  await gotoApp(page, page.url(), page.locator(`[data-e2e=transaction-${transactionId}]`))
+  await expect(page.locator(`[data-e2e=transaction-${transactionId}]`)).toContainText("Wallet")
+  await gotoApp(page, "/categories", status)
+  return { transactionId, accountId }
+}
