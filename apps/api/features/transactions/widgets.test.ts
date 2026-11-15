@@ -225,6 +225,16 @@ describe("the money widgets' read", () => {
 
     expect((await h.read()).current).toMatchObject({ spending: 1200, income: 0 })
   })
+
+  it("never lets another household's older entry open this household's previous period", async () => {
+    const h = household()
+    await h.add(eurAccount, "EUR", 800, "2026-10-18")
+    await h.add(otherAccount, "EUR", 99900, "2026-01-05", TransactionKind.EXPENSE, otherGroupId)
+
+    const result = await h.read({ from: "2026-11-01", to: "2026-11-15" })
+
+    expect(result.previous).toBeNull()
+  })
 })
 
 describe("the money widgets' operation", () => {
