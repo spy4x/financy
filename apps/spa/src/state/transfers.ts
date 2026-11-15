@@ -180,9 +180,9 @@ function sameFields(a: TransferFormValue, b: TransferFormValue): boolean {
 }
 
 /**
- * The transfers of one household: the list (offline-readable, ADR 003 level 2, from the device's
- * copy of the changes pull), the one editor the transfer pages open, and the Undo a delete
- * offers. Writes need the server; offline writes come with #248.
+ * The transfers of one household: the list (offline-writable, ADR 003 level 3, from the device's
+ * copy of the changes pull with the queued writes on top), the one editor the transfer pages open,
+ * and the Undo a delete offers.
  */
 export function createTransfersStore(
   dependencies: TransfersDependencies,
@@ -693,8 +693,10 @@ export const onlineTransfers: TransfersDependencies = {
   newId: () => uuidV7(),
 }
 
-/** The pages' own store: the device's copy in front of the server for reads. */
+const accountCurrency = (id: string) => accountsStore.byId.value.get(id)?.currency
+
+/** The pages' own store: the device's copy and the queue in front of the server. */
 export const transfersStore = createTransfersStore(
-  offlineTransfers(onlineTransfers, currentLayer),
-  { accountCurrency: (id) => accountsStore.byId.value.get(id)?.currency },
+  offlineTransfers(onlineTransfers, currentLayer, accountCurrency),
+  { accountCurrency },
 )

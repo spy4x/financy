@@ -31,7 +31,10 @@ import {
   goneReference,
   offlineTransactions as transactionsOverLayer,
 } from "./offline/transactions-collection.ts"
-import { offlineTransfers as transfersOverLayer } from "./offline/transfers-cache.ts"
+import {
+  goneAccount,
+  offlineTransfers as transfersOverLayer,
+} from "./offline/transfers-collection.ts"
 import { conflictsToReview, OfflineStatus as OfflineStatusLine } from "./offline/OfflineStatus.tsx"
 import { benchmarkLocalData as benchmarkOverLayer } from "./offline/benchmark.ts"
 import {
@@ -502,7 +505,7 @@ export async function watchUnsentChanges(): Promise<UnsentWait | null> {
   if (session !== opened || offlineLayer() !== running) return null
   if (!read) return await watchUnreadLayer(opened, running, ms)
   const queued = running.entries.value.length + running.tagEntries.value.length +
-    running.transactionEntries.value.length
+    running.transactionEntries.value.length + running.transferEntries.value.length
   if (queued === 0) return null
   const { userId } = running
   return watchLayerUnsent({
@@ -646,7 +649,7 @@ export const offlineTags: typeof tagsOverLayer = (online, current) =>
 /** The transactions store's server dependencies with the device copy and the queue in front. */
 export const offlineTransactions = transactionsOverLayer
 
-/** The transfers store's server dependencies with the device copy in front of its reads. */
+/** The transfers store's server dependencies with the device copy and the queue in front. */
 export const offlineTransfers = transfersOverLayer
 
 /** The offline status line and the conflict screen. */
@@ -670,6 +673,25 @@ export async function discardGoneEntry(id: string): Promise<void> {
   const layer = offlineLayer()
   const entry = layer?.transactionEntries.value.find((queued) => queued.entityId === id)
   if (layer && entry && goneReference(entry)) await layer.transactions.outbox.useTheirs(entry)
+}
+
+/**
+ * A household's queued transfers the server refused because one of their accounts was deleted, by
+ * transfer id. Read during a render, it follows the queue.
+ */
+export function goneTransfers(groupId: string): ReadonlySet<string> {
+  return new Set(
+    (activeLayer.value?.transferEntries.value ?? [])
+      .filter((entry) => entry.payload.groupId === groupId && goneAccount(entry))
+      .map((entry) => entry.entityId),
+  )
+}
+
+/** Drops a queued transfer from {@link goneTransfers} from the device, as the conflict's "Discard". */
+export async function discardGoneTransfer(id: string): Promise<void> {
+  const layer = offlineLayer()
+  const entry = layer?.transferEntries.value.find((queued) => queued.entityId === id)
+  if (layer && entry && goneAccount(entry)) await layer.transfers.outbox.useTheirs(entry)
 }
 
 /** The local data the benchmark page measures (`BenchmarkLocalData`). */
@@ -822,7 +844,7 @@ function belongsTo(name: string, userIds: readonly number[]): boolean {
 
 /** Whether the IndexedDB database `name` is one of the queues of unsent writes of `userId`. */
 function isQueueOf(name: string, userId: number): boolean {
-  return [`outbox`, `tags-outbox`, `transactions-outbox`]
+  return [`outbox`, `tags-outbox`, `transactions-outbox`, `transfers-outbox`]
     .some((queue) => name === `offline:user:${userId}:${queue}`)
 }
 

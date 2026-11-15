@@ -1,4 +1,4 @@
-import { Fragment, type JSX } from "preact"
+import { type ComponentChildren, Fragment, type JSX } from "preact"
 import { useFormat } from "@spy4x/preact-ui/format"
 import { Link } from "@spy4x/preact-ui/link"
 import { MoneyDisplay } from "@spy4x/preact-ui/money-display"
@@ -32,6 +32,11 @@ export function impliedRate(
   return new Intl.NumberFormat(locale, { maximumSignificantDigits: 6 }).format(rate)
 }
 
+/** A queued transfer across currencies that the server converts once it is sent. */
+function waitsForRate(row: TransferRow): boolean {
+  return row.queued === true && row.converted && row.fromCurrency !== row.toCurrency
+}
+
 /**
  * "Transfer of €200.00 from Card to Cash, Today": what a screen reader says for a transfer's row.
  * Across currencies it names what arrived too.
@@ -48,7 +53,8 @@ export function transferRowName(
     to: row.toAccountName,
     date: relativeDayLabel(row.date, today, locale),
   }
-  return row.fromCurrency === row.toCurrency
+  // A queued transfer the server converts later has no received amount to name yet.
+  return row.fromCurrency === row.toCurrency || waitsForRate(row)
     ? t.t(`TransferRow.name`, values)
     : t.t(`TransferRow.nameAcross`, {
       ...values,
@@ -75,21 +81,26 @@ export function TransferAccounts({ row }: { row: TransferRow }): JSX.Element {
  * added it. Its amount is neither income nor spending, so it is never green. With the list
  * filtered by one account, the amount is that account's side: money leaving it has a minus sign,
  * money arriving has none. Across currencies a muted line names the other side, with "≈" when the
- * server converted it.
+ * server converted it, or says it is converted later for a queued one. `children` go under the
+ * link, inside the row: a refused transfer's reason and actions, which `describedBy` names.
  */
 export function TransferListRow(
-  { row, today, accountId, navigate }: {
+  { row, today, accountId, navigate, describedBy, children }: {
     row: TransferRow
     today: string
     /** The account the list is filtered by, or `null`. */
     accountId: string | null
     navigate?: Navigate
+    describedBy?: string
+    children?: ComponentChildren
   },
 ): JSX.Element {
   const t = useAppText()
   const { locale } = useFormat()
   const meta = [row.memo, row.author].filter((part) => part)
-  const into = accountId !== null && accountId === row.toAccountId &&
+  const later = waitsForRate(row)
+  // With no received amount yet, the row shows the sent side even when filtered by the to account.
+  const into = !later && accountId !== null && accountId === row.toAccountId &&
     accountId !== row.fromAccountId
   const across = row.fromCurrency !== row.toCurrency
   const approx = row.converted ? `≈ ` : ``
@@ -99,6 +110,7 @@ export function TransferListRow(
         href={TRANSFER_PATHS.transfer(row.id)}
         navigate={navigate}
         aria-label={transferRowName(t, row, locale, today)}
+        aria-describedby={describedBy}
         class="flex min-h-14 items-start gap-3 px-4 py-3 hover:bg-hover focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus sm:px-6"
         data-e2e="transfer-row"
       >
@@ -132,7 +144,7 @@ export function TransferListRow(
           </span>
           {across && (
             <span class="text-sm text-muted" data-e2e="transfer-other-amount">
-              {into
+              {later ? t.t(`Transactions.convertLater`) : into
                 ? t.t(`TransferRow.sent`, {
                   amount: moneyText(row.sentAmount, row.fromCurrency, locale),
                 })
@@ -143,6 +155,7 @@ export function TransferListRow(
           )}
         </div>
       </Link>
+      {children}
     </li>
   )
 }

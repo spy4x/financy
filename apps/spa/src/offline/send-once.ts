@@ -13,6 +13,9 @@ import { TAGS_COLLECTION, tagsCollection } from "./tags-collection.ts"
 import { createMemoryTransactionsCache } from "./memory-transactions-cache.ts"
 import { transactionsQueueDatabase } from "./transactions-cache.ts"
 import { TRANSACTIONS_COLLECTION, transactionsCollection } from "./transactions-collection.ts"
+import { createMemoryTransfersCache } from "./memory-transfers-cache.ts"
+import { transfersQueueDatabase } from "./transfers-cache.ts"
+import { TRANSFERS_COLLECTION, transfersCollection } from "./transfers-collection.ts"
 
 /** The IndexedDB databases a device holds, by name, as far as the queue needs them. */
 export interface QueueDatabases {
@@ -60,16 +63,26 @@ export interface SendOnceOptions {
 }
 
 /** The queues a test passes instead of the IndexedDB ones. */
-type QueueStorage = Pick<OfflineStorage, "openQueue" | "openTagsQueue" | "openTransactionsQueue">
+type QueueStorage = Pick<
+  OfflineStorage,
+  "openQueue" | "openTagsQueue" | "openTransactionsQueue" | "openTransfersQueue"
+>
 
-/** Where a user's queue lies on the device, and which of its two databases exist. */
+/** Where a user's queue lies on the device, and which of its databases exist. */
 interface FoundQueue {
   notesName: string
   tagsName: string
   transactionsName: string
+  transfersName: string
   hasNotes: boolean
   hasTags: boolean
   hasTransactions: boolean
+  hasTransfers: boolean
+}
+
+/** Whether the device holds any of the user's queues. */
+function hasAny(found: FoundQueue): boolean {
+  return found.hasNotes || found.hasTags || found.hasTransactions || found.hasTransfers
 }
 
 /** Lists the device's databases; `undefined` where the browser cannot list them. */
@@ -80,15 +93,18 @@ async function findQueue(
   const notesName = `${databasePrefix(userId)}:outbox`
   const tagsName = tagsQueueDatabase(userId)
   const transactionsName = transactionsQueueDatabase(userId)
+  const transfersName = transfersQueueDatabase(userId)
   const names = await databases.list()
   if (!names) return undefined
   return {
     notesName,
     tagsName,
     transactionsName,
+    transfersName,
     hasNotes: names.includes(notesName),
     hasTags: names.includes(tagsName),
     hasTransactions: names.includes(transactionsName),
+    hasTransfers: names.includes(transfersName),
   }
 }
 
@@ -97,7 +113,7 @@ function openQueue(
   userId: number,
   transport: OfflineTransport,
   storage: QueueStorage,
-  { hasNotes, hasTags, hasTransactions }: FoundQueue,
+  { hasNotes, hasTags, hasTransactions, hasTransfers }: FoundQueue,
 ) {
   // The absent queue stays in memory, so no database is created for it.
   const tagsStore: OutboxStore<TagPayload, TagItem> | undefined = hasTags
@@ -121,8 +137,13 @@ function openQueue(
     cache: createMemoryTransactionsCache(),
     store: hasTransactions ? storage.openTransactionsQueue?.(userId) : createMemoryOutboxStore(),
   })
+  const transfersDefinition = transfersCollection({
+    userId,
+    cache: createMemoryTransfersCache(),
+    store: hasTransfers ? storage.openTransfersQueue?.(userId) : createMemoryOutboxStore(),
+  })
   const collections = createCollections({
-    collections: [tagsDefinition, notesDefinition, transactionsDefinition],
+    collections: [tagsDefinition, notesDefinition, transactionsDefinition, transfersDefinition],
     calls: transport.calls,
     canSend: () => transport.canSend(),
     lock: withBrowserLock(userId),
@@ -132,6 +153,7 @@ function openQueue(
     tags: collections.get(tagsDefinition),
     notes: collections.get(notesDefinition),
     transactions: collections.get(transactionsDefinition),
+    transfers: collections.get(transfersDefinition),
   }
 }
 
@@ -148,7 +170,7 @@ export async function countQueueOnce(
   { userId, storage = {}, databases = browserDatabases }: CountOnceOptions,
 ): Promise<number> {
   const found = await findQueue(userId, databases)
-  if (!found || (!found.hasNotes && !found.hasTags && !found.hasTransactions)) return 0
+  if (!found || !hasAny(found)) return 0
   // Read without the queue's lock: counting changes nothing, and a layer whose own read of the
   // queue stalls holds the lock.
   const notes = found.hasNotes
@@ -161,12 +183,16 @@ export async function countQueueOnce(
     ? storage.openTransactionsQueue?.(userId) ??
       createIndexedDbOutboxStore({ name: found.transactionsName })
     : undefined
-  const [noteEntries, tagEntries, transactionEntries] = await Promise.all([
-    notes?.readOutbox() ?? [],
-    tags?.readOutbox() ?? [],
-    transactions?.readOutbox() ?? [],
-  ])
-  return noteEntries.length + tagEntries.length + transactionEntries.length
+  const transfers = found.hasTransfers
+    ? storage.openTransfersQueue?.(userId) ??
+      createIndexedDbOutboxStore({ name: found.transfersName })
+    : undefined
+  const counts = await Promise.all(
+    [notes, tags, transactions, transfers].map(async (queue) =>
+      (await queue?.readOutbox() ?? []).length
+    ),
+  )
+  return counts.reduce((sum, count) => sum + count, 0)
 }
 
 /**
@@ -184,11 +210,15 @@ export async function sendQueueOnce(
   const found = await findQueue(userId, databases)
   // A browser that cannot list its databases cannot tell without creating one; it keeps the queue.
   if (!found) return { done: false, refused: [] }
-  const { notesName, tagsName, transactionsName, hasNotes, hasTags, hasTransactions } = found
-  if (!hasNotes && !hasTags && !hasTransactions) return { done: true, refused: [] }
+  if (!hasAny(found)) return { done: true, refused: [] }
   if (!transport.canSend()) return { done: false, refused: [] }
 
-  const { collections, tags, notes, transactions } = openQueue(userId, transport, storage, found)
+  const { collections, tags, notes, transactions, transfers } = openQueue(
+    userId,
+    transport,
+    storage,
+    found,
+  )
   await collections.reload()
   try {
     await collections.flush()
@@ -203,12 +233,14 @@ export async function sendQueueOnce(
   const tagEntries = tags.outbox.entries()
   const noteEntries = notes.outbox.entries()
   const transactionEntries = transactions.outbox.entries()
+  const transferEntries = transfers.outbox.entries()
   const isRefused = (collection: string) => (entry: { status: string; entityId: string }) =>
     entry.status === "conflict" || held.has(`${collection}:${entry.entityId}`)
   const waiting = [
     ...tagEntries.filter((entry) => !isRefused(TAGS_COLLECTION)(entry)),
     ...noteEntries.filter((entry) => !isRefused("notes")(entry)),
     ...transactionEntries.filter((entry) => !isRefused(TRANSACTIONS_COLLECTION)(entry)),
+    ...transferEntries.filter((entry) => !isRefused(TRANSFERS_COLLECTION)(entry)),
   ]
   if (waiting.length > 0) return { done: false, refused: [] }
 
@@ -218,11 +250,19 @@ export async function sendQueueOnce(
     ...transactionEntries.map((entry) =>
       [entry.payload.date, entry.payload.memo].filter(Boolean).join(" ") || "Transaction"
     ),
+    ...transferEntries.map((entry) =>
+      [entry.payload.date, entry.payload.memo].filter(Boolean).join(" ") || "Transfer"
+    ),
   ]
   // The databases this device had are deleted; an open connection closes on the deletion's
   // version change.
   for (
-    const name of [hasTags && tagsName, hasNotes && notesName, hasTransactions && transactionsName]
+    const name of [
+      found.hasTags && found.tagsName,
+      found.hasNotes && found.notesName,
+      found.hasTransactions && found.transactionsName,
+      found.hasTransfers && found.transfersName,
+    ]
   ) {
     if (name) await databases.delete(name)
   }

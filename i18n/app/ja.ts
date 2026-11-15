@@ -2339,6 +2339,15 @@ export default {
   "TransactionSync.gone": "オフラインの間に、この取引は削除されました。",
   "TransactionSync.rejected": "サーバーがこの取引を受け付けませんでした。",
   "TransactionSync.version": "オフラインの間に、この取引は他の人によって変更されました。",
+  "OfflineStatus.deletedTransfer": "削除された振替",
+  "OfflineStatus.transfer": "振替 {line}",
+  "OfflineStatus.transferGone": "この振替はもうこの世帯にありません。",
+  "OfflineStatus.youDeletedTransfer": "この振替はあなたが削除しました。",
+  "TransferSync.accountGone":
+    "オフラインの間に、この振替の口座のひとつが削除されました。別の口座を選ぶか、この振替を破棄してください。",
+  "TransferSync.gone": "オフラインの間に、この振替は削除されました。",
+  "TransferSync.rejected": "サーバーがこの振替を受け付けませんでした。",
+  "TransferSync.version": "オフラインの間に、この振替は他の人によって変更されました。",
   "Transactions.title": "取引",
   "Transactions.add": "取引を追加",
   "Transactions.readOnly": "取引は見られますが、変更できるのは編集者だけです。",
@@ -2494,7 +2503,8 @@ export default {
   "TransferEditor.notFoundHint": "削除されたか、別の世帯のものかもしれません。",
   "TransferEditor.readOnly": "この振替は見られますが、変更できるのは編集者だけです。",
   "TransferEditor.readOnlyNew": "{household}に振替を追加できるのは編集者だけです。",
-  "TransferEditor.offline": "振替は見られます。追加や変更をするには、オンラインに戻ってください。",
+  "TransferEditor.offline":
+    "振替の追加や変更は引き続きできます。この端末に保存され、オンラインに戻ったときに送信されます。",
   "TransferEditor.needAccounts": "振替には口座が2つ必要です",
   "TransferEditor.needAccountsHint":
     "現金や貯蓄など、2つ目の口座を追加すると、口座の間でお金を移せます。",

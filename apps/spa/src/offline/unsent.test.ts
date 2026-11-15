@@ -9,6 +9,8 @@ import type { TagEntry } from "./tags-cache.ts"
 import type { TransactionEntry } from "./transactions-cache.ts"
 import { TransactionKind } from "@domain/transactions"
 import { REFERENCE_GONE } from "./transactions-collection.ts"
+import type { TransferEntry } from "./transfers-cache.ts"
+import { TRANSFER_ACCOUNT_GONE } from "./transfers-collection.ts"
 import { countUnsent, watchUnsent } from "./unsent.ts"
 
 function noteEntry(entityId: string, status: "pending" | "conflict", groupId = "g-1"): NoteEntry {
@@ -76,6 +78,42 @@ function goneEntry(entityId: string, groupId: string): TransactionEntry {
   }
 }
 
+function transferEntry(
+  entityId: string,
+  status: "pending" | "conflict",
+  groupId = "g-1",
+): TransferEntry {
+  return {
+    seq: 1,
+    key: `key-${entityId}`,
+    entityId,
+    kind: "create",
+    payload: {
+      groupId,
+      fromAccountId: "a-1",
+      toAccountId: "a-2",
+      sentAmount: 2000,
+      receivedAmount: null,
+      memo: "",
+      date: "2026-11-12",
+      fromCurrency: "EUR",
+      toCurrency: "EUR",
+    },
+    baseVersion: 0,
+    attempted: false,
+    status,
+    queuedAt: "2026-11-12T08:00:00.000Z",
+  }
+}
+
+/** A transfer the server refused because one of its accounts was deleted. */
+function goneTransfer(entityId: string, groupId: string): TransferEntry {
+  return {
+    ...transferEntry(entityId, "conflict", groupId),
+    conflict: { reason: "rejected", message: TRANSFER_ACCOUNT_GONE, server: null },
+  }
+}
+
 const idle: SyncRunnerState = { running: false, lastError: null, failures: 0, nextRetryAt: null }
 
 /** A layer with these queues, whose runner records kicks and reports what the test sets. */
@@ -84,6 +122,7 @@ function layerWith(
   tags: TagEntry[] = [],
   waiting: WaitingEntry[] = [],
   transactions: TransactionEntry[] = [],
+  transfers: TransferEntry[] = [],
 ) {
   const entries = signal<readonly NoteEntry[]>(notes)
   const tagEntries = signal<readonly TagEntry[]>(tags)
@@ -94,6 +133,7 @@ function layerWith(
     entries,
     tagEntries,
     transactionEntries: signal<readonly TransactionEntry[]>(transactions),
+    transferEntries: signal<readonly TransferEntry[]>(transfers),
     collections: { waiting: () => waiting },
     runner: {
       getState: () => state,
@@ -192,6 +232,31 @@ describe("countUnsent", () => {
     ])
 
     expect(countUnsent(layer)).toMatchObject({ reviewGroupId: "g-2", reviewAt: "strip" })
+  })
+
+  it("counts queued transfer writes, and a refused one as needing a choice on the strip", () => {
+    const { layer } = layerWith([], [], [], [], [
+      transferEntry("x-1", "pending"),
+      transferEntry("x-2", "conflict", "g-7"),
+    ])
+
+    expect(countUnsent(layer)).toEqual({
+      unsent: 2,
+      conflicts: 1,
+      reviewGroupId: "g-7",
+      reviewAt: "strip",
+    })
+  })
+
+  it("sends the review to the transactions list when only a transfer with a deleted account waits", () => {
+    const { layer } = layerWith([], [], [], [], [goneTransfer("x-1", "g-8")])
+
+    expect(countUnsent(layer)).toEqual({
+      unsent: 1,
+      conflicts: 1,
+      reviewGroupId: "g-8",
+      reviewAt: "transactions",
+    })
   })
 
   it("sends the review to the strip of an entry refused for another reason", () => {

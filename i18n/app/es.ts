@@ -2631,6 +2631,15 @@ export default {
   "TransactionSync.gone": "Este movimiento se eliminó mientras estabas sin conexión.",
   "TransactionSync.rejected": "El servidor no aceptó este movimiento.",
   "TransactionSync.version": "Alguien cambió este movimiento mientras estabas sin conexión.",
+  "OfflineStatus.deletedTransfer": "Transferencia eliminada",
+  "OfflineStatus.transfer": "Transferencia {line}",
+  "OfflineStatus.transferGone": "La transferencia ya no está en este hogar.",
+  "OfflineStatus.youDeletedTransfer": "Eliminaste esta transferencia.",
+  "TransferSync.accountGone":
+    "Una de las cuentas de esta transferencia se eliminó mientras estabas sin conexión. Elige otra cuenta o descarta la transferencia.",
+  "TransferSync.gone": "Esta transferencia se eliminó mientras estabas sin conexión.",
+  "TransferSync.rejected": "El servidor no aceptó esta transferencia.",
+  "TransferSync.version": "Alguien cambió esta transferencia mientras estabas sin conexión.",
   "Transactions.title": "Movimientos",
   "Transactions.add": "Añadir movimiento",
   "Transactions.readOnly": "Puedes ver los movimientos, pero solo los editores pueden cambiarlos.",
@@ -2794,7 +2803,7 @@ export default {
     "Puedes ver esta transferencia, pero solo los editores pueden cambiarla.",
   "TransferEditor.readOnlyNew": "Solo los editores pueden añadir transferencias a {household}.",
   "TransferEditor.offline":
-    "Puedes ver las transferencias. Para añadir o cambiar una, vuelve a conectarte.",
+    "Puedes seguir añadiendo y cambiando transferencias. Se guardan en este dispositivo y se envían cuando vuelvas a tener conexión.",
   "TransferEditor.needAccounts": "Una transferencia necesita dos cuentas",
   "TransferEditor.needAccountsHint":
     "Añade una segunda cuenta, como efectivo o ahorros, para mover dinero entre ellas.",

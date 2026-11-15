@@ -87,6 +87,14 @@ saving sends it with the new choice and clears the conflict. **Discard** asks fi
 from the device, since it never reached the server and nothing brings it back. The sync line
 leaves such an entry out, since the list handles it; it still shows an entry's other conflicts.
 
+**Transfers** (`offline/transfers-collection.ts`) work the same way. A transfer whose account was
+deleted before it reached the server (`ACCOUNT_NOT_FOUND`) stays in the transactions list with
+**Pick another account**, which opens the transfer's editor, where the deleted account's field is
+empty, and **Discard**. A transfer changed or deleted on the server, or refused for another reason
+(the same account on both sides, a household that is gone), shows on the sync line with the
+transfers' own words. A queued transfer across currencies with no received amount typed shows
+"Converted when back online" until the server converts it at the rate of its date.
+
 A write made online that the server refuses is not queued. The notes screen shows "Someone changed
 this note since you opened it." with "Load the latest version".
 

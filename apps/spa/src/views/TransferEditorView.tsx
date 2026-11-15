@@ -30,8 +30,8 @@ const accountCurrency = (id: string) => accountsStore.byId.value.get(id)?.curren
 /**
  * Wires the transfer editor to the stores: `/transfers/new` (no `transferId`) adds one, from the
  * default account; `/transfers/:transferId` edits one. A save or a delete goes back to the
- * transactions list and says so in a toast with Undo. Writes need the network: offline, the page
- * shows the transfer and keeps Save off. Leaving with unsaved changes asks first.
+ * transactions list and says so in a toast with Undo. Offline, a write waits in the queue and the
+ * page says so. Leaving with unsaved changes asks first.
  */
 export function TransferEditorView({ transferId = null }: { transferId?: string | null }) {
   const [, navigate] = useLocation()

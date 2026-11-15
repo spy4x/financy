@@ -11,6 +11,8 @@ import type { NotePayload, NotesCache } from "./notes-cache.ts"
 import type { TagPayload, TagsCache } from "./tags-cache.ts"
 import type { TransactionItem } from "../state/transactions.ts"
 import type { TransactionPayload, TransactionsCache } from "./transactions-cache.ts"
+import type { TransferItem } from "../state/transfers.ts"
+import type { TransferPayload, TransfersCache } from "./transfers-cache.ts"
 
 /** What one user has on a device in memory. */
 export interface MemoryDevice {
@@ -27,6 +29,9 @@ export interface MemoryDevice {
   /** The copy's entries, as the layer reads them. */
   transactions: TransactionsCache
   transactionsQueue: OutboxStore<TransactionPayload, TransactionItem>
+  /** The copy's transfers, as the layer reads them. */
+  transfers: TransfersCache
+  transfersQueue: OutboxStore<TransferPayload, TransferItem>
 }
 
 /**
@@ -57,6 +62,8 @@ export function createMemoryStorage(): OfflineStorage & {
         tagsQueue: createMemoryOutboxStore<TagPayload, TagItem>(),
         transactions: views.transactions,
         transactionsQueue: createMemoryOutboxStore<TransactionPayload, TransactionItem>(),
+        transfers: views.transfers,
+        transfersQueue: createMemoryOutboxStore<TransferPayload, TransferItem>(),
       }
       devices.set(userId, device)
     }
@@ -76,6 +83,7 @@ export function createMemoryStorage(): OfflineStorage & {
         `offline:user:${userId}:transactions-outbox`,
         () => emptyQueue(device.transactionsQueue),
       ],
+      [`offline:user:${userId}:transfers-outbox`, () => emptyQueue(device.transfersQueue)],
     ]
   }
   const all = () => [...devices].flatMap(([userId, device]) => parts(userId, device))
@@ -90,5 +98,6 @@ export function createMemoryStorage(): OfflineStorage & {
     openQueue: (userId) => of(userId).queue,
     openTagsQueue: (userId) => of(userId).tagsQueue,
     openTransactionsQueue: (userId) => of(userId).transactionsQueue,
+    openTransfersQueue: (userId) => of(userId).transfersQueue,
   }
 }

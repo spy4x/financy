@@ -35,6 +35,10 @@ export function transferRow(
     date: transfer.date,
     author: personName(context.t, transfer.createdByUserId, context.youId, context.members),
     createdAt: transfer.createdAt,
+    // A create the server has not saved has version 0. A queued edit keeps the server's version,
+    // so one that waits for the server's rate is known by its received amount: `0`, which a saved
+    // transfer never has (`queuedReceived`).
+    queued: transfer.version === 0 || (transfer.converted && transfer.receivedAmount === 0),
     deletedAt: transfer.deletedAt ?? null,
   }
 }

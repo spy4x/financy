@@ -2715,6 +2715,15 @@ export default {
   "TransactionSync.gone": "Пока вы были не в сети, эту операцию удалили.",
   "TransactionSync.rejected": "Сервер не принял эту операцию.",
   "TransactionSync.version": "Пока вы были не в сети, кто-то изменил эту операцию.",
+  "OfflineStatus.deletedTransfer": "Удалённый перевод",
+  "OfflineStatus.transfer": "Перевод {line}",
+  "OfflineStatus.transferGone": "Этого перевода больше нет в семье.",
+  "OfflineStatus.youDeletedTransfer": "Вы удалили этот перевод.",
+  "TransferSync.accountGone":
+    "Пока вы были не в сети, один из счетов этого перевода удалили. Выберите другой счёт или удалите перевод.",
+  "TransferSync.gone": "Пока вы были не в сети, этот перевод удалили.",
+  "TransferSync.rejected": "Сервер не принял этот перевод.",
+  "TransferSync.version": "Пока вы были не в сети, кто-то изменил этот перевод.",
   "Transactions.title": "Операции",
   "Transactions.add": "Добавить операцию",
   "Transactions.readOnly": "Вы можете смотреть операции, но менять их могут только редакторы.",
@@ -2879,7 +2888,7 @@ export default {
     "Вы можете смотреть этот перевод, но менять его могут только редакторы.",
   "TransferEditor.readOnlyNew": "Добавлять переводы в {household} могут только редакторы.",
   "TransferEditor.offline":
-    "Переводы можно смотреть. Чтобы добавить или изменить перевод, подключитесь к сети.",
+    "Переводы по-прежнему можно добавлять и менять. Они сохранятся на этом устройстве и отправятся, когда появится сеть.",
   "TransferEditor.needAccounts": "Для перевода нужны два счёта",
   "TransferEditor.needAccountsHint":
     "Добавьте второй счёт, например наличные или накопления, чтобы переводить деньги между ними.",
