@@ -45,7 +45,10 @@ async function totalOf(sql: postgres.Sql, groupId: string, viewer: number) {
   return (await handler(query)).total
 }
 
-/** A household with 0.5 BTC in a crypto account and €100.00 in a bank account, in `base`. */
+/**
+ * A household in `base` with 0.5 BTC in a crypto account and 100.00 of `base` in a bank account, so
+ * only the coin needs the euro's rate.
+ */
 async function household(sql: postgres.Sql, base = "EUR") {
   const members = await team(sql)
   const accounts = new PostgresAccountRepository(sql)
@@ -61,7 +64,7 @@ async function household(sql: postgres.Sql, base = "EUR") {
     }, members.owner)
   // 0.5 BTC is 50,000,000 satoshi.
   await add(AccountKind.CRYPTO, "BTC", 50_000_000)
-  await add(AccountKind.BANK, "EUR", 10_000)
+  await add(AccountKind.BANK, base, 10_000)
   if (base !== "EUR") {
     await sql`
       INSERT INTO household_settings (group_id, base_currency) VALUES (${members.groupId}, ${base})
@@ -99,9 +102,10 @@ Deno.test("crypto total: a household in dollars crosses the coin's euro price wi
       },
     )
 
-    // €30,000.25 × 1.25 = $37,500.3125, so 3,750,031 cents; €100.00 × 1.25 = $125.00.
+    // €30,000.25 × 1.25 = $37,500.3125, so 3,750,031 cents, plus the bank's $100.00. The rate
+    // date is the euro leg's, which only the coin needed.
     expect(await totalOf(sql, groupId, viewer)).toEqual({
-      amount: 3_750_031 + 12_500,
+      amount: 3_750_031 + 10_000,
       currency: "USD",
       rateDate: "2026-11-04",
       coinPriceDate: "2026-11-05",

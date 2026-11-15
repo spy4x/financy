@@ -415,9 +415,9 @@ describe("the household total with coins at today's price", () => {
   it("names the oldest coin price date and the oldest rate date apart, with coins and fiat mixed", () => {
     const total = householdTotal(
       [
-        halfBitcoin,
         // 2 ETH at €2,000 = €4,000.
         { currency: "ETH", balance: 200_000_000 },
+        halfBitcoin,
         // ¥16,000 / 160 = €100.
         { currency: "JPY", balance: 16_000 },
       ],
