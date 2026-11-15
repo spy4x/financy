@@ -2465,6 +2465,32 @@ export default {
   "MoneyWidgets.netLink": "Ver todos los movimientos de este periodo",
   "MoneyWidgets.incomeLink": "Ver movimientos de ingresos",
   "MoneyWidgets.spendingLink": "Ver movimientos de gastos",
+  "BudgetWidgets.title": "Presupuestos",
+  "BudgetWidgets.loading": "Cargando los presupuestos…",
+  "BudgetWidgets.error": "No se pudieron cargar los presupuestos.",
+  "BudgetWidgets.allOnTrack": {
+    "one": "{count} presupuesto, dentro del límite.",
+    "many": "Los {count} presupuestos, dentro del límite.",
+    "other": "Los {count} presupuestos, dentro del límite.",
+  },
+  "BudgetWidgets.oneOver": {
+    "one": "{onTrack} de {count} presupuesto dentro del límite; {category} lo supera en {amount}.",
+    "many":
+      "{onTrack} de {count} presupuestos dentro del límite; {category} lo supera en {amount}.",
+    "other":
+      "{onTrack} de {count} presupuestos dentro del límite; {category} lo supera en {amount}.",
+  },
+  "BudgetWidgets.moreOver": {
+    "one":
+      "{onTrack} de {count} presupuesto dentro del límite; {category} lo supera en {amount}, y {more} más.",
+    "many":
+      "{onTrack} de {count} presupuestos dentro del límite; {category} lo supera en {amount}, y {more} más.",
+    "other":
+      "{onTrack} de {count} presupuestos dentro del límite; {category} lo supera en {amount}, y {more} más.",
+  },
+  "BudgetWidgets.none": "No hay presupuestos para {month}.",
+  "BudgetWidgets.setLink": "Crear un presupuesto",
+  "BudgetWidgets.link": "Ver presupuestos de {month}",
   "Accounts.back": "Volver a las cuentas",
   "Accounts.clearDefault": "Quitar como predeterminada",
   "Accounts.defaultBadge": "Predeterminada",

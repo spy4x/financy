@@ -2394,6 +2394,26 @@ export default {
   "MoneyWidgets.netLink": "Alle Buchungen in diesem Zeitraum ansehen",
   "MoneyWidgets.incomeLink": "Buchungen der Einnahmen ansehen",
   "MoneyWidgets.spendingLink": "Buchungen der Ausgaben ansehen",
+  "BudgetWidgets.title": "Budgets",
+  "BudgetWidgets.loading": "Budgets werden geladen…",
+  "BudgetWidgets.error": "Die Budgets konnten nicht geladen werden.",
+  "BudgetWidgets.allOnTrack": {
+    "one": "{count} Budget, im Rahmen.",
+    "other": "Alle {count} Budgets im Rahmen.",
+  },
+  "BudgetWidgets.oneOver": {
+    "one": "{onTrack} von {count} Budget im Rahmen; {category} liegt {amount} darüber.",
+    "other": "{onTrack} von {count} Budgets im Rahmen; {category} liegt {amount} darüber.",
+  },
+  "BudgetWidgets.moreOver": {
+    "one":
+      "{onTrack} von {count} Budget im Rahmen; {category} liegt {amount} darüber, dazu {more} weitere.",
+    "other":
+      "{onTrack} von {count} Budgets im Rahmen; {category} liegt {amount} darüber, dazu {more} weitere.",
+  },
+  "BudgetWidgets.none": "Keine Budgets für {month}.",
+  "BudgetWidgets.setLink": "Budget festlegen",
+  "BudgetWidgets.link": "Budgets für {month} ansehen",
   "Accounts.back": "Zurück zu den Konten",
   "Accounts.clearDefault": "Nicht mehr Standard",
   "Accounts.defaultBadge": "Standard",

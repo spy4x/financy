@@ -2530,6 +2530,30 @@ export default {
   "MoneyWidgets.netLink": "Voir toutes les opérations de cette période",
   "MoneyWidgets.incomeLink": "Voir les opérations de revenus",
   "MoneyWidgets.spendingLink": "Voir les opérations de dépenses",
+  "BudgetWidgets.title": "Budgets",
+  "BudgetWidgets.loading": "Chargement des budgets…",
+  "BudgetWidgets.error": "Impossible de charger les budgets.",
+  "BudgetWidgets.allOnTrack": {
+    "one": "{count} budget, dans les clous.",
+    "many": "Les {count} budgets sont dans les clous.",
+    "other": "Les {count} budgets sont dans les clous.",
+  },
+  "BudgetWidgets.oneOver": {
+    "one": "{onTrack} budget sur {count} dans les clous ; {category} dépasse de {amount}.",
+    "many": "{onTrack} budgets sur {count} dans les clous ; {category} dépasse de {amount}.",
+    "other": "{onTrack} budgets sur {count} dans les clous ; {category} dépasse de {amount}.",
+  },
+  "BudgetWidgets.moreOver": {
+    "one":
+      "{onTrack} budget sur {count} dans les clous ; {category} dépasse de {amount}, et {more} autres aussi.",
+    "many":
+      "{onTrack} budgets sur {count} dans les clous ; {category} dépasse de {amount}, et {more} autres aussi.",
+    "other":
+      "{onTrack} budgets sur {count} dans les clous ; {category} dépasse de {amount}, et {more} autres aussi.",
+  },
+  "BudgetWidgets.none": "Aucun budget pour {month}.",
+  "BudgetWidgets.setLink": "Définir un budget",
+  "BudgetWidgets.link": "Voir les budgets de {month}",
   "Accounts.back": "Retour aux comptes",
   "Accounts.clearDefault": "Ne plus utiliser par défaut",
   "Accounts.defaultBadge": "Par défaut",

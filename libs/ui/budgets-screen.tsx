@@ -323,7 +323,6 @@ function List(props: Listed): JSX.Element | null {
       )
       : null
   }
-  const placed = placeCategories([...named.values()], t.language)
   if (budgets.rows.length === 0) {
     const canWrite = group?.canWrite === true
     return (
@@ -343,7 +342,6 @@ function List(props: Listed): JSX.Element | null {
       />
     )
   }
-  const rowOf = new Map(budgets.rows.map((row) => [row.categoryId, row]))
   const noLimits = budgets.rows.every((row) => row.limit === null)
   return (
     <>
@@ -353,16 +351,58 @@ function List(props: Listed): JSX.Element | null {
         </p>
       )}
       <ListCard dataE2E="budgets-list">
-        {placed.map(({ category, parent }) => (
-          <Row
-            key={category.id}
-            category={category}
-            child={parent !== null}
-            row={rowOf.get(category.id)!}
-            {...props}
-          />
-        ))}
+        <BudgetBars
+          rows={budgets.rows}
+          named={named}
+          editable={props.editable}
+          canSet={props.canSet}
+          onEdit={props.onEdit}
+        />
       </ListCard>
+    </>
+  )
+}
+
+/** What {@link BudgetBars} draws, and the changes it offers. */
+export interface BudgetBarsProps {
+  /** The month's rows to draw; each needs its category in `named`. */
+  rows: readonly BudgetRow[]
+  /** Each row's category, for its name, icon and colour. */
+  named: ReadonlyMap<string, CategoryRow>
+  /** Whether each row offers its button; left out, the bars are read-only. */
+  editable?: boolean
+  canSet?: boolean
+  onEdit?(categoryId: string, remove: boolean): void
+  /** Rows with no side padding of their own, for a list inside a card that already has it. */
+  flush?: boolean
+}
+
+/**
+ * A month's bars as list items, in the order of the categories page: each parent followed by its
+ * subcategories. The Budgets screen draws them in its list with their buttons; the overview's
+ * budgets widget draws the same bars read-only.
+ */
+export function BudgetBars(props: BudgetBarsProps): JSX.Element {
+  const t = useAppText()
+  const rowOf = new Map(props.rows.map((row) => [row.categoryId, row]))
+  const placed = placeCategories(
+    [...props.named.values()].filter((category) => rowOf.has(category.id)),
+    t.language,
+  )
+  return (
+    <>
+      {placed.map(({ category, parent }) => (
+        <Row
+          key={category.id}
+          category={category}
+          child={parent !== null}
+          row={rowOf.get(category.id)!}
+          editable={props.editable === true}
+          canSet={props.canSet === true}
+          onEdit={props.onEdit ?? (() => {})}
+          flush={props.flush === true}
+        />
+      ))}
     </>
   )
 }
@@ -372,10 +412,14 @@ function List(props: Listed): JSX.Element | null {
  * the end sets or changes the limit; without the plan it removes an own limit.
  */
 function Row(
-  { category, child, row, editable, canSet, onEdit }: Listed & {
+  { category, child, row, editable, canSet, onEdit, flush }: {
     category: CategoryRow
     child: boolean
     row: BudgetRow
+    editable: boolean
+    canSet: boolean
+    onEdit(categoryId: string, remove: boolean): void
+    flush: boolean
   },
 ): JSX.Element {
   const t = useAppText()
@@ -432,7 +476,9 @@ function Row(
     : null
   return (
     <li
-      class={`flex items-center gap-3 px-4 py-3 sm:px-6 ${child ? "ps-16 sm:ps-16" : ""}`}
+      class={`flex items-center gap-3 py-3 ${flush ? "" : "px-4 sm:px-6"} ${
+        child ? (flush ? "ps-12" : "ps-16 sm:ps-16") : ""
+      }`}
       data-e2e={`budget-${category.id}`}
     >
       <CategoryChip icon={category.icon} color={category.color} size={child ? "sm" : "md"} />

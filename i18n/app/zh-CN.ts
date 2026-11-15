@@ -2007,6 +2007,22 @@ export default {
   "MoneyWidgets.netLink": "查看此期间的所有交易",
   "MoneyWidgets.incomeLink": "查看收入交易",
   "MoneyWidgets.spendingLink": "查看支出交易",
+  "BudgetWidgets.title": "预算",
+  "BudgetWidgets.loading": "正在加载预算…",
+  "BudgetWidgets.error": "无法加载预算。",
+  "BudgetWidgets.allOnTrack": {
+    "other": "全部 {count} 项预算均未超支。",
+  },
+  "BudgetWidgets.oneOver": {
+    "other": "{count} 项预算中 {onTrack} 项未超支；{category}超支 {amount}。",
+  },
+  "BudgetWidgets.moreOver": {
+    "other":
+      "{count} 项预算中 {onTrack} 项未超支；{category}超支 {amount}，另有 {more} 项也已超支。",
+  },
+  "BudgetWidgets.none": "{month}没有预算。",
+  "BudgetWidgets.setLink": "设置预算",
+  "BudgetWidgets.link": "查看{month}的预算",
   "Accounts.back": "返回账户",
   "Accounts.clearDefault": "不再设为默认",
   "Accounts.defaultBadge": "默认",

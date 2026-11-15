@@ -2635,6 +2635,42 @@ export default {
   "MoneyWidgets.netLink": "عرض كل معاملات هذه الفترة",
   "MoneyWidgets.incomeLink": "عرض معاملات الدخل",
   "MoneyWidgets.spendingLink": "عرض معاملات المصروفات",
+  "BudgetWidgets.title": "الميزانيات",
+  "BudgetWidgets.loading": "جارٍ تحميل الميزانيات…",
+  "BudgetWidgets.error": "تعذّر تحميل الميزانيات.",
+  "BudgetWidgets.allOnTrack": {
+    "zero": "الميزانيات ضمن الحد: {count}.",
+    "one": "ميزانيتك الوحيدة ضمن الحد ({count}).",
+    "two": "الميزانيتان ضمن الحد ({count}).",
+    "few": "كل الميزانيات ({count}) ضمن الحد.",
+    "many": "كل الميزانيات ({count}) ضمن الحد.",
+    "other": "كل الميزانيات ({count}) ضمن الحد.",
+  },
+  "BudgetWidgets.oneOver": {
+    "zero": "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}.",
+    "one": "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}.",
+    "two": "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}.",
+    "few": "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}.",
+    "many": "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}.",
+    "other": "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}.",
+  },
+  "BudgetWidgets.moreOver": {
+    "zero":
+      "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}، وتجاوزه غيرها: {more}.",
+    "one":
+      "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}، وتجاوزه غيرها: {more}.",
+    "two":
+      "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}، وتجاوزه غيرها: {more}.",
+    "few":
+      "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}، وتجاوزه غيرها: {more}.",
+    "many":
+      "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}، وتجاوزه غيرها: {more}.",
+    "other":
+      "ضمن الحد {onTrack} من {count}؛ تجاوزت {category} حدها بمقدار {amount}، وتجاوزه غيرها: {more}.",
+  },
+  "BudgetWidgets.none": "لا توجد ميزانيات لشهر {month}.",
+  "BudgetWidgets.setLink": "تعيين ميزانية",
+  "BudgetWidgets.link": "عرض ميزانيات {month}",
   "Accounts.back": "العودة إلى الحسابات",
   "Accounts.clearDefault": "إلغاء جعله افتراضيًا",
   "Accounts.defaultBadge": "افتراضي",

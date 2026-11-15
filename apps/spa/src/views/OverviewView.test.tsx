@@ -6,6 +6,7 @@ import { expect } from "@std/expect"
 import { afterEach, describe, it } from "@std/testing/bdd"
 import { renderToString } from "preact-render-to-string"
 import { Router } from "wouter-preact"
+import { BUDGET_WIDGET_IDS, BudgetMethod, type BudgetWidgetResult } from "@domain/budgets"
 import { GroupRole } from "@domain/groups"
 import { NOTE_WIDGET_IDS } from "@domain/notes"
 import { type LedgerFigures, MONEY_WIDGET_IDS } from "@domain/transactions"
@@ -41,7 +42,21 @@ const EMPTY: LedgerFigures = {
   tooLarge: false,
 }
 
-/** Household A's overview, with B selected, its notes count 0 and its money cards loaded. */
+/** November with no budget set. */
+const NO_BUDGETS: BudgetWidgetResult = {
+  budgets: {
+    month: "2026-11",
+    from: "2026-11-01",
+    to: "2026-11-30",
+    baseCurrency: "EUR",
+    rows: [],
+    method: BudgetMethod.LIMITS,
+    methodVersion: null,
+  },
+  categories: [],
+}
+
+/** Household A's overview, with B selected, its notes count 0 and its money and budgets loaded. */
 function overviewOfA(): string {
   groupsStore.groups.value = [
     { id: A, name: `Home`, role: GroupRole.OWNER },
@@ -54,6 +69,7 @@ function overviewOfA(): string {
     [MONEY_WIDGET_IDS.net]: ready({ current: EMPTY, previous: null }),
     [MONEY_WIDGET_IDS.income]: ready({ current: EMPTY, previous: null }),
     [MONEY_WIDGET_IDS.spending]: ready({ current: EMPTY, previous: null }),
+    [BUDGET_WIDGET_IDS.month]: ready(NO_BUDGETS),
   }
   return renderToString(
     <Router ssrPath={OVERVIEW_PATHS.group(A)}>
@@ -75,5 +91,16 @@ describe("the overview with its money cards", () => {
 
     expect(hrefs.length).toBe(3)
     for (const href of hrefs) expect(href).toContain(`group=${A}`)
+  })
+
+  it("puts the budgets card after the money cards, linked to the overview's household and month", () => {
+    const html = overviewOfA()
+    const at = (id: string) => html.indexOf(`data-e2e="overview-widget-${id}"`)
+
+    expect(at(BUDGET_WIDGET_IDS.month)).toBeGreaterThan(at(MONEY_WIDGET_IDS.spending))
+    expect(at(MONEY_WIDGET_IDS.spending)).toBeGreaterThan(-1)
+    expect(html).not.toContain(`data-e2e="overview-empty-group"`)
+    expect([...html.matchAll(/href="(\/budgets[^"]*)"/g)].map((m) => m[1].replaceAll("&amp;", "&")))
+      .toEqual([`/budgets?group=${A}&month=2026-11`])
   })
 })

@@ -12,9 +12,12 @@ import {
   BudgetMoveCommand,
   type BudgetRepository,
   BudgetSetCommand,
+  budgetWidgetMonth,
+  type BudgetWidgetQuery,
   envelopeMonth,
   envelopeRunStart,
 } from "@domain/budgets"
+import type { CategoryRepository } from "@domain/categories"
 import type { EntryRateLookup, Ledger } from "@domain/transactions"
 import { groupTimeZone } from "@domain/groups"
 import type { HouseholdSettings } from "@domain/money"
@@ -181,6 +184,44 @@ export function createBudgetMonthHandler(
         ...dependencies,
         groupId: data.groupId,
       }),
+    }
+  }
+}
+
+/** What the budgets widget reads besides the month: the household's category names. */
+export interface BudgetWidgetDependencies extends BudgetHandlerDependencies {
+  categories: Pick<CategoryRepository, "list">
+}
+
+/**
+ * The budgets widget on the overview: the month the range ends in, never past the household's
+ * current month in its time zone ({@link budgetWidgetMonth}), read by the very handler that answers
+ * `budget.month`, so its figures are the Budgets screen's. Adds the names of the month's
+ * categories. A stranger is told the household does not exist before anything is read.
+ */
+export function createBudgetWidgetHandler(
+  dependencies: BudgetWidgetDependencies,
+): QueryHandler<BudgetWidgetQuery> {
+  const { budgets, groups, categories, now } = dependencies
+  const readMonth = createBudgetMonthHandler(dependencies)
+  return async ({ data }) => {
+    assertCanReadBudgets(await groups.roleOf(data.groupId, data.actor.userId))
+    const timeZone = groupTimeZone({ timeZone: await budgets.timeZoneOf(data.groupId) })
+    const month = budgetWidgetMonth(data.to, now(), timeZone)
+    const [read, named] = await Promise.all([
+      readMonth(new BudgetMonthQuery({ actor: data.actor, groupId: data.groupId, month })),
+      categories.list(data.groupId),
+    ])
+    const listed = new Set(read.budgets.rows.map((row) => row.categoryId))
+    return {
+      budgets: read.budgets,
+      categories: named.filter((category) => listed.has(category.id)).map((category) => ({
+        id: category.id,
+        name: category.name,
+        icon: category.icon,
+        color: category.color,
+        parentId: category.parentId,
+      })),
     }
   }
 }
