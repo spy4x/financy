@@ -77,7 +77,7 @@ export interface TransferEditorScreenProps {
   pending?: boolean
   /** Where Back and Cancel go: the page the person came from. */
   backHref?: string
-  /** The device has no network: a transfer can be read, not written. */
+  /** The device has no network: the write waits in the queue. */
   offline?: boolean
   /**
    * The create page's kind control chose Expense or Income: the view moves to the transaction
@@ -249,12 +249,14 @@ function Editor(props: Shown): JSX.Element {
     : ""
   const settledRate = useSettled(rate)
 
-  // The first field still empty takes focus when the page opens: From, To, then the amount.
+  // The first field still empty takes focus when the page opens: From, To, then the amount. An
+  // account that is no longer listed (deleted while a queued transfer waited) counts as empty, so
+  // a transfer opened to pick another account opens on that field.
   const fields = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const first = value.fromAccountId === null
+    const first = from === undefined
       ? "transfer-from"
-      : value.toAccountId === null
+      : to === undefined
       ? "transfer-to"
       : "transfer-sent"
     fields.current?.querySelector<HTMLElement>(`#${first}`)?.focus()
@@ -284,7 +286,7 @@ function Editor(props: Shown): JSX.Element {
     : null
   const offline = props.offline ?? false
   const showFooter = transfer === null || props.dirty
-  const menu = transfer && props.onDelete && !offline && (
+  const menu = transfer && props.onDelete && (
     <DropdownItem
       onClick={props.onDelete}
       disabled={props.pending}
@@ -316,7 +318,7 @@ function Editor(props: Shown): JSX.Element {
       <ScreenForm
         pending={saving}
         onSubmit={() => {
-          if (!offline && (transfer === null || props.dirty)) props.onSave?.()
+          if (transfer === null || props.dirty) props.onSave?.()
         }}
       >
         <Stack class={FORM_WIDTH}>
@@ -520,7 +522,6 @@ function Editor(props: Shown): JSX.Element {
                 type="submit"
                 class="min-h-11 w-full sm:min-h-9 sm:w-auto"
                 data-e2e="transfer-save"
-                disabled={offline}
                 busy={saving}
                 busyLabel={transfer
                   ? t.t(`TransactionEditor.saving`)

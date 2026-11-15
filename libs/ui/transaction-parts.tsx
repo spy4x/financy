@@ -91,6 +91,13 @@ export interface TransferRow {
   /** "You", the member's name, or `undefined` while the members are not read. */
   author?: string
   createdAt: string
+  /** Made on this device and not on the server yet: a converted one has no received amount yet. */
+  queued?: boolean
+  /**
+   * The server refused this queued transfer because one of its accounts was deleted: it waits on
+   * the list for another account or a Discard.
+   */
+  gone?: boolean
   /** When it was deleted, in the deleted view. */
   deletedAt?: string | null
 }

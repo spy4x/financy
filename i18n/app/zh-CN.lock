@@ -1269,6 +1269,7 @@ OfflineStatus.copyFailed	dc08685a171d1f03
 OfflineStatus.deletedNote	9852f5a39390b6d0
 OfflineStatus.deletedTag	0730471150c3c974
 OfflineStatus.deletedTransaction	e1481990c84ec564
+OfflineStatus.deletedTransfer	b448e76274eccc8c
 OfflineStatus.dismiss	48845bff334a50a5
 OfflineStatus.held	07e61588db6db0c2
 OfflineStatus.mine	f06cf159ad184289
@@ -1282,11 +1283,14 @@ OfflineStatus.theirs	83c3a8628e432740
 OfflineStatus.theirsUnknown	d0738dbc43f136f6
 OfflineStatus.transaction	d4724b5b255e8c65
 OfflineStatus.transactionGone	7204de19650e30dc
+OfflineStatus.transfer	11ad18b6d5ee7226
+OfflineStatus.transferGone	42eee040f8619bf5
 OfflineStatus.untitledNote	e93736573a33ef40
 OfflineStatus.useServers	7cf081c8a3499410
 OfflineStatus.youDeletedNote	4de5dd4f6d9d7595
 OfflineStatus.youDeletedTag	b0f2f90e381905bb
 OfflineStatus.youDeletedTransaction	6dd00f2707642fc1
+OfflineStatus.youDeletedTransfer	3f04b7f11a624a93
 OnboardingCard.accountAction	ee7ee5830f091690
 OnboardingCard.accountText	253f031f3807a15d
 OnboardingCard.accountTitle	18485bb3e8c19ae0
@@ -1987,7 +1991,7 @@ TransferEditor.needAccountsHint	acca3d47c2b8c271
 TransferEditor.new	dfde42c390832b91
 TransferEditor.notFound	d9c42fdce0f0551e
 TransferEditor.notFoundHint	da943e9322947ec9
-TransferEditor.offline	f3b6e5abc33e59e2
+TransferEditor.offline	0e16b3dee105cebe
 TransferEditor.ownRate	39d2c99bff6370ae
 TransferEditor.readOnly	c7c74686c7e5734d
 TransferEditor.readOnlyNew	782ec6318723400d
@@ -2016,6 +2020,10 @@ TransferRow.nameAcross	8caf6b595d040bb5
 TransferRow.received	cfcbf1afd1e711bc
 TransferRow.sent	fd34c4a42f087623
 TransferRow.what	2908cd76d6381fa5
+TransferSync.accountGone	3e7b7f2b0ec2ab03
+TransferSync.gone	bb8d9a7ece18b926
+TransferSync.rejected	044ad8ef508daa65
+TransferSync.version	9fb91e61741d3fe2
 TransferToasts.added	b21944cb32ed4b07
 TransferToasts.addedTitle	b1aed7961ae3610f
 TransferToasts.deleted	a1a51373de3d15c0

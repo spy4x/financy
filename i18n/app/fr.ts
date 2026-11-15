@@ -2708,6 +2708,15 @@ export default {
   "TransactionSync.rejected": "Le serveur n’a pas accepté cette opération.",
   "TransactionSync.version":
     "Quelqu’un a modifié cette opération pendant que vous étiez hors ligne.",
+  "OfflineStatus.deletedTransfer": "Virement supprimé",
+  "OfflineStatus.transfer": "Virement {line}",
+  "OfflineStatus.transferGone": "Le virement ne fait plus partie de ce foyer.",
+  "OfflineStatus.youDeletedTransfer": "Vous avez supprimé ce virement.",
+  "TransferSync.accountGone":
+    "L’un des comptes de ce virement a été supprimé pendant que vous étiez hors ligne. Choisissez un autre compte ou supprimez le virement.",
+  "TransferSync.gone": "Ce virement a été supprimé pendant que vous étiez hors ligne.",
+  "TransferSync.rejected": "Le serveur n’a pas accepté ce virement.",
+  "TransferSync.version": "Quelqu’un a modifié ce virement pendant que vous étiez hors ligne.",
   "Transactions.title": "Opérations",
   "Transactions.add": "Ajouter une opération",
   "Transactions.readOnly":
@@ -2876,7 +2885,7 @@ export default {
     "Vous pouvez consulter ce virement, mais seuls les éditeurs peuvent le modifier.",
   "TransferEditor.readOnlyNew": "Seuls les éditeurs peuvent ajouter des virements à {household}.",
   "TransferEditor.offline":
-    "Vous pouvez consulter les virements. Pour en ajouter ou en modifier un, reconnectez-vous.",
+    "Vous pouvez toujours ajouter et modifier des virements. Ils sont gardés sur cet appareil et envoyés dès que la connexion revient.",
   "TransferEditor.needAccounts": "Un virement nécessite deux comptes",
   "TransferEditor.needAccountsHint":
     "Ajoutez un deuxième compte, comme des espèces ou une épargne, pour déplacer de l’argent entre eux.",

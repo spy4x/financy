@@ -2560,6 +2560,15 @@ export default {
   "TransactionSync.gone": "Diese Buchung wurde gelöscht, während du offline warst.",
   "TransactionSync.rejected": "Der Server hat diese Buchung nicht angenommen.",
   "TransactionSync.version": "Jemand hat diese Buchung geändert, während du offline warst.",
+  "OfflineStatus.deletedTransfer": "Gelöschte Umbuchung",
+  "OfflineStatus.transfer": "Umbuchung {line}",
+  "OfflineStatus.transferGone": "Die Umbuchung ist nicht mehr in diesem Haushalt.",
+  "OfflineStatus.youDeletedTransfer": "Du hast diese Umbuchung gelöscht.",
+  "TransferSync.accountGone":
+    "Eines der Konten dieser Umbuchung wurde gelöscht, während du offline warst. Wähle ein anderes Konto oder verwirf die Umbuchung.",
+  "TransferSync.gone": "Diese Umbuchung wurde gelöscht, während du offline warst.",
+  "TransferSync.rejected": "Der Server hat diese Umbuchung nicht angenommen.",
+  "TransferSync.version": "Jemand hat diese Umbuchung geändert, während du offline warst.",
   "Transactions.title": "Buchungen",
   "Transactions.add": "Buchung hinzufügen",
   "Transactions.readOnly":
@@ -2725,7 +2734,7 @@ export default {
     "Du kannst diese Umbuchung ansehen, aber nur Bearbeiter können sie ändern.",
   "TransferEditor.readOnlyNew": "Nur Bearbeiter können Umbuchungen zu {household} hinzufügen.",
   "TransferEditor.offline":
-    "Du kannst Umbuchungen ansehen. Um eine hinzuzufügen oder zu ändern, geh wieder online.",
+    "Du kannst weiter Umbuchungen hinzufügen und ändern. Sie bleiben auf diesem Gerät und werden gesendet, sobald du wieder online bist.",
   "TransferEditor.needAccounts": "Eine Umbuchung braucht zwei Konten",
   "TransferEditor.needAccountsHint":
     "Füge ein zweites Konto hinzu, etwa Bargeld oder Ersparnisse, um Geld zwischen ihnen zu verschieben.",

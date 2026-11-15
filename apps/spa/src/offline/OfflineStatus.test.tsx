@@ -18,6 +18,7 @@ import { conflictsToReview, OfflineStatus } from "./OfflineStatus.tsx"
 import { startOffline, stopOffline } from "./index.ts"
 import { createMemoryStorage } from "./memory-storage.ts"
 import { REFERENCE_GONE } from "./transactions-collection.ts"
+import { TRANSFER_ACCOUNT_GONE } from "./transfers-collection.ts"
 import { TransactionKind } from "@domain/transactions"
 
 const window = new Window({ url: "http://app.localhost/" })
@@ -150,7 +151,116 @@ function refusedEntry(id: string, memo: string, message: string) {
   }
 }
 
+/** A queued transfer the server refused, with `message` as the conflict's reason. */
+function refusedTransfer(id: string, memo: string, message: string) {
+  return {
+    key: `key-${id}`,
+    entityId: id,
+    kind: "create" as const,
+    payload: {
+      groupId: "g-1",
+      fromAccountId: "a-1",
+      toAccountId: "a-2",
+      sentAmount: 5000,
+      receivedAmount: null,
+      memo,
+      date: "2026-11-12",
+      fromCurrency: "EUR",
+      toCurrency: "EUR",
+    },
+    baseVersion: 0,
+    attempted: true,
+    status: "conflict" as const,
+    conflict: { reason: "rejected" as const, message, server: null },
+    queuedAt: "2026-11-12T08:00:00.000Z",
+  }
+}
+
 describe("OfflineStatus", () => {
+  it("shows a transfer changed by someone else with the transfers' own words, leaving out one whose account was deleted", async () => {
+    const storage = createMemoryStorage()
+    const queue = storage.of(7).transfersQueue
+    await queue.putEntry(refusedTransfer("x-1", "Savings", TRANSFER_ACCOUNT_GONE))
+    await queue.putEntry({
+      ...refusedTransfer("x-2", "Rent pot", `TransferSync.version`),
+      kind: "update",
+      baseVersion: 1,
+      conflict: { reason: "version", message: `TransferSync.version`, server: null },
+    })
+
+    await mountStrip(storage)
+
+    const messages = [...root!.querySelectorAll("[data-e2e=conflict-message]")]
+      .map((message) => message.textContent)
+    expect(messages).toEqual(["Someone changed this transfer while you were offline."])
+    expect(text()).toContain("1 change needs your choice")
+    expect(text()).toContain("Rent pot")
+    expect(text()).not.toContain("Savings")
+  })
+
+  it("hides itself when the only conflict is a transfer whose account was deleted", async () => {
+    const storage = createMemoryStorage()
+    await storage.of(7).transfersQueue.putEntry(
+      refusedTransfer("x-1", "Savings", TRANSFER_ACCOUNT_GONE),
+    )
+
+    await mountStrip(storage)
+
+    expect(root!.innerHTML).toBe("")
+  })
+
+  /** A device whose queued edit of transfer x-2 met the server's newer version 3. */
+  async function transferConflict() {
+    const storage = createMemoryStorage()
+    const server = {
+      id: "x-2",
+      groupId: "g-1",
+      fromAccountId: "a-1",
+      toAccountId: "a-2",
+      sentAmount: 7000,
+      receivedAmount: 7000,
+      converted: false,
+      memo: "Theirs",
+      date: "2026-11-12",
+      version: 3,
+      changeSequence: "3",
+      createdByUserId: 7,
+      updatedByUserId: 8,
+      createdAt: "2026-11-12T08:00:00.000Z",
+      updatedAt: "2026-11-12T09:00:00.000Z",
+    }
+    await storage.of(7).transfersQueue.putEntry({
+      ...refusedTransfer("x-2", "Mine", `TransferSync.version`),
+      kind: "update",
+      baseVersion: 1,
+      conflict: { reason: "version", message: `TransferSync.version`, server },
+    })
+    await mountStrip(storage)
+    const click = (choice: string) =>
+      act(() => (root!.querySelector(`[data-conflict-choice=${choice}]`) as HTMLElement).click())
+    return { storage, click }
+  }
+
+  it("queues a transfer edit again over the server's version when the person keeps their own", async () => {
+    const { storage, click } = await transferConflict()
+
+    await click("mine")
+    await settle()
+
+    expect(await storage.of(7).transfersQueue.readOutbox()).toMatchObject([
+      { entityId: "x-2", status: "pending", baseVersion: 3 },
+    ])
+  })
+
+  it("drops a queued transfer edit when the person uses the server's", async () => {
+    const { storage, click } = await transferConflict()
+
+    await click("theirs")
+    await settle()
+
+    expect(await storage.of(7).transfersQueue.readOutbox()).toEqual([])
+  })
+
   it("leaves out entries refused for a deleted account or category, which the list handles", async () => {
     const storage = createMemoryStorage()
     const queue = storage.of(7).transactionsQueue

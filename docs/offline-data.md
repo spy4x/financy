@@ -108,7 +108,7 @@ them in the same database, the latest date first (`offline/device-copy.ts`). The
 kind the device does not know, rows and tombstones alike.
 
 Transfers come the same way: live ones in `upserts.transfers`, a deleted one as a tombstone of kind
-`transfers`. The SPA does not keep them yet, so its pull leaves them out as an unknown kind.
+`transfers`. The SPA keeps them next to the entries, the latest date first.
 
 ## Which answers count as "unreachable"
 

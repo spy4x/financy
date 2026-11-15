@@ -11,6 +11,7 @@ import { TransactionKind } from "@domain/transactions"
 const NOTES_QUEUE = "offline:user:7:outbox"
 const TRANSACTIONS_QUEUE = "offline:user:7:transactions-outbox"
 const TAGS_QUEUE = "offline:user:7:tags-outbox"
+const TRANSFERS_QUEUE = "offline:user:7:transfers-outbox"
 
 function note(id: string, version: number, title: string): NoteItem {
   return {
@@ -149,6 +150,52 @@ describe("sendQueueOnce", () => {
     expect(result).toEqual({ done: true, refused: [] })
     expect(sent).toEqual(["transaction.create t-1"])
     expect(deleted).toEqual([TRANSACTIONS_QUEUE])
+  })
+
+  it("counts and sends a queued transfer, names a refused one, then deletes its queue", async () => {
+    const storage = createMemoryStorage()
+    const transfer = (id: string, memo: string) => ({
+      key: `key-${id}`,
+      entityId: id,
+      kind: "create" as const,
+      payload: {
+        groupId: "g-1",
+        fromAccountId: "a-1",
+        toAccountId: "a-2",
+        sentAmount: 5000,
+        receivedAmount: null,
+        memo,
+        date: "2026-11-12",
+        fromCurrency: "EUR",
+        toCurrency: "EUR",
+      },
+      baseVersion: 0,
+      attempted: false,
+      status: "pending" as const,
+      queuedAt: "2026-11-12T08:00:00.000Z",
+    })
+    await storage.of(7).transfersQueue.putEntry(transfer("x-1", "Savings"))
+    await storage.of(7).transfersQueue.putEntry({ ...transfer("x-2", "Rent pot"), seq: 2 })
+    const { databases, deleted } = databasesHolding(TRANSFERS_QUEUE, "reads:7")
+    const { calls, sent } = serverAnswering((id) =>
+      id === "x-2"
+        ? Promise.reject(
+          new RealtimeRequestError("not_found", "gone", { code: "ACCOUNT_NOT_FOUND" }),
+        )
+        : Promise.resolve({})
+    )
+
+    expect(await countQueueOnce({ userId: 7, storage, databases })).toBe(2)
+    const result = await sendQueueOnce({
+      userId: 7,
+      transport: { calls, canSend: () => true },
+      storage,
+      databases,
+    })
+
+    expect(sent).toEqual(["transfer.create x-1", "transfer.create x-2"])
+    expect(result).toEqual({ done: true, refused: ["2026-11-12 Rent pot"] })
+    expect(deleted).toEqual([TRANSFERS_QUEUE])
   })
 
   it("opens only the queue the device holds, so no other database is created", async () => {

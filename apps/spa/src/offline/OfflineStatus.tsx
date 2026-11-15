@@ -13,6 +13,8 @@ import type { NoteEntry } from "./notes-cache.ts"
 import type { TagEntry } from "./tags-cache.ts"
 import type { TransactionEntry } from "./transactions-cache.ts"
 import { goneReference } from "./transactions-collection.ts"
+import type { TransferEntry } from "./transfers-cache.ts"
+import { goneAccount } from "./transfers-collection.ts"
 import { formatMoney } from "@spy4x/platform/universal/money-core"
 import { amountDecimals } from "@domain/money"
 import { isolate } from "@spy4x/preact-ui/bdi"
@@ -22,15 +24,16 @@ const network = createOnlineStatus()
 /**
  * The group whose conflict chooser takes focus the next time this strip shows it: "Review changes"
  * in the sign-out dialog sets it (`reviewConflicts` in `modules.ts`) when a write the strip shows
- * waits on a choice, and the strip clears it. Entries refused for a deleted account or category are
- * reviewed on the transactions list instead, which does not read it.
+ * waits on a choice, and the strip clears it. Entries refused for a deleted account or category, and
+ * transfers refused for a deleted account, are reviewed on the transactions list instead, which
+ * does not read it.
  */
 export const conflictsToReview = signal<string | null>(null)
 
 /** One conflict, in the words of the aggregate it is about. */
 interface ConflictView {
   /** The queue it came from, and the first part of its id. */
-  kind: "note" | "tag" | "transaction"
+  kind: "note" | "tag" | "transaction" | "transfer"
   seq: number
   label: string
   reason: "version" | "gone" | "rejected"
@@ -55,7 +58,11 @@ interface ConflictView {
 function theirsUnknown(
   t: Translator<string>,
   reason: ConflictView["reason"] | undefined,
-  gone: `OfflineStatus.noteGone` | `OfflineStatus.tagGone` | `OfflineStatus.transactionGone`,
+  gone:
+    | `OfflineStatus.noteGone`
+    | `OfflineStatus.tagGone`
+    | `OfflineStatus.transactionGone`
+    | `OfflineStatus.transferGone`,
 ): string {
   return reason === "gone" ? t.t(gone) : t.t(`OfflineStatus.theirsUnknown`)
 }
@@ -113,6 +120,49 @@ function transactionView(
     theirs: server
       ? entryLine(server, locale)
       : theirsUnknown(t, entry.conflict?.reason, `OfflineStatus.transactionGone`),
+    theirsUnknown: !server && entry.conflict?.reason !== "gone",
+    canKeepMine: Boolean(server),
+  }
+}
+
+/**
+ * A transfer as a line in a conflict: its date, sent amount and memo. The amount is in the from
+ * account's currency as the device knew it when the write was queued; without one it is left out.
+ */
+function transferLine(
+  value: { date: string; sentAmount: number; memo: string },
+  currency: string,
+  locale: string,
+): string {
+  const money = currency
+    ? formatMoney(value.sentAmount, currency, locale, { decimals: amountDecimals(currency) })
+    : ``
+  return [value.date, money, value.memo].filter(Boolean).join(" · ")
+}
+
+function transferView(
+  t: Translator<string>,
+  entry: TransferEntry,
+  locale: string,
+): ConflictView {
+  const server = entry.conflict?.server
+  const currency = entry.payload.fromCurrency
+  return {
+    kind: "transfer",
+    seq: entry.seq!,
+    label: entry.kind === "delete"
+      ? t.t(`OfflineStatus.deletedTransfer`)
+      : t.t(`OfflineStatus.transfer`, {
+        line: isolate(transferLine(entry.payload, currency, locale)),
+      }),
+    reason: entry.conflict?.reason ?? "version",
+    message: entry.conflict?.message ?? null,
+    mine: entry.kind === "delete"
+      ? t.t(`OfflineStatus.youDeletedTransfer`)
+      : transferLine(entry.payload, currency, locale),
+    theirs: server
+      ? transferLine(server, currency, locale)
+      : theirsUnknown(t, entry.conflict?.reason, `OfflineStatus.transferGone`),
     theirsUnknown: !server && entry.conflict?.reason !== "gone",
     canKeepMine: Boolean(server),
   }
@@ -240,7 +290,10 @@ export function OfflineStatus(
   const transactionEntries = layer.transactionEntries.value.filter((entry) =>
     entry.payload.groupId === groupId
   )
-  const pending = [...entries, ...tagEntries, ...transactionEntries]
+  const transferEntries = layer.transferEntries.value.filter((entry) =>
+    entry.payload.groupId === groupId
+  )
+  const pending = [...entries, ...tagEntries, ...transactionEntries, ...transferEntries]
     .filter((entry) => entry.status === "pending").length
   const conflicts = [
     ...tagEntries.filter((entry) => entry.status === "conflict").map((entry) => tagView(t, entry)),
@@ -250,6 +303,9 @@ export function OfflineStatus(
     ...transactionEntries.filter((entry) =>
       entry.status === "conflict" && goneReference(entry) === null
     ).map((entry) => transactionView(t, entry, t.language)),
+    // So does a transfer refused for a deleted account.
+    ...transferEntries.filter((entry) => entry.status === "conflict" && !goneAccount(entry))
+      .map((entry) => transferView(t, entry, t.language)),
   ]
   // Notes that wait for the person's choice about a tag they name.
   const held = layer.collections.waiting().filter((w) => w.onPerson).length
@@ -274,6 +330,8 @@ export function OfflineStatus(
       ? tagEntries
       : kind === "transaction"
       ? transactionEntries
+      : kind === "transfer"
+      ? transferEntries
       : entries
     const entry = queued.find((candidate) => String(candidate.seq) === seq)
     if (!entry) return
@@ -281,6 +339,8 @@ export function OfflineStatus(
       ? layer.tags.outbox
       : kind === "transaction"
       ? layer.transactions.outbox
+      : kind === "transfer"
+      ? layer.transfers.outbox
       : layer.notes.outbox
     return outbox[choice](entry as never).then(onResolved)
   }

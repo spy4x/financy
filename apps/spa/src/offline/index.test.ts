@@ -885,7 +885,7 @@ describe("a queue left on the device while the module is off", () => {
 describe("the queue of a person whose session the server ended", () => {
   const KEPT_QUEUE = "offline:kept-queue"
 
-  /** A device that holds a read copy, a note and a queued note and tag write of `id`. */
+  /** A device that holds a read copy, a note and a queued note, tag and transfer write of `id`. */
   async function written(storage: ReturnType<typeof createMemoryStorage>, id: number) {
     const device = storage.of(id)
     device.reads.set("groups", { value: [{ id: "g-1" }], savedAt: 1 })
@@ -897,6 +897,26 @@ describe("the queue of a person whose session the server ended", () => {
       kind: "create",
       baseVersion: 0,
       payload: { groupId: "g-1", name: "Urgent", color: "#b91c1c" },
+      attempted: false,
+      status: "pending",
+      queuedAt: "2026-10-01T08:00:00.000Z",
+    })
+    await device.transfersQueue.putEntry({
+      key: "transfer-key",
+      entityId: "tr-1",
+      kind: "create",
+      baseVersion: 0,
+      payload: {
+        groupId: "g-1",
+        fromAccountId: "a-1",
+        toAccountId: "a-2",
+        sentAmount: 20000,
+        receivedAmount: null,
+        memo: "",
+        date: "2026-10-01",
+        fromCurrency: "EUR",
+        toCurrency: "EUR",
+      },
       attempted: false,
       status: "pending",
       queuedAt: "2026-10-01T08:00:00.000Z",
@@ -922,6 +942,8 @@ describe("the queue of a person whose session the server ended", () => {
     expect(await device.notes.readNotes("g-1")).toEqual([])
     expect((await device.queue.readOutbox()).map((entry) => entry.entityId)).toEqual(["n-1"])
     expect((await device.tagsQueue.readOutbox()).map((entry) => entry.entityId)).toEqual(["t-1"])
+    expect((await device.transfersQueue.readOutbox()).map((entry) => entry.entityId))
+      .toEqual(["tr-1"])
     expect(kept.getItem(KEPT_QUEUE)).toBe("7")
   })
 
@@ -945,6 +967,7 @@ describe("the queue of a person whose session the server ended", () => {
     expect(calls.map((call) => [call.url, call.key])).toEqual([
       ["/api/call/tag.create", "tag-key"],
       ["/api/call/note.update", "key-from-last-week"],
+      ["/api/call/transfer.create", "transfer-key"],
     ])
     expect(await device.queue.readOutbox()).toEqual([])
     expect(kept.getItem(KEPT_QUEUE)).toBeNull()
@@ -960,7 +983,7 @@ describe("the queue of a person whose session the server ended", () => {
     startPage(7, storage)
     await settle()
 
-    expect(calls.map((call) => call.key)).toEqual(["tag-key", "key-from-last-week"])
+    expect(calls.map((call) => call.key)).toEqual(["tag-key", "key-from-last-week", "transfer-key"])
     expect(currentLayer()?.userId).toBe(7)
   })
 
@@ -975,6 +998,7 @@ describe("the queue of a person whose session the server ended", () => {
 
     expect(await device.queue.readOutbox()).toEqual([])
     expect(await device.tagsQueue.readOutbox()).toEqual([])
+    expect(await device.transfersQueue.readOutbox()).toEqual([])
     expect(calls).toEqual([])
     expect(currentLayer()?.userId).toBe(8)
     expect(currentLayer()?.entries.value).toEqual([])

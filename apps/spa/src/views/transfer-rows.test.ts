@@ -56,6 +56,11 @@ describe("transferRow", () => {
     expect(row.fromCurrency).toBe("EUR")
     expect(row.toCurrency).toBe("EUR")
   })
+
+  it("marks a transfer the server has not saved yet as queued", () => {
+    expect(transferRow({ ...transfer, version: 0 }, context).queued).toBe(true)
+    expect(transferRow(transfer, context).queued).toBe(false)
+  })
 })
 
 describe("transferUndoText", () => {

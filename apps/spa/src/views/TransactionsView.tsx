@@ -26,7 +26,13 @@ import { toasts } from "../state/toasts.ts"
 import { transactionsStore } from "../state/transactions.ts"
 import { byDate, byDeletedAt } from "../state/transaction-order.ts"
 import { transfersStore } from "../state/transfers.ts"
-import { discardGoneEntry, goneEntries, OfflineStatus } from "../modules.ts"
+import {
+  discardGoneEntry,
+  discardGoneTransfer,
+  goneEntries,
+  goneTransfers,
+  OfflineStatus,
+} from "../modules.ts"
 import {
   amountInCategory,
   transactionAccounts,
@@ -124,13 +130,17 @@ export function TransactionsView() {
   useUndoToast(transfersStore, transferUndoText(context, locale))
   const today = todayInTz(groupTimeZone(membership ?? {}))
   const gone = groupId ? goneEntries(groupId) : new Map()
+  const goneTransfer = groupId ? goneTransfers(groupId) : new Set()
   return (
     <TransactionsScreen
       group={membership ? { id: membership.id, name: membership.name, canWrite } : null}
       intro={groupId && (
         <OfflineStatus
           groupId={groupId}
-          onResolved={() => void store.refresh().catch(() => {})}
+          onResolved={() => {
+            void store.refresh().catch(() => {})
+            void transfersStore.refresh()
+          }}
         />
       )}
       rows={[
@@ -138,7 +148,10 @@ export function TransactionsView() {
           ...transactionRow(entry, rowContext),
           gone: gone.get(entry.id) ?? null,
         })),
-        ...transfersStore.transfers.value.map((transfer) => transferRow(transfer, rowContext)),
+        ...transfersStore.transfers.value.map((transfer) => ({
+          ...transferRow(transfer, rowContext),
+          gone: goneTransfer.has(transfer.id),
+        })),
       ].sort(byDate)}
       deleted={showDeleted && canWrite
         ? [
@@ -209,8 +222,11 @@ export function TransactionsView() {
       pendingId={store.pendingId.value ?? transfersStore.pendingId.value}
       onDiscard={canWrite
         ? async (id) => {
+          // The id is an entry's or a transfer's; the other discard finds nothing and does nothing.
           await discardGoneEntry(id)
+          await discardGoneTransfer(id)
           await store.refresh().catch(() => {})
+          await transfersStore.refresh()
         }
         : undefined}
       navigate={navigate}

@@ -2612,6 +2612,15 @@ export default {
   "TransactionSync.gone": "Este lançamento foi excluído enquanto você estava offline.",
   "TransactionSync.rejected": "O servidor não aceitou este lançamento.",
   "TransactionSync.version": "Alguém alterou este lançamento enquanto você estava offline.",
+  "OfflineStatus.deletedTransfer": "Transferência excluída",
+  "OfflineStatus.transfer": "Transferência {line}",
+  "OfflineStatus.transferGone": "A transferência não está mais nesta família.",
+  "OfflineStatus.youDeletedTransfer": "Você excluiu esta transferência.",
+  "TransferSync.accountGone":
+    "Uma das contas desta transferência foi excluída enquanto você estava offline. Escolha outra conta ou descarte a transferência.",
+  "TransferSync.gone": "Esta transferência foi excluída enquanto você estava offline.",
+  "TransferSync.rejected": "O servidor não aceitou esta transferência.",
+  "TransferSync.version": "Alguém alterou esta transferência enquanto você estava offline.",
   "Transactions.title": "Lançamentos",
   "Transactions.add": "Adicionar lançamento",
   "Transactions.readOnly": "Você pode ver os lançamentos, mas só editores podem alterá-los.",
@@ -2776,7 +2785,7 @@ export default {
   "TransferEditor.readOnly": "Você pode ver esta transferência, mas só editores podem alterá-la.",
   "TransferEditor.readOnlyNew": "Só editores podem adicionar transferências a {household}.",
   "TransferEditor.offline":
-    "Você pode ver as transferências. Para adicionar ou alterar uma, volte a ficar online.",
+    "Você ainda pode adicionar e alterar transferências. Elas ficam salvas neste dispositivo e são enviadas quando a conexão voltar.",
   "TransferEditor.needAccounts": "Uma transferência precisa de duas contas",
   "TransferEditor.needAccountsHint":
     "Adicione uma segunda conta, como dinheiro ou poupança, para mover dinheiro entre elas.",

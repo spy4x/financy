@@ -77,6 +77,7 @@ function browser() {
     openQueue: () => createMemoryOutboxStore<NotePayload, NoteItem>(),
     openTagsQueue: () => createMemoryOutboxStore<TagPayload, TagItem>(),
     openTransactionsQueue: () => createMemoryOutboxStore(),
+    openTransfersQueue: () => createMemoryOutboxStore(),
   }
   /** The user's copy with the pull answered by `answers`, one per pull, in order. */
   const copyOf = (userId: number, answers: unknown[] = []) => {
