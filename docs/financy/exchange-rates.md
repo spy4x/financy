@@ -44,7 +44,8 @@ is `demo` (the default) or `pro`.
   shown, CoinGecko is credited: "Data provided by CoinGecko".
 - **The household total values coins at today's price.** `account.total` converts a crypto
   account's balance at its coin's stored euro price; for a main currency other than the euro, it
-  crosses that price with the euro's latest ECB rate to the main currency. The total then reads
+  crosses that price with the euro's latest rate to the main currency (the ECB's, or the
+  fallback's for a currency the ECB lacks). The total then reads
   "about" and names the oldest price date (`coinPriceDate`) with CoinGecko's credit line. A coin
   with no stored price, or no euro rate to the main currency, is left out and named in `leftOut`,
   never counted as 0.
