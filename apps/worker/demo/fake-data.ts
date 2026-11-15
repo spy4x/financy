@@ -7,6 +7,7 @@ import { AccountKind } from "@domain/accounts"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import { TransactionKind } from "@domain/transactions"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
+import { isoDateInTz, zonedDateTime } from "@spy4x/time/tz"
 import recordedEcbRates from "../../../libs/server/money/fixtures/frankfurter-saturday-ecb.json" with {
   type: "json",
 }
@@ -196,6 +197,16 @@ export interface FakeTransfer {
   ago: number
 }
 
+/** One monthly limit of a demo household, from the current month on. */
+export interface FakeBudget {
+  /** The expense category, by its name. */
+  category: string
+  /** Above zero, in `currency`'s smallest unit. */
+  amount: number
+  currency: string
+  author: FakeMember
+}
+
 export interface FakeGroup {
   name: string
   /** The zone the group's days are cut in: one of {@link DEMO_TIME_ZONES}, by its name. */
@@ -212,6 +223,8 @@ export interface FakeGroup {
   entries: FakeEntry[]
   /** The household's transfers between its accounts, oldest first. */
   transfers: FakeTransfer[]
+  /** The household's monthly limits, each starting in the current month ({@link withBudgets}). */
+  budgets: FakeBudget[]
   notes: FakeNote[]
   /** Pending invitations: tied to an address, or `null` for a link anyone may use. */
   invitations: { email: string | null; role: GroupRole; author: FakeMember; createdAgo: number }[]
@@ -661,6 +674,7 @@ function fakeGroup(
     categories,
     entries: [],
     transfers: [],
+    budgets: [],
     notes,
     invitations,
     promotions,
@@ -720,6 +734,7 @@ export function withStandIns(
       ...transfer,
       author: as(transfer.author, writer),
     })),
+    budgets: group.budgets.map((budget) => ({ ...budget, author: as(budget.author, writer) })),
     notes: group.notes.map((note) => ({
       ...note,
       author: as(note.author, writer),
@@ -920,8 +935,9 @@ export function fakeDemoData(seed: number, now: Date): FakeDemoData {
   addPasskeys(randomTools(seed + PASSKEY_SEED_OFFSET), users)
   const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
   const transferTools = randomTools(seed + TRANSFER_SEED_OFFSET)
+  const budgetTools = randomTools(seed + BUDGET_SEED_OFFSET)
   const all = [...groups, ...small].map((group) =>
-    withTransfers(transferTools, withEntries(entryTools, group))
+    withBudgets(budgetTools, withTransfers(transferTools, withEntries(entryTools, group)), now)
   )
   return { users, groups: all, subscriptions, ...newsletter, operator }
 }
@@ -977,15 +993,17 @@ function addPasskeys(tools: ReturnType<typeof randomTools>, users: FakeUser[]): 
  * The sample groups of a new account (`you`), built from `seed`: one it owns and two of fake
  * people's where it is an editor and a viewer, so every role shows somewhere. Members are fake
  * people by index into the population of {@link fakeDemoData}; the groups are one to six weeks
- * old, and the account joined the two it does not own just now.
+ * old, and the account joined the two it does not own just now. `now` sets the month their limits
+ * start in and size against; the rest depends on `seed` alone.
  */
-export function fakeWorkspace(seed: number): FakeGroup[] {
+export function fakeWorkspace(seed: number, now: Date = new Date()): FakeGroup[] {
   const tools = randomTools(seed)
   const people = Array.from({ length: FAKE_COUNTS.users }, (_, i) => i)
     .filter((i) => i !== VIDEO_PERSON_INDEX)
   const taken = new Set<string>()
   const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
   const transferTools = randomTools(seed + TRANSFER_SEED_OFFSET)
+  const budgetTools = randomTools(seed + BUDGET_SEED_OFFSET)
   return YOUR_ROLES.map(([index, role]) =>
     withSampleFiles(fakeGroup(
       tools,
@@ -996,7 +1014,9 @@ export function fakeWorkspace(seed: number): FakeGroup[] {
       role,
       taken,
     ))
-  ).map((group) => withTransfers(transferTools, withEntries(entryTools, group)))
+  ).map((group) =>
+    withBudgets(budgetTools, withTransfers(transferTools, withEntries(entryTools, group)), now)
+  )
 }
 
 /** A photo and a PDF on the group's first note, and a photo on its second, named after them. */
@@ -1031,7 +1051,7 @@ export const ENTRY_MONTH = 30 * DAY
  * income: the monthly top-up from euros pays for it ({@link withTransfers}). Both hold with the
  * transfers counted as spending, so a month's spending in euros includes its top-up.
  */
-const ENTRY_PLANS: readonly {
+export const ENTRY_PLANS: readonly {
   account: number
   category: string
   kind: TransactionKind
@@ -1215,6 +1235,99 @@ function withTransfers(tools: Tools, group: FakeGroup): FakeGroup {
     add(0, 3, BTC_PURCHASE.euros, BTC_PURCHASE.satoshi, `Bitcoin purchase`, BTC_PURCHASE.ago, 0)
   }
   return { ...group, transfers: transfers.sort((a, b) => b.ago - a.ago) }
+}
+
+/** Budgets draw from a stream of their own, so adding them moved no other fake row. */
+const BUDGET_SEED_OFFSET = 555
+
+/**
+ * Food's own limit, in euro cents, so its bar does not add up its children's limits and turn red
+ * with Eating out. A calendar month touches the spending days of at most two of the
+ * {@link ENTRY_MONTH}s, so by {@link ENTRY_PLANS} Food spends at most 2 x 6 x 95.00 = 1,140.00
+ * euros of groceries, 2 x 3 x 32.00 = 192.00 dollars of eating out (or one {@link DEMO_OVER}
+ * coffee instead) and 2 x 3 x 300,000 dong of groceries. The dollars are at most 192 euros while
+ * a euro buys a dollar or more (the demo's rate is 1.1172), and the dong, which the ECB does not
+ * quote, at most 72 euros at 25,000 dong a euro: at most 1,404 euros, 70 % of this limit, so Food
+ * stays green.
+ */
+export const FOOD_LIMIT = 2_000_00
+
+/** The category {@link withBudgets} puts near its limit, and the entry it adds when it has none. */
+export const DEMO_NEAR = {
+  category: `Housing`,
+  account: 0,
+  memo: `Electricity bill`,
+  amount: [35_00, 60_00],
+} as const
+
+/** The category {@link withBudgets} puts over its limit, and the entry it adds when it has none. */
+export const DEMO_OVER = {
+  category: `Eating out`,
+  account: 1,
+  memo: `Coffee`,
+  amount: [3_00, 6_00],
+} as const
+
+/**
+ * `group` with monthly limits from the current month in its time zone: {@link DEMO_NEAR}'s at
+ * about 90 % of what it spent this month, {@link DEMO_OVER}'s at about 80 % (spending at 125 %),
+ * both in their one account's currency so no rate moves them, and Food's {@link FOOD_LIMIT}. Each
+ * limit is a whole euro or dollar: rounded up near, down over. A category with no entry this
+ * month (just after the 1st, or a young household) gets one, written between the month's start
+ * and now and after its account was made, so both bars always have spending. Every draw happens
+ * either way, so the month changes no other group's rows.
+ */
+function withBudgets(tools: Tools, group: FakeGroup, now: Date): FakeGroup {
+  const authorAt = authorPicker(group)
+  const month = isoDateInTz(now, group.timeZone).slice(0, 7)
+  const monthStart = zonedDateTime(`${month}-01`, `00:00`, group.timeZone)
+  const elapsed = Math.floor((now.getTime() - monthStart.getTime()) / 60_000)
+  const thisMonth = (ago: number) =>
+    isoDateInTz(new Date(now.getTime() - ago * 60_000), group.timeZone).startsWith(month)
+  const entries = [...group.entries]
+  const spentThisMonth = (plan: typeof DEMO_NEAR | typeof DEMO_OVER) => {
+    const account = group.accounts[plan.account]
+    const ago = tools.between(Math.min(elapsed, account.createdAgo) - 1, 1)
+    const amount = tools.int(plan.amount[0], plan.amount[1])
+    const share = tools.random()
+    const spent = entries
+      .filter((entry) => entry.category === plan.category && thisMonth(entry.ago))
+      .reduce((sum, entry) => sum + entry.amount, 0)
+    if (spent > 0) return spent
+    const author = authorAt(ago, share, account.author)
+    const { category, memo } = plan
+    entries.push({
+      account: plan.account,
+      category,
+      kind: TransactionKind.EXPENSE,
+      amount,
+      memo,
+      author,
+      ago,
+    })
+    return amount
+  }
+  const near = spentThisMonth(DEMO_NEAR)
+  const over = spentThisMonth(DEMO_OVER)
+  const author = group.accounts[0].author
+  const currency = (plan: typeof DEMO_NEAR | typeof DEMO_OVER) =>
+    group.accounts[plan.account].currency
+  const budgets: FakeBudget[] = [
+    {
+      category: DEMO_NEAR.category,
+      amount: Math.ceil(near / 90) * 100,
+      currency: currency(DEMO_NEAR),
+      author,
+    },
+    {
+      category: DEMO_OVER.category,
+      amount: Math.max(1, Math.floor(over / 125)) * 100,
+      currency: currency(DEMO_OVER),
+      author,
+    },
+    { category: `Food`, amount: FOOD_LIMIT, currency: `EUR`, author },
+  ]
+  return { ...group, entries: entries.sort((a, b) => b.ago - a.ago), budgets }
 }
 
 /** How many working days of exchange rates the demo holds. */

@@ -4,15 +4,21 @@ import { deviceName } from "@spy4x/net/user-agent"
 import { AccountKind } from "@domain/accounts"
 import { BillingStatus } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
-import { TransactionKind } from "@domain/transactions"
+import { type EntryRateLookup, summarizeLedger, TransactionKind } from "@domain/transactions"
+import { BudgetBand, budgetBand } from "@domain/budgets"
+import { convertAmount } from "@domain/money"
+import { isoDateInTz, zonedDateTime } from "@spy4x/time/tz"
 import {
   BTC_PURCHASE,
   DAY,
   DEMO_ACCOUNTS,
   DEMO_CATEGORIES,
+  DEMO_NEAR,
+  DEMO_OVER,
   DEMO_TIME_ZONES,
   ENTRY_MONTH,
   ENTRY_MONTHS,
+  ENTRY_PLANS,
   FAKE_COUNTS,
   FAKE_PASSKEYS,
   FAKE_RATE_DAYS,
@@ -22,6 +28,7 @@ import {
   fakePeople,
   fakeRates,
   fakeWorkspace,
+  FOOD_LIMIT,
   VIDEO_PERSON_INDEX,
   withStandIns,
 } from "./fake-data.ts"
@@ -306,7 +313,7 @@ Deno.test("the demo's population groups hold fake people only", () => {
 
 Deno.test("a new account owns one sample group and is an editor and a viewer in two more", () => {
   for (const seed of [1, 20261019, 99]) {
-    const groups = fakeWorkspace(seed)
+    const groups = fakeWorkspace(seed, NOW)
     const roles = groups.flatMap((group) =>
       group.members.filter((m) => m.member === "you").map((m) => m.role)
     )
@@ -324,7 +331,7 @@ Deno.test("a new account owns one sample group and is an editor and a viewer in 
 
 Deno.test("a new account's sample notes are written by several people over days", () => {
   for (const seed of [1, 20261019, 99]) {
-    const groups = fakeWorkspace(seed)
+    const groups = fakeWorkspace(seed, NOW)
     for (const group of groups) {
       const authors = new Set(group.notes.map((note) => note.author))
       expect(authors.size).toBeGreaterThanOrEqual(2)
@@ -347,7 +354,7 @@ Deno.test("a visitor's sample groups on another day's population are written onl
     const people = fakePeople(today + 1)
     const hasAccount = (member: FakeMember) =>
       member === `you` || accounts.has(people[member].email)
-    for (const group of fakeWorkspace(today + 1)) {
+    for (const group of fakeWorkspace(today + 1, NOW)) {
       const content = withStandIns(group, hasAccount)
       if (content === null) continue
       const roleOf = (member: FakeMember) =>
@@ -357,6 +364,7 @@ Deno.test("a visitor's sample groups on another day's population are written onl
       const writers = [
         ...content.entries.map((entry) => entry.author),
         ...content.transfers.map((transfer) => transfer.author),
+        ...content.budgets.map((budget) => budget.author),
         ...content.tags.map((tag) => tag.author),
         ...content.notes.flatMap((note) => [note.author, ...(note.edit ? [note.edit.by] : [])]),
       ]
@@ -379,14 +387,14 @@ Deno.test("a visitor's sample groups on another day's population are written onl
 })
 
 Deno.test("sample groups whose members all have accounts keep every author as drawn", () => {
-  for (const group of fakeWorkspace(7)) expect(withStandIns(group, () => true)).toEqual(group)
+  for (const group of fakeWorkspace(7, NOW)) expect(withStandIns(group, () => true)).toEqual(group)
 })
 
-/** Every group of the population and of a visitor's sample groups, on each of `seeds`. */
-function everyGroup(seeds: readonly number[] = [1, 7, 42, 20261020]): FakeGroup[] {
+/** Every group of the population and of a visitor's sample groups, on each of `seeds`, at `now`. */
+function everyGroup(seeds: readonly number[] = [1, 7, 42, 20261020], now = NOW): FakeGroup[] {
   return seeds.flatMap((seed) => [
-    ...fakeDemoData(seed, NOW).groups,
-    ...fakeWorkspace(seed),
+    ...fakeDemoData(seed, now).groups,
+    ...fakeWorkspace(seed, now),
   ])
 }
 
@@ -454,7 +462,12 @@ Deno.test("a household younger than three months has entries only from its accou
 
 Deno.test("no demo account's balance ever drops below zero, on a hundred nights' seeds", () => {
   expect(DEMO_ACCOUNTS.map((account) => account.currency)).toEqual([`EUR`, `USD`, `VND`, `BTC`])
-  for (const group of everyGroup(Array.from({ length: 100 }, (_, i) => i + 1))) {
+  const groups = [
+    ...everyGroup(Array.from({ length: 100 }, (_, i) => i + 1)),
+    // The entries the budgets add at the turn of a month count too.
+    ...BUDGET_NOWS.flatMap((now) => everyGroup([1, 7, 42], now)),
+  ]
+  for (const group of groups) {
     const balances = group.accounts.map((account) => account.startingBalance)
     // Entries and transfers in time order; a transfer's sent side leaves first.
     const moves = [
@@ -574,4 +587,150 @@ Deno.test("the demo's exchange rates fill the working days before now and skip t
     { base: `EUR`, quote: `JPY`, rate: `175.68`, date: `2026-10-19`, source: `frankfurter:ECB` },
     { base: `EUR`, quote: `USD`, rate: `1.1172`, date: `2026-10-19`, source: `frankfurter:ECB` },
   ])
+})
+
+/**
+ * Moments the budget tests run at: mid-month, twenty minutes into the 1st in each demo zone (the
+ * nightly reseed can run then), and the last day of a month.
+ */
+const BUDGET_NOWS: readonly Date[] = [
+  NOW,
+  ...DEMO_TIME_ZONES.map((zone) => zonedDateTime(`2026-11-01`, `00:20`, zone)),
+  new Date(`2026-11-30T18:00:00Z`),
+]
+
+/** Whether `ago` minutes before `now` is in `now`'s calendar month, in `timeZone`. */
+function inMonthOf(now: Date, timeZone: string, ago: number): boolean {
+  const date = isoDateInTz(new Date(now.getTime() - ago * 60_000), timeZone)
+  return date.slice(0, 7) === isoDateInTz(now, timeZone).slice(0, 7)
+}
+
+/**
+ * A rate lookup over the demo's own rates ({@link fakeRates}), as the rate repository answers it:
+ * the euro leg of the day or the latest earlier one, else none.
+ */
+function demoRates(now: Date): EntryRateLookup {
+  const rates = fakeRates(now)
+  return (base, quote, date) => {
+    const code = base === `EUR` ? quote : base
+    const found = rates
+      .filter((rate) => rate.quote === code && rate.date <= date)
+      .sort((a, b) => b.date.localeCompare(a.date))[0]
+    return Promise.resolve(found ?? null)
+  }
+}
+
+/**
+ * Each limit's band in `group` at `now`, as the budgets screen computes it: a single-currency
+ * category's spending summed this month, Food's through the ledger at the demo's rates.
+ */
+async function bandsOf(group: FakeGroup, now: Date): Promise<Map<string, BudgetBand>> {
+  const thisMonth = group.entries.filter((entry) => inMonthOf(now, group.timeZone, entry.ago))
+  const ledgerCategories = DEMO_CATEGORIES.flatMap((category) => [
+    { id: category.name, kind: category.kind, parentId: null },
+    ...(category.children ?? []).map((child) => ({
+      id: child.name,
+      kind: child.kind,
+      parentId: category.name,
+    })),
+  ])
+  const bands = new Map<string, BudgetBand>()
+  for (const budget of group.budgets) {
+    const ledger = await summarizeLedger(
+      thisMonth.map((entry) => ({
+        categoryId: entry.category,
+        currency: group.accounts[entry.account].currency,
+        date: isoDateInTz(new Date(now.getTime() - entry.ago * 60_000), group.timeZone),
+        amount: entry.kind === TransactionKind.INCOME ? entry.amount : -entry.amount,
+      })),
+      ledgerCategories,
+      { currency: budget.currency, from: ``, to: `` },
+      demoRates(now),
+    )
+    const spent = ledger.categories.find((row) => row.categoryId === budget.category)
+    bands.set(budget.category, budgetBand(spent?.spending ?? 0, budget.amount).band)
+  }
+  return bands
+}
+
+Deno.test("every demo household has one limit near, one over and the rest green this month, at any moment of the month", async () => {
+  expect(DEMO_ACCOUNTS[DEMO_NEAR.account].currency).toBe(`EUR`)
+  expect(DEMO_ACCOUNTS[DEMO_OVER.account].currency).toBe(`USD`)
+  for (const now of BUDGET_NOWS) {
+    for (const group of everyGroup([1, 7, 42], now)) {
+      const bands = await bandsOf(group, now)
+      expect(bands.get(DEMO_NEAR.category)).toBeGreaterThanOrEqual(BudgetBand.YELLOW)
+      expect(bands.get(DEMO_NEAR.category)).toBeLessThanOrEqual(BudgetBand.ORANGE)
+      expect(bands.get(DEMO_OVER.category)).toBe(BudgetBand.RED)
+      const all = [...bands.values()]
+      expect(all.filter((band) => band === BudgetBand.RED)).toHaveLength(1)
+      expect(all.filter((band) => band === BudgetBand.YELLOW || band === BudgetBand.ORANGE))
+        .toHaveLength(1)
+      expect(all.filter((band) => band === BudgetBand.GREEN)).toHaveLength(all.length - 2)
+      expect(bands.get(`Food`)).toBe(BudgetBand.GREEN)
+      // Each limit is a whole euro or dollar, in an expense category the household has.
+      for (const budget of group.budgets) {
+        expect(budget.amount % 100).toBe(0)
+        expect(budget.amount).toBeGreaterThan(0)
+      }
+    }
+  }
+})
+
+Deno.test("Food's limit stays green in the most a month can spend on food, at the demo's rates and at a dollar a euro", async () => {
+  // A calendar month touches the spending days of at most two entry months.
+  const worst = new Map<string, number>()
+  for (const plan of ENTRY_PLANS.filter((p) => [`Groceries`, `Eating out`].includes(p.category))) {
+    const currency = DEMO_ACCOUNTS[plan.account].currency
+    worst.set(currency, (worst.get(currency) ?? 0) + 2 * plan.per[1] * plan.amount[1])
+  }
+  // The added coffee comes only when Eating out had nothing this month.
+  expect(DEMO_OVER.amount[1]).toBeLessThan(worst.get(`USD`)!)
+  expect(Object.fromEntries(worst)).toEqual({ EUR: 1_140_00, USD: 192_00, VND: 1_800_000 })
+  const rate = await demoRates(NOW)(`USD`, `EUR`, `2026-10-19`)
+  const dollars = convertAmount(worst.get(`USD`)!, `USD`, `EUR`, rate)
+  if (!dollars.ok) throw new Error(`the demo has no dollar rate`)
+  // The ECB quotes no dong, so the demo's Food leaves it out.
+  expect(await demoRates(NOW)(`VND`, `EUR`, `2026-10-19`)).toBeNull()
+  const atDemoRates = worst.get(`EUR`)! + dollars.value
+  expect(budgetBand(atDemoRates, FOOD_LIMIT).band).toBe(BudgetBand.GREEN)
+  // The comment's margin: a dollar a euro, and the dong at 25,000 a euro.
+  const atWorstRates = worst.get(`EUR`)! + worst.get(`USD`)! + worst.get(`VND`)! / 250
+  expect(budgetBand(atWorstRates, FOOD_LIMIT).band).toBe(BudgetBand.GREEN)
+})
+
+Deno.test("a household with no rent this month gets an electricity bill dated this month, one with rent gets none, and eating out always has spending this month", () => {
+  const firstNight = BUDGET_NOWS.slice(1, -1)
+  let added = 0
+  let kept = 0
+  let firstNight1st = 0
+  let firstNightBills = 0
+  for (const now of BUDGET_NOWS) {
+    for (const group of everyGroup([1, 7, 42], now)) {
+      const thisMonth = group.entries.filter((entry) => inMonthOf(now, group.timeZone, entry.ago))
+      const of = (category: string) => thisMonth.filter((entry) => entry.category === category)
+      const bills = group.entries.filter((entry) => entry.memo === DEMO_NEAR.memo)
+      const rent = of(DEMO_NEAR.category).filter((entry) => entry.memo !== DEMO_NEAR.memo)
+      // At most one bill, this month, only when no rent was paid this month.
+      expect(bills.length).toBeLessThanOrEqual(1)
+      expect(bills.length).toBe(rent.length === 0 ? 1 : 0)
+      if (bills.length) added++
+      else kept++
+      expect(of(DEMO_OVER.category).length).toBeGreaterThan(0)
+      for (const entry of [...bills, ...of(DEMO_OVER.category)]) {
+        expect(inMonthOf(now, group.timeZone, entry.ago)).toBe(true)
+        expect(entry.ago).toBeGreaterThanOrEqual(0)
+        expect(entry.ago).toBeLessThan(group.accounts[entry.account].createdAgo)
+      }
+      // Twenty minutes into the month, almost no household has paid its rent yet.
+      if (firstNight.includes(now) && isoDateInTz(now, group.timeZone).endsWith(`-01`)) {
+        firstNight1st++
+        firstNightBills += bills.length
+      }
+    }
+  }
+  expect(added).toBeGreaterThan(10)
+  expect(kept).toBeGreaterThan(10)
+  expect(firstNight1st).toBeGreaterThan(10)
+  expect(firstNightBills).toBeGreaterThan(firstNight1st * 0.9)
 })
