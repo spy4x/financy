@@ -32,6 +32,7 @@ import { benchmarkOpen } from "./state/demo.ts"
 import { useAppText } from "@ui/i18n.ts"
 import { profileStore } from "./state/profile.ts"
 import { membersStore } from "./state/members.ts"
+import { importsStore } from "./state/imports.ts"
 import { createChangeCheck, createPull } from "./state/pull.ts"
 import { emailStore } from "./state/email.ts"
 import {
@@ -80,6 +81,7 @@ import { TransactionsView } from "./views/TransactionsView.tsx"
 import { TransactionEditorView } from "./views/TransactionEditorView.tsx"
 import { TransferEditorView } from "./views/TransferEditorView.tsx"
 import { TagEditorView } from "./views/TagEditorView.tsx"
+import { ImportNewView, ImportView } from "./views/ImportViews.tsx"
 import { ProfileView } from "./views/ProfileView.tsx"
 import { ApiTokenNewView } from "./views/ApiTokenNewView.tsx"
 import { InvitationNewView } from "./views/InvitationNewView.tsx"
@@ -207,6 +209,8 @@ const PAGES: {
   "/notes/new": () => <NoteEditorView key="new" />,
   "/notes/:noteId": (params) => <NoteEditorView key={params.noteId} noteId={params.noteId} />,
   "/tokens/new": () => <ApiTokenNewView />,
+  "/imports/new": () => <ImportNewView />,
+  "/imports/:importId": (params) => <ImportView key={params.importId} importId={params.importId} />,
   "/benchmark": () => <BenchmarkPage />,
   "/profile/:section?": (params) => <ProfileView section={params.section} />,
   "/": () => <HomeView />,
@@ -370,6 +374,7 @@ export function App() {
       onboardingStore.reset()
       preferencesState.reset()
       newNoteStore.reset()
+      importsStore.reset()
       return
     }
     // The REST read is the pull: it runs at start-up, after every reconnect and for every push
@@ -402,6 +407,7 @@ export function App() {
           await Promise.all([membersStore.refresh(), householdSettingsStore.refresh()])
         },
       },
+      imports: importsStore,
       notifications: notificationsStore,
       onboarding: onboardingStore,
       preferences: preferencesState,

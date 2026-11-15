@@ -325,6 +325,82 @@ export default {
   "GroupImport.imported": "グループをインポートしました",
   "GroupImport.importedBody": "{contents}を「{name}」にインポートしました。",
   "GroupImport.nameInvalid": "グループ名は1〜100文字で入力してください。",
+  "Import.title": "インポート",
+  "Import.file": "ファイル",
+  "Import.fileHint":
+    "{types} ファイル、{size} MB・{rows} 行まで。1 行目に列名を書くこともできます。",
+  "Import.browse": "ファイルを選択",
+  "Import.tooLarge": "{name} は {size} MB を超えています。",
+  "Import.wrongType": "{name} は {types} ファイルではありません。",
+  "Import.uploading": "{file} をアップロード中…",
+  "Import.uploadFailed": "ファイルをアップロードできませんでした。もう一度お試しください。",
+  "Import.recent": "最近のインポート",
+  "Import.statusReading": "読み込み中",
+  "Import.statusReady": "列の対応付け待ち",
+  "Import.statusFailed": "失敗",
+  "Import.statusCommitting": "インポート中",
+  "Import.statusCommitted": "インポート済み",
+  "Import.statusUndone": "取り消し済み",
+  "Import.reading": "{file} を読み込み中…",
+  "Import.readFailed": "このファイルを読み込めませんでした",
+  "Import.chooseAnother": "別のファイルを選択",
+  "Import.match": "列を対応付けてください",
+  "Import.checked": {
+    "other": "{count} 行のうち {valid} 行をインポートできます。",
+  },
+  "Import.further": "ファイルのさらに先",
+  "Import.line": "行",
+  "Import.problem": "問題",
+  "Import.more": {
+    "other": "ほか{count}件",
+  },
+  "Import.noValid": "すべての行に問題があります。ファイルを直すか、列を変えてください。",
+  "Import.committing": "インポート中…",
+  "Import.leave": "このページを離れても、インポートは続きます。",
+  "Import.leftOut": {
+    "other": "問題のある {count} 行はインポートされませんでした。",
+  },
+  "Import.saveFailed": "何もインポートされませんでした",
+  "Import.importAnother": "別のファイルをインポート",
+  "Import.undo": "インポートを取り消す",
+  "Import.undoing": "取り消し中…",
+  "Import.cancel": "キャンセル",
+  "Import.undone": "インポートを取り消しました",
+  "Import.gone": "このインポートはもうありません",
+  "Import.goneText": "インポートされなかったファイルは 1 日後に削除されます。",
+  "Import.viewer":
+    "{group} でのあなたの役割は閲覧者です。管理者かオーナーに編集者の役割を頼んでください。",
+  "Import.offline": "オフラインです。ファイルをインポートするには接続が必要です。",
+  "Import.failed": "問題が発生しました。何も変更されていません。もう一度お試しください。",
+  "ImportNotes.title": "メモをインポート",
+  "ImportNotes.fieldTitle": "タイトル",
+  "ImportNotes.fieldBody": "本文",
+  "ImportNotes.submit": {
+    "other": "{count}件のメモをインポート",
+  },
+  "ImportNotes.committing": {
+    "other": "{count}件のメモをインポート中…",
+  },
+  "ImportNotes.committingUncounted": "メモをインポート中…",
+  "ImportNotes.committed": {
+    "other": "{count}件のメモをインポートしました",
+  },
+  "ImportNotes.undoTitle": {
+    "other": "このインポートの{count}件のメモを削除しますか？",
+  },
+  "ImportNotes.undoText": {
+    "other":
+      "削除したメモに移り、グループの誰でも {count} 日間は復元できます。インポート後に編集したメモも削除されます。",
+  },
+  "ImportNotes.undoConfirm": {
+    "other": "{count}件のメモを削除",
+  },
+  "ImportNotes.undone": {
+    "other": "{count}件のメモを削除したメモに移しました。",
+  },
+  "ImportNotes.showRemoved": "削除したメモを表示",
+  "ImportNotes.goTo": "メモへ移動",
+  "ImportNotes.viewerTitle": "ここではメモをインポートできません",
   "GroupInvitations.viewersOnly":
     "このグループのプランでは、招待で追加できるのは閲覧者のみです。編集者や管理者も招待するには、有料プランにアップグレードしてください。",
   "GroupInvitations.copyNow": "今すぐこのリンクをコピーしてください。二度と表示されません。",
@@ -1074,6 +1150,7 @@ export default {
   "Notes.showLive": "メモを表示",
   "Notes.showDeleted": "削除したメモを表示",
   "Notes.select": "メモを選択",
+  "Notes.import": "メモをインポート…",
   "Notes.manageTags": "タグを管理",
   "Notes.readOnly": "これらのメモは閲覧できますが、変更できるのは編集者だけです。",
   "Notes.deletedBanner": {
@@ -1225,6 +1302,7 @@ export default {
     "オフラインのため、何も保存されませんでした。オンラインに戻ってから、もう一度お試しください。",
   "Preferences.failedInvalid": "それぞれの値をリストから選んでください。",
   "Preferences.updatedElsewhere": "別のデバイスから設定が更新されました。",
+  "Preferences.saved": "保存しました",
   "SeatPriceConfirm.hint":
     "メンバーが1人増えるごとに月額{price}が加算されるため、あと1人加わるとグループの料金は{now}から{next}になります。今の期間の残りの差額は、次回の請求書で請求されます。",
   "SeatPriceConfirm.hintYear":
@@ -1245,6 +1323,9 @@ export default {
   "ProfileAccount.none": "なし。",
   "ProfileAccount.noneProvider":
     "なし。{provider}から確認済みのメールアドレスが共有されませんでした。",
+  "ProfileAccount.loadingEmail": "メールアドレスを読み込んでいます",
+  "ProfileAccount.pendingEmail":
+    "新しいメールアドレス<email>{email}</email>はコードの入力待ちです。",
   "ProfileExport.asking": "リクエストしています…",
   "ProfileExport.never":
     "プロフィール、グループ、メモをJSONとCSVファイルにまとめたZIPです。作成には数分かかり、準備ができたらメールでお知らせします。",
@@ -1577,7 +1658,6 @@ export default {
   "Search.tooShort": {
     "other": "メモを検索するには{count}文字以上入力してください。",
   },
-  "Search.empty": "「{query}」に一致する項目はありません。",
   "Search.emptyOnDevice":
     "このデバイスには「{query}」に一致するものはありません。オンラインに戻ってから、もう一度検索してください。",
   "Search.notes": "メモ",
@@ -1597,7 +1677,9 @@ export default {
     "新規登録、アカウント作成、またはログイン方法を追加してゲストアカウントを保存",
   "Search.newNote": "新しいメモ",
   "Search.newTag": "新しいタグ",
+  "Search.importNotes": "メモをインポート",
   "Search.newGroup": "新しいグループ",
+  "Search.withText": "{label}：「{text}」",
   "Search.openOverview": "概要を開く",
   "Search.openNotifications": "通知を開く",
   "Search.openProfile": "プロフィールを開く",
@@ -1605,6 +1687,7 @@ export default {
   "Search.downloadDetail": "プロフィール、グループ、メモをまとめたZIP",
   "Search.downloadDetailPlain": "プロフィールとグループをまとめたZIP",
   "Search.changePicture": "プロフィール写真を変更",
+  "Search.turnOffTwoFactor": "2段階認証をオフにする",
   "Shortcuts.general": "全般",
   "Shortcuts.goTo": "移動",
   "Shortcuts.newNote": "新しいメモで",

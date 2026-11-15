@@ -48,6 +48,21 @@ export const IMPORT_ROW_ERRORS_MAX = 10
 /** How many of a person's imports the list answers, newest first. */
 export const IMPORT_LIST_MAX = 50
 
+/** How many valid rows one check reviews and answers, for a kind with a `review`. */
+export const IMPORT_REVIEW_ROWS_MAX = 5000
+
+/** The longest upload options, in bytes of their JSON text. */
+export const IMPORT_OPTIONS_MAX_BYTES = 2048
+
+/** The most upload options. */
+export const IMPORT_OPTIONS_MAX_KEYS = 20
+
+/** The most choice fields one row of a save may set. */
+export const IMPORT_CHOICE_FIELDS_MAX = 20
+
+/** The longest value of one choice, in characters. */
+export const IMPORT_CHOICE_MAX_LENGTH = 200
+
 /**
  * The outbox event kinds an import's steps are recorded under. Each rides on the group's change
  * log, like a note's, so the import's screen hears of every step through the change feed.
@@ -61,6 +76,22 @@ export const IMPORT_EVENTS = {
   undone: "import.undone",
 } as const
 
+/**
+ * What the apps know of a kind before a file is chosen: its id and the files it takes. The server
+ * kind reads its own limits from the same value, so the picker refuses exactly what the API
+ * would.
+ */
+export interface ImportKindLimits {
+  /** The kind's id in the upload, such as `notes`. */
+  id: string
+  /** File name endings it takes, lower case with the dot, as `<input accept>` reads them. */
+  accept: readonly string[]
+  /** The largest file it takes, in bytes, at most {@link IMPORT_FILE_MAX_BYTES}. */
+  maxBytes: number
+  /** The most rows a file may hold, the header not counted. */
+  maxRows: number
+}
+
 /** One field a row of a kind can map to. */
 export interface ImportField {
   /** The field's key in a mapping, such as `title`. */
@@ -69,10 +100,21 @@ export interface ImportField {
   label: string
   /** A row without it is refused. */
   required?: boolean
+  /**
+   * The person may set it per row at the save (`choices`), mapped to a column or not. A required
+   * field cannot be one.
+   */
+  choice?: boolean
 }
 
 /** Which column of the file each field takes its value from: field key to zero-based column. */
 export type ImportMapping = Record<string, number>
+
+/**
+ * The person's per-row choices at the save: the row's number among the file's rows (1 is the
+ * first, as a string key) to the values of the kind's choice fields.
+ */
+export type ImportChoices = Record<string, Record<string, string>>
 
 /** What the read job found in the file. */
 export interface ImportPreview {
@@ -104,6 +146,10 @@ export interface ImportSummary {
   savedCount: number | null
   /** Rows left out because they had errors; `null` until saved. */
   errorCount: number | null
+  /** Valid rows the kind's review left out, such as rows saved before; `null` without a review. */
+  skippedCount: number | null
+  /** What the kind's `readOptions` made of the upload's options; `null` for none. */
+  options: unknown
   /** Why reading or saving failed, in words. */
   failure: string | null
   createdAt: Date
@@ -129,6 +175,22 @@ export interface ImportCheckResult {
   withErrors: number
   /** The first {@link IMPORT_CHECK_ROWS_MAX} rows with errors, in file order. */
   rows: ImportRowErrors[]
+  /**
+   * Only for a kind with a `review`: the first {@link IMPORT_REVIEW_ROWS_MAX} valid rows, in file
+   * order, with what the review said of each.
+   */
+  reviews?: ImportRowReview[]
+}
+
+/** What a kind's review said of one valid row, with the row's cells. */
+export interface ImportRowReview {
+  /** Its number among the file's rows; 1 is the first. */
+  row: number
+  cells: string[]
+  /** Why a save leaves it out, in words, or `null` when it is saved. */
+  skip: string | null
+  /** Values the kind proposes for its choice fields; the person's choices override them. */
+  suggestions: Record<string, string>
 }
 
 // #region Errors
@@ -161,9 +223,40 @@ export const importUploadQuerySchema = type({
   name: `string > 0`,
 })
 
-/** The body of a check and of a save: the mapping. */
+const FIELD_KEY = `/^[a-zA-Z][a-zA-Z0-9_]*$/`
+
+/** At most `max` keys, and never an array, which arktype takes for an object. */
+function keysAtMost(max: number) {
+  return (value: object, ctx: { mustBe(expected: string): false }) =>
+    (!Array.isArray(value) && Object.keys(value).length <= max) ||
+    ctx.mustBe(`an object of at most ${max} fields`)
+}
+
+/**
+ * An upload's options: field-key names to text, at most {@link IMPORT_OPTIONS_MAX_KEYS}. What
+ * they mean is the kind's `readOptions`.
+ */
+export const importOptionsSchema = type({ [`[${FIELD_KEY}]`]: `string`, "+": `reject` })
+  .narrow(keysAtMost(IMPORT_OPTIONS_MAX_KEYS))
+
+/** The body of a check: the mapping. */
 export const importMappingBodySchema = type({
   mapping: { "[string]": `0 <= number.integer < 10000` },
+})
+
+/**
+ * The body of a save: the mapping and, optionally, the person's choices per row
+ * ({@link ImportChoices}). Which fields may be chosen and which rows exist is checked against the
+ * kind and the file.
+ */
+export const importCommitBodySchema = importMappingBodySchema.and({
+  "choices?": type({
+    "[/^[1-9][0-9]{0,8}$/]": type({
+      [`[${FIELD_KEY}]`]: `string <= ${IMPORT_CHOICE_MAX_LENGTH}`,
+      "+": `reject`,
+    }).narrow(keysAtMost(IMPORT_CHOICE_FIELDS_MAX)),
+    "+": `reject`,
+  }),
 })
 
 /** `value` checked against `schema`, or `INVALID_REQUEST` with each failed field. */
@@ -188,6 +281,29 @@ export function parseImportFileName(value: string): string {
     })
   }
   return name
+}
+
+/**
+ * The `options` query of an upload, or `undefined` when there is none: a JSON object of at most
+ * {@link IMPORT_OPTIONS_MAX_BYTES} bytes ({@link importOptionsSchema}), else `INVALID_REQUEST`.
+ * The length is checked before the text is parsed.
+ */
+export function parseImportOptions(raw: string | undefined): Record<string, string> | undefined {
+  if (raw === undefined) return undefined
+  const refuse = (message: string) =>
+    new ImportError("INVALID_REQUEST", message, { options: { code: `invalid` } })
+  if (new TextEncoder().encode(raw).byteLength > IMPORT_OPTIONS_MAX_BYTES) {
+    throw refuse(`The options are longer than ${IMPORT_OPTIONS_MAX_BYTES} bytes`)
+  }
+  let value: unknown
+  try {
+    value = JSON.parse(raw)
+  } catch {
+    throw refuse(`The options are not JSON`)
+  }
+  const result = importOptionsSchema(value)
+  if (result instanceof type.errors) throw refuse(`The options ${result.summary}`)
+  return result
 }
 
 /** An uploaded file: its bytes, fingerprinted by their SHA-256 so a retried upload is told apart. */
@@ -231,6 +347,8 @@ export interface ImportCreatePayload {
   kind: string
   fileName: string
   file: ImportUpload
+  /** The upload's options, for the kind's `readOptions`; a kind without one refuses any. */
+  options?: Record<string, string>
   requestId?: string
   /** Makes a retry of this upload safe; see the idempotency middleware on the command bus. */
   idempotencyKey?: string
@@ -260,10 +378,15 @@ export class ImportCheckQuery implements Query<ImportMappingPayload, ImportCheck
   constructor(public data: ImportMappingPayload) {}
 }
 
-/** Saves the import under a mapping: stores the mapping and queues the commit job. */
-export class ImportCommitCommand implements Command<ImportMappingPayload, ImportSummary> {
+export interface ImportCommitPayload extends ImportMappingPayload {
+  /** The person's per-row choices; only the kind's choice fields, only rows the file has. */
+  choices?: ImportChoices
+}
+
+/** Saves the import under a mapping: stores the mapping and choices and queues the commit job. */
+export class ImportCommitCommand implements Command<ImportCommitPayload, ImportSummary> {
   __resultType?: ImportSummary
-  constructor(public data: ImportMappingPayload) {}
+  constructor(public data: ImportCommitPayload) {}
 }
 
 export interface ImportUndoPayload extends ImportRef {
@@ -294,3 +417,106 @@ export class ImportListQuery implements Query<ImportListPayload, { imports: Impo
   constructor(public data: ImportListPayload) {}
 }
 // #endregion Commands and queries
+
+// #region Operator area
+/** A status chip of the admin list; `all` is every import. */
+export type AdminImportStatusFilter =
+  | `all`
+  | `failed`
+  | `reading`
+  | `ready`
+  | `committing`
+  | `committed`
+  | `undone`
+
+/** The chips in their order: failures first, since they are what an operator looks for. */
+export const ADMIN_IMPORT_STATUS_FILTERS: readonly AdminImportStatusFilter[] = [
+  `all`,
+  `failed`,
+  `reading`,
+  `ready`,
+  `committing`,
+  `committed`,
+  `undone`,
+]
+
+/** The status each chip holds; `all` holds every one. */
+export const ADMIN_IMPORT_FILTER_STATUS: Readonly<
+  Record<AdminImportStatusFilter, ImportStatus | null>
+> = {
+  all: null,
+  failed: ImportStatus.FAILED,
+  reading: ImportStatus.READING,
+  ready: ImportStatus.READY,
+  committing: ImportStatus.COMMITTING,
+  committed: ImportStatus.COMMITTED,
+  undone: ImportStatus.UNDONE,
+}
+
+/** How many imports one page of the admin list holds. */
+export const ADMIN_IMPORTS_PAGE_SIZE = 50
+
+/** The admin list's chip and page, as the address and the API's query carry them. */
+export interface AdminImportFilter {
+  status: AdminImportStatusFilter
+  /** 1-based. */
+  page: number
+}
+
+/**
+ * Reads the admin list's filter from query parameters (`status`, `page`). A value it does not
+ * understand falls back to the default, so a hand-edited address still shows a list.
+ */
+export function parseAdminImportFilter(params: URLSearchParams): AdminImportFilter {
+  const raw = params.get(`status`) as AdminImportStatusFilter | null
+  const status = raw && ADMIN_IMPORT_STATUS_FILTERS.includes(raw) ? raw : `all`
+  const page = Number(params.get(`page`))
+  return { status, page: Number.isInteger(page) && page >= 1 && page <= 100_000 ? page : 1 }
+}
+
+/** The query string of `filter`, leaving out every part at its default. No leading `?`. */
+export function adminImportFilterQuery(filter: AdminImportFilter): string {
+  const params = new URLSearchParams()
+  if (filter.status !== `all`) params.set(`status`, filter.status)
+  if (filter.page > 1) params.set(`page`, String(filter.page))
+  return params.toString()
+}
+
+/**
+ * One import as an operator sees it: where it is, its counts and its timing. Never the file, its
+ * name, its cells, or the options and choices a person gave: those are the group's data.
+ */
+export interface AdminImportRow {
+  id: string
+  group: { id: string; name: string }
+  kind: string
+  status: ImportStatus
+  /** The person who uploaded it. */
+  uploaderId: number
+  rowCount: number | null
+  savedCount: number | null
+  errorCount: number | null
+  skippedCount: number | null
+  /** Why reading or saving failed, in the kind's words. */
+  failure: string | null
+  createdAt: string
+  readAt: string | null
+  failedAt: string | null
+  commitRequestedAt: string | null
+  committedAt: string | null
+  undoneAt: string | null
+  /** From upload to read (or to a failed read), in milliseconds; `null` while reading. */
+  readMs: number | null
+  /** From the save's start to its end (or its failure), in milliseconds; `null` until then. */
+  saveMs: number | null
+}
+
+/** One page of the admin list and the count of each chip. */
+export interface AdminImportListResponse {
+  imports: AdminImportRow[]
+  counts: Record<AdminImportStatusFilter, number>
+  total: number
+  page: number
+  pageSize: number
+}
+// #endregion Operator area

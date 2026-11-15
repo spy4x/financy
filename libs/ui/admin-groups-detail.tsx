@@ -55,6 +55,7 @@ import { useFormat, When } from "@spy4x/preact-ui/format"
 import { Rich } from "@spy4x/preact-ui/i18n"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAdminText } from "./i18n.ts"
+import { SCROLLING_TABS } from "./tab-row.ts"
 import { isolate, Isolated } from "@spy4x/preact-ui/bdi"
 import { zoneLabel } from "@spy4x/time/tz"
 import { type AdminPageCommand, adminPageCommand } from "./admin-palette-commands.ts"
@@ -92,16 +93,17 @@ const GROUP_TAB_KEYS: Record<typeof ADMIN_GROUP_TABS[number], string> = {
 
 /**
  * The group page's commands for the admin palette: one per tab the page shows, each running what
- * clicking the tab runs. No Files while the notes are off, as the page draws no Files tab then, and
- * none while the group is not shown.
+ * clicking the tab runs. No Files while the notes or files are off, as the page draws no Files tab
+ * then, and none while the group is not shown. `files` left out: on.
  */
 export function adminGroupPageCommands(
   t: Translator<string>,
-  page: { shown: boolean; notes: boolean },
+  page: { shown: boolean; notes: boolean; files?: boolean },
   onTab: (tab: string) => void,
 ): AdminPageCommand[] {
   if (!page.shown) return []
-  return ADMIN_GROUP_TABS.filter((id) => id !== `files` || page.notes).map((id) =>
+  const filesTab = page.notes && page.files !== false
+  return ADMIN_GROUP_TABS.filter((id) => id !== `files` || filesTab).map((id) =>
     adminPageCommand(t, `group-tab-${id}`, GROUP_TAB_KEYS[id], () => onTab(id), [`tab`, `вкладка`])
   )
 }
@@ -209,6 +211,11 @@ export interface AdminGroupScreenProps {
    * on.
    */
   notes?: boolean
+  /**
+   * Whether files are on (`FILES`). Off, the Files tab is left out, since without a store a file
+   * can be neither shown nor removed, and `tab: "files"` shows the Members tab. Left out: on.
+   */
+  filesOn?: boolean
   navigate?: Navigate
 }
 
@@ -269,7 +276,7 @@ export function AdminGroupScreen(props: AdminGroupScreenProps): JSX.Element {
       label: <TabLabel text={t.t(`AdminGroup.invitations`)} count={pending.length} />,
       content: <Invitations {...props} detail={detail} deleted={deleted} />,
     },
-    ...(props.notes === false ? [] : [{
+    ...(props.notes === false || props.filesOn === false ? [] : [{
       id: `files`,
       label: <TabLabel text={t.t(`AdminGroup.files`)} count={counts.files} />,
       content: <Files {...props} detail={detail} deleted={deleted} />,
@@ -435,7 +442,7 @@ export function AdminGroupScreen(props: AdminGroupScreenProps): JSX.Element {
         onChange={props.onTab}
         lazy
         label={t.t(`AdminGroup.about`)}
-        listClass="flex-nowrap overflow-x-auto pb-px"
+        {...SCROLLING_TABS}
         panelClass="pt-4"
         tabDataE2E="admin-group-tab"
       />
