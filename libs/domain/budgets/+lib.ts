@@ -7,13 +7,21 @@ import {
   canRename,
   type GroupImportIssue,
   type GroupRole,
+  OVERVIEW_RANGE_MAX_DAYS,
+  overviewPeriods,
   plainEntryProblem,
+  type WidgetDefinition,
 } from "@domain/groups"
-import { CategoryKind } from "@domain/categories"
-import type { EntryRateLookup, Ledger } from "@domain/transactions"
+import { type CategoryIcon, CategoryKind } from "@domain/categories"
+import {
+  type EntryRateLookup,
+  type Ledger,
+  transactionWidgetPayloadSchema,
+} from "@domain/transactions"
 import { convertMoney, currencyCode } from "@spy4x/platform/universal/money"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { parseIsoDate, shiftMonth } from "@spy4x/time/date"
+import { isoDateInTz, isValidTimeZone } from "@spy4x/time/tz"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
 
 /**
@@ -809,6 +817,188 @@ export async function envelopeMonth(
   return { envelopes, readyToAssign: safe(readyToAssign), leftOut: [...leftOut].sort() }
 }
 // #endregion Month
+
+// #region Overview widget
+/*
+ * The budgets widget on the household overview (#281): one calendar month's bars and a sentence
+ * over them. Its figures are `budget.month`'s for that month, read through the same handler, so
+ * the overview and the Budgets screen never disagree. Every member reads budgets, so every member
+ * sees it; they are the household's own figures, so the operator's group page draws none of them.
+ */
+
+/** The budgets widget's id. A saved layout keeps it: never rename it. */
+export const BUDGET_WIDGET_IDS = { month: "budgets.month" } as const
+
+/** The query operation of the budgets widget: `budget.month`'s answer for the range's month. */
+export const BUDGET_WIDGET_OPERATION = "budget.widget.month"
+
+/** The budgets widget, full width: it draws a bar per budget. */
+export const BUDGET_WIDGETS: readonly WidgetDefinition[] = [{
+  id: BUDGET_WIDGET_IDS.month,
+  titleKey: "BudgetWidgets.title",
+  size: "full",
+  canView: canRead,
+  operation: BUDGET_WIDGET_OPERATION,
+  operatorView: "never",
+}]
+
+/**
+ * The month, `YYYY-MM`, the budgets widget shows for a range ending on `to`: the calendar month
+ * holding the range's last day, but never later than the household's current month in `timeZone`
+ * at `now`. "This year" on 16 November is November, and "Last month" is last month.
+ */
+export function budgetWidgetMonth(to: string, now: Date, timeZone: string): string {
+  const today = isoDateInTz(now, timeZone)
+  return (to < today ? to : today).slice(0, 7)
+}
+
+/** What the budgets widget query carries: the overview's widget payload, as every widget gets it. */
+export interface BudgetWidgetPayload {
+  actor: Actor
+  groupId: string
+  from: string
+  to: string
+  /** The zone the page cut "today" in. Checked and otherwise unused: the household's own decides. */
+  timeZone: string
+}
+
+/**
+ * A budgets widget payload as the handler needs it. Throws `BudgetError("INVALID_REQUEST")` for a
+ * payload that fails the overview's widget schema, a range that does not run forward or is longer
+ * than a year, and a zone the runtime does not know. Whatever the range, one month is read.
+ */
+export function parseBudgetWidgetRequest(value: unknown): Omit<BudgetWidgetPayload, "actor"> {
+  const request = parseBudgetRequest(transactionWidgetPayloadSchema, value)
+  if (overviewPeriods(request) === null) {
+    throw new BudgetError(
+      "INVALID_REQUEST",
+      `A range runs forward and spans at most ${OVERVIEW_RANGE_MAX_DAYS} days`,
+      { to: { code: "after", values: { rule: request.from } } },
+    )
+  }
+  if (!isValidTimeZone(request.timeZone)) {
+    throw new BudgetError("INVALID_REQUEST", "The time zone is unknown", {
+      timeZone: { code: "timeZone" },
+    })
+  }
+  return request
+}
+
+/** A category as the widget draws its bar: its name, icon and colour, and where it sits. */
+export interface BudgetWidgetCategory {
+  id: string
+  name: string
+  icon: CategoryIcon
+  color: string
+  parentId: string | null
+}
+
+/**
+ * The budgets widget's answer: exactly what `budget.month` answers for the month, and the names
+ * of its rows' categories, which the overview has no other way to read.
+ */
+export interface BudgetWidgetResult {
+  budgets: BudgetMonth
+  categories: BudgetWidgetCategory[]
+}
+
+/** The budgets of the month the range ends in, as the Budgets screen reads them. */
+export class BudgetWidgetQuery implements Query<BudgetWidgetPayload, BudgetWidgetResult> {
+  __resultType?: BudgetWidgetResult
+  constructor(public data: BudgetWidgetPayload) {}
+}
+
+/** A budget past its limit, or an envelope below zero, by how much. */
+export interface BudgetOver {
+  categoryId: string
+  /** Above zero, in the smallest unit of `currency`. */
+  amount: number
+  currency: string
+}
+
+/** How a month's budgets stand: what the widget's sentence says. */
+export interface BudgetStanding {
+  /** The budgets the sentence counts. */
+  total: number
+  onTrack: number
+  /** The budgets that are over, the most over first. */
+  over: BudgetOver[]
+  /**
+   * Currencies the counted figures left out for lack of a rate. The month names them for its whole
+   * ledger, not per category, so no sentence can say which budget is on track.
+   */
+  leftOut: string[]
+  /** A counted figure is past the safe range, so no sentence can be said either. */
+  tooLarge: boolean
+}
+
+/**
+ * How `month`'s budgets stand. Under monthly limits a budget is a category's own limit: a parent
+ * whose limit is its children's sum is not counted again, as its children are. It is over when its
+ * spending is past the limit (band red). Under envelopes a budget is a top-level envelope (a
+ * parent's holds its children's) that holds or moved money this month, or was spent from; it is
+ * over when what is available is below zero. Every other budget is on track. The most over comes
+ * first: by amount when every over one shares a currency, else by how far past its limit it is.
+ */
+export function budgetStanding(month: BudgetMonth): BudgetStanding {
+  const over: (BudgetOver & { limit: number })[] = []
+  let total = 0
+  let tooLarge = false
+  if (month.method === BudgetMethod.ENVELOPES) {
+    const listed = new Set(month.rows.map((row) => row.categoryId))
+    for (const row of month.rows) {
+      const envelope = row.envelope
+      if (!envelope || (row.parentId !== null && listed.has(row.parentId))) continue
+      const { assigned, movedIn, movedOut, available } = envelope
+      if (assigned === 0 && movedIn === 0 && movedOut === 0 && available === 0) continue
+      total++
+      if (available === null) tooLarge = true
+      else if (available < 0) {
+        over.push({
+          categoryId: row.categoryId,
+          amount: -available,
+          currency: month.baseCurrency,
+          limit: 0,
+        })
+      }
+    }
+  } else {
+    for (const row of month.rows) {
+      if (row.limit === null || row.source !== BudgetLimitSource.OWN) continue
+      total++
+      if (row.spending === null) tooLarge = true
+      else if (row.band === BudgetBand.RED) {
+        over.push({
+          categoryId: row.categoryId,
+          amount: row.spending - row.limit.amount,
+          currency: row.currency,
+          limit: row.limit.amount,
+        })
+      }
+    }
+  }
+  const oneCurrency = new Set(over.map((item) => item.currency)).size <= 1
+  // Past its limit by spending / limit; compared crosswise in integers, so no ratio is rounded.
+  const byShare = (a: typeof over[number], b: typeof over[number]) => {
+    const left = BigInt(a.amount + a.limit) * BigInt(b.limit)
+    const right = BigInt(b.amount + b.limit) * BigInt(a.limit)
+    return left === right ? 0 : left > right ? -1 : 1
+  }
+  over.sort(oneCurrency ? (a, b) => b.amount - a.amount : byShare)
+  const counted = month.method === BudgetMethod.ENVELOPES
+    ? month.envelopeLeftOut ?? []
+    : month.rows.flatMap((row) =>
+      row.limit !== null && row.source === BudgetLimitSource.OWN ? row.leftOut : []
+    )
+  return {
+    total,
+    onTrack: total - over.length,
+    over: over.map(({ limit: _limit, ...item }) => item),
+    leftOut: [...new Set(counted)].sort(),
+    tooLarge,
+  }
+}
+// #endregion Overview widget
 
 // #region Ports
 export interface BudgetSetInput {

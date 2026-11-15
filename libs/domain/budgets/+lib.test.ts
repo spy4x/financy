@@ -18,6 +18,8 @@ import {
   assertCanSetBudgetMethod,
   assertCanWriteBudgets,
   BUDGET_AMOUNT_MAX,
+  BUDGET_WIDGET_IDS,
+  BUDGET_WIDGETS,
   type BudgetAssignment,
   BudgetBand,
   budgetBand,
@@ -29,13 +31,17 @@ import {
   budgetMethodAt,
   budgetMethodExportProblems,
   budgetMethodSetPayloadSchema,
+  type BudgetMonth,
   budgetMonth,
   budgetMonthPayloadSchema,
   budgetMovePayloadSchema,
   budgetMoveReferenceProblems,
   type BudgetMoveTotal,
   budgetReferenceProblems,
+  type BudgetRow,
   budgetSetPayloadSchema,
+  budgetStanding,
+  budgetWidgetMonth,
   ENVELOPE_RUN_MAX_MONTHS,
   envelopeMonth,
   envelopeRunStart,
@@ -43,6 +49,7 @@ import {
   parseBudgetMethodExportEntry,
   parseBudgetMoveExportEntry,
   parseBudgetRequest,
+  parseBudgetWidgetRequest,
   rowsInExpenseCategories,
 } from "./+lib.ts"
 
@@ -945,5 +952,196 @@ describe("budgets in a household's export file", () => {
       { index: 1, issue: { code: "notFound", field: "fromCategoryId" } },
       { index: 2, issue: { code: "notFound", field: "toCategoryId" } },
     ])
+  })
+})
+
+describe("the budgets widget on the overview", () => {
+  it("is one full-width members-only widget under a stable id, seen by every member", () => {
+    expect(BUDGET_WIDGETS.map((widget) => widget.id)).toEqual(["budgets.month"])
+    expect(BUDGET_WIDGET_IDS.month).toBe("budgets.month")
+    const [widget] = BUDGET_WIDGETS
+    expect(widget.size).toBe("full")
+    expect(widget.operatorView).toBe("never")
+    expect(widget.operation).toBe("budget.widget.month")
+    expect(
+      [GroupRole.VIEWER, GroupRole.EDITOR, GroupRole.ADMIN, GroupRole.OWNER].map(widget.canView),
+    )
+      .toEqual([true, true, true, true])
+  })
+})
+
+describe("the month the budgets widget shows", () => {
+  const NOV_16 = new Date("2026-11-16T05:00:00.000Z")
+  it("is the month of a range's last day when that day has passed", () => {
+    expect(budgetWidgetMonth("2026-10-31", NOV_16, "UTC")).toBe("2026-10")
+    expect(budgetWidgetMonth("2025-02-28", NOV_16, "UTC")).toBe("2025-02")
+  })
+
+  it("is this month for this year, or any range that ends later, never a future month", () => {
+    expect(budgetWidgetMonth("2026-12-31", NOV_16, "UTC")).toBe("2026-11")
+    expect(budgetWidgetMonth("2027-03-01", NOV_16, "UTC")).toBe("2026-11")
+    expect(budgetWidgetMonth("2026-11-16", NOV_16, "UTC")).toBe("2026-11")
+  })
+
+  it("counts the month in the household's zone: past midnight on the 1st there, it is the new month", () => {
+    // 17:30 UTC on 30 November is 00:30 on 1 December in Ho Chi Minh City.
+    const now = new Date("2026-11-30T17:30:00.000Z")
+    expect(budgetWidgetMonth("2026-12-31", now, "Asia/Ho_Chi_Minh")).toBe("2026-12")
+    expect(budgetWidgetMonth("2026-12-31", now, "UTC")).toBe("2026-11")
+  })
+})
+
+describe("the budgets widget payload", () => {
+  const payload = { groupId, from: "2026-01-01", to: "2026-12-31", timeZone: "Asia/Singapore" }
+  it("takes the overview's range of up to a year", () => {
+    expect(parseBudgetWidgetRequest(payload)).toEqual(payload)
+  })
+
+  it("refuses a range that runs backwards, is past a year, is no date, an unknown zone or an extra field", () => {
+    const refused = [
+      { ...payload, from: "2026-12-31", to: "2026-01-01" },
+      { ...payload, from: "2025-01-01", to: "2026-12-31" },
+      { ...payload, to: "2026-02-30" },
+      { ...payload, timeZone: "Mars/Olympus" },
+      { ...payload, month: "2026-11" },
+      { ...payload, groupId: "x" },
+    ]
+    expect(refused.map((value) => codeOf(() => parseBudgetWidgetRequest(value))))
+      .toEqual(Array(refused.length).fill("INVALID_REQUEST"))
+  })
+})
+
+describe("how a month's budgets stand", () => {
+  const limitRow = (
+    categoryId: string,
+    spending: number | null,
+    limit: number,
+    extra: Partial<BudgetRow> = {},
+  ): BudgetRow => {
+    const banded = spending === null ? null : budgetBand(spending, limit)
+    return {
+      categoryId,
+      parentId: null,
+      limit: { amount: limit, currency: "USD" },
+      source: BudgetLimitSource.OWN,
+      spending,
+      currency: "USD",
+      band: banded?.band ?? null,
+      percent: banded?.percent ?? null,
+      leftOut: [],
+      ...extra,
+    }
+  }
+  const month = (rows: BudgetRow[], extra: Partial<BudgetMonth> = {}): BudgetMonth => ({
+    month: "2026-11",
+    from: "2026-11-01",
+    to: "2026-11-30",
+    baseCurrency: "USD",
+    rows,
+    method: BudgetMethod.LIMITS,
+    methodVersion: null,
+    ...extra,
+  })
+
+  it("counts every own limit as on track while none is past it, at exactly 100% too", () => {
+    const standing = budgetStanding(month([limitRow(food, 100, 500), limitRow(rent, 500, 500)]))
+    expect(standing).toEqual({ total: 2, onTrack: 2, over: [], leftOut: [], tooLarge: false })
+  })
+
+  it("names one over budget by how far past its limit it is", () => {
+    const standing = budgetStanding(month([limitRow(food, 580, 500), limitRow(rent, 100, 500)]))
+    expect(standing.onTrack).toBe(1)
+    expect(standing.over).toEqual([{ categoryId: food, amount: 80, currency: "USD" }])
+  })
+
+  it("puts the most over first, by amount when every over one shares a currency", () => {
+    const standing = budgetStanding(
+      month([limitRow(food, 520, 500), limitRow(rent, 1300, 1000), limitRow(cafes, 90, 50)]),
+    )
+    expect(standing.total).toBe(3)
+    expect(standing.onTrack).toBe(0)
+    expect(standing.over.map((item) => [item.categoryId, item.amount])).toEqual([
+      [rent, 300],
+      [cafes, 40],
+      [food, 20],
+    ])
+  })
+
+  it("puts the most over first by share of its limit when the over ones are in different currencies", () => {
+    const vnd = { limit: { amount: 1_000_000, currency: "VND" }, currency: "VND" }
+    const standing = budgetStanding(
+      month([limitRow(rent, 1_500_000, 1_000_000, vnd), limitRow(food, 600, 500)]),
+    )
+    // 150% of its limit before 120%, though 500,000 VND is the larger number.
+    expect(standing.over.map((item) => item.categoryId)).toEqual([rent, food])
+  })
+
+  it("leaves out rows with no limit, and a parent whose limit is its children's sum", () => {
+    const standing = budgetStanding(month([
+      limitRow(food, 900, 800, { source: BudgetLimitSource.CHILDREN }),
+      limitRow(groceries, 900, 800, { parentId: food }),
+      { ...limitRow(rent, 50, 1), limit: null, source: null, band: null, percent: null },
+    ]))
+    expect(standing.total).toBe(1)
+    expect(standing.over.map((item) => item.categoryId)).toEqual([groceries])
+  })
+
+  it("names the currencies a counted budget left out, and says when a figure was too large", () => {
+    expect(budgetStanding(month([limitRow(food, 100, 500, { leftOut: ["THB", "EUR"] })])).leftOut)
+      .toEqual(["EUR", "THB"])
+    expect(budgetStanding(month([limitRow(food, null, 500)])).tooLarge).toBe(true)
+  })
+
+  it("counts nothing in a month with no budgets", () => {
+    expect(budgetStanding(month([]))).toEqual({
+      total: 0,
+      onTrack: 0,
+      over: [],
+      leftOut: [],
+      tooLarge: false,
+    })
+  })
+
+  it("counts top-level envelopes that hold or moved money, over when below zero, the most over first", () => {
+    const envelope = (available: number | null, assigned = 0, movedIn = 0, movedOut = 0) => ({
+      assigned,
+      movedIn,
+      movedOut,
+      spent: 0,
+      available,
+    })
+    const row = (
+      categoryId: string,
+      env: BudgetRow["envelope"],
+      parentId: string | null = null,
+    ) => ({
+      ...limitRow(categoryId, 0, 1),
+      limit: null,
+      source: null,
+      band: null,
+      percent: null,
+      parentId,
+      envelope: env,
+    })
+    const standing = budgetStanding(month([
+      row(food, envelope(-30, 100)),
+      row(groceries, envelope(-130, 0), food),
+      row(rent, envelope(-200)),
+      row(cafes, envelope(0)),
+      row("019a5b0e-1af5-7f04-8ae4-b1ee5d114005", envelope(0, 0, 50, 50)),
+    ], { method: BudgetMethod.ENVELOPES, envelopeLeftOut: ["THB"] }))
+    // Groceries is in Food's envelope; Cafes holds nothing; the fifth moved money in and out.
+    expect(standing.total).toBe(3)
+    expect(standing.onTrack).toBe(1)
+    expect(standing.over).toEqual([
+      { categoryId: rent, amount: 200, currency: "USD" },
+      { categoryId: food, amount: 30, currency: "USD" },
+    ])
+    expect(standing.leftOut).toEqual(["THB"])
+    expect(
+      budgetStanding(month([row(food, envelope(null, 5))], {
+        method: BudgetMethod.ENVELOPES,
+      })).tooLarge,
+    ).toBe(true)
   })
 })
