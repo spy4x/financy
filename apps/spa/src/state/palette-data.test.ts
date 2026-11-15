@@ -96,15 +96,27 @@ describe(`createPaletteData`, () => {
     stop()
   })
 
-  it(`reads the new household's copy on a switch and drops the old one's late answer`, async () => {
+  it(`shows nothing of the old household after a switch until the new one's copy is read`, async () => {
+    const { groupId, reads, data } = setup()
+    const stop = data.watch()
+    reads[0].answer(lists([`Home wallet`]))
+    await settle()
+    groupId.value = STUDIO
+    expect(reads.map((read) => read.groupId)).toEqual([HOME, STUDIO])
+    expect(data.accounts.value).toEqual([])
+    reads[1].answer(lists([`Studio card`]))
+    await settle()
+    expect(names(data.accounts.value)).toEqual([`Studio card`])
+    stop()
+  })
+
+  it(`keeps the new household's copy when the old one's read answers late`, async () => {
     const { groupId, reads, data } = setup()
     const stop = data.watch()
     groupId.value = STUDIO
-    expect(reads.map((read) => read.groupId)).toEqual([HOME, STUDIO])
-    reads[0].answer(lists([`Home wallet`]))
-    await settle()
-    expect(data.accounts.value).toEqual([])
     reads[1].answer(lists([`Studio card`]))
+    await settle()
+    reads[0].answer(lists([`Home wallet`]))
     await settle()
     expect(names(data.accounts.value)).toEqual([`Studio card`])
     stop()
