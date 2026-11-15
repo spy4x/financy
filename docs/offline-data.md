@@ -110,6 +110,11 @@ kind the device does not know, rows and tombstones alike.
 Transfers come the same way: live ones in `upserts.transfers`, a deleted one as a tombstone of kind
 `transfers`. The SPA keeps them next to the entries, the latest date first.
 
+Repeating rules come the same way: live ones in `upserts.recurring_rules`, a deleted one as a
+tombstone of kind `recurring_rules`. The job that makes their entries records a change of the rule
+whenever it moves the rule's `madeThrough` or `pausedReason`, so a device reads those again. The
+SPA does not keep rules yet.
+
 ## Which answers count as "unreachable"
 
 The copy answers when there is no answer at all: no network, a failed connection, a closed socket.

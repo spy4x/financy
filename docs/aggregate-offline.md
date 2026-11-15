@@ -66,7 +66,8 @@ A level 3 aggregate is read by the changes pull: a device asks only for what cha
 cursor ([offline-data.md](offline-data.md#notes-and-tags-the-changes-pull)). Notes and tags take
 part on both sides; copy them. Entries (`libs/server/transactions/transaction-changes.ts`,
 `offline/transactions-collection.ts`) do too, and so do transfers
-(`libs/server/transfers/transfer-changes.ts`, `offline/transfers-collection.ts`).
+(`libs/server/transfers/transfer-changes.ts`, `offline/transfers-collection.ts`). Repeating rules
+(`libs/server/recurring/recurring-rule-changes.ts`) take part on the server only, so far.
 
 1. **Server.** Write a `ChangesAggregate` beside the repository, as
    `libs/server/notes/note-changes.ts` does. It has a `kind` and two queries. `sequences` reads the

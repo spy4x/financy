@@ -17,7 +17,9 @@ import {
   recurringEntriesJob,
 } from "@server/jobs/recurring-entries.ts"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
+import { readGroupChanges } from "@server/groups/group-changes.ts"
 import { PostgresRecurringRuleRepository } from "@server/recurring/postgres-recurring-rule-repository.ts"
+import { recurringRuleChanges } from "@server/recurring/recurring-rule-changes.ts"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { TEST_FREE_PLAN, TEST_PRO_PLAN, testLimits } from "../../libs/domain/billing/test-plans.ts"
@@ -183,6 +185,21 @@ Deno.test(`the repeating entries job against Postgres`, async (t) => {
         SELECT next_change_sequence::text AS next FROM groups WHERE id = ${groupId}
       `)[0].next,
       ) - 1n
+    }
+
+    /**
+     * The rule as the household's changes pull sends it after `after`, or `undefined` when the page
+     * leaves it out.
+     */
+    async function pulled(groupId: string, after: bigint, ruleId: string) {
+      const answer = await readGroupChanges(sql, [recurringRuleChanges], groupId, Number(after))
+      if (answer?.status !== `changes`) throw new Error(`Expected a page, got ${answer?.status}`)
+      return (answer.upserts.recurring_rules as {
+        id: string
+        madeThrough: string | null
+        pausedReason: number | null
+        changeSequence: string
+      }[]).find((row) => row.id === ruleId)
     }
 
     await step(`makes each due entry once when the job runs twice in the same hour`, async () => {
@@ -490,6 +507,86 @@ Deno.test(`the repeating entries job against Postgres`, async (t) => {
         const rows = await made(rule.id)
         expect(rows.map((row) => BigInt(row.changeSequence))).toEqual([before + 1n, before + 2n])
         expect((await rules.get(h.groupId, rule.id))?.changeSequence).toBe(`${before + 2n}`)
+      },
+    )
+
+    await step(
+      `records a change of the rule when the run moves made_through past its last entry`,
+      async () => {
+        const h = await household()
+        const rule = await h.rule()
+        const before = await sequenceOf(h.groupId)
+
+        await run(`2027-01-15T12:00:00Z`)
+
+        expect(await changesAfter(h.groupId, before))
+          .toEqual([`transaction.created`, `recurring_rule.advanced`])
+        expect(await pulled(h.groupId, before + 1n, rule.id)).toMatchObject({
+          madeThrough: `2027-01-15`,
+          changeSequence: `${before + 2n}`,
+        })
+        // The next day moves it again, with no entry to carry the change.
+        await run(`2027-01-16T12:00:00Z`)
+        expect(await changesAfter(h.groupId, before + 2n)).toEqual([`recurring_rule.advanced`])
+        expect((await pulled(h.groupId, before + 2n, rule.id))?.madeThrough).toBe(`2027-01-16`)
+        expect((await rules.get(h.groupId, rule.id))?.version).toBe(1)
+      },
+    )
+
+    await step(
+      `records a change of the rule when its entry existed and made_through moved`,
+      async () => {
+        const h = await household()
+        const rule = await h.rule({ endDate: `2027-01-01` })
+        // A rule that ends on its first date: once that entry exists, the run has nothing to
+        // finish, so only the step that found the entry can record the move.
+        await sql`
+          INSERT INTO transactions (
+            id, group_id, account_id, category_id, kind, account_amount, amount, currency, memo,
+            date, change_sequence, created_by_user_id, updated_by_user_id, recurring_rule_id,
+            occurrence_date
+          ) VALUES (
+            ${uuidV7()}, ${h.groupId}, ${h.account}, ${h.category}, 1, -120000, -120000, 'USD',
+            'Rent', '2027-01-01', 1, ${h.editor}, ${h.editor}, ${rule.id}, '2027-01-01'
+          )
+        `
+        const before = await sequenceOf(h.groupId)
+
+        await run(`2027-01-01T12:00:00Z`)
+
+        expect(await changesAfter(h.groupId, before)).toEqual([`recurring_rule.advanced`])
+        expect(await pulled(h.groupId, before, rule.id)).toMatchObject({
+          madeThrough: `2027-01-01`,
+          changeSequence: `${before + 1n}`,
+        })
+      },
+    )
+
+    await step(
+      `a rule the job pauses, and one it resumes, comes back in the next changes page`,
+      async () => {
+        const h = await household()
+        const rule = await h.rule()
+        await sql`UPDATE accounts SET archived_at = CURRENT_TIMESTAMP WHERE id = ${h.account}`
+        const before = await sequenceOf(h.groupId)
+
+        await run(`2027-01-01T12:00:00Z`)
+
+        expect(await pulled(h.groupId, before, rule.id)).toMatchObject({
+          pausedReason: RecurringPauseReason.ACCOUNT_ARCHIVED,
+          changeSequence: `${before + 1n}`,
+        })
+
+        await rules.skip({ groupId: h.groupId, id: rule.id, date: `2027-01-01` }, h.editor)
+        await sql`UPDATE accounts SET archived_at = NULL WHERE id = ${h.account}`
+        const resumedAfter = await sequenceOf(h.groupId)
+        await run(`2027-01-02T12:00:00Z`)
+
+        expect(await pulled(h.groupId, resumedAfter, rule.id)).toMatchObject({
+          pausedReason: null,
+          madeThrough: `2027-01-02`,
+          changeSequence: `${resumedAfter + 1n}`,
+        })
       },
     )
 

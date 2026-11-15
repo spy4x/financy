@@ -86,6 +86,19 @@ export class PostgresRecurringRuleRepository implements RecurringRuleRepository 
     return rows.map(toRule)
   }
 
+  /** The group's live rules with `after < change_sequence <= through`, for the changes pull. */
+  async listChanged(groupId: string, after: number, through: number): Promise<RecurringRule[]> {
+    const rows = await this.sql<RecurringRuleRow[]>`
+      SELECT ${this.columns()} FROM recurring_rules
+      WHERE group_id = ${groupId}
+        AND deleted_at IS NULL
+        AND change_sequence > ${after}
+        AND change_sequence <= ${through}
+      ORDER BY change_sequence, id
+    `
+    return rows.map(toRule)
+  }
+
   async count(groupId: string): Promise<number> {
     const [{ count }] = await this.sql<{ count: number }[]>`
       SELECT count(*)::int AS count FROM recurring_rules
