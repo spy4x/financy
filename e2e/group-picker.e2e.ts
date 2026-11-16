@@ -1,6 +1,7 @@
 import { type APIRequestContext, type Locator, type Page } from "@playwright/test"
 import { expect, test } from "./fixtures/stack.ts"
 import { gotoApp, signIn } from "./fixtures/app.ts"
+import { openGroups } from "./fixtures/groups.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { freePlanAllowsNothing, payForGroup, signUpWithCode } from "./fixtures/sign-up.ts"
 
@@ -139,6 +140,46 @@ test.describe("notes at /notes with a group picker", () => {
       await chooseWithKeyboard(page, page.getByRole("menuitem", { name: "Activity" }))
       await expect(page).toHaveURL(`/groups/${team}/activity`)
       await chooseWithKeyboard(page, page.getByRole("menuitem", { name: "All groups" }))
+      await expect(page).toHaveURL("/groups")
+    } finally {
+      await context.close()
+      await cleanup(request, user)
+    }
+  })
+
+  test("on a phone, the tab bar holds the four destinations and Account, and the Account sheet opens the group's Activity and all groups", async ({ browser, request }) => {
+    const user = "e2e_picker_phone@example.com"
+    await cleanup(request, user)
+    const context = await browser.newContext({
+      baseURL: test.info().project.use.baseURL,
+      viewport: { width: 390, height: 844 },
+    })
+    const fits = (page: Page) =>
+      page.evaluate(() =>
+        document.documentElement.scrollWidth <= document.documentElement.clientWidth
+      )
+    try {
+      await signUp(request, user)
+      const page = await context.newPage()
+      await signInOnline(page, user)
+      const personal = await personalGroup(page)
+      await open(page, "/transactions")
+
+      await expect(page.locator("[data-e2e=rail-shell-tabbar] [data-e2e=rail-shell-entry]"))
+        .toHaveText(["Overview", "Transactions", "Accounts", "Categories"])
+      await expect(page.locator("[data-e2e=rail-shell-more]")).toBeVisible()
+      expect(await fits(page)).toBe(true)
+      await page.screenshot({ path: test.info().outputPath(`tab-bar-390.png`) })
+
+      await page.locator("[data-e2e=rail-shell-more]").click()
+      const activity = page.locator("[data-e2e=group-sheet-activity]")
+      await expect(activity).toBeVisible()
+      expect(await fits(page)).toBe(true)
+      await page.screenshot({ path: test.info().outputPath(`account-sheet-390.png`) })
+      await activity.click()
+      await expect(page).toHaveURL(`/groups/${personal.id}/activity`)
+
+      await openGroups(page)
       await expect(page).toHaveURL("/groups")
     } finally {
       await context.close()
