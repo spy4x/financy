@@ -273,6 +273,8 @@ export const RUN_ALL = [
   `apps/mpa/testdata`,
   // Financy: the blog and demo integration tests load the Lighthouse fixture posts.
   `apps/mpa/lighthouse/posts`,
+  // Financy: the bank statement import tests read their synthetic statements.
+  `tests/integration/statements`,
   `infra/scripts/test.ts`,
   `infra/scripts/test-integration.ts`,
 ]

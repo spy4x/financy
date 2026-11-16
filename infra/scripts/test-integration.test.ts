@@ -8,7 +8,7 @@ const BASE = [
   `--no-prompt`,
   `-E`,
   `-N`,
-  `-R=./libs/server/db/migrations,./libs/server/db/schema.sql,./libs/server/blog/seed-posts,./apps/mpa/lighthouse/posts`,
+  `-R=./libs/server/db/migrations,./libs/server/db/schema.sql,./libs/server/blog/seed-posts,./apps/mpa/lighthouse/posts,./tests/integration/statements`,
 ]
 const FILE = `tests/integration/notes.integration.test.ts`
 const RELATED = [`--related=libs/server/notes.ts`]

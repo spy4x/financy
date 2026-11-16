@@ -1677,6 +1677,10 @@ CREATE TABLE transactions (
     -- #219: the repeating rule and occurrence an entry was made for; see the migration.
     recurring_rule_id UUID,
     occurrence_date DATE,
+    -- #299: the bank's id for a row a statement import saved, and that import; see the migration.
+    -- The import key is added after the imports table, below.
+    bank_reference VARCHAR(255),
+    import_batch_id UUID,
     CONSTRAINT transactions_account_fkey FOREIGN KEY (group_id, account_id)
         REFERENCES accounts (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT transactions_category_fkey FOREIGN KEY (group_id, category_id)
@@ -1697,7 +1701,9 @@ CREATE TABLE transactions (
     CONSTRAINT transactions_version_check CHECK (version >= 1),
     CONSTRAINT transactions_change_sequence_check CHECK (change_sequence >= 1),
     CONSTRAINT transactions_occurrence_check
-        CHECK ((recurring_rule_id IS NULL) = (occurrence_date IS NULL))
+        CHECK ((recurring_rule_id IS NULL) = (occurrence_date IS NULL)),
+    CONSTRAINT transactions_bank_reference_check
+        CHECK (bank_reference IS NULL OR char_length(bank_reference) BETWEEN 1 AND 255)
 );
 
 -- An account's balance on a day, and whether it has entries (the currency lock, the delete check).
@@ -1759,6 +1765,18 @@ CREATE TABLE import_records (
     record_id UUID NOT NULL,
     PRIMARY KEY (import_id, record_id)
 );
+
+-- #299: the statement import that saved an entry. An import goes with its uploader or its group,
+-- and the entries it saved stay.
+ALTER TABLE transactions ADD CONSTRAINT transactions_import_batch_fkey
+    FOREIGN KEY (import_batch_id) REFERENCES imports(id) ON DELETE SET NULL;
+-- The duplicate check of a statement import: an account's live entries with a bank reference.
+CREATE INDEX idx_transactions_account_bank_reference
+    ON transactions (account_id, bank_reference)
+    WHERE deleted_at IS NULL AND bank_reference IS NOT NULL;
+-- A statement import's undo, and the import key's SET NULL when an import is deleted.
+CREATE INDEX idx_transactions_import_batch
+    ON transactions (import_batch_id) WHERE import_batch_id IS NOT NULL;
 
 -- Budgets: a household's monthly limit on an expense category (docs/aggregates.md). A row holds one
 -- category's amount from one month on, and a month's limit is the latest row at or before it, so
