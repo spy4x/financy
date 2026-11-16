@@ -1783,6 +1783,7 @@ export default {
   "Shortcuts.goTo": "Go to",
   "Shortcuts.newNote": "In New note",
   "Shortcuts.page": "This page",
+  "Shortcuts.commands": "Palette commands",
   "Shortcuts.show": "Show keyboard shortcuts",
   "Shortcuts.close": "Close a dialog or menu",
   "Shortcuts.switchLabel": "Single-key shortcuts",

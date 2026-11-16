@@ -1860,6 +1860,7 @@ export default {
   "Shortcuts.goTo": "Gehe zu",
   "Shortcuts.newNote": "Unter „Neue Notiz“",
   "Shortcuts.page": "Diese Seite",
+  "Shortcuts.commands": "Befehle der Befehlspalette",
   "Shortcuts.show": "Tastenkürzel anzeigen",
   "Shortcuts.close": "Dialog oder Menü schließen",
   "Shortcuts.switchLabel": "Kürzel mit einer Taste",
