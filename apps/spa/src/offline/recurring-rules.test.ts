@@ -191,16 +191,19 @@ describe("a household's repeating rules on two open devices", () => {
 })
 
 describe("the rules store over the device copy", () => {
-  it("keeps the rule a write answered with in the copy, before any pull", async () => {
+  it("keeps the rule a write answered with in the copy, and drops the one it deleted, before any pull", async () => {
     const shared = server()
     const a = device(shared)
-    // No hint reaches this device: only the write's own answer can put the rule in its copy.
+    // No hint reaches this device: only the write's own answer can change its copy.
     shared.hints.length = 0
     await a.store.open(groupId)
 
-    const rule = await a.store.create({ groupId, ...fields })
+    const kept = await a.store.create({ groupId, ...fields })
+    const deleted = await a.store.create({ groupId, ...fields, memo: "Gym" })
+    expect(ids(await a.copy.recurringRules.readRules(groupId))).toEqual([kept.id, deleted.id])
+    await a.store.delete({ groupId, id: deleted.id, version: deleted.version })
 
-    expect(ids(await a.copy.recurringRules.readRules(groupId))).toEqual([rule.id])
+    expect(ids(await a.copy.recurringRules.readRules(groupId))).toEqual([kept.id])
   })
 
   it("changes neither the list nor the copy when the server refuses a write", async () => {
