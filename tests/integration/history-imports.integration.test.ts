@@ -5,6 +5,12 @@ import type postgres from "postgres"
 import type { OutboxEvent } from "@spy4x/server/outbox"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { ACCOUNT_MAX_PER_GROUP, AccountKind } from "@domain/accounts"
+import {
+  CATEGORY_MAX_PER_GROUP,
+  CATEGORY_MAX_STORED,
+  CategoryKind,
+  DEFAULT_CATEGORY_ICON,
+} from "@domain/categories"
 import type { GroupRole } from "@domain/groups"
 import type { Actor } from "@domain/identity"
 import { TransactionKind } from "@domain/transactions"
@@ -251,8 +257,126 @@ Deno.test("history imports: the amounts, IBAN and foreign amount of a Firefly II
       },
     ])
     expect(after.transfers).toEqual([{ date: `2024-03-03`, sent: 10000, received: 10000 }])
+    // The entry's amount is in the foreign currency; its account amount is in the account's.
+    const own = await sql<{ amount: number; accountAmount: number }[]>`
+      SELECT amount::int AS amount, account_amount::int AS "accountAmount" FROM transactions
+      WHERE group_id = ${h.groupId} AND date = '2024-03-04'
+    `
+    expect(own).toEqual([{ amount: -1000, accountAmount: -920 }])
   })
 })
+
+/** The ids of the Actual Budget export's Checking account and Rent category, and a starter one. */
+async function actualRecords(sql: postgres.Sql, groupId: string) {
+  const [checking] = await sql<{ id: string }[]>`
+    SELECT id FROM accounts WHERE group_id = ${groupId} AND name = 'Checking'
+  `
+  const [savings] = await sql<{ id: string }[]>`
+    SELECT id FROM accounts WHERE group_id = ${groupId} AND name = 'Savings'
+  `
+  const [rent] = await sql<{ id: string }[]>`
+    SELECT id FROM categories WHERE group_id = ${groupId} AND name = 'Rent'
+  `
+  const [starter] = await sql<{ id: string }[]>`
+    SELECT id FROM categories
+    WHERE group_id = ${groupId} AND name <> 'Rent' AND kind = ${CategoryKind.EXPENSE}
+    ORDER BY name LIMIT 1
+  `
+  return { checking: checking.id, savings: savings.id, rent: rent.id, starter: starter.id }
+}
+
+type Records = Awaited<ReturnType<typeof actualRecords>>
+
+for (
+  const [use, change, accounts, keepsRent] of [
+    [
+      `a transfer outside the batch`,
+      (sql: postgres.Sql, h: Household, r: Records) =>
+        sql`
+          INSERT INTO transfers (
+            id, group_id, from_account_id, to_account_id, sent_amount, received_amount, date,
+            change_sequence
+          ) VALUES (${uuidV7()}, ${h.groupId}, ${r.checking}, ${r.savings}, 100, 100, '2024-04-01', 1)
+        `,
+      [`Checking`, `Savings`],
+      false,
+    ],
+    [
+      `a recurring rule`,
+      (sql: postgres.Sql, h: Household, r: Records) =>
+        sql`
+          INSERT INTO recurring_rules (
+            id, group_id, account_id, category_id, kind, amount, currency, rrule, start_date,
+            change_sequence
+          ) VALUES (
+            ${uuidV7()}, ${h.groupId}, ${r.checking}, ${r.rent}, ${TransactionKind.EXPENSE}, 100,
+            'USD', 'FREQ=MONTHLY', '2024-04-01', 1
+          )
+        `,
+      [`Checking`],
+      true,
+    ],
+    [
+      `a budget`,
+      (sql: postgres.Sql, h: Household, r: Records) =>
+        sql`
+          INSERT INTO budgets (id, group_id, category_id, month, amount, currency, change_sequence)
+          VALUES (${uuidV7()}, ${h.groupId}, ${r.rent}, '2024-04-01', 100, 'USD', 1)
+        `,
+      [],
+      true,
+    ],
+    [
+      `a budget move`,
+      (sql: postgres.Sql, h: Household, r: Records) =>
+        sql`
+          INSERT INTO budget_moves (
+            id, group_id, month, from_category_id, to_category_id, amount, currency,
+            change_sequence
+          ) VALUES (${uuidV7()}, ${h.groupId}, '2024-04-01', ${r.starter}, ${r.rent}, 100, 'USD', 1)
+        `,
+      [],
+      true,
+    ],
+    [
+      `a subcategory`,
+      (sql: postgres.Sql, h: Household, r: Records) =>
+        sql`
+          INSERT INTO categories (id, group_id, parent_id, name, kind, icon, color, change_sequence)
+          VALUES (
+            ${uuidV7()}, ${h.groupId}, ${r.rent}, 'Deposit', ${CategoryKind.EXPENSE},
+            ${DEFAULT_CATEGORY_ICON}, '#123456', 1
+          )
+        `,
+      [],
+      true,
+    ],
+    [
+      `being made the default account`,
+      (sql: postgres.Sql, h: Household, r: Records) =>
+        sql`UPDATE accounts SET is_default = true WHERE group_id = ${h.groupId} AND id = ${r.checking}`,
+      [`Checking`],
+      false,
+    ],
+  ] as const
+) {
+  Deno.test(`history imports: undo keeps a created record held by ${use}`, async () => {
+    await withSchema(async (sql) => {
+      const h = await household(sql)
+      const read = await uploaded(sql, h, actualZip(), `USD`)
+      await confirm(sql, h, read.id)
+      await change(sql, h, await actualRecords(sql, h.groupId))
+
+      const undone = await undo(sql, h, read.id)
+
+      expect(undone.status).toBe(ImportStatus.UNDONE)
+      const after = await snapshot(sql, h.groupId)
+      expect(after.accounts.map((account) => account.name)).toEqual(accounts)
+      expect(after.categories.includes(`Rent`)).toBe(keepsRent)
+      expect(after.entries).toEqual([])
+    })
+  })
+}
 
 Deno.test("history imports: undo keeps an account the household has used since, and removes the rest", async () => {
   await withSchema(async (sql) => {
@@ -315,3 +439,39 @@ Deno.test("history imports: an export whose new accounts pass the household's ca
     expect(await snapshot(sql, h.groupId)).toEqual(before)
   })
 })
+
+for (
+  const [cap, archived, limit] of [
+    [`live categories`, false, CATEGORY_MAX_PER_GROUP],
+    [`stored categories`, true, CATEGORY_MAX_STORED],
+  ] as const
+) {
+  Deno.test(`history imports: an export whose new category passes the household's cap of ${cap} is refused before it writes`, async () => {
+    await withSchema(async (sql) => {
+      const h = await household(sql)
+      const [{ count }] = await sql<{ count: number }[]>`
+        SELECT count(*)::int AS count FROM categories WHERE group_id = ${h.groupId}
+      `
+      // The household reaches the cap exactly; the export's new Rent category would pass it.
+      const filler = Array.from({ length: limit - count }, (_, index) => ({
+        id: uuidV7(),
+        group_id: h.groupId,
+        name: `Category ${index}`,
+        kind: CategoryKind.EXPENSE,
+        icon: DEFAULT_CATEGORY_ICON,
+        color: `#123456`,
+        change_sequence: 1,
+        archived_at: archived ? new Date(`2024-01-01T00:00:00Z`) : null,
+      }))
+      await sql`INSERT INTO categories ${sql(filler)}`
+      const before = await snapshot(sql, h.groupId)
+
+      const read = await uploaded(sql, h, actualZip(), `USD`)
+      const done = await confirm(sql, h, read.id)
+
+      expect(done.status).toBe(ImportStatus.FAILED)
+      expect(done.failure).toContain(`at most ${limit}`)
+      expect(await snapshot(sql, h.groupId)).toEqual(before)
+    })
+  })
+}
