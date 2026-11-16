@@ -170,6 +170,21 @@ test.describe("keyboard shortcuts", () => {
     }
   })
 
+  test("the shortcuts dialog lists Financy's New transaction with its English and Russian words", async ({ page, request }) => {
+    const email = address("financy-commands")
+    try {
+      await signUp(request, email)
+      await signIn(page, email, password)
+      await press(page, "?")
+      const list = page.getByRole("dialog", { name: "Keyboard shortcuts" })
+      // Only the palette's row carries the words; the key row of the same name has none.
+      const row = list.locator("dt", { hasText: "добавить расход" })
+      await expect(row).toHaveText(/^New transaction.*add expense/)
+    } finally {
+      await cleanup(request, email)
+    }
+  })
+
   test("the shortcuts dialog and the New note dialog, with an error and after an add, pass axe-core in light and dark", async ({ page, request }) => {
     const email = address("axe")
     try {

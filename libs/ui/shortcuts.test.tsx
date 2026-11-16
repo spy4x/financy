@@ -246,6 +246,42 @@ describe("the Keyboard shortcuts dialog's palette commands", () => {
     expect(rows[users].dt.querySelector("span")?.textContent).toContain(`people`)
     expect(rows[users].dd?.textContent).toBe(`G then U`)
   })
+
+  it("lists Financy's New and Export commands with their English and Russian words", async () => {
+    // The owner of the current household sees every one of them, Export included.
+    const commands = paletteCommands(
+      paletteContext(ENGLISH, `en`, {
+        groups: [],
+        currentGroup: {
+          id: `0190a000-0000-7000-8000-000000000001`,
+          name: `Home`,
+          canWrite: true,
+          canExport: true,
+        },
+        online: true,
+        shortcuts: ROWS,
+      }),
+      run,
+    )
+    await mount(true, ROWS, true, commands)
+    const words = new Map(
+      commandList().map(({ dt }) => [
+        dt.firstChild?.textContent,
+        dt.querySelector("span")?.textContent ?? ``,
+      ]),
+    )
+    const expected = {
+      "New transaction": [`add expense`, `добавить расход`],
+      "New transfer": [`move money`, `перевод между счетами`],
+      "New account": [`bank account`, `новый счёт`],
+      "New category": [`add category`, `новая категория`],
+      "Export group": [`backup`, `резервная копия`],
+    }
+    for (const [label, aliases] of Object.entries(expected)) {
+      expect({ label, listed: words.has(label) }).toEqual({ label, listed: true })
+      for (const alias of aliases) expect(words.get(label), label).toContain(alias)
+    }
+  })
 })
 
 describe("commandRows", () => {
