@@ -203,9 +203,31 @@ from the bytes, never the file name.
   saved the first time. A row is skipped as "Matches a transfer"
   when a live transfer into or out of the account has its amount within 3 days.
 - **Choices.** `category` per row; without one, a row takes the upload's expense or income
-  category by its sign. An income may take an expense category, as a refund.
+  category by its sign. An income may take an expense category, as a refund. Payee memory
+  (below) suggests a row's category.
 - **Save.** The entries carry the import's id in `transactions.import_batch_id`. A household with
   no room left on its plan, a lapsed plan included, saves none and the import fails in words.
 - **Undo.** Moves exactly this batch's live entries to the deleted list, with their tombstones.
 
 An export leaves both new columns out; a move between households keeps them.
+
+### Payee memory
+
+A household's `payee_memory` table (`libs/server/transactions/payee-memory.ts`) holds, per payee,
+the category it chose last. The payee's key is `payeeKey` from `@spy4x/bank-statements` (lower
+case, spacing collapsed, card and reference numbers removed), cut to 200 characters. A payee with
+an empty key is never remembered or looked up.
+
+- **Review.** Each row left to save gets the remembered category of its payee as its `category`
+  suggestion, when that category is not archived and fits the row's sign. A person's own choice
+  overrides it. All rows are looked up in one query, scoped to the household.
+- **Save.** Each saved row with a `category` choice, suggested or picked, remembers that category
+  for its payee, the last row of a payee winning, as one batched upsert in the save's
+  transaction. A row that took the upload's default category remembers nothing. Cancel, a refused
+  save and a preview write nothing.
+- **Undo** leaves the memory as it is.
+- **Elsewhere.** The memory goes into a household's export file (`payeeMemory`), moves with "move
+  all data" (a payee the target household already remembers keeps the target's choice), and the
+  member who chose last finds it in their data export (`finance_payee_memory`). A category is
+  never deleted on its own; when the household is deleted, its memory goes with it. The admin
+  Imports list never carries a payee.

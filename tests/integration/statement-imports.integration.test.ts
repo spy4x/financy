@@ -56,7 +56,7 @@ import { holdMemberChange, stillWaiting, team, withSchema } from "./group-team.t
  * The bank statement import against a real Postgres built from schema.sql: a preview that writes
  * nothing, a save of exactly the previewed rows, a second import of the same file that adds
  * nothing, rows that match a transfer, an undo of one batch only, the plan's read-only state, the
- * options a household may name, and an admin list that holds no row content. Every statement is
+ * options a household may name, payee memory, and an admin list that holds no row content. Every statement is
  * synthetic (`tests/integration/statements/`). Needs "DB_HOST", "DB_USER", "DB_PASS" and "DB_NAME"
  * (recipe in docs/handoff.md); it fails when they are missing.
  */
@@ -533,6 +533,168 @@ Deno.test("statement imports: the admin list shows the kind and the counts, and 
     }
   })
 })
+
+// #region Payee memory
+
+/**
+ * A statement in the CSV layout of `signed.csv`, one row per `[date, payee, amount in cents]`,
+ * with balances that add up.
+ */
+function statement(rows: readonly (readonly [string, string, number])[]): Uint8Array<ArrayBuffer> {
+  let balance = 100_000
+  const lines = rows.map(([date, payee, cents]) => {
+    balance += cents
+    return `${date},${payee},${(cents / 100).toFixed(2)},EUR,${(balance / 100).toFixed(2)}`
+  })
+  return new TextEncoder().encode(
+    `Date,Description,Amount,Currency,Balance\n${lines.join(`\n`)}\n`,
+  )
+}
+
+/** The household's payee memory: each key and its category, by key. */
+async function memory(sql: postgres.Sql, groupId: string) {
+  return await sql<{ payeeKey: string; categoryId: string }[]>`
+    SELECT payee_key, category_id::text AS category_id
+    FROM payee_memory WHERE group_id = ${groupId} ORDER BY payee_key
+  `
+}
+
+/** The category suggestion of each row of the preview of `file`, uploaded for `h`. */
+async function suggested(sql: postgres.Sql, h: Household, file: Uint8Array) {
+  const read = await uploaded(sql, h, file)
+  const reviews = (await preview(sql, h, read.id)).reviews!
+  return { id: read.id, categories: reviews.map((review) => review.suggestions.category ?? null) }
+}
+
+const FIRST = statement([
+  [`2026-02-01`, `CARD 4111********1111 COFFEE BAR REF 99812345`, -450],
+  [`2026-02-02`, `Example Employer`, 250_000],
+  [`2026-02-03`, `99812345`, -100],
+])
+
+Deno.test("payee memory: a preview and a cancelled import remember nothing; a saved choice is suggested for the payee next time", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    // Cancelled: previewed, never confirmed, and removed by the cleanup.
+    const left = await uploaded(sql, h, FIRST)
+    await preview(sql, h, left.id)
+    expect(await memory(sql, h.groupId)).toEqual([])
+    const old = new Date(Date.now() - IMPORT_STALE_MS - 60_000)
+    await sql`UPDATE imports SET created_at = ${old} WHERE id = ${left.id}`
+    await deleteStaleImports(sql)
+    expect(await memory(sql, h.groupId)).toEqual([])
+
+    const read = await uploaded(sql, h, FIRST)
+    // A choice on each row; the third payee is only a reference, so it leaves no key.
+    await confirm(sql, h, read.id, {
+      "1": { category: h.shopping },
+      "2": { category: h.salary },
+      "3": { category: h.shopping },
+    })
+    expect(await memory(sql, h.groupId)).toEqual([
+      { payeeKey: `coffee bar`, categoryId: h.shopping },
+      { payeeKey: `example employer`, categoryId: h.salary },
+    ])
+
+    const next = await suggested(
+      sql,
+      h,
+      statement([
+        [`2026-03-01`, `card 4111********2222 Coffee Bar ref 11223344`, -300],
+        [`2026-03-02`, `Example Employer`, -2_000],
+        [`2026-03-03`, `Unknown Shop`, -700],
+        [`2026-03-04`, `99812345`, -100],
+      ]),
+    )
+    // The employer's row is an expense now, and Salary is an income category: no suggestion.
+    expect(next.categories).toEqual([h.shopping, null, null, null])
+    await confirm(sql, h, next.id)
+    const coffee = (await entries(sql, h.groupId)).find((row) => row.date === `2026-03-01`)
+    expect(coffee?.categoryId).toBe(h.shopping)
+  })
+})
+
+Deno.test("payee memory: a save without a category choice remembers nothing, and a later choice replaces an earlier one", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await imported(sql, h, FIRST)
+    expect(await memory(sql, h.groupId)).toEqual([])
+
+    const read = await uploaded(sql, h, statement([[`2026-03-01`, `Coffee Bar`, -300]]))
+    await confirm(sql, h, read.id, { "1": { category: h.shopping } })
+    const later = await uploaded(sql, h, statement([[`2026-04-01`, `Coffee Bar`, -300]]))
+    await confirm(sql, h, later.id, { "1": { category: h.groceries } })
+    expect(await memory(sql, h.groupId)).toEqual([
+      { payeeKey: `coffee bar`, categoryId: h.groceries },
+    ])
+  })
+})
+
+Deno.test("payee memory: an archived category is not suggested", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const read = await uploaded(sql, h, FIRST)
+    await confirm(sql, h, read.id, { "1": { category: h.shopping } })
+    await sql`UPDATE categories SET archived_at = CURRENT_TIMESTAMP WHERE id = ${h.shopping}`
+
+    const next = await suggested(sql, h, statement([[`2026-03-01`, `Coffee Bar`, -300]]))
+    expect(next.categories).toEqual([null])
+  })
+})
+
+Deno.test("payee memory: a refused save remembers nothing", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const lapsed = await uploaded(sql, h, FIRST)
+    const done = await confirm(sql, h, lapsed.id, { "1": { category: h.shopping } }, {
+      kinds: KINDS,
+      billingEnabled: true,
+      graceDays: 0,
+    })
+    expect(done.status).toBe(ImportStatus.FAILED)
+    // An expense in an income category fails the whole save, the other row's choice included.
+    const wrong = await uploaded(sql, h, FIRST)
+    const failed = await confirm(sql, h, wrong.id, {
+      "1": { category: h.shopping },
+      "3": { category: h.salary },
+    })
+    expect(failed.status).toBe(ImportStatus.FAILED)
+    expect(await memory(sql, h.groupId)).toEqual([])
+  })
+})
+
+Deno.test("payee memory: another household's memory never suggests a category", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const read = await uploaded(sql, h, FIRST)
+    await confirm(sql, h, read.id, { "1": { category: h.shopping } })
+
+    const other = await household(sql)
+    const next = await suggested(sql, other, statement([[`2026-03-01`, `Coffee Bar`, -300]]))
+    expect(next.categories).toEqual([null])
+    await confirm(sql, other, next.id)
+    expect((await entries(sql, other.groupId)).map((row) => row.categoryId)).toEqual([
+      other.groceries,
+    ])
+    expect(await memory(sql, other.groupId)).toEqual([])
+  })
+})
+
+Deno.test("payee memory: the admin list carries no remembered payee", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const read = await uploaded(sql, h, statement([[`2026-02-01`, `Example Secret Payee`, -450]]))
+    await confirm(sql, h, read.id, { "1": { category: h.shopping } })
+    expect(await memory(sql, h.groupId)).toEqual([
+      { payeeKey: `example secret payee`, categoryId: h.shopping },
+    ])
+
+    const text = JSON.stringify(await listAdminImports(sql, { status: `all`, page: 1 }))
+    expect(text).toContain(read.id)
+    expect(text.toLowerCase()).not.toContain(`secret`)
+  })
+})
+// #endregion Payee memory
 
 // #region The route
 // Imports travel over HTTP only, never the socket or `/api/call`: a file is an upload

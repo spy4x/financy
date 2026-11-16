@@ -117,15 +117,21 @@ Deno.test("statement check: a QIF amount takes the account's decimals, and digit
   )
   expect(value.rows.map((row) => row[2])).toEqual([``, ``])
   expect(check(value.rows).values).toEqual([
-    { date: `2026-01-02`, amount: 125050, memo: `Cafe`, reference: null },
-    { date: `2026-01-03`, amount: -300, memo: `Shop`, reference: null },
+    { date: `2026-01-02`, amount: 125050, memo: `Cafe`, reference: null, payee: `Cafe` },
+    { date: `2026-01-03`, amount: -300, memo: `Shop`, reference: null, payee: `Shop` },
   ])
   const yen = check(value.rows, { ...EUR, currency: `JPY` })
-  expect(yen.values).toEqual([{ date: `2026-01-03`, amount: -3, memo: `Shop`, reference: null }])
+  expect(yen.values).toEqual([{
+    date: `2026-01-03`,
+    amount: -3,
+    memo: `Shop`,
+    reference: null,
+    payee: `Shop`,
+  }])
   expect(yen.result.rows[0]).toEqual({ row: 1, errors: [`The amount is not a sum in JPY.`] })
 })
 
-Deno.test("statement check: payee and memo join on one line, and a zero, a bad date or a long reference is refused", () => {
+Deno.test("statement check: payee and memo join on one line, the payee is kept on one line, and a zero, a bad date or a long reference is refused", () => {
   const { values, result } = check([
     [`2026-01-02`, `-5.00`, `EUR`, `Cafe\nCentral`, `Latte`, `REF-1`],
     [`2026-01-02`, `0.00`, `EUR`, ``, ``, ``],
@@ -134,7 +140,13 @@ Deno.test("statement check: payee and memo join on one line, and a zero, a bad d
     [`2026-01-02`, `-1.00`, `EUR`, `Bad\u0000`, ``, ``],
   ])
   expect(values).toEqual([
-    { date: `2026-01-02`, amount: -500, memo: `Cafe Central · Latte`, reference: `REF-1` },
+    {
+      date: `2026-01-02`,
+      amount: -500,
+      memo: `Cafe Central · Latte`,
+      reference: `REF-1`,
+      payee: `Cafe Central`,
+    },
   ])
   expect(result.rows.map((row) => row.errors)).toEqual([
     [`An entry of zero cannot be saved.`],
