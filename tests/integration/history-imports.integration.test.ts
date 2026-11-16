@@ -189,7 +189,7 @@ for (
     [`Actual Budget`, actualZip(), `USD`, 2 + 2 + 1],
   ] as const
 ) {
-  Deno.test(`history imports: a ${app} export saves its rows with the records it needs, and undo removes them all`, async () => {
+  Deno.test(`history imports: an export of ${app} saves its rows with the records it needs, and undo removes them all`, async () => {
     await withSchema(async (sql) => {
       const h = await household(sql)
       const before = await snapshot(sql, h.groupId)
