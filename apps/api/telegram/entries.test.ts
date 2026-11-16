@@ -585,13 +585,14 @@ describe(`/expense and /income in the Telegram bot`, () => {
       expect(bot.entries()).toHaveLength(1)
     })
 
-    it(`answers a button of an older talk as stale and saves nothing`, async () => {
+    it(`answers a button of an older talk as stale and saves nothing, while a newer talk runs`, async () => {
       const bot = entryBot()
       await bot.earlier(OWNER, bot.f.cash.id, bot.f.groceries.id)
       await bot.send(`/expense`)
       await bot.send(`12`)
       const old = bot.data(EN.save)
       await bot.send(`/expense`)
+      await bot.send(`7`)
 
       await bot.press(old)
 
