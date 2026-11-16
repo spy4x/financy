@@ -75,12 +75,12 @@ describe("splitTypedEntry", () => {
     expect(splitTypedEntry(`coffee 4.50`, ` `)).toEqual({ memo: `coffee 4.50`, amount: null })
   })
 
-  it("splits a 10,000-character text quickly", () => {
-    const long = `${`9,`.repeat(4_998)}9 ${`a`.repeat(2_000)}`
+  it("splits a 10,000-character text quickly, with no backtracking on a near-number", () => {
+    const long = `${`9,`.repeat(2_500)}9 ${`9.`.repeat(2_500)}x`
     const started = performance.now()
     const entry = splitTypedEntry(long, `USD`)
     expect(performance.now() - started).toBeLessThan(500)
-    expect(entry.amount).toBeNull()
-    expect(entry.memo).toBe(long)
+    expect(long.length).toBeGreaterThan(10_000)
+    expect(entry).toEqual({ memo: long, amount: null })
   })
 })
