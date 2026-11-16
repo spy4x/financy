@@ -135,7 +135,7 @@ Deno.test("history check: an export that names no currency needs the upload's", 
   expect(result.result.rows[0].errors).toEqual([`Choose the currency the export is in.`])
 })
 
-Deno.test("history check: a Firefly III currency beats the upload's, and a foreign amount is kept", async () => {
+Deno.test("history check: a Firefly III currency beats the upload's, the payee goes into the memo, a foreign amount is kept", async () => {
   const values = await valuesOf(fireflyCsv(FIREFLY_ROWS), `JPY`)
   expect(values[0]).toEqual({
     kind: `entry`,
@@ -210,7 +210,7 @@ Deno.test("history read: an Actual Budget database that inflates past 64 MiB is 
 
 const STORED_ACCOUNTS: StoredAccount[] = [
   { id: `a-iban`, name: `Main`, currency: `EUR`, aliases: [`de00 1234 5678 0000 0000 01`] },
-  { id: `a-name`, name: `savings`, currency: `EUR`, aliases: [] },
+  { id: `a-name`, name: `SAVINGS`, currency: `EUR`, aliases: [] },
   { id: `a-usd`, name: `Dollars`, currency: `USD`, aliases: [] },
 ]
 
@@ -223,7 +223,7 @@ const STORED_CATEGORIES: StoredCategory[] = [
 Deno.test("history plan: an account matches by IBAN alias, then by name in any case, else is created once", async () => {
   const values = await valuesOf(fireflyCsv(FIREFLY_ROWS))
   const plan = planHistory(values, STORED_ACCOUNTS, STORED_CATEGORIES)
-  // Checking's IBAN is Main's alias, written with spaces; Savings is "savings".
+  // Checking's IBAN is Main's alias, written with spaces; Savings is "SAVINGS".
   expect(plan.rows.map((row) => row.account)).toEqual(Array(4).fill({ existing: `a-iban` }))
   expect(plan.rows[2].to).toEqual({ existing: `a-name` })
   const unknown = planHistory(values, [], [])
@@ -232,12 +232,6 @@ Deno.test("history plan: an account matches by IBAN alias, then by name in any c
     { name: `Savings`, kind: AccountKind.BANK, currency: `EUR`, iban: null },
   ])
   expect(unknown.rows.map((row) => row.account)).toEqual(Array(4).fill({ created: 0 }))
-})
-
-Deno.test("history plan: payees never become accounts", async () => {
-  const plan = planHistory(await valuesOf(fireflyCsv(FIREFLY_ROWS)), [], [])
-  expect(plan.accounts.map((account) => account.name)).not.toContain(`Cafe`)
-  expect(plan.accounts.map((account) => account.name)).not.toContain(`Employer`)
 })
 
 Deno.test("history plan: a category matches by name and kind, takes a refund, else is created per kind", async () => {
