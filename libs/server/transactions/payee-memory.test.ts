@@ -1,3 +1,4 @@
+/// <reference lib="deno.ns" />
 import { expect } from "@std/expect"
 import { PAYEE_KEY_MAX_LENGTH } from "@domain/transactions"
 import { memoryKey } from "./payee-memory.ts"
