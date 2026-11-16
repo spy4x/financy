@@ -9,6 +9,7 @@ import {
   plainEntryProblem,
 } from "@domain/groups"
 import { hexColor } from "@spy4x/platform/universal/color"
+import { type AliasRules, assertAliasCount, parseAliases } from "@domain/aliases"
 import { fold, hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { CATEGORY_ICONS, type IconName } from "@spy4x/preact-icons/registry"
@@ -199,7 +200,7 @@ export function parseCategoryRequest<S extends Type<object>>(
   schema: S,
   value: unknown,
 ): S["infer"] {
-  assertAliasCount(value)
+  assertAliasCount(value, CATEGORY_ALIAS_RULES)
   const result = schema(value)
   if (result instanceof type.errors) {
     throw new CategoryError("INVALID_REQUEST", result.summary, fieldErrors(result))
@@ -232,54 +233,22 @@ export function parseCategoryRequest<S extends Type<object>>(
   return { ...cleaned, name }
 }
 
-/**
- * Refuses more than {@link CATEGORY_ALIAS_MAX} aliases by the list's length alone, before any
- * alias is looked at, so a payload of thousands costs one length read.
- */
-function assertAliasCount(value: unknown): void {
-  const aliases = (value as { aliases?: unknown } | null)?.aliases
-  if (Array.isArray(aliases) && aliases.length > CATEGORY_ALIAS_MAX) {
-    throw new CategoryError(
-      "INVALID_REQUEST",
-      `A category can have at most ${CATEGORY_ALIAS_MAX} aliases`,
-      { aliases: { code: "maxItems", values: { rule: CATEGORY_ALIAS_MAX } } },
-    )
-  }
+/** The alias rules of a category: its count, its name's length, and its own refusal. */
+const CATEGORY_ALIAS_RULES: AliasRules = {
+  noun: "category",
+  max: CATEGORY_ALIAS_MAX,
+  maxLength: CATEGORY_NAME_MAX_LENGTH,
+  refuse: (message, fields) => new CategoryError("INVALID_REQUEST", message, fields),
 }
 
 /**
- * Cleans a category's aliases the way its name is cleaned: each trimmed, blanks dropped, and each
- * kept once, compared folded, so "Lidl" and " lidl " are one alias and the first spelling stays.
- * Throws `CategoryError("INVALID_REQUEST")` naming the `aliases` field for an alias longer than
- * {@link CATEGORY_NAME_MAX_LENGTH} characters or one with a control or an invisible character.
- * The caller counts them first.
+ * Cleans a category's aliases the way its name is cleaned ({@link parseAliases}): each trimmed,
+ * blanks dropped, each kept once compared folded. Throws `CategoryError("INVALID_REQUEST")` naming
+ * the `aliases` field for an alias longer than {@link CATEGORY_NAME_MAX_LENGTH} characters or one
+ * with a control or an invisible character. The caller counts them first.
  */
 export function parseCategoryAliases(aliases: readonly string[]): string[] {
-  const kept: string[] = []
-  const seen = new Set<string>()
-  for (const raw of aliases) {
-    const alias = raw.trim()
-    if (alias === "") continue
-    if (Array.from(alias).length > CATEGORY_NAME_MAX_LENGTH) {
-      throw new CategoryError(
-        "INVALID_REQUEST",
-        `Each category alias must contain at most ${CATEGORY_NAME_MAX_LENGTH} characters`,
-        { aliases: { code: "maxLength", values: { rule: CATEGORY_NAME_MAX_LENGTH } } },
-      )
-    }
-    if (hasUnsafeTextCharacters(alias)) {
-      throw new CategoryError(
-        "INVALID_REQUEST",
-        "Category aliases must not contain control or invisible characters",
-        { aliases: { code: "unsafeCharacters" } },
-      )
-    }
-    const key = fold(alias)
-    if (seen.has(key)) continue
-    seen.add(key)
-    kept.push(alias)
-  }
-  return kept
+  return parseAliases(aliases, CATEGORY_ALIAS_RULES)
 }
 // #endregion Request schemas
 
@@ -640,7 +609,7 @@ const CATEGORY_EXPORT_LABELS = {
 
 /** Checks one category of a file with the rules of a create. Throws `CategoryError`. */
 export function parseCategoryExportEntry(entry: unknown): CategoryExportEntry {
-  assertAliasCount(entry)
+  assertAliasCount(entry, CATEGORY_ALIAS_RULES)
   const shape = categoryExportEntrySchema(entry)
   if (shape instanceof type.errors) {
     throw new CategoryError(
