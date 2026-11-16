@@ -509,7 +509,7 @@ export default {
   "HomeStatus.accounts": "任意货币的账户",
   "HomeStatus.transactions": "收入和支出，保留原始金额",
   "HomeStatus.transfers": "在你自己的账户间转账，包括跨币种，两边金额都会保留",
-  "HomeStatus.month": "本月资金一目了然",
+  "HomeStatus.month": "本月资金和每个账户的余额一目了然，家庭总额以一种货币显示",
   "HomeStatus.later": "银行流水导入和付费云服务稍后推出：<plan>查看完整计划</plan>。",
   "HomeWho.keeperTitle": "管钱的人",
   "HomeWho.keeperText":

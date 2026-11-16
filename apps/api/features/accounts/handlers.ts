@@ -11,10 +11,13 @@ import {
   AccountSetDefaultCommand,
   AccountTotalQuery,
   AccountUpdateCommand,
+  type AccountWidgetQuery,
   assertCanReadAccounts,
   assertCanWriteAccounts,
   assertKindFitsCurrency,
+  type HouseholdTotal,
   householdTotal,
+  type ListedAccount,
 } from "@domain/accounts"
 import {
   type CoinPrice,
@@ -216,30 +219,67 @@ export interface AccountTotalDependencies extends AccountHandlerDependencies {
  * written into history.
  */
 export function createAccountTotalHandler(
-  { accounts, groups, settings, rates, today }: AccountTotalDependencies,
+  dependencies: AccountTotalDependencies,
 ): QueryHandler<AccountTotalQuery> {
   return async ({ data }) => {
-    assertCanReadAccounts(await groups.roleOf(data.groupId, data.actor.userId))
-    const [listed, { baseCurrency }] = await Promise.all([
-      accounts.list(data.groupId, false),
-      settings.get(data.groupId),
-    ])
-    const date = today()
-    const held = [...new Set(listed.map((account) => account.currency))]
-    const coins = held.some(isCoin)
-    // A coin's price is in euros, so a coin in a household of another base needs the euro's rate.
-    const foreign = [
-      ...new Set([...held.filter((code) => !isCoin(code)), ...coins ? [ECB_BASE] : []]),
-    ]
-      .filter((code) => code !== baseCurrency)
-    const [found, prices] = await Promise.all([
-      Promise.all(foreign.map(async (code) => {
-        const lookup = await rates.lookup(code, baseCurrency, date)
-        return [code, lookup.found ? lookup.rate : null] as [string, ExchangeRate | null]
-      })),
-      coins ? rates.coinPrices() : [],
-    ])
-    const coinPrices = new Map(prices.map((price) => [price.coin, price]))
-    return { total: householdTotal(listed, baseCurrency, new Map(found), coinPrices) }
+    assertCanReadAccounts(await dependencies.groups.roleOf(data.groupId, data.actor.userId))
+    return { total: (await readHousehold(dependencies, data.groupId)).total }
   }
+}
+
+/**
+ * "How much do we have?" on the overview: the household's accounts as `account.list` lists them,
+ * and the total `account.total` answers, from the one read both use, so the card never disagrees
+ * with the Accounts screen. A stranger is told the household does not exist before anything is
+ * read.
+ */
+export function createAccountWidgetHandler(
+  dependencies: AccountTotalDependencies,
+): QueryHandler<AccountWidgetQuery> {
+  return async ({ data }) => {
+    assertCanReadAccounts(await dependencies.groups.roleOf(data.groupId, data.actor.userId))
+    const { listed, total } = await readHousehold(dependencies, data.groupId)
+    return {
+      accounts: listed.map((account) => ({
+        id: account.id,
+        name: account.name,
+        kind: account.kind,
+        currency: account.currency,
+        balance: account.balance,
+        archived: account.archivedAt !== null,
+      })),
+      total,
+    }
+  }
+}
+
+/**
+ * The household's live accounts and their total: the one read behind `account.total` and the
+ * balances widget. The caller checks the role first.
+ */
+async function readHousehold(
+  { accounts, settings, rates, today }: AccountTotalDependencies,
+  groupId: string,
+): Promise<{ listed: ListedAccount[]; total: HouseholdTotal }> {
+  const [listed, { baseCurrency }] = await Promise.all([
+    accounts.list(groupId, false),
+    settings.get(groupId),
+  ])
+  const date = today()
+  const held = [...new Set(listed.map((account) => account.currency))]
+  const coins = held.some(isCoin)
+  // A coin's price is in euros, so a coin in a household of another base needs the euro's rate.
+  const foreign = [
+    ...new Set([...held.filter((code) => !isCoin(code)), ...coins ? [ECB_BASE] : []]),
+  ]
+    .filter((code) => code !== baseCurrency)
+  const [found, prices] = await Promise.all([
+    Promise.all(foreign.map(async (code) => {
+      const lookup = await rates.lookup(code, baseCurrency, date)
+      return [code, lookup.found ? lookup.rate : null] as [string, ExchangeRate | null]
+    })),
+    coins ? rates.coinPrices() : [],
+  ])
+  const coinPrices = new Map(prices.map((price) => [price.coin, price]))
+  return { listed, total: householdTotal(listed, baseCurrency, new Map(found), coinPrices) }
 }

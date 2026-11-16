@@ -157,16 +157,16 @@ const noWidgetsCard = () =>
 const membersOnly = () =>
   document.querySelector(`[data-e2e=admin-group-overview-members-only]`)?.textContent ?? null
 /**
- * Whether any of the household's money widgets (Net, Income, Spending, where the money went) or its
- * budgets has a card.
+ * Whether any of the household's money widgets (Net, Income, Spending, where the money went), its
+ * budgets or its balances has a card.
  */
 const drawsFigures = () =>
   document.querySelector(
-    `[data-e2e^=overview-widget-money], [data-e2e^=money-widget], [data-e2e^=category-widget], [data-e2e^=overview-widget-budgets], [data-e2e^=budget-widget]`,
+    `[data-e2e^=overview-widget-money], [data-e2e^=money-widget], [data-e2e^=category-widget], [data-e2e^=overview-widget-budgets], [data-e2e^=budget-widget], [data-e2e^=overview-widget-accounts], [data-e2e^=account-widget]`,
   ) !== null
 
 describe(`one group's page in the admin app`, () => {
-  it(`asks for no widget and no files with the notes off, draws no money, categories or budgets widget but says why, and shows no Files tab and no note counts`, async () => {
+  it(`asks for no widget and no files with the notes off, draws no money, categories, budgets or balances widget but says why, and shows no Files tab and no note counts`, async () => {
     const { paths } = await openGroup(new Set([`groups`]))
 
     expect(paths).toEqual([`/api/admin/groups/${GROUP_ID}`])

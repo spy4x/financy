@@ -239,7 +239,7 @@ describe(`accountRecords`, () => {
     ]
     expect(found(`switch to wallet`, rows)).toEqual([`Wallet`])
     expect(found(`switch to наличные`, rows)).toEqual([`Наличные`])
-    expect(found(`переключиться на наличные`, rows)).toEqual([`Наличные`])
+    expect(found(`перейти в наличные`, rows)).toEqual([`Наличные`])
   })
 
   it(`passes an account's own aliases for search to match, and none of its own for one without any`, () => {

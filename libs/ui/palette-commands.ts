@@ -8,6 +8,7 @@
 import type { CommandPaletteOption } from "@spy4x/preact-ui/command-palette"
 import { isolate } from "@spy4x/preact-ui/bdi"
 import type { Translator } from "@spy4x/platform/universal/i18n"
+import { canExportGroup, canMutateNotes, type GroupRole } from "@domain/groups"
 import type { ThemePreference } from "@domain/identity"
 import { NOTE_IMPORT_KIND } from "@domain/notes"
 import {
@@ -86,6 +87,18 @@ export interface PaletteOption extends CommandPaletteOption {
   choice?: SearchChoice
   /** The keys of the app's shortcut that does the same, a sequence such as `g n` included. */
   shortcut?: string
+}
+
+/** The palette's view of the open group: what the person's role lets them do there. */
+export function paletteGroup(
+  group: { id: string; name: string; role: GroupRole },
+): NonNullable<PaletteContext["currentGroup"]> {
+  return {
+    id: group.id,
+    name: group.name,
+    canWrite: canMutateNotes(group.role),
+    canExport: canExportGroup(group.role),
+  }
 }
 
 /** What the registry reads of the app's state. */
