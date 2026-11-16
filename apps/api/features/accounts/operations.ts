@@ -1,5 +1,6 @@
 import {
   type Account,
+  ACCOUNT_WIDGET_OPERATION,
   AccountArchiveCommand,
   accountArchivePayloadSchema,
   AccountCreateCommand,
@@ -18,6 +19,9 @@ import {
   AccountTotalQuery,
   AccountUpdateCommand,
   accountUpdatePayloadSchema,
+  accountWidgetPayloadSchema,
+  AccountWidgetQuery,
+  type AccountWidgetResult,
   type AccountWriteResult,
   type HouseholdTotal,
   type ListedAccount,
@@ -37,6 +41,8 @@ export interface AccountOperationDependencies {
   get(query: AccountGetQuery): Promise<{ account: ListedAccount }>
   list(query: AccountListQuery): Promise<{ accounts: ListedAccount[] }>
   total(query: AccountTotalQuery): Promise<{ total: HouseholdTotal }>
+  /** "How much do we have?" on the overview: the accounts and the same total. */
+  widget(query: AccountWidgetQuery): Promise<AccountWidgetResult>
 }
 
 /**
@@ -121,6 +127,13 @@ export function createAccountOperations(
       handle: async ({ actor, payload }) => {
         const input = parseAccountRequest(accountTotalPayloadSchema, payload)
         return await dependencies.total(new AccountTotalQuery({ actor, ...input }))
+      },
+    },
+    [ACCOUNT_WIDGET_OPERATION]: {
+      kind: "query",
+      handle: async ({ actor, payload }) => {
+        const { groupId } = parseAccountRequest(accountWidgetPayloadSchema, payload)
+        return await dependencies.widget(new AccountWidgetQuery({ actor, groupId }))
       },
     },
   }

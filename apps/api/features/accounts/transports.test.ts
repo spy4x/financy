@@ -17,6 +17,8 @@ import {
   AccountSetDefaultCommand,
   AccountTotalQuery,
   AccountUpdateCommand,
+  AccountWidgetQuery,
+  type AccountWidgetResult,
 } from "@domain/accounts"
 import { defaultHouseholdSettings, type RateLookup } from "@domain/money"
 import { createSessionGate } from "../../cqrs/session-gate.ts"
@@ -44,6 +46,7 @@ import {
   createAccountSetDefaultHandler,
   createAccountTotalHandler,
   createAccountUpdateHandler,
+  createAccountWidgetHandler,
 } from "./handlers.ts"
 import { createAccountOperations } from "./operations.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
@@ -62,6 +65,8 @@ const groupId = uuidV7()
 const otherGroupId = uuidV7()
 const accountId = uuidV7()
 const secondAccountId = uuidV7()
+/** The rest of the overview's widget payload; a balance is today's whatever the range. */
+const WIDGET_RANGE = { from: "2026-11-01", to: "2026-11-30", timeZone: "UTC" }
 const OWNER = 1
 const VIEWER = 2
 const EDITOR = 3
@@ -99,28 +104,27 @@ function stack() {
   queries.use(createSessionGate([]))
   queries.register(AccountListQuery, createAccountListHandler(dependencies))
   queries.register(AccountGetQuery, createAccountGetHandler(dependencies))
-  queries.register(
-    AccountTotalQuery,
-    createAccountTotalHandler({
-      ...dependencies,
-      settings: { get: (group) => Promise.resolve(defaultHouseholdSettings(group)) },
-      // One euro buys 1.25 dollars; no other currency has a rate.
-      rates: {
-        lookup: (base, quote, date): Promise<RateLookup> =>
-          Promise.resolve(
-            base === "USD" && quote === "EUR"
-              ? {
-                found: true,
-                rate: { base: "EUR", quote: "USD", rate: "1.25", date, source: "ecb" },
-              }
-              : { found: false, reason: "no-rate" },
-          ),
-        // One bitcoin buys €60,000; no other coin has a price.
-        coinPrices: () => Promise.resolve([{ coin: "BTC", price: "60000", date: "2026-11-05" }]),
-      },
-      today: () => "2026-11-06",
-    }),
-  )
+  const totalDependencies = {
+    ...dependencies,
+    settings: { get: (group: string) => Promise.resolve(defaultHouseholdSettings(group)) },
+    // One euro buys 1.25 dollars; no other currency has a rate.
+    rates: {
+      lookup: (base: string, quote: string, date: string): Promise<RateLookup> =>
+        Promise.resolve(
+          base === "USD" && quote === "EUR"
+            ? {
+              found: true,
+              rate: { base: "EUR", quote: "USD", rate: "1.25", date, source: "ecb" },
+            }
+            : { found: false, reason: "no-rate" },
+        ),
+      // One bitcoin buys €60,000; no other coin has a price.
+      coinPrices: () => Promise.resolve([{ coin: "BTC", price: "60000", date: "2026-11-05" }]),
+    },
+    today: () => "2026-11-06",
+  }
+  queries.register(AccountTotalQuery, createAccountTotalHandler(totalDependencies))
+  queries.register(AccountWidgetQuery, createAccountWidgetHandler(totalDependencies))
   const operations = createAccountOperations({
     create: (command) => commands.execute(command),
     update: (command) => commands.execute(command),
@@ -131,6 +135,7 @@ function stack() {
     list: (query) => queries.execute(query),
     get: (query) => queries.execute(query),
     total: (query) => queries.execute(query),
+    widget: (query) => queries.execute(query),
   })
   /** Takes the member out of the household, as the owner's removal does. */
   const remove = (group: string, user: number) => delete memberships[`${group}:${user}`]
@@ -296,6 +301,7 @@ for (const [via, open] of TRANSPORTS) {
       const answers = [
         await as.query("account.list", { groupId }),
         await as.query("account.get", { groupId, id: accountId }),
+        await as.query("account.widget.balances", { groupId, ...WIDGET_RANGE }),
         ...await Promise.all(writes().map(([name, payload]) => as.command(name, payload))),
       ]
 
@@ -371,6 +377,50 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
+    it("answers the balances widget with the household's accounts and the very total account.total gives", async () => {
+      const s = stack()
+      await s.accounts.create(input, OWNER)
+      const cash = { ...input, id: secondAccountId, name: "Cash", currency: "EUR" }
+      await s.accounts.create({ ...cash, startingBalance: 500 }, OWNER)
+      const archived = uuidV7()
+      await s.accounts.create({ ...cash, id: archived, startingBalance: 1_000 }, OWNER)
+      await s.accounts.archive({ groupId, id: archived, archived: true, expectedVersion: 1 }, OWNER)
+      await s.accounts.create(
+        { ...cash, groupId: otherGroupId, id: uuidV7(), startingBalance: 90_000 },
+        OWNER,
+      )
+      const as = open(s, VIEWER)
+
+      const total = await as.query("account.total", { groupId })
+      const widget = await as.query("account.widget.balances", { groupId, ...WIDGET_RANGE })
+
+      const payload = (widget as { payload: AccountWidgetResult }).payload
+      expect(payload.total).toEqual((total as { payload: { total: unknown } }).payload.total)
+      expect(
+        payload.accounts.map(({ name, currency, balance, archived }) => ({
+          name,
+          currency,
+          balance,
+          archived,
+        })).sort((a, b) => a.balance - b.balance),
+      ).toEqual([
+        { name: "Cash", currency: "EUR", balance: 500, archived: false },
+        { name: "Cash", currency: "EUR", balance: 1_000, archived: true },
+        { name: "Main account", currency: "USD", balance: 1234, archived: false },
+      ])
+      as.shutdown()
+    })
+
+    it("refuses a balances widget payload with a field the overview never sends", async () => {
+      const s = stack()
+      const as = open(s, VIEWER)
+
+      expect(
+        await as.query("account.widget.balances", { groupId, ...WIDGET_RANGE, extra: 1 }),
+      ).toMatchObject({ kind: "server.error", details: { code: "INVALID_REQUEST" } })
+      as.shutdown()
+    })
+
     it("refuses the total to a removed member and for another household's id, as an unknown household", async () => {
       const s = stack()
       await s.accounts.create(input, OWNER)
@@ -385,6 +435,8 @@ for (const [via, open] of TRANSPORTS) {
       const answers = [
         await editor.query("account.total", { groupId }),
         await viewer.query("account.total", { groupId: otherGroupId }),
+        await editor.query("account.widget.balances", { groupId, ...WIDGET_RANGE }),
+        await viewer.query("account.widget.balances", { groupId: otherGroupId, ...WIDGET_RANGE }),
       ]
 
       for (const answer of answers) {
