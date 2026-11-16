@@ -11,9 +11,9 @@ template gets the pipeline the moment its repository is activated in Woodpecker.
 `ci/woodpecker/pr/ci` and `ci/woodpecker/pr/ci-browser` on a pull request, and branch protection
 requires both.
 
-`ci.yml` runs on every pull request, every push to `main`, every tag and the nightly run on `main`
-(below); `ci-browser.yml` on all of them but a push to `main`. Only `release.yml` filters tags to
-`v<digit>*`. A push to `main` runs only `check`, `secrets` and the four image steps: its pull
+`ci.yml` runs on every pull request, every push to `main`, every release tag `v<digit>*` and the
+nightly run on `main` (below); `ci-browser.yml` on all of them but a push to `main`. A tag
+`ci-image-<n>` runs only `ci-image.yml` ([The CI image](#the-ci-image)). A push to `main` runs only `check`, `secrets` and the four image steps: its pull
 request already ran the rest. A push to any other branch runs nothing: open a pull request to run
 the pipeline. This is the one list of CI's steps; other pages link here.
 
@@ -23,27 +23,27 @@ until it merges `main`, so it cannot merge before that.
 A pull request whose title starts with `[WIP]` runs `.woodpecker/wip.yml` instead: `check` and
 `secrets` only, copies of `ci.yml`'s steps, reported as `ci/woodpecker/pr/wip`. Removing `[WIP]`
 from the title starts `ci.yml` and `ci-browser.yml` without a new push (Woodpecker's
-`pull_request_metadata` event with the reason `edited`), and every later push runs them too; that
-run takes the same steps as a pull request. A commit pushed while the title starts with `[WIP]` has
-neither `ci/woodpecker/pr/ci` nor `ci/woodpecker/pr/ci-browser`, which branch protection requires,
-so it cannot merge. Putting `[WIP]` back without a push runs nothing and keeps the earlier
-statuses, so it does not block a merge. Editing the body of a ready pull request is also `edited`
-and re-runs both workflows; that is rare and accepted.
+`pull_request_metadata` event with the reason `edited`), and every later push runs them too. A
+commit pushed while the title starts with `[WIP]` has neither `ci/woodpecker/pr/ci` nor
+`ci/woodpecker/pr/ci-browser`, which branch protection requires, so it cannot merge. Putting
+`[WIP]` back without a push runs nothing and keeps the earlier statuses, so it does not block a
+merge. Editing the body of a ready pull request is also `edited` and re-runs both workflows; that
+is rare and accepted.
 
 ```
-ci.yml (Postgres and Valkey services)       ci-browser.yml (its own Postgres and Valkey)
+ci.yml (Postgres and Valkey services)       ci-browser.yml (its own Postgres and two Valkeys)
 
 secrets                                     ready
-check ──┬── integration                     browser (build, e2e-mpa, e2e-spa)
-        ├── backup-restore                      │
-        ├── alert-rules                     lighthouse (website changes, nightly, tag)
-        └── runtimes                        ┌───┴───────────┐
-image-node, image-bun,                  e2e-smoke        e2e-full
-image-mpa-node, image-mpa-bun       (pull request, tag)  (nightly)
+check ──┬── integration                     browser (build,          e2e-smoke
+        ├── backup-restore                    e2e-mpa, e2e-spa)      (pull request, tag)
+        ├── alert-rules                         └──────────┬───────────┘
+        └── runtimes                        lighthouse (website changes, nightly, tag)
+image-node, image-bun,                                 │
+image-mpa-node, image-mpa-bun               e2e-full (nightly)
 ```
 
-A pull request that changes no file of the website skips `lighthouse`; `e2e-smoke` then starts
-right after `browser`. `ready` only echoes a line: a pull request that changes only Markdown
+`browser` and `e2e-smoke` start together, and `lighthouse` starts when both have ended. A pull
+request that changes no file of the website skips `lighthouse`. `ready` only echoes a line: a pull request that changes only Markdown
 skips every other step of `ci-browser.yml`, and a workflow with no step left posts no status, so
 the required `ci/woodpecker/pr/ci-browser` would never arrive.
 
@@ -123,14 +123,16 @@ the host with it.
   --max-failures=10`, with the built SPA in the container's own nginx for the specs that start the
   app with no network (`E2E_BUILT=nginx`). It is not part of the pull-request check, so it blocks no
   merge; a red nightly run says a merge broke a screen outside the smoke set.
-- The four browser steps run in `mcr.microsoft.com/playwright`, which ships Chromium and its system
-  libraries, and install the pinned Deno release from GitHub, checked against its SHA-256.
-  Playwright's own browser download, run through Deno in the plain Deno image, hangs. The image
-  tag must equal the Playwright version in `deno.jsonc` (`e2e` task), because the browser build in
-  the image belongs to that version.
-- The browser steps run one after another in `ci-browser.yml`: each keeps the API's `vapid.json`
-  in the shared checkout and starts a worker on the one Valkey service. `ci.yml`'s steps have a
-  checkout and services of their own, so they never meet.
+- The four browser steps run in the CI image ("The CI image" below), built on
+  `mcr.microsoft.com/playwright`, which ships Chromium and its system libraries, with the pinned
+  Deno release in it. Playwright's own browser download, run through Deno in the plain Deno image,
+  hangs. The Playwright tag in `infra/ci/playwright.dockerfile` must equal the Playwright version in
+  `deno.jsonc` (`e2e` task), because the browser build in the image belongs to that version.
+- `browser` and `e2e-smoke` run at the same time in the checkout of `ci-browser.yml`. `browser`'s
+  scripts keep the API's `vapid.json` in the checkout's root and use the `valkey` service;
+  `e2e-smoke` keeps its keys in a scratch folder (`VAPID_KEYS_PATH`) and uses `valkey-smoke`, so
+  neither worker takes the other's jobs. `e2e-full` runs after `browser`, on `valkey`. `ci.yml`'s
+  steps have a checkout and services of their own, so they never meet.
 - Both steps stop after that many failed tests. With sign-in broken every test fails, each after
   30 s, and a step would otherwise run into the script's limit of 25 minutes.
 - A failed test is not retried: one failure fails the step, so a test that fails every second run
@@ -174,7 +176,8 @@ as `@daily`, with no seconds field, in the cron's time zone, UTC unless set. A p
 Deploys run from a developer's machine with `deno task deploy` ([Deploy an
 update](deploy-updates.md)) until a product turns on `.woodpecker/deploy.yml.example`. Then every
 push to the default branch that passes `ci.yml` deploys itself the same way; a push runs no
-`ci-browser.yml`, so the deploy waits for `ci` alone. Seed keeps it off.
+`ci-browser.yml`, so the deploy waits for `ci` alone. Seed keeps it off
+and deploys its own demo nightly from `.woodpecker/demo-deploy.yml`, which a product deletes.
 
 1. Copy the file: `cp .woodpecker/deploy.yml.example .woodpecker/deploy.yml`. Change `main` in its
    `when` when the default branch has another name.
@@ -222,13 +225,37 @@ builds into a tar file without any secret, and crane, the only step with the tok
 version without a pre-release suffix also gets `latest`. The worker and the migration run the API
 image, so there is no worker image. How to cut a release: [Publish a release](releases.md).
 
+## The CI image
+
+`infra/ci/playwright.dockerfile` is the image of the four browser steps of `ci-browser.yml`
+(`browser`, `lighthouse`, `e2e-smoke`, `e2e-full`): the Playwright image, plus `unzip`, `nginx`,
+Deno and a Deno cache (`DENO_DIR=/opt/deno`) that already holds Lighthouse CI. A step that runs in
+it downloads none of them. For those steps, the Dockerfile is the one place that holds the
+versions of Playwright, Deno and Lighthouse CI.
+
+To publish a new one, push a tag `ci-image-<n>` on a commit that is on `main`:
+
+```bash
+git tag ci-image-2 origin/main && git push origin ci-image-2
+```
+
+`.woodpecker/ci-image.yml` builds it with kaniko and pushes it with crane as
+`<IMAGE_PREFIX>-ci:<n>` (here `antonshubin/financy-ci:2`), with the same secrets and guard as
+releases. It never moves `latest`. A product changes `IMAGE_PREFIX` at the top of `ci-image.yml`.
+Then pin the new tag by its digest in the four browser steps of `ci-browser.yml`
+(`image: <IMAGE_PREFIX>-ci:<n>@sha256:<digest>`; a product that changed `IMAGE_PREFIX` changes the
+name there too). The digest is on Docker Hub:
+
+```bash
+curl -s https://hub.docker.com/v2/repositories/antonshubin/template-ci/tags/2 | jq -r .digest
+```
+
 ## Changing the Deno version
 
 Change the tag in every `image: denoland/deno:<version>` line of `ci.yml`, and the release URL and
-SHA-256 in the four Playwright steps of `ci-browser.yml` (`browser`, `lighthouse`, `e2e-smoke`,
-`e2e-full`) and in `runtimes`. `ready` in `ci-browser.yml` pins the Deno image by tag and digest:
-update both. Keep them
-equal to `DENO_VERSION` in `infra/envs/.env.example` and `Dockerfile.base`.
+SHA-256 in `runtimes` and in `infra/ci/playwright.dockerfile`, then publish a new CI image and pin
+it in the four browser steps of `ci-browser.yml` (above). `ready` in `ci-browser.yml` pins the
+Deno image by tag and digest: update both. Keep them equal to `DENO_VERSION` in `infra/envs/.env.example` and `Dockerfile.base`.
 
 ## Running the steps locally
 

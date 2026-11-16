@@ -1,7 +1,7 @@
 import type { JSX, RefObject } from "preact"
 import { useEffect, useRef, useState } from "preact/hooks"
 import { IconArrowPath, IconArrowRight, IconPlayCircle } from "@spy4x/preact-icons"
-import { Badge, type BadgeColor, type BadgeType } from "@spy4x/preact-ui/badge"
+import { Badge, type BadgeTone, type BadgeVariant } from "@spy4x/preact-ui/badge"
 import { Button } from "@spy4x/preact-ui/button"
 import { ConfirmDialog } from "@spy4x/preact-ui/confirm-dialog"
 import { DataTable, type DataTableColumn } from "@spy4x/preact-ui/data-table"
@@ -54,33 +54,38 @@ export const ADMIN_JOB_PATHS = {
  */
 const JOB_STATES: Record<
   AdminJobState,
-  { name: string; key: string; color: BadgeColor; type: BadgeType }
+  { name: string; key: string; color: BadgeTone; type: BadgeVariant }
 > = {
   [AdminJobState.Scheduled]: {
     name: `Scheduled`,
     key: `AdminJobs.scheduled`,
-    color: `gray`,
+    color: `neutral`,
     type: `outline`,
   },
-  [AdminJobState.Due]: { name: `Due now`, key: `AdminJobs.due`, color: `blue`, type: `outline` },
+  [AdminJobState.Due]: { name: `Due now`, key: `AdminJobs.due`, color: `info`, type: `outline` },
   [AdminJobState.Running]: {
     name: `Running`,
     key: `AdminJobs.running`,
-    color: `blue`,
+    color: `info`,
     type: `filled`,
   },
   [AdminJobState.Retrying]: {
     name: `Waiting to retry`,
     key: `AdminJobs.retrying`,
-    color: `orange`,
+    color: `warning`,
     type: `outline`,
   },
-  [AdminJobState.Failed]: { name: `Failed`, key: `AdminJobs.failed`, color: `red`, type: `filled` },
-  [AdminJobState.Done]: { name: `Done`, key: `AdminJobs.done`, color: `green`, type: `outline` },
+  [AdminJobState.Failed]: {
+    name: `Failed`,
+    key: `AdminJobs.failed`,
+    color: `danger`,
+    type: `filled`,
+  },
+  [AdminJobState.Done]: { name: `Done`, key: `AdminJobs.done`, color: `success`, type: `outline` },
   [AdminJobState.Cancelled]: {
     name: `Cancelled`,
     key: `AdminJobs.cancelled`,
-    color: `gray`,
+    color: `neutral`,
     type: `filled`,
   },
 }
@@ -102,7 +107,7 @@ export function JobStateBadge({ state }: { state: AdminJobState }): JSX.Element 
   const view = JOB_STATES[state] ?? JOB_STATES[AdminJobState.Scheduled]
   return (
     <span data-e2e="admin-job-state" data-state={view.name}>
-      <Badge text={t.t(view.key)} color={view.color} type={view.type} />
+      <Badge text={t.t(view.key)} tone={view.color} variant={view.type} />
     </span>
   )
 }
@@ -217,14 +222,17 @@ const TABLE_CLASS = [
   `max-sm:[&_:is(th,td):nth-child(n+2)]:hidden`,
 ].join(` `)
 
-/** "Photo of Zip jacket", the item name a link to its page: what an image job processes. */
+/**
+ * "Photo 2 of Zip jacket", the item name a link to its page: what an image job processes. The
+ * number is the photo's 0-based position + 1, so several uploads to one item read apart.
+ */
 function PhotoOf(
   { photo, t, navigate }: { photo: AdminJobPhoto; t: Translator<string>; navigate?: Navigate },
 ): JSX.Element {
   return (
     <span class="text-sm">
       <Rich
-        parts={t.parts(`AdminJobs.photoOf`, { item: photo.itemName })}
+        parts={t.parts(`AdminJobs.photoOf`, { number: photo.position + 1, item: photo.itemName })}
         tags={{
           link: (text) => (
             <Link
@@ -366,7 +374,9 @@ export function AdminJobsScreen(props: AdminJobsScreenProps): JSX.Element {
     <Stack>
       <PageHeader
         title={t.t(`AdminJobs.title`)}
-        subtitle={t.t(`AdminJobs.subtitle`)}
+        // The header truncates its subtitle; wrapping it lets a phone show the whole sentence.
+        subtitle={<span class="whitespace-normal">{t.t(`AdminJobs.subtitle`)}</span>}
+        subtitleDataE2E="admin-jobs-subtitle"
         titleDataE2E="admin-jobs-title"
         menu={failed > 0
           ? (
@@ -606,8 +616,8 @@ function Repeating(props: AdminJobsScreenProps): JSX.Element {
           ? (
             <span class="flex flex-wrap items-center gap-2 text-sm">
               {job.lastFailed
-                ? <Badge text={t.t(`AdminJobs.failed`)} color="red" type="outline" />
-                : <Badge text={t.t(`AdminJobs.done`)} color="green" type="outline" />}
+                ? <Badge text={t.t(`AdminJobs.failed`)} tone="danger" variant="outline" />
+                : <Badge text={t.t(`AdminJobs.done`)} tone="success" variant="outline" />}
               <When at={job.lastRunAt} />
             </span>
           )
@@ -625,7 +635,7 @@ function Repeating(props: AdminJobsScreenProps): JSX.Element {
       id: `action`,
       header: t.t(`AdminJobs.action`),
       render: (job) =>
-        job.running ? <Badge text={t.t(`AdminJobs.running`)} color="blue" /> : (
+        job.running ? <Badge text={t.t(`AdminJobs.running`)} tone="info" /> : (
           <Button
             size="sm"
             variant="secondary"

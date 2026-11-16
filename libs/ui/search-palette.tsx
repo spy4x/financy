@@ -2,11 +2,7 @@ import type { JSX } from "preact"
 import { createPortal } from "preact/compat"
 import { useEffect, useRef, useState } from "preact/hooks"
 import { useFormat } from "@spy4x/preact-ui/format"
-import {
-  CommandPalette,
-  type CommandPaletteLabels,
-  matchOptions,
-} from "@spy4x/preact-ui/command-palette"
+import { CommandPalette, type CommandPaletteLabels } from "@spy4x/preact-ui/command-palette"
 import { hotkeyClickBinding, useHotkeys } from "@spy4x/preact-ui/hotkeys"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { searchEntries } from "@spy4x/platform/universal/text"
@@ -16,8 +12,10 @@ import { roleName } from "./groups-screen.tsx"
 import type { ShortcutRow } from "./shortcuts.tsx"
 import {
   groupRow,
+  matchCommands,
   type PageCommand,
   paletteCommands,
+  type PaletteContext,
   type PaletteOption,
   pickedChoice,
   quickCreateRows,
@@ -112,6 +110,39 @@ export interface SearchPaletteProps {
    * query.
    */
   records?: readonly PaletteRecordSource[]
+}
+
+/**
+ * What the palette's registry ({@link paletteCommands}) reads, from the palette's props. The app
+ * builds the same list for the shortcuts dialog with it, so the two never disagree.
+ *
+ * @param t The app's translator.
+ * @param locale The region format's locale, for sizes in a detail.
+ * @param props The palette's props.
+ * @param live The latest props, read when a row is drawn (the theme); defaults to `props`.
+ */
+export function paletteContext(
+  t: Translator<string>,
+  locale: string,
+  props: Omit<SearchPaletteProps, "searchNotes" | "onSelect">,
+  live: () => Pick<SearchPaletteProps, "theme"> = () => props,
+): PaletteContext {
+  return {
+    t,
+    locale,
+    currentGroup: props.currentGroup,
+    online: props.online,
+    theme: () => live().theme ?? `system`,
+    shortcuts: props.shortcuts ?? [],
+    activityGroupId: props.activityGroupId ?? null,
+    pageCommands: props.pageCommands ?? [],
+    guest: props.guest ?? false,
+    benchmark: props.benchmark ?? false,
+    canInstall: props.canInstall ?? false,
+    twoFactor: props.twoFactor ?? false,
+    notes: props.notes ?? true,
+    files: props.files ?? true,
+  }
 }
 
 /** One record a product holds on the device, as the palette lists and matches it. */
@@ -258,7 +289,7 @@ export function SearchPalette(props: SearchPaletteProps): JSX.Element {
     // Groups and commands are ranked together, so the strongest match of either is highlighted
     // first; the palette lists each heading where its first row falls.
     const rows = [...groupRows, ...paletteCommands(context(t), select)]
-    const matched = matchOptions(rows, text, rows.length)
+    const matched = matchCommands(rows, text, rows.length)
     // Built from the query, so they list for any text; under Create, after the plain commands.
     const quickCreate = quickCreateRows(context(t), text)
     const hint = notesHint(
@@ -279,26 +310,8 @@ export function SearchPalette(props: SearchPaletteProps): JSX.Element {
   /** A pick made inside a submenu, with the palette still open. */
   const select = (choice: SearchChoice) => latest.current.onSelect(choice)
   /** What the registry reads, from the latest props. */
-  const context = (t: Translator<string>) => {
-    const props = latest.current
-    return {
-      t,
-      locale: region.current,
-      currentGroup: props.currentGroup,
-      online: props.online,
-      theme: () => latest.current.theme ?? `system`,
-      shortcuts: props.shortcuts ?? [],
-      activityGroupId: props.activityGroupId ?? null,
-      pageCommands: props.pageCommands ?? [],
-      guest: props.guest ?? false,
-      benchmark: props.benchmark ?? false,
-      canInstall: props.canInstall ?? false,
-      twoFactor: props.twoFactor ?? false,
-      notes: props.notes ?? true,
-      files: props.files ?? true,
-    }
-  }
-
+  const context = (t: Translator<string>) =>
+    paletteContext(t, region.current, latest.current, () => latest.current)
   return (
     <div ref={root} data-e2e="search-root">
       <CommandPalette<PaletteOption>
