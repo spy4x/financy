@@ -15,6 +15,7 @@ import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { IcalDateKind } from "@spy4x/time/ical"
 import {
   formatRrule,
+  nextOccurrence,
   occurrencesBetween,
   parseRrule,
   type Rrule,
@@ -527,6 +528,45 @@ export function dueOccurrences(
     .map((value) => value.date)
     .filter((date) => !rule.skippedDates.includes(date))
   return { dates, through }
+}
+
+/**
+ * The dates `rule` will still make an entry for, in order, from `from` on: its occurrences after
+ * the day it is made through, without its skipped dates, at most `max` of them and none after `to`
+ * when given. The screens list a rule's next dates and the household's upcoming ones with it, on
+ * the device, so they read offline. A repeat that does not parse has none.
+ */
+export function upcomingDates(
+  rule: Pick<
+    RecurringRule,
+    `rrule` | `startDate` | `endDate` | `count` | `skippedDates` | `madeThrough`
+  >,
+  from: string,
+  max: number,
+  to?: string,
+): string[] {
+  const parsed = parseRrule(rule.rrule)
+  if (!parsed.success) return []
+  const series: Rrule = { ...parsed.output }
+  if (rule.count !== null) series.count = rule.count
+  if (rule.endDate !== null) {
+    series.until = { kind: IcalDateKind.Date, date: rule.endDate }
+  }
+  const start = { kind: IcalDateKind.Date, date: rule.startDate } as const
+  const first = rule.madeThrough !== null && rule.madeThrough >= from
+    ? addDays(rule.madeThrough, 1)
+    : from
+  const dates: string[] = []
+  let after = addDays(first, -1)
+  // Each skipped date costs one step, so the loop ends even when every step lands on one.
+  for (let step = 0; step < max + rule.skippedDates.length && dates.length < max; step++) {
+    const next = nextOccurrence(series, { start, after: new Date(`${after}T00:00:00Z`) })
+    if (!next.success || next.output === null) break
+    after = next.output.date
+    if (to !== undefined && after > to) break
+    if (!rule.skippedDates.includes(after)) dates.push(after)
+  }
+  return dates
 }
 
 /**
