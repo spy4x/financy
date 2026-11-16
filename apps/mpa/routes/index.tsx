@@ -25,6 +25,7 @@ import { organizationId, organizationJsonLd } from "../contact-links.ts"
 import {
   PERSON_JSON_LD,
   REPOSITORY_URL,
+  SELF_HOST_GUIDE,
   SITE_NAME,
   SiteFrame,
   type SitePageHead,
@@ -144,34 +145,47 @@ function homeJsonLd(
 const TEXT_LINK = `font-medium text-primary underline`
 
 /**
- * The page's one action: "Get notified" to the form below while the newsletter is on, else
- * "Follow the build on GitHub" (#91 makes self-hosting the primary action once its guide ships).
+ * The page's actions: "Self-host Financy" to its guide first, then "Get notified" to the form below
+ * while the newsletter is on, else "Follow the build on GitHub".
  */
 function HeroActions({ newsletter }: { newsletter: boolean }): JSX.Element {
-  const { t } = useSite()
+  const { t, href } = useSite()
   return (
     <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
-      {newsletter && (
-        <Button
-          href="#newsletter"
-          size="lg"
-          data-e2e="home-notify"
-          data-umami-event="notify"
-          data-umami-event-from="hero"
-        >
-          {t.t(`HomeHero.notify`)}
-        </Button>
-      )}
       <Button
-        href={REPOSITORY_URL}
-        variant={newsletter ? `outline` : `primary`}
+        href={href(SELF_HOST_GUIDE)}
         size="lg"
-        data-e2e="home-github"
-        data-umami-event="github"
+        data-e2e="home-self-host"
+        data-umami-event="self-host"
         data-umami-event-from="hero"
       >
-        <IconGitHub class="size-5" /> {t.t(`HomeHero.github`)}
+        <IconServer class="size-5" /> {t.t(`HomeHero.selfHost`)}
       </Button>
+      {newsletter
+        ? (
+          <Button
+            href="#newsletter"
+            variant="outline"
+            size="lg"
+            data-e2e="home-notify"
+            data-umami-event="notify"
+            data-umami-event-from="hero"
+          >
+            {t.t(`HomeHero.notify`)}
+          </Button>
+        )
+        : (
+          <Button
+            href={REPOSITORY_URL}
+            variant="outline"
+            size="lg"
+            data-e2e="home-github"
+            data-umami-event="github"
+            data-umami-event-from="hero"
+          >
+            <IconGitHub class="size-5" /> {t.t(`HomeHero.github`)}
+          </Button>
+        )}
     </div>
   )
 }
@@ -286,7 +300,7 @@ function Who(): JSX.Element {
 
 /** Self-host it today, or wait for the paid cloud: two cards with a text link each. */
 function Ways({ newsletter }: { newsletter: boolean }): JSX.Element {
-  const { t } = useSite()
+  const { t, href } = useSite()
   return (
     <Band tone="alt" id="ways" labelledBy="ways-title">
       <div class="flex flex-col gap-8">
@@ -298,10 +312,10 @@ function Ways({ newsletter }: { newsletter: boolean }): JSX.Element {
             </h3>
             <p class="text-muted text-pretty">{t.t(`HomeWays.selfHostText`)}</p>
             <a
-              href={REPOSITORY_URL}
-              class="mt-auto inline-flex items-center gap-1 self-start font-medium text-primary hover:underline"
-              data-umami-event="github"
-              data-umami-event-from="self-host"
+              href={href(SELF_HOST_GUIDE)}
+              class="mt-auto inline-flex min-h-11 items-center gap-1 self-start font-medium text-primary hover:underline sm:min-h-9"
+              data-umami-event="self-host"
+              data-umami-event-from="ways"
             >
               {t.t(`HomeWays.selfHostLink`)} <IconArrowRight class="size-4" />
             </a>
@@ -397,8 +411,8 @@ function Questions(): JSX.Element {
 }
 
 /**
- * The home page: what Financy is, the one action a visitor can finish today (get notified, or
- * follow the build when the newsletter is off), and an honest, dated account of where the rebuild
+ * The home page: what Financy is, its main action (self-host it, by the guide; then get notified,
+ * or follow the build when the newsletter is off), and an honest, dated account of where the rebuild
  * stands; then who it is for, how to run it, the questions and the newsletter. `/` in the default
  * language and `/<language>` in every other (`routes/[lang]/index.tsx`).
  */

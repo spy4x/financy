@@ -125,6 +125,9 @@ Pick the guide that fits. New here? Start with [Get started](get-started.md). Th
   fallback and its cap, and how a rate is chosen.
 - [What we are building](financy/product.md): who Financy is for, the first version, the price,
   and the owner's decisions.
+- Self-hosting, also on financy.dev/docs: [install](financy/self-host.md) Financy on your own
+  server, [upgrade](financy/upgrade.md) it to a newer release, and [back it up](financy/backups.md)
+  and rehearse a restore.
 - [Research for the rebuild on Seed](financy/research/README.md), and its parts:
   [product](financy/research/product.md), [marketing](financy/research/marketing.md),
   [legacy features](financy/research/legacy-features.md),

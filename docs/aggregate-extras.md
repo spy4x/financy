@@ -134,7 +134,9 @@ for all of it. A person's saved layout gets the new widget at its end.
 A widget that shows what another screen already reads answers with that screen's read instead, so
 the two never disagree. The budgets widget (`BUDGET_WIDGETS` in `libs/domain/budgets/+lib.ts`)
 calls the `budget.month` handler for the month the range ends in, never later than the household's
-current month, and draws the Budgets screen's own bars read-only.
+current month, and draws the Budgets screen's own bars read-only. "Where did the money go?"
+(`CATEGORY_WIDGETS` in `libs/domain/transactions/+lib.ts`) reads the range's ledger, the one Net,
+Income and Spending read, and lists its top-level categories by `categoryWidgetResult`.
 
 ## Tell a person in their inbox
 

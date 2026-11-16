@@ -558,9 +558,10 @@ export interface Ledger {
   net: number | null
   /**
    * Each expense category with entries in the period, with its spending: its own entries less its
-   * refunds, a parent's including its children's (R13). Most spending first.
+   * refunds, a parent's including its children's (R13). Most spending first. `converted` when any
+   * of its rows counted, a child's included, needed a rate.
    */
-  categories: { categoryId: string; spending: number }[]
+  categories: { categoryId: string; spending: number; converted: boolean }[]
   /** The currencies left out for lack of a rate, by code (R8): both lists below, together. */
   leftOut: string[]
   /** The currencies whose income entries were left out for lack of a rate, by code. */
@@ -628,6 +629,7 @@ export async function summarizeLedger(
   let tooLarge = false
   let income = 0n
   const spentByCategory = new Map<string, bigint>()
+  const convertedCategories = new Set<string>()
   for (const row of rows) {
     const category = byId.get(row.categoryId)
     if (!category) continue
@@ -650,6 +652,7 @@ export async function summarizeLedger(
     const spent = -BigInt(result.value)
     for (const id of new Set([category.id, category.parentId ?? category.id])) {
       spentByCategory.set(id, (spentByCategory.get(id) ?? 0n) + spent)
+      if (rate) convertedCategories.add(id)
     }
   }
   const topLevel = [...spentByCategory].filter(([id]) => byId.get(id)?.parentId === null)
@@ -681,7 +684,11 @@ export async function summarizeLedger(
         ? -1
         : 1)
       )
-      .map(({ categoryId, spent }) => ({ categoryId, spending: Number(spent) })),
+      .map(({ categoryId, spent }) => ({
+        categoryId,
+        spending: Number(spent),
+        converted: convertedCategories.has(categoryId),
+      })),
     leftOut: [...new Set([...incomeLeftOut, ...spendingLeftOut])].sort(),
     incomeLeftOut: [...incomeLeftOut].sort(),
     spendingLeftOut: [...spendingLeftOut].sort(),
@@ -732,7 +739,8 @@ export async function summarizeLedgerMonths(
 // #region Overview widgets
 /*
  * The money widgets on the household overview: Net, Income and Spending for the range, each with
- * the period of the same length before it. Every member sees them, as every member reads the
+ * the period of the same length before it, and "Where did the money go?", the range's spending by
+ * category with no comparison. Every member sees them, as every member reads the
  * entries. They show the household's own figures, so the operator's group page draws none of them
  * (`operatorView: "never"`, product.md §5).
  */
@@ -742,6 +750,7 @@ export const MONEY_WIDGET_IDS = {
   net: "money.net",
   income: "money.income",
   spending: "money.spending",
+  categories: "money.categories",
 } as const
 
 /**
@@ -823,6 +832,96 @@ export function parseTransactionWidgetRequest(
 /** Net, Income and Spending: the range's ledger and the previous period's. */
 export class TransactionWidgetQuery implements Query<TransactionWidgetPayload, MoneyWidgetResult> {
   __resultType?: MoneyWidgetResult
+  constructor(public data: TransactionWidgetPayload) {}
+}
+
+/** The query operation of "Where did the money go?": the range's ledger, by category. */
+export const CATEGORY_WIDGET_OPERATION = "transaction.widget.categories"
+
+/** How many categories "Where did the money go?" names before "and N more". */
+export const CATEGORY_WIDGET_TOP = 5
+
+/**
+ * "Where did the money go?", full width: a ranked row per category. It comes after the budgets
+ * widget, so it has its own list.
+ */
+export const CATEGORY_WIDGETS: readonly WidgetDefinition[] = [{
+  id: MONEY_WIDGET_IDS.categories,
+  titleKey: "MoneyWidgets.categoriesTitle",
+  size: "full",
+  canView: canRead,
+  operation: CATEGORY_WIDGET_OPERATION,
+  operatorView: "never",
+}]
+
+/** One row of "Where did the money go?": a top-level category and its spending. */
+export interface CategoryWidgetRow {
+  categoryId: string
+  name: string
+  /** Above zero: its spending with its children's, refunds taken off, as the ledger reads it. */
+  spending: number
+  /** Whether any of its rows, a child's included, needed a rate. */
+  converted: boolean
+}
+
+/**
+ * "Where did the money go?" for the range: the ledger's top-level categories that spent, most
+ * first, and their sum.
+ */
+export interface CategoryWidgetResult {
+  currency: string
+  /**
+   * The shares' denominator: the spending of every top-level category that spent, listed or in
+   * `more`. A net-refunded category is not in it, so it can be above the ledger's `spending`.
+   * `null` only when `tooLarge`.
+   */
+  total: number | null
+  /** Whether any spending in {@link total} needed a rate. */
+  converted: boolean
+  /** At most {@link CATEGORY_WIDGET_TOP} rows, in the ledger's order. */
+  top: CategoryWidgetRow[]
+  /** How many more top-level categories spent in the range. */
+  more: number
+  spendingLeftOut: string[]
+  spendingRateDate: string | null
+  tooLarge: boolean
+}
+
+/**
+ * The ledger's categories as "Where did the money go?" lists them: top-level ones only, since a
+ * parent's figure already holds its children's and shares must not count twice, and only those
+ * that spent. Names come from `categories`, the household's own, archived ones included; a
+ * category it lacks is not listed.
+ */
+export function categoryWidgetResult(
+  ledger: Ledger,
+  categories: readonly { id: string; name: string; parentId: string | null }[],
+): CategoryWidgetResult {
+  const byId = new Map(categories.map((category) => [category.id, category]))
+  const listed = ledger.categories.flatMap(({ categoryId, spending, converted }) => {
+    const category = byId.get(categoryId)
+    return category && category.parentId === null && spending > 0
+      ? [{ categoryId, name: category.name, spending, converted }]
+      : []
+  })
+  const sum = listed.reduce((total, row) => total + BigInt(row.spending), 0n)
+  const tooLarge = ledger.tooLarge || sum > BigInt(Number.MAX_SAFE_INTEGER)
+  return {
+    currency: ledger.currency,
+    total: tooLarge ? null : Number(sum),
+    converted: listed.some((row) => row.converted),
+    top: listed.slice(0, CATEGORY_WIDGET_TOP),
+    more: Math.max(listed.length - CATEGORY_WIDGET_TOP, 0),
+    spendingLeftOut: ledger.spendingLeftOut,
+    spendingRateDate: ledger.spendingRateDate,
+    tooLarge,
+  }
+}
+
+/** "Where did the money go?": the range's ledger by top-level category, named. */
+export class TransactionCategoryWidgetQuery
+  implements Query<TransactionWidgetPayload, CategoryWidgetResult> {
+  __resultType?: CategoryWidgetResult
   constructor(public data: TransactionWidgetPayload) {}
 }
 // #endregion Overview widgets
