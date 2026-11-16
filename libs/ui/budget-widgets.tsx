@@ -118,7 +118,7 @@ export function BudgetBody(
         class={LINK_CLASS}
         data-e2e="budget-widget-link"
       >
-        {t.t(`BudgetWidgets.link`, { month })}
+        {t.t(`BudgetWidgets.link`)}
       </Link>
     </div>
   )

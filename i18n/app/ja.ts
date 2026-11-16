@@ -2250,7 +2250,7 @@ export default {
   },
   "BudgetWidgets.none": "{month}の予算はありません。",
   "BudgetWidgets.setLink": "予算を設定",
-  "BudgetWidgets.link": "{month}の予算を見る",
+  "BudgetWidgets.link": "上限の変更・ほかの月を見る",
   "AccountWidgets.title": "お金はいくらある？",
   "AccountWidgets.loading": "残高を読み込み中…",
   "AccountWidgets.error": "残高を読み込めませんでした。",

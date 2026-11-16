@@ -236,10 +236,10 @@ describe("the overview's budgets widget", () => {
     expect(bar.className.split(" ")).not.toContain("px-4")
   })
 
-  it("links to that month's Budgets screen of the overview's household, with a touch-sized target", () => {
+  it("links to that month's Budgets screen of the overview's household, saying limits change and other months open there, with a touch-sized target", () => {
     const drawn = card(result([limitRow(FOOD, 100, 500)]))
 
-    expect(drawn.link.textContent).toBe("See budgets for November 2026")
+    expect(drawn.link.textContent).toBe("Change limits or see other months")
     expect(drawn.link.getAttribute("href")).toBe("/budgets?group=g-a&month=2026-11")
     expect(drawn.link.className.split(" ")).toEqual(
       expect.arrayContaining(["min-h-11", "sm:min-h-9"]),

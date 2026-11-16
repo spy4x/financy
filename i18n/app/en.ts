@@ -1910,7 +1910,7 @@ export default {
   },
   "BudgetWidgets.none": "No budgets for {month}.",
   "BudgetWidgets.setLink": "Set a budget",
-  "BudgetWidgets.link": "See budgets for {month}",
+  "BudgetWidgets.link": "Change limits or see other months",
   "AccountWidgets.title": "How much do we have?",
   "AccountWidgets.loading": "Loading the balances…",
   "AccountWidgets.error": "The balances could not be loaded.",

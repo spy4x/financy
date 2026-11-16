@@ -2723,7 +2723,7 @@ export default {
   },
   "BudgetWidgets.none": "لا توجد ميزانيات لشهر {month}.",
   "BudgetWidgets.setLink": "تعيين ميزانية",
-  "BudgetWidgets.link": "عرض ميزانيات {month}",
+  "BudgetWidgets.link": "تغيير الحدود أو عرض أشهر أخرى",
   "AccountWidgets.title": "كم لدينا من المال؟",
   "AccountWidgets.loading": "جارٍ تحميل الأرصدة…",
   "AccountWidgets.error": "تعذّر تحميل الأرصدة.",

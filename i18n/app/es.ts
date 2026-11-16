@@ -2543,7 +2543,7 @@ export default {
   },
   "BudgetWidgets.none": "No hay presupuestos para {month}.",
   "BudgetWidgets.setLink": "Crear un presupuesto",
-  "BudgetWidgets.link": "Ver presupuestos de {month}",
+  "BudgetWidgets.link": "Cambiar límites o ver otros meses",
   "AccountWidgets.title": "¿Cuánto tenemos?",
   "AccountWidgets.loading": "Cargando los saldos…",
   "AccountWidgets.error": "No se pudieron cargar los saldos.",

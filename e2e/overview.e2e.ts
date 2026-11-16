@@ -237,7 +237,7 @@ test.describe("group overview", () => {
       await card.scrollIntoViewIfNeeded()
       await page.screenshot({ path: test.info().outputPath(`overview-budgets-390.png`) })
 
-      await card.getByRole("link", { name: /^See budgets for / }).click()
+      await card.getByRole("link", { name: "Change limits or see other months" }).click()
       await expect(page).toHaveURL(/\/budgets\??$/)
       await expect(page.locator(`[data-e2e=budget-${supplies}]`).getByRole("meter"))
         .toContainText("₫125,000,000 of ₫1,000,000")
