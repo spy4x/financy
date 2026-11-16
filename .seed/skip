@@ -49,3 +49,6 @@ e2e/mpa/launch-checklist.mpa.ts
 libs/server/db/migrations/2026_12_16_0005_import_options_review_choices.sql
 apps/mpa/docs-list.ts
 .woodpecker/demo-deploy.yml
+apps/mpa/media/video/speed-loop-*
+apps/mpa/static/video/speed-loop-*
+apps/mpa/screenshots/speed-usual-app.html
