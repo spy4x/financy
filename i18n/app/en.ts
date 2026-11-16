@@ -2823,4 +2823,12 @@ export default {
   "TransferToasts.deleted": "{what} is deleted.",
   "TransferToasts.restoredTitle": "Transfer restored",
   "TransferToasts.restored": "{what} is back in the list.",
+  "AccountEditor.aliases": "Also known as",
+  "AccountEditor.aliasesHint":
+    "Your other words for it, such as a bank's name. Search finds the account by them too.",
+  "AccountEditor.aliasesPlaceholder": "Add a word and press Enter",
+  "AccountEditor.aliasRemove": "Remove alias {alias}",
+  "AccountEditor.aliasAdded": "Added alias {alias}",
+  "AccountEditor.aliasRemoved": "Removed alias {alias}",
+  "AccountEditor.aliasDuplicate": "{alias} is already an alias",
 } satisfies Catalog

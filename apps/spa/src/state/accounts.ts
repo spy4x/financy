@@ -19,6 +19,11 @@ export interface AccountItem {
   kind: AccountKind
   currency: string
   startingBalance: number
+  /**
+   * The person's other words for it, which search matches too. Missing from a device copy written
+   * before aliases existed, so read it as `account.aliases ?? []`.
+   */
+  aliases?: string[]
   /** Derived by the server; a write's answer carries none, so the store keeps the one it had. */
   balance?: number
   archivedAt: string | null
@@ -56,6 +61,7 @@ interface AccountFields {
   kind: AccountKind
   currency: string
   startingBalance: number
+  aliases: string[]
 }
 
 /** What the store says went wrong, as keys of the `app` catalog. */
@@ -81,6 +87,7 @@ export interface AccountForm extends AccountFormValue {
 
 export interface AccountFormErrors {
   name: Message | null
+  aliases: Message | null
   currency: Message | null
   form: Message | null
   /**
@@ -90,12 +97,19 @@ export interface AccountFormErrors {
   plan: PlanRefusal | null
 }
 
-const NO_ERRORS: AccountFormErrors = { name: null, currency: null, form: null, plan: null }
+const NO_ERRORS: AccountFormErrors = {
+  name: null,
+  aliases: null,
+  currency: null,
+  form: null,
+  plan: null,
+}
 const NEW_ACCOUNT: AccountFormValue = {
   name: "",
   kind: AccountKind.BANK,
   currency: null,
   startingBalance: 0,
+  aliases: [],
 }
 
 /** The plan's refusal of a call, or `null` when the plan did not refuse it. */
@@ -116,6 +130,7 @@ function fieldsOf(account: AccountItem): AccountFormValue {
     kind: account.kind,
     currency: account.currency,
     startingBalance: account.startingBalance,
+    aliases: account.aliases ?? [],
   }
 }
 
@@ -126,7 +141,7 @@ function toForm(account: AccountItem): AccountForm {
 
 function sameFields(a: AccountFormValue, b: AccountFormValue): boolean {
   return a.name === b.name && a.kind === b.kind && a.currency === b.currency &&
-    a.startingBalance === b.startingBalance
+    a.startingBalance === b.startingBalance && a.aliases.join("\n") === b.aliases.join("\n")
 }
 
 /**
@@ -280,6 +295,7 @@ export function createAccountsStore(
       kind: current.kind,
       currency: current.currency,
       startingBalance: current.startingBalance ?? 0,
+      aliases: current.aliases,
     }
     saving.value = true
     formErrors.value = NO_ERRORS
@@ -319,12 +335,14 @@ export function createAccountsStore(
         formErrors.value = { ...NO_ERRORS, plan: planRefusal(cause) }
       } else {
         const nameError = refusedField(cause, "name")
+        const aliasesError = refusedField(cause, "aliases")
         const currencyError = refusedField(cause, "currency")
         formErrors.value = {
           ...NO_ERRORS,
           name: nameError,
+          aliases: aliasesError,
           currency: currencyError,
-          form: nameError || currencyError ? null : describeError(
+          form: nameError || aliasesError || currencyError ? null : describeError(
             cause,
             current.id === null ? ACCOUNT_MESSAGES.create : ACCOUNT_MESSAGES.save,
           ),

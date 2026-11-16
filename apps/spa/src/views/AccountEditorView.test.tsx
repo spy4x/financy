@@ -122,6 +122,7 @@ describe("AccountEditorView", () => {
         kind: wallet.kind,
         currency: "EUR",
         startingBalance: 0,
+        aliases: [],
       })
     )
     await save()

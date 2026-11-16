@@ -3155,4 +3155,12 @@ export default {
   "TransactionToasts.restored": "{what} : de retour dans la liste.",
   "TransferToasts.restoredTitle": "Virement restauré",
   "TransferToasts.restored": "{what} : de retour dans la liste.",
+  "AccountEditor.aliases": "Autres noms",
+  "AccountEditor.aliasesHint":
+    "Les autres mots que vous utilisez pour lui, comme le nom d’une banque. La recherche trouve aussi le compte avec ces mots.",
+  "AccountEditor.aliasesPlaceholder": "Saisissez un mot et appuyez sur Entrée",
+  "AccountEditor.aliasRemove": "Retirer {alias}",
+  "AccountEditor.aliasAdded": "{alias} ajouté",
+  "AccountEditor.aliasRemoved": "{alias} retiré",
+  "AccountEditor.aliasDuplicate": "{alias} figure déjà dans la liste",
 } satisfies Catalog

@@ -18,6 +18,7 @@ interface ServerAccount {
   startingBalance: number
   balance: number
   archivedAt: string | null
+  aliases: string[]
 }
 
 async function cleanup(request: APIRequestContext, email: string): Promise<void> {
@@ -289,6 +290,34 @@ test.describe("accounts", () => {
       await cleanup(request, user)
     }
   })
+  test("a long unbroken alias is saved and leaves the editor without sideways scroll on a 390 px phone", async ({ page, request }) => {
+    const owner = "e2e_accounts_long_alias@example.com"
+    await cleanup(request, owner)
+    try {
+      await signUp(request, owner)
+      await signInOnline(page, owner)
+      const groupId = await household(page, request, "Long aliases")
+      await openAccounts(page, "Long aliases")
+      await page.setViewportSize({ width: 390, height: 800 })
+      await page.locator("[data-e2e=account-new]").click()
+      await fillAccount(page, { name: "W".repeat(60), currency: "EUR", balance: "0" })
+      const long = "Hauptgirokonto".repeat(4)
+      const aliases = page.locator("#account-aliases")
+      for (const alias of ["card", "Наличка", long]) {
+        await aliases.fill(alias)
+        await aliases.press("Enter")
+      }
+      await expect(page.locator("[data-e2e=account-aliases] li")).toHaveCount(3)
+      expect(await page.evaluate(() => document.documentElement.scrollWidth))
+        .toBeLessThanOrEqual(390)
+      await saveAndBack(page)
+      const [stored] = await serverAccounts(page, groupId)
+      expect(stored.aliases).toEqual(["card", "Наличка", long])
+    } finally {
+      await cleanup(request, owner)
+    }
+  })
+
   test("a crypto account offers only coins, stores 0.5 BTC as 50000000 and lists it with 8 decimals", async ({ browser, request }) => {
     const user = "e2e_accounts_crypto@example.com"
     await cleanup(request, user)

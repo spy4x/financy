@@ -3264,4 +3264,12 @@ export default {
   "TransferToasts.deleted": "{what}: حُذف.",
   "TransferToasts.restoredTitle": "استُعيد التحويل",
   "TransferToasts.restored": "{what}: عاد إلى القائمة.",
+  "AccountEditor.aliases": "أسماء أخرى",
+  "AccountEditor.aliasesHint":
+    "كلمات أخرى تسمّي بها هذا الحساب، مثل اسم بنك. يجد البحث الحساب بهذه الكلمات أيضًا.",
+  "AccountEditor.aliasesPlaceholder": "اكتب كلمة واضغط Enter",
+  "AccountEditor.aliasRemove": "إزالة {alias}",
+  "AccountEditor.aliasAdded": "تمت إضافة {alias}",
+  "AccountEditor.aliasRemoved": "تمت إزالة {alias}",
+  "AccountEditor.aliasDuplicate": "{alias} موجود في القائمة بالفعل",
 } satisfies Catalog

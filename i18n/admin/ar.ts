@@ -2720,4 +2720,6 @@ export default {
   "AdminBudgets.methodLimits": "حدود شهرية",
   "AdminBudgets.methodEnvelopes": "مظاريف",
   "AdminBudgets.householdLastChange": "آخر تغيير {date}",
+  "AdminAccounts.withAliases": "بأسماء أخرى",
+  "AdminAccounts.withAliasesHint": "لها اسم آخر واحد على الأقل",
 } satisfies Catalog

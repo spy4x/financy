@@ -6,12 +6,12 @@ import {
 import { portable } from "@server/groups/portable.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
-/** Rows one statement writes: well under Postgres's 65,535 parameters at thirteen columns a row. */
+/** Rows one statement writes: well under Postgres's 65,535 parameters at fourteen columns a row. */
 const WRITE_BATCH = 1_000
 
 /**
  * Accounts in a household's export file: what a person typed (name, kind, currency, starting
- * balance) and whether each was archived or the default. Never a balance, which is derived, nor a
+ * balance, aliases) and whether each was archived or the default. Never a balance, which is derived, nor a
  * deleted account. Each gets a new id on import. A file's accounts fit one household: at most
  * `ACCOUNT_MAX_PER_GROUP`, one default, never an archived one. They count against the new
  * household's `maxAccounts`.
@@ -27,7 +27,7 @@ export const accountPortable = portable<AccountExportEntry>({
     const rows = await sql<
       (Omit<AccountExportEntry, "startingBalance"> & { startingBalance: string })[]
     >`
-      SELECT id, name, kind, currency, starting_balance::text AS starting_balance,
+      SELECT id, name, kind, currency, starting_balance::text AS starting_balance, aliases,
         archived_at IS NOT NULL AS archived, is_default, created_at, updated_at
       FROM accounts WHERE group_id = ${groupId} AND deleted_at IS NULL
       ORDER BY lower(name), id
@@ -46,6 +46,8 @@ export const accountPortable = portable<AccountExportEntry>({
         kind: account.kind,
         currency: account.currency,
         starting_balance: account.startingBalance,
+        // A file exported before aliases existed has none.
+        aliases: sql.array(account.aliases ?? []),
         archived_at: account.archived ? account.updatedAt : null,
         is_default: account.isDefault,
         change_sequence: context.changeSequence,

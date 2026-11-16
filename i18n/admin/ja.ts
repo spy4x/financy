@@ -2266,4 +2266,6 @@ export default {
   "AdminBudgets.methodLimits": "毎月の上限",
   "AdminBudgets.methodEnvelopes": "封筒",
   "AdminBudgets.householdLastChange": "最終変更 {date}",
+  "AdminAccounts.withAliases": "別名あり",
+  "AdminAccounts.withAliasesHint": "別名が1件以上ある口座",
 } satisfies Catalog

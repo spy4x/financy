@@ -18,6 +18,7 @@ import {
   isCoin,
 } from "@domain/money"
 import { crossRate, type ExchangeRate, type Money, sumMoney } from "@spy4x/platform/universal/money"
+import { type AliasRules, assertAliasCount, parseAliases } from "@domain/aliases"
 import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN } from "@spy4x/platform/universal/uuid"
 import { type FieldErrors, fieldErrors } from "@spy4x/validation"
@@ -31,6 +32,12 @@ import { type FieldErrors, fieldErrors } from "@spy4x/validation"
 
 /** The longest account name, in characters, after trimming. */
 export const ACCOUNT_NAME_MAX_LENGTH = 60
+
+/**
+ * The most aliases one account carries. Each is at most {@link ACCOUNT_NAME_MAX_LENGTH}
+ * characters, like the name; the database checks the count too.
+ */
+export const ACCOUNT_ALIAS_MAX = 20
 
 /**
  * The most accounts one household holds, archived ones included (deleted ones are not counted). The
@@ -162,6 +169,11 @@ export interface Account {
   currency: string
   /** In the currency's smallest unit: 1234 is 12.34 USD, 500 is 500 JPY, 1234 is 1.234 BHD. */
   startingBalance: number
+  /**
+   * The person's other words for it ("card", "наличка"), which search matches as well as the
+   * name: trimmed, each once compared folded, at most {@link ACCOUNT_ALIAS_MAX}. Empty for none.
+   */
+  aliases: string[]
   /** `null` while the account is in use; set once it is archived. */
   archivedAt: Date | null
   /** The household's account for quick entry; at most one live account has it. */
@@ -195,6 +207,9 @@ const accountFields = {
   kind: kindField,
   currency: accountCurrencyCode,
   startingBalance: amountField,
+  // Optional, so a device's command queued before aliases existed still goes through: a create
+  // without them makes none, an update without them keeps the stored ones.
+  "aliases?": "string[]",
 } as const
 const groupIdField = { groupId: UUID_PATTERN } as const
 const accountIdField = { id: UUID_PATTERN } as const
@@ -258,16 +273,21 @@ export const accountListPayloadSchema = type({
 /**
  * Validates `value` against `schema`, then trims the name and checks its length in characters, so
  * an emoji counts as one. A name with a control or an invisible character is refused, as a tag's.
- * Throws `AccountError("INVALID_REQUEST")`.
+ * Aliases are counted before anything else looks at them, then cleaned
+ * ({@link parseAccountAliases}). Throws `AccountError("INVALID_REQUEST")`.
  */
 export function parseAccountRequest<S extends Type<object>>(schema: S, value: unknown): S["infer"] {
+  assertAliasCount(value, ACCOUNT_ALIAS_RULES)
   const result = schema(value)
   if (result instanceof type.errors) {
     throw new AccountError("INVALID_REQUEST", result.summary, fieldErrors(result))
   }
-  const parsed = result as S["infer"] & { name?: string }
-  if (parsed.name === undefined) return parsed
-  const name = parsed.name.trim()
+  const parsed = result as S["infer"] & { name?: string; aliases?: string[] }
+  const cleaned = parsed.aliases === undefined
+    ? parsed
+    : { ...parsed, aliases: parseAccountAliases(parsed.aliases) }
+  if (cleaned.name === undefined) return cleaned
+  const name = cleaned.name.trim()
   const length = Array.from(name).length
   if (length < 1 || length > ACCOUNT_NAME_MAX_LENGTH) {
     throw new AccountError(
@@ -287,7 +307,25 @@ export function parseAccountRequest<S extends Type<object>>(schema: S, value: un
       { name: { code: "unsafeCharacters" } },
     )
   }
-  return { ...parsed, name }
+  return { ...cleaned, name }
+}
+
+/** The alias rules of an account: its count, its name's length, and its own refusal. */
+const ACCOUNT_ALIAS_RULES: AliasRules = {
+  noun: "account",
+  max: ACCOUNT_ALIAS_MAX,
+  maxLength: ACCOUNT_NAME_MAX_LENGTH,
+  refuse: (message, fields) => new AccountError("INVALID_REQUEST", message, fields),
+}
+
+/**
+ * Cleans an account's aliases the way its name is cleaned ({@link parseAliases}): each trimmed,
+ * blanks dropped, each kept once compared folded. Throws `AccountError("INVALID_REQUEST")` naming
+ * the `aliases` field for an alias longer than {@link ACCOUNT_NAME_MAX_LENGTH} characters or one
+ * with a control or an invisible character. The caller counts them first.
+ */
+export function parseAccountAliases(aliases: readonly string[]): string[] {
+  return parseAliases(aliases, ACCOUNT_ALIAS_RULES)
 }
 // #endregion Request schemas
 
@@ -327,9 +365,19 @@ export interface AccountFields {
   kind: AccountKind
   currency: string
   startingBalance: number
+  aliases: string[]
 }
 
-export interface AccountCreatePayload extends AccountCommandBase, AccountFields {}
+/**
+ * The fields a command carries. Aliases are optional: a create without them makes none, and an
+ * update without them keeps the stored ones, so a command an older device queued offline never
+ * wipes them.
+ */
+export interface AccountCommandFields extends Omit<AccountFields, "aliases"> {
+  aliases?: string[]
+}
+
+export interface AccountCreatePayload extends AccountCommandBase, AccountCommandFields {}
 
 export interface AccountWriteResult {
   account: Account
@@ -344,7 +392,7 @@ export class AccountCreateCommand implements Command<AccountCreatePayload, Accou
   constructor(public data: AccountCreatePayload) {}
 }
 
-export interface AccountUpdatePayload extends AccountCommandBase, AccountFields {
+export interface AccountUpdatePayload extends AccountCommandBase, AccountCommandFields {
   /** The version the person edited; an account at any other version is not changed. */
   version: number
 }
@@ -634,9 +682,12 @@ interface AccountAllowance {
   allowance: number | null
 }
 
-export interface AccountCreateInput extends AccountInputBase, AccountFields, AccountAllowance {}
+/** A create; `aliases` left out makes none. */
+export interface AccountCreateInput
+  extends AccountInputBase, AccountCommandFields, AccountAllowance {}
 
-export interface AccountUpdateInput extends AccountInputBase, AccountFields {
+/** An update; `aliases` left out keeps the stored ones. */
+export interface AccountUpdateInput extends AccountInputBase, AccountCommandFields {
   expectedVersion: number
 }
 
@@ -718,6 +769,8 @@ const ACCOUNT_EXPORT_LABELS = {
   kind: "kind",
   currency: "currency",
   startingBalance: "starting balance",
+  aliases: "aliases",
+  "aliases[]": "alias",
   archived: "archived flag",
   isDefault: "default flag",
   createdAt: "creation date",
@@ -726,6 +779,7 @@ const ACCOUNT_EXPORT_LABELS = {
 
 /** Checks one account of a file with the rules of a create. Throws `AccountError`. */
 export function parseAccountExportEntry(entry: unknown): AccountExportEntry {
+  assertAliasCount(entry, ACCOUNT_ALIAS_RULES)
   const shape = accountExportEntrySchema(entry)
   if (shape instanceof type.errors) {
     throw new AccountError(
@@ -792,6 +846,8 @@ export const ADMIN_ACCOUNTS_HOUSEHOLD_LIMIT = 20
 export interface AdminAccountsOverview {
   /** Live accounts, archived ones included; deleted ones are left out. */
   accounts: number
+  /** Live accounts with at least one alias. How many, never which aliases. */
+  withAliases: number
   /** Households with at least one live account. */
   households: number
   /** One row per kind in use, in {@link ACCOUNT_KINDS} order. */

@@ -12,6 +12,7 @@ import {
 import type { Message } from "@ui/message.ts"
 import { refusedField } from "../i18n.ts"
 import { byDate } from "./transaction-order.ts"
+import { splitTypedEntry } from "./typed-entry.ts"
 import { accountsStore } from "./accounts.ts"
 import { categoriesStore } from "./categories.ts"
 import { callCommand, callQuery, canCall, currentLayer, offlineTransactions } from "../modules.ts"
@@ -258,6 +259,12 @@ export interface TransactionReferences {
   categoryKind(categoryId: string): CategoryKind | undefined
 }
 
+/** The memo, and the amount when the text has one, that `text` gives a form in `currency`. */
+function typedFields(text: string, currency: string | null): Partial<TransactionFormValue> {
+  const { memo, amount } = splitTypedEntry(text, currency)
+  return amount === null ? { memo } : { memo, amount }
+}
+
 /**
  * The entries of one household: the list (offline-writable, ADR 003 level 3, from the device's
  * copy with the queued writes applied), the deleted list while it is shown, the one editor the
@@ -289,6 +296,8 @@ export function createTransactionsStore(
     return current !== null && !sameFields(current, current.base)
   })
   let reads = 0
+  /** Text from the search palette that the next new entry's form takes ({@link fillTyped}). */
+  let typed: string | null = null
   /** The id of the new entry in the editor: every Save of that draft sends it, so a retry is the same create. */
   let draftId = ""
   const toForm = (entry: TransactionItem) => formOf(entry, references)
@@ -341,11 +350,31 @@ export function createTransactionsStore(
     }
   }
 
-  /** Opens the editor for a new entry with `value` prefilled ({@link prefillEntry}). */
+  /**
+   * Opens the editor for a new entry with `value` prefilled ({@link prefillEntry}), and with the
+   * memo and amount of text handed over by {@link fillTyped}, read in `value`'s currency.
+   */
   function startCreate(value: TransactionFormValue): void {
+    const text = typed
+    typed = null
+    const filled = text === null ? value : { ...value, ...typedFields(text, value.currency) }
     draftId = dependencies.newId()
-    form.value = { id: null, ...value, version: 0, base: value }
+    form.value = { id: null, ...filled, version: 0, base: filled }
     formErrors.value = NO_ERRORS
+  }
+
+  /**
+   * Hands text typed in the search palette (`coffee 4.50`) to the quick entry of `inGroup`: a new
+   * entry's form already open in that group takes its memo and amount now, as typed changes; else
+   * the next {@link startCreate} takes them, once. A form left over from another group is dropped
+   * when the quick entry opens that group, so it never takes the text.
+   */
+  function fillTyped(text: string, inGroup: string): void {
+    const current = form.value
+    if (current?.id === null && groupId.value === inGroup) {
+      return change(typedFields(text, current.currency))
+    }
+    typed = text
   }
 
   /** Opens the editor of an entry; a form with unsaved changes on it is kept. */
@@ -666,6 +695,7 @@ export function createTransactionsStore(
     refresh,
     showDeleted,
     startCreate,
+    fillTyped,
     startEdit,
     change,
     closeForm,

@@ -85,6 +85,8 @@ function buses(sql: postgres.Sql) {
 }
 
 const fields = { name: "Main account", kind: AccountKind.BANK, currency: "USD", startingBalance: 0 }
+/** The fields a test may change: every editor field, aliases included. */
+type More = Partial<typeof fields & { aliases: string[] }>
 
 async function refusal(promise: Promise<unknown>): Promise<unknown> {
   return await promise.then(() => null, (error) => error)
@@ -116,7 +118,7 @@ async function fill(sql: postgres.Sql, groupId: string, userId: number, count: n
 Deno.test("accounts against Postgres", async (t) => {
   await withSchema(async (sql) => {
     const { commands, queries } = buses(sql)
-    const create = (userId: number, groupId: string, more: Partial<typeof fields> = {}) =>
+    const create = (userId: number, groupId: string, more: More = {}) =>
       commands.execute(
         new AccountCreateCommand({
           actor: actor(userId),
@@ -126,6 +128,39 @@ Deno.test("accounts against Postgres", async (t) => {
           ...more,
         }),
       )
+
+    await t.step(
+      "stores an account's aliases, keeps them on an update without any, and replaces them on one with them",
+      async () => {
+        const accounts = new PostgresAccountRepository(sql)
+        const { groupId, owner } = await team(sql)
+        const { account } = await create(owner, groupId, { aliases: ["Card", "Наличка"] })
+        expect(account.aliases).toEqual(["Card", "Наличка"])
+        const at = { groupId, id: account.id }
+
+        const kept = await accounts.update({
+          ...at,
+          ...fields,
+          name: "Spending",
+          expectedVersion: 1,
+        }, owner)
+        expect(kept.aliases).toEqual(["Card", "Наличка"])
+        const cleared = await accounts.update(
+          { ...at, ...fields, aliases: [], expectedVersion: 2 },
+          owner,
+        )
+        expect(cleared.aliases).toEqual([])
+        const { account: plain } = await create(owner, groupId, { name: "Rent" })
+        expect(plain.aliases).toEqual([])
+        expect((await accounts.get(groupId, account.id))?.aliases).toEqual([])
+        expect(
+          await refusal(sql`
+            UPDATE accounts SET aliases = ${sql.array(Array.from({ length: 21 }, String))}::text[]
+            WHERE id = ${account.id}
+          `),
+        ).toMatchObject({ constraint_name: "accounts_aliases_check" })
+      },
+    )
 
     await t.step(
       "every account write moves the household's sequence once and leaves its outbox and audit rows",
@@ -420,7 +455,7 @@ Deno.test("accounts against Postgres", async (t) => {
     )
 
     await t.step(
-      "a retried create is answered with the first account and stores one row",
+      "a retried create is answered with the first account and stores one row, and one with another name or other aliases is refused",
       async () => {
         const { groupId, owner } = await team(sql)
         const command = new AccountCreateCommand({
@@ -428,6 +463,7 @@ Deno.test("accounts against Postgres", async (t) => {
           groupId,
           id: uuidV7(),
           ...fields,
+          aliases: ["Card"],
         })
 
         const first = await commands.execute(command)
@@ -438,6 +474,11 @@ Deno.test("accounts against Postgres", async (t) => {
         expect(
           await refusal(
             commands.execute(new AccountCreateCommand({ ...command.data, name: "Other" })),
+          ),
+        ).toMatchObject({ code: "ID_ALREADY_EXISTS" })
+        expect(
+          await refusal(
+            commands.execute(new AccountCreateCommand({ ...command.data, aliases: ["Visa"] })),
           ),
         ).toMatchObject({ code: "ID_ALREADY_EXISTS" })
       },
@@ -476,11 +517,11 @@ Deno.test("accounts against Postgres", async (t) => {
   })
 })
 
-Deno.test("the operator's accounts read counts live accounts by kind, currency and household, and carries no account name or amount", async () => {
+Deno.test("the operator's accounts read counts live accounts by kind, currency and household, and carries no account name, alias or amount", async () => {
   await withSchema(async (sql) => {
     const { commands } = buses(sql)
     const { groupId, owner } = await team(sql)
-    const add = (more: Partial<typeof fields>) =>
+    const add = (more: More) =>
       commands.execute(
         new AccountCreateCommand({
           actor: actor(owner),
@@ -490,15 +531,22 @@ Deno.test("the operator's accounts read counts live accounts by kind, currency a
           ...more,
         }),
       )
-    await add({ name: "Secret savings", currency: "EUR", startingBalance: 987_654 })
+    await add({
+      name: "Secret savings",
+      currency: "EUR",
+      startingBalance: 987_654,
+      aliases: ["Rainy day"],
+    })
     await add({ kind: AccountKind.CASH, currency: "VND", startingBalance: 1_500_000 })
-    const { account } = await add({ kind: AccountKind.CARD, currency: "USD" })
+    // A deleted account's aliases are not counted.
+    const { account } = await add({ kind: AccountKind.CARD, currency: "USD", aliases: ["Visa"] })
     await sql`UPDATE accounts SET deleted_at = now() WHERE id = ${account.id}`
 
     const overview = await readAdminAccounts(sql)
 
     expect(overview).toEqual({
       accounts: 2,
+      withAliases: 1,
       households: 1,
       byKind: [
         { kind: AccountKind.CASH, accounts: 1 },
@@ -510,5 +558,6 @@ Deno.test("the operator's accounts read counts live accounts by kind, currency a
     const text = JSON.stringify(overview)
     expect(text).not.toContain("Secret savings")
     expect(text).not.toContain("987654")
+    expect(text).not.toContain("Rainy day")
   })
 })
