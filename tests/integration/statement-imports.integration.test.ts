@@ -782,7 +782,7 @@ const TO_SAVINGS = statement([
   [`2026-01-11`, `Coffee Bar`, -450],
 ])
 
-Deno.test("statement transfers: an accepted proposal saves one transfer out of the account and deletes the other entry; Undo brings the entry back", async () => {
+Deno.test("statement transfers: an accepted proposal saves one transfer out of the account, ignores the row's category and deletes the other entry; Undo brings the entry back", async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
     const other = await typed(sql, h, h.savings, 25_000, `2026-01-11`)
@@ -791,8 +791,11 @@ Deno.test("statement transfers: an accepted proposal saves one transfer out of t
 
     const read = await proposed(sql, h, TO_SAVINGS)
     expect(read.transfers).toEqual([other, null])
-    const done = await confirm(sql, h, read.id)
+    // A transfer row has no category: its choice, even one that names nothing, is ignored and
+    // teaches the payee memory nothing.
+    const done = await confirm(sql, h, read.id, { "1": { category: uuidV7() } })
     expect(done).toMatchObject({ status: ImportStatus.COMMITTED, savedCount: 2 })
+    expect(await memory(sql, h.groupId)).toEqual([])
     expect(await transfers(sql, h.groupId)).toEqual([
       {
         from: h.bank,
