@@ -1681,6 +1681,8 @@ CREATE TABLE transactions (
     -- The import key is added after the imports table, below.
     bank_reference VARCHAR(255),
     import_batch_id UUID,
+    -- #344: the statement import that replaced this entry with a transfer; see the migration.
+    replaced_by_import_id UUID,
     CONSTRAINT transactions_account_fkey FOREIGN KEY (group_id, account_id)
         REFERENCES accounts (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT transactions_category_fkey FOREIGN KEY (group_id, category_id)
@@ -1777,6 +1779,11 @@ CREATE INDEX idx_transactions_account_bank_reference
 -- A statement import's undo, and the import key's SET NULL when an import is deleted.
 CREATE INDEX idx_transactions_import_batch
     ON transactions (import_batch_id) WHERE import_batch_id IS NOT NULL;
+-- #344: the statement import that replaced an entry with a transfer; its undo brings it back.
+ALTER TABLE transactions ADD CONSTRAINT transactions_replaced_by_import_fkey
+    FOREIGN KEY (replaced_by_import_id) REFERENCES imports(id) ON DELETE SET NULL;
+CREATE INDEX idx_transactions_replaced_by_import
+    ON transactions (replaced_by_import_id) WHERE replaced_by_import_id IS NOT NULL;
 
 -- Budgets: a household's monthly limit on an expense category (docs/aggregates.md). A row holds one
 -- category's amount from one month on, and a month's limit is the latest row at or before it, so
@@ -1970,6 +1977,8 @@ CREATE TABLE transfers (
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMPTZ(3),
+    -- #344: the statement import that saved the transfer; see the migration.
+    import_batch_id UUID,
     CONSTRAINT transfers_from_account_fkey FOREIGN KEY (group_id, from_account_id)
         REFERENCES accounts (group_id, id) DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT transfers_to_account_fkey FOREIGN KEY (group_id, to_account_id)
@@ -1992,6 +2001,11 @@ CREATE INDEX idx_transfers_group_change_sequence ON transfers (group_id, change_
 CREATE INDEX idx_transfers_deleted_at ON transfers (deleted_at) WHERE deleted_at IS NOT NULL;
 CREATE INDEX idx_transfers_created_by ON transfers (created_by_user_id);
 CREATE INDEX idx_transfers_updated_by ON transfers (updated_by_user_id);
+-- #344: a statement import's undo, and the import key's SET NULL when an import is deleted.
+ALTER TABLE transfers ADD CONSTRAINT transfers_import_batch_fkey
+    FOREIGN KEY (import_batch_id) REFERENCES imports(id) ON DELETE SET NULL;
+CREATE INDEX idx_transfers_import_batch
+    ON transfers (import_batch_id) WHERE import_batch_id IS NOT NULL;
 
 -- Payee memory: the category a household last chose for a payee when it saved a bank statement
 -- (docs/imports.md, "Payee memory"). The next statement's preview suggests it for that payee's rows.
