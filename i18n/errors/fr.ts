@@ -299,5 +299,9 @@ export default {
   "ImportPlace.categories": "Catégories",
   "ImportPlace.categoriesEntry": "Catégorie {index}",
   "Reason.BUDGET_INCOME_CATEGORY": "Seule une catégorie de dépenses peut avoir un budget.",
+  "Reason.BUDGET_OVER_PARENT":
+    "Ce plafond dépasse ce que laisse le plafond de sa catégorie parente.",
+  "Reason.BUDGET_UNDER_CHILDREN":
+    "Ce plafond est inférieur à la somme des plafonds de ses sous-catégories.",
   "Reason.CATEGORY_ARCHIVED": "Cette catégorie est archivée. Désarchivez-la pour fixer un budget.",
 } satisfies Catalog

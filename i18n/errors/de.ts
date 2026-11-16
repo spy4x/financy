@@ -300,6 +300,10 @@ export default {
   "ImportPlace.categories": "Kategorien",
   "ImportPlace.categoriesEntry": "Kategorie {index}",
   "Reason.BUDGET_INCOME_CATEGORY": "Nur eine Ausgabenkategorie kann ein Budget haben.",
+  "Reason.BUDGET_OVER_PARENT":
+    "Dieses Limit ist höher als das, was das Limit der übergeordneten Kategorie übrig lässt.",
+  "Reason.BUDGET_UNDER_CHILDREN":
+    "Dieses Limit ist niedriger als die Summe der Limits ihrer Unterkategorien.",
   "Reason.CATEGORY_ARCHIVED":
     "Diese Kategorie ist archiviert. Hole sie aus dem Archiv, um ein Budget festzulegen.",
 } satisfies Catalog

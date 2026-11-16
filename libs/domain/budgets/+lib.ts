@@ -86,6 +86,8 @@ export enum BudgetLimitSource {
 
 export type BudgetErrorCode =
   | "BUDGET_INCOME_CATEGORY"
+  | "BUDGET_OVER_PARENT"
+  | "BUDGET_UNDER_CHILDREN"
   | "CATEGORY_ARCHIVED"
   | "CATEGORY_NOT_FOUND"
   | "GROUP_NOT_FOUND"
@@ -114,6 +116,26 @@ export class BudgetVersionConflictError extends BudgetError {
   constructor(public readonly currentVersion: number | null) {
     super("VERSION_CONFLICT", "The budget was changed by someone else")
     this.name = "BudgetVersionConflictError"
+  }
+}
+
+/**
+ * A limit asked past a bound of R20: a subcategory's above what its parent's own limit leaves
+ * (`BUDGET_OVER_PARENT`), or a parent's own below its subcategories' sum (`BUDGET_UNDER_CHILDREN`).
+ * It carries that bound, so the dialog can name it.
+ */
+export class BudgetBoundError extends BudgetError {
+  constructor(
+    code: "BUDGET_OVER_PARENT" | "BUDGET_UNDER_CHILDREN",
+    public readonly bound: BudgetBound,
+  ) {
+    super(
+      code,
+      code === "BUDGET_OVER_PARENT"
+        ? "The limit is more than its parent category's limit leaves"
+        : "The limit is less than its subcategories' limits",
+    )
+    this.name = "BudgetBoundError"
   }
 }
 
@@ -430,6 +452,19 @@ export interface BudgetRow {
   leftOut: string[]
   /** The category's envelope, only in a month the household budgets with envelopes. */
   envelope?: BudgetEnvelope
+  /**
+   * The most the subcategory's limit may be this month (R20), only when its parent has a limit of
+   * its own and the household budgets with limits.
+   */
+  allowance?: BudgetBound
+}
+
+/** A bound of R20 on a limit, in its parent's currency or in the asked limit's. */
+export interface BudgetBound {
+  amount: number
+  currency: string
+  /** Currencies of limits left out of the bound for lack of a rate (R8). */
+  leftOut: string[]
 }
 
 /**
@@ -511,27 +546,123 @@ async function childrenLimit(
 ): Promise<{ limit: BudgetLimit | null; leftOut: string[] }> {
   const currencies = new Set(limits.map((limit) => limit.currency))
   const currency = currencies.size === 1 ? limits[0].currency : baseCurrency
+  const { sum, counted, leftOut } = await limitsSum(limits, currency, rateDate, rate)
+  const usable = counted > 0 && sum > 0n && sum <= BigInt(Number.MAX_SAFE_INTEGER)
+  return { limit: usable ? { amount: Number(sum), currency } : null, leftOut }
+}
+
+/**
+ * `limits` summed in `currency`, each other currency converted at the rate of `rateDate`; a limit
+ * with no rate is left out and its currency named, never counted as zero (R8).
+ */
+async function limitsSum(
+  limits: readonly BudgetLimit[],
+  currency: string,
+  rateDate: string,
+  rate: EntryRateLookup,
+): Promise<{ sum: bigint; counted: number; leftOut: string[] }> {
   const leftOut = new Set<string>()
   let sum = 0n
   let counted = 0
   for (const limit of limits) {
-    const converted = limit.currency === currency
-      ? { ok: true as const, value: limit.amount }
-      : convertMoney(
-        limit.amount,
-        limit.currency,
-        currency,
-        await rate(limit.currency, currency, rateDate),
-      )
-    if (!converted.ok) {
+    const converted = await convertLimit(limit, currency, rateDate, rate)
+    if (converted === null) {
       leftOut.add(limit.currency)
       continue
     }
-    sum += BigInt(converted.value)
+    sum += BigInt(converted)
     counted++
   }
-  const usable = counted > 0 && sum > 0n && sum <= BigInt(Number.MAX_SAFE_INTEGER)
-  return { limit: usable ? { amount: Number(sum), currency } : null, leftOut: [...leftOut] }
+  return { sum, counted, leftOut: [...leftOut].sort() }
+}
+
+/** `limit` in `currency` at the rate of `rateDate`; `null` when there is no rate. */
+async function convertLimit(
+  limit: BudgetLimit,
+  currency: string,
+  rateDate: string,
+  rate: EntryRateLookup,
+): Promise<number | null> {
+  if (limit.currency === currency) return limit.amount
+  const converted = convertMoney(
+    limit.amount,
+    limit.currency,
+    currency,
+    await rate(limit.currency, currency, rateDate),
+  )
+  return converted.ok ? converted.value : null
+}
+
+/**
+ * A household's expense categories and the limits in effect in one month (`limitsAt`), with the
+ * day whose rates convert them: the month's last day, or today while the month runs.
+ */
+export interface BudgetFamily {
+  categories: readonly BudgetCategory[]
+  limits: ReadonlyMap<string, BudgetLimit>
+  rateDate: string
+}
+
+/** The live category's live children: the ones a month draws under it. */
+function liveChildren(categories: readonly BudgetCategory[], id: string): BudgetCategory[] {
+  return categories.filter((category) => !category.archived && category.parentId === id)
+}
+
+/**
+ * The most a subcategory's limit may be in the month (R20): its parent's own limit less the limits
+ * of the parent's other live subcategories, in the parent's currency, never below zero. Their
+ * limits count, never their spending. `null` when the category has no live parent with a limit of
+ * its own: a parent whose limit is its children's sum caps nothing.
+ */
+export async function budgetAllowance(
+  categoryId: string,
+  { categories, limits, rateDate }: BudgetFamily,
+  rate: EntryRateLookup,
+): Promise<BudgetBound | null> {
+  const parentId = categories.find((category) => category.id === categoryId)?.parentId ?? null
+  const parent = categories.find((category) => category.id === parentId && !category.archived)
+  const parentLimit = parent ? limits.get(parent.id) : undefined
+  if (!parent || !parentLimit) return null
+  const siblings = liveChildren(categories, parent.id)
+    .flatMap((sibling) => sibling.id === categoryId ? [] : limits.get(sibling.id) ?? [])
+  const { sum, leftOut } = await limitsSum(siblings, parentLimit.currency, rateDate, rate)
+  const left = BigInt(parentLimit.amount) - sum
+  return { amount: left > 0n ? Number(left) : 0, currency: parentLimit.currency, leftOut }
+}
+
+/**
+ * Refuses a limit past R20 before it is written: a subcategory's above its {@link budgetAllowance},
+ * the asked amount converted to the parent's currency, and a parent's own below the sum of its live
+ * subcategories' limits, converted to the asked currency. Only the month asked is checked. A
+ * removal is never refused, nor an amount with no rate to its parent's currency, which cannot be
+ * compared. An unknown or archived category passes, for the write to refuse it by its own code.
+ */
+export async function assertBudgetFits(
+  input: BudgetFamily & { categoryId: string; limit: BudgetLimit | null },
+  rate: EntryRateLookup,
+): Promise<void> {
+  const { categoryId, limit, categories, limits, rateDate } = input
+  const category = categories.find((candidate) => candidate.id === categoryId)
+  if (limit === null || !category || category.archived) return
+  const allowance = await budgetAllowance(categoryId, input, rate)
+  if (allowance) {
+    const asked = await convertLimit(limit, allowance.currency, rateDate, rate)
+    if (asked !== null && asked > allowance.amount) {
+      throw new BudgetBoundError("BUDGET_OVER_PARENT", allowance)
+    }
+  }
+  const children = liveChildren(categories, categoryId).flatMap((child) =>
+    limits.get(child.id) ?? []
+  )
+  if (children.length === 0) return
+  const { sum, leftOut } = await limitsSum(children, limit.currency, rateDate, rate)
+  if (BigInt(limit.amount) < sum) {
+    throw new BudgetBoundError("BUDGET_UNDER_CHILDREN", {
+      amount: Number(sum),
+      currency: limit.currency,
+      leftOut,
+    })
+  }
 }
 
 /**
@@ -575,6 +706,11 @@ export async function budgetMonth(
     const derived = await childrenLimit(childLimits, baseCurrency, rateDate, readers.rate)
     return { category, ...derived, source: BudgetLimitSource.CHILDREN }
   }))
+  const allowances = await Promise.all(
+    ordered.map((category) =>
+      budgetAllowance(category.id, { categories, limits, rateDate }, readers.rate)
+    ),
+  )
 
   const currencies = [...new Set(bars.map((bar) => bar.limit?.currency ?? baseCurrency))]
   const ledgers = new Map(
@@ -582,7 +718,7 @@ export async function budgetMonth(
       currencies.map(async (currency) => [currency, await readers.ledger(currency)] as const),
     ),
   )
-  const rows = bars.map(({ category, limit, source, leftOut }): BudgetRow => {
+  const rows = bars.map(({ category, limit, source, leftOut }, index): BudgetRow => {
     const currency = limit?.currency ?? baseCurrency
     const ledger = ledgers.get(currency)!
     const spentIn = (id: string) =>
@@ -604,6 +740,7 @@ export async function budgetMonth(
       band: band?.band ?? null,
       percent: band?.percent ?? null,
       leftOut: [...new Set([...ledger.leftOut, ...leftOut])].sort(),
+      ...(allowances[index] && { allowance: allowances[index] }),
     }
   })
   return {

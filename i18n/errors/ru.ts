@@ -296,5 +296,7 @@ export default {
   "ImportPlace.categories": "Категории",
   "ImportPlace.categoriesEntry": "Категория {index}",
   "Reason.BUDGET_INCOME_CATEGORY": "Бюджет можно задать только для категории расходов.",
+  "Reason.BUDGET_OVER_PARENT": "Этот лимит больше, чем оставляет лимит родительской категории.",
+  "Reason.BUDGET_UNDER_CHILDREN": "Этот лимит меньше суммы лимитов подкатегорий.",
   "Reason.CATEGORY_ARCHIVED": "Эта категория в архиве. Верните её из архива, чтобы задать бюджет.",
 } satisfies Catalog
