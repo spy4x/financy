@@ -1,14 +1,14 @@
 import type { JSX } from "preact"
-import { IconCheck, IconChevronDown, IconList, IconPlus } from "@spy4x/preact-icons"
+import { IconCheck, IconChevronDown, IconClock, IconList, IconPlus } from "@spy4x/preact-icons"
 import { Dropdown, DropdownItem } from "@spy4x/preact-ui/dropdown"
 import { Link } from "@spy4x/preact-ui/link"
 import { RailCell, railFocusRing } from "@spy4x/preact-system/rail"
-import type { GroupColor, GroupRole } from "@domain/groups"
+import { canViewActivity, type GroupColor, type GroupRole } from "@domain/groups"
 import { GroupMark } from "./group-appearance.tsx"
 import { NEW_GROUP_PATH, roleName } from "./groups-screen.tsx"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAppText } from "./i18n.ts"
-import { type Navigate, SCREEN_PATHS } from "./progressive.tsx"
+import { GROUP_PATHS, type Navigate, SCREEN_PATHS } from "./progressive.tsx"
 import { isolate } from "@spy4x/preact-ui/bdi"
 
 /** One group of the switcher: its name, and the person's role in it. */
@@ -48,6 +48,15 @@ function SwitcherMark({ group }: { group: PickerGroup }): JSX.Element {
   )
 }
 
+/**
+ * The address of the selected group's Activity, or `null` when no group is selected or the person's
+ * role there may not read its log: the switcher shows the entry only with an address.
+ */
+export function activityPath(groups: readonly PickerGroup[], selectedId: string | null) {
+  const selected = groups.find((group) => group.id === selectedId)
+  return selected && canViewActivity(selected.role) ? GROUP_PATHS.activity(selected.id) : null
+}
+
 /** The switcher's accessible name: `Group: Home`, or the visible `Choose a group` without one. */
 export function switcherLabel(t: Translator<string>, selected: PickerGroup | null): string {
   return selected ? t.t(`GroupPicker.label`, { name: selected.name }) : t.t(`GroupPicker.choose`)
@@ -64,7 +73,7 @@ export function switcherTip(t: Translator<string>, selected: PickerGroup | null)
  * The current group in the rail's top zone: a 40 px tile with the group's mark or initial, never
  * filled with the accent, that opens a short menu of the person's groups. The current one is
  * checked (`menuitemradio`), each names the person's role there, and the menu ends with links to
- * all groups and to a new one. The tile is named `Group: Home`; its tooltip, the rail's own
+ * the selected group's Activity ({@link activityPath}), all groups and a new one. The tile is named `Group: Home`; its tooltip, the rail's own
  * (`RailCell`), says `Home · Owner`, and its focus ring is the rail's too. `Rail` places that
  * tooltip, so `AppFrame` returns this cell straight from its `switcher` render prop. On a phone
  * the sheet lists the groups instead ({@link GroupSheet}).
@@ -74,6 +83,7 @@ export function GroupPicker(
 ): JSX.Element {
   const t = useAppText()
   const selected = groups.find((group) => group.id === selectedId) ?? null
+  const activity = activityPath(groups, selectedId)
   const tile =
     "flex size-10 items-center justify-center rounded-[var(--radius-primary,0.5rem)] border border-subtle bg-canvas text-sm font-semibold text-muted"
   return (
@@ -112,6 +122,11 @@ export function GroupPicker(
           </DropdownItem>
         ))}
         {groups.length > 0 && <div role="separator" class="my-1 border-t border-subtle" />}
+        {activity && (
+          <DropdownItem href={activity} navigate={navigate} dataE2E="group-picker-activity">
+            {t.t(`Frame.activity`)}
+          </DropdownItem>
+        )}
         <DropdownItem href={SCREEN_PATHS.groups} navigate={navigate} dataE2E="group-picker-all">
           {t.t(`GroupPicker.all`)}
         </DropdownItem>
@@ -126,18 +141,19 @@ export function GroupPicker(
 const sheetRow =
   "flex min-h-11 w-full min-w-0 items-center gap-3 rounded-md px-3 py-2 text-start text-sm hover:bg-canvas"
 
-/** "All groups" and "New group": rows like the sheet's own (Profile, Sign out), with an icon. */
+/** "Activity", "All groups" and "New group": rows like the sheet's own (Profile, Sign out), with an icon. */
 const sheetLink = `${sheetRow} ${railFocusRing} font-medium text-muted hover:text-foreground`
 
 /**
- * The groups in the phone's Account sheet: one row per group, the current one checked, then "All
- * groups" and "New group". Choosing a group selects it and closes the sheet, as a menu closes when
- * an item is chosen; the two links close it by leaving the page.
+ * The groups in the phone's Account sheet: one row per group, the current one checked, then
+ * "Activity" ({@link activityPath}), "All groups" and "New group". Choosing a group selects it and
+ * closes the sheet, as a menu closes when an item is chosen; the links close it by leaving the page.
  */
 export function GroupSheet(
   { groups, selectedId, onSelect, navigate }: GroupPickerData & { navigate?: Navigate },
 ): JSX.Element {
   const t = useAppText()
+  const activity = activityPath(groups, selectedId)
   return (
     <div class="flex flex-col gap-1" role="group" aria-labelledby="group-sheet-heading">
       <h3 id="group-sheet-heading" class="px-3 pt-1 text-xs font-medium text-muted">
@@ -172,6 +188,19 @@ export function GroupSheet(
         })}
       </ul>
       <ul class="flex flex-col gap-1">
+        {activity && (
+          <li>
+            <Link
+              href={activity}
+              navigate={navigate}
+              class={sheetLink}
+              data-e2e="group-sheet-activity"
+            >
+              <IconClock class="size-6 shrink-0" aria-hidden="true" />
+              {t.t(`Frame.activity`)}
+            </Link>
+          </li>
+        )}
         <li>
           <Link
             href={SCREEN_PATHS.groups}
