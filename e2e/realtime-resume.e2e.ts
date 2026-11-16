@@ -1,6 +1,7 @@
 import { type Page } from "@playwright/test"
 import { expect, test } from "./fixtures/stack.ts"
 import { signIn } from "./fixtures/app.ts"
+import { openGroups } from "./fixtures/groups.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { signUpWithCode } from "./fixtures/sign-up.ts"
 
@@ -76,9 +77,7 @@ async function signedIn(
   })
   expect(signUp.ok()).toBe(true)
   await signIn(page, email, password)
-  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", {
-    name: "Groups",
-  }).click()
+  await openGroups(page)
   await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
   const dropSockets = async () => {
     const closed = await request.post(`${apiBase}/api/test/close-sockets`, {

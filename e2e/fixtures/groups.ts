@@ -9,10 +9,26 @@ function literal(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }
 
-/** Opens the groups page from the main navigation, the way a person gets there. */
+/**
+ * Chooses `entry` ("all" for All groups, "activity" for the selected group's Activity) in the group
+ * switcher, the way a person gets there: the rail's dropdown on a wide screen, the Account sheet
+ * below the `md` breakpoint (768 px), where the rail and its switcher are hidden.
+ */
+export async function openFromSwitcher(page: Page, entry: "all" | "activity"): Promise<void> {
+  const width = page.viewportSize()?.width
+  if (width === undefined) throw new Error("openFromSwitcher needs a page with a fixed viewport")
+  if (width >= 768) {
+    await page.locator("[data-e2e=group-picker]").click()
+    await page.locator(`[data-e2e=group-picker-${entry}]`).click()
+  } else {
+    await page.locator("[data-e2e=rail-shell-more]").click()
+    await page.locator(`[data-e2e=group-sheet-${entry}]`).click()
+  }
+}
+
+/** Opens the groups page from the group switcher's "All groups". */
 export async function openGroups(page: Page): Promise<void> {
-  await page.getByRole("navigation", { name: "Main navigation" })
-    .getByRole("link", { name: "Groups" }).click()
+  await openFromSwitcher(page, "all")
   await expect(page.getByRole("heading", { level: 1, name: "Groups" })).toBeVisible()
 }
 

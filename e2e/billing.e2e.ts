@@ -2,7 +2,7 @@ import { type Page } from "@playwright/test"
 import { expect, test } from "./fixtures/stack.ts"
 import { signIn } from "./fixtures/app.ts"
 import { BILLING_WEBHOOK_PATH, stripeSignature, subscriptionEvent } from "./fixtures/billing.ts"
-import { createGroup, openGroupTab } from "./fixtures/groups.ts"
+import { createGroup, openGroups, openGroupTab } from "./fixtures/groups.ts"
 import { signUpWithCode } from "./fixtures/sign-up.ts"
 
 const apiBase = "http://app.localhost"
@@ -43,8 +43,7 @@ test.describe("group billing", () => {
       await signIn(page, email, password)
       await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 
-      await page.getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link", { name: "Groups" }).click()
+      await openGroups(page)
       await createGroup(page, "Club", { keepFree: true })
       const groupId = new URL(page.url()).pathname.replace("/groups/", "")
       await openGroupTab(page, "Billing")
@@ -114,12 +113,10 @@ test.describe("group billing", () => {
       }, { keepFree: true })
       expect(signUp.ok()).toBe(true)
       await signIn(page, email, password)
-      const groups = page.getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link", { name: "Groups" })
       const trial = page.locator("[data-e2e=group-trial]")
 
       const days = await trialDays(page)
-      await groups.click()
+      await openGroups(page)
       await page.locator("[data-e2e=group-new]").click()
       if (days === 0) {
         await expect(page.locator("[data-e2e=group-name]")).toBeVisible()
@@ -139,7 +136,7 @@ test.describe("group billing", () => {
       await expect(page.locator("[data-e2e=billing-confirming]")).toBeVisible()
       await expect(page).toHaveURL(`/groups/${groupId}/billing`)
 
-      await groups.click()
+      await openGroups(page)
       await page.locator("[data-e2e=group-new]").click()
       await expect(trial).toContainText("You've already used your free trial")
     } finally {

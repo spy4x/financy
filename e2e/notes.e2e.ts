@@ -382,11 +382,11 @@ test.describe("notes in a shared group", () => {
 
       // A link in the side menu is held back the same way.
       await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", {
-        name: "Groups",
+        name: "Categories",
       }).click()
       await expect(dialog).toBeVisible()
       await dialog.getByRole("button", { name: "Leave" }).click()
-      await expect(page).toHaveURL("/groups")
+      await expect(page).toHaveURL("/categories")
 
       // Discarded: the next create page starts empty.
       await gotoApp(page, "/notes/new", page.locator("[data-e2e=shell-ws-status]"))

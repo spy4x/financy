@@ -169,8 +169,7 @@ test.describe("the app with the local-data module switched off", () => {
       await signIn(page, email, password)
 
       // A group.
-      await page.getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link", { name: "Groups" }).click()
+      await openGroups(page)
       await createGroupInBrowser(page, "Online-only team")
 
       // A note: created, edited, and read again after a reload.
