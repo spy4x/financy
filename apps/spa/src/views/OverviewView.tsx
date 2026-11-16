@@ -106,6 +106,8 @@ export function OverviewView(
     if (!membership) return
     overviewStore.open({ groupId, range: choice.range, timeZone }, shown)
   }, [groupId, membership?.role, choice.range.from, choice.range.to, timeZone, shownKey])
+  // While the page is closed its group's hints read nothing (`overviewStore.groupId`).
+  useEffect(() => () => overviewStore.close(), [])
 
   // The owner of a new group under a free plan that allows nothing is told to choose a plan, as the
   // home page tells them on sign-in, and with the same exceptions (`landingPath`).

@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals"
+import { type ReadonlySignal, signal } from "@preact/signals"
 import type { DateRange } from "@spy4x/time/date"
 import type { WidgetDefinition } from "@domain/groups"
 import type { OverviewWidgetLoad } from "@ui/overview-screen.tsx"
@@ -25,6 +25,9 @@ export interface OverviewRequest {
  *
  * The device keeps each widget's last answer per group and range: when the server cannot be
  * reached, that copy answers, with the time it was saved (`savedAt`).
+ *
+ * While the page is open, `groupId` names its group, so the pull calls `refresh` on that group's
+ * change hint (`pull.ts`). A refresh keeps the numbers on screen until the new ones arrive.
  */
 export function createOverviewStore(
   dependencies: OverviewDependencies,
@@ -35,18 +38,27 @@ export function createOverviewStore(
   let requestKey = ""
   let widgets: readonly WidgetDefinition[] = []
   const reads = new Map<string, number>()
+  const groupId = signal<string | null>(null)
+  /** The refresh round that runs, and the one queued behind it. */
+  let running: Promise<void> | null = null
+  let queued: Promise<void> | null = null
 
   function set(id: string, load: OverviewWidgetLoad): void {
     loads.value = { ...loads.value, [id]: load }
   }
 
-  async function load(widget: WidgetDefinition): Promise<void> {
+  /**
+   * Reads one widget for the current request. With `keep`, a widget that has an answer keeps it
+   * on screen, and keeps it when the read fails, rather than showing loading or the error.
+   */
+  async function load(widget: WidgetDefinition, keep = false): Promise<void> {
     const asked = request
     if (!asked) return
     const read = (reads.get(widget.id) ?? 0) + 1
     reads.set(widget.id, read)
     const current = () => request === asked && reads.get(widget.id) === read
-    set(widget.id, { status: "loading" })
+    const kept = keep && loads.value[widget.id]?.status === `ready`
+    if (!kept) set(widget.id, { status: "loading" })
     const payload = {
       groupId: asked.groupId,
       from: asked.range.from,
@@ -65,19 +77,23 @@ export function createOverviewStore(
         savedAt: answer.fresh ? null : answer.savedAt,
       })
     } catch (_error) {
-      if (current()) set(widget.id, { status: "error" })
+      if (current() && !kept) set(widget.id, { status: "error" })
     }
   }
 
   /**
    * Shows `next` with `shown`, the widgets on screen. The same request again reads only the widgets
-   * that have no answer yet, such as one the person just showed again.
+   * that have no answer yet, such as one the person just showed again; after `close` it reads
+   * every widget again as a refresh, since the data may have changed while the page was closed.
    */
   function open(next: OverviewRequest, shown: readonly WidgetDefinition[]): void {
     widgets = shown
     const key = `${next.range.from}:${next.range.to}:${next.timeZone}`
+    const reopened = groupId.value === null
+    groupId.value = next.groupId
     if (request?.groupId === next.groupId && key === requestKey) {
-      for (const widget of shown) if (!loads.value[widget.id]) void load(widget)
+      if (reopened) void refresh()
+      else for (const widget of shown) if (!loads.value[widget.id]) void load(widget)
       return
     }
     request = next
@@ -92,14 +108,48 @@ export function createOverviewStore(
     if (widget) void load(widget)
   }
 
+  /**
+   * Reads every widget on screen again, keeping the answers shown until the new ones arrive: a
+   * change hint for the open group. A call while a round runs queues one more round after it, so
+   * a burst of hints costs at most two; the promise resolves once a round that began after the
+   * call has ended. Does nothing while the page is closed.
+   */
+  function refresh(): Promise<void> {
+    if (!running) {
+      running = Promise.all(groupId.value === null ? [] : widgets.map((w) => load(w, true)))
+        .then(() => {})
+        .finally(() => running = null)
+      return running
+    }
+    queued ??= running.then(() => {
+      queued = null
+      return refresh()
+    })
+    return queued
+  }
+
+  /** The page closed: hints stop reading until it opens again. The answers stay for that. */
+  function close(): void {
+    groupId.value = null
+  }
+
   /** Forgets the request, so the next `open` reads everything: after sign-out, say. */
   function reset(): void {
+    groupId.value = null
     request = null
     requestKey = ""
     loads.value = {}
   }
 
-  return { loads, open, retry, reset }
+  return {
+    loads,
+    groupId: groupId as ReadonlySignal<string | null>,
+    open,
+    refresh,
+    close,
+    retry,
+    reset,
+  }
 }
 
 /** The overview's widgets over the socket (or `POST /api/call`) and the device's copies. */
