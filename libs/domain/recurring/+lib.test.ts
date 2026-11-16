@@ -10,6 +10,7 @@ import {
   dueOccurrences,
   isOccurrence,
   parseRecurrence,
+  parseRecurringRuleExportEntry,
   parseRecurringRuleRequest,
   pauseReasonOf,
   RECURRING_COUNT_MAX,
@@ -18,6 +19,7 @@ import {
   RECURRING_SKIPPED_MAX,
   RecurringPauseReason,
   recurringRuleCreatePayloadSchema,
+  recurringRuleReferenceProblems,
   recurringRuleUpdatePayloadSchema,
   skipDate,
   upcomingDates,
@@ -448,5 +450,109 @@ describe(`the dates a rule will still make`, () => {
   it(`does not start before the start date, and has none for a repeat it cannot read`, () => {
     expect(upcomingDates(monthly, `2026-01-01`, 1)).toEqual([`2026-10-16`])
     expect(upcomingDates({ ...monthly, rrule: `FREQ=NOPE` }, `2026-11-01`, 3)).toEqual([])
+  })
+})
+
+describe(`a rule in a household's export file`, () => {
+  /** Rent as an export file holds it: made through November, paused, with one skipped date. */
+  const fileRent = {
+    id,
+    accountId,
+    categoryId,
+    kind: TransactionKind.EXPENSE,
+    amount: 120000,
+    currency: `USD`,
+    accountAmount: null,
+    memo: `Rent`,
+    rrule: `FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1`,
+    startDate: `2026-11-01`,
+    endDate: null,
+    count: null,
+    skippedDates: [`2027-01-01`],
+    madeThrough: `2026-11-30`,
+    pausedReason: RecurringPauseReason.ACCOUNT_ARCHIVED,
+    createdAt: `2026-10-30T09:00:00.000Z`,
+    updatedAt: `2026-11-02T09:00:00.000Z`,
+  }
+  const fieldOf = (entry: unknown) =>
+    Object.keys(
+      (refusalOf(() => parseRecurringRuleExportEntry(entry))?.fields ?? {}) as object,
+    )[0]
+
+  it(`keeps what the job set, and reads the dates of creation and change`, () => {
+    const rule = parseRecurringRuleExportEntry(fileRent)
+    expect(rule).toMatchObject({ madeThrough: `2026-11-30`, pausedReason: 2 })
+    expect(rule.createdAt).toEqual(new Date(fileRent.createdAt))
+    expect(parseRecurringRuleExportEntry({ ...fileRent, madeThrough: null, pausedReason: null }))
+      .toMatchObject({ madeThrough: null, pausedReason: null })
+  })
+
+  it(`stores the repeat as a create does, and the skipped dates in order, each once`, () => {
+    const rule = parseRecurringRuleExportEntry({
+      ...fileRent,
+      rrule: `FREQ=MONTHLY;BYMONTHDAY=1`,
+      memo: `  Rent  `,
+      skippedDates: [`2027-02-01`, `2027-01-01`, `2027-02-01`],
+    })
+    expect(rule).toMatchObject({
+      rrule: `FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1`,
+      memo: `Rent`,
+      skippedDates: [`2027-01-01`, `2027-02-01`],
+    })
+  })
+
+  it(`refuses what a create refuses: a repeat, an end with a count, an end before the start`, () => {
+    expect(fieldOf({ ...fileRent, rrule: `FREQ=MONTHLY;BYMONTHDAY=31` })).toBe(`rrule`)
+    expect(fieldOf({ ...fileRent, rrule: `` })).toBe(`rrule`)
+    expect(fieldOf({ ...fileRent, endDate: `2027-01-01`, count: 3 })).toBe(`count`)
+    expect(fieldOf({ ...fileRent, endDate: `2026-10-31` })).toBe(`endDate`)
+    expect(fieldOf({ ...fileRent, memo: `a`.repeat(501) })).toBe(`memo`)
+    expect(fieldOf({ ...fileRent, memo: `bell\u0007` })).toBe(`memo`)
+  })
+
+  it(`refuses each field the database would: amounts, currency, count, dates and reasons`, () => {
+    expect(fieldOf({ ...fileRent, amount: 0 })).toBe(`amount`)
+    expect(fieldOf({ ...fileRent, amount: 1.5 })).toBe(`amount`)
+    expect(fieldOf({ ...fileRent, accountAmount: 0 })).toBe(`accountAmount`)
+    expect(fieldOf({ ...fileRent, kind: 3 })).toBe(`kind`)
+    expect(fieldOf({ ...fileRent, currency: `usd` })).toBe(`currency`)
+    expect(fieldOf({ ...fileRent, count: 0 })).toBe(`count`)
+    expect(fieldOf({ ...fileRent, count: RECURRING_COUNT_MAX + 1 })).toBe(`count`)
+    expect(fieldOf({ ...fileRent, rrule: `F`.repeat(RECURRING_RRULE_MAX_LENGTH + 1) }))
+      .toBe(`rrule`)
+    expect(fieldOf({ ...fileRent, startDate: `2026-02-30` })).toBe(`startDate`)
+    expect(fieldOf({ ...fileRent, madeThrough: `soon` })).toBe(`madeThrough`)
+    expect(fieldOf({ ...fileRent, skippedDates: [`2027-13-01`] })).toBe(`skippedDates[0]`)
+    expect(fieldOf({ ...fileRent, pausedReason: 0 })).toBe(`pausedReason`)
+    expect(fieldOf({ ...fileRent, version: 1 })).toBe(`version`)
+  })
+
+  it(`refuses more skipped dates than a rule holds`, () => {
+    const many = Array.from(
+      { length: RECURRING_SKIPPED_MAX + 1 },
+      (_, day) => new Date(Date.UTC(2027, 0, 1 + day)).toISOString().slice(0, 10),
+    )
+    expect(fieldOf({ ...fileRent, skippedDates: many })).toBe(`skippedDates`)
+    expect(parseRecurringRuleExportEntry({ ...fileRent, skippedDates: many.slice(1) }).skippedDates)
+      .toHaveLength(RECURRING_SKIPPED_MAX)
+  })
+
+  it(`names the rules whose account or category the file lacks`, () => {
+    const other = `019a5b0e-1af5-7f04-8ae4-b1ee5d119999`
+    const inFile = {
+      account: (fileId: string) => fileId === accountId,
+      category: (fileId: string) => fileId === categoryId,
+    }
+    const problems = recurringRuleReferenceProblems([
+      fileRent,
+      { ...fileRent, accountId: other },
+      { ...fileRent, categoryId: other },
+      { ...fileRent, accountId: other, categoryId: other },
+    ], inFile)
+    expect(problems.map(({ index, issue }) => [index, issue])).toEqual([
+      [1, { code: `notFound`, field: `accountId` }],
+      [2, { code: `notFound`, field: `categoryId` }],
+      [3, { code: `notFound`, field: `accountId` }],
+    ])
   })
 })
