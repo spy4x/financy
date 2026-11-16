@@ -87,18 +87,41 @@ like every job.
 ## Add a product's commands
 
 A product edits one file, `apps/api/telegram/commands.ts`. Each command has a name, the description
-the command menu shows, and a handler that gets the linked person:
+the command menu shows, and a handler that gets the linked person. Financy's commands are
+`/expense` and `/income` (`apps/api/telegram/entries.ts`, below); one of them looks like this:
 
 ```ts
 {
-  name: `notes`,
-  description: `Your newest notes`,
+  name: `expense`,
+  description: `Add an expense`,
   handler: async (ctx, account) => {
-    const notes = await queryBus.execute(new NoteListQuery({ actor: account.actor, ... }))
+    const { accounts } = await queryBus.execute(new AccountListQuery({ actor: account.actor, ... }))
     await ctx.reply(...)
   },
 }
 ```
+
+## Add an expense or an income
+
+`/expense` and `/income` add an entry to the selected household. A person who never chose a
+household and is in several picks one first, by button.
+
+1. The bot asks for the amount, naming the account and its currency: "How much? In USD, from
+   Cash." The amount is read in the person's region format, else Telegram's language, with the
+   currency's own decimals: "500" in yen is 500, "12.50" in dollars is 1250 cents.
+2. It shows the summary, "Expense: $12.50 · Cash · Groceries · today", with Save, Account,
+   Category and Cancel. A pick from a list returns to the summary. An account in another currency
+   reads the typed amount again in that currency, and asks again when it does not fit.
+3. Save writes the entry; the summary loses its buttons and says "Saved."
+
+`/expense 12.50` saves at once when the person's last expense gives the account and the category.
+Without one, it starts in the household's default account and asks for a category. The household
+dates the entry in its own time zone.
+
+The buses refuse a viewer, a removed member, another household's account or category and a full
+plan, and the bot says why in one line. A talk lives 15 minutes; a button of an older or finished
+talk says so and changes nothing. The entry's id is made when the talk starts, so a double tap on
+Save saves once.
 
 - Put `account.actor` on every command and query. The buses check it as for any other client.
 - Commands answer in a private chat only. In a group, the bot says so and runs nothing, because
