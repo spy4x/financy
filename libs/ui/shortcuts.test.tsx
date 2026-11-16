@@ -242,7 +242,13 @@ describe("the Keyboard shortcuts dialog's palette commands", () => {
     const spa = paletteCommands(
       paletteContext(RU, `ru`, {
         groups: [],
-        currentGroup: { id: `0190a000-0000-7000-8000-000000000001`, name: `Home`, canWrite: true },
+        // Export too, so Financy's Export group is among the commands checked.
+        currentGroup: {
+          id: `0190a000-0000-7000-8000-000000000001`,
+          name: `Home`,
+          canWrite: true,
+          canExport: true,
+        },
         online: true,
         shortcuts: ROWS,
         pageCommands: [{ id: `delete`, label: `Удалить`, englishWords: [`Delete this note`] }],
@@ -262,6 +268,19 @@ describe("the Keyboard shortcuts dialog's palette commands", () => {
     // Guards against a vacuous pass: the label and the detail of New note are English words.
     expect(spa.find((command) => command.id === `action-new-note`)?.englishWords)
       .toEqual([`New note`, `In Home`])
+    // Financy's own commands are checked too, each with its English label and detail.
+    const financy = {
+      "new-transaction": `New transaction`,
+      "new-transfer": `New transfer`,
+      "new-account": `New account`,
+      "new-category": `New category`,
+    }
+    for (const [id, label] of Object.entries(financy)) {
+      expect(spa.find((command) => command.id === `action-${id}`)?.englishWords, id)
+        .toEqual([label, `In Home`])
+    }
+    expect(spa.find((command) => command.id === `action-export-group`)?.englishWords)
+      .toContain(`Export group`)
     for (const commands of [spa, admin]) {
       await mount(true, ROWS, true, commands)
       const rows = commandList()
