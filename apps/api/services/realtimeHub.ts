@@ -110,6 +110,7 @@ export const operations: Operations<Actor> = operationRateLimits.limit({
     list: (query) => queryBus.execute(query),
     get: (query) => queryBus.execute(query),
     total: (query) => queryBus.execute(query),
+    widget: (query) => queryBus.execute(query),
   }),
   ...createCategoryOperations({
     create: (command) => commandBus.execute(command),

@@ -93,7 +93,7 @@ describe("the household total card", () => {
     await mount(<AccountsScreen {...screen} total={{ ...exact, rateDate: "2026-11-06" }} />)
 
     const amount = document.querySelector("[data-e2e=accounts-total-amount]")!
-    expect(amount.textContent).toBe("about €12,345.67")
+    expect(amount.textContent).toBe("about \u2068€12,345.67\u2069")
     expect(amount.childNodes.length).toBe(1)
     expect(text("[data-e2e=accounts-total-rates]")).toBe("At the exchange rates of 6 Nov 2026")
     expect(text("[data-e2e=accounts-total] h2")).toBe("Total")
@@ -102,14 +102,14 @@ describe("the household total card", () => {
   it("shows an exact total, with no 'about' and no rate date, when no rate was used", async () => {
     await mount(<AccountsScreen {...screen} total={exact} />)
 
-    expect(text("[data-e2e=accounts-total-amount]")).toBe("€12,345.67")
+    expect(text("[data-e2e=accounts-total-amount]")).toBe("\u2068€12,345.67\u2069")
     expect(count("[data-e2e=accounts-total-rates]")).toBe(0)
   })
 
   it("reads 'about' with the coin price date and CoinGecko's credit line when a coin was valued", async () => {
     await mount(<AccountsScreen {...screen} total={{ ...exact, coinPriceDate: "2026-11-05" }} />)
 
-    expect(text("[data-e2e=accounts-total-amount]")).toBe("about €12,345.67")
+    expect(text("[data-e2e=accounts-total-amount]")).toBe("about \u2068€12,345.67\u2069")
     expect(text("[data-e2e=accounts-total-coins]")).toBe(
       "Coin prices of 5 Nov 2026. Data provided by CoinGecko.",
     )
@@ -138,7 +138,7 @@ describe("the household total card", () => {
     await mount(<AccountsScreen {...screen} total={{ ...exact, amount: -50_000 }} />)
 
     const amount = document.querySelector("[data-e2e=accounts-total-amount]")!
-    expect(amount.textContent).toBe("-€500.00")
+    expect(amount.textContent).toBe("\u2068-€500.00\u2069")
     expect(count("[data-e2e=accounts-total] .text-danger")).toBe(0)
   })
 

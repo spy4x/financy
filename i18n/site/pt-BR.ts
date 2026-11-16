@@ -567,7 +567,8 @@ export default {
   "HomeStatus.transactions": "Receitas e despesas, com o valor original guardado",
   "HomeStatus.transfers":
     "Transferências entre suas próprias contas, também entre moedas, com os dois valores guardados",
-  "HomeStatus.month": "O dinheiro do mês num relance",
+  "HomeStatus.month":
+    "O dinheiro do mês e o saldo de cada conta num relance, com o total da casa em uma só moeda",
   "HomeStatus.later":
     "A importação de extratos bancários e a nuvem paga vêm depois: <plan>veja o plano completo</plan>.",
   "HomeWho.keeperTitle": "Quem cuida das contas",

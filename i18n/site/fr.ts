@@ -577,7 +577,8 @@ export default {
   "HomeStatus.transactions": "Revenus et dépenses, avec le montant d’origine conservé",
   "HomeStatus.transfers":
     "Virements entre vos propres comptes, y compris entre devises, avec les deux montants conservés",
-  "HomeStatus.month": "L’argent du mois en un coup d’œil",
+  "HomeStatus.month":
+    "L’argent du mois et le solde de chaque compte en un coup d’œil, avec le total du foyer dans une seule devise",
   "HomeStatus.later":
     "L’import de relevés bancaires et le cloud payant viendront ensuite : <plan>voir tout le plan</plan>.",
   "HomeWho.keeperTitle": "Celui ou celle qui tient les comptes",

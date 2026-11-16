@@ -545,7 +545,7 @@ export default {
   "HomeStatus.accounts": "حسابات بأي عملة",
   "HomeStatus.transactions": "الدخل والمصروفات، مع حفظ المبلغ الأصلي",
   "HomeStatus.transfers": "تحويلات بين حساباتك، وبين العملات أيضًا، مع حفظ المبلغين",
-  "HomeStatus.month": "أموال هذا الشهر في لمحة",
+  "HomeStatus.month": "أموال هذا الشهر ورصيد كل حساب في لمحة، مع إجمالي الأسرة بعملة واحدة",
   "HomeStatus.later":
     "استيراد كشوف الحساب البنكية والسحابة المدفوعة يأتيان لاحقًا: <plan>اطّلع على الخطة كاملة</plan>.",
   "HomeWho.keeperTitle": "من يدير المال",

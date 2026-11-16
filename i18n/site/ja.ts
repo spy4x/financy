@@ -552,7 +552,7 @@ export default {
   "HomeStatus.accounts": "どの通貨でも使える口座",
   "HomeStatus.transactions": "元の金額を残したままの収入と支出",
   "HomeStatus.transfers": "自分の口座間の振替（通貨をまたいでも）。両方の金額を記録",
-  "HomeStatus.month": "今月のお金がひと目でわかる画面",
+  "HomeStatus.month": "今月のお金と口座ごとの残高がひと目でわかる画面。世帯の合計は1つの通貨で表示",
   "HomeStatus.later":
     "銀行明細の取り込みと有料クラウドはその後です：<plan>計画の全体を見る</plan>。",
   "HomeWho.keeperTitle": "家計を管理する人",

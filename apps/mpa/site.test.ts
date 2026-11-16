@@ -505,6 +505,17 @@ describe("the public website", () => {
     expect(card).not.toContain(`/issues/97"`)
   })
 
+  it("says under Building now that the overview shows each account's balance and the household total", async () => {
+    const { html } = await page("/")
+    const card = html.slice(html.indexOf(`data-e2e="home-status"`))
+    const line = card.indexOf(
+      `This month's money and each account's balance at a glance, with the household total in one currency`,
+    )
+
+    expect(line).toBeGreaterThan(card.indexOf(`Building now`))
+    expect(card.indexOf(`/issues/99"`)).toBeGreaterThan(line)
+  })
+
   it("lists budgets on /features as built, right after transactions, and on the home page's Works today, not under Later", async () => {
     const { html } = await page("/features")
 

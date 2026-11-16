@@ -7,6 +7,7 @@ import {
   type GroupImportIssue,
   type GroupRole,
   plainEntryProblem,
+  type WidgetDefinition,
 } from "@domain/groups"
 import {
   accountCurrencyCode,
@@ -606,6 +607,65 @@ export function householdTotal(
   }
 }
 // #endregion Household total
+
+// #region Overview widget
+/** The balances widget's id: what a person's saved layout keeps, so it never changes. */
+export const ACCOUNT_WIDGET_IDS = { balances: "accounts.balances" } as const
+
+/** The query operation of "How much do we have?": the household's accounts and its total. */
+export const ACCOUNT_WIDGET_OPERATION = "account.widget.balances"
+
+/**
+ * "How much do we have?", full width: the household total, then each account's balance. It is the
+ * overview's last question, after where the money went.
+ */
+export const ACCOUNT_WIDGETS: readonly WidgetDefinition[] = [{
+  id: ACCOUNT_WIDGET_IDS.balances,
+  titleKey: "AccountWidgets.title",
+  size: "full",
+  canView: canRead,
+  operation: ACCOUNT_WIDGET_OPERATION,
+  operatorView: "never",
+}]
+
+/**
+ * The balances widget payload: the overview's widget payload, as every widget gets it. A balance is
+ * today's whatever the range, so only the household is read; the rest is checked for shape.
+ */
+export const accountWidgetPayloadSchema = type({
+  ...groupIdField,
+  from: "string <= 10",
+  to: "string <= 10",
+  timeZone: "string <= 64",
+  "+": "reject",
+})
+
+/** One account as the balances widget draws it. */
+export interface AccountBalance {
+  id: string
+  name: string
+  kind: AccountKind
+  currency: string
+  /** The Accounts screen's balance, in the currency's smallest unit. */
+  balance: number
+  archived: boolean
+}
+
+/**
+ * The balances widget's answer: the household's accounts, archived ones included, and the very
+ * total `account.total` answers, both from one read.
+ */
+export interface AccountWidgetResult {
+  accounts: AccountBalance[]
+  total: HouseholdTotal
+}
+
+/** "How much do we have?": the household's accounts and its total. */
+export class AccountWidgetQuery implements Query<AccountTotalPayload, AccountWidgetResult> {
+  __resultType?: AccountWidgetResult
+  constructor(public data: AccountTotalPayload) {}
+}
+// #endregion Overview widget
 
 // #region Ports
 interface AccountInputBase {

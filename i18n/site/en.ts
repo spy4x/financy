@@ -562,7 +562,8 @@ export default {
   "HomeStatus.transactions": "Income and expenses, with the original amount kept",
   "HomeStatus.transfers":
     "Transfers between your own accounts, across currencies, with both amounts kept",
-  "HomeStatus.month": "This month's money at a glance",
+  "HomeStatus.month":
+    "This month's money and each account's balance at a glance, with the household total in one currency",
   "HomeStatus.later":
     "Bank statement import and the paid cloud come later: <plan>see the whole plan</plan>.",
   "HomeWho.keeperTitle": "The money keeper",

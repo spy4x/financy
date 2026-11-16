@@ -566,7 +566,8 @@ export default {
   "HomeStatus.transactions": "Einnahmen und Ausgaben, der ursprüngliche Betrag bleibt erhalten",
   "HomeStatus.transfers":
     "Umbuchungen zwischen deinen eigenen Konten, auch über Währungen hinweg, mit beiden Beträgen",
-  "HomeStatus.month": "Das Geld dieses Monats auf einen Blick",
+  "HomeStatus.month":
+    "Das Geld dieses Monats und der Stand jedes Kontos auf einen Blick, mit der Haushaltssumme in einer Währung",
   "HomeStatus.later":
     "Der Import von Kontoauszügen und die kostenpflichtige Cloud kommen später: <plan>den ganzen Plan ansehen</plan>.",
   "HomeWho.keeperTitle": "Wer das Geld verwaltet",

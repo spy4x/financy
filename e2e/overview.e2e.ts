@@ -411,4 +411,128 @@ test.describe("group overview", () => {
       expect.soft(response.status(), await response.text()).toBe(200)
     }
   })
+
+  test("how much do we have shows a long dong total and a long account name whole on a phone, without sideways scrolling, moves two balances on a transfer, and opens its own household's accounts", async ({ page, request }) => {
+    test.setTimeout(120_000)
+    const email = `e2e-overview-balances-${uuidV7().slice(-8)}@example.com`
+    try {
+      const signUp = await signUpWithCode(request, `${appBase}/api/auth/password/sign-up`, {
+        headers,
+        data: { email, password },
+      })
+      expect(signUp.ok(), await signUp.text()).toBe(true)
+      await page.setViewportSize({ width: 390, height: 844 })
+      await signIn(page, email, password)
+
+      /** Runs one operation as the signed-in person, the way the app's HTTP transport does. */
+      const call = async (name: string, data: unknown) => {
+        const me = await page.request.get(`${appBase}/api/auth/me`)
+        const response = await page.request.post(`${appBase}/api/call/${name}`, {
+          headers: {
+            ...headers,
+            "x-realtime-user": String((await me.json()).id),
+            "idempotency-key": uuidV7(),
+          },
+          data,
+        })
+        expect(response.ok(), `${name}: ${await response.text()}`).toBe(true)
+        return (await response.json()).result
+      }
+      const household = async (name: string) => {
+        const groupId = uuidV7()
+        const created = await page.request.post(`${appBase}/api/groups`, {
+          headers,
+          data: { id: groupId, name },
+        })
+        expect(created.status(), await created.text()).toBe(201)
+        await payForGroup(page.request, appBase, groupId)
+        return groupId
+      }
+      const home = await household("Home")
+      // In dong, so no rate is needed and the total says no "about".
+      const { settings } = await call(`household.settings`, { groupId: home })
+      await call(`household.updateSettings`, {
+        groupId: home,
+        baseCurrency: "VND",
+        version: settings.version,
+      })
+      const account = async (name: string, startingBalance: number) => {
+        const id = uuidV7()
+        await call(`account.create`, {
+          groupId: home,
+          id,
+          name,
+          kind: 1,
+          currency: "VND",
+          startingBalance,
+        })
+        return id
+      }
+      // The longest name an account may have: 60 characters.
+      const longName = "Joint everyday account for the whole family and the children"
+      const joint = await account(longName, 9_876_543_210_000)
+      const pot = await account("Pot", 1_000_000)
+      const work = await household("Work")
+      await call(`group.select`, { groupId: work })
+
+      await page.goto(`/overview/${home}`)
+      const card = page.locator(`[data-e2e="overview-widget-accounts.balances"]`)
+      await expect(card.locator(`[data-e2e=accounts-total-amount]`)).toHaveText(
+        /^.?₫9,876,544,210,000.?$/,
+      )
+      const rows = card.locator(`[data-e2e=account-widget-row]`)
+      await expect(rows).toHaveCount(2)
+      await expect(rows.first().locator(`[data-e2e=account-widget-name]`)).toHaveText(longName)
+      await expect(rows.first().locator(`[data-e2e=account-widget-balance]`)).toHaveText(
+        /^.?₫9,876,543,210,000.?$/,
+      )
+      // The whole name shows, on more than one line: it wraps, never cut or shortened.
+      const name = rows.first().locator(`[data-e2e=account-widget-name]`)
+      expect(await name.evaluate((element) => element.scrollHeight <= element.clientHeight))
+        .toBe(true)
+      expect((await name.boundingBox())?.height ?? 0).toBeGreaterThan(30)
+      expect(
+        await page.evaluate(() =>
+          document.documentElement.scrollWidth <= document.documentElement.clientWidth
+        ),
+      ).toBe(true)
+      const link = card.locator(`[data-e2e=account-widget-link]`)
+      expect((await link.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44)
+      await card.scrollIntoViewIfNeeded()
+      await page.screenshot({ path: test.info().outputPath(`overview-balances-390.png`) })
+
+      // A transfer moves two balances and leaves the total as it was.
+      await call(`transfer.create`, {
+        groupId: home,
+        id: uuidV7(),
+        fromAccountId: joint,
+        toAccountId: pot,
+        sentAmount: 210_000,
+        date: new Date().toISOString().slice(0, 10),
+        memo: "To the pot",
+      })
+      await page.goto(`/overview/${home}`)
+      await expect(rows.nth(1).locator(`[data-e2e=account-widget-balance]`)).toHaveText(
+        /^.?₫1,210,000.?$/,
+      )
+      await expect(rows.first().locator(`[data-e2e=account-widget-balance]`)).toHaveText(
+        /^.?₫9,876,543,000,000.?$/,
+      )
+      await expect(card.locator(`[data-e2e=accounts-total-amount]`)).toHaveText(
+        /^.?₫9,876,544,210,000.?$/,
+      )
+
+      // Work is still the selected household: the link names Home, the Accounts screen opens it
+      // and drops the parameter.
+      await expect(link).toHaveAttribute("href", `/accounts?group=${home}`)
+      await link.click()
+      await expect(page).toHaveURL(/\/accounts\??$/)
+      await expect(page.locator(`[data-e2e=account-${joint}]`)).toBeVisible()
+    } finally {
+      const response = await request.post(`${appBase}/api/test/cleanup-user`, {
+        data: { login: email },
+      })
+      expect.soft(response.status(), await response.text()).toBe(200)
+    }
+  })
 })
