@@ -394,6 +394,7 @@ describe("AccountEditorScreen", () => {
     const field = find("[data-e2e=account-aliases]")
     expect(field.textContent).toContain(markup)
     expect(field.querySelector("img")).toBe(null)
+    expect(field.querySelector("input, button")).toBe(null)
   })
 
   it("wraps a long account name in the title to two lines instead of cutting it, and keeps the full name as its tooltip", async () => {

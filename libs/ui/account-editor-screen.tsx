@@ -13,6 +13,7 @@ import { MoneyDisplay } from "@spy4x/preact-ui/money-display"
 import { MoneyInput } from "@spy4x/preact-ui/money-input"
 import { Notice } from "@spy4x/preact-ui/notice"
 import { PageHeader } from "@spy4x/preact-ui/page-header"
+import { FactList } from "@spy4x/preact-ui/fact-list"
 import { TagInput } from "@spy4x/preact-ui/tag-input"
 import { isolate } from "@spy4x/preact-ui/bdi"
 import { currencyOptions, formatMoney } from "@spy4x/platform/universal/money-core"
@@ -272,34 +273,51 @@ function Editor(props: AccountEditorScreenProps & { group: NotesGroup }): JSX.El
                   required
                 />
               </Field>
-              <div data-e2e="account-aliases">
-                <Field
-                  id="account-aliases"
-                  label={t.t(`AccountEditor.aliases`)}
-                  hint={t.t(`AccountEditor.aliasesHint`)}
-                  error={messageText(t, errors.aliases ?? null)}
-                >
-                  {(wiring) => (
-                    <TagInput
-                      id={wiring.id}
-                      aria-describedby={wiring["aria-describedby"]}
-                      aria-invalid={Boolean(errors.aliases)}
-                      value={value.aliases}
-                      onChange={(aliases) => onChange?.({ ...value, aliases })}
-                      placeholder={t.t(`AccountEditor.aliasesPlaceholder`)}
-                      tagsLabel={t.t(`AccountEditor.aliases`)}
-                      removeLabel={(alias) =>
-                        t.t(`AccountEditor.aliasRemove`, { alias: isolate(alias) })}
-                      addedMessage={(alias) =>
-                        t.t(`AccountEditor.aliasAdded`, { alias: isolate(alias) })}
-                      removedMessage={(alias) =>
-                        t.t(`AccountEditor.aliasRemoved`, { alias: isolate(alias) })}
-                      duplicateMessage={(alias) =>
-                        t.t(`AccountEditor.aliasDuplicate`, { alias: isolate(alias) })}
-                    />
-                  )}
-                </Field>
-              </div>
+              {/* A viewer reads the aliases as text, as on a category: no chips to remove. */}
+              {!canWrite && value.aliases.length > 0 && (
+                <div data-e2e="account-aliases">
+                  <FactList
+                    facts={[{
+                      label: t.t(`AccountEditor.aliases`),
+                      value: (
+                        <span class="inline-flex flex-wrap gap-x-2">
+                          {value.aliases.map((alias) => <bdi key={alias}>{alias}</bdi>)}
+                        </span>
+                      ),
+                    }]}
+                  />
+                </div>
+              )}
+              {canWrite && (
+                <div data-e2e="account-aliases">
+                  <Field
+                    id="account-aliases"
+                    label={t.t(`AccountEditor.aliases`)}
+                    hint={t.t(`AccountEditor.aliasesHint`)}
+                    error={messageText(t, errors.aliases ?? null)}
+                  >
+                    {(wiring) => (
+                      <TagInput
+                        id={wiring.id}
+                        aria-describedby={wiring["aria-describedby"]}
+                        aria-invalid={Boolean(errors.aliases)}
+                        value={value.aliases}
+                        onChange={(aliases) => onChange?.({ ...value, aliases })}
+                        placeholder={t.t(`AccountEditor.aliasesPlaceholder`)}
+                        tagsLabel={t.t(`AccountEditor.aliases`)}
+                        removeLabel={(alias) =>
+                          t.t(`AccountEditor.aliasRemove`, { alias: isolate(alias) })}
+                        addedMessage={(alias) =>
+                          t.t(`AccountEditor.aliasAdded`, { alias: isolate(alias) })}
+                        removedMessage={(alias) =>
+                          t.t(`AccountEditor.aliasRemoved`, { alias: isolate(alias) })}
+                        duplicateMessage={(alias) =>
+                          t.t(`AccountEditor.aliasDuplicate`, { alias: isolate(alias) })}
+                      />
+                    )}
+                  </Field>
+                </div>
+              )}
               <Field id="account-kind" label={t.t(`AccountEditor.kind`)}>
                 <Select
                   name="kind"
