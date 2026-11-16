@@ -213,7 +213,7 @@ from the bytes, never the file name.
 Financy's `app-history` kind (`libs/server/transactions/history-import.ts`) brings a household's
 history over from another finance app: Firefly III's transactions CSV, YNAB's register (the CSV, or
 the "Export budget" zip) and Actual Budget's "Export data" zip. `@spy4x/bank-statements` reads the
-file, at most 5 MiB and 50,000 rows. The app comes from the bytes, never the file name. There is no
+file, at most 5 MiB and 20,000 rows. The app comes from the bytes, never the file name. There is no
 screen for it yet; the API takes it like any kind.
 
 - **Upload options.** `currency`, optional: the currency of a YNAB or Actual export, which name
