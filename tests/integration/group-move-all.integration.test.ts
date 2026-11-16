@@ -536,6 +536,7 @@ Deno.test("moving all of a group's data", async (t) => {
             recurringRules: 0,
             budgets: 0,
             budgetMoves: 0,
+            payeeMemory: 0,
             tags: 4,
             notes: 1,
           },
@@ -1250,6 +1251,7 @@ Deno.test("moving all of a group's data", async (t) => {
             recurringRules: 0,
             budgets: 0,
             budgetMoves: 0,
+            payeeMemory: 0,
           },
         })
         expect(await accountsOf(sql, from)).toEqual([])

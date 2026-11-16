@@ -537,18 +537,15 @@ Deno.test("statement imports: the admin list shows the kind and the counts, and 
 // #region Payee memory
 
 /**
- * A statement in the CSV layout of `signed.csv`, one row per `[date, payee, amount in cents]`,
- * with balances that add up.
+ * A QIF statement, one row per `[date, payee, amount in cents]`. QIF names the payee in a field of
+ * its own; the built-in CSV layout of `signed.csv` has only a description, which is the memo.
  */
 function statement(rows: readonly (readonly [string, string, number])[]): Uint8Array<ArrayBuffer> {
-  let balance = 100_000
-  const lines = rows.map(([date, payee, cents]) => {
-    balance += cents
-    return `${date},${payee},${(cents / 100).toFixed(2)},EUR,${(balance / 100).toFixed(2)}`
+  const entries = rows.map(([date, payee, cents]) => {
+    const [year, month, day] = date.split(`-`)
+    return `D${month}/${day}'${year.slice(2)}\nT${(cents / 100).toFixed(2)}\nP${payee}\n^\n`
   })
-  return new TextEncoder().encode(
-    `Date,Description,Amount,Currency,Balance\n${lines.join(`\n`)}\n`,
-  )
+  return new TextEncoder().encode(`!Type:Bank\n${entries.join(``)}`)
 }
 
 /** The household's payee memory: each key and its category, by key. */
