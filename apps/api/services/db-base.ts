@@ -54,6 +54,7 @@ import { PostgresTransferRepository } from "@server/transfers/postgres-transfer-
 import { PostgresRecurringRuleRepository } from "@server/recurring/postgres-recurring-rule-repository.ts"
 import { recurringRuleMovable } from "@server/recurring/recurring-rule-movable.ts"
 import { recurringRuleChanges } from "@server/recurring/recurring-rule-changes.ts"
+import { recurringRulePortable } from "@server/recurring/recurring-rule-portable.ts"
 import { PostgresBudgetRepository } from "@server/budgets/postgres-budget-repository.ts"
 import { budgetMovable, budgetMoveMovable } from "@server/budgets/budget-movable.ts"
 import { budgetPortables } from "@server/budgets/budget-portable.ts"
@@ -240,6 +241,7 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   categoryPortable,
   payeeMemoryPortable,
   ...budgetPortables,
+  recurringRulePortable,
   transactionPortable,
   transferPortable,
   householdPortable,

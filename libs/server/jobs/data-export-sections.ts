@@ -354,6 +354,50 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       ORDER BY created_at, id`,
   },
   {
+    // The repeating entries the person created, in households they still belong to, deleted ones
+    // waiting in the trash included: the entry each makes, as `finance_entries` has it, and when,
+    // with dates as YYYY-MM-DD. `rrule` is the repeat as RFC 5545 text, `madeThrough` the last day
+    // entries were made through, and `pausedReason` why making stopped (1 the author may no longer
+    // write, 2 the account, 3 the category is archived), empty while it runs.
+    name: `finance_recurring_rules`,
+    columns: [
+      `id`,
+      `groupId`,
+      `accountId`,
+      `categoryId`,
+      `kind`,
+      `amount`,
+      `currency`,
+      `accountAmount`,
+      `memo`,
+      `rrule`,
+      `startDate`,
+      `endDate`,
+      `count`,
+      `skippedDates`,
+      `madeThrough`,
+      `pausedReason`,
+      `createdAt`,
+      `updatedAt`,
+      `deletedAt`,
+    ],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, account_id, category_id,
+        CASE kind WHEN 1 THEN 'expense' ELSE 'income' END AS kind,
+        amount::text AS amount, currency, account_amount::text AS account_amount, memo, rrule,
+        to_char(start_date, 'YYYY-MM-DD') AS start_date, to_char(end_date, 'YYYY-MM-DD') AS end_date,
+        count,
+        ARRAY(
+          SELECT to_char(skipped, 'YYYY-MM-DD') FROM unnest(skipped_dates) AS skipped
+          ORDER BY skipped
+        ) AS skipped_dates,
+        to_char(made_through, 'YYYY-MM-DD') AS made_through, paused_reason, created_at,
+        updated_at, deleted_at
+      FROM recurring_rules
+      WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
     // The payees whose category the person chose last when saving a bank statement, in households
     // they still belong to: the payee's key, as the import keeps it, and the category, an id from
     // the list above or another member's.
