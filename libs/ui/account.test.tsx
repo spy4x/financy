@@ -360,7 +360,7 @@ describe("AppFrame", () => {
     expect(column()).not.toContain("max-w-3xl")
   })
 
-  it("lists Overview, Transactions, Accounts, Activity and Groups, with Activity pointing at the selected group", async () => {
+  it("lists Overview, Transactions, Accounts and Categories in the rail and all four in the phone bar", async () => {
     await mount(
       <AppFrame
         user={ada}
@@ -371,10 +371,11 @@ describe("AppFrame", () => {
       </AppFrame>,
     )
     const rail = '[data-e2e=rail-shell-rail] a[data-e2e="rail-shell-entry"]'
-    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Activity", "Groups"])
+    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Categories"])
     expect([...document.querySelectorAll(rail)].map((link) => link.getAttribute("href")))
-      .toEqual(["/overview", "/transactions", "/accounts", "/groups/g-1/activity", "/groups"])
-    expect(texts('[data-e2e=rail-shell-tabbar] [data-e2e="rail-shell-entry"]')).toHaveLength(4)
+      .toEqual(["/overview", "/transactions", "/accounts", "/categories"])
+    expect(texts('[data-e2e=rail-shell-tabbar] [data-e2e="rail-shell-entry"]'))
+      .toEqual(["Overview", "Transactions", "Accounts", "Categories"])
   })
 
   it("ends the phone bar with Account, counting the unread notifications in its name", async () => {
@@ -385,7 +386,33 @@ describe("AppFrame", () => {
     expect(find("[data-e2e=rail-shell-dialog] h2").textContent).toBe("Account")
   })
 
-  it("leaves Activity out with no selected group, and for a group whose log the person may not read", async () => {
+  it("offers the selected group's Activity in the switcher and the phone's sheet, before All groups", async () => {
+    await mount(
+      <AppFrame
+        user={ada}
+        onSignOut={() => {}}
+        groupPicker={{ groups, selectedId: "g-1", onSelect: () => {} }}
+      >
+        page
+      </AppFrame>,
+    )
+    expect(menuItems("[data-e2e=group-picker]")).toEqual([
+      "HHome Owner",
+      "TTeam Viewer",
+      "Activity",
+      "All groups",
+      "New group",
+    ])
+    expect(find("[data-e2e=group-picker-activity]").getAttribute("href"))
+      .toBe("/groups/g-1/activity")
+    const sheet = find("[data-e2e=group-sheet-activity]")
+    expect(sheet.getAttribute("href")).toBe("/groups/g-1/activity")
+    expect(sheet.textContent).toBe("Activity")
+    expect(sheet.closest("li")?.nextElementSibling?.querySelector("[data-e2e=group-sheet-all]"))
+      .not.toBe(null)
+  })
+
+  it("leaves Activity out of the switcher and the sheet with no selected group, and for a group whose log the person may not read", async () => {
     const frame = (selectedId: string | null) => (
       <AppFrame
         user={ada}
@@ -395,10 +422,19 @@ describe("AppFrame", () => {
         page
       </AppFrame>
     )
+    const activity = "[data-e2e=group-picker-activity], [data-e2e=group-sheet-activity]"
     await mount(frame(null))
-    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Groups"])
+    expect(document.querySelector(activity)).toBe(null)
+    expect(find("[data-e2e=group-sheet-all]")).not.toBe(null)
     await rerender(frame("g-2"))
-    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Groups"])
+    expect(document.querySelector(activity)).toBe(null)
+    expect(menuItems("[data-e2e=group-picker]")).toEqual([
+      "HHome Owner",
+      "TTeam Viewer",
+      "All groups",
+      "New group",
+    ])
+    expect(railLabels()).toEqual(["Overview", "Transactions", "Accounts", "Categories"])
   })
 
   it("follows a plain click on a navigation entry through navigate, and leaves a Ctrl-click to the browser", async () => {
@@ -434,8 +470,8 @@ describe("AppFrame", () => {
     await rerender(at("/transactions/abc"))
     expect(marked("page")).toEqual([])
     expect(marked("true")).toEqual(["/transactions"])
-    await rerender(at("/groups/abc/pricing"))
-    expect(marked("true")).toEqual(["/groups"])
+    await rerender(at("/categories/abc"))
+    expect(marked("true")).toEqual(["/categories"])
   })
 
   it("says the connection in one live region always, and shows it only while it is down", async () => {
@@ -556,7 +592,7 @@ describe("AppFrame", () => {
     atTop()
   })
 
-  it("names the account entry after the person, heads its menu with their name and address, and offers Categories, Budgets, Repeating entries, Tags, Notes and Sign out with no Profile or Theme item", async () => {
+  it("names the account entry after the person, heads its menu with their name and address, and offers Repeating entries, Tags, Notes and Sign out with no Profile, Theme, Categories or Budgets item", async () => {
     await mount(<AppFrame user={ada} onSignOut={() => {}}>page</AppFrame>)
     expect(find(ACCOUNT).getAttribute("aria-label")).toBe("Account: Ada Lovelace")
     expect(find("[data-e2e=account-menu-header]").textContent).toContain(
@@ -564,8 +600,6 @@ describe("AppFrame", () => {
     )
     expect(menuItems(ACCOUNT)).toEqual([
       HEADER,
-      "Categories",
-      "Budgets",
       "Repeating entries",
       "Tags",
       "Notes",
@@ -585,11 +619,9 @@ describe("AppFrame", () => {
     expect(on.filter((href) => href === "/notes" || href === "/tags").length).toBeGreaterThan(1)
     expect(off.filter((href) => /^\/(notes|tags)(\/|$)/.test(href))).toEqual([])
     expect(off).toContain("/overview")
-    expect(off).toContain("/groups")
+    expect(off).toContain("/categories")
     expect(menuItems(ACCOUNT)).toEqual([
       HEADER,
-      "Categories",
-      "Budgets",
       "Repeating entries",
       "Sign out",
     ])
@@ -742,7 +774,7 @@ describe("AppFrame", () => {
     expect(find<HTMLDialogElement>(sheet).open).toBe(false)
   })
 
-  it("draws All groups and New group in the phone's sheet as rows with an icon, like its other entries", async () => {
+  it("draws Activity, All groups and New group in the phone's sheet as rows with an icon, like its other entries", async () => {
     await mount(
       <AppFrame
         user={ada}
@@ -752,7 +784,7 @@ describe("AppFrame", () => {
         page
       </AppFrame>,
     )
-    for (const row of ["group-sheet-all", "group-sheet-new"]) {
+    for (const row of ["group-sheet-activity", "group-sheet-all", "group-sheet-new"]) {
       const link = find(`[data-e2e=${row}]`)
       expect({
         row,
@@ -776,7 +808,13 @@ describe("AppFrame", () => {
       </AppFrame>,
     )
     for (
-      const row of ["group-sheet-g-1", "group-sheet-g-2", "group-sheet-all", "group-sheet-new"]
+      const row of [
+        "group-sheet-g-1",
+        "group-sheet-g-2",
+        "group-sheet-activity",
+        "group-sheet-all",
+        "group-sheet-new",
+      ]
     ) {
       expect({ row, tall: find(`[data-e2e=${row}]`).classList.contains("min-h-11") })
         .toEqual({ row, tall: true })

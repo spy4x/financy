@@ -8,7 +8,7 @@ import { navItems } from "./frame.tsx"
 const ENGLISH = createTranslator({ language: `en`, catalogs: [{ source: app }] })
 
 it("marks Accounts with the bank icon and leaves the wallet to the brand", () => {
-  const items = navItems(`group-1`, ENGLISH)
+  const items = navItems(ENGLISH)
   expect(items.find((item) => item.key === `accounts`)?.Icon).toBe(IconBank)
   expect(items.some((item) => item.Icon === IconWallet)).toBe(false)
 })

@@ -2467,7 +2467,7 @@ export default {
   },
   "BudgetWidgets.none": "Keine Budgets für {month}.",
   "BudgetWidgets.setLink": "Budget festlegen",
-  "BudgetWidgets.link": "Budgets für {month} ansehen",
+  "BudgetWidgets.link": "Limits ändern oder andere Monate ansehen",
   "AccountWidgets.title": "Wie viel haben wir?",
   "AccountWidgets.loading": "Kontostände werden geladen…",
   "AccountWidgets.error": "Die Kontostände konnten nicht geladen werden.",

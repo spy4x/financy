@@ -133,6 +133,12 @@ export function onboardingSteps(
 /** The link of the side navigation that opens `href`; hidden on a phone, where a step is a sheet. */
 const railLink = (href: string) => `[data-e2e="rail-shell-rail"] a[href="${href}"]`
 
+/**
+ * The group switcher's button in the rail's top zone, whose menu opens all groups and a new one;
+ * hidden on a phone, where a step is a sheet.
+ */
+const groupSwitcher = `[data-e2e="rail-shell-top"] [data-e2e="group-picker"]`
+
 /** A control of the rail's bottom zone: the Notifications cell or the account trigger. */
 const railBottom = (selector: string) => `[data-e2e="rail-shell-bottom"] ${selector}`
 
@@ -151,7 +157,7 @@ export function tourSteps(t: Translator<string>, notes = true): TourStep[] {
     },
     {
       id: "groups",
-      target: railLink(SCREEN_PATHS.groups),
+      target: groupSwitcher,
       title: t.t(`OnboardingCard.tourGroupsTitle`),
       body: t.t(notes ? `OnboardingCard.tourGroupsText` : `OnboardingCard.tourGroupsTextPlain`),
       placement: "right",

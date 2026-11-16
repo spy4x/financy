@@ -2067,7 +2067,7 @@ export default {
   },
   "BudgetWidgets.none": "{month}没有预算。",
   "BudgetWidgets.setLink": "设置预算",
-  "BudgetWidgets.link": "查看{month}的预算",
+  "BudgetWidgets.link": "修改限额或查看其他月份",
   "AccountWidgets.title": "我们有多少钱？",
   "AccountWidgets.loading": "正在加载余额…",
   "AccountWidgets.error": "无法加载余额。",

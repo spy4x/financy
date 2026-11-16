@@ -68,26 +68,30 @@ screens were redesigned against these rules in October 2026.
     centred in the rest of the window. The rail's top is the group switcher: a 40 px tile with the
     current group's mark or initial in a `RailCell`, with the rail's own tooltip (the group and the
     person's role) and focus ring, opening a short menu of checked items (`DropdownItem checked`)
-    ending with "All groups" and "New group". The bottom zone is the connection while it is not
-    live, "Notifications" with its unread count, and the account: the avatar opening the library's
-    `AccountMenu` (the name and address, which open the profile, then Keyboard shortcuts and Sign
-    out; the theme is chosen on the profile). The admin's menu keeps the theme. The skip link
+    ending with the selected group's "Activity", "All groups" and "New group". The bottom zone is
+    the connection while it is not live, "Notifications" with its unread count, and the account:
+    the avatar opening the library's `AccountMenu` (the name and address, which open the profile,
+    then Repeating entries, Tags, Notes, Keyboard shortcuts and Sign out; the theme is chosen on
+    the profile). The admin's menu keeps the theme. The skip link
     jumps past the rail into `<main>`. The admin's rail has no switcher: its top holds only Search
     (Ctrl K), where the product's sits under the switcher, and its middle starts with Dashboard;
     a neutral "Admin" badge under the operator's avatar says where the operator is, and its tables
     use the wide column.
 12. **The rail's middle holds the daily destinations:** Overview, Transactions, Accounts,
-    Activity, Groups. The phone bar shows the first four and keeps its last slot for Account; the
-    rest move to its sheet. Overview opens the selected group's overview. Transactions is the
-    household's list, and `t` opens a new transaction from any page. Activity is the selected
-    group's log and is left out when there is no selected group or the person may not read its
-    log. The profile opens from the account menu's name and address only. Categories, Tags and
-    Notes live in the account menu, on their `g` keys and in the search palette; Tags also in
-    Notes' "More actions". Tags and Notes are left out when the product turns the notes off
-    (`SPA_NOTES=false`).
+    Categories. The phone bar shows all four and keeps its last slot for Account, so nothing
+    spills into its sheet. Overview opens the selected group's overview. Transactions is the
+    household's list, and `t` opens a new transaction from any page. The groups list and the
+    selected group's Activity open from the group switcher, in the rail and in the phone's sheet;
+    Activity is left out when there is no selected group or the person may not read its log.
+    Budgets opens from the Overview's Budgets card ("Change limits or see other months"), `g b`
+    and the search palette. The profile opens from the account menu's name and address only.
+    Repeating entries, Tags and Notes live in the account menu, on their `g` keys and in the
+    search palette; Tags also in Notes' "More actions". Tags and Notes are left out when the
+    product turns the notes off (`SPA_NOTES=false`).
     Below `md` the rail becomes a tab bar; its last tab is "Account" ("Admin" in the admin), the
-    avatar with the unread count, opening a sheet with the groups, the destinations that did not
-    fit, Notifications and the account, every row at least 44 px tall. Because the switcher is in
+    avatar with the unread count, opening a sheet with Search, the groups, any destinations that
+    did not fit (only the admin has more than four), Notifications and the account, every row at
+    least 44 px tall. Because the switcher is in
     that sheet, a group-scoped page names its group as the `PageHeader` subtitle.
 
 ## Spacing rhythm

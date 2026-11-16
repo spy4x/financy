@@ -1,7 +1,7 @@
 import { expect, test } from "./fixtures/stack.ts"
 import { gotoApp, signIn } from "./fixtures/app.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
-import { createGroup } from "./fixtures/groups.ts"
+import { createGroup, openGroups } from "./fixtures/groups.ts"
 import { signUpWithCode } from "./fixtures/sign-up.ts"
 
 const apiBase = "http://app.localhost"
@@ -41,9 +41,7 @@ test.describe("groups over the socket", () => {
 
       await signIn(page, email, password)
 
-      const nav = page.getByRole("navigation", { name: "Main navigation" })
-      await nav.getByRole("link", { name: "Groups" }).click()
-      await expect(page.getByRole("heading", { level: 1, name: "Groups" })).toBeVisible()
+      await openGroups(page)
       await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 
       // The signed-up user starts with a personal group.

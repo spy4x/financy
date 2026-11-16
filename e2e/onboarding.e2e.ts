@@ -1,6 +1,7 @@
 import { type APIRequestContext, type Page } from "@playwright/test"
 import { expect, test } from "./fixtures/stack.ts"
 import { gotoApp, openNotesFromMenu, signIn } from "./fixtures/app.ts"
+import { openGroups } from "./fixtures/groups.ts"
 import { freePlanAllowsNothing, signUpInPage } from "./fixtures/sign-up.ts"
 
 const apiBase = "http://app.localhost"
@@ -37,7 +38,6 @@ async function signUpInBrowser(page: Page, email: string): Promise<void> {
   await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 }
 
-const nav = (page: Page) => page.getByRole("navigation", { name: "Main navigation" })
 const card = (page: Page) => page.locator("[data-e2e=onboarding]")
 /** A step of the checklist, by its title; its text starts with "Done: " or "To do: ". */
 const step = (page: Page, title: string) =>
@@ -51,8 +51,7 @@ const notesHeading = (page: Page) =>
  * the card mounts again and reads the steps again.
  */
 async function openHome(page: Page): Promise<void> {
-  await nav(page).getByRole("link", { name: "Groups" }).click()
-  await expect(page.getByRole("heading", { level: 1, name: "Groups", exact: true })).toBeVisible()
+  await openGroups(page)
   await openNotesFromMenu(page)
   await expect(notesHeading(page)).toBeVisible()
 }

@@ -1,7 +1,7 @@
 import { expect, test } from "./fixtures/stack.ts"
 import { gotoApp, signIn } from "./fixtures/app.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
-import { createGroup, groupLink, openGroup, openGroupTab } from "./fixtures/groups.ts"
+import { createGroup, groupLink, openGroup, openGroups, openGroupTab } from "./fixtures/groups.ts"
 import { signUpWithCode } from "./fixtures/sign-up.ts"
 
 const apiBase = "http://app.localhost"
@@ -28,9 +28,7 @@ test.describe("group list and settings pages", () => {
       await signIn(page, email, password)
       await expect(page.locator("[data-e2e=shell-ws-status]")).toHaveText("Online")
 
-      await page.getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link", { name: "Groups" }).click()
-      await expect(page.getByRole("heading", { level: 1, name: "Groups" })).toBeVisible()
+      await openGroups(page)
       await expect(page.locator("[data-e2e=group-item-name]")).toHaveCount(1)
 
       await createGroup(page, "Trip")
