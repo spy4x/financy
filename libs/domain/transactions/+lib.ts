@@ -1,6 +1,6 @@
 import { type Type, type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
-import type { ImportKindLimits } from "@domain/imports"
+import { IMPORT_FILE_MAX_BYTES, type ImportKindLimits } from "@domain/imports"
 import type { Actor } from "@domain/identity"
 import {
   canMutateNotes,
@@ -56,6 +56,19 @@ export const BANK_STATEMENT_IMPORT_KIND: ImportKindLimits = {
   accept: [`.csv`, `.ofx`, `.qfx`, `.qif`, `.xml`, `.sta`, `.mt940`, `.txt`],
   maxBytes: 5 * 1024 * 1024,
   maxRows: 5_000,
+}
+
+/**
+ * The app history import kind's limits: Firefly III's transactions CSV, YNAB's export (the zip or
+ * its register CSV) and Actual Budget's export zip, at most the generic 5 MiB and 20,000 rows. A
+ * check reviews only the first 5,000 (`IMPORT_REVIEW_ROWS_MAX`); a save reviews every row. The
+ * server's kind is `libs/server/transactions/history-import.ts`.
+ */
+export const APP_HISTORY_IMPORT_KIND: ImportKindLimits = {
+  id: `app-history`,
+  accept: [`.csv`, `.zip`],
+  maxBytes: IMPORT_FILE_MAX_BYTES,
+  maxRows: 20_000,
 }
 
 /** The longest period the ledger reads at once, in days: a year, a leap year included. */
@@ -538,7 +551,49 @@ export class TransactionLedgerQuery implements Query<TransactionLedgerPayload, {
   __resultType?: { ledger: Ledger }
   constructor(public data: TransactionLedgerPayload) {}
 }
+
+export interface TransactionLatestPayload {
+  actor: Actor
+  groupId: string
+  kind: TransactionKind
+}
+
+/**
+ * The actor's own newest live entry of `kind` in the household, or `null`: what a new entry's
+ * defaults follow ({@link entryDefaults}). Every member reads it; a stranger is told the household
+ * does not exist.
+ */
+export class TransactionLatestQuery
+  implements Query<TransactionLatestPayload, { transaction: Transaction | null }> {
+  __resultType?: { transaction: Transaction | null }
+  constructor(public data: TransactionLatestPayload) {}
+}
 // #endregion Commands and queries
+
+// #region Defaults
+/** An account as {@link entryDefaults} weighs it; `archivedAt` is `null` while it is open. */
+export interface DefaultableAccount {
+  id: string
+  isDefault: boolean
+  archivedAt: unknown
+}
+
+/**
+ * Which account a new entry starts in (R19): the person's last entry's, while that account is
+ * still open; else the default account, else the first open one, else none. `last` is returned
+ * only when it decided the account, so the caller copies its other fields (its category) only
+ * then.
+ */
+export function entryDefaults<E extends { accountId: string }, A extends DefaultableAccount>(
+  last: E | null,
+  accounts: readonly A[],
+): { last: E; account: A } | { last: null; account: A | null } {
+  const open = accounts.filter((account) => account.archivedAt === null)
+  const followed = last && open.find((account) => account.id === last.accountId)
+  if (last && followed) return { last, account: followed }
+  return { last: null, account: open.find((account) => account.isDefault) ?? open[0] ?? null }
+}
+// #endregion Defaults
 
 // #region Ledger
 /**
@@ -976,6 +1031,8 @@ export interface TransactionRepository {
   timeZoneOf(groupId: string): Promise<string | null>
   /** The date of the household's oldest live entry, or `null` when it has none. */
   firstDate(groupId: string): Promise<string | null>
+  /** `userId`'s newest live entry of `kind` in the household, or `null`. */
+  latest(groupId: string, userId: number, kind: TransactionKind): Promise<Transaction | null>
   /**
    * Throws `ID_ALREADY_EXISTS` when the id holds a different entry, the refusals of
    * {@link assertEntryReferences} and {@link deriveAmounts}, and a `PlanError` when the plan's

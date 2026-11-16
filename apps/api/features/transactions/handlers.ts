@@ -10,6 +10,7 @@ import {
   TransactionError,
   type TransactionFields,
   TransactionGetQuery,
+  TransactionLatestQuery,
   TransactionLedgerQuery,
   TransactionListDeletedQuery,
   type TransactionRepository,
@@ -181,6 +182,18 @@ export function createTransactionListDeletedHandler(
     assertCanReadTransactions(await groups.roleOf(data.groupId, data.actor.userId))
     return {
       transactions: await transactions.listDeleted(data.groupId, TRANSACTION_DELETED_LIST_MAX),
+    }
+  }
+}
+
+/** The actor's own newest entry of a kind in the household, for a new entry's defaults. */
+export function createTransactionLatestHandler(
+  { transactions, groups }: TransactionHandlerDependencies,
+): QueryHandler<TransactionLatestQuery> {
+  return async ({ data }) => {
+    assertCanReadTransactions(await groups.roleOf(data.groupId, data.actor.userId))
+    return {
+      transaction: await transactions.latest(data.groupId, data.actor.userId, data.kind),
     }
   }
 }
