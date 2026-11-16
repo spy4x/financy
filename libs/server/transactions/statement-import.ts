@@ -365,11 +365,11 @@ function balanceProblem(failures: readonly BalanceFailure[]): string {
 }
 
 /** Text from a statement on one line: line breaks and runs of spaces become one space. */
-function oneLine(text: string): string {
+export function oneLine(text: string): string {
   return text.replace(/\s+/g, ` `).trim()
 }
 
-function isCalendarDate(text: string): boolean {
+export function isCalendarDate(text: string): boolean {
   try {
     parseIsoDate(text)
     return true
@@ -492,7 +492,7 @@ function keyOf(value: StatementValue): string {
 }
 
 /** How many of each key are left to match. */
-class Counter {
+export class Counter {
   private readonly counts = new Map<string, number>()
 
   add(key: string): void {
