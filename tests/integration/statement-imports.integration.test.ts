@@ -791,11 +791,9 @@ Deno.test("statement transfers: an accepted proposal saves one transfer out of t
 
     const read = await proposed(sql, h, TO_SAVINGS)
     expect(read.transfers).toEqual([other, null])
-    // A transfer row has no category: its choice, even one that names nothing, is ignored and
-    // teaches the payee memory nothing.
+    // A transfer row has no category: its choice, even one that names nothing, is ignored.
     const done = await confirm(sql, h, read.id, { "1": { category: uuidV7() } })
     expect(done).toMatchObject({ status: ImportStatus.COMMITTED, savedCount: 2 })
-    expect(await memory(sql, h.groupId)).toEqual([])
     expect(await transfers(sql, h.groupId)).toEqual([
       {
         from: h.bank,
@@ -841,13 +839,14 @@ Deno.test("statement transfers: an accepted proposal saves one transfer out of t
   })
 })
 
-Deno.test("statement transfers: an accepted proposal for money in saves a transfer into the account, dated when the other account sent it", async () => {
+Deno.test("statement transfers: an accepted proposal for money in saves a transfer into the account, dated when the other account sent it, and teaches no payee memory", async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
     const other = await typed(sql, h, h.savings, -10_000, `2026-01-09`)
     const read = await proposed(sql, h, statement([[`2026-01-12`, `From savings`, 10_000]]))
     expect(read.transfers).toEqual([other])
-    await confirm(sql, h, read.id)
+    await confirm(sql, h, read.id, { "1": { category: h.salary } })
+    expect(await memory(sql, h.groupId)).toEqual([])
     expect(await transfers(sql, h.groupId)).toMatchObject([
       { from: h.savings, to: h.bank, sent: 10_000, received: 10_000, date: `2026-01-09` },
     ])
