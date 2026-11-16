@@ -1,12 +1,19 @@
 import { type Type, type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
 import type { Actor } from "@domain/identity"
-import { canMutateNotes, canRead, type GroupRole } from "@domain/groups"
+import {
+  canMutateNotes,
+  canRead,
+  type GroupImportIssue,
+  type GroupRole,
+  plainEntryProblem,
+} from "@domain/groups"
 import {
   assertEntryReferences,
   calendarDate,
   entryFields,
   type EntryReferences,
+  messageOfReference,
   parseTransactionRequest,
   TransactionError,
   type TransactionKind,
@@ -24,7 +31,7 @@ import {
   RruleWeekday,
 } from "@spy4x/time/rrule"
 import { addDays } from "@spy4x/time/tz"
-import type { FieldErrors } from "@spy4x/validation"
+import { type FieldErrors, fieldErrors } from "@spy4x/validation"
 
 /**
  * Repeating rules: an entry a household writes again on a schedule, such as rent on the 1st or a
@@ -800,3 +807,128 @@ export interface RecurringRuleRepository {
   skip(input: RecurringRuleSkipInput, actorId: number): Promise<RecurringRule>
 }
 // #endregion Ports
+
+// #region Export file
+const { "accountAmount?": accountAmountField, ...entryTemplateFields } = entryFields
+
+/**
+ * One live rule in a household's export file: the entry it makes and when, its account and
+ * category by their ids in the same file, and what the job keeps (`madeThrough`, so the import
+ * never makes again the entries the file's transactions already hold, and `pausedReason`). Never
+ * a person, a version or a deleted rule.
+ */
+export const recurringRuleExportEntrySchema = type({
+  ...idField,
+  ...entryTemplateFields,
+  accountAmount: type(accountAmountField).or(`null`),
+  memo: `string`,
+  rrule: ruleFields.rrule,
+  startDate: calendarDate,
+  endDate: calendarDate.or(`null`),
+  count: type(ruleFields[`count?`]).or(`null`),
+  skippedDates: calendarDate.array().atMostLength(RECURRING_SKIPPED_MAX),
+  madeThrough: calendarDate.or(`null`),
+  pausedReason: type
+    .enumerated(
+      RecurringPauseReason.AUTHOR_CANNOT_WRITE,
+      RecurringPauseReason.ACCOUNT_ARCHIVED,
+      RecurringPauseReason.CATEGORY_ARCHIVED,
+    )
+    .or(`null`),
+  createdAt: `string.date.iso.parse`,
+  updatedAt: `string.date.iso.parse`,
+  "+": `reject`,
+})
+export type RecurringRuleExportEntry = typeof recurringRuleExportEntrySchema.infer
+
+/** What a rule a person sets is checked with, for a file's rule: the create's fields, memo set. */
+const recurringRuleFileFieldsSchema = type({ ...ruleFields, memo: `string`, "+": `reject` })
+
+/** What a refusal calls each field of a rule in a file. */
+const RECURRING_RULE_EXPORT_LABELS = {
+  id: `id`,
+  accountId: `account`,
+  categoryId: `category`,
+  kind: `kind`,
+  amount: `amount`,
+  currency: `currency`,
+  accountAmount: `account amount`,
+  memo: `memo`,
+  rrule: `repeat`,
+  startDate: `start date`,
+  endDate: `end date`,
+  count: `count`,
+  skippedDates: `skipped dates`,
+  "skippedDates[]": `skipped date`,
+  madeThrough: `made-through date`,
+  pausedReason: `pause reason`,
+  createdAt: `creation date`,
+  updatedAt: `last change date`,
+}
+
+/**
+ * Checks one rule of a file with the rules of a create ({@link parseRecurringRuleRequest}): the
+ * memo's, an end date or a count but not both, an end on or after the start, and a repeat
+ * Financy makes, stored as `formatRrule` writes it. Its skipped dates come back in order, each
+ * once. Throws `RecurringRuleError` or `TransactionError`, both `INVALID_REQUEST`.
+ */
+export function parseRecurringRuleExportEntry(entry: unknown): RecurringRuleExportEntry {
+  const rule = recurringRuleExportEntrySchema(entry)
+  if (rule instanceof type.errors) {
+    throw new RecurringRuleError(
+      `INVALID_REQUEST`,
+      plainEntryProblem(rule, `repeating entry`, RECURRING_RULE_EXPORT_LABELS),
+      fieldErrors(rule),
+    )
+  }
+  const { accountAmount, endDate, count } = rule
+  const checked = parseRecurringRuleRequest(recurringRuleFileFieldsSchema, {
+    accountId: rule.accountId,
+    categoryId: rule.categoryId,
+    kind: rule.kind,
+    amount: rule.amount,
+    currency: rule.currency,
+    memo: rule.memo,
+    rrule: rule.rrule,
+    startDate: rule.startDate,
+    ...(accountAmount !== null && { accountAmount }),
+    ...(endDate !== null && { endDate }),
+    ...(count !== null && { count }),
+  })
+  return {
+    ...rule,
+    memo: checked.memo,
+    rrule: checked.rrule,
+    skippedDates: [...new Set(rule.skippedDates)].sort(),
+  }
+}
+
+/**
+ * The rules of a file whose account or category the file lacks, by index. Nothing else about what
+ * a rule names is checked: the app itself holds rules a create would refuse, such as an expense
+ * whose category switched to income while it had no entries, or a stated account amount in an
+ * account whose currency changed, so an import keeps them as the household had them.
+ */
+export function recurringRuleReferenceProblems(
+  rules: readonly Pick<RecurringRuleExportEntry, `accountId` | `categoryId`>[],
+  inFile: { account(fileId: string): boolean; category(fileId: string): boolean },
+): { index: number; problem: string; issue: GroupImportIssue }[] {
+  const problems: { index: number; problem: string; issue: GroupImportIssue }[] = []
+  rules.forEach((rule, index) => {
+    if (!inFile.account(rule.accountId)) {
+      problems.push({
+        index,
+        problem: messageOfReference(`ACCOUNT_NOT_FOUND`),
+        issue: { code: `notFound`, field: `accountId` },
+      })
+    } else if (!inFile.category(rule.categoryId)) {
+      problems.push({
+        index,
+        problem: messageOfReference(`CATEGORY_NOT_FOUND`),
+        issue: { code: `notFound`, field: `categoryId` },
+      })
+    }
+  })
+  return problems
+}
+// #endregion Export file

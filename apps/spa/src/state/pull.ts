@@ -23,6 +23,8 @@ export interface PullDependencies {
   recurring?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The open household's budgets: the month on screen, which a transaction or a limit moves. */
   budgets?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
+  /** The overview's widgets while the overview is open: every change in its group can move them. */
+  overview?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The members of the group whose settings are open. */
   members: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The import that is open, read again on its group's hint (`import.*` events ride on it). */
@@ -66,6 +68,7 @@ export function createPull(dependencies: PullDependencies) {
     transfers,
     recurring,
     budgets,
+    overview,
     members,
     imports,
     notifications,
@@ -96,6 +99,7 @@ export function createPull(dependencies: PullDependencies) {
     const transfersGroup = transfers?.groupId.value ?? null
     const recurringGroup = recurring?.groupId.value ?? null
     const budgetsGroup = budgets?.groupId.value ?? null
+    const overviewGroup = overview?.groupId.value ?? null
     const importsGroup = imports?.groupId.value ?? null
     // A group hint is not about the inbox or the preferences; a start-up or a reconnect may have
     // missed one.
@@ -115,6 +119,7 @@ export function createPull(dependencies: PullDependencies) {
       due(transfersGroup) ? transfers?.refresh() : undefined,
       due(recurringGroup) ? recurring?.refresh() : undefined,
       due(budgetsGroup) ? budgets?.refresh() : undefined,
+      due(overviewGroup) ? overview?.refresh() : undefined,
       due(membersGroup) ? members.refresh() : undefined,
       due(importsGroup) ? imports?.refresh() : undefined,
     ])
@@ -150,6 +155,7 @@ export function createChangeCheck(dependencies: ChangeCheckDependencies) {
     transfers,
     recurring,
     budgets,
+    overview,
     members,
     imports,
   } = dependencies
@@ -163,6 +169,7 @@ export function createChangeCheck(dependencies: ChangeCheckDependencies) {
     ...(transfers ? [["transfers", transfers] as const] : []),
     ...(recurring ? [["recurring", recurring] as const] : []),
     ...(budgets ? [["budgets", budgets] as const] : []),
+    ...(overview ? [["overview", overview] as const] : []),
     ["members", members],
     ...(imports ? [["imports", imports] as const] : []),
   ] as const

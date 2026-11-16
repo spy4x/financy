@@ -2,7 +2,15 @@
 import { expect } from "@std/expect"
 import { BANK_STATEMENT_IMPORT_KIND } from "@domain/transactions"
 import { checkRows } from "@server/imports/import-kind.ts"
-import { statementImportKind, type StatementOptions } from "./statement-import.ts"
+import {
+  type Counterpart,
+  counterpartFits,
+  statementImportKind,
+  type StatementOptions,
+  type StatementValue,
+  takeNearest,
+  transferSides,
+} from "./statement-import.ts"
 
 const encode = (text: string) => new TextEncoder().encode(text)
 
@@ -159,4 +167,67 @@ Deno.test("statement check: payee and memo join on one line, the payee is kept o
 Deno.test("statement check: a memo past 500 characters is cut, not refused", () => {
   const { values } = check([[`2026-01-02`, `-1.00`, `EUR`, `P`.repeat(400), `M`.repeat(400), ``]])
   expect((values[0] as { memo: string }).memo.length).toBe(500)
+})
+
+const SAVINGS = `00000000-0000-7000-8000-000000000009`
+const ROW: StatementValue = {
+  date: `2026-01-10`,
+  amount: -250_00,
+  memo: `To savings`,
+  reference: null,
+  payee: ``,
+}
+const OTHER: Counterpart = {
+  id: `00000000-0000-7000-8000-00000000000a`,
+  account: SAVINGS,
+  date: `2026-01-11`,
+  amount: 250_00,
+  currency: `EUR`,
+  open: true,
+}
+
+Deno.test("statement transfer: the kind offers a transfer choice per row", () => {
+  expect(statementImportKind.fields.find((field) => field.key === `transfer`)).toEqual({
+    key: `transfer`,
+    label: `Transfer`,
+    choice: true,
+  })
+})
+
+Deno.test("statement transfer: the nearest item within three days is taken out, the first of equally near ones", () => {
+  const items = [{ day: 6, id: `a` }, { day: 14, id: `b` }, { day: 12, id: `c` }, {
+    day: 8,
+    id: `d`,
+  }]
+  expect(takeNearest(items, 10)?.id).toBe(`c`)
+  expect(takeNearest(items, 10)?.id).toBe(`d`)
+  expect(takeNearest(items, 10)?.id).toBe(undefined)
+  expect(items.map((item) => item.id)).toEqual([`a`, `b`])
+  expect(takeNearest(items, 3)?.id).toBe(`a`)
+  expect(takeNearest(undefined, 3)).toBe(undefined)
+})
+
+Deno.test("statement transfer: an entry fits a row only in another open account of the currency, with the opposite amount, within three days", () => {
+  expect(counterpartFits(ROW, OTHER, EUR)).toBe(true)
+  expect(counterpartFits(ROW, { ...OTHER, date: `2026-01-13` }, EUR)).toBe(true)
+  expect(counterpartFits(ROW, { ...OTHER, date: `2026-01-14` }, EUR)).toBe(false)
+  expect(counterpartFits(ROW, { ...OTHER, date: `2026-01-06` }, EUR)).toBe(false)
+  expect(counterpartFits(ROW, { ...OTHER, account: EUR.accountId }, EUR)).toBe(false)
+  expect(counterpartFits(ROW, { ...OTHER, open: false }, EUR)).toBe(false)
+  expect(counterpartFits(ROW, { ...OTHER, currency: `USD` }, EUR)).toBe(false)
+  expect(counterpartFits(ROW, { ...OTHER, amount: -250_00 }, EUR)).toBe(false)
+  expect(counterpartFits(ROW, { ...OTHER, amount: 250_01 }, EUR)).toBe(false)
+})
+
+Deno.test("statement transfer: money out goes from the import account on the row's date; money in reaches it on the other side's date", () => {
+  expect(transferSides(ROW, OTHER, EUR.accountId)).toEqual({
+    from: EUR.accountId,
+    to: SAVINGS,
+    date: `2026-01-10`,
+  })
+  expect(transferSides({ ...ROW, amount: 250_00 }, OTHER, EUR.accountId)).toEqual({
+    from: SAVINGS,
+    to: EUR.accountId,
+    date: `2026-01-11`,
+  })
 })

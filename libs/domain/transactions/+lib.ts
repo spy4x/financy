@@ -1177,7 +1177,7 @@ export function transactionReferenceProblems(
 }
 
 /** A file's words for a refusal of {@link assertEntryReferences}. */
-function messageOfReference(code: TransactionErrorCode): string {
+export function messageOfReference(code: TransactionErrorCode): string {
   if (code === `ACCOUNT_NOT_FOUND`) return `its account is not among the file's accounts`
   if (code === `CATEGORY_NOT_FOUND`) return `its category is not among the file's categories`
   return `an expense needs an expense category`

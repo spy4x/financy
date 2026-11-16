@@ -180,7 +180,8 @@ of `kind=notes` is refused, and a notes import made before the switch fails when
 ## The bank statement kind
 
 Financy's `bank-statement` kind (`libs/server/transactions/statement-import.ts`) turns a bank's
-export into entries of one account. `@spy4x/bank-statements` reads the file: CSV in a built-in bank
+export into entries of one account, and into transfers where a row is the other side of an entry
+in another of the household's accounts. `@spy4x/bank-statements` reads the file: CSV in a built-in bank
 layout, OFX or QFX, QIF, CAMT.053 and MT940, at most 5 MiB and 5,000 entries. The format comes
 from the bytes, never the file name.
 
@@ -201,13 +202,32 @@ from the bytes, never the file name.
   an entry without one (typed by hand, or brought back from an export), since another reference
   is another payment. Each stored entry matches one row, so two equal rows in one file are both
   saved the first time. A row is skipped as "Matches a transfer"
-  when a live transfer into or out of the account has its amount within 3 days.
+  when a live transfer into or out of the account has its amount within 3 days. A row left to
+  save is proposed as a transfer (its `transfer` suggestion is that entry's id) when another live
+  account of the household in the same currency has a live entry of the opposite amount within 3
+  days, such as the savings account's entry of money from this one, saved from that account's
+  statement or typed by hand. Each entry is proposed for one row, and each row takes the nearest
+  one still free. One query reads the candidates for the whole file: the household's live entries
+  in the file's dates plus 3 days on each side, with one of the file's amounts.
 - **Choices.** `category` per row; without one, a row takes the upload's expense or income
   category by its sign. An income may take an expense category, as a refund. Payee memory
-  (below) suggests a row's category.
-- **Save.** The entries carry the import's id in `transactions.import_batch_id`. A household with
-  no room left on its plan, a lapsed plan included, saves none and the import fails in words.
-- **Undo.** Moves exactly this batch's live entries to the deleted list, with their tombstones.
+  (below) suggests a row's category. `transfer` per row: the review's proposal is taken unless the
+  person chooses `""`, which saves the row as an entry. The save checks any entry a choice names
+  by the same rules as the proposal: an id that is no live entry of the household is "not found",
+  and one in the import's own account, in a deleted account or another currency, of another
+  amount, more than 3 days away, or named by two rows is refused. A refused choice fails the whole
+  save.
+- **Save.** The entries carry the import's id in `transactions.import_batch_id`. A row with a
+  transfer becomes one transfer instead, carrying the import's id in `transfers.import_batch_id`:
+  out of the account for money out, into it for money in, the same amount on both sides, the row's
+  memo, dated on the sending side. Its category choice is ignored and it teaches no payee memory.
+  The other entry goes to the deleted list as its own delete does, with its tombstone, and
+  `transactions.replaced_by_import_id` names the import. The plan counts live entries and
+  transfers together, so the pair counts once. A household with no room left on its plan, a lapsed
+  plan included, saves none and the import fails in words.
+- **Undo.** Moves exactly this batch's live entries and transfers to the deleted list, with their
+  tombstones, and brings back every entry the batch replaced, stamped with the undo's change so
+  devices put it back. An entry purged since, or saved by an import undone since, stays gone.
 
 ## The app history kind
 

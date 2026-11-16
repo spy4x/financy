@@ -583,4 +583,76 @@ test.describe("group overview", () => {
       expect.soft(response.status(), await response.text()).toBe(200)
     }
   })
+
+  test("an entry added elsewhere moves the income card without a reload", async ({ page, request }) => {
+    test.setTimeout(120_000)
+    const email = `e2e-overview-live-${uuidV7().slice(-8)}@example.com`
+    try {
+      const signUp = await signUpWithCode(request, `${appBase}/api/auth/password/sign-up`, {
+        headers,
+        data: { email, password },
+      })
+      expect(signUp.ok(), await signUp.text()).toBe(true)
+      await signIn(page, email, password)
+      const me = await (await page.request.get(`${appBase}/api/auth/me`)).json()
+      /** Runs one operation as the signed-in person over HTTP, as another device would. */
+      const call = async (name: string, data: unknown) => {
+        const response = await page.request.post(`${appBase}/api/call/${name}`, {
+          headers: { ...headers, "x-realtime-user": String(me.id), "idempotency-key": uuidV7() },
+          data,
+        })
+        expect(response.ok(), `${name}: ${await response.text()}`).toBe(true)
+      }
+      const home = uuidV7()
+      const created = await page.request.post(`${appBase}/api/groups`, {
+        headers,
+        data: { id: home, name: `Home` },
+      })
+      expect(created.status(), await created.text()).toBe(201)
+      await payForGroup(page.request, appBase, home)
+      const accountId = uuidV7()
+      const salary = uuidV7()
+      await call(`account.create`, {
+        groupId: home,
+        id: accountId,
+        name: `Wallet`,
+        kind: 1,
+        currency: `EUR`,
+        startingBalance: 0,
+      })
+      await call(`category.create`, {
+        groupId: home,
+        id: salary,
+        name: `Salary`,
+        kind: 2,
+        icon: `shopping-cart`,
+        color: `#16a34a`,
+        parentId: null,
+      })
+      const entry = (amount: number) =>
+        call(`transaction.create`, {
+          groupId: home,
+          id: uuidV7(),
+          accountId,
+          categoryId: salary,
+          kind: 2,
+          amount,
+          currency: `EUR`,
+          memo: `Salary`,
+        })
+      await entry(300_000)
+
+      await page.goto(`/overview/${home}`)
+      const income = page.locator(`[data-e2e="overview-widget-money.income"]`)
+      await expect(income).toContainText(`€3,000.00`)
+      await entry(100_000)
+
+      await expect(income).toContainText(`€4,000.00`)
+    } finally {
+      const response = await request.post(`${appBase}/api/test/cleanup-user`, {
+        data: { login: email },
+      })
+      expect.soft(response.status(), await response.text()).toBe(200)
+    }
+  })
 })

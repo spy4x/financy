@@ -384,6 +384,7 @@ async function counts(sql: postgres.Sql) {
       transfers: number
       budgetRows: number
       payees: number
+      rules: number
     }[]
   >`
     SELECT
@@ -393,6 +394,7 @@ async function counts(sql: postgres.Sql) {
       (SELECT count(*)::int FROM budgets) + (SELECT count(*)::int FROM budget_methods) +
         (SELECT count(*)::int FROM budget_moves) AS budget_rows,
       (SELECT count(*)::int FROM payee_memory) AS payees,
+      (SELECT count(*)::int FROM recurring_rules) AS rules,
       (SELECT count(*)::int FROM accounts) AS accounts,
       (SELECT count(*)::int FROM notes) AS notes,
       (SELECT count(*)::int FROM tags) AS tags,
@@ -1314,6 +1316,249 @@ Deno.test("an import refuses repeated budget months, budgets and envelope moves 
         { code: "notFound", field: "toCategoryId" },
       ],
     ])
+  })
+})
+
+/**
+ * Repeating rules in `source`'s household: rent made through November with a skipped date and a
+ * stated account amount, a paused yearly bonus with a count on the archived account, an expense
+ * whose category switched to income while it had no entries (which the app allows), and one in
+ * the trash, which stays behind.
+ */
+async function seedRules(sql: postgres.Sql, source: Awaited<ReturnType<typeof seed>>) {
+  const { groupId, owner } = source
+  const [main, tripCash] = source.accountIds
+  const [food, , bonus] = source.categoryIds
+  const rule = (
+    refs: { accountId: string; categoryId: string },
+    fields: {
+      kind: number
+      amount: number
+      accountAmount: number | null
+      currency: string
+      memo: string
+      rrule: string
+      startDate: string
+      endDate: string | null
+      count: number | null
+      skippedDates: string
+      madeThrough: string | null
+      pausedReason: number | null
+    },
+    deleted = false,
+  ) =>
+    sql`
+      INSERT INTO recurring_rules (id, group_id, account_id, category_id, kind, amount,
+        account_amount, currency, memo, rrule, start_date, end_date, count, skipped_dates,
+        made_through, paused_reason, version, change_sequence, created_by_user_id,
+        updated_by_user_id, deleted_at)
+      VALUES (${uuidV7()}, ${groupId}, ${refs.accountId}, ${refs.categoryId}, ${fields.kind},
+        ${fields.amount}, ${fields.accountAmount}, ${fields.currency}, ${fields.memo},
+        ${fields.rrule}, ${fields.startDate}, ${fields.endDate}, ${fields.count},
+        ${fields.skippedDates}::date[], ${fields.madeThrough}, ${fields.pausedReason}, 4, 1,
+        ${owner}, ${owner}, ${deleted ? new Date() : null})
+    `
+  const rent = {
+    kind: 1,
+    amount: 120000,
+    accountAmount: 130000,
+    currency: "EUR",
+    memo: "Rent",
+    rrule: "FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1",
+    startDate: "2026-10-01",
+    endDate: "2027-09-30",
+    count: null,
+    skippedDates: "{2026-12-01}",
+    madeThrough: "2026-11-01",
+    pausedReason: null,
+  }
+  await rule({ accountId: main, categoryId: food }, rent)
+  await rule({ accountId: tripCash, categoryId: bonus }, {
+    kind: 2,
+    amount: 500,
+    accountAmount: null,
+    currency: "JPY",
+    memo: "Bonus",
+    rrule: "FREQ=YEARLY;INTERVAL=1",
+    startDate: "2026-06-15",
+    endDate: null,
+    count: 3,
+    skippedDates: "{}",
+    madeThrough: "2026-06-15",
+    pausedReason: 2,
+  })
+  await rule({ accountId: main, categoryId: bonus }, {
+    ...rent,
+    currency: "USD",
+    accountAmount: 999,
+    memo: "Switched",
+    rrule: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO",
+    endDate: null,
+    skippedDates: "{}",
+    madeThrough: null,
+  })
+  await rule({ accountId: main, categoryId: food }, { ...rent, memo: "Binned" }, true)
+}
+
+/** A household's live rules, with their account and category by name, as two can be compared. */
+async function ruleContents(sql: postgres.Sql, groupId: string) {
+  return [
+    ...await sql`
+      SELECT a.name AS account, c.name AS category, r.kind, r.amount::text AS amount,
+        r.account_amount::text AS account_amount, r.currency, r.memo, r.rrule,
+        to_char(r.start_date, 'YYYY-MM-DD') AS start_date,
+        to_char(r.end_date, 'YYYY-MM-DD') AS end_date, r.count,
+        ARRAY(SELECT to_char(d, 'YYYY-MM-DD') FROM unnest(r.skipped_dates) AS d ORDER BY d)
+          AS skipped_dates,
+        to_char(r.made_through, 'YYYY-MM-DD') AS made_through, r.paused_reason, r.created_at,
+        r.updated_at
+      FROM recurring_rules r
+      JOIN accounts a ON a.id = r.account_id AND a.group_id = r.group_id
+      JOIN categories c ON c.id = r.category_id AND c.group_id = r.group_id
+      WHERE r.group_id = ${groupId} AND r.deleted_at IS NULL ORDER BY r.memo
+    `,
+  ]
+}
+
+Deno.test("an export imported by another person gives the same repeating entries under new ids, naming the copy's accounts and categories, made through the same day and paused as they were; a deleted one stays behind", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    await seedRules(sql, source)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    expect(file.aggregates.recurringRules.map((rule) => rule.memo)).toEqual([
+      "Rent",
+      "Bonus",
+      "Switched",
+    ])
+
+    const importer = await insertUser(sql)
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file, name: null },
+      importer,
+      NO_CAP,
+    )
+    const copy = result.group.id
+    expect(result.parts.find((part) => part.kind === "recurringRules")).toMatchObject({
+      count: 3,
+      one: "repeating entry",
+      other: "repeating entries",
+    })
+    const rules = await ruleContents(sql, copy)
+    expect(rules.map(({ memo, account, category, madeThrough, pausedReason, skippedDates }) => ({
+      memo,
+      account,
+      category,
+      madeThrough,
+      pausedReason,
+      skippedDates,
+    }))).toEqual([
+      {
+        memo: "Bonus",
+        account: "Trip cash",
+        category: "Bonus",
+        madeThrough: "2026-06-15",
+        pausedReason: 2,
+        skippedDates: [],
+      },
+      {
+        memo: "Rent",
+        account: "Main",
+        category: "Food",
+        madeThrough: "2026-11-01",
+        pausedReason: null,
+        skippedDates: ["2026-12-01"],
+      },
+      {
+        memo: "Switched",
+        account: "Main",
+        category: "Bonus",
+        madeThrough: null,
+        pausedReason: null,
+        skippedDates: [],
+      },
+    ])
+    expect(rules).toEqual(await ruleContents(sql, source.groupId))
+
+    const written = await sql<
+      { id: string; version: number; createdByUserId: number; updatedByUserId: number }[]
+    >`
+      SELECT id, version, created_by_user_id, updated_by_user_id FROM recurring_rules
+      WHERE group_id = ${copy}
+    `
+    const fileIds = file.aggregates.recurringRules.map((rule) => rule.id)
+    expect(written).toHaveLength(3)
+    for (const row of written) {
+      expect(fileIds).not.toContain(row.id)
+      expect(row).toMatchObject({
+        version: 1,
+        createdByUserId: importer,
+        updatedByUserId: importer,
+      })
+    }
+  })
+})
+
+Deno.test("an import refuses repeating entries that name an account or a category the file lacks, or more than the plan allows, and writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    await seedRules(sql, source)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    const importer = await insertUser(sql)
+    const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+    const before = await counts(sql)
+    const [rent] = file.aggregates.recurringRules
+    const refusedWith = async (recurringRules: unknown[]) => {
+      const refused = await porter.importGroup(
+        { file: { ...file, aggregates: { ...file.aggregates, recurringRules } }, name: null },
+        importer,
+        NO_CAP,
+      ).then(() => null, (error) => error)
+      expect(refused).toBeInstanceOf(GroupImportError)
+      expect(await counts(sql)).toEqual(before)
+      return (refused as GroupImportError).problems.map((problem) =>
+        problem.kind === "invalid" && [problem.where, problem.place, problem.issue]
+      )
+    }
+    expect(
+      await refusedWith([
+        rent,
+        { ...rent, id: uuidV7(), accountId: uuidV7() },
+        { ...rent, id: uuidV7(), categoryId: uuidV7() },
+      ]),
+    ).toEqual([
+      [
+        "Repeating entry 2",
+        { part: "recurringRules", index: 2 },
+        { code: "notFound", field: "accountId" },
+      ],
+      [
+        "Repeating entry 3",
+        { part: "recurringRules", index: 3 },
+        { code: "notFound", field: "categoryId" },
+      ],
+    ])
+    // A rule the database would refuse is refused by the file's check first.
+    const [count] = await refusedWith([{ ...rent, endDate: "2027-01-01", count: 3 }])
+    expect(count && count.slice(0, 2)).toEqual([
+      "Repeating entry 1",
+      { part: "recurringRules", index: 1 },
+    ])
+
+    await expect(
+      porter.importGroup({ file, name: null }, importer, {
+        maxNotes: null,
+        maxRecurringRules: 2,
+      }),
+    ).rejects.toMatchObject({
+      code: "PLAN_LIMIT_REACHED",
+      entitlement: "maxRecurringRules",
+      limit: 2,
+    })
+    expect(await counts(sql)).toEqual(before)
   })
 })
 
