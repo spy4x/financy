@@ -426,9 +426,9 @@ describe("the ledger summary", () => {
       spending: 105000,
       net: 195000,
       categories: [
-        { categoryId: rent, spending: 100000 },
-        { categoryId: food, spending: 5000 },
-        { categoryId: groceries, spending: 4000 },
+        { categoryId: rent, spending: 100000, converted: false },
+        { categoryId: food, spending: 5000, converted: false },
+        { categoryId: groceries, spending: 4000, converted: false },
       ],
       leftOut: [],
       incomeLeftOut: [],
@@ -455,8 +455,27 @@ describe("the ledger summary", () => {
     expect(ledger.spending).toBe(2500)
     expect(ledger.net).toBe(-2500)
     expect(ledger.categories).toEqual([
-      { categoryId: food, spending: 2500 },
-      { categoryId: groceries, spending: 2500 },
+      { categoryId: food, spending: 2500, converted: false },
+      { categoryId: groceries, spending: 2500, converted: false },
+    ])
+  })
+
+  it("marks a category converted when any of its rows needed a rate, a parent through its child's", async () => {
+    const ledger = await summarizeLedger(
+      [
+        { categoryId: groceries, currency: "USD", date: "2026-11-02", amount: -1000 },
+        { categoryId: food, currency: "EUR", date: "2026-11-02", amount: -500 },
+        { categoryId: rent, currency: "EUR", date: "2026-11-03", amount: -100000 },
+      ],
+      categories,
+      period,
+      lookupFrom({ "USD:EUR:2026-11-02": "0.9" }),
+    )
+
+    expect(ledger.categories).toEqual([
+      { categoryId: rent, spending: 100000, converted: false },
+      { categoryId: food, spending: 1400, converted: true },
+      { categoryId: groceries, spending: 900, converted: true },
     ])
   })
 

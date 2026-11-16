@@ -441,8 +441,8 @@ Deno.test("entries against Postgres", async (t) => {
 
         expect(ledger.spending).toBe(3000)
         expect(ledger.categories).toEqual([
-          { categoryId: h.food, spending: 3000 },
-          { categoryId: groceries, spending: 2000 },
+          { categoryId: h.food, spending: 3000, converted: false },
+          { categoryId: groceries, spending: 2000, converted: false },
         ])
       },
     )

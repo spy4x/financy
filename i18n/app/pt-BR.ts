@@ -2445,6 +2445,24 @@ export default {
   "MoneyWidgets.netLink": "Ver todos os lançamentos deste período",
   "MoneyWidgets.incomeLink": "Ver lançamentos de receita",
   "MoneyWidgets.spendingLink": "Ver lançamentos de despesa",
+  "MoneyWidgets.categoriesTitle": "Para onde foi o dinheiro?",
+  "MoneyWidgets.categoriesLoading": "Carregando para onde foi o dinheiro…",
+  "MoneyWidgets.categoriesError": "Não foi possível carregar para onde foi o dinheiro.",
+  "MoneyWidgets.categoriesTop":
+    "A maior parte foi para {category}: {share} das despesas nas suas categorias.",
+  "MoneyWidgets.categoriesTopAbout":
+    "A maior parte foi para {category}: cerca de {share} das despesas nas suas categorias.",
+  "MoneyWidgets.categoriesTopCounted":
+    "Das despesas que conseguimos contar, a maior parte foi para {category}.",
+  "MoneyWidgets.categoriesShareTiny": "menos de 1%",
+  "MoneyWidgets.categoriesColumnCategory": "Categoria",
+  "MoneyWidgets.categoriesColumnSpent": "Gasto",
+  "MoneyWidgets.categoriesColumnShare": "Parcela do total das categorias",
+  "MoneyWidgets.categoriesMore": {
+    "one": "E mais {count} categoria",
+    "many": "E mais {count} categorias",
+    "other": "E mais {count} categorias",
+  },
   "BudgetWidgets.title": "Orçamentos",
   "BudgetWidgets.loading": "Carregando os orçamentos…",
   "BudgetWidgets.error": "Não foi possível carregar os orçamentos.",

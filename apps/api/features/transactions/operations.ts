@@ -1,10 +1,13 @@
 import {
+  CATEGORY_WIDGET_OPERATION,
+  type CategoryWidgetResult,
   type Ledger,
   MONEY_WIDGET_OPERATION,
   type MoneyWidgetResult,
   parseTransactionRequest,
   parseTransactionWidgetRequest,
   type Transaction,
+  TransactionCategoryWidgetQuery,
   TransactionCreateCommand,
   transactionCreatePayloadSchema,
   TransactionDeleteCommand,
@@ -36,6 +39,8 @@ export interface TransactionOperationDependencies {
   ledger(query: TransactionLedgerQuery): Promise<{ ledger: Ledger }>
   /** The money widgets' query, which the overview asks once per widget. */
   widget(query: TransactionWidgetQuery): Promise<MoneyWidgetResult>
+  /** "Where did the money go?", the range's spending by category. */
+  categoryWidget(query: TransactionCategoryWidgetQuery): Promise<CategoryWidgetResult>
 }
 
 /**
@@ -109,6 +114,13 @@ export function createTransactionOperations(
       handle: async ({ actor, payload }) =>
         await dependencies.widget(
           new TransactionWidgetQuery({ actor, ...parseTransactionWidgetRequest(payload) }),
+        ),
+    },
+    [CATEGORY_WIDGET_OPERATION]: {
+      kind: "query",
+      handle: async ({ actor, payload }) =>
+        await dependencies.categoryWidget(
+          new TransactionCategoryWidgetQuery({ actor, ...parseTransactionWidgetRequest(payload) }),
         ),
     },
   }

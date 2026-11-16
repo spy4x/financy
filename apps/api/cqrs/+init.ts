@@ -189,6 +189,7 @@ import { categoryArchiveHandler } from "@api/cqrs/command-handlers/category-arch
 import { categoryListHandler } from "@api/cqrs/query-handlers/category-list.ts"
 import { categoryGetHandler } from "@api/cqrs/query-handlers/category-get.ts"
 import {
+  TransactionCategoryWidgetQuery,
   TransactionCreateCommand,
   TransactionDeleteCommand,
   TransactionGetQuery,
@@ -204,6 +205,7 @@ import { transactionDeleteHandler } from "@api/cqrs/command-handlers/transaction
 import { transactionRestoreHandler } from "@api/cqrs/command-handlers/transaction-restore.ts"
 import { transactionGetHandler } from "@api/cqrs/query-handlers/transaction-get.ts"
 import {
+  transactionCategoryWidgetHandler,
   transactionLedgerHandler,
   transactionWidgetHandler,
 } from "@api/cqrs/query-handlers/transaction-ledger.ts"
@@ -449,6 +451,7 @@ queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(TransactionGetQuery, transactionGetHandler)
 queryBus.register(TransactionLedgerQuery, transactionLedgerHandler)
 queryBus.register(TransactionWidgetQuery, transactionWidgetHandler)
+queryBus.register(TransactionCategoryWidgetQuery, transactionCategoryWidgetHandler)
 queryBus.register(TransactionListDeletedQuery, transactionListDeletedHandler)
 queryBus.register(TransferGetQuery, transferGetHandler)
 queryBus.register(TransferListDeletedQuery, transferListDeletedHandler)

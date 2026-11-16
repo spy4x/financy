@@ -242,7 +242,7 @@ export function MoneyBody(
 }
 
 /** A rate's calendar day as the overview writes days: with its year only when the range's differs. */
-function rateDay({ format, days, periods }: WidgetDrawContext, iso: string): string {
+export function rateDay({ format, days, periods }: WidgetDrawContext, iso: string): string {
   const at = `${iso}T00:00:00Z`
   const utc = days ?? format.utc()
   return iso.slice(0, 4) === periods.current.to.slice(0, 4) ? utc.dayMonth(at) : utc.date(at)
