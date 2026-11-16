@@ -285,7 +285,14 @@ Deno.test("a pull request that changes only the API runs no Lighthouse and still
 
 Deno.test("a pull request that changes the website, a published guide, the lockfile or ci-browser.yml runs Lighthouse", async () => {
   const ci = await browserWorkflow()
-  const files = [`apps/mpa/routes/index.tsx`, `docs/billing.md`, `deno.lock`, BROWSER]
+  // docs/financy/self-host.md is Financy's published self-host guide.
+  const files = [
+    `apps/mpa/routes/index.tsx`,
+    `docs/billing.md`,
+    `docs/financy/self-host.md`,
+    `deno.lock`,
+    BROWSER,
+  ]
   for (const file of files) {
     const steps = blockingSteps(ci, `deno task lighthouse`, `pull_request`, `main`, [file])
     expect({ file, steps }).toEqual({ file, steps: [`lighthouse`] })
