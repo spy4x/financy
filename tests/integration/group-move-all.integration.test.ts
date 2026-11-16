@@ -579,7 +579,7 @@ Deno.test("moving all of a group's data", async (t) => {
     )
 
     await t.step(
-      "the registered aggregates move every live account, and the target keeps its own default",
+      "the registered aggregates move every live account with its aliases, and the target keeps its own default",
       async () => {
         const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
         const { editor, from, to } = await seed(sql, [])
@@ -587,10 +587,16 @@ Deno.test("moving all of a group's data", async (t) => {
         const saved = await insertAccount(sql, from, "Savings", editor, { archived: true })
         const binned = await insertAccount(sql, from, "Binned", editor, { deleted: true })
         const theirs = await insertAccount(sql, to, "Theirs", editor, { isDefault: true })
+        await sql`UPDATE accounts SET aliases = ${sql.array([`Card`, `Наличка`])}::text[]
+          WHERE id = ${main}`
 
         const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
 
         expect(result).toMatchObject({ moved: 2, counts: { accounts: 2 } })
+        const [moved] = await sql<{ aliases: string[] }[]>`
+          SELECT aliases FROM accounts WHERE id = ${main} AND group_id = ${to}
+        `
+        expect(moved.aliases).toEqual([`Card`, `Наличка`])
         expect(await accountsOf(sql, from)).toEqual([
           { id: binned, name: "Binned", archived: false, isDefault: false, version: 1 },
         ])

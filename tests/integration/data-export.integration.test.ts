@@ -220,10 +220,12 @@ Deno.test("data export: leaves out other people's notes, tags and groups, even i
   })
 })
 
-Deno.test("data export: lists the finance accounts the person created, the kind as a word and the amount in the smallest unit", async () => {
+Deno.test("data export: lists the finance accounts the person created, the kind as a word, the amount in the smallest unit and the aliases as a list", async () => {
   await withSchema(async (sql) => {
     const { groupId, editor } = await team(sql)
     const id = await account(sql, groupId, editor, `Wallet`)
+    await sql`UPDATE accounts SET aliases = ${sql.array([`Purse`, `Наличка`])}::text[]
+      WHERE id = ${id}`
 
     const files = unzip(await buildDataExport(sql, editor, new Date()))
 
@@ -235,14 +237,17 @@ Deno.test("data export: lists the finance accounts the person created, the kind 
         kind: `liability`,
         currency: `BHD`,
         startingBalance: `-1234`,
+        aliases: [`Purse`, `Наличка`],
         isDefault: false,
         archivedAt: null,
         deletedAt: null,
       }),
     ])
     expect(files[`finance_accounts.csv`].split(`\r\n`)[0]).toBe(
-      `\uFEFFid,groupId,name,kind,currency,startingBalance,isDefault,archivedAt,createdAt,updatedAt,deletedAt`,
+      `\uFEFFid,groupId,name,kind,currency,startingBalance,aliases,isDefault,archivedAt,createdAt,updatedAt,deletedAt`,
     )
+    expect(files[`finance_accounts.csv`].split(`\r\n`)[1])
+      .toContain(`"[""Purse"",""Наличка""]"`)
   })
 })
 
