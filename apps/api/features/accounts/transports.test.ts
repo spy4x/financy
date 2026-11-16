@@ -6,6 +6,7 @@ import { CommandBus, QueryBus } from "@spy4x/platform/cqrs"
 import { FREE_PLAN_ID } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
 import {
+  ACCOUNT_ALIAS_MAX,
   ACCOUNT_MAX_PER_GROUP,
   AccountArchiveCommand,
   AccountCreateCommand,
@@ -687,17 +688,86 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
-    it("answers a retried create with the first account", async () => {
+    it("creates an account with no aliases when the payload has none, and with the cleaned ones when it has some", async () => {
       const s = stack()
       const as = open(s, OWNER)
 
-      await as.command("account.create", create)
-      const again = await as.command("account.create", create)
+      expect(await as.command("account.create", create)).toMatchObject({
+        kind: "server.result",
+        payload: { account: { id: accountId, aliases: [] } },
+      })
+      expect(
+        await as.command("account.create", {
+          ...create,
+          id: secondAccountId,
+          name: "Wallet",
+          aliases: [" Card", "card", "Наличка"],
+        }),
+      ).toMatchObject({
+        kind: "server.result",
+        payload: { account: { id: secondAccountId, aliases: ["Card", "Наличка"] } },
+      })
+      as.shutdown()
+    })
+
+    it("keeps the stored aliases on an update without them, and replaces them on one with them", async () => {
+      const s = stack()
+      await s.accounts.create({ ...input, aliases: ["Card", "Visa"] }, OWNER)
+      const as = open(s, OWNER)
+
+      expect(await as.command("account.update", { ...create, name: "Spending", version: 1 }))
+        .toMatchObject({
+          kind: "server.result",
+          payload: { account: { name: "Spending", aliases: ["Card", "Visa"], version: 2 } },
+        })
+      expect(await as.command("account.update", { ...create, aliases: [], version: 2 }))
+        .toMatchObject({ kind: "server.result", payload: { account: { aliases: [] } } })
+      expect(s.accounts.accounts.get(accountId)?.aliases).toEqual([])
+      as.shutdown()
+    })
+
+    it("refuses too many, too long or unsafe aliases as a bad request and stores nothing", async () => {
+      const s = stack()
+      const as = open(s, OWNER)
+
+      const answers = [
+        await as.command("account.create", {
+          ...create,
+          aliases: Array.from({ length: ACCOUNT_ALIAS_MAX + 1 }, () => "x".repeat(64)),
+        }),
+        await as.command("account.create", {
+          ...create,
+          aliases: Array.from({ length: ACCOUNT_ALIAS_MAX + 1 }, (_, n) => `Card ${n}`),
+        }),
+        await as.command("account.create", { ...create, aliases: ["x".repeat(61)] }),
+        await as.command("account.create", { ...create, aliases: ["a\u200bb"] }),
+        await as.command("account.create", { ...create, aliases: "Card" }),
+      ]
+
+      for (const answer of answers) {
+        expect(answer).toMatchObject({
+          kind: "server.error",
+          code: "bad_request",
+          details: { code: "INVALID_REQUEST" },
+        })
+      }
+      expect(s.accounts.accounts.size).toBe(0)
+      as.shutdown()
+    })
+
+    it("answers a retried create with the first account, and refuses the id with other aliases", async () => {
+      const s = stack()
+      const as = open(s, OWNER)
+
+      await as.command("account.create", { ...create, aliases: ["Card"] })
+      const again = await as.command("account.create", { ...create, aliases: ["Card"] })
 
       expect(again).toMatchObject({
         kind: "server.result",
         payload: { created: false, account: { id: accountId, version: 1 } },
       })
+      expect(await as.command("account.create", { ...create, aliases: ["Visa"] }))
+        .toMatchObject({ kind: "server.error", details: { code: "ID_ALREADY_EXISTS" } })
       expect(s.accounts.accounts.size).toBe(1)
       as.shutdown()
     })

@@ -42,6 +42,7 @@ function text(selector: string): string {
 const groupId = "019a0000-0000-7000-8000-000000000001"
 const overview: AdminAccountsOverview = {
   accounts: 3,
+  withAliases: 2,
   households: 1,
   byKind: [
     { kind: AccountKind.CASH, accounts: 1 },
@@ -57,6 +58,7 @@ describe("AdminAccountsScreen", () => {
     await mount(<AdminAccountsScreen overview={overview} error={null} onRetry={() => {}} />)
 
     expect(text("[data-e2e=admin-accounts-stats]")).toContain("3")
+    expect(text("[data-e2e=admin-accounts-stats]")).toContain("With aliases2")
     expect(text("[data-e2e=admin-accounts-kinds]")).toContain("Cash1")
     expect(text("[data-e2e=admin-accounts-kinds]")).toContain("Bank2")
     expect(text("[data-e2e=admin-accounts-kinds]")).toContain("Crypto1")

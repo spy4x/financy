@@ -1,6 +1,6 @@
 /**
  * The operator area's read over accounts: counts per kind, per currency and per household. No
- * account name and no amount leaves here (product.md §5). Reads no environment and imports no
+ * account name, alias or amount leaves here (product.md §5). Reads no environment and imports no
  * singleton.
  *
  * @module
@@ -17,8 +17,10 @@ import {
 /** Counts the live accounts, archived ones included, as {@link AdminAccountsOverview}. */
 export async function readAdminAccounts(sql: postgres.Sql): Promise<AdminAccountsOverview> {
   const [[totals], kinds, currencies, households] = await Promise.all([
-    sql<{ accounts: number; households: number }[]>`
-      SELECT COUNT(*)::int AS accounts, COUNT(DISTINCT group_id)::int AS households
+    sql<{ accounts: number; withAliases: number; households: number }[]>`
+      SELECT COUNT(*)::int AS accounts,
+        COUNT(*) FILTER (WHERE cardinality(aliases) > 0)::int AS with_aliases,
+        COUNT(DISTINCT group_id)::int AS households
       FROM accounts WHERE deleted_at IS NULL
     `,
     sql<{ kind: AccountKind; accounts: number }[]>`
@@ -42,6 +44,7 @@ export async function readAdminAccounts(sql: postgres.Sql): Promise<AdminAccount
   const byKind = new Map(kinds.map((row) => [row.kind, row.accounts]))
   return {
     accounts: totals.accounts,
+    withAliases: totals.withAliases,
     households: totals.households,
     byKind: ACCOUNT_KINDS.filter((kind) => byKind.has(kind))
       .map((kind) => ({ kind, accounts: byKind.get(kind)! })),

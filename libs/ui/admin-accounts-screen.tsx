@@ -38,7 +38,7 @@ export interface AdminAccountsScreenProps {
 
 /**
  * How households use accounts: how many there are, by kind and by currency, and the households
- * with the most. Counts and currency codes only: never an account's name or an amount.
+ * with the most. Counts and currency codes only: never an account's name, alias or amount.
  */
 export function AdminAccountsScreen(props: AdminAccountsScreenProps): JSX.Element {
   const t = useAdminText()
@@ -91,6 +91,12 @@ function Body(
             label={t.t(`AdminAccounts.accounts`)}
             value={NUMBER.format(overview.accounts)}
             tone="accent"
+          />
+          <Kpi
+            label={t.t(`AdminAccounts.withAliases`)}
+            value={NUMBER.format(overview.withAliases)}
+            sub={t.t(`AdminAccounts.withAliasesHint`)}
+            tone="neutral"
           />
           <Kpi
             label={t.t(`AdminAccounts.households`)}

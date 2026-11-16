@@ -19,6 +19,7 @@ const passThrough: MiddlewareHandler<APIContext> = async (_c, next) => await nex
 
 const overview: AdminAccountsOverview = {
   accounts: 3,
+  withAliases: 1,
   households: 1,
   byKind: [{ kind: AccountKind.BANK, accounts: 3 }],
   byCurrency: [{ currency: "EUR", accounts: 2 }, { currency: "VND", accounts: 1 }],

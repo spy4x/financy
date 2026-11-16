@@ -2600,4 +2600,6 @@ export default {
   "AdminBudgets.methodLimits": "Месячные лимиты",
   "AdminBudgets.methodEnvelopes": "Конверты",
   "AdminBudgets.householdLastChange": "Последнее изменение {date}",
+  "AdminAccounts.withAliases": "С другими названиями",
+  "AdminAccounts.withAliasesHint": "Хотя бы с одним другим названием",
 } satisfies Catalog

@@ -223,6 +223,16 @@ describe(`accountRecords`, () => {
       { id: `old`, label: `Old card`, detail: `Archived`, href: `/accounts/old` },
     ])
   })
+
+  it(`passes an account's aliases for search to match, and none for an account without any`, () => {
+    const rows = accountRecords([
+      account({ aliases: [`Card`, `Наличка`] }),
+      account({ id: `bank`, name: `Bank`, aliases: [] }),
+      account({ id: `old`, name: `Old card` }),
+    ], TEXT)
+
+    expect(rows.map((row) => row.aliases)).toEqual([[`Card`, `Наличка`], undefined, undefined])
+  })
 })
 
 describe(`categoryRecords`, () => {

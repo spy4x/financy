@@ -3040,4 +3040,12 @@ export default {
   "TransferToasts.deleted": "{what}: excluída.",
   "TransferToasts.restoredTitle": "Transferência restaurada",
   "TransferToasts.restored": "{what}: de volta à lista.",
+  "AccountEditor.aliases": "Outros nomes",
+  "AccountEditor.aliasesHint":
+    "Outros jeitos de chamar a conta, como o nome de um banco. A busca também encontra a conta por essas palavras.",
+  "AccountEditor.aliasesPlaceholder": "Digite uma palavra e pressione Enter",
+  "AccountEditor.aliasRemove": "Remover {alias}",
+  "AccountEditor.aliasAdded": "{alias} adicionado",
+  "AccountEditor.aliasRemoved": "{alias} removido",
+  "AccountEditor.aliasDuplicate": "{alias} já está na lista",
 } satisfies Catalog

@@ -4,9 +4,11 @@ import { GroupRole } from "@domain/groups"
 import type { CoinPrice } from "@domain/money"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
+  ACCOUNT_ALIAS_MAX,
   ACCOUNT_MAX_PER_GROUP,
   ACCOUNT_NAME_MAX_LENGTH,
   accountCreatePayloadSchema,
+  AccountError,
   accountExportProblems,
   AccountKind,
   accountUpdatePayloadSchema,
@@ -28,6 +30,15 @@ const base = {
   kind: AccountKind.BANK,
   currency: "USD",
   startingBalance: 1234,
+}
+const codeOf = (write: () => unknown) => {
+  try {
+    write()
+  } catch (error) {
+    if (error instanceof AccountError) return { code: error.code, fields: error.fields }
+    throw error
+  }
+  throw new Error("expected a refusal")
 }
 
 describe("parsing an account request", () => {
@@ -113,6 +124,84 @@ describe("parsing an account request", () => {
     expect(() => parseAccountRequest(accountUpdatePayloadSchema, base)).toThrow("version")
   })
 
+  it("leaves aliases out of a create or an update that has none, so a queued older command keeps them", () => {
+    expect("aliases" in parseAccountRequest(accountCreatePayloadSchema, base)).toBe(false)
+    expect(
+      "aliases" in parseAccountRequest(accountUpdatePayloadSchema, { ...base, version: 3 }),
+    ).toBe(false)
+  })
+
+  it("trims each alias, drops blank ones and keeps the first of two that fold alike", () => {
+    const parsed = parseAccountRequest(accountUpdatePayloadSchema, {
+      ...base,
+      version: 3,
+      aliases: ["  Card ", "", "   ", "Наличка", "card", "НАЛИЧКА", "Épargne", "epargne"],
+    })
+
+    expect(parsed.aliases).toEqual(["Card", "Наличка", "Épargne"])
+  })
+
+  it("takes an alias up to the longest name in characters and refuses a longer one", () => {
+    const alias = "💳".repeat(ACCOUNT_NAME_MAX_LENGTH)
+
+    expect(parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases: [alias] }).aliases)
+      .toEqual([alias])
+    expect(
+      codeOf(() =>
+        parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases: [alias + "💳"] })
+      ),
+    ).toEqual({
+      code: "INVALID_REQUEST",
+      fields: { aliases: { code: "maxLength", values: { rule: ACCOUNT_NAME_MAX_LENGTH } } },
+    })
+  })
+
+  it("refuses an alias with a control or an invisible character", () => {
+    for (const alias of ["a\u0000b", "a\nb", "a\u200bb", "a\u202eb"]) {
+      expect(
+        codeOf(() =>
+          parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases: ["ok", alias] })
+        ),
+      ).toEqual({ code: "INVALID_REQUEST", fields: { aliases: { code: "unsafeCharacters" } } })
+    }
+  })
+
+  it("takes the most aliases and refuses one more by the count alone", () => {
+    const most = Array.from({ length: ACCOUNT_ALIAS_MAX }, (_, i) => `alias ${i}`)
+
+    expect(parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases: most }).aliases)
+      .toEqual(most)
+    // Not one of the 10 000 items is a string: the count refuses the list before any is read.
+    const huge = Array.from({ length: 10_000 }, () => 1)
+    for (const aliases of [[...most, "x".repeat(64)], huge]) {
+      expect(codeOf(() => parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases })))
+        .toEqual({
+          code: "INVALID_REQUEST",
+          fields: { aliases: { code: "maxItems", values: { rule: ACCOUNT_ALIAS_MAX } } },
+        })
+    }
+  })
+
+  it("takes only a list of text as aliases", () => {
+    for (const aliases of ["Card", [1], [null], null]) {
+      expect(
+        codeOf(() => parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases })).code,
+      ).toBe("INVALID_REQUEST")
+    }
+  })
+
+  it("names an account, not a category, in an alias refusal's message", () => {
+    expect(() =>
+      parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases: ["a\u0000b"] })
+    ).toThrow("Account aliases must not contain control or invisible characters")
+    expect(() =>
+      parseAccountRequest(accountCreatePayloadSchema, {
+        ...base,
+        aliases: Array.from({ length: ACCOUNT_ALIAS_MAX + 1 }, () => "a"),
+      })
+    ).toThrow("An account can have at most 20 aliases")
+  })
+
   it("refuses a field the payload does not have, such as a balance", () => {
     expect(() => parseAccountRequest(accountCreatePayloadSchema, { ...base, balance: 1 }))
       .toThrow()
@@ -173,6 +262,19 @@ describe("an account in an export file", () => {
     expect(parseAccountExportEntry(entry).currency).toBe("VND")
     expect(() => parseAccountExportEntry({ ...entry, balance: 5 })).toThrow("does not have")
     expect(() => parseAccountExportEntry({ ...entry, currency: "vnd" })).toThrow()
+  })
+
+  it("reads an older entry without aliases, and cleans and counts the aliases of a newer one", () => {
+    expect(parseAccountExportEntry(entry).aliases).toBeUndefined()
+    expect(parseAccountExportEntry({ ...entry, aliases: [" Card", "card", ""] }).aliases)
+      .toEqual(["Card"])
+    expect(() => parseAccountExportEntry({ ...entry, aliases: [1] })).toThrow("alias")
+    expect(() =>
+      parseAccountExportEntry({
+        ...entry,
+        aliases: Array.from({ length: ACCOUNT_ALIAS_MAX + 1 }, () => 1),
+      })
+    ).toThrow(`at most ${ACCOUNT_ALIAS_MAX} aliases`)
   })
 
   it("reads a crypto account in BTC, and refuses a coin on a cash account or a crypto one in VND", () => {

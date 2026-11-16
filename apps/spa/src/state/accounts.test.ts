@@ -114,6 +114,7 @@ describe("accounts store", () => {
       kind: AccountKind.CASH,
       currency: "JPY",
       startingBalance: 500,
+      aliases: [],
     })
 
     const created = await store.save()
@@ -127,10 +128,61 @@ describe("accounts store", () => {
         kind: AccountKind.CASH,
         currency: "JPY",
         startingBalance: 500,
+        aliases: [],
       },
     }])
     expect(created?.balance).toBe(500)
     expect(store.byId.value.get("new-1")?.currency).toBe("JPY")
+  })
+
+  it("starts a new account with no aliases and sends the ones the person added", async () => {
+    const { store, calls } = harness()
+    await store.open(groupId)
+    store.startCreate()
+    expect(store.form.value?.aliases).toEqual([])
+    store.change({ ...store.form.value!, name: "Wallet", currency: "EUR", aliases: ["Card"] })
+    await store.save()
+    expect(calls[0].input).toMatchObject({ name: "Wallet", aliases: ["Card"] })
+  })
+
+  it("counts a change of aliases as unsaved, and sends the stored ones with an edit of another field", async () => {
+    const { store, calls } = harness()
+    await store.open(groupId)
+    store.accounts.value = [item("a", { name: "Cash", aliases: ["Наличка"] })]
+    store.startEdit("a")
+    expect(store.unsaved.value).toBe(false)
+    store.change({ ...store.form.value!, aliases: ["Наличка", "Wallet"] })
+    expect(store.unsaved.value).toBe(true)
+    store.revert()
+    expect(store.form.value?.aliases).toEqual(["Наличка"])
+    store.change({ ...store.form.value!, name: "Pocket" })
+    await store.save()
+    expect(calls[0].input).toMatchObject({ name: "Pocket", aliases: ["Наличка"] })
+  })
+
+  it("reads an account from an older device copy, which has no aliases, as having none", async () => {
+    const { store } = harness()
+    await store.open(groupId)
+    store.startEdit("a")
+    expect(store.form.value?.aliases).toEqual([])
+    expect(store.unsaved.value).toBe(false)
+  })
+
+  it("puts the server's alias refusal under the aliases field, not the form", async () => {
+    const { store } = harness({
+      create: () =>
+        Promise.reject(
+          Object.assign(new RealtimeRequestError("bad_request", "Refused", {}), {
+            fields: { aliases: { code: "maxItems", values: { rule: 20 } } },
+          }),
+        ),
+    })
+    await store.open(groupId)
+    store.startCreate()
+    store.change({ ...store.form.value!, name: "Wallet", currency: "EUR", aliases: ["Card"] })
+    expect(await store.save()).toBe(null)
+    expect(store.formErrors.value.aliases).toBeTruthy()
+    expect(store.formErrors.value.form).toBe(null)
   })
 
   it("makes one account when Save is pressed again after the first answer was lost", async () => {
@@ -148,7 +200,13 @@ describe("accounts store", () => {
     })
     await store.open(groupId)
     store.startCreate()
-    store.change({ name: "Wallet", kind: AccountKind.CASH, currency: "USD", startingBalance: 0 })
+    store.change({
+      name: "Wallet",
+      kind: AccountKind.CASH,
+      currency: "USD",
+      startingBalance: 0,
+      aliases: [],
+    })
 
     expect(await store.save()).toBeNull()
     await store.save()
@@ -195,7 +253,13 @@ describe("accounts store", () => {
     const { store } = harness({ create: () => Promise.reject(refused("ACCOUNT_LIMIT_REACHED")) })
     await store.open(groupId)
     store.startCreate()
-    store.change({ name: "One more", kind: AccountKind.BANK, currency: "EUR", startingBalance: 0 })
+    store.change({
+      name: "One more",
+      kind: AccountKind.BANK,
+      currency: "EUR",
+      startingBalance: 0,
+      aliases: [],
+    })
 
     await store.save()
 
@@ -239,7 +303,13 @@ describe("accounts store", () => {
     const { store } = harness({ create: () => Promise.reject(planRefused()) })
     await store.open(groupId)
     store.startCreate()
-    store.change({ name: "One more", kind: AccountKind.BANK, currency: "EUR", startingBalance: 0 })
+    store.change({
+      name: "One more",
+      kind: AccountKind.BANK,
+      currency: "EUR",
+      startingBalance: 0,
+      aliases: [],
+    })
 
     await store.save()
 

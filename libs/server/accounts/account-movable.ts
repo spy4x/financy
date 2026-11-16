@@ -5,9 +5,9 @@ import type { MovableAggregate, MoveAllContext } from "@server/groups/movable.ts
 
 /**
  * Moves every live account of the source household into the target, in the move's transaction,
- * and returns how many moved. Each keeps its id, its creator and its history; its version grows by
- * one and it is stamped with the target's change. Deleted accounts stay behind and go with the
- * source household.
+ * and returns how many moved. Each keeps its id, its aliases, its creator and its history; its
+ * version grows by one and it is stamped with the target's change. Deleted accounts stay behind and
+ * go with the source household.
  *
  * The target keeps its own default: when it has one, the moved accounts arrive without the flag.
  * The target's caps, Financy's own (`ACCOUNT_MAX_PER_GROUP`) and its plan's `maxAccounts`, are

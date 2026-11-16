@@ -2715,4 +2715,12 @@ export default {
   "TransferToasts.deleted": "{what}を削除しました。",
   "TransferToasts.restoredTitle": "振替を復元しました",
   "TransferToasts.restored": "{what}が一覧に戻りました。",
+  "AccountEditor.aliases": "別名",
+  "AccountEditor.aliasesHint":
+    "銀行名など、この口座を呼ぶときのほかの言葉です。検索ではこれらの言葉でも口座が見つかります。",
+  "AccountEditor.aliasesPlaceholder": "言葉を入力してEnterで追加",
+  "AccountEditor.aliasRemove": "{alias}を外す",
+  "AccountEditor.aliasAdded": "{alias}を追加しました",
+  "AccountEditor.aliasRemoved": "{alias}を外しました",
+  "AccountEditor.aliasDuplicate": "{alias}はすでに追加されています",
 } satisfies Catalog

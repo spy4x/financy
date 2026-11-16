@@ -10,6 +10,13 @@ AccountDelete.planEndingPeriod	a2f29dcef829c0cf
 AccountDelete.subscription	bc78a3973fc23003
 AccountDelete.summary	62f9ae87d6a24752
 AccountDelete.title	21d5294717e25f75
+AccountEditor.aliasAdded	5ce272ff55f41122
+AccountEditor.aliasDuplicate	c4612b3f2f3c2b03
+AccountEditor.aliasRemove	466b072ab9d0d813
+AccountEditor.aliasRemoved	7c9cac03039e4a99
+AccountEditor.aliases	4f8c470505d11f7d
+AccountEditor.aliasesHint	77f54f5803ee7d1a
+AccountEditor.aliasesPlaceholder	661c2a1c2eaca2dd
 AccountEditor.amountCleared	28f0370af318b029
 AccountEditor.amountDecimals	bce284f88d2c6006
 AccountEditor.amountInvalid	3a63124a1fa23f19

@@ -6,6 +6,7 @@ import { createAccountsState } from "./state.ts"
 
 const overview: AdminAccountsOverview = {
   accounts: 3,
+  withAliases: 1,
   households: 1,
   byKind: [],
   byCurrency: [],

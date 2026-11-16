@@ -50,7 +50,9 @@ export class MemoryAccountRepository implements AccountRepository {
     if (existing) {
       const same = existing.groupId === input.groupId && existing.name === input.name &&
         existing.kind === input.kind && existing.currency === input.currency &&
-        existing.startingBalance === input.startingBalance && existing.createdByUserId === actorId
+        existing.startingBalance === input.startingBalance &&
+        existing.aliases.join("\n") === (input.aliases ?? []).join("\n") &&
+        existing.createdByUserId === actorId
       if (same) return Promise.resolve({ account: existing, created: false })
       throw new AccountError("ID_ALREADY_EXISTS", "taken")
     }
@@ -62,6 +64,7 @@ export class MemoryAccountRepository implements AccountRepository {
       kind: input.kind,
       currency: input.currency,
       startingBalance: input.startingBalance,
+      aliases: input.aliases ?? [],
       archivedAt: null,
       isDefault: false,
       version: 1,
@@ -83,6 +86,7 @@ export class MemoryAccountRepository implements AccountRepository {
       kind: input.kind,
       currency: input.currency,
       startingBalance: input.startingBalance,
+      aliases: input.aliases ?? account.aliases,
     }))
   }
 
