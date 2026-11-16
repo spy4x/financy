@@ -5,7 +5,7 @@ import { matchRoute, useLocation, useRouter, useSearch } from "wouter-preact"
 import { useFormat } from "@spy4x/preact-ui/format"
 import { todayInTz } from "@spy4x/time/tz"
 import { canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
-import { pictureUrl, shownPictureId, UserMFAStatus } from "@domain/identity"
+import { UserMFAStatus } from "@domain/identity"
 import {
   NOTE_PATHS,
   profilePath,
@@ -15,8 +15,13 @@ import {
 } from "@ui/progressive.tsx"
 import { AppFrame, type ConnectionStatus, PublicFrame as PublicFrameScreen } from "@ui/frame.tsx"
 import { EmailBanner, showsEmailBanner } from "@ui/email-screen.tsx"
-import { type SearchChoice, SearchPalette } from "@ui/search-palette.tsx"
-import { paletteGroup } from "@ui/palette-commands.ts"
+import {
+  paletteContext,
+  type SearchChoice,
+  SearchPalette,
+  type SearchPaletteProps,
+} from "@ui/search-palette.tsx"
+import { paletteCommands, paletteGroup } from "@ui/palette-commands.ts"
 import { NewNoteDialog } from "@ui/new-note-dialog.tsx"
 import { emailStore } from "../state/email.ts"
 import { signOut } from "../state/auth.ts"
@@ -50,6 +55,7 @@ import {
 } from "../modules.ts"
 import { signOutRedirect } from "./sign-in-gate.ts"
 import { languageChoice } from "./language-choice.ts"
+import { shellUser } from "./shell-user.ts"
 import { UnsentSignOut } from "./UnsentSignOut.tsx"
 import { createSignOutCheck } from "./sign-out-check.ts"
 import { GUEST_PATHS, GuestBanner, GuestSignOutDialog } from "@ui/guest-screens.tsx"
@@ -261,6 +267,8 @@ export function AppShell(
   const notes = notesOn()
   const routed = spaRoutePaths(notes).some((path) => matchRoute(parser, path, location)[0])
   const t = useAppText()
+  // The palette's registry reads it for sizes in a detail; the shortcuts dialog lists its commands.
+  const { locale } = useFormat()
   const guest = isGuestSession(user)
   const { onSignOut, dialog } = useSignOut(guest)
   // Hidden on this browser once dismissed; the profile keeps its own entry to the same page.
@@ -295,7 +303,6 @@ export function AppShell(
     if (location.startsWith(`${NOTE_PATHS.list}/`)) navigate(NOTE_PATHS.list)
   }
   useEffect(() => paletteData.watch(), [])
-  const { locale } = useFormat()
   const today = todayInTz(groupTimeZone(current ?? {}))
   // Made again only when the words, the region format, the day or the notes switch change, so the
   // sources keep their mapped records between renders.
@@ -355,35 +362,38 @@ export function AppShell(
       exportFailed: () =>
         toasts.error({ body: t.t(`GroupEditor.exportFailed`), dataE2E: "palette-export-failed" }),
     })
+  const palette: SearchPaletteProps = {
+    searchNotes,
+    groups,
+    currentGroup: current ? paletteGroup(current) : null,
+    online: wsStatus === "open",
+    pageCommands: pageCommands(t, {
+      overview: Boolean(overviewPageActions.value),
+      benchmark: Boolean(benchmarkPageActions.value),
+      ...actionPages(notes),
+    }, rows),
+    onSelect: (choice) => void open(choice),
+    theme: themeStore.preference.value,
+    shortcuts: rows,
+    activityGroupId,
+    canInstall: install.mode.value === "prompt",
+    slashKey: singleKeys.on.value,
+    guest,
+    twoFactor: user.mfa === UserMFAStatus.CONFIGURED,
+    benchmark: benchmarkOpen(),
+    notes,
+    records,
+    files: filesOn(),
+  }
   return (
     <AppFrame
-      search={
-        <SearchPalette
-          searchNotes={searchNotes}
-          groups={groups}
-          currentGroup={current ? paletteGroup(current) : null}
-          online={wsStatus === "open"}
-          pageCommands={pageCommands(t, {
-            overview: Boolean(overviewPageActions.value),
-            benchmark: Boolean(benchmarkPageActions.value),
-            ...actionPages(notes),
-          }, rows)}
-          onSelect={(choice) => void open(choice)}
-          theme={themeStore.preference.value}
-          shortcuts={rows}
-          activityGroupId={activityGroupId}
-          canInstall={install.mode.value === "prompt"}
-          slashKey={singleKeys.on.value}
-          guest={guest}
-          twoFactor={user.mfa === UserMFAStatus.CONFIGURED}
-          benchmark={benchmarkOpen()}
-          notes={notes}
-          records={records}
-          files={filesOn()}
-        />
-      }
+      search={<SearchPalette {...palette} />}
       shortcuts={{
         rows,
+        // The palette's own registry, built only while the dialog shows it.
+        commands: shortcutsOpen.value
+          ? paletteCommands(paletteContext(t, locale, palette), palette.onSelect)
+          : undefined,
         open: shortcutsOpen.value,
         onOpen: () => shortcutsOpen.value = true,
         onClose: () => shortcutsOpen.value = false,
@@ -396,13 +406,7 @@ export function AppShell(
         selectedId: selectionStore.groupId.value,
         onSelect: switchGroup,
       }}
-      user={{
-        // With no name and no address the menu would read "User"; a guest is named for what it is.
-        firstName: guest && !user.firstName && !user.lastName ? "Guest" : user.firstName,
-        lastName: user.lastName,
-        email: emailStore.status.value?.email,
-        avatarUrl: pictureUrl(shownPictureId(user)),
-      }}
+      user={shellUser(user, guest, emailStore.status.value?.email)}
       // The profile's Account section offers the code itself; the banner would only repeat it
       // there, and `/profile` shows that section from `md` up. With nothing to show it is left
       // out, because the frame keeps a margin under any banner it gets.

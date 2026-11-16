@@ -425,7 +425,7 @@ export default {
   "FeaturePage.all": "Alle Funktionen",
   "FeaturePage.runtimeQuestion": "Läuft Seed auf Node oder Bun?",
   "FeaturePage.runtimeAnswer":
-    "Ja. Die API, der Hintergrund-Worker und die Website laufen auf Deno, Node oder Bun, gewählt mit einer Einstellung (APP_RUNTIME). Seeds eigene Tasks laufen auf Deno, das npm oder Bun dir mitinstalliert. Mehr dazu im Abschnitt zu den Laufzeiten auf der Funktionsseite.",
+    "Ja. Die API, der Hintergrund-Worker und die Website laufen auf Deno, Node oder Bun, gewählt mit einer Einstellung (APP_RUNTIME). Seeds eigene Tasks laufen auf Deno, das npm oder Bun dir mitinstalliert. Mehr dazu im Abschnitt zu den Runtimes auf der Funktionsseite.",
   "FeaturePageMissing.title": "Diese Funktionsseite gibt es hier nicht",
   "FeaturePageMissing.description":
     "Vielleicht ist sie umgezogen. Alle Funktionen findest du auf der Funktionsseite.",

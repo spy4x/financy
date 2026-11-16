@@ -318,7 +318,7 @@ describe("SearchPalette", () => {
             pageCommands={[{
               id: "overview-range",
               label: "Изменить период",
-              aliases: ["Change date range"],
+              englishWords: ["Change date range"],
             }]}
             onSelect={() => {}}
           />
