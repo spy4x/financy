@@ -166,6 +166,7 @@ import {
   AccountSetDefaultCommand,
   AccountTotalQuery,
   AccountUpdateCommand,
+  AccountWidgetQuery,
 } from "@domain/accounts"
 import { accountCreateHandler } from "@api/cqrs/command-handlers/account-create.ts"
 import { accountUpdateHandler } from "@api/cqrs/command-handlers/account-update.ts"
@@ -175,7 +176,10 @@ import { accountDeleteHandler } from "@api/cqrs/command-handlers/account-delete.
 import { accountRestoreHandler } from "@api/cqrs/command-handlers/account-restore.ts"
 import { accountListHandler } from "@api/cqrs/query-handlers/account-list.ts"
 import { accountGetHandler } from "@api/cqrs/query-handlers/account-get.ts"
-import { accountTotalHandler } from "@api/cqrs/query-handlers/account-total.ts"
+import {
+  accountTotalHandler,
+  accountWidgetHandler,
+} from "@api/cqrs/query-handlers/account-total.ts"
 import {
   CategoryArchiveCommand,
   CategoryCreateCommand,
@@ -446,6 +450,7 @@ queryBus.register(MyInvitationsQuery, createMyInvitationsHandler(invitationDepen
 queryBus.register(AccountListQuery, accountListHandler)
 queryBus.register(AccountGetQuery, accountGetHandler)
 queryBus.register(AccountTotalQuery, accountTotalHandler)
+queryBus.register(AccountWidgetQuery, accountWidgetHandler)
 queryBus.register(CategoryListQuery, categoryListHandler)
 queryBus.register(CategoryGetQuery, categoryGetHandler)
 queryBus.register(TransactionGetQuery, transactionGetHandler)

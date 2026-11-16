@@ -1,4 +1,5 @@
 import type { JSX } from "preact"
+import { isolate } from "@spy4x/preact-ui/bdi"
 import { Card } from "@spy4x/preact-ui/card"
 import { useFormat } from "@spy4x/preact-ui/format"
 import { Rich } from "@spy4x/preact-ui/i18n"
@@ -45,13 +46,16 @@ export function AccountsTotal({ total }: AccountsTotalProps): JSX.Element {
   )
 }
 
-/** The amount, the rate and coin price dates, and what was left out, in the region format. */
-function TotalText({ total }: { total: HouseholdTotal }): JSX.Element {
+/**
+ * The amount, the rate and coin price dates, and what was left out, in the region format. The
+ * overview's balances card draws it too, so the two never word the total differently.
+ */
+export function TotalText({ total }: { total: HouseholdTotal }): JSX.Element {
   const t = useAppText()
   const format = useFormat()
   const amount = total.amount === null
     ? null
-    : formatMoney(total.amount, total.currency, format.locale)
+    : isolate(formatMoney(total.amount, total.currency, format.locale))
   const leftOut = total.leftOut.reduce((sum, item) => sum + item.accounts, 0)
   const approximate = total.rateDate !== null || total.coinPriceDate !== null
   return (
