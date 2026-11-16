@@ -237,4 +237,62 @@ test.describe("budgets", () => {
       await cleanup(request, owner)
     }
   })
+
+  test("a subcategory's dialog says what its parent's limit leaves, and refuses a cent more under the field (R20)", async ({ page, request }) => {
+    const owner = "e2e_budgets_cap@example.com"
+    await cleanup(request, owner)
+    try {
+      await signUp(request, owner)
+      await signInOnline(page, owner)
+      const { groupId } = await household(page, request, "Capped")
+      const category = async (name: string, parentId: string | null) => {
+        const id = uuidV7()
+        await call(page, `category.create`, {
+          groupId,
+          id,
+          name,
+          kind: EXPENSE,
+          icon: "utensils",
+          color: "#c2410c",
+          parentId,
+        })
+        return id
+      }
+      const food = await category("Food", null)
+      const market = await category("Market", food)
+      const coffee = await category("Coffee", food)
+      const limit = (categoryId: string, amount: number) =>
+        call(page, `budget.set`, {
+          groupId,
+          categoryId,
+          month: monthFromNow(0),
+          amount,
+          currency: "EUR",
+          expectedVersion: null,
+        })
+      await limit(food, 30_000)
+      await limit(market, 20_000)
+
+      await openBudgets(page, "Capped")
+      await page.locator(`[data-e2e=budget-${coffee}]`).getByRole("button").click()
+      const dialog = page.locator("[data-e2e=budget-dialog]")
+      const field = dialog.getByLabel("Monthly limit")
+      await expect(dialog.locator("[data-e2e=budget-allowance]"))
+        .toHaveText(/^Up to €100\.00 left in ⁨?Food⁩?\.$/)
+      await field.fill("101")
+      await field.press("Enter")
+      await expect(dialog.locator("#budget-amount-error"))
+        .toHaveText(/^That's more than ⁨?Food⁩? has left\. Type up to €100\.00\.$/)
+      await expect(field).toHaveAttribute("aria-invalid", "true")
+      await expect(field).toBeFocused()
+
+      await field.fill("100")
+      await field.press("Enter")
+      await expect(dialog).toHaveCount(0)
+      await expect(page.locator(`[data-e2e=budget-${coffee}]`).getByRole("meter"))
+        .toContainText("€0.00 of €100.00")
+    } finally {
+      await cleanup(request, owner)
+    }
+  })
 })
