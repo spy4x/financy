@@ -89,6 +89,8 @@ export interface TransactionEditorScreenProps {
   /** The fields differ from the saved entry; an existing entry shows Save only then. */
   dirty: boolean
   onSave?: () => void
+  /** "Repeat this": the new repeating entry's page, prefilled from this entry. */
+  repeatHref?: string
   onDelete?: () => void
   /** A delete is in flight. */
   pending?: boolean
@@ -284,15 +286,24 @@ function Editor(props: Shown): JSX.Element {
     : t.t(`TransactionEditor.accountAmountHint`, { date: value.date })
 
   const showFooter = transaction === null || props.dirty
-  const menu = transaction && props.onDelete && (
-    <DropdownItem
-      onClick={props.onDelete}
-      disabled={props.pending}
-      danger
-      dataE2E="transaction-delete"
-    >
-      {t.t(`TransactionEditor.delete`)}
-    </DropdownItem>
+  const menu = transaction && (props.onDelete || props.repeatHref) && (
+    <>
+      {props.repeatHref && (
+        <DropdownItem href={props.repeatHref} navigate={navigate} dataE2E="transaction-repeat">
+          {t.t(`TransactionEditor.repeat`)}
+        </DropdownItem>
+      )}
+      {props.onDelete && (
+        <DropdownItem
+          onClick={props.onDelete}
+          disabled={props.pending}
+          danger
+          dataE2E="transaction-delete"
+        >
+          {t.t(`TransactionEditor.delete`)}
+        </DropdownItem>
+      )}
+    </>
   )
   const memoLength = value.memo.trim().length
   return (
