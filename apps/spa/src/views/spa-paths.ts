@@ -67,6 +67,10 @@ export const SPA_ROUTES = {
   "/categories/new": { open: false, title: "CategoryEditor.new" },
   "/categories/:categoryId": { open: false, title: "CategoryEditor.title" },
   "/budgets": { open: false, title: "Budgets.title" },
+  "/recurring": { open: false, title: "Recurring.title" },
+  // Before the rule's page, or "new" would be read as a rule's id.
+  "/recurring/new": { open: false, title: "RecurringEditor.new" },
+  "/recurring/:ruleId": { open: false, title: "RecurringEditor.title" },
   "/tags": { open: false, title: "Tags.title" },
   // Before the tag's page, or "new" would be read as a tag's id.
   "/tags/new": { open: false, title: "TagEditor.new" },

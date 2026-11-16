@@ -250,6 +250,7 @@ describe("SearchPalette", () => {
       "Accounts",
       "Categories",
       "Budgets",
+      "Repeating entries",
       "Notes",
       "Tags",
       "Groups",
@@ -673,6 +674,21 @@ describe("SearchPalette", () => {
       })
     }
     expect(picked).toEqual(Array(2).fill({ kind: "page", href: "/transfers/new" }))
+  })
+
+  it("finds Repeating entries by subscriptions, rent and регулярные", async () => {
+    const { picked } = await mount()
+    for (const query of ["subscriptions", "rent", "регулярные"]) {
+      await open()
+      await type(query)
+      const row = [...document.querySelectorAll("[role=option]")]
+        .find((candidate) => text(candidate).startsWith("Repeating entries"))
+      expect(row, query).toBeDefined()
+      await act(() => {
+        row!.dispatchEvent(new window.MouseEvent("click", { bubbles: true }) as unknown as Event)
+      })
+    }
+    expect(picked).toEqual(Array(3).fill({ kind: "page", href: "/recurring" }))
   })
 
   it("finds New category by subcategory and категория, Categories by категории, and Budgets by limits and бюджет", async () => {

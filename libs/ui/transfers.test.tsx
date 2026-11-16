@@ -273,15 +273,20 @@ describe("TransactionsScreen with transfers", () => {
     expect(text(rowOf(topUp.id)!.querySelector("[data-e2e=transfer-amount]"))).toBe("-€50.00")
   })
 
-  it("offers an editor New transfer in the list's menu, and a viewer no menu", async () => {
+  it("offers an editor New transfer in the list's menu, and a viewer only Repeating entries", async () => {
     await mount(<TransactionsScreen {...listDefaults} />)
     await click(document.querySelector("[data-e2e=transactions-menu]")!)
     const item = document.querySelector("[data-e2e=transfer-new]")!
     expect(text(item)).toBe("New transfer")
     expect(item.getAttribute("href")).toBe("/transfers/new")
+    const rules = document.querySelector("[data-e2e=transactions-recurring]")!
+    expect(text(rules)).toBe("Repeating entries")
+    expect(rules.getAttribute("href")).toBe("/recurring")
 
     await mount(<TransactionsScreen {...listDefaults} group={viewerOfHome} />)
-    expect(has("[data-e2e=transactions-menu]")).toBe(false)
+    await click(document.querySelector("[data-e2e=transactions-menu]")!)
+    expect(has("[data-e2e=transfer-new]")).toBe(false)
+    expect(has("[data-e2e=transactions-recurring]")).toBe(true)
   })
 
   it("says no transfer is in the dates under the Transfers filter, offering one to an editor only", async () => {

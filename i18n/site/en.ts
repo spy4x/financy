@@ -636,6 +636,18 @@ export default {
   "FeatureBudgets.fact3":
     "Setting a limit needs the Household plan; reading budgets and removing a limit never do, checked on the server",
   "FeatureBudgets.code": "Read the budgets domain",
+  "HomeStatus.recurring": "Repeating entries for rent, salary and subscriptions",
+  "FeatureRecurring.nav": "Repeating entries",
+  "FeatureRecurring.title": "Rent, salary and subscriptions that add themselves",
+  "FeatureRecurring.lead":
+    "Add a repeating entry once: daily, weekly on the days you pick, monthly or yearly, until a date or for a number of times. Financy adds each entry on its date, converted at that day's rate, and lists the next 30 days so you can skip one.",
+  "FeatureRecurring.fact1":
+    "A monthly entry falls on a day from 1 to 28 or on the last day of the month, so no month is left out",
+  "FeatureRecurring.fact2":
+    "An archived account or category pauses the rule and says why; the missed dates are added once it is fixed",
+  "FeatureRecurring.fact3":
+    "Adding a repeating entry needs the Household plan; reading them never does, checked on the server",
+  "FeatureRecurring.code": "Read the repeating entries domain",
   "FeatureTransactions.nav": "Transactions",
   "FeatureTransactions.title": "Every expense and income, in the currency you paid",
   "FeatureTransactions.lead":

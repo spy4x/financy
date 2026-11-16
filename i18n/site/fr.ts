@@ -670,6 +670,18 @@ export default {
   "FeatureBudgets.fact3":
     "Fixer un plafond demande le forfait Household ; lire les budgets et retirer un plafond, jamais, et le serveur le vérifie",
   "FeatureBudgets.code": "Lire le code source des budgets",
+  "HomeStatus.recurring": "Des opérations récurrentes pour le loyer, le salaire et les abonnements",
+  "FeatureRecurring.nav": "Opérations récurrentes",
+  "FeatureRecurring.title": "Loyer, salaire et abonnements qui s’ajoutent tout seuls",
+  "FeatureRecurring.lead":
+    "Ajoutez une opération récurrente une seule fois : chaque jour, chaque semaine les jours choisis, chaque mois ou chaque année, jusqu’à une date ou un nombre de fois. Financy ajoute chaque opération à sa date, convertie au taux de ce jour-là, et liste les 30 prochains jours pour que vous puissiez en sauter une.",
+  "FeatureRecurring.fact1":
+    "Une opération mensuelle tombe un jour du 1 au 28 ou le dernier jour du mois, pour qu’aucun mois ne manque",
+  "FeatureRecurring.fact2":
+    "Un compte ou une catégorie archivé met la règle en pause en disant pourquoi ; les dates manquées sont ajoutées une fois le problème réglé",
+  "FeatureRecurring.fact3":
+    "Ajouter une opération récurrente demande le forfait Household ; les lire, jamais, et le serveur le vérifie",
+  "FeatureRecurring.code": "Lire le code source des opérations récurrentes",
   "FeatureTransactions.nav": "Opérations",
   "FeatureTransactions.title": "Chaque dépense et chaque revenu, dans la devise payée",
   "FeatureTransactions.lead":
