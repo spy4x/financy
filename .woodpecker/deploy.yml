@@ -1,6 +1,7 @@
-# Deploys `main` to the server after every push that passes `ci.yml`. A copy of Seed's
-# `.woodpecker/deploy.yml.example`; docs/woodpecker-ci-setup.md in Seed, "Deploy on every push to
-# main", lists the four repository secrets it needs.
+# Deploys `main` to the server after every push that passes `ci.yml`. It waits for `ci` alone:
+# ci-browser.yml does not run on a push to `main`, so it is not named in `depends_on`. A copy of
+# Seed's `.woodpecker/deploy.yml.example`; docs/woodpecker-ci-setup.md in Seed, "Deploy on every
+# push to main", lists the four repository secrets it needs.
 #
 # On a push to `main`, `ci.yml` runs only `check`, `secrets` and the four image builds, so the
 # deploy waits only for those, minutes rather than the 40 the slow steps took. The slow steps run
