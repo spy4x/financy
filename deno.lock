@@ -14,7 +14,7 @@
     "jsr:@spy4x/billing@1.127.0": "1.127.0",
     "jsr:@spy4x/caldav@^1.128.0": "1.129.0",
     "jsr:@spy4x/email@1.127.0": "1.127.0",
-    "jsr:@spy4x/email@^1.127.0": "1.127.0",
+    "jsr:@spy4x/email@^1.127.0": "1.129.0",
     "jsr:@spy4x/email@^1.129.0": "1.129.0",
     "jsr:@spy4x/integrations@1.127.0": "1.127.0",
     "jsr:@spy4x/integrations@^1.127.0": "1.127.0",
@@ -25,6 +25,7 @@
     "jsr:@spy4x/platform@^1.126.0": "1.129.0",
     "jsr:@spy4x/platform@^1.127.0": "1.129.0",
     "jsr:@spy4x/platform@^1.128.0": "1.129.0",
+    "jsr:@spy4x/platform@^1.91.0": "1.129.0",
     "jsr:@spy4x/preact-charts@16.0.0": "16.0.0",
     "jsr:@spy4x/preact-cn@16": "16.0.0",
     "jsr:@spy4x/preact-icons@16": "16.0.0",
@@ -39,10 +40,11 @@
     "jsr:@spy4x/preact-ui@16": "16.0.0",
     "jsr:@spy4x/preact-ui@16.0.0": "16.0.0",
     "jsr:@spy4x/realtime@1.127.0": "1.127.0",
+    "jsr:@spy4x/realtime@1.91.0": "1.91.0",
     "jsr:@spy4x/search@1.127.0": "1.127.0",
     "jsr:@spy4x/search@^1.126.0": "1.127.0",
     "jsr:@spy4x/server@1.127.0": "1.127.0",
-    "jsr:@spy4x/time@1.127.0": "1.127.0",
+    "jsr:@spy4x/time@1.129.0": "1.129.0",
     "jsr:@spy4x/time@^1.126.0": "1.129.0",
     "jsr:@spy4x/time@^1.127.0": "1.129.0",
     "jsr:@spy4x/time@^1.128.0": "1.129.0",
@@ -388,6 +390,13 @@
         "npm:preact@^10.29.8"
       ]
     },
+    "@spy4x/realtime@1.91.0": {
+      "integrity": "e66453ecac43c011c8d7fae9611a263f2c59306dcda7eb952e6ffbe63bb5d5c4",
+      "dependencies": [
+        "jsr:@spy4x/platform@^1.91.0",
+        "npm:arktype"
+      ]
+    },
     "@spy4x/realtime@1.127.0": {
       "integrity": "3e0b913291d58b997be83b2502ebe9ac89d251a905cae6a4f0ec5d13041939dd",
       "dependencies": [
@@ -424,9 +433,6 @@
         "npm:arktype",
         "npm:postgres"
       ]
-    },
-    "@spy4x/time@1.127.0": {
-      "integrity": "35f2da5bfbadcf081a4dae0d0894a4364e655eefa9b35fd2597cfcb02e094c53"
     },
     "@spy4x/time@1.129.0": {
       "integrity": "1a689a5fbce6340a50cff754b20cd7687bfd6f8dd064f6240aaed40e94ffc862"
@@ -2509,7 +2515,7 @@
       "jsr:@spy4x/realtime@1.127.0",
       "jsr:@spy4x/search@1.127.0",
       "jsr:@spy4x/server@1.127.0",
-      "jsr:@spy4x/time@1.127.0",
+      "jsr:@spy4x/time@1.129.0",
       "jsr:@spy4x/validation@1.127.0",
       "jsr:@std/async@1.5.1",
       "jsr:@std/encoding@1.0.11",
