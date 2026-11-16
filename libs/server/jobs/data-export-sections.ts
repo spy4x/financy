@@ -196,6 +196,7 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       `kind`,
       `currency`,
       `startingBalance`,
+      `aliases`,
       `isDefault`,
       `archivedAt`,
       `createdAt`,
@@ -208,7 +209,7 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
           WHEN 1 THEN 'cash' WHEN 2 THEN 'bank' WHEN 3 THEN 'card' WHEN 4 THEN 'savings'
           WHEN 5 THEN 'asset' ELSE 'liability'
         END AS kind,
-        currency, starting_balance::text AS starting_balance, is_default, archived_at,
+        currency, starting_balance::text AS starting_balance, aliases, is_default, archived_at,
         created_at, updated_at, deleted_at
       FROM accounts
       WHERE created_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
