@@ -556,7 +556,7 @@ describe("AppFrame", () => {
     atTop()
   })
 
-  it("names the account entry after the person, heads its menu with their name and address, and offers Categories, Budgets, Tags, Notes and Sign out with no Profile or Theme item", async () => {
+  it("names the account entry after the person, heads its menu with their name and address, and offers Categories, Budgets, Repeating entries, Tags, Notes and Sign out with no Profile or Theme item", async () => {
     await mount(<AppFrame user={ada} onSignOut={() => {}}>page</AppFrame>)
     expect(find(ACCOUNT).getAttribute("aria-label")).toBe("Account: Ada Lovelace")
     expect(find("[data-e2e=account-menu-header]").textContent).toContain(
@@ -566,6 +566,7 @@ describe("AppFrame", () => {
       HEADER,
       "Categories",
       "Budgets",
+      "Repeating entries",
       "Tags",
       "Notes",
       "Sign out",
@@ -585,7 +586,13 @@ describe("AppFrame", () => {
     expect(off.filter((href) => /^\/(notes|tags)(\/|$)/.test(href))).toEqual([])
     expect(off).toContain("/overview")
     expect(off).toContain("/groups")
-    expect(menuItems(ACCOUNT)).toEqual([HEADER, "Categories", "Budgets", "Sign out"])
+    expect(menuItems(ACCOUNT)).toEqual([
+      HEADER,
+      "Categories",
+      "Budgets",
+      "Repeating entries",
+      "Sign out",
+    ])
   })
 
   it("names a person with no name by their e-mail address, written once", async () => {

@@ -213,6 +213,13 @@ FeatureRealtime.fact2	e2b228e3d8ca5ebb
 FeatureRealtime.lead	9fae0586499f6772
 FeatureRealtime.nav	cf1a4f432633b850
 FeatureRealtime.title	c85f9b8ed0d332ae
+FeatureRecurring.code	a77a45d815e32516
+FeatureRecurring.fact1	3fd2e0f38fcd2670
+FeatureRecurring.fact2	9757d87c60a37f0b
+FeatureRecurring.fact3	6c3cec452fad81d1
+FeatureRecurring.lead	c359c40f63ea4853
+FeatureRecurring.nav	b4a66eabacd5ae2c
+FeatureRecurring.title	d06c0fc0f8a14608
 FeatureSection.forDevelopers	6f79cf5c144a1612
 FeatureSection.issue	bdec5bf93a591401
 FeatureSignIn.code	a7876cf40a160add
@@ -297,6 +304,7 @@ HomeStatus.later	235a9d1a08bc4152
 HomeStatus.month	7da7cbc570e87ec4
 HomeStatus.notBuilt	45ecacee6d987c49
 HomeStatus.realtime	0fafebb5d51850a6
+HomeStatus.recurring	a10cdc2038dc2824
 HomeStatus.selfHost	cbd492e04bf27b28
 HomeStatus.signIn	c9cf57502f977962
 HomeStatus.title	16ae6501339300ea

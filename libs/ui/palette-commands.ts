@@ -22,6 +22,7 @@ import {
   profilePath,
   type ProfileSectionId,
   profileSections,
+  RECURRING_PATHS,
   SCREEN_PATHS,
   TAG_PATHS,
   TRANSACTION_PATHS,
@@ -187,6 +188,13 @@ const GO_TO: readonly {
     href: (context) => context.currentGroup ? BUDGET_PATHS.list : null,
     open: `Search.openBudgets`,
     aliases: [`budget`, `limits`, `бюджет`],
+  },
+  {
+    id: "recurring",
+    key: `Frame.recurring`,
+    href: (context) => context.currentGroup ? RECURRING_PATHS.list : null,
+    open: `Search.openRecurring`,
+    aliases: [`recurring`, `subscriptions`, `rent`, `salary`, `регулярные`, `подписки`],
   },
   {
     id: "notes",

@@ -54,6 +54,18 @@ export const BUDGET_PATHS = {
   list: "/budgets",
 } as const
 
+/** The repeating entries of the person's selected household. */
+export const RECURRING_PATHS = {
+  /** The household's upcoming dates, then each rule. */
+  list: "/recurring",
+  /** The create page; `?from={transactionId}` fills it in from that entry ("Repeat this"). */
+  new: "/recurring/new",
+  /** The create page filled in from one entry. */
+  fromEntry: (transactionId: string) => `/recurring/new?from=${encodeURIComponent(transactionId)}`,
+  /** One rule's editor. */
+  rule: (ruleId: string) => `/recurring/${ruleId}`,
+} as const
+
 /** The pages of a household's accounts, in the person's selected group. */
 /** The transaction pages. `?next=` on the create page names the page to return to after a save. */
 export const TRANSACTION_PATHS = {

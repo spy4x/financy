@@ -12,17 +12,24 @@
 
 import { createTranslator, type Translator } from "@spy4x/platform/universal/i18n"
 import { ENGLISH, useT } from "@spy4x/preact-ui/i18n"
+import rrule from "@spy4x/time/rrule-words/en"
 import app from "@i18n/app/en.ts"
 import admin from "@i18n/admin/en.ts"
 
 let appEnglish: Translator<string> | undefined
 let adminEnglish: Translator<string> | undefined
 
-/** The translator of the product's screens (the `app` namespace). */
+/**
+ * The translator of the product's screens (the `app` namespace), with the repeat's words that
+ * `describeRrule` reads, as the app's own catalog lists carry them.
+ */
 export function useAppText(): Translator<string> {
   const translator = useT()
   if (translator !== ENGLISH) return translator
-  appEnglish ??= createTranslator({ language: `en`, catalogs: [{ source: app }] })
+  appEnglish ??= createTranslator({
+    language: `en`,
+    catalogs: [{ source: rrule }, { source: app }],
+  })
   return appEnglish
 }
 

@@ -10,6 +10,7 @@ const SECTIONS = [
   `categories`,
   `transactions`,
   `budgets`,
+  `recurring`,
   `sign-in`,
   `teams`,
   `realtime`,

@@ -4,6 +4,7 @@ import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import type { RecurringRule, RecurringRuleRequestFields } from "@domain/recurring"
 import { callCommand, callQuery, canCall, offlineRecurring } from "../modules.ts"
 import { byCreated } from "./recurring-order.ts"
+import { UNDO_MS } from "./transactions.ts"
 
 /** A repeating rule as the API sends it: dates are ISO strings, the sequence a decimal string. */
 export interface RecurringRuleItem
@@ -11,6 +12,16 @@ export interface RecurringRuleItem
   createdAt: string
   updatedAt: string
   deletedAt: string | null
+}
+
+/** The rule a person just deleted and may still take back. */
+export interface RecurringUndoOffer {
+  id: string
+  groupId: string
+  /** The deleted rule, for the toast's words. */
+  rule: RecurringRuleItem
+  /** When the offer ends, in milliseconds since the epoch. */
+  until: number
 }
 
 /** One rule a write names. */
@@ -47,6 +58,10 @@ export function createRecurringStore(dependencies: RecurringDependencies) {
   const loading = signal(false)
   /** Why the last read failed, or `null`. */
   const error = signal<unknown>(null)
+  /** The rule a person just deleted and may still take back. */
+  const undo = signal<RecurringUndoOffer | null>(null)
+  /** Why the last Undo failed (a plan refusal, no network), or `null`. */
+  const undoError = signal<unknown>(null)
   let reads = 0
 
   /** Reads the open household's rules again; a read answered for another group is dropped. */
@@ -75,6 +90,8 @@ export function createRecurringStore(dependencies: RecurringDependencies) {
     rules.value = []
     loading.value = false
     error.value = null
+    undo.value = null
+    undoError.value = null
   }
 
   /** Shows a household's rules. Opening the household already open reads it again. */
@@ -92,6 +109,10 @@ export function createRecurringStore(dependencies: RecurringDependencies) {
     const others = rules.value.filter((item) => item.id !== rule.id)
     rules.value = [...others, rule].sort(byCreated)
     return rule
+  }
+
+  async function restore(input: RuleRef): Promise<RecurringRuleItem> {
+    return show((await dependencies.restore(input)).rule)
   }
 
   return {
@@ -114,12 +135,34 @@ export function createRecurringStore(dependencies: RecurringDependencies) {
     ): Promise<RecurringRuleItem> {
       return show((await dependencies.update(input)).rule)
     },
+    undo,
+    undoError,
+    /** Deletes a rule at the version the person saw, and offers Undo for {@link UNDO_MS}. */
     async delete(input: RuleRef & { version: number }): Promise<void> {
+      const rule = rules.value.find((item) => item.id === input.id)
       await dependencies.delete(input)
       rules.value = rules.value.filter((item) => item.id !== input.id)
+      if (rule) {
+        undo.value = { id: input.id, groupId: input.groupId, rule, until: Date.now() + UNDO_MS }
+      }
     },
-    async restore(input: RuleRef): Promise<RecurringRuleItem> {
-      return show((await dependencies.restore(input)).rule)
+    restore,
+    /** Takes back the delete the Undo toast offers; a refusal lands in `undoError`. */
+    async undoDelete(): Promise<boolean> {
+      const offer = undo.value
+      if (!offer) return false
+      undo.value = null
+      undoError.value = null
+      try {
+        await restore({ groupId: offer.groupId, id: offer.id })
+        return true
+      } catch (cause) {
+        undoError.value = cause
+        return false
+      }
+    },
+    dismissUndo(): void {
+      undo.value = null
     },
     async skip(input: RuleRef & { date: string }): Promise<RecurringRuleItem> {
       return show((await dependencies.skip(input)).rule)

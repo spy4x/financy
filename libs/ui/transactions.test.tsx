@@ -571,6 +571,19 @@ describe("TransactionEditorScreen", () => {
     expect(text(document.querySelector("[data-e2e=transaction-save]"))).toBe("Save transaction")
   })
 
+  it("offers Repeat this in a saved entry's menu, leading to the prefilled new rule", async () => {
+    const saved = {
+      ...editorDefaults,
+      transaction: latte,
+      value: { ...editorDefaults.value, amount: 450 },
+    }
+    await mount(<TransactionEditorScreen {...saved} repeatHref="/recurring/new?from=t-latte" />)
+    await click(document.querySelector("[data-e2e=transaction-editor-menu]")!)
+    const item = document.querySelector("[data-e2e=transaction-repeat]")!
+    expect(text(item)).toBe("Repeat this")
+    expect(item.getAttribute("href")).toBe("/recurring/new?from=t-latte")
+  })
+
   it("shows a viewer the entry as text, its date in words, with no field, Save or menu", async () => {
     // A fixed locale: the default follows the machine, and CI's formats the date another way.
     const format = createFormatters({

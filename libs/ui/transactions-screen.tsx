@@ -35,7 +35,13 @@ import {
   TRANSFERS_KIND,
 } from "./transaction-parts.tsx"
 import { moneyText, TransferAccounts, TransferListRow } from "./transfer-parts.tsx"
-import { ACCOUNT_PATHS, type Navigate, TRANSACTION_PATHS, TRANSFER_PATHS } from "./progressive.tsx"
+import {
+  ACCOUNT_PATHS,
+  type Navigate,
+  RECURRING_PATHS,
+  TRANSACTION_PATHS,
+  TRANSFER_PATHS,
+} from "./progressive.tsx"
 import { useAppText } from "./i18n.ts"
 import { type Message, messageText } from "./message.ts"
 import { PlanRefusalNotice } from "./plan-refusal.tsx"
@@ -119,10 +125,21 @@ export function TransactionsScreen(props: TransactionsScreenProps): JSX.Element 
           />
         )}
         menuDataE2E="transactions-menu"
-        menu={canWrite && !trash && (
-          <DropdownItem href={TRANSFER_PATHS.new} navigate={navigate} dataE2E="transfer-new">
-            {t.t(`Transfers.new`)}
-          </DropdownItem>
+        menu={!trash && (
+          <>
+            {canWrite && (
+              <DropdownItem href={TRANSFER_PATHS.new} navigate={navigate} dataE2E="transfer-new">
+                {t.t(`Transfers.new`)}
+              </DropdownItem>
+            )}
+            <DropdownItem
+              href={RECURRING_PATHS.list}
+              navigate={navigate}
+              dataE2E="transactions-recurring"
+            >
+              {t.t(`Frame.recurring`)}
+            </DropdownItem>
+          </>
         )}
       />
       <Stack>

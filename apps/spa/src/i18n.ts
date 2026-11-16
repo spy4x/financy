@@ -9,6 +9,7 @@ import ui from "@spy4x/preact-ui/i18n/en"
 import system from "@spy4x/preact-system/i18n/en"
 import signals from "@spy4x/preact-signals/i18n/en"
 import charts from "@spy4x/preact-charts/i18n/en"
+import rrule from "@spy4x/time/rrule-words/en"
 import own from "@i18n/app/en.ts"
 import errors from "@i18n/errors/en.ts"
 import { LANGUAGES } from "@domain/identity"
@@ -17,7 +18,7 @@ import type { MessageValues } from "@spy4x/platform/universal/i18n"
 import { type ErrorAnswer, errorText, fieldText } from "@ui/message.ts"
 
 /** The English catalogs, in the order every language module lists its own. */
-export const ENGLISH: CatalogList = [ui, system, signals, charts, own, errors]
+export const ENGLISH: CatalogList = [ui, system, signals, charts, rrule, own, errors]
 
 /** The page's languages: the translator every screen reads, and the switch. */
 export const languages = createLanguages({

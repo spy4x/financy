@@ -7,7 +7,7 @@ import { UnsavedGuard } from "@spy4x/preact-ui/unsaved-guard"
 import { todayInTz } from "@spy4x/time/tz"
 import { canMutateNotes, groupTimeZone } from "@domain/groups"
 import { TransactionEditorScreen } from "@ui/transaction-editor-screen.tsx"
-import { readNext, TRANSACTION_PATHS, TRANSFER_PATHS } from "@ui/progressive.tsx"
+import { readNext, RECURRING_PATHS, TRANSACTION_PATHS, TRANSFER_PATHS } from "@ui/progressive.tsx"
 import { useAppText } from "@ui/i18n.ts"
 import { accountsStore } from "../state/accounts.ts"
 import { categoriesStore } from "../state/categories.ts"
@@ -157,6 +157,7 @@ export function TransactionEditorView(
             if (await store.remove(entry.id)) navigate(TRANSACTION_PATHS.list)
           }
           : undefined}
+        repeatHref={canWrite && entry ? RECURRING_PATHS.fromEntry(entry.id) : undefined}
         pending={store.pendingId.value !== null}
         backHref={back}
         focusField={field === "account" || field === "category" ? field : null}
