@@ -37,7 +37,7 @@ An edit of a note's title, from one tab until another tab of a member shows it.
    `notifyGroupChange` (`apps/api/services/realtime.ts`) sends a `change.hint` with the sequence to
    every member's open socket.
 9. **Pull.** The other tab's socket module (`apps/spa/src/realtime/index.ts`) takes the hint and
-   calls the pull (`apps/spa/src/state/pull.ts`), which reads the group's notes again. A lost hint costs nothing: the next
+   calls the pull (`apps/spa/src/state/pull.ts`), which reads the group's open lists again (the notes, here) and, while the overview is open, its widgets. A lost hint costs nothing: the next
    reconnect or check reads the same way.
 
 ## How a profile or push call travels
@@ -110,7 +110,8 @@ its own session) moves its subscription to it.
    the same.
 7. The SPA treats a hint as a reason to read. `pull` (`apps/spa/src/state/pull.ts`) reads again
    what the hint names: the groups list (over REST, `GET /api/groups`, or as the socket's
-   `group.list` query), then the open group's notes, tags and members. It is the same read the page
+   `group.list` query), then whatever is open for that group: its notes, tags and members, the
+   household's lists, budgets and imports, and the overview's widgets. It is the same read the page
    makes at start-up and after every reconnect, so a lost frame costs one read.
 8. The selected group is per person, not per group: a `user_settings` row holds `selected_group_id`
    and a `version`. It is read through `getSelected`, which checks membership at read time and, when

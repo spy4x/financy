@@ -54,8 +54,8 @@ Every store and view takes its ports from that file. `tests/realtime-removal.tes
   HTTP with the same idempotency key. An `unauthorized` answer signs the page out.
 - **Changes:** what triggers a fresh read. An open socket sends hints. Without one, the page reads
   on start, back online, when the tab shows again, after its own write, and every 30 seconds while
-  visible. That check (`createChangeCheck`, `state/pull.ts`) reads the open group's notes only
-  when the group's change sequence moved.
+  visible. That check (`createChangeCheck`, `state/pull.ts`) reads the open group's notes, lists
+  and overview widgets again only when the group's change sequence moved.
 - **Local data:** `localReads` (the level 2 copies), `offlineNotes` and the sync line. With the
   module off, `localReads` reads from the server and keeps nothing, so no store has a second code
   path.

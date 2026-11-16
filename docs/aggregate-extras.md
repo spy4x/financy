@@ -141,6 +141,12 @@ we have?" (`ACCOUNT_WIDGETS` in `libs/domain/accounts/+lib.ts`) shares one read 
 `account.total` handler and draws its total with the Accounts screen's `TotalText`; a balance is
 today's, so it ignores the range.
 
+While the overview is open, its group's change hint (or, with no socket, a moved change sequence)
+reads every shown widget again (`apps/spa/src/state/overview.ts`, `refresh`), and the old numbers
+stay on screen until the new ones arrive. A widget therefore updates live only from what moves its
+group's change sequence. A new exchange rate or coin price moves none, so a figure converted at
+today's rate changes with the next hint, reconnect or opening of the page.
+
 ## Tell a person in their inbox
 
 A change that a person should hear about, and did not make, writes a notification. Copy
