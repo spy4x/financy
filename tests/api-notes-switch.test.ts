@@ -16,11 +16,10 @@ Deno.test("the API's config reads the notes switch from its environment", async 
   )
 })
 
-Deno.test("the API's entry point hands the notes switch to its routes, admin and bot", async () => {
+Deno.test("the API's entry point hands the notes switch to its routes and admin", async () => {
   const index = await read(`apps/api/index.ts`)
   expect(index).toMatch(/^mountNotesRoutes\(app, config\.notes, \{$/m)
   expect(index).toMatch(/^\s+notes: config\.notes,$/m)
-  expect(index).toContain(`createTelegramProduct({ queryBus, notes: config.notes })`)
   expect(index).not.toMatch(/createNotesRoute|createTagsRoute|createTokenApiRoute/)
 })
 

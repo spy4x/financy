@@ -6,6 +6,7 @@ import { type PlanRefusal, readPlanRefusal } from "@domain/billing"
 import type { CategoryKind } from "@domain/categories"
 import {
   categoryFitsKind,
+  entryDefaults,
   TRANSACTION_MEMO_MAX_LENGTH,
   TransactionKind,
 } from "@domain/transactions"
@@ -182,26 +183,25 @@ export interface PrefillSource {
  * category. The amount and the memo are always empty.
  */
 export function prefillEntry(source: PrefillSource): TransactionFormValue {
-  const open = source.accounts.filter((account) => account.archivedAt === null)
   const mine = source.transactions
     .filter((entry) => entry.createdByUserId === source.userId)
     .reduce<TransactionItem | null>(
       (latest, entry) => !latest || entry.createdAt > latest.createdAt ? entry : latest,
       null,
     )
-  if (mine && open.some((account) => account.id === mine.accountId)) {
+  const { last, account } = entryDefaults(mine, source.accounts)
+  if (last) {
     return {
-      kind: mine.kind,
+      kind: last.kind,
       amount: null,
-      currency: mine.currency,
+      currency: last.currency,
       accountAmount: null,
-      accountId: mine.accountId,
-      categoryId: mine.categoryId,
-      date: mine.date,
+      accountId: last.accountId,
+      categoryId: last.categoryId,
+      date: last.date,
       memo: "",
     }
   }
-  const account = open.find((candidate) => candidate.isDefault) ?? open[0] ?? null
   return {
     kind: TransactionKind.EXPENSE,
     amount: null,
