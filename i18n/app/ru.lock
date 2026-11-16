@@ -54,6 +54,12 @@ AccountMessages.limit	17fb67cd2cf41449
 AccountMessages.load	b6339ecf82de2d2f
 AccountMessages.nameRequired	e23f1b00c513d649
 AccountMessages.save	55d53fbfd8e41661
+AccountWidgets.archived	04fd66d8185f1bfe
+AccountWidgets.error	6e9b8ca31d37142e
+AccountWidgets.link	7e2dae92348b8b7c
+AccountWidgets.loading	3f082d8f2e7e90e0
+AccountWidgets.none	1d2722b02ffcbfd6
+AccountWidgets.title	e6d820aa46603c78
 Accounts.actions	aac6defa1846338b
 Accounts.add	ee7ee5830f091690
 Accounts.allArchived	1cded0c2a0211af1
