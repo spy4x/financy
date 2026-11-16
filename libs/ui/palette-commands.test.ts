@@ -7,6 +7,7 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { matchOptions } from "@spy4x/preact-ui/command-palette"
 import { createTranslator } from "@spy4x/platform/universal/i18n"
+import { GroupRole } from "@domain/groups"
 import type { ThemePreference } from "@domain/identity"
 import app from "@i18n/app/en.ts"
 import appRu from "@i18n/app/ru.ts"
@@ -14,6 +15,7 @@ import {
   groupRow,
   paletteCommands,
   type PaletteContext,
+  paletteGroup,
   type PaletteOption,
   pickedChoice,
   quickCreateRows,
@@ -264,6 +266,21 @@ describe(`the finance commands`, () => {
     expect(exportOf({ currentGroup: null })).toBeUndefined()
   })
 
+  it(`offer Export group for the owner's role only, as the shell maps it`, () => {
+    const listed = (role: GroupRole) =>
+      ids({ currentGroup: paletteGroup({ ...HOME, role }) }).includes(`action-export-group`)
+    expect(listed(GroupRole.OWNER)).toBe(true)
+    for (const role of [GroupRole.ADMIN, GroupRole.EDITOR, GroupRole.VIEWER]) {
+      expect(listed(role), GroupRole[role]).toBe(false)
+    }
+  })
+
+  it(`label Export group apart from the household page's own Export, in English and Russian`, () => {
+    for (const t of [EN, RU]) {
+      expect(t.t(`Search.exportGroup`)).not.toBe(t.t(`AppShell.exportGroup`))
+    }
+  })
+
   it(`keep Export group listed offline, dimmed because it needs a connection`, () => {
     const exportOf = (online: boolean) =>
       paletteCommands(context({ currentGroup: OWNER, online }), () => {})
@@ -285,7 +302,7 @@ describe(`the finance commands`, () => {
         `резервная копия`,
       ]
     ) expect(found(query), query).toContain(`Export group`)
-    expect(found(`экспорт`, { t: RU })).toContain(`Экспортировать группу`)
+    expect(found(`экспорт`, { t: RU })).toContain(`Экспорт группы`)
   })
 })
 
