@@ -120,7 +120,7 @@ export const GROUPS: TestGroup[] = [
   },
   {
     flags: [
-      `--allow-read=infra/compose,infra/postgres,infra/envs/.env.example,infra/scripts/e2e-local.sh,.woodpecker/ci.yml,docs/handoff.md,docs/woodpecker-ci-setup.md`,
+      `--allow-read=infra/compose,infra/postgres,infra/envs/.env.example,infra/scripts/e2e-local.sh,.woodpecker/ci.yml,.woodpecker/ci-browser.yml,docs/handoff.md,docs/woodpecker-ci-setup.md`,
     ],
     paths: [`tests/compose-postgres.test.ts`],
   },
@@ -185,7 +185,7 @@ export const GROUPS: TestGroup[] = [
   },
   {
     flags: [
-      `--allow-read=.woodpecker/ci.yml,.woodpecker/wip.yml,e2e,docs/browser-tests.md,docs/woodpecker-ci-setup.md`,
+      `--allow-read=.woodpecker/ci.yml,.woodpecker/ci-browser.yml,.woodpecker/wip.yml,.woodpecker/release.yml,.woodpecker/deploy.yml.example,.woodpecker/deploy.yml,e2e,docs/browser-tests.md,docs/woodpecker-ci-setup.md`,
     ],
     // ci-notes-off is Financy's: it holds the notes-off spec in the pull-request check.
     paths: [`tests/ci-browser-tests.test.ts`, `tests/ci-notes-off.test.ts`],

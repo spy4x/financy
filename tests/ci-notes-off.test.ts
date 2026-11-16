@@ -15,7 +15,7 @@ const NOTES_OFF =
   `NOTES=false SPA_NOTES=false deno task e2e:local e2e/notes-off.e2e.ts --max-failures=3`
 
 const workflow = async () =>
-  parse(await Deno.readTextFile(fromFileUrl(new URL(`.woodpecker/ci.yml`, ROOT)))) as
+  parse(await Deno.readTextFile(fromFileUrl(new URL(`.woodpecker/ci-browser.yml`, ROOT)))) as
     & Step
     & { steps?: Record<string, Step> }
 
