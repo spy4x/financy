@@ -627,6 +627,17 @@ Deno.test("payee memory: a save without a category choice remembers nothing, and
   })
 })
 
+Deno.test("payee memory: a row skipped as saved before gets no suggestion", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const read = await uploaded(sql, h, FIRST)
+    await confirm(sql, h, read.id, { "1": { category: h.shopping } })
+
+    const again = await suggested(sql, h, FIRST)
+    expect(again.categories).toEqual([null, null, null])
+  })
+})
+
 Deno.test("payee memory: an archived category is not suggested", async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
