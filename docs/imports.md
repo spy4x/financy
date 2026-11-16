@@ -222,6 +222,9 @@ screen for it yet; the API takes it like any kind.
 - **Refused files.** A file of no app above, an export over the caps (including an Actual database
   that inflates past 32 MiB) and one with no entries are refused in words, quoting nothing from the
   file. A row the reader cannot read becomes a refused row naming its line; the rest stay.
+- **One read at a time.** The API and the worker each read one such file at a time, from format
+  detection to the rows, so parallel previews wait in line instead of each holding a parsed export
+  in memory.
 - **Each row.** An entry or a transfer, named in the `Kind` column. An amount with more decimals
   than its currency has is refused. In a currency without decimals, YNAB's amounts are read again
   as whole numbers, since `¥1,000` would otherwise read as one yen. A foreign amount goes into the

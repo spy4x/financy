@@ -15,9 +15,9 @@ import {
 } from "./history-fixtures.ts"
 import {
   ACTUAL_DATABASE_MAX_BYTES,
-  actualReads,
   detectHistoryFormat,
   historyImportKind,
+  historyReads,
   type HistoryValue,
   planHistory,
   type StoredAccount,
@@ -236,11 +236,98 @@ Deno.test("history read: two Actual Budget reads at once run one after the other
   const zip = actualZip()
   const first = historyImportKind.read(zip)
   const second = historyImportKind.read(zip)
-  expect(actualReads.locked).toBe(true)
-  expect(actualReads.queued).toBe(1)
+  expect(historyReads.locked).toBe(true)
+  expect(historyReads.queued).toBe(1)
   const reads = await Promise.all([first, second])
   expect(reads.map((read) => read.ok)).toEqual([true, true])
-  expect(actualReads.locked).toBe(false)
+  expect(historyReads.locked).toBe(false)
+})
+
+/**
+ * Runs `run` with every `DecompressionStream` logged: `+` when one starts, then the bytes it
+ * inflated when it ends. The zip readers inflate through it, so the log shows which reads were in
+ * flight at once.
+ */
+async function withInflations(run: (log: (string | number)[]) => Promise<void>) {
+  const Inflate = globalThis.DecompressionStream
+  const log: (string | number)[] = []
+  globalThis.DecompressionStream = class {
+    readonly writable: WritableStream<BufferSource>
+    readonly readable: ReadableStream<Uint8Array>
+    constructor(format: CompressionFormat) {
+      const inflate = new Inflate(format)
+      let bytes = 0
+      log.push(`+`)
+      this.writable = inflate.writable
+      this.readable = inflate.readable.pipeThrough(
+        new TransformStream<Uint8Array, Uint8Array>({
+          transform(chunk, controller) {
+            bytes += chunk.length
+            controller.enqueue(chunk)
+          },
+          flush() {
+            log.push(bytes)
+          },
+        }),
+      )
+    }
+  } as unknown as typeof DecompressionStream
+  try {
+    await run(log)
+  } finally {
+    globalThis.DecompressionStream = Inflate
+  }
+}
+
+Deno.test("history read: two YNAB zip reads at once never overlap: one inflates its register twice, then the other", async () => {
+  const [small, large] = [ynabCsv(), ynabCsv(`$1,012.34`)]
+  await withInflations(async (log) => {
+    const reads = await Promise.all([
+      historyImportKind.read(ynabZip(small)),
+      historyImportKind.read(ynabZip(large)),
+    ])
+    expect(reads.map((read) => read.ok)).toEqual([true, true])
+    const twice = (register: Uint8Array) => [`+`, register.length, `+`, register.length]
+    expect(log).toEqual([...twice(small), ...twice(large)])
+  })
+})
+
+Deno.test("history read: a Firefly III read waits until a YNAB zip read in flight has finished", async () => {
+  const register = ynabCsv()
+  await withInflations(async (log) => {
+    const logged = async (name: string, read: ReturnType<typeof historyImportKind.read>) => {
+      const result = await read
+      log.push(name)
+      return result
+    }
+    const reads = await Promise.all([
+      logged(`ynab`, historyImportKind.read(ynabZip(register))),
+      logged(`firefly`, historyImportKind.read(fireflyCsv(FIREFLY_ROWS))),
+    ])
+    expect(reads.map((read) => read.ok)).toEqual([true, true])
+    expect(log).toEqual([`+`, register.length, `+`, register.length, `ynab`, `firefly`])
+  })
+})
+
+Deno.test("history read: every app's export is read under the lock, and only its rows leave it", async () => {
+  const runExclusive = historyReads.runExclusive.bind(historyReads)
+  const left: unknown[] = []
+  historyReads.runExclusive = (async (fn: () => unknown) => {
+    const value = await runExclusive(fn)
+    left.push(value)
+    return value
+  }) as typeof historyReads.runExclusive
+  try {
+    for (const file of [fireflyCsv(FIREFLY_ROWS), ynabCsv(), ynabZip(), actualZip()]) {
+      left.length = 0
+      const read = await historyImportKind.read(file)
+      expect(read.ok && read.value.rows.length).toBeGreaterThan(0)
+      expect(left).toHaveLength(1)
+      expect(left[0]).toBe(read)
+    }
+  } finally {
+    historyReads.runExclusive = runExclusive
+  }
 })
 
 const STORED_ACCOUNTS: StoredAccount[] = [

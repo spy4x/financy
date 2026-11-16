@@ -119,11 +119,13 @@ const WHOLE_CURRENCY = `JPY`
 export const ACTUAL_DATABASE_MAX_BYTES = 32 * 1024 * 1024
 
 /**
- * One Actual Budget read at a time in this process: a tiny zip can inflate to a database near
- * {@link ACTUAL_DATABASE_MAX_BYTES}, and every check request reads the file again, so parallel
- * requests would each hold one in memory. Exported for its test only.
+ * One history read at a time in this process, from format detection through every parse to the
+ * rows. A zip of a few kilobytes can inflate to a database near {@link ACTUAL_DATABASE_MAX_BYTES}
+ * or a register near the file cap, a YNAB register is parsed twice, and every check request reads
+ * the file again, so parallel reads would each hold a parsed export in memory. A read waiting here
+ * holds only its upload. Exported for its tests only.
  */
-export const actualReads = new AsyncMutex()
+export const historyReads = new AsyncMutex()
 
 /** Rows one write inserts: well under Postgres's 65,535 parameters at sixteen columns a row. */
 const WRITE_BATCH = 1_000
@@ -203,10 +205,13 @@ export const historyImportKind = importKind<HistoryValue>({
     { key: `line`, label: `Line` },
   ],
   canCreate: canMutateNotes,
-  async read(bytes) {
-    const read = await readHistoryFile(bytes)
-    if (!read.ok) return read
-    return ok({ columns: [...COLUMNS], rows: historyRows(read.value), mapping: { ...MAPPING } })
+  read(bytes) {
+    // Only the rows leave the lock; the parsed export is unreachable once they are built.
+    return historyReads.runExclusive(async () => {
+      const read = await readHistoryFile(bytes)
+      if (!read.ok) return read
+      return ok({ columns: [...COLUMNS], rows: historyRows(read.value), mapping: { ...MAPPING } })
+    })
   },
   check(row, mapping, options) {
     return checkHistoryRow(row, mapping, options as HistoryOptions | null | undefined)
@@ -503,9 +508,10 @@ const FORMATS = `Use Firefly III's transactions export, YNAB's export or Actual 
 
 /**
  * Reads an export: its app by content, then its reader with the kind's limits. Every refusal is in
- * words that quote nothing from the file, since the admin panel shows why an import failed.
+ * words that quote nothing from the file, since the admin panel shows why an import failed. Called
+ * only under {@link historyReads}, by the kind's `read`.
  */
-export async function readHistoryFile(bytes: Uint8Array): Promise<Result<ReadHistory, string>> {
+async function readHistoryFile(bytes: Uint8Array): Promise<Result<ReadHistory, string>> {
   const limits = {
     maxBytes: APP_HISTORY_IMPORT_KIND.maxBytes,
     maxRows: APP_HISTORY_IMPORT_KIND.maxRows,
@@ -526,13 +532,11 @@ export async function readHistoryFile(bytes: Uint8Array): Promise<Result<ReadHis
       // each reader looks for its own entry before it reads anything else.
       try {
         read = {
-          history: await actualReads.runExclusive(() =>
-            parseActualBudget(bytes, {
-              ...limits,
-              maxDatabaseBytes: ACTUAL_DATABASE_MAX_BYTES,
-              currency: PLACEHOLDER_CURRENCY,
-            })
-          ),
+          history: await parseActualBudget(bytes, {
+            ...limits,
+            maxDatabaseBytes: ACTUAL_DATABASE_MAX_BYTES,
+            currency: PLACEHOLDER_CURRENCY,
+          }),
           placeholder: true,
           whole: null,
         }
