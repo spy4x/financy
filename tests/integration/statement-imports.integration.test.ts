@@ -704,6 +704,354 @@ Deno.test("payee memory: the admin list carries no remembered payee", async () =
 })
 // #endregion Payee memory
 
+// #region Transfers between the household's accounts
+
+/** Types an entry into `accountId` by hand: its id. Money in is positive. */
+async function typed(
+  sql: postgres.Sql,
+  h: Household,
+  accountId: string,
+  amount: number,
+  date: string,
+  currency = `EUR`,
+): Promise<string> {
+  const id = uuidV7()
+  await new PostgresTransactionRepository(sql).create(
+    {
+      groupId: h.groupId,
+      id,
+      accountId,
+      categoryId: amount < 0 ? h.groceries : h.salary,
+      kind: amount < 0 ? TransactionKind.EXPENSE : TransactionKind.INCOME,
+      amount: Math.abs(amount),
+      currency,
+      memo: `Typed by hand`,
+      date,
+      allowance: null,
+    } as Parameters<PostgresTransactionRepository[`create`]>[0],
+    h.owner,
+  )
+  return id
+}
+
+/** The household's live transfers, oldest first. */
+async function transfers(sql: postgres.Sql, groupId: string) {
+  return await sql<
+    { from: string; to: string; sent: number; received: number; date: string; memo: string }[]
+  >`
+    SELECT from_account_id::text AS "from", to_account_id::text AS "to", sent_amount::int AS sent,
+      received_amount::int AS received, to_char(date, 'YYYY-MM-DD') AS date, memo
+    FROM transfers WHERE group_id = ${groupId} AND deleted_at IS NULL ORDER BY date
+  `
+}
+
+/** One entry by id, deleted or not, as the household's devices and its trash see it. */
+async function entryRow(sql: postgres.Sql, id: string) {
+  const [row] = await sql<
+    {
+      date: string
+      amount: number
+      memo: string
+      category: string
+      live: boolean
+      version: number
+      replaced: string | null
+    }[]
+  >`
+    SELECT to_char(date, 'YYYY-MM-DD') AS date, account_amount::int AS amount, memo,
+      category_id::text AS category, deleted_at IS NULL AS live, version,
+      replaced_by_import_id::text AS replaced
+    FROM transactions WHERE id = ${id}
+  `
+  return row
+}
+
+/** The `transfer` suggestion and the skip of each row of the preview of `file`, uploaded for `h`. */
+async function proposed(sql: postgres.Sql, h: Household, file: Uint8Array) {
+  const read = await uploaded(sql, h, file)
+  const reviews = (await preview(sql, h, read.id)).reviews!
+  return {
+    id: read.id,
+    transfers: reviews.map((review) => review.suggestions.transfer ?? null),
+    skips: reviews.map((review) => review.skip),
+  }
+}
+
+const TO_SAVINGS = statement([
+  [`2026-01-10`, `To savings`, -25_000],
+  [`2026-01-11`, `Coffee Bar`, -450],
+])
+
+Deno.test("statement transfers: an accepted proposal saves one transfer out of the account and deletes the other entry; Undo brings the entry back", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const other = await typed(sql, h, h.savings, 25_000, `2026-01-11`)
+    const before = await entryRow(sql, other)
+    expect(await h.balances()).toEqual({ Bank: 0, Savings: 25_000 })
+
+    const read = await proposed(sql, h, TO_SAVINGS)
+    expect(read.transfers).toEqual([other, null])
+    const done = await confirm(sql, h, read.id)
+    expect(done).toMatchObject({ status: ImportStatus.COMMITTED, savedCount: 2 })
+    expect(await transfers(sql, h.groupId)).toEqual([
+      {
+        from: h.bank,
+        to: h.savings,
+        sent: 25_000,
+        received: 25_000,
+        date: `2026-01-10`,
+        memo: `To savings`,
+      },
+    ])
+    // The savings entry went to the deleted list, marked by the import, and no entry was made for
+    // the transfer's row: the money is counted once in each account.
+    expect((await entries(sql, h.groupId)).map((row) => row.memo)).toEqual([`Coffee Bar`])
+    expect(await entryRow(sql, other)).toMatchObject({
+      live: false,
+      version: 2,
+      replaced: read.id,
+    })
+    const tombstones = await sql<{ id: string }[]>`
+      SELECT entity_id::text AS id FROM group_change_tombstones
+      WHERE group_id = ${h.groupId} AND kind = 'transactions'
+    `
+    expect(tombstones.map((row) => row.id)).toEqual([other])
+    expect(await h.balances()).toEqual({ Bank: -25_000 - 450, Savings: 25_000 })
+
+    await handlers(sql).undo(
+      new ImportUndoCommand({ actor: actor(h.editor), groupId: h.groupId, importId: read.id }),
+    )
+    expect(await transfers(sql, h.groupId)).toEqual([])
+    expect(await entryRow(sql, other)).toEqual({
+      ...before,
+      version: 3,
+      replaced: null,
+    })
+    const [{ restored }] = await sql<{ restored: boolean }[]>`
+      SELECT (SELECT change_sequence FROM transactions WHERE id = ${other}) >
+        (SELECT max(change_sequence) FROM group_change_tombstones WHERE entity_id = ${other})
+        AS restored
+    `
+    // Newer than its tombstone, so a device that saw the delete puts the entry back.
+    expect(restored).toBe(true)
+    expect(await h.balances()).toEqual({ Bank: 0, Savings: 25_000 })
+  })
+})
+
+Deno.test("statement transfers: an accepted proposal for money in saves a transfer into the account, dated when the other account sent it", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const other = await typed(sql, h, h.savings, -10_000, `2026-01-09`)
+    const read = await proposed(sql, h, statement([[`2026-01-12`, `From savings`, 10_000]]))
+    expect(read.transfers).toEqual([other])
+    await confirm(sql, h, read.id)
+    expect(await transfers(sql, h.groupId)).toMatchObject([
+      { from: h.savings, to: h.bank, sent: 10_000, received: 10_000, date: `2026-01-09` },
+    ])
+    expect(await entries(sql, h.groupId)).toEqual([])
+    expect(await h.balances()).toEqual({ Bank: 10_000, Savings: -10_000 })
+  })
+})
+
+Deno.test("statement transfers: a rejected proposal saves the row as an entry and keeps the other one", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const other = await typed(sql, h, h.savings, 25_000, `2026-01-11`)
+    const read = await proposed(sql, h, TO_SAVINGS)
+    await confirm(sql, h, read.id, { "1": { transfer: `` } })
+    expect(await transfers(sql, h.groupId)).toEqual([])
+    expect((await entries(sql, h.groupId)).map((row) => row.memo)).toEqual([
+      `To savings`,
+      `Coffee Bar`,
+      `Typed by hand`,
+    ])
+    expect(await entryRow(sql, other)).toMatchObject({ live: true, replaced: null })
+  })
+})
+
+Deno.test("statement transfers: an entry is proposed to one row only, and each row takes the nearest", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const near = await typed(sql, h, h.savings, 25_000, `2026-01-12`)
+    const far = await typed(sql, h, h.savings, 25_000, `2026-01-08`)
+    // Two equal rows on the 12th and one entry within three days of them: one proposal.
+    const one = await proposed(
+      sql,
+      h,
+      statement([[`2026-01-12`, `To savings`, -25_000], [`2026-01-12`, `To savings`, -25_000]]),
+    )
+    expect(one.transfers).toEqual([near, null])
+    const both = await proposed(
+      sql,
+      h,
+      statement([[`2026-01-10`, `To savings`, -25_000], [`2026-01-12`, `To savings`, -25_000]]),
+    )
+    // The 10th is two days from either entry and takes the first; the 12th takes what is left.
+    expect(both.transfers).toEqual([far, near])
+  })
+})
+
+Deno.test("statement transfers: no proposal from an account in another currency, a deleted account, the same amount's sign, or past three days", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const dollars = await h.account(`Dollars`, `USD`)
+    await typed(sql, h, dollars, 25_000, `2026-01-10`, `USD`)
+    const closed = await h.account(`Closed`)
+    await typed(sql, h, closed, 25_000, `2026-01-10`)
+    await sql`UPDATE accounts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ${closed}`
+    await typed(sql, h, h.savings, -25_000, `2026-01-10`)
+    await typed(sql, h, h.savings, 25_000, `2026-01-14`)
+    // The import account's own entry is never its own other side.
+    await typed(sql, h, h.bank, 25_000, `2026-01-09`)
+    const read = await proposed(sql, h, statement([[`2026-01-10`, `To savings`, -25_000]]))
+    expect(read.transfers).toEqual([null])
+  })
+})
+
+Deno.test("statement transfers: a row saved before or matching a transfer gets no proposal", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await typed(sql, h, h.savings, 25_000, `2026-01-11`)
+    const first = await proposed(sql, h, TO_SAVINGS)
+    await confirm(sql, h, first.id, { "1": { transfer: `` } })
+    const again = await proposed(sql, h, TO_SAVINGS)
+    expect(again.skips).toEqual([SKIP_SAVED_BEFORE, SKIP_SAVED_BEFORE])
+    expect(again.transfers).toEqual([null, null])
+
+    const g = await household(sql)
+    await typed(sql, g, g.savings, 25_000, `2026-01-11`)
+    await new PostgresTransferRepository(sql).create(
+      {
+        groupId: g.groupId,
+        id: uuidV7(),
+        fromAccountId: g.bank,
+        toAccountId: await g.account(`Third`),
+        sentAmount: 25_000,
+        memo: ``,
+        date: `2026-01-10`,
+        allowance: null,
+      } as Parameters<PostgresTransferRepository[`create`]>[0],
+      g.owner,
+    )
+    const matched = await proposed(sql, g, TO_SAVINGS)
+    expect(matched.skips).toEqual([SKIP_TRANSFER, null])
+    expect(matched.transfers).toEqual([null, null])
+  })
+})
+
+Deno.test("statement transfers: another household's matching entry is never proposed, and a choice naming it fails the save and writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const stranger = await household(sql)
+    const theirs = await typed(sql, stranger, stranger.savings, 25_000, `2026-01-11`)
+    const read = await proposed(sql, h, TO_SAVINGS)
+    expect(read.transfers).toEqual([null, null])
+    const done = await confirm(sql, h, read.id, { "1": { transfer: theirs } })
+    expect(done.status).toBe(ImportStatus.FAILED)
+    expect(done.failure).toContain(`Entry not found`)
+    expect(await entries(sql, h.groupId)).toEqual([])
+    expect(await transfers(sql, h.groupId)).toEqual([])
+    expect(await entryRow(sql, theirs)).toMatchObject({ live: true, version: 1 })
+  })
+})
+
+Deno.test("statement transfers: a forged choice of an entry that is deleted, of the import account, in a closed account, of another amount or not an id fails the save and writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const deleted = await typed(sql, h, h.savings, 25_000, `2026-01-11`)
+    await sql`UPDATE transactions SET deleted_at = CURRENT_TIMESTAMP WHERE id = ${deleted}`
+    const own = await typed(sql, h, h.bank, 25_000, `2026-01-11`)
+    const closedAccount = await h.account(`Closed`)
+    const closed = await typed(sql, h, closedAccount, 25_000, `2026-01-11`)
+    await sql`UPDATE accounts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ${closedAccount}`
+    const other = await typed(sql, h, h.savings, 24_999, `2026-01-11`)
+    const late = await typed(sql, h, h.savings, 25_000, `2026-01-14`)
+    const cases: [string, string][] = [
+      [deleted, `Entry not found`],
+      [own, `does not match`],
+      [closed, `does not match`],
+      [other, `does not match`],
+      [late, `does not match`],
+      [`not-an-id`, `must name an entry`],
+    ]
+    const live = await entries(sql, h.groupId)
+    for (const [choice, failure] of cases) {
+      const read = await uploaded(sql, h, TO_SAVINGS)
+      const done = await confirm(sql, h, read.id, { "1": { transfer: choice } })
+      expect({ choice, status: done.status, failure: done.failure?.includes(failure) }).toEqual({
+        choice,
+        status: ImportStatus.FAILED,
+        failure: true,
+      })
+    }
+    expect(await entries(sql, h.groupId)).toEqual(live)
+    expect(await transfers(sql, h.groupId)).toEqual([])
+  })
+})
+
+Deno.test("statement transfers: two rows naming one entry fail the save", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const other = await typed(sql, h, h.savings, 25_000, `2026-01-11`)
+    const read = await proposed(
+      sql,
+      h,
+      statement([[`2026-01-10`, `To savings`, -25_000], [`2026-01-11`, `To savings`, -25_000]]),
+    )
+    expect(read.transfers).toEqual([other, null])
+    const done = await confirm(sql, h, read.id, { "2": { transfer: other } })
+    expect(done.status).toBe(ImportStatus.FAILED)
+    expect(done.failure).toContain(`two rows`)
+    expect(await transfers(sql, h.groupId)).toEqual([])
+  })
+})
+
+Deno.test("statement transfers: a household whose plan lapsed saves no transfer either, and the other entry stays", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const other = await typed(sql, h, h.savings, 25_000, `2026-01-11`)
+    const read = await proposed(sql, h, statement([[`2026-01-10`, `To savings`, -25_000]]))
+    expect(read.transfers).toEqual([other])
+    const done = await confirm(sql, h, read.id, undefined, {
+      kinds: KINDS,
+      billingEnabled: true,
+      graceDays: 0,
+    })
+    expect(done.status).toBe(ImportStatus.FAILED)
+    expect(await transfers(sql, h.groupId)).toEqual([])
+    expect(await entryRow(sql, other)).toMatchObject({ live: true, version: 1 })
+  })
+})
+
+Deno.test("statement transfers: Undo does not bring back a replaced entry whose own import was undone since", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const intoSavings = await uploaded(
+      sql,
+      h,
+      statement([[`2026-01-11`, `From bank`, 25_000]]),
+      { ...h.options, accountId: h.savings },
+    )
+    await confirm(sql, h, intoSavings.id)
+    const [{ id: saved }] = await sql<{ id: string }[]>`
+      SELECT id::text FROM transactions WHERE import_batch_id = ${intoSavings.id}
+    `
+    const read = await proposed(sql, h, statement([[`2026-01-10`, `To savings`, -25_000]]))
+    expect(read.transfers).toEqual([saved])
+    await confirm(sql, h, read.id)
+    const undo = (importId: string) =>
+      handlers(sql).undo(
+        new ImportUndoCommand({ actor: actor(h.editor), groupId: h.groupId, importId }),
+      )
+    await undo(intoSavings.id)
+    await undo(read.id)
+    expect(await entryRow(sql, saved)).toMatchObject({ live: false })
+    expect(await transfers(sql, h.groupId)).toEqual([])
+    expect(await h.balances()).toEqual({ Bank: 0, Savings: 0 })
+  })
+})
+// #endregion Transfers between the household's accounts
+
 // #region The route
 // Imports travel over HTTP only, never the socket or `/api/call`: a file is an upload
 // (`apps/api/routes/imports.ts`). These run the route on the real handlers and this database.
