@@ -209,6 +209,49 @@ from the bytes, never the file name.
   no room left on its plan, a lapsed plan included, saves none and the import fails in words.
 - **Undo.** Moves exactly this batch's live entries to the deleted list, with their tombstones.
 
+## The app history kind
+
+Financy's `app-history` kind (`libs/server/transactions/history-import.ts`) brings a household's
+history over from another finance app: Firefly III's transactions CSV, YNAB's register (the CSV, or
+the "Export budget" zip) and Actual Budget's "Export data" zip. `@spy4x/bank-statements` reads the
+file, at most 5 MiB and 20,000 rows. The app comes from the bytes, never the file name. There is no
+screen for it yet; the API takes it like any kind.
+
+- **Upload options.** `currency`, optional: the currency of a YNAB or Actual export, which name
+  none. Left out, it is the household's base currency. Firefly III names each row's currency, and
+  that wins.
+- **Refused files.** A file of no app above, an export over the caps (including an Actual database
+  that inflates past 32 MiB) and one with no entries are refused in words, quoting nothing from the
+  file. A row the reader cannot read becomes a refused row naming its line; the rest stay.
+- **One read at a time.** The API and the worker each read one such file at a time, from format
+  detection to the rows, so parallel previews wait in line instead of each holding a parsed export
+  in memory. Each preview still keeps its rows until it answers, and the preview route does not
+  limit parallel requests yet (spy4x/seed#1091): about 6 to 8 parallel previews of a 20,000-row
+  file at the 5 MiB cap can exhaust an API limited to 512 MiB.
+- **Each row.** An entry or a transfer, named in the `Kind` column. An amount with more decimals
+  than its currency has is refused. In a currency without decimals, YNAB's amounts are read again
+  as whole numbers, since `¥1,000` would otherwise read as one yen. A foreign amount goes into the
+  entry's amount and currency, and the own amount into its account amount. The payee, description
+  and notes are joined into the memo. Firefly III's expense and revenue accounts are payees, never
+  accounts: a row on one is refused.
+- **Accounts and categories.** An account matches a live one by IBAN (kept in its aliases), then
+  by name in any case; else one account is created per name, in the currency of its first row,
+  with its IBAN as an alias. A category matches by name and a kind that fits the row (an income in
+  an expense category is a refund); else one is created per name and kind. An entry without a
+  category goes to "Uncategorized". The review suggests each row's `accountId`, `toAccountId` and
+  `categoryId`, or `new`.
+- **Review.** A row is skipped as "Saved before" when a live entry or transfer has its accounts,
+  date, amounts and memo, each stored one matching one row. A row in another currency than its
+  account is skipped with that reason, and so is a transfer whose sides are one account.
+- **Save.** New accounts and categories first, then the entries (with the import's id in
+  `transactions.import_batch_id`) and transfers. The household's own caps (100 accounts, 100
+  categories) and its plan's are checked; past one, nothing is saved and the import fails in
+  words. Tags are not imported.
+- **Undo.** Moves the batch's entries and transfers to the deleted list, with their tombstones,
+  then deletes the accounts and archives the categories the import created. An account or category
+  that the household used since (an entry or transfer outside the batch, a budget, a recurring
+  rule, a subcategory) is kept.
+
 An export leaves both new columns out; a move between households keeps them.
 
 ### Payee memory

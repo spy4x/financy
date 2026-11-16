@@ -1,6 +1,6 @@
 import { type Type, type } from "arktype"
 import type { Command, Query } from "@spy4x/platform/cqrs"
-import type { ImportKindLimits } from "@domain/imports"
+import { IMPORT_FILE_MAX_BYTES, type ImportKindLimits } from "@domain/imports"
 import type { Actor } from "@domain/identity"
 import {
   canMutateNotes,
@@ -56,6 +56,19 @@ export const BANK_STATEMENT_IMPORT_KIND: ImportKindLimits = {
   accept: [`.csv`, `.ofx`, `.qfx`, `.qif`, `.xml`, `.sta`, `.mt940`, `.txt`],
   maxBytes: 5 * 1024 * 1024,
   maxRows: 5_000,
+}
+
+/**
+ * The app history import kind's limits: Firefly III's transactions CSV, YNAB's export (the zip or
+ * its register CSV) and Actual Budget's export zip, at most the generic 5 MiB and 20,000 rows. A
+ * check reviews only the first 5,000 (`IMPORT_REVIEW_ROWS_MAX`); a save reviews every row. The
+ * server's kind is `libs/server/transactions/history-import.ts`.
+ */
+export const APP_HISTORY_IMPORT_KIND: ImportKindLimits = {
+  id: `app-history`,
+  accept: [`.csv`, `.zip`],
+  maxBytes: IMPORT_FILE_MAX_BYTES,
+  maxRows: 20_000,
 }
 
 /** The longest period the ledger reads at once, in days: a year, a leap year included. */

@@ -22,7 +22,7 @@
     "jsr:@spy4x/net@^1.129.0": "1.129.0",
     "jsr:@spy4x/platform@1.126.0": "1.126.0",
     "jsr:@spy4x/platform@1.127.0": "1.127.0",
-    "jsr:@spy4x/platform@^1.126.0": "1.129.0",
+    "jsr:@spy4x/platform@^1.126.0": "1.127.0",
     "jsr:@spy4x/platform@^1.127.0": "1.129.0",
     "jsr:@spy4x/platform@^1.129.0": "1.129.0",
     "jsr:@spy4x/platform@^1.91.0": "1.129.0",
