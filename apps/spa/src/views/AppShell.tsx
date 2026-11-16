@@ -4,7 +4,7 @@ import { useSignal } from "@preact/signals"
 import { matchRoute, useLocation, useRouter, useSearch } from "wouter-preact"
 import { useFormat } from "@spy4x/preact-ui/format"
 import { todayInTz } from "@spy4x/time/tz"
-import { canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
+import { canExportGroup, canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
 import { pictureUrl, shownPictureId, UserMFAStatus } from "@domain/identity"
 import {
   NOTE_PATHS,
@@ -28,6 +28,7 @@ import { newNoteStore } from "../state/new-note.ts"
 import { paletteData } from "../state/palette-data.ts"
 import { recordSources } from "./palette-records.ts"
 import { tagsStore } from "../state/tags.ts"
+import { groupExportStore } from "../state/group-files.ts"
 import { toasts } from "../state/toasts.ts"
 import { isolate } from "@spy4x/preact-ui/bdi"
 import { type ActionPages, pageCommands, runActionCommand, spaShortcutRows } from "./shortcuts.ts"
@@ -347,6 +348,9 @@ export function AppShell(
       openShortcuts: () => shortcutsOpen.value = true,
       signOut: onSignOut,
       install: () => void install.install(),
+      groupExport: groupExportStore,
+      exportFailed: () =>
+        toasts.error({ body: t.t(`GroupEditor.exportFailed`), dataE2E: "palette-export-failed" }),
     })
   return (
     <AppFrame
@@ -355,7 +359,12 @@ export function AppShell(
           searchNotes={searchNotes}
           groups={groups}
           currentGroup={current
-            ? { id: current.id, name: current.name, canWrite: canMutateNotes(current.role) }
+            ? {
+              id: current.id,
+              name: current.name,
+              canWrite: canMutateNotes(current.role),
+              canExport: canExportGroup(current.role),
+            }
             : null}
           online={wsStatus === "open"}
           pageCommands={pageCommands(t, {

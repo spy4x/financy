@@ -1,7 +1,9 @@
 /** `runChoice`: what the shell does with each palette pick. */
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
+import { signal } from "@preact/signals"
 import type { SearchChoice } from "@ui/search-palette.tsx"
+import { createGroupExportStore } from "../state/group-files.ts"
 import { type ChoicePorts, runChoice } from "./palette-choice.ts"
 
 const HOME = `0190a000-0000-7000-8000-000000000001`
@@ -13,7 +15,11 @@ const MADE = `0190a000-0000-7000-8000-0000000000aa`
  * Runs `choice` against ports that record each call by name. A create resolves {@link MADE}, or
  * `null` with `refused`.
  */
-async function run(choice: SearchChoice, refused = false): Promise<string[]> {
+async function run(
+  choice: SearchChoice,
+  refused = false,
+  groupExport?: ChoicePorts["groupExport"],
+): Promise<string[]> {
   const calls: string[] = []
   const record = (name: string) => (...args: unknown[]) =>
     void calls.push([name, ...args].join(` `))
@@ -35,6 +41,14 @@ async function run(choice: SearchChoice, refused = false): Promise<string[]> {
     openShortcuts: record(`openShortcuts`),
     signOut: record(`signOut`),
     install: record(`install`),
+    groupExport: groupExport ?? {
+      download: (groupId) => {
+        record(`download`)(groupId)
+        return Promise.resolve(true)
+      },
+      failed: signal(null),
+    },
+    exportFailed: record(`exportFailed`),
   }
   await runChoice(choice, ports)
   return calls
@@ -63,6 +77,43 @@ describe(`runChoice`, () => {
       `navigate /notes/n1`,
     ])
     expect(await run({ kind: `note`, noteId: `n1`, groupId: HOME })).toEqual([`navigate /notes/n1`])
+  })
+
+  describe(`an Export group pick`, () => {
+    /** The group export store the group menu uses, against a server answering `status`. */
+    const exportStore = (status: number | `busy`) => {
+      const requests: string[] = []
+      const saved: string[] = []
+      const store = createGroupExportStore({
+        fetch: (url) => {
+          requests.push(url)
+          return Promise.resolve(new Response(`{}`, { status: status === `busy` ? 200 : status }))
+        },
+        save: (_response, filename) => Promise.resolve(void saved.push(filename)),
+      })
+      if (status === `busy`) store.exporting.value = HOME
+      return { store, requests, saved }
+    }
+
+    it(`downloads the group's file through the group menu's export store`, async () => {
+      const { store, requests, saved } = exportStore(200)
+      expect(await run({ kind: `export-group`, groupId: STUDIO }, false, store)).toEqual([])
+      expect([requests, saved]).toEqual([[`/api/groups/${STUDIO}/export`], [`group-export.json`]])
+    })
+
+    it(`says the export failed when the server refuses it`, async () => {
+      const { store, saved } = exportStore(500)
+      expect(await run({ kind: `export-group`, groupId: STUDIO }, false, store)).toEqual([
+        `exportFailed`,
+      ])
+      expect(saved).toEqual([])
+    })
+
+    it(`says nothing while another export runs, since nothing failed`, async () => {
+      const { store, requests } = exportStore(`busy`)
+      expect(await run({ kind: `export-group`, groupId: STUDIO }, false, store)).toEqual([])
+      expect(requests).toEqual([])
+    })
   })
 
   describe(`a quick-create pick`, () => {

@@ -190,6 +190,105 @@ describe(`the palette's commands`, () => {
   })
 })
 
+describe(`the finance commands`, () => {
+  const OWNER = { ...HOME, canExport: true }
+  /** The labels of every command `query` finds, ranked by the palette's own matcher. */
+  const found = (query: string, overrides: Partial<PaletteContext> = {}) =>
+    matchOptions(paletteCommands(context({ currentGroup: OWNER, ...overrides }), () => {}), query)
+      .map((option) => option.label)
+  const ids = (overrides: Partial<PaletteContext> = {}) =>
+    paletteCommands(context(overrides), () => {}).map((option) => option.id)
+
+  it(`offer New account, New transaction, New transfer and New category only in a writable group`, () => {
+    const finance = [
+      `action-new-account`,
+      `action-new-transaction`,
+      `action-new-transfer`,
+      `action-new-category`,
+    ]
+    expect(ids()).toEqual(expect.arrayContaining(finance))
+    for (const currentGroup of [{ ...HOME, canWrite: false }, null]) {
+      for (const id of finance) expect(ids({ currentGroup }), id).not.toContain(id)
+    }
+  })
+
+  it(`open the new account page from New account, in the current group`, () => {
+    const newAccount = paletteCommands(context(), () => {})
+      .find((option) => option.id === `action-new-account`)
+    expect([newAccount?.label, newAccount?.detail, newAccount?.choice]).toEqual([
+      `New account`,
+      `In Home`,
+      { kind: `page`, href: `/accounts/new` },
+    ])
+  })
+
+  it(`find each Create command by the English and Russian words a person types`, () => {
+    const words: Record<string, readonly string[]> = {
+      "New account": [`add account`, `bank account`, `новый счёт`, `новый счет`, `создать счёт`],
+      "New category": [`add category`, `create category`, `новая категория`, `создать категорию`],
+      "New transaction": [
+        `expense`,
+        `трата`,
+        `расход`,
+        `доход`,
+        `новая операция`,
+        `добавить расход`,
+        `добавить трату`,
+        `платёж`,
+        `возврат`,
+      ],
+      "New transfer": [`transfer money`, `перевод`, `перевести`, `перевод между счетами`],
+    }
+    for (const [label, queries] of Object.entries(words)) {
+      for (const query of queries) expect(found(query), query).toContain(label)
+    }
+    for (const query of [`wallet`, `card`, `кошелёк`, `карта`]) {
+      expect(found(query), query).toContain(`New account`)
+    }
+    expect(found(`снятие наличных`)).toContain(`New transfer`)
+    expect(found(`новый счёт`, { t: RU })).toContain(`Новый счёт`)
+  })
+
+  it(`offer Export group to the current group's owner only, downloading that group`, () => {
+    const exportOf = (overrides: Partial<PaletteContext> = {}) =>
+      paletteCommands(context(overrides), () => {}).find((o) => o.id === `action-export-group`)
+    const owned = exportOf({ currentGroup: OWNER })
+    expect([owned?.label, owned?.detail, owned?.group, owned?.choice]).toEqual([
+      `Export group`,
+      `In Home`,
+      `Settings`,
+      { kind: `export-group`, groupId: HOME.id },
+    ])
+    expect(exportOf({ currentGroup: { ...OWNER, canExport: false } })).toBeUndefined()
+    expect(exportOf({ currentGroup: HOME })).toBeUndefined()
+    expect(exportOf({ currentGroup: null })).toBeUndefined()
+  })
+
+  it(`keep Export group listed offline, dimmed because it needs a connection`, () => {
+    const exportOf = (online: boolean) =>
+      paletteCommands(context({ currentGroup: OWNER, online }), () => {})
+        .find((o) => o.id === `action-export-group`)
+    expect(exportOf(false)?.disabledReason).toBe(`Needs a connection`)
+    expect(exportOf(true)?.disabledReason).toBeUndefined()
+  })
+
+  it(`find Export group by export, download, backup and their Russian words`, () => {
+    for (
+      const query of [
+        `export`,
+        `download`,
+        `backup`,
+        `export household`,
+        `экспорт`,
+        `выгрузить`,
+        `скачать`,
+        `резервная копия`,
+      ]
+    ) expect(found(query), query).toContain(`Export group`)
+    expect(found(`экспорт`, { t: RU })).toContain(`Экспортировать группу`)
+  })
+})
+
 describe(`a group row`, () => {
   const row: PaletteOption = groupRow(EN, { id: HOME.id, name: `Acme Studio` }, `Owner`, false)
 
@@ -201,6 +300,12 @@ describe(`a group row`, () => {
 
   it(`is found by "switch to" and its name`, () => {
     expect(matchOptions([row], `switch to acme`)).toEqual([row])
+  })
+
+  it(`is found by budget, household and their Russian words`, () => {
+    for (const query of [`budget`, `household`, `бюджет`, `семья`, `домохозяйство`]) {
+      expect(matchOptions([row], query), query).toEqual([row])
+    }
   })
 })
 

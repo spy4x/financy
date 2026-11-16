@@ -1772,6 +1772,7 @@ Search.downloadDetail	9ac1ea3828e84eac
 Search.downloadDetailPlain	cf3034c9dd4847af
 Search.emptyOnDevice	4909b534f1b33bd7
 Search.error	d11d89ec7e75ceee
+Search.exportGroup	dbcd401a373f7c98
 Search.groups	39bbb719fa2b9d22
 Search.importNotes	f5544a89b22d3ea4
 Search.inGroup	5fbfbf61c9c598e5
@@ -1780,6 +1781,7 @@ Search.keep	125f55ebeeef85ad
 Search.keepDetail	3a9708158f466c58
 Search.loading	c31723ab330289fe
 Search.needsConnection	3cb8a39b153d4d58
+Search.newAccount	b8773d75259ed491
 Search.newCategory	1ab1e121c0df65a8
 Search.newGroup	df796c655f6f5ed4
 Search.newNote	76ea482f843e76e4
@@ -1799,6 +1801,7 @@ Search.placeholder	307374ce6cbe1d84
 Search.search	49c266baaaa70981
 Search.settings	74a883a037bc227f
 Search.switchTo	8428ee28478a5415
+Search.switchToAccount	d5fef08ef375f40f
 Search.tooShort	ebd779b78fd1ed75
 Search.turnOffTwoFactor	0de6a15d48759944
 Search.untitled	e93736573a33ef40

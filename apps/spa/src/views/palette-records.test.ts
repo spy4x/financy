@@ -7,6 +7,9 @@ import { AccountKind } from "@domain/accounts"
 import { BudgetLimitSource, type BudgetMonth, type BudgetRow } from "@domain/budgets"
 import { CategoryKind } from "@domain/categories"
 import { TransactionKind } from "@domain/transactions"
+import { createTranslator } from "@spy4x/platform/universal/i18n"
+import app from "@i18n/app/en.ts"
+import appRu from "@i18n/app/ru.ts"
 import { ENGLISH } from "@ui/i18n-testing.ts"
 import type { AccountItem } from "../state/accounts.ts"
 import type { CategoryItem } from "../state/categories.ts"
@@ -28,6 +31,11 @@ const FOOD = `0190a000-0000-7000-8000-000000000021`
 const GROCERIES = `0190a000-0000-7000-8000-000000000022`
 const ENTRY = `0190a000-0000-7000-8000-000000000031`
 const TEXT = { t: ENGLISH, locale: `en`, today: `2026-11-15` }
+const RUSSIAN_TEXT = {
+  t: createTranslator({ language: `ru`, catalogs: [{ source: app, translation: appRu }] }),
+  locale: `ru`,
+  today: `2026-11-15`,
+}
 /** The marks `isolate` puts around a name inside a line, so it keeps its own direction. */
 const name = (value: string) => `⁨${value}⁩`
 
@@ -218,20 +226,31 @@ describe(`accountRecords`, () => {
       account(),
       account({ id: `old`, name: `Old card`, archivedAt: `2026-10-01T00:00:00Z` }),
     ], TEXT)
-    expect(rows).toEqual([
+    expect(rows.map(({ aliases: _, ...row }) => row)).toEqual([
       { id: WALLET, label: `Wallet`, detail: undefined, href: `/accounts/${WALLET}` },
       { id: `old`, label: `Old card`, detail: `Archived`, href: `/accounts/old` },
     ])
   })
 
-  it(`passes an account's aliases for search to match, and none for an account without any`, () => {
+  it(`finds an account by "switch to" and its name, in English and in the person's language`, () => {
+    const rows = [
+      ...accountRecords([account(), account({ id: `bank`, name: `Bank` })], TEXT),
+      ...accountRecords([account({ id: `cash`, name: `Наличные` })], RUSSIAN_TEXT),
+    ]
+    expect(found(`switch to wallet`, rows)).toEqual([`Wallet`])
+    expect(found(`switch to наличные`, rows)).toEqual([`Наличные`])
+    expect(found(`переключиться на наличные`, rows)).toEqual([`Наличные`])
+  })
+
+  it(`passes an account's own aliases for search to match, and none of its own for one without any`, () => {
     const rows = accountRecords([
       account({ aliases: [`Card`, `Наличка`] }),
       account({ id: `bank`, name: `Bank`, aliases: [] }),
       account({ id: `old`, name: `Old card` }),
     ], TEXT)
 
-    expect(rows.map((row) => row.aliases)).toEqual([[`Card`, `Наличка`], undefined, undefined])
+    const own = rows.map((row) => row.aliases?.filter((alias) => !alias.includes(row.label)))
+    expect(own).toEqual([[`Card`, `Наличка`], [], []])
   })
 })
 

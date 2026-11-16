@@ -20,6 +20,7 @@ import {
   TRANSACTION_PATHS,
 } from "@ui/progressive.tsx"
 import type { PaletteRecord, PaletteRecordSource } from "@ui/search-palette.tsx"
+import { englishText } from "@ui/message.ts"
 import type { AccountItem } from "../state/accounts.ts"
 import type { CategoryItem } from "../state/categories.ts"
 import type { PaletteData } from "../state/palette-data.ts"
@@ -81,8 +82,8 @@ export function transactionRecords(
 }
 
 /**
- * Each account as a row opening its page; an archived one says so. Its aliases let search find it
- * by the person's own words for it.
+ * Each account as a row opening its page; an archived one says so. Found by its name, by "Switch
+ * to …" in the person's language and in English, and by the person's own words for it.
  */
 export function accountRecords(
   accounts: readonly AccountItem[],
@@ -94,7 +95,11 @@ export function accountRecords(
     label: account.name,
     detail: account.archivedAt === null ? undefined : archived,
     href: ACCOUNT_PATHS.account(account.id),
-    aliases: account.aliases?.length ? account.aliases : undefined,
+    aliases: [
+      text.t.t(`Search.switchToAccount`, { account: account.name }),
+      englishText(`Search.switchToAccount`, { account: account.name }),
+      ...account.aliases ?? [],
+    ],
   }))
 }
 
