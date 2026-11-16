@@ -26,6 +26,7 @@ import {
 import { createAdminRoute } from "./+routes.ts"
 import { BUDGET_WIDGETS } from "@domain/budgets"
 import { CATEGORY_WIDGETS, MONEY_WIDGETS } from "@domain/transactions"
+import { ACCOUNT_WIDGETS } from "@domain/accounts"
 import {
   ADMIN_GROUP_FILE_CROSS_SITE,
   ADMIN_GROUP_FILE_NOT_FOUND,
@@ -752,8 +753,8 @@ describe(`admin group widgets: what the operator may read`, () => {
     expect(reads).toEqual([])
   })
 
-  it(`answers 404 for the household's money, categories and budgets widgets, reading nothing even when a reader is wired`, async () => {
-    const figures = [...MONEY_WIDGETS, ...CATEGORY_WIDGETS, ...BUDGET_WIDGETS]
+  it(`answers 404 for the household's money, categories, budgets and balances widgets, reading nothing even when a reader is wired`, async () => {
+    const figures = [...MONEY_WIDGETS, ...CATEGORY_WIDGETS, ...BUDGET_WIDGETS, ...ACCOUNT_WIDGETS]
     const moneyIds = figures.map((definition) => definition.id)
     // The operator's own list has no reader for them, and none of them is a counts one.
     expect(moneyIds.filter((id) => Object.hasOwn(ADMIN_WIDGETS.readers, id))).toEqual([])

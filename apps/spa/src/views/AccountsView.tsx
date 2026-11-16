@@ -7,7 +7,7 @@ import { useAppText } from "@ui/i18n.ts"
 import { type AccountItem, accountsStore } from "../state/accounts.ts"
 import { groupsStore } from "../state/groups.ts"
 import { householdTotalStore } from "../state/household-total.ts"
-import { selectionStore } from "../state/selection.ts"
+import { useLinkedGroup } from "./linked-group.ts"
 import { toasts } from "../state/toasts.ts"
 import { accountActions } from "./account-actions.ts"
 
@@ -27,13 +27,15 @@ export function accountRow(account: AccountItem): AccountRow {
 
 /**
  * Wires the accounts page to the accounts store for `/accounts`: the accounts of the person's
- * selected household. Whoever may write notes may change accounts; a viewer reads them.
+ * selected household, or the one the address names (the overview's balances card links here with
+ * its household, `useLinkedGroup`). Whoever may write notes may change accounts; a viewer reads
+ * them.
  */
 export function AccountsView() {
   const [, navigate] = useLocation()
   const t = useAppText()
   const store = accountsStore
-  const groupId = selectionStore.groupId.value
+  const groupId = useLinkedGroup()
   useEffect(() => {
     if (groupId) void Promise.all([store.open(groupId), householdTotalStore.open(groupId)])
   }, [groupId])

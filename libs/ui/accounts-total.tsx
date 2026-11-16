@@ -45,8 +45,11 @@ export function AccountsTotal({ total }: AccountsTotalProps): JSX.Element {
   )
 }
 
-/** The amount, the rate and coin price dates, and what was left out, in the region format. */
-function TotalText({ total }: { total: HouseholdTotal }): JSX.Element {
+/**
+ * The amount, the rate and coin price dates, and what was left out, in the region format. The
+ * overview's balances card draws it too, so the two never word the total differently.
+ */
+export function TotalText({ total }: { total: HouseholdTotal }): JSX.Element {
   const t = useAppText()
   const format = useFormat()
   const amount = total.amount === null
