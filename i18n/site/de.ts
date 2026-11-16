@@ -5,7 +5,7 @@ export default {
   "SiteNav.docs": "Doku",
   "SiteNav.blog": "Blog",
   "SiteNav.github": "GitHub",
-  "HeaderAction.github": "GitHub",
+  "HeaderAction.selfHost": "Selbst hosten",
   "SiteFrame.skip": "Zum Inhalt springen",
   "SiteFooter.pitch":
     "Ein Haushaltsbuch für dich oder deine Familie, in beliebig vielen Währungen.",
@@ -558,6 +558,7 @@ export default {
     "Ja. Ein optionales tägliches, verschlüsseltes restic-Backup der Datenbank, mit einer schriftlichen Anleitung zur Wiederherstellung.",
   "ErrorPage.status": "Ansehen, was heute funktioniert",
   "HomeHero.notify": "Benachrichtigen lassen",
+  "HomeHero.selfHost": "Financy selbst hosten",
   "HomeProof.languages": "Sprachen in der App und auf dieser Website",
   "HomeStatus.selfHost": "Betrieb auf deinem eigenen Server mit Docker Compose",
   "HomeStatus.building": "In Arbeit",
@@ -581,7 +582,7 @@ export default {
   "HomeWays.selfHostTitle": "Selbst hosten",
   "HomeWays.selfHostText":
     "Kostenlos unter der AGPL‑3.0-Lizenz. Es läuft mit Docker Compose auf deinem Server, und deine Daten bleiben dort.",
-  "HomeWays.selfHostLink": "Den Code auf GitHub lesen",
+  "HomeWays.selfHostLink": "Die Anleitung zum Selbsthosten lesen",
   "HomeWays.cloudTitle": "Die Cloud",
   "HomeWays.cloudText":
     "Noch nicht gestartet. Derselbe Code, für dich betrieben, als bezahlter Tarif.",

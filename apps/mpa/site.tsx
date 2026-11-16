@@ -311,6 +311,9 @@ export const NAV_LINKS = [
   { label: `SiteNav.github`, href: REPOSITORY_URL, Icon: IconGitHub },
 ] as const
 
+/** The self-hosting guide, the site's main action: the header's button and the home page's. */
+export const SELF_HOST_GUIDE = `${DOCS_PATH}/self-host`
+
 /**
  * The frame of every page of the public website: its head tags, a link that skips to the content,
  * the header with the language menu and the one call to action, the content as full-width bands,
@@ -394,7 +397,7 @@ export function SiteFrame(
                 href={languageHref}
               />
             </div>
-            <HeaderAction newsletter={state.newsletter === true} />
+            <HeaderAction />
           </>
         }
       />
@@ -438,35 +441,20 @@ export function SiteFrame(
   )
 }
 
-/**
- * The header's one call to action: "Get notified" leads to the home page's newsletter form while
- * the API takes subscriptions, and the repository otherwise, so it never leads to a missing form.
- */
-function HeaderAction({ newsletter }: { newsletter: boolean }): JSX.Element {
+/** The header's one call to action: the self-hosting guide, in the page's language. */
+function HeaderAction(): JSX.Element {
   const { t, href } = useSite()
-  return newsletter
-    ? (
-      <Button
-        href={`${href(`/`)}#newsletter`}
-        size="sm"
-        data-e2e="site-notify"
-        data-umami-event="notify"
-        data-umami-event-from="header"
-      >
-        {t.t(`HomeHero.notify`)}
-      </Button>
-    )
-    : (
-      <Button
-        href={REPOSITORY_URL}
-        size="sm"
-        data-e2e="site-github"
-        data-umami-event="github"
-        data-umami-event-from="header"
-      >
-        {t.t(`HeaderAction.github`)}
-      </Button>
-    )
+  return (
+    <Button
+      href={href(SELF_HOST_GUIDE)}
+      size="sm"
+      data-e2e="site-self-host"
+      data-umami-event="self-host"
+      data-umami-event-from="header"
+    >
+      {t.t(`HeaderAction.selfHost`)}
+    </Button>
+  )
 }
 
 /**

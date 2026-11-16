@@ -20,8 +20,21 @@ const english = (path: string) => path
 const german = (path: string) => `/de${path}`
 
 describe(`rewriteDocLinks`, () => {
+  // Two guides as a fixed list, so these tests hold whatever guides docs-list.ts publishes.
+  const guides = [{
+    title: `Guides`,
+    docs: [
+      { file: `docs/deploy.md`, slug: `deploy`, summary: ``, text: `# Deploy\n\n## Releases\n` },
+      {
+        file: `docs/aggregates.md`,
+        slug: `aggregates`,
+        summary: ``,
+        text: `# Aggregates\n\n## 2. Database: \`libs/server/db/\`\n`,
+      },
+    ],
+  }]
   const rewrite = (href: string, localize = english, self?: string) =>
-    rewriteDocLinks(`<p><a href="${href}">x</a></p>`, localize, self)
+    rewriteDocLinks(`<p><a href="${href}">x</a></p>`, localize, self, guides)
 
   it(`points a published guide at its page, in the page's language, with its anchor`, () => {
     expect(rewrite(`deploy.md`)).toBe(`<p><a href="/docs/deploy">x</a></p>`)
@@ -109,8 +122,8 @@ describe(`rewriteDocLinks`, () => {
 })
 
 describe(`the published guides`, () => {
-  it(`publishes the guides of docs/README.md and never an internal doc`, () => {
-    expect(DOC_SLUGS).toContain(`deploy`)
+  it(`publishes Financy's own guides and never an internal doc`, () => {
+    expect(DOC_SLUGS).toContain(`self-host`)
     for (
       const slug of [
         `handoff`,
