@@ -35,6 +35,7 @@ import {
   goneAccount,
   offlineTransfers as transfersOverLayer,
 } from "./offline/transfers-collection.ts"
+import { offlineRecurring as recurringOverLayer } from "./offline/recurring-rules.ts"
 import { conflictsToReview, OfflineStatus as OfflineStatusLine } from "./offline/OfflineStatus.tsx"
 import { benchmarkLocalData as benchmarkOverLayer } from "./offline/benchmark.ts"
 import {
@@ -664,6 +665,10 @@ export const offlineTransactions = transactionsOverLayer
 
 /** The transfers store's server dependencies with the device copy and the queue in front. */
 export const offlineTransfers = transfersOverLayer
+
+/** The repeating rules store's server dependencies with the device copy in front of the reads. */
+export const offlineRecurring = (online: Parameters<typeof recurringOverLayer>[0]) =>
+  recurringOverLayer(online, currentLayer)
 
 /** The offline status line and the conflict screen. */
 export const OfflineStatus = OfflineStatusLine

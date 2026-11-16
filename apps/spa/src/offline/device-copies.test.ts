@@ -219,6 +219,101 @@ describe("the notes and tags a device keeps in IndexedDB", () => {
       .toEqual(["evening", "older"])
   })
 
+  it("keeps a household's repeating rules, oldest first, and drops one deleted later", async () => {
+    const { copyOf } = browser()
+    // The row `listChanged` reads, every nullable column `null`, as a rule with no end has.
+    const rule = (id: string, createdAt: string, more: Record<string, unknown> = {}) => ({
+      id,
+      groupId,
+      accountId: "a-1",
+      categoryId: "c-1",
+      kind: 1,
+      amount: 120000,
+      currency: "EUR",
+      accountAmount: null,
+      memo: "Rent",
+      rrule: "FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1",
+      startDate: "2026-12-01",
+      endDate: null,
+      count: null,
+      skippedDates: [],
+      madeThrough: null,
+      pausedReason: null,
+      version: 1,
+      changeSequence: "1",
+      createdByUserId: null,
+      updatedByUserId: null,
+      createdAt,
+      updatedAt: createdAt,
+      deletedAt: null,
+      ...more,
+    })
+    const page = (after: number, through: number, rows: unknown[], gone: unknown[] = []) => ({
+      ...(changes(after, through) as object),
+      upserts: { recurring_rules: rows },
+      tombstones: gone,
+    })
+    const copy = copyOf(7, [
+      // The ids sort the other way round, so only the created time puts "first" first.
+      page(0, 3, [
+        rule("z-second", "2026-11-02T00:00:00.000Z", {
+          accountAmount: 99000,
+          endDate: "2027-12-01",
+          skippedDates: ["2027-01-01"],
+          madeThrough: "2026-12-01",
+          pausedReason: 2,
+        }),
+        rule("y-third", "2026-11-03T00:00:00.000Z", { count: 12 }),
+        rule("x-first", "2026-11-01T00:00:00.000Z"),
+      ]),
+      page(3, 4, [], [{ kind: "recurring_rules", id: "y-third" }]),
+    ])
+    const held = async () => (await copy.recurringRules.readRules(groupId)).map((row) => row.id)
+
+    await copy.pull(groupId)
+    expect(await held()).toEqual(["x-first", "z-second", "y-third"])
+    await copy.pull(groupId)
+    expect(await held()).toEqual(["x-first", "z-second"])
+  })
+
+  it("refuses a page with a repeating rule it cannot read, and keeps the copy it had", async () => {
+    const { copyOf } = browser()
+    const valid = {
+      id: "r-1",
+      groupId,
+      accountId: "a-1",
+      categoryId: "c-1",
+      kind: 2,
+      amount: 500,
+      currency: "EUR",
+      accountAmount: null,
+      memo: "",
+      rrule: "FREQ=WEEKLY;INTERVAL=1",
+      startDate: "2026-12-01",
+      endDate: null,
+      count: null,
+      skippedDates: [],
+      madeThrough: null,
+      pausedReason: null,
+      ...stamps,
+      deletedAt: null,
+    }
+    const page = (after: number, through: number, rows: unknown[]) => ({
+      ...(changes(after, through) as object),
+      upserts: { recurring_rules: rows },
+    })
+    const copy = copyOf(7, [
+      page(0, 1, [valid]),
+      page(1, 2, [{ ...valid, id: "r-2", amount: 1.5 }]),
+    ])
+    await copy.pull(groupId)
+
+    await expect(copy.pull(groupId)).rejects.toThrow("amount")
+
+    expect((await copy.recurringRules.readRules(groupId)).map((row) => row.id)).toEqual(["r-1"])
+    expect(copy.asked).toEqual([0, 1])
+  })
+
   it("asks only for the changes after its cursor, and drops the notes the server sends as gone", async () => {
     const { copyOf, notesOf } = browser()
     const edited = note("a", groupId, { title: "Edited", version: 2 })

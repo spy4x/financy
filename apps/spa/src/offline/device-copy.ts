@@ -15,11 +15,14 @@ import type { TransactionItem } from "../state/transactions.ts"
 import type { TransactionsCache } from "./transactions-cache.ts"
 import type { TransferItem } from "../state/transfers.ts"
 import type { TransfersCache } from "./transfers-cache.ts"
+import type { RecurringRuleItem } from "../state/recurring.ts"
+import type { RecurringRulesCache } from "./recurring-rules.ts"
 import { byDate } from "../state/transaction-order.ts"
+import { byCreated } from "../state/recurring-order.ts"
 
 /**
- * The device's copy of each group's notes, tags, entries and transfers, kept by the changes pull of
- * `@spy4x/realtime/changes` (`docs/offline-data.md`, "Notes and tags: the changes pull"). One database per user
+ * The device's copy of each group's notes, tags, entries, transfers and repeating rules, kept by the
+ * changes pull of `@spy4x/realtime/changes` (`docs/offline-data.md`, "Notes and tags: the changes pull"). One database per user
  * holds every group's rows and the sequence they are complete through, written together, so a
  * read after a pull asks the server only for what changed since the last one.
  */
@@ -30,6 +33,8 @@ export interface ChangesRows {
   tags: TagItem
   transactions: TransactionItem
   transfers: TransferItem
+  /** The server's kind is the table's name (`libs/server/recurring/recurring-rule-changes.ts`). */
+  recurring_rules: RecurringRuleItem
 }
 
 const stamps = {
@@ -68,6 +73,24 @@ const transferRow = type({
   date: "string",
   deletedAt: "string | null",
 })
+const recurringRuleRow = type({
+  ...stamps,
+  accountId: "string",
+  categoryId: "string",
+  kind: "1 | 2",
+  amount: "number.integer",
+  currency: "string",
+  accountAmount: "number.integer | null",
+  memo: "string",
+  rrule: "string",
+  startDate: "string",
+  endDate: "string | null",
+  count: "number.integer | null",
+  skippedDates: "string[]",
+  madeThrough: "string | null",
+  pausedReason: "number.integer | null",
+  deletedAt: "string | null",
+})
 
 /** How the pull checks each kind of row the server sends. */
 export const CHANGES_KINDS: ChangesKinds<ChangesRows> = {
@@ -80,6 +103,10 @@ export const CHANGES_KINDS: ChangesKinds<ChangesRows> = {
   transfers: {
     row: { assert: (value) => transferRow.assert(value) as TransferItem },
     id: (transfer) => transfer.id,
+  },
+  recurring_rules: {
+    row: { assert: (value) => recurringRuleRow.assert(value) as RecurringRuleItem },
+    id: (rule) => rule.id,
   },
 }
 
@@ -105,6 +132,7 @@ export interface DeviceCopy {
   tags: TagsCache
   transactions: TransactionsCache
   transfers: TransfersCache
+  recurringRules: RecurringRulesCache
 }
 
 /** What {@link deviceCopy} is built from. */
@@ -122,7 +150,7 @@ function byNewest(a: NoteItem, b: NoteItem): number {
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
 }
 
-const NO_ROWS = { notes: [], tags: [], transactions: [], transfers: [] }
+const NO_ROWS = { notes: [], tags: [], transactions: [], transfers: [], recurring_rules: [] }
 
 /**
  * The copy behind the notes and tags views. A row a write answered with (`putNote`, `putTag`) is
@@ -223,6 +251,14 @@ export function deviceCopy({ copy, fetch, lock }: DeviceCopyOptions): DeviceCopy
       },
       putTransfer: (transfer) => put("transfers", transfer),
       removeTransfer: (transferId) => removeEverywhere("transfers", transferId),
+    },
+    recurringRules: {
+      async readRules(groupId) {
+        known.add(groupId)
+        return (await copy.read("recurring_rules", groupId)).sort(byCreated)
+      },
+      putRule: (rule) => put("recurring_rules", rule),
+      removeRule: (ruleId) => removeEverywhere("recurring_rules", ruleId),
     },
   }
 }
