@@ -169,8 +169,8 @@ describe("text typed in the search palette", () => {
   it("fills the next new entry's memo and amount, read in its prefilled currency", () => {
     const usd = harness().store
     const jpy = harness().store
-    usd.fillTyped("coffee 4,50")
-    jpy.fillTyped("coffee 4,50")
+    usd.fillTyped("coffee 4,50", groupId)
+    jpy.fillTyped("coffee 4,50", groupId)
 
     usd.startCreate(blank)
     jpy.startCreate({ ...blank, currency: "JPY" })
@@ -182,7 +182,7 @@ describe("text typed in the search palette", () => {
 
   it("fills only the memo when the text has no amount", () => {
     const { store } = harness()
-    store.fillTyped("coffee with Ann")
+    store.fillTyped("coffee with Ann", groupId)
 
     store.startCreate({ ...blank, amount: null })
 
@@ -193,15 +193,25 @@ describe("text typed in the search palette", () => {
     const { store } = await newEntry()
     store.change({ categoryId: null })
 
-    store.fillTyped("coffee 4.50")
+    store.fillTyped("coffee 4.50", groupId)
 
     expect(fields(store)).toEqual({ memo: "coffee", amount: 450, currency: "USD" })
     expect(store.form.value?.categoryId).toBe(null)
   })
 
+  it("reaches the new group's quick entry past a new entry left open in the group before", async () => {
+    const { store } = await newEntry()
+
+    store.fillTyped("coffee 4.50", "g-2")
+    await store.open("g-2")
+    store.startCreate(blank)
+
+    expect(fields(store)).toEqual({ memo: "coffee", amount: 450, currency: "USD" })
+  })
+
   it("does not leak into a later plain new entry", () => {
     const { store } = harness()
-    store.fillTyped("coffee 4.50")
+    store.fillTyped("coffee 4.50", groupId)
     store.startCreate(blank)
     store.closeForm()
 

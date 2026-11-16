@@ -259,17 +259,17 @@ export interface TransactionReferences {
   categoryKind(categoryId: string): CategoryKind | undefined
 }
 
-/**
- * The entries of one household: the list (offline-writable, ADR 003 level 3, from the device's
- * copy with the queued writes applied), the deleted list while it is shown, the one editor the
- * transaction pages open, and the Undo a delete offers.
- */
 /** The memo, and the amount when the text has one, that `text` gives a form in `currency`. */
 function typedFields(text: string, currency: string | null): Partial<TransactionFormValue> {
   const { memo, amount } = splitTypedEntry(text, currency)
   return amount === null ? { memo } : { memo, amount }
 }
 
+/**
+ * The entries of one household: the list (offline-writable, ADR 003 level 3, from the device's
+ * copy with the queued writes applied), the deleted list while it is shown, the one editor the
+ * transaction pages open, and the Undo a delete offers.
+ */
 export function createTransactionsStore(
   dependencies: TransactionsDependencies,
   references: TransactionReferences,
@@ -364,13 +364,16 @@ export function createTransactionsStore(
   }
 
   /**
-   * Hands text typed in the search palette (`coffee 4.50`) to the quick entry: a new entry's form
-   * already open takes its memo and amount now, as typed changes; else the next
-   * {@link startCreate} takes them, once.
+   * Hands text typed in the search palette (`coffee 4.50`) to the quick entry of `inGroup`: a new
+   * entry's form already open in that group takes its memo and amount now, as typed changes; else
+   * the next {@link startCreate} takes them, once. A form left over from another group is dropped
+   * when the quick entry opens that group, so it never takes the text.
    */
-  function fillTyped(text: string): void {
+  function fillTyped(text: string, inGroup: string): void {
     const current = form.value
-    if (current?.id === null) return change(typedFields(text, current.currency))
+    if (current?.id === null && groupId.value === inGroup) {
+      return change(typedFields(text, current.currency))
+    }
     typed = text
   }
 

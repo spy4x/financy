@@ -315,7 +315,7 @@ export function AppShell(
         return note?.id ?? null
       },
       fillForm: (entity, name) => {
-        if (entity === "transaction") return transactionsStore.fillTyped(name)
+        if (entity === "transaction") return transactionsStore.fillTyped(name, current?.id ?? "")
         if (entity === "group") return groupsStore.startCreate(name)
         // The tag is made in the current group, which the tags page may not have opened yet.
         if (current) void tagsStore.open(current.id)
