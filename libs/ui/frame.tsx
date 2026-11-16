@@ -31,6 +31,7 @@ import {
   type Navigate,
   NOTE_PATHS,
   OVERVIEW_PATHS,
+  RECURRING_PATHS,
   SCREEN_PATHS,
   ScreenForm,
   TAG_PATHS,
@@ -45,9 +46,10 @@ import { useAppText } from "./i18n.ts"
  * The daily destinations, in the order the rail and the phone tab bar show them. The rail shows
  * them all; the phone bar shows the first four and moves the rest into the Account sheet behind its
  * last slot, so the order puts the destinations used most first. Activity belongs to the selected group and
- * shows only while there is one whose log the person may read. Profile, Categories, Budgets, Tags
- * and Notes are in the account menu (both left out with the notes off); Tags is in Notes' "More
- * actions" too. Labels come from `t`, the app's translator.
+ * shows only while there is one whose log the person may read. Profile, Categories, Budgets,
+ * Repeating entries, Tags and Notes are in the account menu (the last two left out with the notes
+ * off); Tags is in Notes' "More actions" too, and Repeating entries in Transactions'. Labels come
+ * from `t`, the app's translator.
  */
 export function navItems(
   activityGroupId: string | null,
@@ -298,6 +300,7 @@ export function AppFrame(
         items: [
           { label: t.t("Frame.categories"), href: CATEGORY_PATHS.list },
           { label: t.t("Frame.budgets"), href: BUDGET_PATHS.list },
+          { label: t.t("Frame.recurring"), href: RECURRING_PATHS.list },
           ...(notes
             ? [
               { label: t.t("Frame.tags"), href: TAG_PATHS.list },

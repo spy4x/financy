@@ -661,6 +661,18 @@ export default {
   "FeatureBudgets.fact3":
     "Definir um limite exige o plano Household; ver os orçamentos e remover um limite, nunca; o servidor confere",
   "FeatureBudgets.code": "Ler o código dos orçamentos",
+  "HomeStatus.recurring": "Lançamentos recorrentes para aluguel, salário e assinaturas",
+  "FeatureRecurring.nav": "Lançamentos recorrentes",
+  "FeatureRecurring.title": "Aluguel, salário e assinaturas que se lançam sozinhos",
+  "FeatureRecurring.lead":
+    "Cadastre um lançamento recorrente uma vez: todo dia, toda semana nos dias que você escolher, todo mês ou todo ano, até uma data ou por um número de vezes. O Financy lança cada um na sua data, convertido pela cotação daquele dia, e mostra os próximos 30 dias para você pular um.",
+  "FeatureRecurring.fact1":
+    "Um lançamento mensal cai num dia de 1 a 28 ou no último dia do mês, para nenhum mês ficar de fora",
+  "FeatureRecurring.fact2":
+    "Uma conta ou categoria arquivada pausa a regra e diz por quê; as datas perdidas são lançadas assim que isso for resolvido",
+  "FeatureRecurring.fact3":
+    "Criar um lançamento recorrente exige o plano Household; vê-los, nunca; o servidor confere",
+  "FeatureRecurring.code": "Ler o código dos lançamentos recorrentes",
   "FeatureTransactions.nav": "Lançamentos",
   "FeatureTransactions.title": "Cada despesa e receita, na moeda em que você pagou",
   "FeatureTransactions.lead":

@@ -5,6 +5,7 @@ import {
   GROUP_PATHS,
   NOTE_PATHS,
   OVERVIEW_PATHS,
+  RECURRING_PATHS,
   SCREEN_PATHS,
   TAG_PATHS,
   TRANSACTION_PATHS,
@@ -79,6 +80,7 @@ export function spaShortcutRows(ports: SpaShortcutPorts): ShortcutRow[] {
       : []),
     go("g c", `Frame.categories`, CATEGORY_PATHS.list),
     go("g b", `Frame.budgets`, BUDGET_PATHS.list),
+    go("g r", `Frame.recurring`, RECURRING_PATHS.list),
     ...(ports.activityGroupId === null
       ? []
       : [go("g a", `Frame.activity`, GROUP_PATHS.activity(ports.activityGroupId))]),

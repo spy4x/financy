@@ -20,6 +20,7 @@ import {
   recurringRuleCreatePayloadSchema,
   recurringRuleUpdatePayloadSchema,
   skipDate,
+  upcomingDates,
 } from "./+lib.ts"
 
 const groupId = `019a5b0e-1af5-7f04-8ae4-b1ee5d111002`
@@ -400,5 +401,52 @@ describe(`why the job pauses a rule`, () => {
     expect(pauseReasonOf(GroupRole.EDITOR, null, live)).toBe(RecurringPauseReason.ACCOUNT_ARCHIVED)
     expect(pauseReasonOf(GroupRole.EDITOR, live, archived))
       .toBe(RecurringPauseReason.CATEGORY_ARCHIVED)
+  })
+})
+
+describe(`the dates a rule will still make`, () => {
+  /** On the 16th of every month from 16 October 2026, not yet made. */
+  const monthly = {
+    rrule: `FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=16`,
+    startDate: `2026-10-16`,
+    endDate: null,
+    count: null,
+    skippedDates: [] as string[],
+    madeThrough: null,
+  }
+
+  it(`starts on the day asked, includes it, and stops at the most asked for`, () => {
+    expect(upcomingDates(monthly, `2026-11-16`, 3))
+      .toEqual([`2026-11-16`, `2026-12-16`, `2027-01-16`])
+  })
+
+  it(`starts after the day the rule is made through`, () => {
+    expect(upcomingDates({ ...monthly, madeThrough: `2026-11-16` }, `2026-11-16`, 1))
+      .toEqual([`2026-12-16`])
+    expect(upcomingDates({ ...monthly, madeThrough: `2026-11-15` }, `2026-11-16`, 1))
+      .toEqual([`2026-11-16`])
+  })
+
+  it(`leaves out a skipped date and goes on to the next`, () => {
+    expect(upcomingDates({ ...monthly, skippedDates: [`2026-11-16`] }, `2026-11-01`, 2))
+      .toEqual([`2026-12-16`, `2027-01-16`])
+  })
+
+  it(`ends at the rule's end date and after its count, counted from the start`, () => {
+    expect(upcomingDates({ ...monthly, endDate: `2026-12-16` }, `2026-11-01`, 5))
+      .toEqual([`2026-11-16`, `2026-12-16`])
+    expect(upcomingDates({ ...monthly, count: 3 }, `2026-11-01`, 5))
+      .toEqual([`2026-11-16`, `2026-12-16`])
+  })
+
+  it(`ends at the last day asked for, included`, () => {
+    expect(upcomingDates(monthly, `2026-11-01`, 10, `2026-12-16`))
+      .toEqual([`2026-11-16`, `2026-12-16`])
+    expect(upcomingDates(monthly, `2026-11-01`, 10, `2026-12-15`)).toEqual([`2026-11-16`])
+  })
+
+  it(`does not start before the start date, and has none for a repeat it cannot read`, () => {
+    expect(upcomingDates(monthly, `2026-01-01`, 1)).toEqual([`2026-10-16`])
+    expect(upcomingDates({ ...monthly, rrule: `FREQ=NOPE` }, `2026-11-01`, 3)).toEqual([])
   })
 })

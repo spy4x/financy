@@ -75,6 +75,8 @@ import { NotesView } from "./views/NotesView.tsx"
 import { TagsView } from "./views/TagsView.tsx"
 import { AccountsView } from "./views/AccountsView.tsx"
 import { BudgetsView } from "./views/BudgetsView.tsx"
+import { RecurringView } from "./views/RecurringView.tsx"
+import { RecurringEditorView } from "./views/RecurringEditorView.tsx"
 import { CategoriesView } from "./views/CategoriesView.tsx"
 import { CategoryEditorView } from "./views/CategoryEditorView.tsx"
 import { AccountEditorView } from "./views/AccountEditorView.tsx"
@@ -203,6 +205,11 @@ const PAGES: {
     <CategoryEditorView key={params.categoryId} categoryId={params.categoryId} />
   ),
   "/budgets": () => <BudgetsView />,
+  "/recurring": () => <RecurringView />,
+  "/recurring/new": () => <RecurringEditorView key="new" />,
+  "/recurring/:ruleId": (params) => (
+    <RecurringEditorView key={params.ruleId} ruleId={params.ruleId} />
+  ),
   "/tags": () => <TagsView />,
   "/tags/new": () => <TagEditorView key="new" />,
   "/tags/:tagId": (params) => <TagEditorView key={params.tagId} tagId={params.tagId} />,

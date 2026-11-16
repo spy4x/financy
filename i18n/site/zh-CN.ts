@@ -587,6 +587,15 @@ export default {
   "FeatureBudgets.fact2": "支出是花费减去退款；还没有汇率的币种会被列出，而不是悄悄丢掉",
   "FeatureBudgets.fact3": "设置限额需要 Household 套餐；查看预算和移除限额从不需要，由服务器检查",
   "FeatureBudgets.code": "阅读预算代码",
+  "HomeStatus.recurring": "房租、工资和订阅的定期交易",
+  "FeatureRecurring.nav": "定期交易",
+  "FeatureRecurring.title": "房租、工资和订阅，自动记账",
+  "FeatureRecurring.lead":
+    "定期交易只需添加一次：每天、每周的指定几天、每月或每年，可设结束日期或次数。Financy 会在每个日期按当天汇率换算并记一笔，还会列出未来 30 天，方便你跳过某一次。",
+  "FeatureRecurring.fact1": "每月的交易可设在 1 日到 28 日或每月最后一天，不会漏掉任何一个月",
+  "FeatureRecurring.fact2": "账户或分类归档后，规则会暂停并说明原因；问题解决后会补记错过的日期",
+  "FeatureRecurring.fact3": "添加定期交易需要 Household 套餐；查看从不需要，由服务器检查",
+  "FeatureRecurring.code": "阅读定期交易代码",
   "FeatureTransactions.nav": "交易",
   "FeatureTransactions.title": "每一笔支出和收入，都按你付款的币种记录",
   "FeatureTransactions.lead":
