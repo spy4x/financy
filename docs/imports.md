@@ -220,7 +220,7 @@ screen for it yet; the API takes it like any kind.
   none. Left out, it is the household's base currency. Firefly III names each row's currency, and
   that wins.
 - **Refused files.** A file of no app above, an export over the caps (including an Actual database
-  that inflates past 64 MiB) and one with no entries are refused in words, quoting nothing from the
+  that inflates past 32 MiB) and one with no entries are refused in words, quoting nothing from the
   file. A row the reader cannot read becomes a refused row naming its line; the rest stay.
 - **Each row.** An entry or a transfer, named in the `Kind` column. An amount with more decimals
   than its currency has is refused. In a currency without decimals, YNAB's amounts are read again

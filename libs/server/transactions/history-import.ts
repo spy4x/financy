@@ -37,6 +37,7 @@ import {
   parseFireflyIii,
   parseYnab,
 } from "@spy4x/bank-statements/app-exports"
+import { AsyncMutex } from "@spy4x/platform/universal/concurrency"
 import { decodeTextFile } from "@spy4x/platform/universal/csv"
 import {
   currencyDecimals,
@@ -110,8 +111,19 @@ const PLACEHOLDER_CURRENCY = `CLF`
  */
 const WHOLE_CURRENCY = `JPY`
 
-/** The most bytes Actual Budget's database may inflate to: a 5 MiB zip of years of history. */
-const ACTUAL_DATABASE_MAX_BYTES = 64 * 1024 * 1024
+/**
+ * The most bytes Actual Budget's database may inflate to: years of history. One read near the cap
+ * adds about three times the database to the process's memory, which must fit next to the rest of
+ * the API and the worker.
+ */
+export const ACTUAL_DATABASE_MAX_BYTES = 32 * 1024 * 1024
+
+/**
+ * One Actual Budget read at a time in this process: a tiny zip can inflate to a database near
+ * {@link ACTUAL_DATABASE_MAX_BYTES}, and every check request reads the file again, so parallel
+ * requests would each hold one in memory. Exported for its test only.
+ */
+export const actualReads = new AsyncMutex()
 
 /** Rows one write inserts: well under Postgres's 65,535 parameters at sixteen columns a row. */
 const WRITE_BATCH = 1_000
@@ -241,14 +253,18 @@ export const historyImportKind = importKind<HistoryValue>({
     }
     const liveCategories = stored.categories.filter((one) => !one.archived).length +
       plan.categories.length
-    if (
-      liveCategories > CATEGORY_MAX_PER_GROUP ||
-      stored.categories.length + plan.categories.length > CATEGORY_MAX_STORED
-    ) {
+    if (liveCategories > CATEGORY_MAX_PER_GROUP) {
       throw new ImportError(
         `IMPORT_REFUSED`,
         `The export needs ${plan.categories.length} new categories, but a household holds at ` +
           `most ${CATEGORY_MAX_PER_GROUP}`,
+      )
+    }
+    if (stored.categories.length + plan.categories.length > CATEGORY_MAX_STORED) {
+      throw new ImportError(
+        `IMPORT_REFUSED`,
+        `The export needs ${plan.categories.length} new categories, but a household keeps at ` +
+          `most ${CATEGORY_MAX_STORED}, archived ones included`,
       )
     }
     const accountIds: string[] = []
@@ -383,15 +399,17 @@ export const historyImportKind = importKind<HistoryValue>({
     }
     // Then the accounts and categories the batch created, except one that anything outside the
     // batch names now, live or deleted: as the account's own delete refuses, and as a category in
-    // use stays live. Such a record is kept as it is.
+    // use stays live. Such a record is kept as it is, and so is an account made the household's
+    // default since, which would otherwise leave the household without one.
     for (let start = 0; start < ids.length; start += WRITE_BATCH) {
       const batch = ids.slice(start, start + WRITE_BATCH)
       await tx`
         UPDATE accounts
-        SET deleted_at = CURRENT_TIMESTAMP, is_default = false, version = version + 1,
+        SET deleted_at = CURRENT_TIMESTAMP, version = version + 1,
             updated_by_user_id = ${context.actorId}, updated_at = CURRENT_TIMESTAMP,
             change_sequence = ${context.changeSequence}::bigint
         WHERE group_id = ${context.groupId} AND deleted_at IS NULL AND id IN ${tx(batch)}
+          AND NOT is_default
           AND NOT EXISTS (
             SELECT 1 FROM transactions
             WHERE transactions.group_id = accounts.group_id
@@ -508,11 +526,13 @@ export async function readHistoryFile(bytes: Uint8Array): Promise<Result<ReadHis
       // each reader looks for its own entry before it reads anything else.
       try {
         read = {
-          history: await parseActualBudget(bytes, {
-            ...limits,
-            maxDatabaseBytes: ACTUAL_DATABASE_MAX_BYTES,
-            currency: PLACEHOLDER_CURRENCY,
-          }),
+          history: await actualReads.runExclusive(() =>
+            parseActualBudget(bytes, {
+              ...limits,
+              maxDatabaseBytes: ACTUAL_DATABASE_MAX_BYTES,
+              currency: PLACEHOLDER_CURRENCY,
+            })
+          ),
           placeholder: true,
           whole: null,
         }

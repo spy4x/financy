@@ -14,6 +14,8 @@ import {
   ynabZip,
 } from "./history-fixtures.ts"
 import {
+  ACTUAL_DATABASE_MAX_BYTES,
+  actualReads,
   detectHistoryFormat,
   historyImportKind,
   type HistoryValue,
@@ -158,6 +160,27 @@ Deno.test("history check: a Firefly III currency beats the upload's, the payee g
   })
 })
 
+Deno.test("history check: a transfer with a negative amount is refused", async () => {
+  const rows = await rowsOf(fireflyCsv(FIREFLY_ROWS))
+  const transfer = [...rows[2]]
+  expect(transfer[0]).toBe(`transfer`)
+  transfer[2] = `-${transfer[2]}`
+  const result = checkRows(historyImportKind, [transfer], MAPPING, { currency: `EUR` })
+  expect(result.result.rows).toEqual([{ row: 1, errors: [`A transfer's amount is negative.`] }])
+})
+
+Deno.test("history check: a foreign amount going the other way from the amount is refused", async () => {
+  const rows = await rowsOf(fireflyCsv(FIREFLY_ROWS))
+  const foreign = [...rows[3]]
+  expect(foreign[11].startsWith(`-`)).toBe(true)
+  foreign[11] = foreign[11].slice(1)
+  const result = checkRows(historyImportKind, [foreign], MAPPING, { currency: `EUR` })
+  expect(result.result.rows).toEqual([{
+    row: 1,
+    errors: [`The foreign amount does not go the same way as the amount.`],
+  }])
+})
+
 Deno.test("history check: a row on the export's expense or revenue account is refused: it is a payee", async () => {
   const rows = await rowsOf(fireflyCsv(FIREFLY_ROWS))
   const row = [...rows[0]]
@@ -201,11 +224,23 @@ Deno.test("history read: a file over the row cap is refused whole", async () => 
   expect(error).toContain(`more than ${APP_HISTORY_IMPORT_KIND.maxRows} rows`)
 })
 
-Deno.test("history read: an Actual Budget database that inflates past 64 MiB is refused before it is read", async () => {
-  const bomb = zipSync({ "db.sqlite": new Uint8Array(64 * 1024 * 1024 + 1) })
+Deno.test("history read: an Actual Budget database that inflates past 32 MiB is refused before it is read", async () => {
+  expect(ACTUAL_DATABASE_MAX_BYTES).toBe(32 * 1024 * 1024)
+  const bomb = zipSync({ "db.sqlite": new Uint8Array(ACTUAL_DATABASE_MAX_BYTES + 1) })
   expect(bomb.length).toBeLessThan(APP_HISTORY_IMPORT_KIND.maxBytes)
   const error = await refusalOf(bomb)
   expect(error).toContain(`larger than Financy reads`)
+})
+
+Deno.test("history read: two Actual Budget reads at once run one after the other", async () => {
+  const zip = actualZip()
+  const first = historyImportKind.read(zip)
+  const second = historyImportKind.read(zip)
+  expect(actualReads.locked).toBe(true)
+  expect(actualReads.queued).toBe(1)
+  const reads = await Promise.all([first, second])
+  expect(reads.map((read) => read.ok)).toEqual([true, true])
+  expect(actualReads.locked).toBe(false)
 })
 
 const STORED_ACCOUNTS: StoredAccount[] = [
