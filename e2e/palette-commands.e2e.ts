@@ -2,8 +2,8 @@
  * The palette's commands in a real browser: the Theme submenu applies a theme with the palette
  * still open, the palette's look on a phone and a desktop in both palettes, photographed into
  * the test's output folder for the design review, a group page's own commands per role, the
- * risky account commands, which only open their confirmation, and the quick-create rows, which
- * make a note, tag or group from the typed text.
+ * risky account commands, which only open their confirmation, the quick-create rows, which
+ * make a note, tag or group from the typed text, and Export group, which downloads the file.
  */
 import { type APIRequestContext, type BrowserContext, type Page } from "@playwright/test"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
@@ -416,6 +416,30 @@ test.describe("the palette's commands", () => {
       expect(errors).toEqual([])
     } finally {
       if (errors.length) console.log(errors.join(`\n---\n`))
+      await cleanup(request, email)
+    }
+  })
+
+  test("Export group, typed as backup on any page, downloads the current group's file as the group menu does", async ({ page, request }) => {
+    test.setTimeout(120_000)
+    const email = `e2e-palette-export-${uuidV7().slice(-8)}@example.com`
+    await cleanup(request, email)
+    try {
+      const signedUp = await signUpWithCode(request, `${apiBase}/api/auth/password/sign-up`, {
+        headers,
+        data: { email, password },
+      })
+      expect(signedUp.ok(), await signedUp.text()).toBe(true)
+      await signIn(page, email, password)
+      await gotoApp(page, "/groups", page.locator("[data-e2e=shell-ws-status]"))
+      const palette = page.locator("[data-e2e=search]")
+      await page.keyboard.press("Control+k")
+      await palette.getByRole("combobox").fill("backup")
+      const downloading = page.waitForEvent("download")
+      await palette.getByRole("option", { name: /^Export group/ }).click()
+      expect((await downloading).suggestedFilename()).toMatch(/-\d{4}-\d{2}-\d{2}\.json$/)
+      await expect(palette).toBeHidden()
+    } finally {
       await cleanup(request, email)
     }
   })
