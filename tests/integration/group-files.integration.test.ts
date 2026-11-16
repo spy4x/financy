@@ -199,6 +199,70 @@ async function seed(sql: postgres.Sql) {
 }
 
 /** What the owner downloads, through the handler: the file's name, media type and pieces. */
+Deno.test("an export imported by another person gives the same payee memory under new ids, naming the copy's categories; a repeated payee or a missing category writes nothing", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const [food, groceries] = source.categoryIds
+    await sql`
+      INSERT INTO payee_memory (id, group_id, payee_key, category_id, updated_by_user_id)
+      VALUES (${uuidV7()}, ${source.groupId}, 'coffee bar', ${food}, ${source.owner}),
+        (${uuidV7()}, ${source.groupId}, 'example grocer', ${groceries}, ${source.owner})
+    `
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    const remembered = async (groupId: string) => [
+      ...await sql`
+        SELECT p.payee_key, c.name AS category
+        FROM payee_memory p JOIN categories c ON c.id = p.category_id AND c.group_id = p.group_id
+        WHERE p.group_id = ${groupId} ORDER BY p.payee_key
+      `,
+    ]
+
+    const importer = await insertUser(sql)
+    const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+    const result = await porter.importGroup({ file, name: null }, importer, NO_CAP)
+    const copy = result.group.id
+    expect(result.parts.find((part) => part.kind === "payeeMemory")?.count).toBe(2)
+    expect(await remembered(copy)).toEqual([
+      { payeeKey: "coffee bar", category: "Food" },
+      { payeeKey: "example grocer", category: "Groceries" },
+    ])
+    const fileIds = file.aggregates.payeeMemory.map((entry) => entry.id)
+    for (const row of await sql`SELECT id FROM payee_memory WHERE group_id = ${copy}`) {
+      expect(fileIds).not.toContain(row.id)
+    }
+
+    const [entry] = file.aggregates.payeeMemory
+    const before = await counts(sql)
+    const refusedWith = async (payeeMemory: unknown[]) => {
+      const refused = await porter.importGroup(
+        { file: { ...file, aggregates: { ...file.aggregates, payeeMemory } }, name: null },
+        importer,
+        NO_CAP,
+      ).then(() => null, (error) => error)
+      expect(refused).toBeInstanceOf(GroupImportError)
+      expect(await counts(sql)).toEqual(before)
+      return (refused as GroupImportError).problems.map((problem) =>
+        problem.kind === "invalid" && [problem.where, problem.place, problem.issue]
+      )
+    }
+    const [repeated] = await refusedWith([entry, { ...entry, id: uuidV7() }])
+    expect(repeated && repeated.slice(0, 2)).toEqual([
+      "Remembered payee 2",
+      { part: "payeeMemory", index: 2 },
+    ])
+    expect(
+      await refusedWith([entry, { ...entry, id: uuidV7(), payeeKey: "x", categoryId: uuidV7() }]),
+    )
+      .toEqual([[
+        "Remembered payee 2",
+        { part: "payeeMemory", index: 2 },
+        { code: "notFound", field: "categoryId" },
+      ]])
+  })
+})
+
 async function download(
   sql: postgres.Sql,
   groupId: string,
@@ -319,6 +383,7 @@ async function counts(sql: postgres.Sql) {
       transactions: number
       transfers: number
       budgetRows: number
+      payees: number
     }[]
   >`
     SELECT
@@ -327,6 +392,7 @@ async function counts(sql: postgres.Sql) {
       (SELECT count(*)::int FROM transfers) AS transfers,
       (SELECT count(*)::int FROM budgets) + (SELECT count(*)::int FROM budget_methods) +
         (SELECT count(*)::int FROM budget_moves) AS budget_rows,
+      (SELECT count(*)::int FROM payee_memory) AS payees,
       (SELECT count(*)::int FROM accounts) AS accounts,
       (SELECT count(*)::int FROM notes) AS notes,
       (SELECT count(*)::int FROM tags) AS tags,

@@ -61,6 +61,8 @@ It holds only what is about the person or made by them, never another person's d
   belong to, deleted ones included, never the ones others made;
 - the budget limits, budgeting methods and envelope moves they set in households they still belong
   to, never the ones others set;
+- the payees whose category they chose last when saving a bank statement, in households they
+  still belong to;
 - the files they attached to those notes: name, type, size and note, never the bytes or the
   stored key;
 - what they did in their groups, without the details that can name other people;

@@ -10,12 +10,11 @@
     "jsr:@negrel/http-ece@0.7.0": "0.7.0",
     "jsr:@negrel/webpush@0.5.0": "0.5.0",
     "jsr:@simplewebauthn/server@14.0.3": "14.0.3",
-    "jsr:@spy4x/bank-statements@1.128.0": "1.128.0",
+    "jsr:@spy4x/bank-statements@1.129.0": "1.129.0",
     "jsr:@spy4x/billing@1.127.0": "1.127.0",
-    "jsr:@spy4x/caldav@^1.128.0": "1.129.0",
+    "jsr:@spy4x/caldav@^1.129.0": "1.129.0",
     "jsr:@spy4x/email@1.127.0": "1.127.0",
-    "jsr:@spy4x/email@^1.127.0": "1.129.0",
-    "jsr:@spy4x/email@^1.129.0": "1.129.0",
+    "jsr:@spy4x/email@^1.127.0": "1.127.0",
     "jsr:@spy4x/integrations@1.127.0": "1.127.0",
     "jsr:@spy4x/integrations@^1.127.0": "1.127.0",
     "jsr:@spy4x/net@1.127.0": "1.127.0",
@@ -24,7 +23,7 @@
     "jsr:@spy4x/platform@1.127.0": "1.127.0",
     "jsr:@spy4x/platform@^1.126.0": "1.129.0",
     "jsr:@spy4x/platform@^1.127.0": "1.129.0",
-    "jsr:@spy4x/platform@^1.128.0": "1.129.0",
+    "jsr:@spy4x/platform@^1.129.0": "1.129.0",
     "jsr:@spy4x/platform@^1.91.0": "1.129.0",
     "jsr:@spy4x/preact-charts@16.0.0": "16.0.0",
     "jsr:@spy4x/preact-cn@16": "16.0.0",
@@ -47,10 +46,9 @@
     "jsr:@spy4x/time@1.129.0": "1.129.0",
     "jsr:@spy4x/time@^1.126.0": "1.129.0",
     "jsr:@spy4x/time@^1.127.0": "1.129.0",
-    "jsr:@spy4x/time@^1.128.0": "1.129.0",
     "jsr:@spy4x/time@^1.129.0": "1.129.0",
     "jsr:@spy4x/validation@1.127.0": "1.127.0",
-    "jsr:@spy4x/validation@^1.126.0": "1.129.0",
+    "jsr:@spy4x/validation@^1.126.0": "1.127.0",
     "jsr:@spy4x/validation@^1.127.0": "1.129.0",
     "jsr:@spy4x/validation@^1.129.0": "1.129.0",
     "jsr:@std/assert@^1.0.14": "1.0.19",
@@ -205,12 +203,12 @@
         "npm:reflect-metadata"
       ]
     },
-    "@spy4x/bank-statements@1.128.0": {
-      "integrity": "a5f423dede2ce4602b0fc97f0ce1e0028cb55fb9e65441ec22edb41f03b6080e",
+    "@spy4x/bank-statements@1.129.0": {
+      "integrity": "4c9a2ab3d47fe3566da780a81d5af7623702f6927555455f151c4b734c26ae9f",
       "dependencies": [
         "jsr:@spy4x/caldav",
-        "jsr:@spy4x/platform@^1.128.0",
-        "jsr:@spy4x/time@^1.128.0",
+        "jsr:@spy4x/platform@^1.129.0",
+        "jsr:@spy4x/time@^1.129.0",
         "npm:arktype",
         "npm:sql.js",
         "npm:unpdf"
@@ -238,12 +236,6 @@
         "jsr:@spy4x/time@^1.127.0",
         "jsr:@std/encoding@1.0.11",
         "npm:nodemailer"
-      ]
-    },
-    "@spy4x/email@1.129.0": {
-      "integrity": "dced8f1f53872e5e6bdab4529f780df7ea758de6d93f6af1a16485dd5dc06647",
-      "dependencies": [
-        "jsr:@spy4x/time@^1.129.0"
       ]
     },
     "@spy4x/integrations@1.127.0": {
@@ -286,7 +278,6 @@
       "integrity": "b88067b35d5831165ac47dfc39ff5913e31f5499d11625f0f703299e5926219c",
       "dependencies": [
         "jsr:@hono/hono",
-        "jsr:@spy4x/email@^1.129.0",
         "jsr:@spy4x/net@^1.129.0",
         "jsr:@spy4x/time@^1.129.0",
         "jsr:@spy4x/validation@^1.129.0",
@@ -2499,7 +2490,7 @@
       "jsr:@hono/hono@4.13.8",
       "jsr:@iuioiua/redis@1.1.10",
       "jsr:@libs/qrcode@3.1.0",
-      "jsr:@spy4x/bank-statements@1.128.0",
+      "jsr:@spy4x/bank-statements@1.129.0",
       "jsr:@spy4x/billing@1.127.0",
       "jsr:@spy4x/email@1.127.0",
       "jsr:@spy4x/integrations@1.127.0",

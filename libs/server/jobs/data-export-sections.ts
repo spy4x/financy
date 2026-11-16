@@ -354,6 +354,18 @@ export const DATA_EXPORT_SECTIONS: readonly DataExportSection[] = [
       ORDER BY created_at, id`,
   },
   {
+    // The payees whose category the person chose last when saving a bank statement, in households
+    // they still belong to: the payee's key, as the import keeps it, and the category, an id from
+    // the list above or another member's.
+    name: `finance_payee_memory`,
+    columns: [`id`, `groupId`, `payeeKey`, `categoryId`, `createdAt`, `updatedAt`],
+    rows: (sql, userId) =>
+      sql`SELECT id, group_id, payee_key, category_id, created_at, updated_at
+      FROM payee_memory
+      WHERE updated_by_user_id = ${userId} AND group_id IN (${memberOf(sql, userId)})
+      ORDER BY created_at, id`,
+  },
+  {
     // What the person did in their groups, by kind and id. `details` and the person acted on are
     // left out: they can name other people.
     name: `group_activity`,

@@ -12,8 +12,11 @@ import {
   type EntryRateLookup,
   LEDGER_MAX_DAYS,
   type LedgerCategory,
+  parsePayeeMemoryExportEntry,
   parseTransactionExportEntry,
   parseTransactionRequest,
+  PAYEE_KEY_MAX_LENGTH,
+  payeeMemoryExportProblems,
   summarizeLedger,
   summarizeLedgerMonths,
   TRANSACTION_MEMO_MAX_LENGTH,
@@ -722,5 +725,38 @@ describe("where a new entry starts", () => {
       last: null,
       account: null,
     })
+  })
+})
+
+describe("a remembered payee in a household's export file", () => {
+  const entry = {
+    id: "0190a000-0000-7000-8000-000000000001",
+    payeeKey: "coffee bar",
+    categoryId: "0190a000-0000-7000-8000-000000000002",
+    createdAt: "2026-11-02T10:00:00.000Z",
+    updatedAt: "2026-11-02T10:00:00.000Z",
+  }
+
+  it("keeps the payee key and the category", () => {
+    expect(parsePayeeMemoryExportEntry(entry)).toMatchObject({
+      payeeKey: "coffee bar",
+      categoryId: entry.categoryId,
+    })
+  })
+
+  it("refuses an empty or too long key, hidden characters and a field it lacks", () => {
+    expect(() => parsePayeeMemoryExportEntry({ ...entry, payeeKey: "" })).toThrow()
+    expect(() =>
+      parsePayeeMemoryExportEntry({ ...entry, payeeKey: "a".repeat(PAYEE_KEY_MAX_LENGTH + 1) })
+    ).toThrow()
+    expect(() => parsePayeeMemoryExportEntry({ ...entry, payeeKey: "a​b" })).toThrow(
+      "control or invisible",
+    )
+    expect(() => parsePayeeMemoryExportEntry({ ...entry, userId: 3 })).toThrow("does not have")
+  })
+
+  it("names each payee a file remembers twice", () => {
+    expect(payeeMemoryExportProblems([entry, { ...entry }, { ...entry, payeeKey: "other" }]))
+      .toEqual([{ index: 1, problem: "the payee is remembered twice" }])
   })
 })
