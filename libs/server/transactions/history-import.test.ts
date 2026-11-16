@@ -279,7 +279,7 @@ async function withInflations(run: (log: (string | number)[]) => Promise<void>) 
   }
 }
 
-Deno.test("history read: two YNAB zip reads at once never overlap: one inflates its register twice, then the other", async () => {
+Deno.test("history read: two YNAB zip reads at once never parse at the same time: one inflates its register twice, then the other", async () => {
   const [small, large] = [ynabCsv(), ynabCsv(`$1,012.34`)]
   await withInflations(async (log) => {
     const reads = await Promise.all([
@@ -292,7 +292,7 @@ Deno.test("history read: two YNAB zip reads at once never overlap: one inflates 
   })
 })
 
-Deno.test("history read: a Firefly III read waits until a YNAB zip read in flight has finished", async () => {
+Deno.test("history read: a Firefly III read waits until a YNAB zip read in flight has parsed its register twice", async () => {
   const register = ynabCsv()
   await withInflations(async (log) => {
     const logged = async (name: string, read: ReturnType<typeof historyImportKind.read>) => {
