@@ -85,7 +85,13 @@ function layerWith(online: { socket: boolean }, net?: Network) {
   notes.outbox.subscribe((all) => entries.value = all)
   /** Puts `held` on the device as the copy of `group`, as a pull would have. */
   const seed = (held: NoteItem[], group = groupId) =>
-    changes.replace(group, { notes: held, tags: [], transactions: [], transfers: [] }, 1)
+    changes.replace(group, {
+      notes: held,
+      tags: [],
+      transactions: [],
+      transfers: [],
+      recurring_rules: [],
+    }, 1)
   return { copy, cache, notes, entries, seed }
 }
 

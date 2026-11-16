@@ -25,6 +25,7 @@ import { budgetsStore } from "./state/budgets.ts"
 import { categoriesStore } from "./state/categories.ts"
 import { transactionsStore } from "./state/transactions.ts"
 import { transfersStore } from "./state/transfers.ts"
+import { recurringStore } from "./state/recurring.ts"
 import { householdTotalStore } from "./state/household-total.ts"
 import { householdSettingsStore } from "./state/household-settings.ts"
 import { selectionStore } from "./state/selection.ts"
@@ -362,6 +363,7 @@ export function App() {
       categoriesStore.reset()
       transactionsStore.reset()
       transfersStore.reset()
+      recurringStore.reset()
       budgetsStore.reset()
       householdTotalStore.reset()
       householdSettingsStore.reset()
@@ -398,6 +400,7 @@ export function App() {
       categories: categoriesStore,
       transactions: transactionsStore,
       transfers: transfersStore,
+      recurring: recurringStore,
       budgets: budgetsStore,
       // The main currency is read with the members of the group whose settings are open: a save
       // moves the group's sequence, and the same page shows both.

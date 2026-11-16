@@ -220,6 +220,7 @@ describe("the saved notes and tags and the answer of the server", () => {
           tags: [{ ...tag, id: "t-2", groupId: other }],
           transactions: [],
           transfers: [],
+          recurring_rules: [],
         }, 1)
         answer = 200
         await list.read(layer)
