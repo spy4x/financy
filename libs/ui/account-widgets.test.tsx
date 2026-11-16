@@ -126,7 +126,7 @@ describe(`the overview's "How much do we have?" widget`, () => {
       total: EXACT,
     })
 
-    expect(c.line("accounts-total-amount")).toBe("€1,500.00")
+    expect(c.line("accounts-total-amount")).toBe("\u2068€1,500.00\u2069")
     expect(c.line("accounts-total-rates")).toBeNull()
     expect(c.rows).toEqual([
       ["Wallet", "€25.50"],
@@ -142,7 +142,7 @@ describe(`the overview's "How much do we have?" widget`, () => {
       total: { ...EXACT, rateDate: "2026-11-06", coinPriceDate: "2026-11-05" },
     })
 
-    expect(c.line("accounts-total-amount")).toBe("about €1,500.00")
+    expect(c.line("accounts-total-amount")).toBe("about \u2068€1,500.00\u2069")
     expect(c.line("accounts-total-rates")).toBe("At the exchange rates of 6 Nov 2026")
     expect(c.line("accounts-total-coins")).toBe(
       "Coin prices of 5 Nov 2026. Data provided by CoinGecko.",
@@ -155,7 +155,7 @@ describe(`the overview's "How much do we have?" widget`, () => {
       accounts: [account("Main", "EUR", 150_000), account("Tbilisi", "GEL", 9_900)],
       total: { ...EXACT, leftOut: [{ currency: "GEL", accounts: 1 }] },
     })
-    expect(some.line("accounts-total-amount")).toBe("€1,500.00")
+    expect(some.line("accounts-total-amount")).toBe("\u2068€1,500.00\u2069")
     expect(some.line("accounts-total-left-out")).toBe(
       "Leaves out 1 account: no exchange rate for GEL yet.",
     )
