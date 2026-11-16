@@ -2681,6 +2681,12 @@ export default {
   "BudgetDialog.gone": "Esta categoría se archivó o se eliminó, así que no puede tener límite.",
   "BudgetDialog.saveFailed": "No se pudo guardar el límite. Inténtalo de nuevo.",
   "BudgetDialog.removeFailed": "No se pudo quitar el límite. Inténtalo de nuevo.",
+  "BudgetDialog.allowance": "Quedan hasta {amount} en {parent}.",
+  "BudgetDialog.allowanceLeftOut":
+    "Quedan hasta {amount} en {parent}. No se cuentan los límites en {currencies}: aún no hay tipo de cambio para ellos.",
+  "BudgetDialog.overParent": "Es más de lo que queda en {parent}. Escribe como máximo {amount}.",
+  "BudgetDialog.underChildren":
+    "Los límites de sus subcategorías suman {amount}. Escribe al menos esa cantidad o baja primero los de ellas.",
   "BudgetRemove.title": "¿Quitar el límite de {name}?",
   "BudgetRemove.message":
     "Desde {month}, {name} no tiene límite. Los meses anteriores conservan el suyo. Puedes fijarlo de nuevo cuando quieras.",

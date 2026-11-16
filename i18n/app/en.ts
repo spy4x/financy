@@ -2461,6 +2461,12 @@ export default {
   "BudgetDialog.gone": "This category was archived or deleted, so it can't have a limit.",
   "BudgetDialog.saveFailed": "The limit could not be saved. Try again.",
   "BudgetDialog.removeFailed": "The limit could not be removed. Try again.",
+  "BudgetDialog.allowance": "Up to {amount} left in {parent}.",
+  "BudgetDialog.allowanceLeftOut":
+    "Up to {amount} left in {parent}. Limits in {currencies} aren't counted: they have no exchange rate yet.",
+  "BudgetDialog.overParent": "That's more than {parent} has left. Type up to {amount}.",
+  "BudgetDialog.underChildren":
+    "Its subcategories' limits add up to {amount}. Type at least that, or lower theirs first.",
   "BudgetRemove.title": "Remove the limit on {name}?",
   "BudgetRemove.message":
     "From {month} on, {name} has no limit. Earlier months keep theirs. You can set it again anytime.",

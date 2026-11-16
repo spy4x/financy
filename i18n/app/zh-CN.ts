@@ -2188,6 +2188,12 @@ export default {
   "BudgetDialog.gone": "这个分类已归档或删除，因此不能设置限额。",
   "BudgetDialog.saveFailed": "无法保存限额。请重试。",
   "BudgetDialog.removeFailed": "无法移除限额。请重试。",
+  "BudgetDialog.allowance": "{parent}最多还剩 {amount}。",
+  "BudgetDialog.allowanceLeftOut":
+    "{parent}最多还剩 {amount}。未计入 {currencies} 的限额：这些币种还没有汇率。",
+  "BudgetDialog.overParent": "超出了{parent}的剩余额度。最多输入 {amount}。",
+  "BudgetDialog.underChildren":
+    "子分类的限额合计 {amount}。请至少输入这个金额，或先调低它们的限额。",
   "BudgetRemove.title": "移除{name}的限额？",
   "BudgetRemove.message":
     "从{month}起，{name}将没有限额。之前的月份保留各自的限额。你可以随时重新设置。",

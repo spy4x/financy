@@ -312,6 +312,8 @@ Benchmark.subtitle	e225b762e76d49a6
 Benchmark.title	1fa330e271ba9b77
 Benchmark.unavailableDetail	dfc75b8f9f53b31b
 Benchmark.within	6d99b67376c97161
+BudgetDialog.allowance	485bb9e0464df775
+BudgetDialog.allowanceLeftOut	c410f922d800ee77
 BudgetDialog.amount	c52f575884d08440
 BudgetDialog.amountRange	68837208286019c6
 BudgetDialog.amountRequired	777486fc41147d1e
@@ -320,12 +322,14 @@ BudgetDialog.close	7d9eb7acb13e2462
 BudgetDialog.conflict	21a57673497374f4
 BudgetDialog.gone	bf89c890a6af911a
 BudgetDialog.hint	c8bdffbc2bac24cf
+BudgetDialog.overParent	ebb02cea48eb263f
 BudgetDialog.remove	a21627c6bf0bf717
 BudgetDialog.removeFailed	df38cbb5dd7e90d8
 BudgetDialog.save	4f9f0e2830ed3e14
 BudgetDialog.saveFailed	b51e7de4236c76b5
 BudgetDialog.saving	23e39291d6135814
 BudgetDialog.title	d1a49d63284d0fd0
+BudgetDialog.underChildren	b772390cfa978961
 BudgetRemove.confirm	a21627c6bf0bf717
 BudgetRemove.message	19b41c87608d1a0a
 BudgetRemove.title	5a3c68775c14150d

@@ -2378,6 +2378,12 @@ export default {
   "BudgetDialog.gone": "このカテゴリはアーカイブまたは削除されたため、上限を設定できません。",
   "BudgetDialog.saveFailed": "上限を保存できませんでした。もう一度お試しください。",
   "BudgetDialog.removeFailed": "上限を削除できませんでした。もう一度お試しください。",
+  "BudgetDialog.allowance": "{parent}の残りは最大 {amount} です。",
+  "BudgetDialog.allowanceLeftOut":
+    "{parent}の残りは最大 {amount} です。{currencies} の上限は含みません。まだ為替レートがありません。",
+  "BudgetDialog.overParent": "{parent}の残りを超えています。{amount} 以下で入力してください。",
+  "BudgetDialog.underChildren":
+    "サブカテゴリの上限の合計は {amount} です。この金額以上で入力するか、先にサブカテゴリの上限を下げてください。",
   "BudgetRemove.title": "{name}の上限を削除しますか？",
   "BudgetRemove.message":
     "{month}から、{name}には上限がなくなります。それより前の月の上限はそのままです。いつでも設定し直せます。",

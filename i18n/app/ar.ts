@@ -2859,6 +2859,12 @@ export default {
   "BudgetDialog.gone": "أُرشفت هذه الفئة أو حُذفت، لذا لا يمكن أن يكون لها حد.",
   "BudgetDialog.saveFailed": "تعذّر حفظ الحد. حاول مجددًا.",
   "BudgetDialog.removeFailed": "تعذّرت إزالة الحد. حاول مجددًا.",
+  "BudgetDialog.allowance": "يتبقى حتى {amount} في {parent}.",
+  "BudgetDialog.allowanceLeftOut":
+    "يتبقى حتى {amount} في {parent}. لا تُحتسب الحدود بـ {currencies}: لا يوجد سعر صرف لها بعد.",
+  "BudgetDialog.overParent": "هذا أكثر مما تبقى في {parent}. أدخل {amount} كحد أقصى.",
+  "BudgetDialog.underChildren":
+    "مجموع حدود فئاتها الفرعية {amount}. أدخل هذا المبلغ على الأقل، أو خفّض حدودها أولًا.",
   "BudgetRemove.title": "إزالة حد {name}؟",
   "BudgetRemove.message":
     "من {month} فصاعدًا، لن يكون لـ {name} حد. تحتفظ الأشهر السابقة بحدودها. يمكنك تعيينه مجددًا في أي وقت.",

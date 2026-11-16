@@ -1,6 +1,11 @@
 import { signal } from "@preact/signals"
 import { describeError, RealtimeRequestError } from "@spy4x/realtime"
-import { type BudgetLimit, BudgetLimitSource, type BudgetMonth } from "@domain/budgets"
+import {
+  type BudgetBound,
+  type BudgetLimit,
+  BudgetLimitSource,
+  type BudgetMonth,
+} from "@domain/budgets"
 import { readPlanRefusal } from "@domain/billing"
 import type { BudgetFormView as BudgetForm } from "@ui/budgets-screen.tsx"
 import type { Message } from "@ui/message.ts"
@@ -43,6 +48,16 @@ function refusal(error: unknown): { code: string | null; currentVersion: number 
     code: typeof details.code === "string" ? details.code : null,
     currentVersion: typeof details.currentVersion === "number" ? details.currentVersion : null,
   }
+}
+
+/** A refusal past a limit's bound (R20), with the bound it names; else `null`. */
+function boundRefusal(error: unknown): BudgetForm["bound"] {
+  const { code } = refusal(error)
+  if (code !== "BUDGET_OVER_PARENT" && code !== "BUDGET_UNDER_CHILDREN") return null
+  const bound = ((error as RealtimeRequestError).details as { bound?: Partial<BudgetBound> }).bound
+  if (typeof bound?.amount !== "number" || typeof bound.currency !== "string") return null
+  const leftOut = Array.isArray(bound.leftOut) ? bound.leftOut.map(String) : []
+  return { code, limit: { amount: bound.amount, currency: bound.currency, leftOut } }
 }
 
 function sameLimit(a: BudgetLimit | null, b: BudgetLimit | null): boolean {
@@ -157,13 +172,16 @@ export function createBudgetsStore(
       base: own,
       conflict: false,
       amountError: null,
+      bound: null,
       error: null,
       plan: null,
     }
   }
 
   function change(amount: number | null): void {
-    if (form.value) form.value = { ...form.value, amount, amountError: null, error: null }
+    if (form.value) {
+      form.value = { ...form.value, amount, amountError: null, bound: null, error: null }
+    }
   }
 
   function closeForm(): void {
@@ -194,7 +212,7 @@ export function createBudgetsStore(
         expectedVersion,
       })
     saving.value = true
-    form.value = { ...current, amountError: null, error: null, plan: null }
+    form.value = { ...current, amountError: null, bound: null, error: null, plan: null }
     try {
       let answer
       try {
@@ -232,7 +250,13 @@ export function createBudgetsStore(
       const { code } = refusal(cause)
       const plan = cause instanceof RealtimeRequestError ? readPlanRefusal(cause.details) : null
       const gone = code === "CATEGORY_NOT_FOUND" || code === "CATEGORY_ARCHIVED"
-      if (gone) await refresh()
+      const bound = boundRefusal(cause)
+      // A bound refusal means another limit in the family moved: read the month's again.
+      if (gone || bound) await refresh()
+      if (bound) {
+        form.value = { ...current, bound }
+        return false
+      }
       form.value = {
         ...current,
         plan,

@@ -11,6 +11,7 @@ import { usageReading } from "@spy4x/preact-ui/usage-meter"
 import {
   BudgetBand,
   budgetBand,
+  type BudgetBound,
   type BudgetLimit,
   BudgetLimitSource,
   BudgetMethod,
@@ -175,6 +176,7 @@ const form = (over: Partial<BudgetFormView> = {}): BudgetFormView => ({
   base: eur(35_000),
   conflict: false,
   amountError: null,
+  bound: null,
   error: null,
   plan: null,
   ...over,
@@ -375,6 +377,73 @@ describe("BudgetsScreen", () => {
     expect(input.parentElement?.classList.contains("border-danger")).toBe(true)
     expect(document.activeElement?.id).toBe("budget-amount")
     expect(count("[data-e2e=budget-dialog] [role=alert]")).toBe(0)
+  })
+
+  /** {@link ROWS} with Food at its own €300 and Market allowed €100 of it (R20). */
+  const capped = (allowance: BudgetBound) => ({
+    ...defaults.budgets!,
+    rows: [
+      row("food", eur(30_000)),
+      row("market", eur(5_000), { parentId: "food", allowance }),
+      row("rent", null),
+    ],
+  })
+
+  it("says in the hint how much the parent's limit leaves for a subcategory (R20)", async () => {
+    await mount({
+      budgets: capped({ amount: 10_000, currency: "EUR", leftOut: [] }),
+      form: form({ amount: 5_000, base: eur(5_000) }),
+    })
+    expect(text("[data-e2e=budget-allowance]")).toBe("Up to €100.00 left in Food.")
+    expect(document.getElementById("budget-amount-hint")?.textContent).toContain("Applies from")
+  })
+
+  it("names the currencies an allowance leaves out for lack of a rate (R8, R20)", async () => {
+    await mount({
+      budgets: capped({ amount: 10_000, currency: "EUR", leftOut: ["JPY", "THB"] }),
+      form: form({ amount: 5_000, base: eur(5_000) }),
+    })
+    expect(text("[data-e2e=budget-allowance]")).toBe(
+      "Up to €100.00 left in Food. Limits in JPY and THB aren't counted: they have no exchange rate yet.",
+    )
+  })
+
+  it("shows no allowance for a category its parent does not cap", async () => {
+    await mount({ form: form({ categoryId: "rent", amount: null, base: null }) })
+    expect(count("[data-e2e=budget-allowance]")).toBe(0)
+  })
+
+  it("shows a refusal past the parent's allowance as the amount's error, naming the allowance (R20)", async () => {
+    await mount({
+      budgets: capped({ amount: 10_000, currency: "EUR", leftOut: [] }),
+      form: form({
+        amount: 10_001,
+        bound: {
+          code: "BUDGET_OVER_PARENT",
+          limit: { amount: 10_000, currency: "EUR", leftOut: [] },
+        },
+      }),
+    })
+    expect(text("#budget-amount-error")).toBe("That's more than Food has left. Type up to €100.00.")
+    expect(document.getElementById("budget-amount")?.getAttribute("aria-invalid")).toBe("true")
+    expect(document.activeElement?.id).toBe("budget-amount")
+    expect(count("[data-e2e=budget-dialog] [role=alert]")).toBe(0)
+  })
+
+  it("shows a parent's limit under its subcategories' sum as the amount's error, naming the sum (R20)", async () => {
+    await mount({
+      form: form({
+        categoryId: "food",
+        amount: 1_000,
+        bound: {
+          code: "BUDGET_UNDER_CHILDREN",
+          limit: { amount: 35_000, currency: "EUR", leftOut: [] },
+        },
+      }),
+    })
+    expect(text("#budget-amount-error")).toBe(
+      "Its subcategories' limits add up to €350.00. Type at least that, or lower theirs first.",
+    )
   })
 
   it("says someone else changed the limit while the dialog was open", async () => {

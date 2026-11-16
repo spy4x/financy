@@ -22,6 +22,7 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { currentPeriod, periodLabel, periodOf, PeriodUnit } from "@spy4x/time/period"
 import {
   BUDGET_AMOUNT_MAX,
+  type BudgetBound,
   type BudgetLimit,
   BudgetLimitSource,
   type BudgetMonth,
@@ -49,6 +50,14 @@ export interface BudgetFormView {
   conflict: boolean
   /** What is wrong with the amount, shown under its field. */
   amountError: Message | null
+  /**
+   * The server refused the amount past a bound of R20: over what the parent's limit leaves, or
+   * under the subcategories' sum. Shown under the field like {@link amountError}, naming the bound.
+   */
+  bound: {
+    code: "BUDGET_OVER_PARENT" | "BUDGET_UNDER_CHILDREN"
+    limit: BudgetBound
+  } | null
   /** A failure no field owns, such as a save that did not go through. */
   error: Message | null
   /** The household's plan refused the limit. */
@@ -167,6 +176,8 @@ export function BudgetsScreen(props: BudgetsScreenProps): JSX.Element {
     }),
   )
   const formName = form ? named.get(form.categoryId)?.name ?? "" : ""
+  const formRow = form ? rows.find((row) => row.categoryId === form.categoryId) : undefined
+  const parentName = formRow?.parentId ? named.get(formRow.parentId)?.name ?? "" : ""
   const leftOut = [...new Set(rows.flatMap((row) => row.leftOut))].sort()
 
   function edit(categoryId: string, remove: boolean): void {
@@ -244,6 +255,8 @@ export function BudgetsScreen(props: BudgetsScreenProps): JSX.Element {
         <BudgetDialog
           form={form}
           name={formName}
+          parentName={parentName}
+          allowance={formRow?.allowance ?? null}
           month={monthName}
           saving={props.saving}
           canRemove={form.base !== null}
@@ -539,9 +552,25 @@ function Row(
  * a limit of its own, and asks first. Enter saves; Escape and Cancel close it.
  */
 function BudgetDialog(
-  { form, name, month, saving, canRemove, groupId, actions, onRemove, navigate }: {
+  {
+    form,
+    name,
+    parentName,
+    allowance,
+    month,
+    saving,
+    canRemove,
+    groupId,
+    actions,
+    onRemove,
+    navigate,
+  }: {
     form: BudgetFormView
     name: string
+    /** The parent category's name; empty for a top-level category. */
+    parentName: string
+    /** The most a subcategory's limit may be this month (R20), when its parent caps it. */
+    allowance: BudgetBound | null
     month: string
     saving: boolean
     canRemove: boolean
@@ -554,11 +583,29 @@ function BudgetDialog(
   const t = useAppText()
   const format = useFormat()
   const decimals = amountDecimals(form.currency)
-  const amountError = messageText(t, form.amountError)
+  const money = ({ amount, currency }: BudgetLimit) =>
+    formatMoney(amount, currency, format.locale, { decimals: amountDecimals(currency) })
+  const parent = isolate(parentName)
+  const amountError = form.bound
+    ? t.t(
+      form.bound.code === "BUDGET_OVER_PARENT"
+        ? `BudgetDialog.overParent`
+        : `BudgetDialog.underChildren`,
+      { amount: money(form.bound.limit), parent },
+    )
+    : messageText(t, form.amountError)
+  const listFormat = new Intl.ListFormat(t.language, { type: "conjunction" })
+  const left = allowance && (allowance.leftOut.length > 0
+    ? t.t(`BudgetDialog.allowanceLeftOut`, {
+      amount: money(allowance),
+      parent,
+      currencies: listFormat.format(allowance.leftOut),
+    })
+    : t.t(`BudgetDialog.allowance`, { amount: money(allowance), parent }))
   const amountRow = useRef<HTMLDivElement>(null)
   // A refused amount sends focus back to its field, where the message now sits.
   useEffect(() => {
-    if (form.amountError) amountRow.current?.querySelector(`input`)?.focus()
+    if (form.amountError || form.bound) amountRow.current?.querySelector(`input`)?.focus()
   }, [form])
   return (
     <Modal
@@ -577,7 +624,14 @@ function BudgetDialog(
             <Field
               id="budget-amount"
               label={t.t(`BudgetDialog.amount`)}
-              hint={t.t(`BudgetDialog.hint`, { month })}
+              hint={left
+                ? (
+                  <>
+                    <span data-e2e="budget-allowance">{left}</span>{" "}
+                    {t.t(`BudgetDialog.hint`, { month })}
+                  </>
+                )
+                : t.t(`BudgetDialog.hint`, { month })}
               error={amountError}
             >
               {(wiring) => (
