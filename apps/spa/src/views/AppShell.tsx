@@ -4,7 +4,7 @@ import { useSignal } from "@preact/signals"
 import { matchRoute, useLocation, useRouter, useSearch } from "wouter-preact"
 import { useFormat } from "@spy4x/preact-ui/format"
 import { todayInTz } from "@spy4x/time/tz"
-import { canExportGroup, canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
+import { canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
 import { pictureUrl, shownPictureId, UserMFAStatus } from "@domain/identity"
 import {
   NOTE_PATHS,
@@ -16,6 +16,7 @@ import {
 import { AppFrame, type ConnectionStatus, PublicFrame as PublicFrameScreen } from "@ui/frame.tsx"
 import { EmailBanner, showsEmailBanner } from "@ui/email-screen.tsx"
 import { type SearchChoice, SearchPalette } from "@ui/search-palette.tsx"
+import { paletteGroup } from "@ui/palette-commands.ts"
 import { NewNoteDialog } from "@ui/new-note-dialog.tsx"
 import { emailStore } from "../state/email.ts"
 import { signOut } from "../state/auth.ts"
@@ -360,14 +361,7 @@ export function AppShell(
         <SearchPalette
           searchNotes={searchNotes}
           groups={groups}
-          currentGroup={current
-            ? {
-              id: current.id,
-              name: current.name,
-              canWrite: canMutateNotes(current.role),
-              canExport: canExportGroup(current.role),
-            }
-            : null}
+          currentGroup={current ? paletteGroup(current) : null}
           online={wsStatus === "open"}
           pageCommands={pageCommands(t, {
             overview: Boolean(overviewPageActions.value),
