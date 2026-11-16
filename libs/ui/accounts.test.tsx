@@ -107,6 +107,7 @@ const NEW_FORM: AccountFormValue = {
   kind: AccountKind.CASH,
   currency: null,
   startingBalance: null,
+  aliases: [],
 }
 
 /** The editor with its form value held in state, as the app's store holds it. */
@@ -334,7 +335,13 @@ describe("AccountEditorScreen", () => {
         group={viewerOfHome}
         account={saved}
         dirty
-        start={{ name: "Wallet", kind: AccountKind.BANK, currency: "EUR", startingBalance: 1000 }}
+        start={{
+          name: "Wallet",
+          kind: AccountKind.BANK,
+          currency: "EUR",
+          startingBalance: 1000,
+          aliases: [],
+        }}
         seen={[]}
       />,
     )
@@ -346,13 +353,56 @@ describe("AccountEditorScreen", () => {
     expect(count("[data-e2e=account-read-only]")).toBe(1)
   })
 
+  it("adds an alias typed into Also known as, with the hint under it, and names each remove button for the alias", async () => {
+    const seen: AccountFormValue[] = []
+    await mount(<Editor start={{ ...NEW_FORM, name: "Cash", aliases: ["Wallet"] }} seen={seen} />)
+    const field = find("[data-e2e=account-aliases]")
+    expect(field.textContent).toContain("Also known as")
+    expect(field.textContent).toContain("Search finds the account by them too.")
+
+    await type("#account-aliases", "Наличка,")
+
+    expect(seen.at(-1)?.aliases).toEqual(["Wallet", "Наличка"])
+    const removes = [...field.querySelectorAll("button")].map((button) =>
+      (button.getAttribute("aria-label") ?? "").replace(/[\u2068\u2069]/g, "")
+    )
+    expect(removes).toEqual(["Remove alias Wallet", "Remove alias Наличка"])
+  })
+
+  it("puts an alias refusal under Also known as and marks the field invalid", async () => {
+    await mount(
+      <Editor
+        start={{ ...NEW_FORM, name: "Cash" }}
+        errors={{ name: null, aliases: "Keep it to 20 items.", currency: null, form: null }}
+        seen={[]}
+      />,
+    )
+    expect(find("[data-e2e=account-aliases]").textContent).toContain("Keep it to 20 items.")
+    expect(find("#account-aliases").getAttribute("aria-invalid")).toBe("true")
+  })
+
+  it("shows a viewer the aliases as plain text, never as markup", async () => {
+    const markup = `<img src=x onerror="alert(1)">`
+    await mount(
+      <Editor
+        group={viewerOfHome}
+        account={account({ id: "019a0000-0000-7000-8000-0000000000a2", name: "Cash" })}
+        start={{ ...NEW_FORM, name: "Cash", currency: "USD", aliases: ["Card", markup] }}
+        seen={[]}
+      />,
+    )
+    const field = find("[data-e2e=account-aliases]")
+    expect(field.textContent).toContain(markup)
+    expect(field.querySelector("img")).toBe(null)
+  })
+
   it("wraps a long account name in the title to two lines instead of cutting it, and keeps the full name as its tooltip", async () => {
     const name = "Joint savings account for the summer holiday in Portugal"
     const saved = account({ id: "019a0000-0000-7000-8000-0000000000a2", name, currency: "EUR" })
     await mount(
       <Editor
         account={saved}
-        start={{ name, kind: AccountKind.BANK, currency: "EUR", startingBalance: 0 }}
+        start={{ name, kind: AccountKind.BANK, currency: "EUR", startingBalance: 0, aliases: [] }}
         seen={[]}
       />,
     )

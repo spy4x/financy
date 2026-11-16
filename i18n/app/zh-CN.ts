@@ -2484,4 +2484,11 @@ export default {
   "TransferToasts.deleted": "{what}：已删除。",
   "TransferToasts.restoredTitle": "已恢复转账",
   "TransferToasts.restored": "{what}：已回到列表中。",
+  "AccountEditor.aliases": "别名",
+  "AccountEditor.aliasesHint": "你对它的其他叫法，比如银行名。搜索时用这些词也能找到该账户。",
+  "AccountEditor.aliasesPlaceholder": "输入一个词后按 Enter",
+  "AccountEditor.aliasRemove": "移除{alias}",
+  "AccountEditor.aliasAdded": "已添加{alias}",
+  "AccountEditor.aliasRemoved": "已移除{alias}",
+  "AccountEditor.aliasDuplicate": "{alias}已在列表中",
 } satisfies Catalog

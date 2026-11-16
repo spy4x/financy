@@ -2172,4 +2172,6 @@ export default {
   "AdminBudgets.methodLimits": "每月限额",
   "AdminBudgets.methodEnvelopes": "信封",
   "AdminBudgets.householdLastChange": "最近更改 {date}",
+  "AdminAccounts.withAliases": "有别名",
+  "AdminAccounts.withAliasesHint": "至少有一个别名",
 } satisfies Catalog

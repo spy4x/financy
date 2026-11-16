@@ -3140,4 +3140,12 @@ export default {
   "TransferToasts.deleted": "{what}: удалено.",
   "TransferToasts.restoredTitle": "Перевод восстановлен",
   "TransferToasts.restored": "{what}: снова в списке.",
+  "AccountEditor.aliases": "Другие названия",
+  "AccountEditor.aliasesHint":
+    "Как ещё вы его называете, например название банка. Поиск найдёт счёт и по этим словам.",
+  "AccountEditor.aliasesPlaceholder": "Введите слово и нажмите Enter",
+  "AccountEditor.aliasRemove": "Убрать {alias}",
+  "AccountEditor.aliasAdded": "Добавлено: {alias}",
+  "AccountEditor.aliasRemoved": "Убрано: {alias}",
+  "AccountEditor.aliasDuplicate": "{alias} уже есть в списке",
 } satisfies Catalog

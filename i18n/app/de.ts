@@ -2952,4 +2952,12 @@ export default {
   "TransferToasts.deleted": "{what} ist gelöscht.",
   "TransferToasts.restoredTitle": "Umbuchung wiederhergestellt",
   "TransferToasts.restored": "{what} ist wieder in der Liste.",
+  "AccountEditor.aliases": "Auch bekannt als",
+  "AccountEditor.aliasesHint":
+    "Wie du es sonst noch nennst, etwa der Name einer Bank. Die Suche findet das Konto auch über diese Wörter.",
+  "AccountEditor.aliasesPlaceholder": "Wort eingeben und Enter drücken",
+  "AccountEditor.aliasRemove": "{alias} entfernen",
+  "AccountEditor.aliasAdded": "{alias} hinzugefügt",
+  "AccountEditor.aliasRemoved": "{alias} entfernt",
+  "AccountEditor.aliasDuplicate": "{alias} steht schon in der Liste",
 } satisfies Catalog
