@@ -317,15 +317,17 @@ describe(`the quick-create rows`, () => {
     ) => [row.label, row.detail ?? null, row.disabledReason ?? null])
   const shown = (text: string) => `\u2068${text}\u2069`
 
-  it(`offer a note, a tag and a group named after the trimmed query, under Create`, () => {
+  it(`offer a note, a transaction, a tag and a group named after the trimmed query, under Create`, () => {
     const made = quickCreateRows(context(), `  groceries `)
     expect(rows(`  groceries `)).toEqual([
       [`New note: “${shown(`groceries`)}”`, `In Home`, null],
+      [`New transaction: “${shown(`groceries`)}”`, `In Home`, null],
       [`New tag: “${shown(`groceries`)}”`, `In Home`, null],
       [`New group: “${shown(`groceries`)}”`, null, null],
     ])
     expect(made.map((row) => [row.group, row.choice])).toEqual([
       [`Create`, { kind: `quick-create`, entity: `note`, title: `groceries` }],
+      [`Create`, { kind: `quick-create`, entity: `transaction`, title: `groceries` }],
       [`Create`, { kind: `quick-create`, entity: `tag`, title: `groceries` }],
       [`Create`, { kind: `quick-create`, entity: `group`, title: `groceries` }],
     ])
@@ -335,16 +337,23 @@ describe(`the quick-create rows`, () => {
     expect([rows(``), rows(` \t `)]).toEqual([[], []])
   })
 
-  it(`offer only the group without a current group, in a read-only group, and with the notes off`, () => {
+  it(`offer only the group without a current group and in a read-only group`, () => {
     const groupOnly = [[`New group: “${shown(`milk`)}”`, null, null]]
     expect(rows(`milk`, { currentGroup: null })).toEqual(groupOnly)
     expect(rows(`milk`, { currentGroup: { ...HOME, canWrite: false } })).toEqual(groupOnly)
-    expect(rows(`milk`, { notes: false })).toEqual(groupOnly)
   })
 
-  it(`keep the group listed offline, dimmed with why it cannot run, and the note and tag as they are`, () => {
+  it(`keep the transaction and the group with the notes off`, () => {
+    expect(rows(`milk`, { notes: false })).toEqual([
+      [`New transaction: “${shown(`milk`)}”`, `In Home`, null],
+      [`New group: “${shown(`milk`)}”`, null, null],
+    ])
+  })
+
+  it(`keep the group listed offline, dimmed with why it cannot run, and the others as they are`, () => {
     expect(rows(`milk`, { online: false })).toEqual([
       [`New note: “${shown(`milk`)}”`, `In Home`, null],
+      [`New transaction: “${shown(`milk`)}”`, `In Home`, null],
       [`New tag: “${shown(`milk`)}”`, `In Home`, null],
       [`New group: “${shown(`milk`)}”`, null, `Needs a connection`],
     ])
@@ -370,5 +379,11 @@ describe(`the quick-create rows`, () => {
     const choice: SearchChoice = { kind: `quick-create`, entity: `tag`, title: `milk` }
     expect(pickedChoice(choice, false)).toEqual(choice)
     expect(pickedChoice(choice, true)).toEqual({ ...choice, now: true })
+  })
+
+  it(`open the quick entry for a transaction on Enter and on Ctrl Enter alike`, () => {
+    const choice: SearchChoice = { kind: `quick-create`, entity: `transaction`, title: `milk 2` }
+    expect(pickedChoice(choice, false)).toEqual(choice)
+    expect(pickedChoice(choice, true)).toEqual(choice)
   })
 })

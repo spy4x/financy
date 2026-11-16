@@ -117,7 +117,10 @@ describe(`runChoice`, () => {
   })
 
   describe(`a quick-create pick`, () => {
-    const quick = (entity: `note` | `tag` | `group`, now?: boolean): SearchChoice => ({
+    const quick = (
+      entity: `note` | `transaction` | `tag` | `group`,
+      now?: boolean,
+    ): SearchChoice => ({
       kind: `quick-create`,
       entity,
       title: `groceries`,
@@ -137,6 +140,12 @@ describe(`runChoice`, () => {
 
     it(`stays on the page when the note is refused: the dialog holds the text and why`, async () => {
       expect(await run(quick(`note`, true), true)).toEqual([`addNote groceries`])
+    })
+
+    it(`opens the quick entry with the text handed to it on Enter and on Ctrl Enter alike`, async () => {
+      const opened = [`fillForm transaction groceries`, `navigate /transactions/new`]
+      expect(await run(quick(`transaction`))).toEqual(opened)
+      expect(await run(quick(`transaction`, true))).toEqual(opened)
     })
 
     it(`opens the new tag page with the name filled in on Enter`, async () => {

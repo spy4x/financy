@@ -402,7 +402,7 @@ describe("SearchPalette", () => {
     expect(listed()[0]).toBe("# Notes on this device")
   })
 
-  it("offers New note, New tag and New group from any text nothing else matches, under Create", async () => {
+  it("offers New note, New transaction, New tag and New group from any text nothing else matches, under Create", async () => {
     await mount({}, () => ({ notes: [], onDevice: false }))
     await open()
 
@@ -412,6 +412,7 @@ describe("SearchPalette", () => {
     expect(listed()).toEqual([
       "# Create",
       `New note: “${isolated("groceries")}” | In Home`,
+      `New transaction: “${isolated("groceries")}” | In Home`,
       `New tag: “${isolated("groceries")}” | In Home`,
       `New group: “${isolated("groceries")}”`,
     ])
@@ -517,6 +518,18 @@ describe("SearchPalette", () => {
     ])
   })
 
+  it("opens the quick entry on Enter and on Ctrl Enter on the New transaction row", async () => {
+    const { picked } = await mount({ notes: false }, () => ({ notes: [], onDevice: false }))
+    for (const ctrlKey of [false, true]) {
+      await open()
+      await fill("coffee 4,50")
+      await until(() => listed()[1]?.startsWith("New transaction"))
+      await enter(ctrlKey)
+    }
+    const choice = { kind: "quick-create", entity: "transaction", title: "coffee 4,50" }
+    expect(picked).toEqual([choice, choice])
+  })
+
   it("with the notes off, never asks for notes and lists no notes, tags or note commands", async () => {
     const { asked } = await mount({ notes: false })
 
@@ -556,14 +569,18 @@ describe("SearchPalette", () => {
     expect(await fileCommandsFound(false)).toBe(0)
   })
 
-  it("with the notes off, offers only New group from a query nothing else matches", async () => {
+  it("with the notes off, offers only New transaction and New group from a query nothing else matches", async () => {
     await mount({ notes: false })
     await open()
 
     await fill("7")
     await until(() => listed()[0] === "# Create")
 
-    expect(listed()).toEqual(["# Create", `New group: “${isolated("7")}”`])
+    expect(listed()).toEqual([
+      "# Create",
+      `New transaction: “${isolated("7")}” | In Home`,
+      `New group: “${isolated("7")}”`,
+    ])
   })
 
   it("does not search notes for a single character, but still matches groups", async () => {
