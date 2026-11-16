@@ -4,6 +4,8 @@ import { type Git, readChangelog } from "./changelog-write.ts"
 import { PUBLISHED_GUIDES } from "./docs-site.ts"
 
 const SEP = `\x1f`
+/** A guide the website publishes, whichever the product lists first. */
+const GUIDE = PUBLISHED_GUIDES[0].file
 
 /** A `git` that answers from `log` and records every command it was asked to run. */
 function fakeGit(options: { shallow: boolean; log: string[] }): Git & { calls: string[][] } {
@@ -16,7 +18,7 @@ function fakeGit(options: { shallow: boolean; log: string[] }): Git & { calls: s
     if (args[0] === `rev-parse`) return Promise.resolve(`abc123\n`)
     if (args[0] === `log` && args[1] === `-1`) {
       return Promise.resolve(
-        args.at(-1) === `docs/deploy.md` ? `2026-10-30T09:00:00+02:00\n` : `\n`,
+        args.at(-1) === GUIDE ? `2026-10-30T09:00:00+02:00\n` : `\n`,
       )
     }
     if (args[0] === `log`) return Promise.resolve(`${options.log.join(`\n`)}\n`)
@@ -61,9 +63,8 @@ describe(`readChangelog`, () => {
         { kind: `new`, text: `Load posts.`, number: 627, date: `2026-10-20T10:00:00.000Z` },
         { kind: `fixed`, text: `Keep edits.`, date: `2026-10-18T10:00:00.000Z` },
       ],
-      docs: { "docs/deploy.md": `2026-10-30T07:00:00.000Z` },
+      docs: { [GUIDE]: `2026-10-30T07:00:00.000Z` },
     })
-    expect(PUBLISHED_GUIDES.map(({ file }) => file)).toContain(`docs/deploy.md`)
   })
 
   it(`refuses an empty changelog in CI, so a release never ships one by accident`, async () => {

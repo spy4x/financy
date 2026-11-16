@@ -292,6 +292,7 @@ steps:
           - apps/api/services/error-response.ts
           - i18n/**
           - docs/*.md
+          - docs/financy/*.md
           - deno.json
           - deno.jsonc
           - deno.lock
