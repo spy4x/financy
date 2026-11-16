@@ -459,6 +459,86 @@ Deno.test("data export: lists the budget limits, methods and envelope moves the 
   })
 })
 
+Deno.test("data export: lists the repeating entries the person created, deleted ones included, never another member's or a former household's", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, editor, owner } = await team(sql)
+    const left = uuidV7()
+    // A household the editor never joined or has left: only the owner belongs to it.
+    await sql`
+      INSERT INTO groups (id, name, owner_user_id) VALUES (${left}, 'Former household', ${owner})
+    `
+    const accountId = await account(sql, groupId, owner, `Shared wallet`)
+    const categoryId = await category(sql, groupId, owner, `Salary`)
+    const elsewhereAccount = await account(sql, left, owner, `Old wallet`)
+    const elsewhereCategory = await category(sql, left, owner, `Old salary`)
+    const rule = async (
+      inGroup: string,
+      refs: { accountId: string; categoryId: string },
+      userId: number,
+      memo: string,
+      deleted = false,
+    ) => {
+      const id = uuidV7()
+      await sql`
+        INSERT INTO recurring_rules (id, group_id, account_id, category_id, kind, amount,
+          account_amount, currency, memo, rrule, start_date, count, skipped_dates, made_through,
+          paused_reason, change_sequence, created_by_user_id, deleted_at)
+        VALUES (${id}, ${inGroup}, ${refs.accountId}, ${refs.categoryId}, 2, 250000, 9500,
+          'USD', ${memo}, 'FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=-1', '2026-10-31', 12,
+          '{2026-12-31,2026-11-30}', '2026-11-30', 2, 1, ${userId},
+          ${deleted ? new Date() : null})
+      `
+      return id
+    }
+    const mine = await rule(groupId, { accountId, categoryId }, editor, `Editor's salary`)
+    const binned = await rule(groupId, { accountId, categoryId }, editor, `Editor's binned`, true)
+    await rule(groupId, { accountId, categoryId }, owner, `Owner's salary`)
+    await rule(
+      left,
+      { accountId: elsewhereAccount, categoryId: elsewhereCategory },
+      editor,
+      `Former household's salary`,
+    )
+
+    const files = unzip(await buildDataExport(sql, editor, new Date()))
+
+    const rows: { id: string }[] = JSON.parse(files[`data.json`]).sections
+      .finance_recurring_rules
+    expect(rows.map((row) => row.id).sort()).toEqual([mine, binned].sort())
+    expect(rows.find((row) => row.id === mine)).toEqual({
+      id: mine,
+      groupId,
+      accountId,
+      categoryId,
+      kind: `income`,
+      amount: `250000`,
+      currency: `USD`,
+      accountAmount: `9500`,
+      memo: `Editor's salary`,
+      rrule: `FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=-1`,
+      startDate: `2026-10-31`,
+      endDate: null,
+      count: 12,
+      skippedDates: [`2026-11-30`, `2026-12-31`],
+      madeThrough: `2026-11-30`,
+      pausedReason: 2,
+      createdAt: expect.stringMatching(/^\d{4}-/),
+      updatedAt: expect.stringMatching(/^\d{4}-/),
+      deletedAt: null,
+    })
+    expect(rows.find((row) => row.id === binned)).toMatchObject({
+      deletedAt: expect.stringMatching(/^\d{4}-/),
+    })
+    const everything = Object.values(files).join(`\n`)
+    expect(everything).not.toContain(`Owner's salary`)
+    expect(everything).not.toContain(`Former household's salary`)
+    const csv = files[`finance_recurring_rules.csv`].split(`\r\n`)
+    expect(csv[0]).toBe(
+      `\uFEFFid,groupId,accountId,categoryId,kind,amount,currency,accountAmount,memo,rrule,startDate,endDate,count,skippedDates,madeThrough,pausedReason,createdAt,updatedAt,deletedAt`,
+    )
+  })
+})
+
 Deno.test("data export: lists the payees whose category the person chose last, never another member's or a former household's", async () => {
   await withSchema(async (sql) => {
     const { groupId, editor, owner } = await team(sql)
