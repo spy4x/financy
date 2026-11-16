@@ -44,6 +44,7 @@ import { UUID_PATTERN, uuidV7 } from "@spy4x/platform/universal/uuid"
 import { parseIsoDate } from "@spy4x/time/date"
 import { recordTombstones } from "@server/groups/group-changes.ts"
 import { cellOf, importKind, type ImportRow } from "@server/imports/import-kind.ts"
+import { memoryKey, rememberedCategories, rememberPayees } from "./payee-memory.ts"
 import { countPlanTransactions } from "./plan-count.ts"
 
 /** The columns every statement reads into, whatever its format, and the mapping they take. */
@@ -92,6 +93,8 @@ export interface StatementValue {
   amount: number
   memo: string
   reference: string | null
+  /** The row's payee on one line, `""` for none: the payee memory's key comes from it. */
+  payee: string
 }
 
 /** The bank statement import kind. See the module doc. */
@@ -142,8 +145,9 @@ export const statementImportKind = importKind<StatementValue>({
       else if (parsed.value === 0) problems.push(`An entry of zero cannot be saved.`)
       else amount = parsed.value
     }
+    const payee = oneLine(cellOf(row, mapping, `payee`))
     const memo = Array.from(
-      [cellOf(row, mapping, `payee`), cellOf(row, mapping, `memo`)]
+      [payee, cellOf(row, mapping, `memo`)]
         .map(oneLine).filter((part) => part !== ``).join(` · `),
     ).slice(0, TRANSACTION_MEMO_MAX_LENGTH).join(``).trim()
     if (hasUnsafeTextCharacters(memo)) {
@@ -158,7 +162,7 @@ export const statementImportKind = importKind<StatementValue>({
       problems.push(`The reference holds control or invisible characters.`)
     }
     if (problems.length > 0) return err(problems)
-    return ok({ date, amount, memo, reference: reference === `` ? null : reference })
+    return ok({ date, amount, memo, reference: reference === `` ? null : reference, payee })
   },
   async readOptions(tx, raw, context) {
     const parsed = optionsSchema(raw)
@@ -217,6 +221,9 @@ export const statementImportKind = importKind<StatementValue>({
       (value.amount < 0 ? options.expenseCategoryId : options.incomeCategoryId)
     )
     const kinds = await categoryKinds(tx, context.groupId, [...new Set(categoryIds)])
+    // A row saved with a category choice teaches the household's payee memory; the last row of a
+    // payee wins. Every category is checked below, before anything is written.
+    const remembered = new Map<string, string>()
     const rows = values.map((value, index) => {
       const kind = value.amount < 0 ? TransactionKind.EXPENSE : TransactionKind.INCOME
       const category = kinds.get(categoryIds[index])
@@ -224,6 +231,8 @@ export const statementImportKind = importKind<StatementValue>({
       if (!categoryFitsKind(kind, category)) {
         throw new ImportError(`INVALID_REQUEST`, `An expense needs an expense category`)
       }
+      const key = memoryKey(value.payee)
+      if (context.choices[index]?.category && key !== ``) remembered.set(key, categoryIds[index])
       return {
         id: uuidV7(),
         group_id: context.groupId,
@@ -246,6 +255,7 @@ export const statementImportKind = importKind<StatementValue>({
     for (let start = 0; start < rows.length; start += WRITE_BATCH) {
       await tx`INSERT INTO transactions ${tx(rows.slice(start, start + WRITE_BATCH))}`
     }
+    await rememberPayees(tx, context.groupId, context.actorId, remembered)
     // A household whose plan lapsed has no room: it keeps reading, but adds nothing.
     const cap = context.allowances.maxTransactions
     if (cap !== null && rows.length > 0) {
@@ -399,7 +409,9 @@ async function categoryKinds(
  * stored entry matches one row only, so two equal rows in one file (two coffees on a day) are both
  * saved the first time and both skipped the next. A row left after that is skipped when it matches
  * a side of a live transfer of the account, the same amount within three days; each side matches
- * one row, and each row takes the nearest side still free.
+ * one row, and each row takes the nearest side still free. A row left to save gets the category
+ * the household's payee memory holds for its payee as a suggestion, when that category fits the
+ * row's sign.
  */
 async function reviewStatement(
   tx: postgres.TransactionSql,
@@ -483,7 +495,17 @@ async function reviewStatement(
     days.splice(nearest, 1)
     skips[index] = SKIP_TRANSFER
   })
-  return skips.map((skip) => ({ skip, suggestions: {} }))
+  const keys = values.map((value) => memoryKey(value.payee))
+  const memory = await rememberedCategories(tx, groupId, keys)
+  return skips.map((skip, index) => {
+    const category = memory.get(keys[index])
+    const kind = values[index].amount < 0 ? TransactionKind.EXPENSE : TransactionKind.INCOME
+    const suggestions: Record<string, string> = {}
+    if (skip === null && category && categoryFitsKind(kind, category.kind)) {
+      suggestions.category = category.id
+    }
+    return { skip, suggestions }
+  })
 }
 
 /** A row's date, amount and memo, as the review's query keys a stored entry. */

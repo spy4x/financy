@@ -60,6 +60,8 @@ import { budgetPortables } from "@server/budgets/budget-portable.ts"
 import { categoryMovable } from "@server/categories/category-movable.ts"
 import { categoryPortable } from "@server/categories/category-portable.ts"
 import { transactionMovable } from "@server/transactions/transaction-movable.ts"
+import { payeeMemoryMovable } from "@server/transactions/payee-memory-movable.ts"
+import { payeeMemoryPortable } from "@server/transactions/payee-memory-portable.ts"
 import { transferMovable } from "@server/transfers/transfer-movable.ts"
 import { transferPortable } from "@server/transfers/transfer-portable.ts"
 import { transactionChanges } from "@server/transactions/transaction-changes.ts"
@@ -207,10 +209,11 @@ export interface UserTotp {
 /**
  * The aggregates "move all of a group's data" moves, in the order it moves them. A new aggregate
  * joins here (`docs/aggregate-lifecycle.md`, "Make it movable"): put one that other aggregates
- * point at before the ones that point at it. Entries, transfers, repeating rules, budget rows and
- * envelope moves are the exceptions: they defer the keys to their accounts and categories to the
- * move's commit, so they move before them (`transaction-movable.ts`, `transfer-movable.ts`,
- * `recurring-rule-movable.ts`, `budget-movable.ts`).
+ * point at before the ones that point at it. Entries, transfers, repeating rules, budget rows,
+ * envelope moves and payee memory are the exceptions: they defer the keys to their accounts and
+ * categories to the move's commit, so they move before them (`transaction-movable.ts`,
+ * `transfer-movable.ts`, `recurring-rule-movable.ts`, `budget-movable.ts`,
+ * `payee-memory-movable.ts`).
  */
 export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   tagMovable,
@@ -220,6 +223,7 @@ export const MOVABLE_AGGREGATES: readonly MovableAggregate[] = [
   recurringRuleMovable,
   budgetMovable,
   budgetMoveMovable,
+  payeeMemoryMovable,
   accountMovable,
   categoryMovable,
 ]
@@ -234,6 +238,7 @@ export const PORTABLE_AGGREGATES: readonly PortableAggregate[] = [
   notePortable,
   accountPortable,
   categoryPortable,
+  payeeMemoryPortable,
   ...budgetPortables,
   transactionPortable,
   transferPortable,

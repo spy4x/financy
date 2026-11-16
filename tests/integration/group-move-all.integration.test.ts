@@ -536,6 +536,7 @@ Deno.test("moving all of a group's data", async (t) => {
             recurringRules: 0,
             budgets: 0,
             budgetMoves: 0,
+            payeeMemory: 0,
             tags: 4,
             notes: 1,
           },
@@ -1074,6 +1075,50 @@ Deno.test("moving all of a group's data", async (t) => {
     )
 
     await t.step(
+      "moves payee memory with the categories it names; a payee the target remembers keeps the target's choice; a refused category move leaves it all in the source",
+      async () => {
+        const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
+        const { editor, from, to } = await seed(sql, [])
+        const food = await insertCategory(sql, from, "Food", editor)
+        const theirs = await insertCategory(sql, to, "Theirs", editor)
+        const remember = async (groupId: string, key: string, categoryId: string) => {
+          const id = uuidV7()
+          await sql`
+            INSERT INTO payee_memory (id, group_id, payee_key, category_id, updated_by_user_id)
+            VALUES (${id}, ${groupId}, ${key}, ${categoryId}, ${editor})
+          `
+          return id
+        }
+        const coffee = await remember(from, "coffee bar", food)
+        await remember(from, "example grocer", food)
+        const kept = await remember(to, "example grocer", theirs)
+        const memoryOf = async (groupId: string) => [
+          ...await sql`
+            SELECT id, payee_key, category_id FROM payee_memory
+            WHERE group_id = ${groupId} ORDER BY payee_key
+          `,
+        ]
+
+        // A category of the same name in the target refuses the categories' move, and with it all.
+        const clash = await insertCategory(sql, to, "Food", editor)
+        const before = await memoryOf(from)
+        expect(await refusal(app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)))
+          .toMatchObject({ code: "CATEGORY_NAME_TAKEN" })
+        expect(await memoryOf(from)).toEqual(before)
+        await sql`UPDATE categories SET name = 'Food elsewhere' WHERE id = ${clash}`
+
+        const result = await app.moveAll({ fromGroupId: from, toGroupId: to }, editor, NO_CAP)
+
+        expect(result.counts).toMatchObject({ payeeMemory: 1, categories: 1 })
+        expect(await memoryOf(from)).toEqual([])
+        expect(await memoryOf(to)).toEqual([
+          { id: coffee, payeeKey: "coffee bar", categoryId: food },
+          { id: kept, payeeKey: "example grocer", categoryId: theirs },
+        ])
+      },
+    )
+
+    await t.step(
       "moves every budget limit and envelope move with the categories they name, ids and authors kept",
       async () => {
         const app = new PostgresGroupDataMover(sql, MOVABLE_AGGREGATES)
@@ -1206,6 +1251,7 @@ Deno.test("moving all of a group's data", async (t) => {
             recurringRules: 0,
             budgets: 0,
             budgetMoves: 0,
+            payeeMemory: 0,
           },
         })
         expect(await accountsOf(sql, from)).toEqual([])
