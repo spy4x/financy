@@ -28,8 +28,9 @@ export interface AliasRules {
 export function assertAliasCount(value: unknown, rules: AliasRules): void {
   const aliases = (value as { aliases?: unknown } | null)?.aliases
   if (Array.isArray(aliases) && aliases.length > rules.max) {
+    const article = /^[aeiou]/i.test(rules.noun) ? `An` : `A`
     throw rules.refuse(
-      `A ${rules.noun} can have at most ${rules.max} aliases`,
+      `${article} ${rules.noun} can have at most ${rules.max} aliases`,
       { aliases: { code: "maxItems", values: { rule: rules.max } } },
     )
   }

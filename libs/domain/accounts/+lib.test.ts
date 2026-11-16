@@ -194,6 +194,12 @@ describe("parsing an account request", () => {
     expect(() =>
       parseAccountRequest(accountCreatePayloadSchema, { ...base, aliases: ["a\u0000b"] })
     ).toThrow("Account aliases must not contain control or invisible characters")
+    expect(() =>
+      parseAccountRequest(accountCreatePayloadSchema, {
+        ...base,
+        aliases: Array.from({ length: ACCOUNT_ALIAS_MAX + 1 }, () => "a"),
+      })
+    ).toThrow("An account can have at most 20 aliases")
   })
 
   it("refuses a field the payload does not have, such as a balance", () => {
