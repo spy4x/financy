@@ -16,6 +16,7 @@ function harness(
     groupsAfterRead: string[]
     settings?: string | null
     budgets?: string | null
+    overview?: string | null
     importing?: string | null
   },
 ) {
@@ -43,6 +44,10 @@ function harness(
     budgets: {
       groupId: signal(options.budgets ?? null),
       refresh: () => Promise.resolve(void calls.push("budgets")),
+    },
+    overview: {
+      groupId: signal(options.overview ?? null),
+      refresh: () => Promise.resolve(void calls.push(`overview`)),
     },
     members: {
       groupId: signal(options.settings ?? null),
@@ -160,6 +165,16 @@ describe("the pull after a hint", () => {
     expect(other.calls).not.toContain("budgets")
   })
 
+  it("reads the open overview's widgets again for its group's hint, and not for another's", async () => {
+    const own = harness({ open: null, overview: "team", groupsAfterRead: ["home", "team"] })
+    await own.pull({ groupId: `team` })
+    expect(own.calls).toEqual([`flush`, `selection`, `groups`, `overview`])
+
+    const other = harness({ open: null, overview: "team", groupsAfterRead: ["home", "team"] })
+    await other.pull({ groupId: `home` })
+    expect(other.calls).not.toContain(`overview`)
+  })
+
   it("reads the open import again for its group's hint only", async () => {
     const own = harness({ open: null, importing: "team", groupsAfterRead: ["home", "team"] })
     await own.pull({ groupId: "team" })
@@ -196,6 +211,7 @@ function checkHarness(
   budgets: string | null = null,
   importing: string | null = null,
   recurring: string | null = null,
+  overview: string | null = null,
 ) {
   const calls: string[] = []
   const sequences: Record<string, string> = { home: "1", team: "5" }
@@ -232,6 +248,10 @@ function checkHarness(
     recurring: {
       groupId: signal(recurring),
       refresh: () => Promise.resolve(void calls.push("recurring")),
+    },
+    overview: {
+      groupId: signal(overview),
+      refresh: () => Promise.resolve(void calls.push(`overview`)),
     },
     notifications: { refresh: () => Promise.resolve(void calls.push("notifications")) },
   })
@@ -281,6 +301,16 @@ describe("the change check of a page with no socket", () => {
 
     expect(await run(false)).toEqual(["flush", "groups", "budgets"])
     expect(await run(false)).toEqual(["flush", "groups"])
+  })
+
+  it("reads the open overview's widgets again once its group's sequence moved, and not before", async () => {
+    const { run, sequences } = checkHarness(null, null, null, null, null, "team")
+    await run(true)
+    expect(await run(false)).toEqual([`flush`, `groups`])
+    sequences.team = `6`
+
+    expect(await run(false)).toEqual([`flush`, `groups`, `overview`])
+    expect(await run(false)).toEqual([`flush`, `groups`])
   })
 
   it("reads the open import again once its group's sequence moved, without a socket", async () => {
