@@ -208,7 +208,7 @@ there.
 `NOTES=false` turns the notes example off while its files stay as Seed has them, so later syncs
 merge cleanly. The API then answers 404 to every note, tag and attachment route and to the
 personal-token API (`/api/v1`), which serves notes only, and refuses their operations over the
-socket and `/api/call` as unknown ones. The changes pull and the Telegram bot's `/notes` leave
+socket and `/api/call` as unknown ones. The changes pull leaves
 them out too, and the admin app's group page shows no note widgets, no Files tab and no note, tag
 or file counts ([admin-modules.md](admin-modules.md#what-an-operator-may-see)); its dashboard
 shows no Notes card, the group list no Notes column, and the audit log's event filter offers no

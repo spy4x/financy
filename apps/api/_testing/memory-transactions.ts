@@ -13,6 +13,7 @@ import {
   type TransactionCreateInput,
   type TransactionDeleteInput,
   TransactionError,
+  type TransactionKind,
   type TransactionRepository,
   type TransactionRestoreInput,
   type TransactionUpdateInput,
@@ -78,6 +79,17 @@ export class MemoryTransactionRepository implements TransactionRepository {
 
   timeZoneOf(groupId: string): Promise<string | null> {
     return Promise.resolve(this.references.timeZones.get(groupId) ?? "UTC")
+  }
+
+  /** Every entry here is created at one instant, so the later write is the newer one. */
+  latest(groupId: string, userId: number, kind: TransactionKind): Promise<Transaction | null> {
+    const mine = [...this.transactions.values()]
+      .filter((entry) =>
+        entry.groupId === groupId && entry.createdByUserId === userId && entry.kind === kind &&
+        entry.deletedAt === null
+      )
+      .sort((a, b) => Number(b.changeSequence) - Number(a.changeSequence))
+    return Promise.resolve(mine[0] ?? null)
   }
 
   async create(input: TransactionCreateInput, actorId: number): Promise<TransactionWriteResult> {

@@ -8,6 +8,7 @@ import {
   assertCanWriteTransactions,
   assertEntryReferences,
   deriveAmounts,
+  entryDefaults,
   type EntryRateLookup,
   LEDGER_MAX_DAYS,
   type LedgerCategory,
@@ -690,5 +691,36 @@ describe("an entry in a household's export file", () => {
       "control or invisible",
     )
     expect(() => parseTransactionExportEntry({ ...entry, date: "2026-02-30" })).toThrow()
+  })
+})
+
+describe("where a new entry starts", () => {
+  const open = (id: string, isDefault = false) => ({ id, isDefault, archivedAt: null })
+  const first = open("a")
+  const main = open("b", true)
+  const closed = { id: "c", isDefault: false, archivedAt: new Date("2026-11-01") }
+
+  it("follows the person's last entry while its account is open", () => {
+    const last = { accountId: "a", categoryId: "x" }
+
+    expect(entryDefaults(last, [main, first])).toEqual({ last, account: first })
+  })
+
+  it("starts in the default account when the last entry's account is archived or gone", () => {
+    for (const accountId of ["c", "z"]) {
+      expect(entryDefaults({ accountId }, [first, main, closed])).toEqual({
+        last: null,
+        account: main,
+      })
+    }
+  })
+
+  it("starts in the default account, else the first open one, else none, with no last entry", () => {
+    expect(entryDefaults(null, [first, main])).toEqual({ last: null, account: main })
+    expect(entryDefaults(null, [closed, first])).toEqual({ last: null, account: first })
+    expect(entryDefaults(null, [{ ...main, archivedAt: new Date() }, closed])).toEqual({
+      last: null,
+      account: null,
+    })
   })
 })

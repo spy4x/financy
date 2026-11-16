@@ -16,6 +16,7 @@ import {
   type TransactionDeleteInput,
   TransactionError,
   type TransactionFields,
+  type TransactionKind,
   type TransactionRepository,
   type TransactionRestoreInput,
   type TransactionUpdateInput,
@@ -165,6 +166,22 @@ export class PostgresTransactionRepository implements TransactionRepository {
       WHERE group_id = ${groupId} AND deleted_at IS NULL
     `
     return row?.first ?? null
+  }
+
+  /** Through the author index (`idx_transactions_created_by`): one person's entries only. */
+  async latest(
+    groupId: string,
+    userId: number,
+    kind: TransactionKind,
+  ): Promise<Transaction | null> {
+    const [row] = await this.sql<TransactionRow[]>`
+      SELECT ${this.columns()} FROM transactions
+      WHERE created_by_user_id = ${userId} AND group_id = ${groupId} AND kind = ${kind}
+        AND deleted_at IS NULL
+      ORDER BY created_at DESC, id DESC
+      LIMIT 1
+    `
+    return row ? toTransaction(row) : null
   }
 
   async create(input: TransactionCreateInput, actorId: number): Promise<TransactionWriteResult> {

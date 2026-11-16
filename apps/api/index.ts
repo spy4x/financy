@@ -451,7 +451,7 @@ const telegram = telegramSetup
     db,
     store: kv,
     webAppUrl: config.webAppUrl,
-    product: createTelegramProduct({ queryBus, notes: config.notes }),
+    product: createTelegramProduct({ queryBus, commandBus, store: kv }),
     log,
   })
   : null
