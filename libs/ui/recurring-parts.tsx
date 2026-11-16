@@ -1,6 +1,7 @@
 import type { JSX } from "preact"
 import { Badge } from "@spy4x/preact-ui/badge"
 import type { Translator } from "@spy4x/platform/universal/i18n"
+import { dayInMonth, shiftMonth } from "@spy4x/time/date"
 import { IcalDateKind } from "@spy4x/time/ical"
 import { localeFirstWeekday, weekdayLabels } from "@spy4x/time/locale"
 import {
@@ -286,12 +287,8 @@ export function newRecurringValue(entry: EntryFields, today: string): RecurringE
  */
 export function repeatFromEntry(entry: EntryFields & { date: string }): RecurringEditorValue {
   const monthDay = monthDayOf(entry.date)
-  const year = Number(entry.date.slice(0, 4))
-  // 1 to 12, so as `Date.UTC`'s 0-based month it is already the next month.
-  const month = Number(entry.date.slice(5, 7))
-  // Day 0 of the month after next is the next month's last day.
-  const day = monthDay === LAST_DAY ? new Date(Date.UTC(year, month + 1, 0)).getUTCDate() : monthDay
-  const startDate = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10)
+  // `dayInMonth` clamps day 31 to the next month's last day.
+  const startDate = dayInMonth(shiftMonth(entry.date, 1), monthDay === LAST_DAY ? 31 : monthDay)
   return {
     kind: entry.kind,
     amount: entry.amount === null ? null : Math.abs(entry.amount),

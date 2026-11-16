@@ -393,6 +393,24 @@ describe("RecurringEditorScreen", () => {
     expect(text("[data-e2e=recurring-sentence] p")).toBe("Monthly on the last day, 12 times")
   })
 
+  it("moves focus to the first field a refused save newly names", async () => {
+    await mount(<RecurringEditorScreen {...editor} />)
+    await rerender(
+      <RecurringEditorScreen
+        {...editor}
+        errors={{ ...NO_RECURRING_ERRORS, category: `Pick one`, startDate: `Pick one` }}
+      />,
+    )
+    expect(document.activeElement?.id).toBe(`recurring-category`)
+    await rerender(
+      <RecurringEditorScreen
+        {...editor}
+        errors={{ ...NO_RECURRING_ERRORS, amount: `Enter one`, category: `Pick one` }}
+      />,
+    )
+    expect(document.activeElement?.id).toBe(`recurring-amount`)
+  })
+
   it("lets a writer delete a saved rule from the page's menu", async () => {
     const deleted: true[] = []
     await mount(

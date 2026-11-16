@@ -1,5 +1,5 @@
 import type { ComponentChildren, JSX } from "preact"
-import { useMemo } from "preact/hooks"
+import { useEffect, useMemo, useRef } from "preact/hooks"
 import { Button } from "@spy4x/preact-ui/button"
 import { Card } from "@spy4x/preact-ui/card"
 import { CurrencyField } from "@spy4x/preact-ui/currency-field"
@@ -160,6 +160,29 @@ function Editor(props: Shown): JSX.Element {
   const sentence = repeatSentence(value, props.words)
   const preview = previewDates(value, PREVIEW_DATES)
   const showFooter = rule === null || props.dirty
+  // A refused save moves focus to the first field it newly names, top to bottom, as the
+  // transaction editor does. A field whose error stays leaves the focus where it is.
+  const named = ([
+    [errors.amount, `#recurring-amount`],
+    [errors.currency, `#recurring-currency`],
+    [errors.accountAmount, `#recurring-account-amount`],
+    [errors.account, `#recurring-account`],
+    [errors.category, `#recurring-category`],
+    [errors.memo, `#recurring-memo`],
+    [errors.interval, `#recurring-interval`],
+    [errors.weekdays, `[data-e2e=recurring-weekdays] button`],
+    [errors.startDate, `#recurring-start`],
+    [errors.endDate, `#recurring-end-date`],
+    [errors.count, `#recurring-count`],
+  ] as const).filter(([error]) => error).map(([, selector]) => selector)
+  const before = useRef<readonly string[]>([])
+  // Marks the page, so the effect finds the fields without a page global.
+  const anchor = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    const fresh = named.find((selector) => !before.current.includes(selector))
+    before.current = named
+    if (fresh) anchor.current?.parentElement?.querySelector<HTMLElement>(fresh)?.focus()
+  }, [named.join(` `)])
   const menu = rule && props.onDelete && (
     <DropdownItem
       onClick={props.onDelete}
@@ -182,6 +205,7 @@ function Editor(props: Shown): JSX.Element {
         menu={menu}
       />
       {rule?.paused != null && <PausedBadge reason={rule.paused} />}
+      <span ref={anchor} hidden />
       <ScreenForm
         pending={saving}
         onSubmit={() => {
