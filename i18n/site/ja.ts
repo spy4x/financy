@@ -5,7 +5,7 @@ export default {
   "SiteNav.docs": "ドキュメント",
   "SiteNav.blog": "ブログ",
   "SiteNav.github": "GitHub",
-  "HeaderAction.github": "GitHub",
+  "HeaderAction.selfHost": "セルフホスト",
   "SiteFrame.skip": "本文へスキップ",
   "SiteFooter.pitch": "一人でも家族でも、複数の通貨をまとめて管理できる家計簿。",
   "SiteFooter.builtBy": "<author>{name}</author> が公開で開発しています。AGPL‑3.0 ライセンス。",
@@ -545,6 +545,7 @@ export default {
     "はい。オプトインで、データベースの暗号化resticバックアップを毎日取れます。復元手順も文書化されています。",
   "ErrorPage.status": "今できることを見る",
   "HomeHero.notify": "通知を受け取る",
+  "HomeHero.selfHost": "Financy をセルフホスト",
   "HomeProof.languages": "言語（アプリとこのサイト）",
   "HomeStatus.selfHost": "Docker Compose で自分のサーバーで動かす",
   "HomeStatus.building": "開発中",
@@ -565,7 +566,7 @@ export default {
   "HomeWays.selfHostTitle": "セルフホスト",
   "HomeWays.selfHostText":
     "AGPL‑3.0 ライセンスで無料。Docker Compose であなたのサーバー上で動き、データはそこに残ります。",
-  "HomeWays.selfHostLink": "GitHub でコードを読む",
+  "HomeWays.selfHostLink": "セルフホストの手順を読む",
   "HomeWays.cloudTitle": "クラウド",
   "HomeWays.cloudText":
     "まだ公開していません。同じコードを、サーバーの管理なしで使える有料プランです。",

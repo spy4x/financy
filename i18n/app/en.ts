@@ -1874,6 +1874,22 @@ export default {
   "MoneyWidgets.netLink": "See all transactions in this range",
   "MoneyWidgets.incomeLink": "See income transactions",
   "MoneyWidgets.spendingLink": "See expense transactions",
+  "MoneyWidgets.categoriesTitle": "Where did the money go?",
+  "MoneyWidgets.categoriesLoading": "Loading where the money went…",
+  "MoneyWidgets.categoriesError": "Where the money went could not be loaded.",
+  "MoneyWidgets.categoriesTop":
+    "Most went to {category}: {share} of the spending in your categories.",
+  "MoneyWidgets.categoriesTopAbout":
+    "Most went to {category}: about {share} of the spending in your categories.",
+  "MoneyWidgets.categoriesTopCounted": "Most of the spending we could count went to {category}.",
+  "MoneyWidgets.categoriesShareTiny": "less than 1%",
+  "MoneyWidgets.categoriesColumnCategory": "Category",
+  "MoneyWidgets.categoriesColumnSpent": "Spent",
+  "MoneyWidgets.categoriesColumnShare": "Share of all categories",
+  "MoneyWidgets.categoriesMore": {
+    "one": "And {count} more category",
+    "other": "And {count} more categories",
+  },
   "BudgetWidgets.title": "Budgets",
   "BudgetWidgets.loading": "Loading the budgets…",
   "BudgetWidgets.error": "The budgets could not be loaded.",

@@ -2,7 +2,9 @@ import type { CommandHandler, QueryHandler } from "@spy4x/platform/cqrs"
 import {
   assertCanReadTransactions,
   assertCanWriteTransactions,
+  categoryWidgetResult,
   TRANSACTION_DELETED_LIST_MAX,
+  type TransactionCategoryWidgetQuery,
   TransactionCreateCommand,
   TransactionDeleteCommand,
   TransactionError,
@@ -18,6 +20,7 @@ import {
 } from "@domain/transactions"
 import { groupTimeZone, overviewPeriods } from "@domain/groups"
 import type { HouseholdSettings } from "@domain/money"
+import type { CategoryRepository } from "@domain/categories"
 import type { GroupRoleLookup } from "@domain/notes"
 import { isoDateInTz } from "@spy4x/time/tz"
 
@@ -224,5 +227,33 @@ export function createTransactionWidgetHandler(
         ? await read(previous.from, previous.to)
         : null,
     }
+  }
+}
+
+/** What "Where did the money go?" reads besides the ledger: the household's category names. */
+export interface TransactionCategoryWidgetDependencies extends TransactionLedgerDependencies {
+  categories: Pick<CategoryRepository, "list">
+}
+
+/**
+ * "Where did the money go?" on the overview: the household's ledger for the range, through the
+ * repository's `ledger`, by top-level category ({@link categoryWidgetResult}), named from the
+ * household's own categories. No previous period: the card has no comparison. A stranger is told
+ * the household does not exist before anything is read.
+ */
+export function createTransactionCategoryWidgetHandler(
+  { transactions, groups, settings, categories }: TransactionCategoryWidgetDependencies,
+): QueryHandler<TransactionCategoryWidgetQuery> {
+  return async ({ data }) => {
+    assertCanReadTransactions(await groups.roleOf(data.groupId, data.actor.userId))
+    const periods = overviewPeriods({ from: data.from, to: data.to })
+    if (!periods) throw new TransactionError("INVALID_REQUEST", "The range is invalid")
+    const { baseCurrency } = await settings.get(data.groupId)
+    const { from, to } = periods.current
+    const [ledger, named] = await Promise.all([
+      transactions.ledger(data.groupId, baseCurrency, from, to),
+      categories.list(data.groupId),
+    ])
+    return categoryWidgetResult(ledger, named)
   }
 }

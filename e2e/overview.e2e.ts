@@ -248,4 +248,167 @@ test.describe("group overview", () => {
       expect.soft(response.status(), await response.text()).toBe(200)
     }
   })
+
+  test("where the money went shows a long category name whole and a long dong amount on a phone, without sideways scrolling, and a row opens that category's transactions of its own household, and hides every share while a currency has no rate", async ({ page, request }) => {
+    test.setTimeout(120_000)
+    const email = `e2e-overview-categories-${uuidV7().slice(-8)}@example.com`
+    try {
+      const signUp = await signUpWithCode(request, `${appBase}/api/auth/password/sign-up`, {
+        headers,
+        data: { email, password },
+      })
+      expect(signUp.ok(), await signUp.text()).toBe(true)
+      await page.setViewportSize({ width: 390, height: 844 })
+      await signIn(page, email, password)
+
+      /** Runs one operation as the signed-in person, the way the app's HTTP transport does. */
+      const call = async (name: string, data: unknown) => {
+        const me = await page.request.get(`${appBase}/api/auth/me`)
+        const response = await page.request.post(`${appBase}/api/call/${name}`, {
+          headers: {
+            ...headers,
+            "x-realtime-user": String((await me.json()).id),
+            "idempotency-key": uuidV7(),
+          },
+          data,
+        })
+        expect(response.ok(), `${name}: ${await response.text()}`).toBe(true)
+        return (await response.json()).result
+      }
+      const household = async (name: string) => {
+        const groupId = uuidV7()
+        const created = await page.request.post(`${appBase}/api/groups`, {
+          headers,
+          data: { id: groupId, name },
+        })
+        expect(created.status(), await created.text()).toBe(201)
+        await payForGroup(page.request, appBase, groupId)
+        return groupId
+      }
+      const home = await household("Home")
+      // In dong, so no rate is needed and no figure says "about".
+      const { settings } = await call(`household.settings`, { groupId: home })
+      await call(`household.updateSettings`, {
+        groupId: home,
+        baseCurrency: "VND",
+        version: settings.version,
+      })
+      const accountId = uuidV7()
+      await call(`account.create`, {
+        groupId: home,
+        id: accountId,
+        name: "Ví",
+        kind: 1,
+        currency: "VND",
+        startingBalance: 0,
+      })
+      const category = async (name: string, parentId: string | null = null) => {
+        const id = uuidV7()
+        await call(`category.create`, {
+          groupId: home,
+          id,
+          name,
+          kind: 1,
+          icon: "shopping-cart",
+          color: "#c2410c",
+          parentId,
+        })
+        return id
+      }
+      // The longest name a category may have: 60 characters.
+      const longName = "Groceries and household supplies for the whole family weekly"
+      const supplies = await category(longName)
+      const rice = await category("Rice", supplies)
+      const rent = await category("Rent")
+      const spend = (categoryId: string, amount: number, memo: string, kind = 1) =>
+        call(`transaction.create`, {
+          groupId: home,
+          id: uuidV7(),
+          accountId,
+          categoryId,
+          kind,
+          amount,
+          currency: "VND",
+          memo,
+        })
+      await spend(supplies, 125_000_000, "Supplies of Home")
+      await spend(rice, 3_000_000, "Rice of Home")
+      await spend(rent, 50_000_000, "Rent of Home")
+      await spend(rent, 10_000_000, "Rent refund of Home", 2)
+      const work = await household("Work")
+      await call(`group.select`, { groupId: work })
+
+      await page.goto(`/overview/${home}`)
+      const card = page.locator(`[data-e2e="overview-widget-money.categories"]`)
+      // 128,000,000 of 168,000,000 is 76%, rounded down; Rice counts under its parent only.
+      await expect(card.locator(`[data-e2e=category-widget-sentence]`)).toHaveText(
+        `Most went to ⁨${longName}⁩: 76% of the spending in your categories.`,
+      )
+      const rows = card.locator(`[data-e2e=category-widget-rows] tbody tr`)
+      await expect(rows).toHaveCount(2)
+      const first = rows.first()
+      await expect(first.getByRole("link")).toHaveText(longName)
+      await expect(first.locator("td").first()).toHaveText(/^.?₫128,000,000.?$/)
+      await expect(rows.nth(1).getByRole("link")).toHaveText("Rent")
+      // The whole name shows: its box is not cut to fewer lines than its text needs.
+      const label = first.locator("th span").first()
+      expect(await label.evaluate((element) => element.scrollHeight <= element.clientHeight))
+        .toBe(true)
+      expect(
+        await page.evaluate(() =>
+          document.documentElement.scrollWidth <= document.documentElement.clientWidth
+        ),
+      ).toBe(true)
+      // The row is the link's touch target: at least 44 px high.
+      expect((await first.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44)
+      await card.scrollIntoViewIfNeeded()
+      await page.screenshot({ path: test.info().outputPath(`overview-categories-390.png`) })
+
+      await first.getByRole("link").click()
+      await expect(page).toHaveURL(
+        new RegExp(`/transactions\\?category=${supplies}&from=[\\d-]+&to=[\\d-]+$`),
+      )
+      await expect(page.getByText("Supplies of Home")).toBeVisible()
+      await expect(page.getByText("Rice of Home")).toBeVisible()
+      await expect(page.getByText("Rent of Home")).toHaveCount(0)
+
+      // Lari has no rate to dong here, so the card counts what it can and shows no share.
+      const lariAccount = uuidV7()
+      await call(`account.create`, {
+        groupId: home,
+        id: lariAccount,
+        name: "Lari",
+        kind: 1,
+        currency: "GEL",
+        startingBalance: 0,
+      })
+      await call(`transaction.create`, {
+        groupId: home,
+        id: uuidV7(),
+        accountId: lariAccount,
+        categoryId: rent,
+        kind: 1,
+        amount: 30000,
+        currency: "GEL",
+        memo: "Rent in lari",
+      })
+      await page.goto(`/overview/${home}`)
+      await expect(card.locator(`[data-e2e=category-widget-left-out]`)).toHaveText(
+        "Leaves out spending in ⁨GEL⁩: no exchange rate for it yet.",
+      )
+      await expect(card.locator(`[data-e2e=category-widget-sentence]`)).toHaveText(
+        `Most of the spending we could count went to ⁨${longName}⁩.`,
+      )
+      await expect(card).not.toContainText(/\d%/)
+      await card.scrollIntoViewIfNeeded()
+      await page.screenshot({
+        path: test.info().outputPath(`overview-categories-left-out-390.png`),
+      })
+    } finally {
+      const response = await request.post(`${appBase}/api/test/cleanup-user`, {
+        data: { login: email },
+      })
+      expect.soft(response.status(), await response.text()).toBe(200)
+    }
+  })
 })
