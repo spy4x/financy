@@ -136,7 +136,10 @@ the two never disagree. The budgets widget (`BUDGET_WIDGETS` in `libs/domain/bud
 calls the `budget.month` handler for the month the range ends in, never later than the household's
 current month, and draws the Budgets screen's own bars read-only. "Where did the money go?"
 (`CATEGORY_WIDGETS` in `libs/domain/transactions/+lib.ts`) reads the range's ledger, the one Net,
-Income and Spending read, and lists its top-level categories by `categoryWidgetResult`.
+Income and Spending read, and lists its top-level categories by `categoryWidgetResult`. "How much do
+we have?" (`ACCOUNT_WIDGETS` in `libs/domain/accounts/+lib.ts`) shares one read with the
+`account.total` handler and draws its total with the Accounts screen's `TotalText`; a balance is
+today's, so it ignores the range.
 
 ## Tell a person in their inbox
 

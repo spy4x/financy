@@ -6,6 +6,7 @@ import { expect } from "@std/expect"
 import { afterEach, describe, it } from "@std/testing/bdd"
 import { renderToString } from "preact-render-to-string"
 import { Router } from "wouter-preact"
+import { ACCOUNT_WIDGET_IDS, AccountKind, type AccountWidgetResult } from "@domain/accounts"
 import { BUDGET_WIDGET_IDS, BudgetMethod, type BudgetWidgetResult } from "@domain/budgets"
 import { GroupRole } from "@domain/groups"
 import { NOTE_WIDGET_IDS } from "@domain/notes"
@@ -77,9 +78,29 @@ const WHERE_IT_WENT: CategoryWidgetResult = {
   tooLarge: false,
 }
 
+/** One euro account. */
+const BALANCES: AccountWidgetResult = {
+  accounts: [{
+    id: `019a5b0e-1af5-7f04-8ae4-b1ee5d114101`,
+    name: `Main`,
+    kind: AccountKind.BANK,
+    currency: `EUR`,
+    balance: 1500,
+    archived: false,
+  }],
+  total: {
+    amount: 1500,
+    currency: `EUR`,
+    rateDate: null,
+    coinPriceDate: null,
+    leftOut: [],
+    tooLarge: false,
+  },
+}
+
 /**
- * Household A's overview, with B selected, its notes count 0 and its money, budgets and where the
- * money went loaded.
+ * Household A's overview, with B selected, its notes count 0 and its money, budgets, where the
+ * money went and its balances loaded.
  */
 function overviewOfA(): string {
   groupsStore.groups.value = [
@@ -95,6 +116,7 @@ function overviewOfA(): string {
     [MONEY_WIDGET_IDS.spending]: ready({ current: EMPTY, previous: null }),
     [BUDGET_WIDGET_IDS.month]: ready(NO_BUDGETS),
     [MONEY_WIDGET_IDS.categories]: ready(WHERE_IT_WENT),
+    [ACCOUNT_WIDGET_IDS.balances]: ready(BALANCES),
   }
   return renderToString(
     <Router ssrPath={OVERVIEW_PATHS.group(A)}>
@@ -129,5 +151,16 @@ describe("the overview with its money cards", () => {
     expect(html).not.toContain(`data-e2e="overview-empty-group"`)
     expect([...html.matchAll(/href="(\/budgets[^"]*)"/g)].map((m) => m[1].replaceAll("&amp;", "&")))
       .toEqual([`/budgets?group=${A}&month=2026-11`])
+  })
+
+  it("puts the balances card last of the money cards, before the notes, linked to the overview's household", () => {
+    const html = overviewOfA()
+    const at = (id: string) => html.indexOf(`data-e2e="overview-widget-${id}"`)
+
+    expect(at(ACCOUNT_WIDGET_IDS.balances)).toBeGreaterThan(at(MONEY_WIDGET_IDS.categories))
+    expect(at(MONEY_WIDGET_IDS.categories)).toBeGreaterThan(-1)
+    expect(at(NOTE_WIDGET_IDS.total)).toBeGreaterThan(at(ACCOUNT_WIDGET_IDS.balances))
+    expect([...html.matchAll(/href="(\/accounts[^"]*)"/g)].map((m) => m[1]))
+      .toEqual([`/accounts?group=${A}`])
   })
 })

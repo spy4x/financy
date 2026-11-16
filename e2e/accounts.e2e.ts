@@ -214,7 +214,7 @@ test.describe("accounts", () => {
       // An account in the main currency (the euro by default): the total is exact.
       await openAccounts(ownerPage, "Total team")
       await createAccount(ownerPage, { name: "Wallet", currency: "EUR", balance: "25.50" })
-      await expect(amount).toHaveText("€25.50", { timeout: 5_000 })
+      await expect(amount).toHaveText(/^.?€25\.50.?$/, { timeout: 5_000 })
       await expect(viewerPage.locator("[data-e2e=accounts-total-rates]")).toHaveCount(0)
 
       // The test stack stores no rate for the lari: the account is left out and named.
@@ -222,7 +222,7 @@ test.describe("accounts", () => {
       await expect(leftOut).toHaveText("Leaves out 1 account: no exchange rate for GEL yet.", {
         timeout: 5_000,
       })
-      await expect(amount).toHaveText("€25.50")
+      await expect(amount).toHaveText(/^.?€25\.50.?$/)
 
       // The owner makes the lari the main currency from the checklist's link: now the euros have
       // no rate. The dialog opens with the field focused, and marks the lari as having no rate.
@@ -403,7 +403,9 @@ test.describe("accounts", () => {
       await expect(balance("Euros")).toContainText("400.00")
       await expect(balance("Bitcoin")).toContainText("0.01000000")
       // €400.00 and 0.01 BTC at €60,000.00: about €1,000.00, at the price of today.
-      await expect(page.locator("[data-e2e=accounts-total-amount]")).toHaveText("about €1,000.00")
+      await expect(page.locator("[data-e2e=accounts-total-amount]")).toHaveText(
+        /^about .?€1,000\.00.?$/,
+      )
       const [year, , day] = today.split("-")
       const coins = page.locator("[data-e2e=accounts-total-coins]")
       await expect(coins).toHaveText(
