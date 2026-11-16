@@ -160,6 +160,67 @@ describe("prefillEntry", () => {
   })
 })
 
+describe("text typed in the search palette", () => {
+  const fields = (store: ReturnType<typeof harness>["store"]) => {
+    const form = store.form.value
+    return form && { memo: form.memo, amount: form.amount, currency: form.currency }
+  }
+
+  it("fills the next new entry's memo and amount, read in its prefilled currency", () => {
+    const usd = harness().store
+    const jpy = harness().store
+    usd.fillTyped("coffee 4,50", groupId)
+    jpy.fillTyped("coffee 4,50", groupId)
+
+    usd.startCreate(blank)
+    jpy.startCreate({ ...blank, currency: "JPY" })
+
+    expect(fields(usd)).toEqual({ memo: "coffee", amount: 450, currency: "USD" })
+    // The yen has no decimals, so `4,50` is no amount in it and stays in the memo.
+    expect(fields(jpy)).toEqual({ memo: "coffee 4,50", amount: null, currency: "JPY" })
+  })
+
+  it("fills only the memo when the text has no amount", () => {
+    const { store } = harness()
+    store.fillTyped("coffee with Ann", groupId)
+
+    store.startCreate({ ...blank, amount: null })
+
+    expect(fields(store)).toEqual({ memo: "coffee with Ann", amount: null, currency: "USD" })
+  })
+
+  it("fills a new entry already open at once, keeping what else was typed there", async () => {
+    const { store } = await newEntry()
+    store.change({ categoryId: null })
+
+    store.fillTyped("coffee 4.50", groupId)
+
+    expect(fields(store)).toEqual({ memo: "coffee", amount: 450, currency: "USD" })
+    expect(store.form.value?.categoryId).toBe(null)
+  })
+
+  it("reaches the new group's quick entry past a new entry left open in the group before", async () => {
+    const { store } = await newEntry()
+
+    store.fillTyped("coffee 4.50", "g-2")
+    await store.open("g-2")
+    store.startCreate(blank)
+
+    expect(fields(store)).toEqual({ memo: "coffee", amount: 450, currency: "USD" })
+  })
+
+  it("does not leak into a later plain new entry", () => {
+    const { store } = harness()
+    store.fillTyped("coffee 4.50", groupId)
+    store.startCreate(blank)
+    store.closeForm()
+
+    store.startCreate(blank)
+
+    expect(fields(store)).toEqual({ memo: "", amount: null, currency: "USD" })
+  })
+})
+
 describe("reading the list", () => {
   it("keeps the entries it has and says so when a later read fails", async () => {
     let fail = false

@@ -79,12 +79,13 @@ async function seed(sql: postgres.Sql) {
     kind: AccountKind,
     currency: string,
     balance: number,
+    aliases: string[] = [],
   ) =>
     accounts.create(
-      { groupId, id, name, kind, currency, startingBalance: balance, allowance: null },
+      { groupId, id, name, kind, currency, startingBalance: balance, aliases, allowance: null },
       owner,
     )
-  await account(accountIds[0], "Main", AccountKind.BANK, "USD", 1234)
+  await account(accountIds[0], "Main", AccountKind.BANK, "USD", 1234, ["Checking", "Текущий"])
   await account(accountIds[1], "Trip cash", AccountKind.CASH, "JPY", 500)
   await account(accountIds[2], "Closed", AccountKind.CARD, "EUR", -99)
   await accounts.setDefault(
@@ -268,7 +269,7 @@ async function contents(sql: postgres.Sql, groupId: string) {
   const accounts = await sql<
     { name: string; kind: number; currency: string; balance: string; archived: boolean }[]
   >`
-    SELECT name, kind, currency, starting_balance::text AS balance,
+    SELECT name, kind, currency, starting_balance::text AS balance, aliases,
       archived_at IS NOT NULL AS archived, is_default
     FROM accounts WHERE group_id = ${groupId} AND deleted_at IS NULL ORDER BY name
   `
@@ -369,13 +370,15 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
       ]),
     )
     expect(await contents(sql, copy)).toEqual(await contents(sql, source.groupId))
-    // The default and the archived account keep their state; the one in the trash stays behind.
+    // The default and the archived account keep their state and each its aliases; the one in the
+    // trash stays behind.
     expect((await contents(sql, copy)).accounts).toEqual([
       {
         name: "Main",
         kind: AccountKind.BANK,
         currency: "USD",
         balance: "1234",
+        aliases: ["Checking", "Текущий"],
         archived: false,
         isDefault: true,
       },
@@ -384,6 +387,7 @@ Deno.test("an export imported by another person gives the same notes, tags, acco
         kind: AccountKind.CASH,
         currency: "JPY",
         balance: "500",
+        aliases: [],
         archived: true,
         isDefault: false,
       },
@@ -612,6 +616,28 @@ Deno.test("a file exported before categories had aliases imports with none", asy
       SELECT aliases FROM categories WHERE group_id = ${result.group.id}
     `
     expect(aliases.map((row) => row.aliases)).toEqual([[], [], []])
+  })
+})
+
+Deno.test("a file exported before accounts had aliases imports with none", async () => {
+  await withSchema(async (sql) => {
+    const source = await seed(sql)
+    const file = await exportAs(sql, source.groupId, source.owner) as {
+      aggregates: Record<string, Record<string, unknown>[]>
+    }
+    const older = file.aggregates.accounts.map(({ aliases: _, ...account }) => account)
+    const importer = await insertUser(sql)
+
+    const result = await new PostgresGroupPorter(sql, PORTABLE_AGGREGATES).importGroup(
+      { file: { ...file, aggregates: { ...file.aggregates, accounts: older } }, name: null },
+      importer,
+      NO_CAP,
+    )
+
+    const aliases = await sql<{ aliases: string[] }[]>`
+      SELECT aliases FROM accounts WHERE group_id = ${result.group.id}
+    `
+    expect(aliases.map((row) => row.aliases)).toEqual([[], []])
   })
 })
 

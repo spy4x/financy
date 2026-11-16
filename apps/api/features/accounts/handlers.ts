@@ -67,6 +67,7 @@ export function createAccountCreateHandler(
         kind: data.kind,
         currency: data.currency,
         startingBalance: data.startingBalance,
+        aliases: data.aliases ?? [],
         requestId: data.requestId,
       },
       data.actor.userId,
@@ -88,6 +89,8 @@ export function createAccountUpdateHandler(
         kind: data.kind,
         currency: data.currency,
         startingBalance: data.startingBalance,
+        // Left out by a device that queued the command before aliases existed: keep the stored ones.
+        aliases: data.aliases,
         expectedVersion: data.version,
         requestId: data.requestId,
       },

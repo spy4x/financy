@@ -80,7 +80,10 @@ export function transactionRecords(
   })
 }
 
-/** Each account as a row opening its page; an archived one says so. */
+/**
+ * Each account as a row opening its page; an archived one says so. Its aliases let search find it
+ * by the person's own words for it.
+ */
 export function accountRecords(
   accounts: readonly AccountItem[],
   text: RecordText,
@@ -91,6 +94,7 @@ export function accountRecords(
     label: account.name,
     detail: account.archivedAt === null ? undefined : archived,
     href: ACCOUNT_PATHS.account(account.id),
+    aliases: account.aliases?.length ? account.aliases : undefined,
   }))
 }
 

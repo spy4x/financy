@@ -1589,6 +1589,7 @@ CREATE TABLE accounts (
     created_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMPTZ(3),
+    aliases TEXT[] DEFAULT '{}' NOT NULL,
     CONSTRAINT accounts_group_id_id_key UNIQUE (group_id, id),
     CONSTRAINT accounts_name_check CHECK (length(btrim(name)) BETWEEN 1 AND 60),
     CONSTRAINT accounts_kind_check CHECK (kind BETWEEN 1 AND 7),
@@ -1599,6 +1600,7 @@ CREATE TABLE accounts (
     ),
     CONSTRAINT accounts_starting_balance_check
         CHECK (starting_balance BETWEEN -9007199254740991 AND 9007199254740991),
+    CONSTRAINT accounts_aliases_check CHECK (cardinality(aliases) <= 20),
     CONSTRAINT accounts_default_live_check
         CHECK (NOT is_default OR (archived_at IS NULL AND deleted_at IS NULL)),
     CONSTRAINT accounts_version_check CHECK (version >= 1),

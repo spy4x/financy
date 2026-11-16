@@ -2511,4 +2511,6 @@ export default {
   "AdminBudgets.methodLimits": "Limites mensais",
   "AdminBudgets.methodEnvelopes": "Envelopes",
   "AdminBudgets.householdLastChange": "Última alteração {date}",
+  "AdminAccounts.withAliases": "Com outros nomes",
+  "AdminAccounts.withAliasesHint": "Com pelo menos um outro nome",
 } satisfies Catalog

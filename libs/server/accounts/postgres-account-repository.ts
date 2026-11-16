@@ -142,11 +142,12 @@ export class PostgresAccountRepository implements AccountRepository {
       const inserted = (
         await transaction<{ id: string }[]>`
           INSERT INTO accounts (
-            id, group_id, name, kind, currency, starting_balance, change_sequence,
+            id, group_id, name, kind, currency, starting_balance, aliases, change_sequence,
             created_by_user_id, updated_by_user_id
           ) VALUES (
             ${input.id}, ${input.groupId}, ${input.name}, ${input.kind}, ${input.currency},
-            ${input.startingBalance}, 1, ${actorId}, ${actorId}
+            ${input.startingBalance}, ${transaction.array(input.aliases ?? [])}::text[], 1,
+            ${actorId}, ${actorId}
           )
           ON CONFLICT (id) DO NOTHING
           RETURNING id
@@ -164,7 +165,9 @@ export class PostgresAccountRepository implements AccountRepository {
       if (
         existing && existing.deletedAt === null && existing.createdByUserId === actorId &&
         existing.name === input.name && existing.kind === input.kind &&
-        existing.currency === input.currency && existing.startingBalance === input.startingBalance
+        existing.currency === input.currency &&
+        existing.startingBalance === input.startingBalance &&
+        existing.aliases.join("\n") === (input.aliases ?? []).join("\n")
       ) {
         return { account: existing, created: false }
       }
@@ -194,6 +197,7 @@ export class PostgresAccountRepository implements AccountRepository {
             kind = ${input.kind},
             currency = ${input.currency},
             starting_balance = ${input.startingBalance},
+            aliases = ${aliasesOrKept(transaction, input.aliases)},
             version = version + 1,
             updated_by_user_id = ${actorId},
             updated_at = CURRENT_TIMESTAMP
@@ -475,6 +479,7 @@ export class PostgresAccountRepository implements AccountRepository {
       accounts.kind,
       accounts.currency,
       accounts.starting_balance::text AS starting_balance,
+      accounts.aliases,
       accounts.archived_at,
       accounts.is_default,
       accounts.version,
@@ -508,6 +513,7 @@ function toAccount(row: AccountRow): Account {
     kind: row.kind,
     currency: row.currency,
     startingBalance: amountOf(row.startingBalance),
+    aliases: row.aliases,
     archivedAt: row.archivedAt,
     isDefault: row.isDefault,
     version: row.version,
@@ -522,4 +528,9 @@ function toAccount(row: AccountRow): Account {
 
 function toListedAccount(row: ListedAccountRow): ListedAccount {
   return { ...toAccount(row), balance: amountOf(row.balance) }
+}
+
+/** The new aliases of an update, or the stored ones when the command carried none. */
+function aliasesOrKept(sql: postgres.Sql, aliases: string[] | undefined) {
+  return aliases === undefined ? sql`aliases` : sql`${sql.array(aliases)}::text[]`
 }

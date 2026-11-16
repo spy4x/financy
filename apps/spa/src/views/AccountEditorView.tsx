@@ -48,7 +48,7 @@ export function AccountEditorView({ accountId = null }: { accountId?: string | n
   const value = editing ?? creating ??
     (account
       ? { ...account }
-      : { name: "", kind: AccountKind.BANK, currency: null, startingBalance: 0 })
+      : { name: "", kind: AccountKind.BANK, currency: null, startingBalance: 0, aliases: [] })
   const listLoading = store.loading.value || store.groupId.value !== groupId
   const groupLoading = !membership && (groupsStore.loading.value || groupId === null)
   const actions = canWrite ? accountActions(t, store, toasts) : undefined
@@ -64,6 +64,7 @@ export function AccountEditorView({ accountId = null }: { accountId?: string | n
           kind: value.kind,
           currency: value.currency,
           startingBalance: value.startingBalance,
+          aliases: value.aliases ?? [],
         }}
         onChange={(next) => store.change(next)}
         errors={{
