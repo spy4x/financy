@@ -3,9 +3,10 @@ import ui from "@spy4x/preact-ui/i18n/pt-BR"
 import system from "@spy4x/preact-system/i18n/pt-BR"
 import signals from "@spy4x/preact-signals/i18n/pt-BR"
 import charts from "@spy4x/preact-charts/i18n/pt-BR"
+import rrule from "@spy4x/time/rrule-words/pt-BR"
 import own from "@i18n/app/pt-BR.ts"
 import errors from "@i18n/errors/pt-BR.ts"
 import type { CatalogList } from "@platform/i18n.ts"
 
-const catalogs: CatalogList = [ui, system, signals, charts, own, errors]
+const catalogs: CatalogList = [ui, system, signals, charts, rrule, own, errors]
 export default catalogs
