@@ -18,13 +18,13 @@ const password = "Passw0rd!"
 const OPERATOR = 2
 
 /**
- * The onboarding tour's targets in the rail's bottom zone, as `tourSteps` in
+ * The onboarding tour's targets in the rail, as `tourSteps` in
  * `libs/ui/onboarding-card.tsx` names them (its unit test pins the same strings). A step whose
  * target matches nothing loses its spotlight without failing anything else.
  */
 const TOUR_TARGETS = [
   `[data-e2e="rail-shell-rail"] a[href="/transactions"]`,
-  `[data-e2e="rail-shell-rail"] a[href="/groups"]`,
+  `[data-e2e="rail-shell-top"] [data-e2e="group-picker"]`,
   `[data-e2e="rail-shell-bottom"] a[href="/notifications"]`,
   `[data-e2e="rail-shell-bottom"] [data-e2e="account-menu-button"]`,
 ]

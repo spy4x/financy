@@ -389,6 +389,21 @@ describe("first-steps tour", () => {
     }
   })
 
+  it("spotlights the group switcher on the groups step, since the rail has no Groups link", async () => {
+    const top = window.document.createElement("div")
+    top.setAttribute("data-e2e", "rail-shell-top")
+    top.innerHTML = `<button data-e2e="group-picker" aria-label="Group: Home">H</button>`
+    window.document.body.appendChild(top)
+    const picker = top.firstElementChild as unknown as HTMLElement
+    picker.getBoundingClientRect = () => ({ width: 48, height: 48 }) as DOMRect
+    try {
+      await mount({ tourOpen: true, tourIndex: TOUR_STEPS.findIndex((s) => s.id === "groups") })
+      expect(control("Go to Group").textContent?.trim()).toBe("Go to Group")
+    } finally {
+      top.remove()
+    }
+  })
+
   it("keeps focus on the card's heading when the offer comes back because the end was not saved", async () => {
     const { update } = await mount({ tourOpen: true })
     await press("Skip tour")
@@ -408,7 +423,7 @@ describe("first-steps tour", () => {
     expect(document.activeElement?.textContent?.trim()).toBe("Dismiss")
   })
 
-  it("walks the side navigation, Notifications and the account, in that order, on the hooks the browser tests use", async () => {
+  it("walks Transactions, the group switcher, Notifications and the account, in that order, on the hooks the browser tests use", async () => {
     await mount()
 
     expect(TOUR_STEPS.map((step) => step.id)).toEqual([
@@ -419,7 +434,7 @@ describe("first-steps tour", () => {
     ])
     expect(TOUR_STEPS.map((step) => step.target)).toEqual([
       `[data-e2e="rail-shell-rail"] a[href="/transactions"]`,
-      `[data-e2e="rail-shell-rail"] a[href="/groups"]`,
+      `[data-e2e="rail-shell-top"] [data-e2e="group-picker"]`,
       `[data-e2e="rail-shell-bottom"] a[href="/notifications"]`,
       `[data-e2e="rail-shell-bottom"] [data-e2e="account-menu-button"]`,
     ])

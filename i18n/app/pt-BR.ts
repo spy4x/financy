@@ -2522,7 +2522,7 @@ export default {
   },
   "BudgetWidgets.none": "Nenhum orçamento para {month}.",
   "BudgetWidgets.setLink": "Definir um orçamento",
-  "BudgetWidgets.link": "Ver orçamentos de {month}",
+  "BudgetWidgets.link": "Alterar limites ou ver outros meses",
   "AccountWidgets.title": "Quanto temos?",
   "AccountWidgets.loading": "Carregando os saldos…",
   "AccountWidgets.error": "Não foi possível carregar os saldos.",

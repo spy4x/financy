@@ -1,6 +1,7 @@
-import { type APIRequestContext, type Page } from "@playwright/test"
+import { type APIRequestContext, type Locator, type Page } from "@playwright/test"
 import { expect, test } from "./fixtures/stack.ts"
 import { gotoApp, signIn } from "./fixtures/app.ts"
+import { openGroups } from "./fixtures/groups.ts"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { freePlanAllowsNothing, payForGroup, signUpWithCode } from "./fixtures/sign-up.ts"
 
@@ -80,13 +81,12 @@ const open = (page: Page, path: string) =>
   gotoApp(page, path, page.locator("[data-e2e=shell-ws-status]"))
 
 /**
- * Picks a group from the sidebar's switcher with the keyboard alone: Enter opens it on the first
- * group, the arrow keys move to the one named, Enter chooses it.
+ * Chooses `choice`, an item of the sidebar's switcher, with the keyboard alone: Enter opens the
+ * menu on the first group, the arrow keys move to the item, Enter chooses it.
  */
-async function pickWithKeyboard(page: Page, groupName: string): Promise<void> {
+async function chooseWithKeyboard(page: Page, choice: Locator): Promise<void> {
   await page.locator("[data-e2e=group-picker]").focus()
   await page.keyboard.press("Enter")
-  const choice = page.getByRole("menuitemradio", { name: new RegExp(groupName) })
   await expect(choice).toBeVisible()
   for (let step = 0; step < 10; step++) {
     if (await choice.evaluate((item) => item === document.activeElement)) break
@@ -94,6 +94,14 @@ async function pickWithKeyboard(page: Page, groupName: string): Promise<void> {
   }
   await expect(choice).toBeFocused()
   await page.keyboard.press("Enter")
+}
+
+/** Picks the group named `groupName` from the sidebar's switcher with the keyboard alone. */
+function pickWithKeyboard(page: Page, groupName: string): Promise<void> {
+  return chooseWithKeyboard(
+    page,
+    page.getByRole("menuitemradio", { name: new RegExp(groupName) }),
+  )
 }
 
 test.describe("notes at /notes with a group picker", () => {
@@ -128,10 +136,50 @@ test.describe("notes at /notes with a group picker", () => {
       await expect(heading(page, "Team B")).toBeVisible()
       await expect(titles).toHaveText(["Only in team"])
 
-      // The Groups entry of the navigation opens the groups page, by keyboard.
-      await page.getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link", { name: "Groups" }).focus()
-      await page.keyboard.press("Enter")
+      // The switcher opens the selected group's Activity and the groups page, by keyboard.
+      await chooseWithKeyboard(page, page.getByRole("menuitem", { name: "Activity" }))
+      await expect(page).toHaveURL(`/groups/${team}/activity`)
+      await chooseWithKeyboard(page, page.getByRole("menuitem", { name: "All groups" }))
+      await expect(page).toHaveURL("/groups")
+    } finally {
+      await context.close()
+      await cleanup(request, user)
+    }
+  })
+
+  test("on a phone, the tab bar holds the four destinations and Account, and the Account sheet opens the group's Activity and all groups", async ({ browser, request }) => {
+    const user = "e2e_picker_phone@example.com"
+    await cleanup(request, user)
+    const context = await browser.newContext({
+      baseURL: test.info().project.use.baseURL,
+      viewport: { width: 390, height: 844 },
+    })
+    const fits = (page: Page) =>
+      page.evaluate(() =>
+        document.documentElement.scrollWidth <= document.documentElement.clientWidth
+      )
+    try {
+      await signUp(request, user)
+      const page = await context.newPage()
+      await signInOnline(page, user)
+      const personal = await personalGroup(page)
+      await open(page, "/transactions")
+
+      await expect(page.locator("[data-e2e=rail-shell-tabbar] [data-e2e=rail-shell-entry]"))
+        .toHaveText(["Overview", "Transactions", "Accounts", "Categories"])
+      await expect(page.locator("[data-e2e=rail-shell-more]")).toBeVisible()
+      expect(await fits(page)).toBe(true)
+      await page.screenshot({ path: test.info().outputPath(`tab-bar-390.png`) })
+
+      await page.locator("[data-e2e=rail-shell-more]").click()
+      const activity = page.locator("[data-e2e=group-sheet-activity]")
+      await expect(activity).toBeVisible()
+      expect(await fits(page)).toBe(true)
+      await page.screenshot({ path: test.info().outputPath(`account-sheet-390.png`) })
+      await activity.click()
+      await expect(page).toHaveURL(`/groups/${personal.id}/activity`)
+
+      await openGroups(page)
       await expect(page).toHaveURL("/groups")
     } finally {
       await context.close()

@@ -2625,7 +2625,7 @@ export default {
   },
   "BudgetWidgets.none": "На {month} бюджетов нет.",
   "BudgetWidgets.setLink": "Задать бюджет",
-  "BudgetWidgets.link": "Бюджеты за {month}",
+  "BudgetWidgets.link": "Изменить лимиты или открыть другие месяцы",
   "AccountWidgets.title": "Сколько у нас денег?",
   "AccountWidgets.loading": "Загружаем остатки на счетах…",
   "AccountWidgets.error": "Не удалось загрузить остатки на счетах.",

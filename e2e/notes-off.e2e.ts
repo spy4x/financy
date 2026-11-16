@@ -57,7 +57,7 @@ test.describe("the notes switched off", () => {
 
       const rail = page.locator(`[data-e2e=rail-shell-rail]`)
       await expect(rail.locator(`a[href^="/overview"]`)).toBeVisible()
-      await expect(rail.locator(`a[href="/groups"]`)).toBeVisible()
+      await expect(rail.locator(`a[href="/categories"]`)).toBeVisible()
       await expect(rail.locator(NOTES_LINK)).toHaveCount(0)
 
       // The API mounts no note route, so the stack really runs with NOTES=false.

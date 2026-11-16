@@ -1,13 +1,11 @@
 import type { ComponentChildren, JSX, RefObject } from "preact"
 import { useRef } from "preact/hooks"
-import { canViewActivity } from "@domain/groups"
 import {
   IconBank,
   IconChartPie,
-  IconClock,
   IconList,
   IconSearch,
-  IconUsers,
+  IconTag,
   IconWallet,
 } from "@spy4x/preact-icons"
 import {
@@ -25,9 +23,7 @@ import { PRODUCT_NAME } from "./brand.ts"
 import { GroupPicker, type GroupPickerData, GroupSheet } from "./group-picker.tsx"
 import {
   ACCOUNT_PATHS,
-  BUDGET_PATHS,
   CATEGORY_PATHS,
-  GROUP_PATHS,
   type Navigate,
   NOTE_PATHS,
   OVERVIEW_PATHS,
@@ -43,18 +39,15 @@ import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAppText } from "./i18n.ts"
 
 /**
- * The daily destinations, in the order the rail and the phone tab bar show them. The rail shows
- * them all; the phone bar shows the first four and moves the rest into the Account sheet behind its
- * last slot, so the order puts the destinations used most first. Activity belongs to the selected group and
- * shows only while there is one whose log the person may read. Profile, Categories, Budgets,
- * Repeating entries, Tags and Notes are in the account menu (the last two left out with the notes
- * off); Tags is in Notes' "More actions" too, and Repeating entries in Transactions'. Labels come
- * from `t`, the app's translator.
+ * The daily destinations, in the order the rail and the phone tab bar show them: Overview,
+ * Transactions, Accounts and Categories. The phone bar shows the first four and keeps its last slot
+ * for Account, so all four fit. The groups list and the selected group's Activity open from the
+ * group switcher ({@link GroupPicker}, {@link GroupSheet}); Budgets from the Overview's Budgets card,
+ * `g b` and the search. Profile, Repeating entries, Tags and Notes are in the account menu (the last
+ * two left out with the notes off); Tags is in Notes' "More actions" too, and Repeating entries in
+ * Transactions'. Labels come from `t`, the app's translator.
  */
-export function navItems(
-  activityGroupId: string | null,
-  t: Translator<string>,
-): AppShellItem[] {
+export function navItems(t: Translator<string>): AppShellItem[] {
   return [
     {
       key: "overview",
@@ -69,13 +62,12 @@ export function navItems(
       Icon: IconList,
     },
     { key: "accounts", label: t.t("Frame.accounts"), href: ACCOUNT_PATHS.list, Icon: IconBank },
-    ...(activityGroupId === null ? [] : [{
-      key: "activity",
-      label: t.t("Frame.activity"),
-      href: GROUP_PATHS.activity(activityGroupId),
-      Icon: IconClock,
-    }]),
-    { key: "groups", label: t.t("Frame.groups"), href: SCREEN_PATHS.groups, Icon: IconUsers },
+    {
+      key: "categories",
+      label: t.t("Frame.categories"),
+      href: CATEGORY_PATHS.list,
+      Icon: IconTag,
+    },
   ]
 }
 
@@ -196,12 +188,13 @@ export function shortcutsMenuItems(
  * The signed-in frame: the library's `AppShell`, which draws every piece of chrome the same way in
  * every app, fed with this product's data.
  *
- * - The top of the 72 px rail is the group switcher ({@link GroupPicker}), then "Search", an icon
- *   cell with its tooltip that opens `search`.
+ * - The top of the 72 px rail is the group switcher ({@link GroupPicker}), which also opens all
+ *   groups and the selected group's Activity, then "Search", an icon cell with its tooltip that
+ *   opens `search`.
  * - The middle is the destinations ({@link navItems}).
  * - The bottom is the connection while it is not live, Notifications with its unread count, and the
- *   account menu: the person's name and portrait, which open the profile, then Keyboard shortcuts
- *   on a device with a fine pointer, then Sign out. The theme is chosen on the profile only.
+ *   account menu: the person's name and portrait, which open the profile, then Repeating entries,
+ *   Tags and Notes, Keyboard shortcuts on a device with a fine pointer, then Sign out. The theme is chosen on the profile only.
  *
  * On a phone the tab bar's last slot is "Account": the avatar with the unread count, opening a sheet
  * with "Search", the groups ({@link GroupSheet}), Notifications and the account's choices.
@@ -263,8 +256,6 @@ export function AppFrame(
   },
 ): JSX.Element {
   const t = useAppText()
-  const selected = groupPicker?.groups.find((group) => group.id === groupPicker.selectedId)
-  const activityGroupId = selected && canViewActivity(selected.role) ? selected.id : null
   const name = displayName(user, t.t("Frame.user"))
   // A person known only by the address would read it twice.
   const email = user.email && user.email !== name ? user.email : undefined
@@ -272,7 +263,7 @@ export function AppFrame(
   const searchEntries = useSearchEntries(shortcuts?.singleKeys ?? true, t.t("Frame.search"))
   return (
     <AppShell
-      items={navItems(activityGroupId, t)}
+      items={navItems(t)}
       currentPath={currentPath}
       navigate={navigate}
       switcher={groupPicker || hasSearch
@@ -298,8 +289,6 @@ export function AppFrame(
         user: { name, email, avatarUrl: user.avatarUrl },
         headerHref: SCREEN_PATHS.profile,
         items: [
-          { label: t.t("Frame.categories"), href: CATEGORY_PATHS.list },
-          { label: t.t("Frame.budgets"), href: BUDGET_PATHS.list },
           { label: t.t("Frame.recurring"), href: RECURRING_PATHS.list },
           ...(notes
             ? [

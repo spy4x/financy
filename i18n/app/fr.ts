@@ -2608,7 +2608,7 @@ export default {
   },
   "BudgetWidgets.none": "Aucun budget pour {month}.",
   "BudgetWidgets.setLink": "Définir un budget",
-  "BudgetWidgets.link": "Voir les budgets de {month}",
+  "BudgetWidgets.link": "Modifier les plafonds ou voir d'autres mois",
   "AccountWidgets.title": "Combien avons-nous ?",
   "AccountWidgets.loading": "Chargement des soldes…",
   "AccountWidgets.error": "Impossible de charger les soldes.",
