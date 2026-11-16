@@ -223,10 +223,7 @@ export const statementImportKind = importKind<StatementValue>({
       context.choices[index]?.category ||
       (value.amount < 0 ? options.expenseCategoryId : options.incomeCategoryId)
     )
-    // A transfer row has no category: its choice is ignored, never checked.
-    const kinds = await categoryKinds(tx, context.groupId, [
-      ...new Set(categoryIds.filter((_, index) => others[index] === null)),
-    ])
+    const kinds = await categoryKinds(tx, context.groupId, [...new Set(categoryIds)])
     // A row saved with a category choice teaches the household's payee memory; the last row of a
     // payee wins. Every category is checked below, before anything is written.
     const remembered = new Map<string, string>()
@@ -234,6 +231,7 @@ export const statementImportKind = importKind<StatementValue>({
     const ids: string[] = []
     const rows = values.flatMap((value, index) => {
       const other = others[index]
+      // A transfer has no category: the row's choice is ignored, never checked.
       if (other !== null) {
         const sides = transferSides(value, other, options.accountId)
         const id = uuidV7()

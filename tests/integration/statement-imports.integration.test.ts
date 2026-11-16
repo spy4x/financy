@@ -910,18 +910,23 @@ Deno.test("statement transfers: no proposal from an account in another currency,
   })
 })
 
-Deno.test("statement transfers: a row saved before or matching a transfer gets no proposal", async () => {
+Deno.test("statement transfers: a row saved before or matching a transfer gets no proposal; a later row of its amount does", async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
-    await typed(sql, h, h.savings, 25_000, `2026-01-11`)
+    const other = await typed(sql, h, h.savings, 25_000, `2026-01-11`)
     const first = await proposed(sql, h, TO_SAVINGS)
     await confirm(sql, h, first.id, { "1": { transfer: `` } })
-    const again = await proposed(sql, h, TO_SAVINGS)
-    expect(again.skips).toEqual([SKIP_SAVED_BEFORE, SKIP_SAVED_BEFORE])
-    expect(again.transfers).toEqual([null, null])
+    // The entry is a day from both rows of -250.00; the first row was saved before.
+    const again = await proposed(
+      sql,
+      h,
+      statement([[`2026-01-10`, `To savings`, -25_000], [`2026-01-12`, `Again`, -25_000]]),
+    )
+    expect(again.skips).toEqual([SKIP_SAVED_BEFORE, null])
+    expect(again.transfers).toEqual([null, other])
 
     const g = await household(sql)
-    await typed(sql, g, g.savings, 25_000, `2026-01-11`)
+    const theirs = await typed(sql, g, g.savings, 25_000, `2026-01-11`)
     await new PostgresTransferRepository(sql).create(
       {
         groupId: g.groupId,
@@ -935,9 +940,13 @@ Deno.test("statement transfers: a row saved before or matching a transfer gets n
       } as Parameters<PostgresTransferRepository[`create`]>[0],
       g.owner,
     )
-    const matched = await proposed(sql, g, TO_SAVINGS)
+    const matched = await proposed(
+      sql,
+      g,
+      statement([[`2026-01-10`, `To third`, -25_000], [`2026-01-12`, `Again`, -25_000]]),
+    )
     expect(matched.skips).toEqual([SKIP_TRANSFER, null])
-    expect(matched.transfers).toEqual([null, null])
+    expect(matched.transfers).toEqual([null, theirs])
   })
 })
 
