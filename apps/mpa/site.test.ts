@@ -521,6 +521,22 @@ describe("the public website", () => {
     expect(home).not.toContain(`Budgets, bank statement import`)
   })
 
+  it("lists repeating entries on /features as built, right after budgets, and on the home page's Works today", async () => {
+    const { html } = await page("/features")
+
+    expect(html.indexOf(`<section id="recurring"`)).toBeGreaterThan(
+      html.indexOf(`<section id="budgets"`),
+    )
+    expect(html.indexOf(`<section id="recurring"`)).toBeLessThan(
+      html.indexOf(`<section id="sign-in"`),
+    )
+    expect(html).toContain(`Rent, salary and subscriptions that add themselves`)
+    expect(html).toContain(`/tree/main/libs/domain/recurring"`)
+    const home = (await page("/")).html
+    const card = home.slice(home.indexOf(`data-e2e="home-status"`), home.indexOf(`Building now`))
+    expect(card).toContain(`Repeating entries for rent, salary and subscriptions`)
+  })
+
   it("lists passkeys on /features as built, not under Not built yet", async () => {
     const { html } = await page("/features")
 
@@ -947,14 +963,14 @@ describe("the public website", () => {
 
     // Every language of a page carries the English page's date: the translation says the same.
     expect(lastmods["/de/subscribe"]).toBe("2026-11-04T00:00:00.000Z")
-    expect(lastmods["/ar"]).toBe("2026-11-14T00:00:00.000Z")
+    expect(lastmods["/ar"]).toBe("2026-11-16T00:00:00.000Z")
     expect(Object.values(lastmods)).not.toContain(undefined)
     const english = Object.fromEntries(
       Object.entries(lastmods).filter(([path]) => pathLanguage(path).language === "en"),
     )
     expect(english).toEqual({
-      "/": "2026-11-14T00:00:00.000Z",
-      "/features": "2026-11-06T00:00:00.000Z",
+      "/": "2026-11-16T00:00:00.000Z",
+      "/features": "2026-11-16T00:00:00.000Z",
       "/docs/api": "2026-10-23T00:00:00.000Z",
       // With no history to read, as under `deno test`, the guides and the changelog carry the day
       // they were first published.

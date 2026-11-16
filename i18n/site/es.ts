@@ -665,6 +665,18 @@ export default {
   "FeatureBudgets.fact3":
     "Fijar un límite requiere el plan Household; ver los presupuestos y quitar un límite, nunca; lo comprueba el servidor",
   "FeatureBudgets.code": "Ver el código de los presupuestos",
+  "HomeStatus.recurring": "Movimientos recurrentes para el alquiler, el sueldo y las suscripciones",
+  "FeatureRecurring.nav": "Movimientos recurrentes",
+  "FeatureRecurring.title": "Alquiler, sueldo y suscripciones que se anotan solos",
+  "FeatureRecurring.lead":
+    "Añade un movimiento recurrente una sola vez: a diario, cada semana los días que elijas, cada mes o cada año, hasta una fecha o un número de veces. Financy anota cada movimiento en su fecha, convertido al cambio de ese día, y muestra los próximos 30 días para que puedas saltarte uno.",
+  "FeatureRecurring.fact1":
+    "Un movimiento mensual cae en un día del 1 al 28 o en el último día del mes, así no se salta ningún mes",
+  "FeatureRecurring.fact2":
+    "Una cuenta o categoría archivada pausa la regla y dice por qué; las fechas perdidas se anotan en cuanto se arregla",
+  "FeatureRecurring.fact3":
+    "Añadir un movimiento recurrente requiere el plan Household; verlos, nunca; lo comprueba el servidor",
+  "FeatureRecurring.code": "Ver el código de los movimientos recurrentes",
   "FeatureTransactions.nav": "Movimientos",
   "FeatureTransactions.title": "Cada gasto e ingreso, en la moneda en que pagaste",
   "FeatureTransactions.lead":

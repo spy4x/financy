@@ -659,6 +659,18 @@ export default {
   "FeatureBudgets.fact3":
     "Ein Limit setzen braucht den Tarif Household; Budgets lesen und ein Limit entfernen nie, geprüft auf dem Server",
   "FeatureBudgets.code": "Code der Budgets lesen",
+  "HomeStatus.recurring": "Wiederkehrende Buchungen für Miete, Gehalt und Abos",
+  "FeatureRecurring.nav": "Wiederkehrende Buchungen",
+  "FeatureRecurring.title": "Miete, Gehalt und Abos, die sich selbst eintragen",
+  "FeatureRecurring.lead":
+    "Eine wiederkehrende Buchung einmal anlegen: täglich, wöchentlich an den gewählten Tagen, monatlich oder jährlich, bis zu einem Datum oder für eine Anzahl von Malen. Financy trägt jede Buchung an ihrem Datum ein, umgerechnet zum Kurs dieses Tages, und zeigt die nächsten 30 Tage, damit sich ein Termin überspringen lässt.",
+  "FeatureRecurring.fact1":
+    "Eine monatliche Buchung fällt auf einen Tag von 1 bis 28 oder auf den letzten Tag des Monats, damit kein Monat fehlt",
+  "FeatureRecurring.fact2":
+    "Ein archiviertes Konto oder eine archivierte Kategorie pausiert die Regel und nennt den Grund; verpasste Termine werden nachgetragen, sobald das behoben ist",
+  "FeatureRecurring.fact3":
+    "Eine wiederkehrende Buchung anlegen braucht den Tarif Household; sie lesen nie, geprüft auf dem Server",
+  "FeatureRecurring.code": "Code der wiederkehrenden Buchungen lesen",
   "FeatureTransactions.nav": "Buchungen",
   "FeatureTransactions.title": "Jede Ausgabe und Einnahme, in der Währung, in der du bezahlt hast",
   "FeatureTransactions.lead":

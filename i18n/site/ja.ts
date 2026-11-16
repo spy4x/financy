@@ -640,6 +640,17 @@ export default {
   "FeatureBudgets.fact3":
     "上限の設定には Household プランが必要です。予算の閲覧と上限の削除には不要で、サーバーが確認します",
   "FeatureBudgets.code": "予算のコードを読む",
+  "HomeStatus.recurring": "家賃・給料・サブスクの定期取引",
+  "FeatureRecurring.nav": "定期取引",
+  "FeatureRecurring.title": "家賃も給料もサブスクも、自動で記録",
+  "FeatureRecurring.lead":
+    "定期取引は一度登録するだけ：毎日、選んだ曜日に毎週、毎月、毎年。終了日か回数も決められます。Financy は日付ごとにその日のレートで換算して取引を追加し、今後30日間の予定を表示するので、1回だけスキップすることもできます。",
+  "FeatureRecurring.fact1": "毎月の取引は1日から28日か月末に設定でき、抜ける月がありません",
+  "FeatureRecurring.fact2":
+    "口座やカテゴリがアーカイブされると定期取引は理由を示して一時停止し、解決すると抜けた日付の取引が追加されます",
+  "FeatureRecurring.fact3":
+    "定期取引の追加には Household プランが必要です。閲覧には不要で、サーバーが確認します",
+  "FeatureRecurring.code": "定期取引のコードを読む",
   "FeatureTransactions.nav": "取引",
   "FeatureTransactions.title": "支出も収入も、支払った通貨のまま",
   "FeatureTransactions.lead":
