@@ -103,6 +103,7 @@ from these steps.
    export const discardGoneEntry = (_id: string) => Promise.resolve()
    export const goneTransfers = (_groupId: string): ReadonlySet<string> => new Set()
    export const discardGoneTransfer = (_id: string) => Promise.resolve()
+   export const offlineRecurring = <T>(online: T) => online
    ```
 
    The level 2 stores then read from the server and keep nothing, with no change to them or their

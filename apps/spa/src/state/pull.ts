@@ -19,6 +19,8 @@ export interface PullDependencies {
   transactions?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The open household's transfers, which the transactions list shows too. */
   transfers?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
+  /** The open household's repeating rules. */
+  recurring?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The open household's budgets: the month on screen, which a transaction or a limit moves. */
   budgets?: { refresh(): Promise<void>; groupId: ReadonlySignal<string | null> }
   /** The members of the group whose settings are open. */
@@ -62,6 +64,7 @@ export function createPull(dependencies: PullDependencies) {
     categories,
     transactions,
     transfers,
+    recurring,
     budgets,
     members,
     imports,
@@ -91,6 +94,7 @@ export function createPull(dependencies: PullDependencies) {
     const categoriesGroup = categories?.groupId.value ?? null
     const transactionsGroup = transactions?.groupId.value ?? null
     const transfersGroup = transfers?.groupId.value ?? null
+    const recurringGroup = recurring?.groupId.value ?? null
     const budgetsGroup = budgets?.groupId.value ?? null
     const importsGroup = imports?.groupId.value ?? null
     // A group hint is not about the inbox or the preferences; a start-up or a reconnect may have
@@ -109,6 +113,7 @@ export function createPull(dependencies: PullDependencies) {
       due(categoriesGroup) ? categories?.refresh() : undefined,
       due(transactionsGroup) ? transactions?.refresh() : undefined,
       due(transfersGroup) ? transfers?.refresh() : undefined,
+      due(recurringGroup) ? recurring?.refresh() : undefined,
       due(budgetsGroup) ? budgets?.refresh() : undefined,
       due(membersGroup) ? members.refresh() : undefined,
       due(importsGroup) ? imports?.refresh() : undefined,
@@ -143,6 +148,7 @@ export function createChangeCheck(dependencies: ChangeCheckDependencies) {
     categories,
     transactions,
     transfers,
+    recurring,
     budgets,
     members,
     imports,
@@ -155,6 +161,7 @@ export function createChangeCheck(dependencies: ChangeCheckDependencies) {
     ...(categories ? [["categories", categories] as const] : []),
     ...(transactions ? [["transactions", transactions] as const] : []),
     ...(transfers ? [["transfers", transfers] as const] : []),
+    ...(recurring ? [["recurring", recurring] as const] : []),
     ...(budgets ? [["budgets", budgets] as const] : []),
     ["members", members],
     ...(imports ? [["imports", imports] as const] : []),

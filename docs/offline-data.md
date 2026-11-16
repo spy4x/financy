@@ -34,7 +34,7 @@ the device keeps. [aggregates.md](aggregates.md#choosing-the-offline-level) has 
 | Level               | What works with no network                         | Which lists                                                                                                                                              |
 | ------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1. Online only      | Nothing: the screen says the server is unreachable | Deleted notes, transactions and groups, sign-in, two-factor set-up, every write but a note's, a tag's or a transaction's                                |
-| 2. Offline-readable | The last list the server sent                      | Groups, members, invitations, notifications and the bell's count, activity, the overview's widgets, push devices, billing, API tokens, signed-in devices, budgets |
+| 2. Offline-readable | The last list the server sent                      | Groups, members, invitations, notifications and the bell's count, activity, the overview's widgets, push devices, billing, API tokens, signed-in devices, budgets, repeating rules |
 | 3. Offline-writable | The last list, and create, edit and delete         | Notes, tags, transactions                                                                                                                                |
 
 The selected group can be switched offline only among groups already on the device.
@@ -113,7 +113,9 @@ Transfers come the same way: live ones in `upserts.transfers`, a deleted one as 
 Repeating rules come the same way: live ones in `upserts.recurring_rules`, a deleted one as a
 tombstone of kind `recurring_rules`. The job that makes their entries records a change of the rule
 whenever it moves the rule's `madeThrough` or `pausedReason`, so a device reads those again. The
-SPA does not keep rules yet.
+SPA keeps them next to the transfers, oldest first, as the server lists them. Rules are level 2:
+their writes go to the server only, and the rule a write answers with is put in the copy
+(`offline/recurring-rules.ts`).
 
 ## Which answers count as "unreachable"
 

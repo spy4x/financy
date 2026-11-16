@@ -195,6 +195,7 @@ function checkHarness(
   settings: string | null = null,
   budgets: string | null = null,
   importing: string | null = null,
+  recurring: string | null = null,
 ) {
   const calls: string[] = []
   const sequences: Record<string, string> = { home: "1", team: "5" }
@@ -227,6 +228,10 @@ function checkHarness(
     imports: {
       groupId: signal(importing),
       refresh: () => Promise.resolve(void calls.push("imports")),
+    },
+    recurring: {
+      groupId: signal(recurring),
+      refresh: () => Promise.resolve(void calls.push("recurring")),
     },
     notifications: { refresh: () => Promise.resolve(void calls.push("notifications")) },
   })
@@ -285,6 +290,15 @@ describe("the change check of a page with no socket", () => {
     sequences.team = "6"
 
     expect(await run(false)).toEqual(["flush", "groups", "imports"])
+  })
+
+  it("reads the open household's repeating rules again once its sequence moved, without a socket", async () => {
+    const { run, sequences } = checkHarness(null, null, null, null, "team")
+    await run(true)
+    expect(await run(false)).toEqual(["flush", "groups"])
+    sequences.team = "6"
+
+    expect(await run(false)).toEqual(["flush", "groups", "recurring"])
   })
 
   it("leaves the notes alone when another group's sequence moved", async () => {
