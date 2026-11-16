@@ -4,6 +4,10 @@ import { renderToString } from "preact-render-to-string"
 import { h } from "preact"
 import { matchRoute, useRouter } from "wouter-preact"
 import { OAUTH_PAGES } from "@domain/identity"
+import { createTranslator, type Translator } from "@spy4x/platform/universal/i18n"
+import app from "@i18n/app/en.ts"
+import site from "@i18n/site/en.ts"
+import { PRODUCT_NAME } from "@ui/brand.ts"
 import {
   announcedPage,
   isMembersOnlyPath,
@@ -11,6 +15,7 @@ import {
   isSpaPath,
   SPA_ROUTE_PATHS,
   SPA_ROUTES,
+  spaPageTitle,
 } from "./spa-paths.ts"
 
 /** An address the pattern matches: every `:name` filled in, an optional `:name?` too. */
@@ -189,5 +194,60 @@ describe("announcedPage", () => {
     ) {
       expect(announcedPage(path), path).toBe(path)
     }
+  })
+})
+
+describe("spaPageTitle", () => {
+  const english = createTranslator({
+    language: `en`,
+    catalogs: [{ source: app }, { source: site }],
+  })
+  const title = (path: string, notes = true, t: Translator<string> = english) =>
+    spaPageTitle(t, path, notes, routerParser())
+
+  it("names each page, then the product", () => {
+    expect(title("/notes")).toBe(`Notes · ${PRODUCT_NAME}`)
+    expect(title("/notes/new")).toBe(`New note · ${PRODUCT_NAME}`)
+    expect(title("/notes/abc")).toBe(`Note · ${PRODUCT_NAME}`)
+    expect(title("/tags/new")).toBe(`New tag · ${PRODUCT_NAME}`)
+    expect(title("/groups")).toBe(`Groups · ${PRODUCT_NAME}`)
+    expect(title("/overview/abc")).toBe(`Overview · ${PRODUCT_NAME}`)
+    expect(title("/sign-in")).toBe(`Welcome back · ${PRODUCT_NAME}`)
+    // The newsletter's pages take their name from the website's catalog.
+    expect(title("/unsubscribe")).toBe(`Unsubscribe · ${PRODUCT_NAME}`)
+  })
+
+  it("gives every route but the home page's redirect a name from the catalogs", () => {
+    for (const pattern of SPA_ROUTE_PATHS) {
+      const key = SPA_ROUTES[pattern].title
+      if (pattern === "/") {
+        expect(key).toBe(null)
+        continue
+      }
+      expect(key, pattern).not.toBe(null)
+      expect(english.t(key!), pattern).not.toBe(key)
+      expect(title(addressOf(pattern)), pattern).toBe(`${english.t(key!)} · ${PRODUCT_NAME}`)
+    }
+  })
+
+  it("names a group's tabs and the profile's sections after their page", () => {
+    for (const path of ["/groups/abc", "/groups/abc/members", "/groups/abc/billing"]) {
+      expect(title(path), path).toBe(`Group · ${PRODUCT_NAME}`)
+    }
+    expect(title("/groups/abc/invitations/new")).toBe(`New invitation · ${PRODUCT_NAME}`)
+    expect(title("/profile/security")).toBe(`Profile · ${PRODUCT_NAME}`)
+  })
+
+  it("reads the product's name alone where no page is drawn", () => {
+    expect(title("/")).toBe(PRODUCT_NAME)
+    expect(title("/nowhere")).toBe(PRODUCT_NAME)
+    expect(title("/notes/abc/extra")).toBe(PRODUCT_NAME)
+    expect(title("/notes", false)).toBe(PRODUCT_NAME)
+    expect(title("/tags/abc", false)).toBe(PRODUCT_NAME)
+  })
+
+  it("names the page in the translator's language", () => {
+    const marked = { ...english, t: (key: string) => `⟦${english.t(key)}⟧` }
+    expect(title("/notes", true, marked)).toBe(`⟦Notes⟧ · ${PRODUCT_NAME}`)
   })
 })
