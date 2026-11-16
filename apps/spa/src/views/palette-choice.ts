@@ -1,3 +1,4 @@
+import type { ReadonlySignal } from "@preact/signals"
 import type { ThemePreference } from "@domain/identity"
 import { GROUP_PATHS, NOTE_PATHS, TAG_PATHS, TRANSACTION_PATHS } from "@ui/progressive.tsx"
 import type { SearchChoice } from "@ui/search-palette.tsx"
@@ -33,6 +34,14 @@ export interface ChoicePorts {
   /** The account menu's sign-out, which asks about unsent changes first. */
   signOut: () => void
   install: () => void
+  /** The group export store, whose `download` the group menu's "Export group…" calls too. */
+  groupExport: {
+    download: (groupId: string) => Promise<boolean>
+    /** The group whose last export failed, or `null`. */
+    failed: ReadonlySignal<string | null>
+  }
+  /** Says an export failed: the group page that shows why may not be open. */
+  exportFailed: () => void
 }
 
 /** Does what a palette pick asks, through the same function as its button or shortcut. */
@@ -56,6 +65,12 @@ export async function runChoice(choice: SearchChoice, ports: ChoicePorts): Promi
       return ports.signOut()
     case "install":
       return ports.install()
+    case "export-group": {
+      // A download refused because another one runs is no failure: the store keeps no failure then.
+      const saved = await ports.groupExport.download(choice.groupId)
+      if (!saved && ports.groupExport.failed.value === choice.groupId) ports.exportFailed()
+      return
+    }
     case "note":
       // Straight to the note: never the editor's "Note in another group" page in between.
       if (choice.groupId !== ports.currentGroupId) await ports.selectGroup(choice.groupId)

@@ -63,8 +63,11 @@ export interface SearchPaletteProps {
   searchNotes: (query: string, signal: AbortSignal) => Promise<SearchNotesAnswer>
   /** Every group the person belongs to now. */
   groups: readonly SearchGroup[]
-  /** The group the notes pages show, and whether the person may add notes and tags to it. */
-  currentGroup: { id: string; name: string; canWrite: boolean } | null
+  /**
+   * The group the notes pages show, whether the person may add notes and tags to it, and whether
+   * they may export it.
+   */
+  currentGroup: { id: string; name: string; canWrite: boolean; canExport?: boolean } | null
   /** Whether the server can be reached: "New group" needs it. */
   online: boolean
   /** The open page's own commands, listed first among the commands. */

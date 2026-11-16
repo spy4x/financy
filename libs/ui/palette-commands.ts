@@ -44,6 +44,8 @@ export type SearchChoice =
   | { kind: "switch-group"; groupId: string }
   /** Open the group's settings page. */
   | { kind: "group-settings"; groupId: string }
+  /** Download the group's export file, as the group menu's "Export group…" does. */
+  | { kind: "export-group"; groupId: string }
   /** Go to a page of the app. */
   | { kind: "page"; href: string }
   /** Open the New note dialog, which adds a note without leaving the page. */
@@ -91,8 +93,11 @@ export interface PaletteContext {
   t: Translator<string>
   /** The region format's locale, for sizes in a detail. */
   locale: string
-  /** The group the notes pages show, and whether the person may add notes and tags to it. */
-  currentGroup: { id: string; name: string; canWrite: boolean } | null
+  /**
+   * The group the notes pages show, whether the person may add notes and tags to it, and whether
+   * they may export it (the owner only); left out, they may not.
+   */
+  currentGroup: { id: string; name: string; canWrite: boolean; canExport?: boolean } | null
   /** Whether the server can be reached. */
   online: boolean
   /**
@@ -262,6 +267,9 @@ const SECTION_ALIASES: Record<ProfileSectionId, readonly string[]> = {
   "danger-zone": [`delete account`, `close account`, `remove account`, `удалить аккаунт`],
 }
 
+/** What a person may call a group, a household's books: each finds every group row. */
+const GROUP_ALIASES: readonly string[] = [`budget`, `household`, `бюджет`, `семья`, `домохозяйство`]
+
 /** The three themes, in the order the profile lists them. */
 const THEMES: readonly ThemePreference[] = [`system`, `light`, `dark`]
 
@@ -289,12 +297,13 @@ export function shortcutKeys(keys: string | undefined): Pick<PaletteOption, "kbd
  * Every command the person can take now, under their headings in the order the palette lists
  * them: This page, Go to, Create, Settings, Account. Go to comes before Create, so a typo that
  * fits both ("notse") finds the page first. A command the person cannot take is left out
- * ("New note" without a group they may write to, Activity while the rail hides it, "Install app"
- * while the browser offers no install, Notes, Tags, New note, New tag, Import notes and API tokens
- * with the notes off, Download my data and Change profile picture with files off); one that needs
- * the server ({@link SERVER_ONLY}: Import notes, New group, Keep your account, Download my data,
- * Change profile picture, Delete my account, Turn off two-factor sign-in, Sign out of all other
- * devices) stays listed offline, dimmed, with why it cannot run. Each is found by its label, by its
+ * (New note, New transaction, New transfer, New account and New category without a group they may
+ * write to, Export group unless they own the current group, Activity while the rail hides it,
+ * "Install app" while the browser offers no install, Notes, Tags, New note, New tag, Import notes
+ * and API tokens with the notes off, Download my data and Change profile picture with files off);
+ * one that needs the server ({@link SERVER_ONLY}: Import notes, New group, Export group, Keep your
+ * account, Download my data, Change profile picture, Delete my account, Turn off two-factor
+ * sign-in, Sign out of all other devices) stays listed offline, dimmed, with why it cannot run. Each is found by its label, by its
  * English label in every language, and by the words a person would try, in English and Russian.
  *
  * @param context The app's state.
@@ -371,7 +380,25 @@ export function paletteCommands(
         page(TRANSACTION_PATHS.new),
         {
           detail: inGroup,
-          aliases: [`add expense`, `add income`, `spend`, `payment`, `refund`, `entry`, `log`],
+          aliases: [
+            `add expense`,
+            `add income`,
+            `expense`,
+            `income`,
+            `spend`,
+            `payment`,
+            `refund`,
+            `entry`,
+            `log`,
+            `трата`,
+            `расход`,
+            `доход`,
+            `новая операция`,
+            `добавить расход`,
+            `добавить трату`,
+            `платёж`,
+            `возврат`,
+          ],
           kbd: kbdOf(shortcuts, `Shortcuts.newTransaction`),
         },
       )]
@@ -380,13 +407,46 @@ export function paletteCommands(
     ...(inGroup
       ? [command("new-transfer", `Search.newTransfer`, heading.create, page(TRANSFER_PATHS.new), {
         detail: inGroup,
-        aliases: [`move money`, `withdrawal`],
+        aliases: [
+          `move money`,
+          `transfer money`,
+          `withdrawal`,
+          `перевод`,
+          `перевести`,
+          `перевод между счетами`,
+          `снятие наличных`,
+        ],
+      })]
+      : []),
+    ...(inGroup
+      ? [command("new-account", `Search.newAccount`, heading.create, page(ACCOUNT_PATHS.new), {
+        detail: inGroup,
+        aliases: [
+          `add account`,
+          `create account`,
+          `wallet`,
+          `card`,
+          `bank account`,
+          `новый счёт`,
+          `новый счет`,
+          `создать счёт`,
+          `кошелёк`,
+          `карта`,
+        ],
       })]
       : []),
     ...(inGroup
       ? [command("new-category", `Search.newCategory`, heading.create, page(CATEGORY_PATHS.new), {
         detail: inGroup,
-        aliases: [`subcategory`, `категория`],
+        aliases: [
+          `add category`,
+          `create category`,
+          `subcategory`,
+          `категория`,
+          `новая категория`,
+          `создать категорию`,
+          `подкатегория`,
+        ],
       })]
       : []),
     ...(notesInGroup
@@ -486,6 +546,28 @@ export function paletteCommands(
         },
       ),
     ]),
+    // The group menu's Export, which only the owner sees: the same download, from any page.
+    ...(currentGroup?.canExport
+      ? [command(
+        "export-group",
+        `Search.exportGroup`,
+        heading.settings,
+        { kind: "export-group", groupId: currentGroup.id },
+        {
+          detail: { key: `Search.inGroup`, values: { group: currentGroup.name } },
+          aliases: [
+            `export`,
+            `download`,
+            `backup`,
+            `export household`,
+            `экспорт`,
+            `выгрузить`,
+            `скачать`,
+            `резервная копия`,
+          ],
+        },
+      )]
+      : []),
     command("shortcuts", `Frame.shortcuts`, heading.settings, { kind: "shortcuts" }, {
       aliases: SHORTCUTS_ALIASES,
       kbd: kbdOf(shortcuts, `Shortcuts.show`),
@@ -675,6 +757,7 @@ const SERVER_ONLY = new Set(
   [
     `import-notes`,
     `new-group`,
+    `export-group`,
     `keep`,
     `download-data`,
     `change-picture`,
@@ -697,7 +780,8 @@ function needsServer(context: PaletteContext, option: PaletteOption): PaletteOpt
 
 /**
  * The person's groups whose name matches, one row each: Enter makes it the current group, and
- * Ctrl Enter (⌘Enter) opens its settings. Found by its name and by "Switch to …".
+ * Ctrl Enter (⌘Enter) opens its settings. Found by its name, by "Switch to …", and by the words a
+ * person uses for a household's books, such as "budget".
  */
 export function groupRow(
   t: Translator<string>,
@@ -713,6 +797,7 @@ export function groupRow(
     aliases: [
       t.t(`Search.switchTo`, { group: group.name }),
       englishText(`Search.switchTo`, { group: group.name }),
+      ...GROUP_ALIASES,
     ],
     group: t.t(`Search.groups`),
     choice: { kind: "switch-group", groupId: group.id },

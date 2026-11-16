@@ -259,6 +259,7 @@ describe("SearchPalette", () => {
       "New note | In Home",
       "New transaction | In Home",
       "New transfer | In Home",
+      "New account | In Home",
       "New category | In Home",
       "New tag | In Home",
       "Import notes | In Home",
