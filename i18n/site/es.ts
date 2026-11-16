@@ -5,7 +5,7 @@ export default {
   "SiteNav.docs": "Docs",
   "SiteNav.blog": "Blog",
   "SiteNav.github": "GitHub",
-  "HeaderAction.github": "GitHub",
+  "HeaderAction.selfHost": "Alojarlo tú",
   "SiteFrame.skip": "Ir al contenido",
   "SiteFooter.pitch":
     "Control de finanzas para ti o tu familia, en cualquier combinación de monedas.",
@@ -563,6 +563,7 @@ export default {
     "Sí. Una copia de seguridad diaria y cifrada de la base de datos con restic, opcional, y un procedimiento de restauración por escrito.",
   "ErrorPage.status": "Ver qué funciona hoy",
   "HomeHero.notify": "Avísame",
+  "HomeHero.selfHost": "Aloja Financy tú mismo",
   "HomeProof.languages": "idiomas en la app y en este sitio",
   "HomeStatus.selfHost": "Funciona en tu propio servidor con Docker Compose",
   "HomeStatus.building": "En construcción",
@@ -586,7 +587,7 @@ export default {
   "HomeWays.selfHostTitle": "Alojarlo tú",
   "HomeWays.selfHostText":
     "Gratis bajo la licencia AGPL‑3.0. Funciona en tu servidor con Docker Compose, y tus datos se quedan allí.",
-  "HomeWays.selfHostLink": "Lee el código en GitHub",
+  "HomeWays.selfHostLink": "Lee la guía para alojarlo tú",
   "HomeWays.cloudTitle": "La nube",
   "HomeWays.cloudText":
     "Aún no está abierta. El mismo código, sin que tengas que mantener un servidor, en un plan de pago.",

@@ -12,8 +12,8 @@ async function accessibilityViolations(page: Page): Promise<string[]> {
   )
 }
 
-// capacity has the widest table of the guides; /ar/ is the right-to-left frame around English.
-const PAGES = ["/changelog", "/docs", "/docs/get-started", "/docs/capacity", "/ar/docs/capacity"]
+// backups has the widest table of the guides; /ar/ is the right-to-left frame around English.
+const PAGES = ["/changelog", "/docs", "/docs/self-host", "/docs/backups", "/ar/docs/backups"]
 
 for (const path of PAGES) {
   test(`${path} fits a 390 px phone without sideways scrolling or cut-off parts`, async ({ page }) => {
@@ -34,7 +34,7 @@ for (const path of PAGES) {
 }
 
 // The dark theme needs the theme script, so these run with JavaScript, in both colour schemes.
-for (const path of ["/changelog", "/docs", "/docs/get-started", "/docs/capacity"]) {
+for (const path of ["/changelog", "/docs", "/docs/self-host", "/docs/backups"]) {
   for (const colorScheme of ["light", "dark"] as const) {
     for (const width of [390, 1440]) {
       test(`${path} has no accessibility violations in the ${colorScheme} theme at ${width} px`, async ({ page }) => {
@@ -51,7 +51,7 @@ for (const path of ["/changelog", "/docs", "/docs/get-started", "/docs/capacity"
 }
 
 for (const width of [390, 1440]) {
-  test(`a visitor at ${width} px opens Docs from the header and starts with Get started`, async ({ page }) => {
+  test(`a visitor at ${width} px opens Docs from the header and starts with Self-host Financy`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto("/features")
     if (width < 1024) await page.locator("header summary").last().click()
@@ -59,9 +59,10 @@ for (const width of [390, 1440]) {
     await nav.getByRole("link", { name: "Docs", exact: true }).click()
 
     await expect(page).toHaveURL(/\/docs$/)
-    await page.locator("[data-e2e=docs-first]").getByRole("link", { name: "Get started" }).click()
-    await expect(page).toHaveURL(/\/docs\/get-started$/)
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Get started")
+    await page.locator("[data-e2e=docs-first]").getByRole("link", { name: "Self-host Financy" })
+      .click()
+    await expect(page).toHaveURL(/\/docs\/self-host$/)
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Self-host Financy")
     if (width < 1024) await page.locator("header summary").last().click()
     await expect(nav.getByRole("link", { name: "Docs", exact: true })).toHaveAttribute(
       "aria-current",
@@ -73,15 +74,15 @@ for (const width of [390, 1440]) {
 test("a reader moves from the docs index to a guide, through its sections, to the next guide", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto("/docs")
-  await page.getByRole("link", { name: /^Deploy to a server/ }).click()
+  await page.getByRole("link", { name: /^Upgrade Financy/ }).click()
 
-  await expect(page).toHaveURL(/\/docs\/deploy$/)
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Deploy to a server")
+  await expect(page).toHaveURL(/\/docs\/upgrade$/)
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Upgrade Financy")
   const sections = page.getByRole("navigation", { name: "On this page" })
   await sections.getByRole("link").filter({ visible: true }).first().click()
-  await expect(page).toHaveURL(/\/docs\/deploy#.+/)
+  await expect(page).toHaveURL(/\/docs\/upgrade#.+/)
   await page.locator("a[rel=next]").click()
-  await expect(page).not.toHaveURL(/\/docs\/deploy(#|$)/)
+  await expect(page).not.toHaveURL(/\/docs\/upgrade(#|$)/)
   await expect(page).toHaveURL(/\/docs\/[a-z-]+$/)
 })
 
@@ -95,7 +96,7 @@ test("an internal doc answers 404 with the way back to the docs", async ({ page 
 
 test("a press on a guide's copy button copies the command and says it did", async ({ page, context, baseURL }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: baseURL })
-  await page.goto("/docs/load-tests")
+  await page.goto("/docs/self-host")
   const block = page.locator("main [data-prose-code]").first()
 
   await block.getByRole("button", { name: "Copy" }).click()
@@ -109,7 +110,7 @@ test.describe("with JavaScript off", () => {
   test.use({ javaScriptEnabled: false })
 
   test("a guide shows no copy button that could not work", async ({ page }) => {
-    await page.goto("/docs/load-tests")
+    await page.goto("/docs/self-host")
 
     const buttons = page.locator("main button[data-prose-copy]")
     expect(await buttons.count()).toBeGreaterThan(0)

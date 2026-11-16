@@ -47,3 +47,4 @@ apps/mpa/islands/launch-checklist.tsx
 apps/mpa/islands/checklist-actions.tsx
 e2e/mpa/launch-checklist.mpa.ts
 libs/server/db/migrations/2026_12_16_0005_import_options_review_choices.sql
+apps/mpa/docs-list.ts

@@ -5,7 +5,7 @@ import type { JSX } from "preact"
 import { Breadcrumbs } from "@spy4x/preact-ui/breadcrumbs"
 import { Button } from "@spy4x/preact-ui/button"
 import { API_DOCS_PATH } from "../../../api-docs.ts"
-import { DOCS_PATH, PUBLISHED_DOCS, readDoc } from "../../../docs-site.ts"
+import { DOC_SLUGS, DOCS_PATH, PUBLISHED_DOCS, readDoc } from "../../../docs-site.ts"
 import { DEFAULT_LANGUAGE } from "../../../languages.ts"
 import { SITE_NAME, siteBreadcrumbsJsonLd, SiteFrame } from "../../../site.tsx"
 import { useSite } from "../../../use-site.tsx"
@@ -13,9 +13,9 @@ import { define } from "../../../utils.ts"
 
 /** The index's title and description, for its head, the sitemap and `llms.txt`. */
 export const DOCS_HEAD = {
-  title: `Seed docs: run, build on and deploy the starter`,
+  title: `Financy docs: self-host it, upgrade it, back it up`,
   description:
-    `How to run, build on and deploy Seed. The same guides as the repository's docs folder, kept in step with main.`,
+    `How to run Financy on your own server, upgrade it and back it up. The same guides as the repository's docs folder, kept in step with main.`,
 }
 
 /** One card of the index: a guide or the API reference. */
@@ -25,11 +25,11 @@ interface DocCard {
   summary: string
 }
 
-/** The guide the index puts first, above the groups, as the way in for a new reader. */
-export const FIRST_DOC = `get-started`
+/** The first published guide, which the index puts above the groups as the way in for a new reader. */
+export const FIRST_DOC = DOC_SLUGS[0]
 
 /**
- * `/docs`: the Get started guide first, as a band with one link, then every other published guide
+ * `/docs`: the first guide, as a band with one link, then every other published guide
  * as a card under its group, with the API reference last under Reference while the notes are on.
  */
 export default define.page(function DocsIndex({ state }) {
@@ -89,7 +89,9 @@ export default define.page(function DocsIndex({ state }) {
               {SITE_NAME} docs
             </h1>
             <p class="text-lg text-muted text-pretty">
-              How to run, build on and deploy {SITE_NAME}. The same guides as the repository's{" "}
+              How to run {SITE_NAME}{" "}
+              on your own server, upgrade it and back it up. The same guides as the repository's
+              {" "}
               <code dir="ltr">docs</code> folder, kept in step with <code dir="ltr">main</code>.
             </p>
           </header>
