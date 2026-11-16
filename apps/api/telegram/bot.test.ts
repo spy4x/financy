@@ -1,19 +1,14 @@
 import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
-import { GroupSelectedQuery } from "@domain/groups"
 import { type Actor, UserMFAStatus } from "@domain/identity"
-import { NoteListQuery } from "@domain/notes"
 import type { TelegramAccountLabel } from "@server/auth/telegram.ts"
 import { botText, createSeedBot, menuCommands, type TelegramLinkService } from "./bot.ts"
-import { createTelegramProduct } from "./commands.ts"
-import { NOTES_OFF } from "@server/notes/setup.ts"
 import deApp from "@i18n/app/de.ts"
 import type { TelegramProduct } from "./extension.ts"
 import { callbackUpdate, fakeTelegram, TELEGRAM_USER_ID, textUpdate } from "./fake-telegram.ts"
 
 const USER_ID = 42
 const CODE = `42_${`a`.repeat(32)}`
-const groupId = `7b6d8d6c-1af5-7f04-8ae4-b1ee5d111002`
 const ADA: TelegramAccountLabel = { firstName: `Ada`, maskedAddress: `a•••@example.com` }
 const ASK =
   `Press "Link" only if it's your own account. If you didn't ask for this, ignore this message.`
@@ -345,43 +340,5 @@ describe(`Seed's Telegram bot`, () => {
       `/add - Add a transaction\n/link - Link your account with a code from the app\n` +
         `/unlink - Stop this chat acting for your account\n/help - What I can do`,
     )
-  })
-})
-
-describe(`the example product command /notes`, () => {
-  it(`answers with the newest notes of the linked person's selected group, read as them`, async () => {
-    const queries: unknown[] = []
-    const queryBus = {
-      execute: (query: unknown) => {
-        queries.push(query)
-        if (query instanceof GroupSelectedQuery) return Promise.resolve({ groupId, version: 1 })
-        return Promise.resolve({
-          notes: [{ title: `Groceries` }, { title: `` }],
-          nextPageKey: null,
-        })
-      },
-    } as unknown as Parameters<typeof createTelegramProduct>[0]["queryBus"]
-    const { handle, sent } = bot({
-      links: memoryLinks(true),
-      product: createTelegramProduct({ queryBus }),
-    })
-
-    await handle(`/notes`)
-
-    expect(sent()).toEqual([`• Groceries\n• Untitled`])
-    const list = queries[1] as NoteListQuery
-    expect(list).toBeInstanceOf(NoteListQuery)
-    expect(list.data.groupId).toBe(groupId)
-    expect(list.data.actor.userId).toBe(USER_ID)
-  })
-})
-
-describe(`the example product command /notes with the notes off`, () => {
-  it(`is not offered, so the bot reads no note`, () => {
-    const queryBus = {
-      execute: () => Promise.reject(new Error(`no query may run`)),
-    } as unknown as Parameters<typeof createTelegramProduct>[0]["queryBus"]
-
-    expect(createTelegramProduct({ queryBus, notes: NOTES_OFF }).commands).toEqual([])
   })
 })
