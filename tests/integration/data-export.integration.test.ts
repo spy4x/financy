@@ -459,6 +459,39 @@ Deno.test("data export: lists the budget limits, methods and envelope moves the 
   })
 })
 
+Deno.test("data export: lists the payees whose category the person chose last, never another member's or a former household's", async () => {
+  await withSchema(async (sql) => {
+    const { groupId, editor, owner } = await team(sql)
+    const left = uuidV7()
+    await sql`
+      INSERT INTO groups (id, name, owner_user_id) VALUES (${left}, 'Former household', ${owner})
+    `
+    const food = await category(sql, groupId, owner, `Food`)
+    const elsewhere = await category(sql, left, owner, `Food`)
+    const mine = uuidV7()
+    await sql`
+      INSERT INTO payee_memory (id, group_id, payee_key, category_id, updated_by_user_id)
+      VALUES (${mine}, ${groupId}, 'coffee bar', ${food}, ${editor}),
+        (${uuidV7()}, ${groupId}, 'example grocer', ${food}, ${owner}),
+        (${uuidV7()}, ${left}, 'coffee bar', ${elsewhere}, ${editor})
+    `
+
+    const files = unzip(await buildDataExport(sql, editor, new Date()))
+
+    expect(JSON.parse(files[`data.json`]).sections.finance_payee_memory).toEqual([{
+      id: mine,
+      groupId,
+      payeeKey: `coffee bar`,
+      categoryId: food,
+      createdAt: expect.stringMatching(/^\d{4}-/),
+      updatedAt: expect.stringMatching(/^\d{4}-/),
+    }])
+    expect(files[`finance_payee_memory.csv`].split(`\r\n`)[0]).toBe(
+      `﻿id,groupId,payeeKey,categoryId,createdAt,updatedAt`,
+    )
+  })
+})
+
 Deno.test("data export: lists the files the person attached, never another person's or the stored key", async () => {
   await withSchema(async (sql) => {
     const { groupId, editor, owner } = await team(sql)

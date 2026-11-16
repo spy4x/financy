@@ -1169,6 +1169,65 @@ function messageOfReference(code: TransactionErrorCode): string {
   if (code === `CATEGORY_NOT_FOUND`) return `its category is not among the file's categories`
   return `an expense needs an expense category`
 }
+
+/** The longest payee key payee memory keeps, in characters (`payee_memory.payee_key`). */
+export const PAYEE_KEY_MAX_LENGTH = 200
+
+/**
+ * One payee a household's statement saves remembered, in its export file: the payee's key and the
+ * category last chosen for it, named by its id in the same file. Never a person.
+ */
+export const payeeMemoryExportEntrySchema = type({
+  id: UUID_PATTERN,
+  payeeKey: `0 < string <= ${PAYEE_KEY_MAX_LENGTH}`,
+  categoryId: UUID_PATTERN,
+  createdAt: `string.date.iso.parse`,
+  updatedAt: `string.date.iso.parse`,
+  "+": `reject`,
+})
+export type PayeeMemoryExportEntry = typeof payeeMemoryExportEntrySchema.infer
+
+/** What a refusal calls each field of a remembered payee in a file. */
+const PAYEE_MEMORY_EXPORT_LABELS = {
+  id: `id`,
+  payeeKey: `payee`,
+  categoryId: `category`,
+  createdAt: `creation date`,
+  updatedAt: `last change date`,
+}
+
+/** Checks one remembered payee of a file: its shape and a payee key without hidden characters. */
+export function parsePayeeMemoryExportEntry(entry: unknown): PayeeMemoryExportEntry {
+  const parsed = payeeMemoryExportEntrySchema(entry)
+  if (parsed instanceof type.errors) {
+    throw new TransactionError(
+      `INVALID_REQUEST`,
+      plainEntryProblem(parsed, `remembered payee`, PAYEE_MEMORY_EXPORT_LABELS),
+      fieldErrors(parsed),
+    )
+  }
+  if (hasUnsafeTextCharacters(parsed.payeeKey)) {
+    throw new TransactionError(
+      `INVALID_REQUEST`,
+      `the payee holds control or invisible characters`,
+      { payeeKey: { code: `unsafe` } },
+    )
+  }
+  return parsed
+}
+
+/** A file's remembered payees named twice, by index: a household remembers each payee once. */
+export function payeeMemoryExportProblems(
+  entries: readonly Pick<PayeeMemoryExportEntry, `payeeKey`>[],
+): { index: number; problem: string }[] {
+  const seen = new Set<string>()
+  const problems: { index: number; problem: string }[] = []
+  entries.forEach((entry, index) => {
+    if (seen.has(entry.payeeKey)) problems.push({ index, problem: `the payee is remembered twice` })
+    seen.add(entry.payeeKey)
+  })
+  return problems
+}
 // #endregion Export file
 
 // #region Admin
