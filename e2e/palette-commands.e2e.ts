@@ -3,13 +3,14 @@
  * still open, the palette's look on a phone and a desktop in both palettes, photographed into
  * the test's output folder for the design review, a group page's own commands per role, the
  * risky account commands, which only open their confirmation, and the quick-create rows, which
- * make a note, tag or group from the typed text.
+ * make a note, tag or group from the typed text, or open the quick entry with its memo and amount.
  */
 import { type APIRequestContext, type BrowserContext, type Page } from "@playwright/test"
 import { uuidV7 } from "@jsr/spy4x__platform/universal/uuid"
 import { expect, test } from "./fixtures/stack.ts"
 import { gotoApp, signIn } from "./fixtures/app.ts"
-import { signUpWithCode } from "./fixtures/sign-up.ts"
+import { payForGroup, signUpWithCode } from "./fixtures/sign-up.ts"
+import { openAccounts } from "./fixtures/groups.ts"
 import { enrolTotp } from "./fixtures/totp.ts"
 
 const apiBase = "http://app.localhost"
@@ -318,7 +319,7 @@ test.describe("the palette's commands", () => {
     }
   })
 
-  test("typed text offers New note, New tag and New group named after it: Enter fills the form, Ctrl Enter creates and opens", async ({ page, request }) => {
+  test("typed text offers New note, New transaction, New tag and New group named after it: Enter fills the form, Ctrl Enter creates and opens", async ({ page, request }) => {
     test.setTimeout(180_000)
     const email = `e2e-palette-quick-${uuidV7().slice(-8)}@example.com`
     await cleanup(request, email)
@@ -363,9 +364,12 @@ test.describe("the palette's commands", () => {
       // From the rail's Search button: closing the New note dialog gives focus back to it.
       await ask("groceries", "rail")
       await expect(palette.getByRole("option").nth(1)).toHaveAccessibleName(
-        row("New tag", "groceries"),
+        row("New transaction", "groceries"),
       )
       await expect(palette.getByRole("option").nth(2)).toHaveAccessibleName(
+        row("New tag", "groceries"),
+      )
+      await expect(palette.getByRole("option").nth(3)).toHaveAccessibleName(
         row("New group", "groceries"),
       )
       await page.keyboard.press("Enter")
@@ -386,11 +390,13 @@ test.describe("the palette's commands", () => {
 
       await ask("Errands")
       await page.keyboard.press("ArrowDown")
+      await page.keyboard.press("ArrowDown")
       await page.keyboard.press("Enter")
       await expect(page).toHaveURL("/tags/new")
       await expect(page.getByRole("textbox", { name: "Name" })).toHaveValue("Errands")
 
       await ask("Chores")
+      await page.keyboard.press("ArrowDown")
       await page.keyboard.press("ArrowDown")
       await page.keyboard.press("Control+Enter")
       await expect(page).toHaveURL(/\/tags\/[0-9a-f-]{36}$/)
@@ -398,6 +404,7 @@ test.describe("the palette's commands", () => {
       await expect(page.getByRole("textbox", { name: "Name" })).toHaveValue("Chores")
 
       await ask("Book club")
+      await page.keyboard.press("ArrowDown")
       await page.keyboard.press("ArrowDown")
       await page.keyboard.press("ArrowDown")
       await page.keyboard.press("Enter")
@@ -413,6 +420,55 @@ test.describe("the palette's commands", () => {
       await expect(first).toHaveAccessibleName(/^New note: “.*…/)
       expect(await first.evaluate((option) => option.scrollWidth <= option.clientWidth)).toBe(true)
       await page.screenshot({ path: test.info().outputPath(`quick-create-390.png`) })
+      expect(errors).toEqual([])
+    } finally {
+      if (errors.length) console.log(errors.join(`\n---\n`))
+      await cleanup(request, email)
+    }
+  })
+
+  test("New transaction from the typed text opens the quick entry with the memo and a comma-decimal amount filled in", async ({ page, request }) => {
+    test.setTimeout(180_000)
+    const email = `e2e-palette-entry-${uuidV7().slice(-8)}@example.com`
+    await cleanup(request, email)
+    const errors: string[] = []
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message))
+    try {
+      const signedUp = await signUpWithCode(request, `${apiBase}/api/auth/password/sign-up`, {
+        headers,
+        data: { email, password },
+      })
+      expect(signedUp.ok(), await signedUp.text()).toBe(true)
+      await signIn(page, email, password)
+      // A household on the paid plan, since the free plan allows no entries, with one account.
+      const groupId = uuidV7()
+      const created = await page.request.post(`${apiBase}/api/groups`, {
+        headers,
+        data: { id: groupId, name: "Daily money" },
+      })
+      expect(created.status(), await created.text()).toBe(201)
+      await payForGroup(page.request, apiBase, groupId)
+      await openAccounts(page, "Daily money")
+      await page.locator("[data-e2e=account-new]").click()
+      await page.locator("[data-e2e=account-name-input]").fill("Wallet")
+      const currency = page.locator("[data-e2e=account-currency-field] input")
+      await currency.fill("EUR")
+      await currency.press("Enter")
+      await page.locator("[data-e2e=account-save]").click()
+      await expect(page.locator("[data-e2e=account-save]")).toHaveCount(0)
+
+      const palette = page.locator("[data-e2e=search]")
+      await page.keyboard.press("Control+k")
+      await palette.getByRole("combobox").fill("coffee 4,50")
+      const entry = palette.getByRole("option", {
+        name: /^New transaction: “\u2068?coffee 4,50\u2069?”/,
+      })
+      await expect(entry).toBeVisible()
+      await entry.click()
+      await expect(page).toHaveURL(/\/transactions\/new\?next=/)
+      await expect(page.locator("[data-e2e=transaction-memo]")).toHaveValue("coffee")
+      await expect(page.locator("[data-e2e=transaction-amount-field] input[type=text]"))
+        .toHaveValue("4.50")
       expect(errors).toEqual([])
     } finally {
       if (errors.length) console.log(errors.join(`\n---\n`))

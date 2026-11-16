@@ -1,5 +1,5 @@
 import type { ThemePreference } from "@domain/identity"
-import { GROUP_PATHS, NOTE_PATHS, TAG_PATHS } from "@ui/progressive.tsx"
+import { GROUP_PATHS, NOTE_PATHS, TAG_PATHS, TRANSACTION_PATHS } from "@ui/progressive.tsx"
 import type { SearchChoice } from "@ui/search-palette.tsx"
 
 /** What {@link runChoice} drives: the shell's own functions, the ones its buttons and keys call. */
@@ -17,8 +17,11 @@ export interface ChoicePorts {
    * or failed: the New note dialog is then open on the text and why.
    */
   addNote: (title: string) => Promise<string | null>
-  /** Puts `name` in the create form of a tag or a group, as if typed there. */
-  fillForm: (entity: "tag" | "group", name: string) => void
+  /**
+   * Puts `name` in the create form of a tag or a group, as if typed there, or hands a
+   * transaction's text to the quick entry, which reads its memo and amount when it opens.
+   */
+  fillForm: (entity: "transaction" | "tag" | "group", name: string) => void
   /**
    * Creates the tag or group its filled create form holds. Resolves its id, or `null` when it was
    * refused or failed: the form keeps the text and why.
@@ -66,6 +69,8 @@ export async function runChoice(choice: SearchChoice, ports: ChoicePorts): Promi
  * A quick-create pick: Enter opens the create form with the text filled in (the New note dialog,
  * the new tag or new group page); `now` creates the item and opens it (the note's page, the tag's
  * editor, the group's page, which becomes the current group, as the group editor's create does).
+ * A transaction always opens the quick entry with the text's memo and amount filled in, so the
+ * person checks the amount before it is saved.
  * A refused or failed create never loses the text: its form opens on the text and why.
  */
 async function quickCreate(
@@ -79,6 +84,7 @@ async function quickCreate(
     return
   }
   ports.fillForm(entity, title)
+  if (entity === "transaction") return ports.navigate(TRANSACTION_PATHS.new)
   const id = now ? await ports.createFromForm(entity) : null
   if (id === null) return ports.navigate(entity === "tag" ? TAG_PATHS.new : GROUP_PATHS.new)
   if (entity === "tag") return ports.navigate(TAG_PATHS.tag(id))

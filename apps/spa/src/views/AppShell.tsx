@@ -28,6 +28,7 @@ import { newNoteStore } from "../state/new-note.ts"
 import { paletteData } from "../state/palette-data.ts"
 import { recordSources } from "./palette-records.ts"
 import { tagsStore } from "../state/tags.ts"
+import { transactionsStore } from "../state/transactions.ts"
 import { toasts } from "../state/toasts.ts"
 import { isolate } from "@spy4x/preact-ui/bdi"
 import { type ActionPages, pageCommands, runActionCommand, spaShortcutRows } from "./shortcuts.ts"
@@ -314,6 +315,7 @@ export function AppShell(
         return note?.id ?? null
       },
       fillForm: (entity, name) => {
+        if (entity === "transaction") return transactionsStore.fillTyped(name, current?.id ?? "")
         if (entity === "group") return groupsStore.startCreate(name)
         // The tag is made in the current group, which the tags page may not have opened yet.
         if (current) void tagsStore.open(current.id)
