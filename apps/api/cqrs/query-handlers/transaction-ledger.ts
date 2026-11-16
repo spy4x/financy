@@ -1,6 +1,11 @@
-import type { TransactionLedgerQuery, TransactionWidgetQuery } from "@domain/transactions"
+import type {
+  TransactionCategoryWidgetQuery,
+  TransactionLedgerQuery,
+  TransactionWidgetQuery,
+} from "@domain/transactions"
 import type { QueryHandler } from "@spy4x/platform/cqrs"
 import {
+  createTransactionCategoryWidgetHandler,
   createTransactionLedgerHandler,
   createTransactionWidgetHandler,
 } from "../../features/transactions/handlers.ts"
@@ -14,3 +19,11 @@ export const transactionLedgerHandler: QueryHandler<TransactionLedgerQuery> =
 /** The overview's money widgets read the same ledger, through the same dependencies. */
 export const transactionWidgetHandler: QueryHandler<TransactionWidgetQuery> =
   createTransactionWidgetHandler({ ...transactionDependencies, settings: db.householdSettings })
+
+/** "Where did the money go?" reads the same ledger, and the household's category names. */
+export const transactionCategoryWidgetHandler: QueryHandler<TransactionCategoryWidgetQuery> =
+  createTransactionCategoryWidgetHandler({
+    ...transactionDependencies,
+    settings: db.householdSettings,
+    categories: db.category,
+  })

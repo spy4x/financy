@@ -8,6 +8,7 @@ import { CategoryError, CategoryKind } from "@domain/categories"
 import { GroupRole } from "@domain/groups"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
+  TransactionCategoryWidgetQuery,
   TransactionCreateCommand,
   TransactionDeleteCommand,
   TransactionGetQuery,
@@ -32,6 +33,7 @@ import {
 import { createCallRoute } from "../../routes/call.ts"
 import { Realtime, toRequestError } from "../../services/realtime.ts"
 import {
+  createTransactionCategoryWidgetHandler,
   createTransactionCreateHandler,
   createTransactionDeleteHandler,
   createTransactionGetHandler,
@@ -126,6 +128,13 @@ function stack() {
   }
   queries.register(TransactionLedgerQuery, createTransactionLedgerHandler(ledgerDependencies))
   queries.register(TransactionWidgetQuery, createTransactionWidgetHandler(ledgerDependencies))
+  queries.register(
+    TransactionCategoryWidgetQuery,
+    createTransactionCategoryWidgetHandler({
+      ...ledgerDependencies,
+      categories: { list: () => Promise.resolve([]) },
+    }),
+  )
   const operations = createTransactionOperations({
     create: (command) => commands.execute(command),
     update: (command) => commands.execute(command),
@@ -135,6 +144,7 @@ function stack() {
     listDeleted: (query) => queries.execute(query),
     ledger: (query) => queries.execute(query),
     widget: (query) => queries.execute(query),
+    categoryWidget: (query) => queries.execute(query),
   })
   /** Takes the member out of the household, as the owner's removal does. */
   const remove = (group: string, user: number) => delete memberships[`${group}:${user}`]
@@ -484,6 +494,12 @@ for (const [via, open] of TRANSPORTS) {
         await as.query("transaction.get", { groupId, id: entry.id }),
         await as.query("transaction.ledger", { groupId, from: "2026-11-01", to: "2026-11-30" }),
         await as.query("transaction.widget.ledger", {
+          groupId,
+          from: "2026-11-01",
+          to: "2026-11-30",
+          timeZone: "UTC",
+        }),
+        await as.query("transaction.widget.categories", {
           groupId,
           from: "2026-11-01",
           to: "2026-11-30",
