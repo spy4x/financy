@@ -224,7 +224,9 @@ screen for it yet; the API takes it like any kind.
   file. A row the reader cannot read becomes a refused row naming its line; the rest stay.
 - **One read at a time.** The API and the worker each read one such file at a time, from format
   detection to the rows, so parallel previews wait in line instead of each holding a parsed export
-  in memory.
+  in memory. Each preview still keeps its rows until it answers, and the preview route does not
+  limit parallel requests yet (spy4x/seed#1091): about 6 to 8 parallel previews of a 20,000-row
+  file at the 5 MiB cap can exhaust an API limited to 512 MiB.
 - **Each row.** An entry or a transfer, named in the `Kind` column. An amount with more decimals
   than its currency has is refused. In a currency without decimals, YNAB's amounts are read again
   as whole numbers, since `¥1,000` would otherwise read as one yen. A foreign amount goes into the
