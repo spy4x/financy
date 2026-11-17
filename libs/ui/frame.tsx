@@ -34,7 +34,7 @@ import {
   TRANSACTION_PATHS,
 } from "./progressive.tsx"
 import { openSearch, searchHotkeys } from "./search-palette.tsx"
-import { ShortcutsList, type ShortcutsProps } from "./shortcuts.tsx"
+import { entryKeys, ShortcutsList, type ShortcutsProps } from "./shortcuts.tsx"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { useAppText } from "./i18n.ts"
 
@@ -45,29 +45,25 @@ import { useAppText } from "./i18n.ts"
  * group switcher ({@link GroupPicker}, {@link GroupSheet}); Budgets from the Overview's Budgets card,
  * `g b` and the search. Profile, Repeating entries, Tags and Notes are in the account menu (the last
  * two left out with the notes off); Tags is in Notes' "More actions" too, and Repeating entries in
- * Transactions'. Labels come from `t`, the app's translator.
+ * Transactions'. Labels come from `t`, the app's translator. Each entry names the keys `keys` holds
+ * for its address ({@link entryKeys}): its tooltip reads "Transactions (G X)".
  */
-export function navItems(t: Translator<string>): AppShellItem[] {
+export function navItems(
+  t: Translator<string>,
+  keys: ReadonlyMap<string, readonly string[]> = new Map(),
+): AppShellItem[] {
+  const item = (key: string, label: string, href: string, Icon: AppShellItem["Icon"]) => ({
+    key,
+    label: t.t(label),
+    href,
+    Icon,
+    keyshortcuts: keys.get(href),
+  })
   return [
-    {
-      key: "overview",
-      label: t.t("Frame.overview"),
-      href: OVERVIEW_PATHS.root,
-      Icon: IconChartPie,
-    },
-    {
-      key: "transactions",
-      label: t.t("Frame.transactions"),
-      href: TRANSACTION_PATHS.list,
-      Icon: IconList,
-    },
-    { key: "accounts", label: t.t("Frame.accounts"), href: ACCOUNT_PATHS.list, Icon: IconBank },
-    {
-      key: "categories",
-      label: t.t("Frame.categories"),
-      href: CATEGORY_PATHS.list,
-      Icon: IconTag,
-    },
+    item("overview", "Frame.overview", OVERVIEW_PATHS.root, IconChartPie),
+    item("transactions", "Frame.transactions", TRANSACTION_PATHS.list, IconList),
+    item("accounts", "Frame.accounts", ACCOUNT_PATHS.list, IconBank),
+    item("categories", "Frame.categories", CATEGORY_PATHS.list, IconTag),
   ]
 }
 
@@ -202,6 +198,9 @@ export function shortcutsMenuItems(
  * the palette; closing the palette gives focus back to "Account" again.
  *
  * `shortcuts` draws the "Keyboard shortcuts" dialog; the app binds the keys ({@link ShortcutsList}).
+ * A row that opens a page (`href`) names its keys on that page's entry while they work: a rail
+ * cell, the bell or an account menu item ({@link entryKeys}). The account header shows none yet:
+ * the desktop menu is too narrow for its hint beside the name.
  *
  * `search` is drawn once, at the end of the page's column, with no trigger of its own (such as
  * `SearchPalette`, which binds Ctrl K and `/` itself). Both "Search" entries open it by clicking
@@ -261,9 +260,11 @@ export function AppFrame(
   const email = user.email && user.email !== name ? user.email : undefined
   const hasSearch = search !== undefined
   const searchEntries = useSearchEntries(shortcuts?.singleKeys ?? true, t.t("Frame.search"))
+  // The keys of the `g` rows that work now, shown on the entry each opens.
+  const keys = entryKeys(shortcuts?.rows ?? [], shortcuts?.singleKeys ?? true)
   return (
     <AppShell
-      items={navItems(t)}
+      items={navItems(t, keys)}
       currentPath={currentPath}
       navigate={navigate}
       switcher={groupPicker || hasSearch
@@ -282,18 +283,32 @@ export function AppFrame(
               </div>
             ))
         : undefined}
-      notifications={unreadCount === undefined
-        ? undefined
-        : { href: SCREEN_PATHS.notifications, unread: unreadCount }}
+      notifications={unreadCount === undefined ? undefined : {
+        href: SCREEN_PATHS.notifications,
+        unread: unreadCount,
+        keyshortcuts: keys.get(SCREEN_PATHS.notifications),
+      }}
       account={{
         user: { name, email, avatarUrl: user.avatarUrl },
         headerHref: SCREEN_PATHS.profile,
         items: [
-          { label: t.t("Frame.recurring"), href: RECURRING_PATHS.list },
+          {
+            label: t.t("Frame.recurring"),
+            href: RECURRING_PATHS.list,
+            keyshortcuts: keys.get(RECURRING_PATHS.list),
+          },
           ...(notes
             ? [
-              { label: t.t("Frame.tags"), href: TAG_PATHS.list },
-              { label: t.t("Frame.notes"), href: NOTE_PATHS.list },
+              {
+                label: t.t("Frame.tags"),
+                href: TAG_PATHS.list,
+                keyshortcuts: keys.get(TAG_PATHS.list),
+              },
+              {
+                label: t.t("Frame.notes"),
+                href: NOTE_PATHS.list,
+                keyshortcuts: keys.get(NOTE_PATHS.list),
+              },
             ]
             : []),
           ...shortcutsMenuItems(shortcuts, t.t("Frame.shortcuts")),
