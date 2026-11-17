@@ -236,6 +236,8 @@ export default {
   "FeatureTeams.fact1": "الأسرة هي الحدّ الوحيد الذي تُفحص على أساسه كل البيانات",
   "FeatureTeams.fact2": "يرى كل شخص الأُسر التي ينتمي إليها فقط",
   "FeatureTeams.fact3": "الدعوات وتغيير الأدوار ونقل الملكية، ولكلٍّ منها اختباراته",
+  "FeatureTeams.notYetClosedSignUp": "الانضمام عبر دعوة بينما إنشاء الحسابات مغلق على الخادم",
+  "FeatureTeams.notYetGroupWord": "ما زال التطبيق يقول «مجموعة» حيث يقصد الأسرة",
   "FeatureTeams.code": "اقرأ شيفرة المجموعات",
   "FeatureExport.nav": "التصدير",
   "FeatureExport.title": "بياناتك ترحل معك",
@@ -252,6 +254,18 @@ export default {
   "FeatureLanguages.fact2": "الأرقام والتواريخ عبر Intl المدمج في المتصفح",
   "FeatureLanguages.fact3": "الصفحات العربية تُقرأ من اليمين إلى اليسار",
   "FeatureLanguages.code": "اقرأ دليل الترجمة",
+  "FeatureLiveSync.nav": "المزامنة الفورية",
+  "FeatureLiveSync.title": "مباشر على كل جهاز، حتى دون اتصال",
+  "FeatureLiveSync.lead":
+    "حين يغيّر أحد أفراد الأسرة شيئًا، يراه الآخرون فورًا دون إعادة تحميل الصفحة. ثبّت Financy على هاتفك أو حاسوبك، فيفتح دون اتصال بالشبكة ويرسل المعاملات التي أضفتها حين يعود الاتصال.",
+  "FeatureLiveSync.fact1": "اتصال WebSocket قياسي، مع رقم تسلسلي لكل تغيير",
+  "FeatureLiveSync.fact2": "الجهاز الذي يعاود الاتصال يجلب ما فاته",
+  "FeatureLiveSync.fact3":
+    "نسخة محلية في IndexedDB، وقائمة انتظار للتغييرات دون اتصال، لكلٍّ منها مفتاح يمنع تكرارها",
+  "FeatureLiveSync.notYetSetup": "تغيير الحسابات والفئات والميزانيات دون اتصال",
+  "FeatureLiveSync.notYetRates": "أسعار صرف يمكنك قراءتها دون اتصال",
+  "FeatureLiveSync.notYetStores": "تطبيقات في Google Play وApp Store",
+  "FeatureLiveSync.code": "اقرأ تصميم المزامنة الفورية",
   "FeatureDeploy.nav": "الاستضافة الذاتية",
   "FeatureDeploy.title": "يعمل على خادمك الخاص",
   "FeatureDeploy.lead":
@@ -261,6 +275,7 @@ export default {
   "FeatureDeploy.fact3": "المقاييس والسجلات والتنبيهات عبر VictoriaMetrics وVictoriaLogs وGrafana",
   "FeatureDeploy.fact4":
     "نسخة احتياطية يومية مشفّرة اختيارية لقاعدة البيانات، مع خطوات استعادة مكتوبة",
+  "FeatureDeploy.notYetRehearsed": "مدة تثبيت مقيسة على خادم جديد",
   "FeatureDeploy.code": "اقرأ ملفات Compose",
   "FeaturesFaq.serverlessQuestion":
     "هل يمكنني تشغيل Financy على استضافة مشتركة أو منصة بلا خوادم (serverless)؟",
@@ -397,6 +412,106 @@ export default {
   "FeaturePage.otherFeatures": "ميزات أخرى",
   "FeaturePage.readMore": "اقرأ المزيد عن {name}",
   "FeaturePage.all": "كل الميزات",
+  "FeaturePage.demo": "جرّبه في النسخة التجريبية، دون إنشاء حساب",
+  "FeaturePageMultiCurrency.name": "عملات متعددة",
+  "FeaturePageMultiCurrency.title": "تتبّع أموالك بعدة عملات في مجموع واحد",
+  "FeaturePageMultiCurrency.description":
+    "احفظ كل حساب بعملته، وشاهد كل مجموع بالعملة الرئيسية لأسرتك، محوّلًا بسعر صرف اليوم الذي تحرّك فيه المال.",
+  "FeaturePageMultiCurrency.h1": "هل يمكنني رؤية أرصدتي بعدة عملات في مجموع واحد؟",
+  "FeaturePageMultiCurrency.answer":
+    "نعم. يحتفظ كل حساب بعملته، ويجمعها Financy بالعملة الرئيسية لأسرتك بسعر صرف كل يوم. والمعاملة المدفوعة بعملة أخرى تحتفظ بمبلغها الأصلي بجانب المبلغ المحوَّل.",
+  "FeaturePageMultiCurrency.summary": "كل حساب بعملته، وكل مجموع بعملتك الرئيسية.",
+  "FeaturePageMultiCurrency.how1":
+    "تختار أسرتك عملة رئيسية واحدة. ويجلب Financy كل يوم أسعار الصرف من البنك المركزي الأوروبي. وحين تضيف معاملة بعملة غير عملة حسابها، يحوّلها Financy بسعر صرف تاريخ المعاملة نفسه ويحفظ المبلغين. وإن كتبت المبلغين بنفسك، يُحفظ سعرك أنت بدلًا من ذلك.",
+  "FeaturePageMultiCurrency.how2":
+    "تعرض النظرة العامة دخلك وإنفاقك ومجموع الأسرة بالعملة الرئيسية. وحين لا يكون لعملة ما سعر صرف، يستبعدها المجموع ويذكر ذلك، بدلًا من احتسابها صفرًا.",
+  "FeaturePageMultiCurrency.historyQuestion": "هل يغيّر سعر الصرف الجديد معاملاتي السابقة؟",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "لا. تحفظ المعاملة بعملة أخرى مبلغها المحوَّل مرة واحدة، بسعر صرف تاريخها. ولا يغيّره أي سعر يأتي لاحقًا أبدًا.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion": "هل يمكننا تغيير العملة الرئيسية لأسرتنا لاحقًا؟",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "نعم. يستطيع مسؤول الأسرة أو مالكها تغييرها في أي وقت. لا يتغيّر أي مبلغ: يبقى كلٌّ بعملته، ولا يُعاد تحويل إلا المجاميع.",
+  "FeaturePageMultiCurrency.ownRateQuestion": "هل يمكنني إدخال سعر الصرف الذي احتسبه مصرفي فعلًا؟",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "نعم. اكتب المبلغين، ما دفعته وما خرج من حسابك، فيحتفظ Financy بسعرك أنت بدلًا من سعر ذلك اليوم.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion": "هل لدى Financy سعر صرف يومي لكل عملة؟",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "لا. تغطي الأسعار اليومية المجانية من البنك المركزي الأوروبي نحو 30 عملة. أما غيرها، مثل الدونغ الفيتنامي، فتحتاج إلى مصدر أسعار مدفوع يفعّله مالك الخادم؛ ومن دونه تستبعد المجاميع تلك المبالغ وتذكر ذلك.",
+  "FeaturePageHouseholds.name": "الأُسر",
+  "FeaturePageHouseholds.title": "ميزانية مشتركة للزوجين، ولكلٍّ حساب مستخدم خاص",
+  "FeaturePageHouseholds.description":
+    "ادعُ شريكك أو عائلتك إلى أسرة واحدة. يسجّل كل شخص الدخول بحساب مستخدم ودور خاصّين به، ويرى الجميع الحسابات والميزانيات نفسها.",
+  "FeaturePageHouseholds.h1": "هل يمكنني مشاركة ميزانية مع شريكي، ولكلٍّ منا حساب مستخدم خاص؟",
+  "FeaturePageHouseholds.answer":
+    "نعم. الأسرة هي الأشخاص الذين يتشاركون المال. ادعُ شريكك أو عائلتك، فيسجّل كل شخص الدخول بحساب المستخدم الخاص به وبدور من القارئ إلى المالك، بينما يرى الجميع الحسابات والمعاملات والميزانيات نفسها.",
+  "FeaturePageHouseholds.summary": "أسرة واحدة، ولكل شخص حساب مستخدم ودور خاصّان به.",
+  "FeaturePageHouseholds.how1":
+    "من ينشئ الأسرة يملكها. يدعو المالك أو المسؤول الأشخاص برابط ويختار دور كل منهم. القارئ يقرأ فقط. والمحرر يضيف أيضًا الحسابات والمعاملات والميزانيات ويغيّرها. والمسؤول يدير الأعضاء أيضًا، ويستطيع المالك نقل ملكية الأسرة إلى غيره.",
+  "FeaturePageHouseholds.how2":
+    "يسمّي التطبيق الأسرة «مجموعة». ويمكن لحساب مستخدم واحد أن ينتمي إلى عدة أُسر، كأسرة مشتركة وأخرى خاصة بك، وتنتقل بينها. ويُظهر سجل النشاط من غيّر ماذا.",
+  "FeaturePageHouseholds.privateQuestion": "هل يمكنني إخفاء بعض الحسابات عن شريكي؟",
+  "FeaturePageHouseholds.privateAnswer":
+    "لا. يرى كل من في الأسرة جميع حساباتها ومعاملاتها. أما المال الذي تريد إبقاءه لنفسك فمكانه أسرة خاصة بك، تنتقل إليها بحساب المستخدم نفسه.",
+  "FeaturePageHouseholds.viewerQuestion": "هل يمكن لشخص رؤية ميزانيتنا دون تغييرها؟",
+  "FeaturePageHouseholds.viewerAnswer":
+    "نعم. امنحه دور القارئ. يرى القارئ الحسابات والمعاملات والميزانيات، ويرفض الخادم أي تغيير يحاوله.",
+  "FeaturePageHouseholds.handOverQuestion": "هل يمكنني نقل ملكية الأسرة إلى شريكي؟",
+  "FeaturePageHouseholds.handOverAnswer":
+    "نعم. يستطيع المالك أن يجعل عضوًا آخر مالكًا. ويبقى كل سجل في مكانه.",
+  "FeaturePageHouseholds.restoreQuestion": "هل يمكننا استعادة أسرة محذوفة؟",
+  "FeaturePageHouseholds.restoreAnswer":
+    "نعم. لا يحذف الأسرة إلا مالكها، ويستطيع المالك استعادتها خلال 30 يومًا.",
+  "FeaturePageLiveSync.name": "المزامنة الفورية",
+  "FeaturePageLiveSync.title": "مزامنة فورية لميزانيتك على كل أجهزتك",
+  "FeaturePageLiveSync.description":
+    "حين يضيف شريكك معاملة، تظهر على هاتفك فورًا. ويفتح Financy أيضًا دون اتصال، ويرسل تغييراتك حين يعود الاتصال.",
+  "FeaturePageLiveSync.h1": "هل تظهر التغييرات على هاتف شريكي دون إعادة تحميل؟",
+  "FeaturePageLiveSync.answer":
+    "نعم. حين يضيف أحد أفراد أسرتك شيئًا أو يغيّره، يراه الآخرون فورًا على كل جهاز مفتوح. والهاتف الذي كان دون اتصال أو في وضع السكون يلحق بما فاته فور عودة الاتصال.",
+  "FeaturePageLiveSync.summary": "تظهر التغييرات على كل جهاز فورًا، حتى بعد فترة دون اتصال.",
+  "FeaturePageLiveSync.how1":
+    "تحتفظ كل نسخة مفتوحة من Financy باتصال بالخادم. وحين يحفظ أحدهم تغييرًا، يرسله الخادم إلى كل أفراد الأسرة مباشرةً. والجهاز الذي فاتته تغييرات أثناء غيابه يطلبها حين يعود.",
+  "FeaturePageLiveSync.how2":
+    "ثبّت Financy من متصفحك على هاتف أو حاسوب، فيفتح دون اتصال ويعرض آخر ما رآه. والمعاملات والتحويلات التي تضيفها أو تغيّرها أو تحذفها دون اتصال تنتظر على الجهاز، وتُرسل حين يعود الاتصال.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "هل يمكنني إضافة معاملة دون إنترنت؟",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "نعم. المعاملات والتحويلات التي تضيفها أو تغيّرها أو تحذفها دون اتصال تُحفظ على جهازك، وتُرسل إلى الخادم حين يعود الاتصال.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "هل يمكنني تغيير الحسابات أو الميزانيات دون اتصال؟",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "لا. تظهر الحسابات والفئات والميزانيات دون اتصال كما كانت آخر مرة، لكن تغييرها يحتاج إلى اتصال.",
+  "FeaturePageLiveSync.overwriteQuestion": "هل يمكن لتغيير أجريته دون اتصال أن يمحو تغيير شريكي؟",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "لا. إن تغيّرت المعاملة نفسها على الخادم في الأثناء، يرفض الخادم تغييرك، ويحتفظ به جهازك لتحسم الأمر بنفسك. لا يُمحى شيء من تلقاء نفسه.",
+  "FeaturePageLiveSync.storesQuestion": "هل Financy متوفر في App Store أو Google Play؟",
+  "FeaturePageLiveSync.storesAnswer":
+    "ليس بعد. اليوم تثبّت Financy من متصفحك على هاتف أو حاسوب، ويفتح دون اتصال.",
+  "FeaturePageSelfHosting.name": "الاستضافة الذاتية",
+  "FeaturePageSelfHosting.title": "شغّل تطبيق ميزانية على خادمك الخاص",
+  "FeaturePageSelfHosting.description":
+    "شغّل Financy لأسرتك على خادم تستأجره أو تملكه، باستخدام Docker Compose. تبقى سجلاتك على خادمك، ولا تدفع إلا ثمن الخادم.",
+  "FeaturePageSelfHosting.h1": "هل يمكنني تشغيل تطبيق ميزانية على خادمي الخاص؟",
+  "FeaturePageSelfHosting.answer":
+    "نعم. يعمل Financy باستخدام Docker Compose على خادم Ubuntu تستأجره أو تملكه. وبموجب رخصة AGPL‑3.0 لا تدفع إلا ثمن الخادم، وتبقى سجلات أسرتك عليه.",
+  "FeaturePageSelfHosting.summary": "سجلات أسرتك على خادمك الخاص.",
+  "FeaturePageSelfHosting.how1":
+    "تحتاج إلى خادم واسم نطاق وحساب بريد لإرسال رموز إنشاء الحساب. ومن حاسوبك، ينسخ أمر واحد Financy إلى الخادم ويبنيه هناك ويشغّله. وتُصدَر شهادة HTTPS الخاصة به وتُجدَّد تلقائيًا.",
+  "FeaturePageSelfHosting.how2":
+    "اترك الفوترة معطّلة، فتحصل كل أسرة على خادمك على كل الميزات بلا حدود. فعّل النسخ الاحتياطي اليومي المشفّر، واتّبع دليل الترقية للانتقال إلى كل إصدار جديد.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "هل تنقص نسخةَ Financy المستضافة ذاتيًا أي ميزات؟",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "لا. إنها الشيفرة نفسها. ومع ترك الفوترة معطّلة، تحصل كل أسرة على خادمك على كل الميزات، دون حد لعدد الأعضاء.",
+  "FeaturePageSelfHosting.mailQuestion": "هل أحتاج إلى حساب بريد لاستضافة Financy ذاتيًا؟",
+  "FeaturePageSelfHosting.mailAnswer":
+    "نعم. يرسل Financy رمزًا بالبريد الإلكتروني إلى كل من ينشئ حسابًا، لذا يحتاج الخادم إلى حساب SMTP لدى مزوّد بريد. ومن دونه لا يستطيع أحد إنشاء حساب.",
+  "FeaturePageSelfHosting.moveQuestion": "هل يمكنني نقل أسرتي من financy.dev إلى خادمي الخاص؟",
+  "FeaturePageSelfHosting.moveAnswer":
+    "نعم. يصدّر مالك الأسرة بياناتها إلى ملف، ثم تستورد ذلك الملف على خادمك كأسرة جديدة.",
+  "FeaturePageSelfHosting.backupQuestion": "هل يستطيع Financy نسخ خادمي احتياطيًا؟",
+  "FeaturePageSelfHosting.backupAnswer":
+    "نعم. فعّل النسخ الاحتياطي اليومي، فيحفظ كل 24 ساعة سجلات أسرتك وملفاتها، مشفّرة، في مساحة تخزين خارج الخادم. ويرشدك دليل النسخ الاحتياطي أيضًا خلال استعادة تجريبية.",
+  "FeaturePageSelfHosting.installerQuestion": "هل يوجد مثبّت بنقرة واحدة؟",
+  "FeaturePageSelfHosting.installerAnswer":
+    "ليس بعد. تُعِدّ Financy من حاسوبك باستخدام Deno وrsync وgit، وأمر واحد ينشره. ويرشدك دليل الاستضافة الذاتية خطوة بخطوة.",
   "FeaturePageMissing.title": "صفحة هذه الميزة غير موجودة",
   "FeaturePageMissing.description": "ربما انتقلت. كل الميزات موجودة في صفحة الميزات.",
   "FeaturePageMissing.action": "عرض كل الميزات",
@@ -508,6 +623,19 @@ export default {
   "FeatureRecurring.fact3":
     "إضافة معاملة متكررة تتطلب خطة Household؛ أما قراءتها فلا تتطلبها أبدًا، ويتحقق الخادم من ذلك",
   "FeatureRecurring.code": "اقرأ شيفرة المعاملات المتكررة",
+  "FeatureMultiCurrency.nav": "العملات",
+  "FeatureMultiCurrency.title": "عملات كثيرة، ومجموع واحد",
+  "FeatureMultiCurrency.lead":
+    "اختر العملة الرئيسية لأسرتك، فيُحوَّل إليها كل مجموع بسعر صرف اليوم الذي تحرّك فيه المال. والمعاملة بعملة أخرى تحتفظ بمبلغها الأصلي بجانب المبلغ المحوَّل.",
+  "FeatureMultiCurrency.fact1":
+    "أسعار مرجعية يومية من البنك المركزي الأوروبي عبر Frankfurter، دون حاجة إلى مفتاح",
+  "FeatureMultiCurrency.fact2": "يُخزَّن المبلغ المحوَّل مرة واحدة، بسعر صرف تاريخه، ولا يُعاد حسابه أبدًا",
+  "FeatureMultiCurrency.fact3":
+    "العملة التي لا سعر لها تُستبعد من المجموع وتُذكر باسمها، ولا تُحسب صفرًا أبدًا",
+  "FeatureMultiCurrency.notYetBudgets":
+    "أرقام الميزانية المحوّلة من عملة أخرى لا تقول «تقريبًا» ولا تذكر تاريخ السعر بعد",
+  "FeatureMultiCurrency.notYetOffline": "أسعار صرف يمكنك قراءتها دون اتصال",
+  "FeatureMultiCurrency.code": "اقرأ شيفرة المال",
   "FeatureTransactions.nav": "المعاملات",
   "FeatureTransactions.title": "كل مصروف ودخل، بالعملة التي دفعت بها",
   "FeatureTransactions.lead":

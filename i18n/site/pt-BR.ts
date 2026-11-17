@@ -245,6 +245,9 @@ export default {
   "FeatureTeams.fact2": "Cada pessoa vê só as famílias de que faz parte",
   "FeatureTeams.fact3":
     "Convites, troca de funções e transferência de dono, cada um com seus próprios testes",
+  "FeatureTeams.notYetClosedSignUp":
+    "Aceitar um convite enquanto a criação de contas no servidor está fechada",
+  "FeatureTeams.notYetGroupWord": "O app ainda diz “grupo” onde quer dizer família",
   "FeatureTeams.code": "Ler o domínio de grupos",
   "FeatureExport.nav": "Exportação",
   "FeatureExport.title": "Seus dados vão com você",
@@ -264,6 +267,18 @@ export default {
   "FeatureLanguages.fact2": "Números e datas pelo Intl do próprio navegador",
   "FeatureLanguages.fact3": "As páginas em árabe são lidas da direita para a esquerda",
   "FeatureLanguages.code": "Ler o guia de tradução",
+  "FeatureLiveSync.nav": "Sincronização ao vivo",
+  "FeatureLiveSync.title": "Ao vivo em todos os dispositivos, até offline",
+  "FeatureLiveSync.lead":
+    "Quando alguém da família muda alguma coisa, todos os outros veem na hora, sem recarregar. Instale o Financy no celular ou no computador: ele abre sem internet e envia os lançamentos que você adicionou assim que você volta a ficar online.",
+  "FeatureLiveSync.fact1": "Um WebSocket padrão, com um número de sequência em cada mudança",
+  "FeatureLiveSync.fact2": "Um dispositivo que se reconecta busca o que perdeu",
+  "FeatureLiveSync.fact3":
+    "Uma cópia local no IndexedDB e uma fila de mudanças offline com chaves de idempotência",
+  "FeatureLiveSync.notYetSetup": "Mudar contas, categorias e orçamentos sem internet",
+  "FeatureLiveSync.notYetRates": "Ver as cotações sem internet",
+  "FeatureLiveSync.notYetStores": "Apps no Google Play e na App Store",
+  "FeatureLiveSync.code": "Ler o projeto da sincronização em tempo real",
   "FeatureDeploy.nav": "Hospedagem própria",
   "FeatureDeploy.title": "Roda no seu próprio servidor",
   "FeatureDeploy.lead":
@@ -273,6 +288,7 @@ export default {
   "FeatureDeploy.fact3": "Métricas, logs e alertas com VictoriaMetrics, VictoriaLogs e Grafana",
   "FeatureDeploy.fact4":
     "Um backup diário e criptografado do banco, opcional, com os passos de restauração por escrito",
+  "FeatureDeploy.notYetRehearsed": "Um tempo de instalação medido num servidor novo",
   "FeatureDeploy.code": "Ler os arquivos do Compose",
   "FeaturesFaq.serverlessQuestion":
     "Posso rodar o Financy em hospedagem compartilhada ou serverless?",
@@ -407,6 +423,115 @@ export default {
   "FeaturePage.otherFeatures": "Outros recursos",
   "FeaturePage.readMore": "Saiba mais sobre {name}",
   "FeaturePage.all": "Todos os recursos",
+  "FeaturePage.demo": "Teste na demo, sem criar conta",
+  "FeaturePageMultiCurrency.name": "Várias moedas",
+  "FeaturePageMultiCurrency.title": "Controle financeiro em várias moedas num total só",
+  "FeaturePageMultiCurrency.description":
+    "Cada conta na própria moeda e todos os totais na moeda principal da família, convertidos pela cotação do dia em que o dinheiro se moveu.",
+  "FeaturePageMultiCurrency.h1": "Veja saldos em várias moedas somados num total só",
+  "FeaturePageMultiCurrency.answer":
+    "Sim. Cada conta mantém a própria moeda, e o Financy soma tudo na moeda principal da família pela cotação de cada dia. Um lançamento pago em outra moeda guarda o próprio valor ao lado do valor convertido.",
+  "FeaturePageMultiCurrency.summary":
+    "Cada conta na própria moeda, cada total na sua moeda principal.",
+  "FeaturePageMultiCurrency.how1":
+    "Sua família escolhe uma moeda principal. Todo dia, o Financy busca as cotações do Banco Central Europeu. Quando você adiciona um lançamento numa moeda diferente da moeda da conta, o Financy converte pela cotação da data do próprio lançamento e guarda os dois valores. Se você mesmo digitar os dois valores, a sua cotação é mantida no lugar.",
+  "FeaturePageMultiCurrency.how2":
+    "A visão geral mostra suas receitas, seus gastos e o total da família na moeda principal. Quando uma moeda não tem cotação, o total a deixa de fora e avisa, em vez de contá-la como zero.",
+  "FeaturePageMultiCurrency.historyQuestion": "Uma cotação nova muda meus lançamentos antigos?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "Não. Um lançamento em outra moeda guarda o valor convertido uma única vez, pela cotação da própria data. Uma cotação que chega depois nunca o reescreve.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "Dá para mudar a moeda principal da família depois?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Sim. Um administrador ou o dono da família pode mudá-la a qualquer momento. Nenhum valor muda: cada um continua na própria moeda, e só os totais são convertidos de novo.",
+  "FeaturePageMultiCurrency.ownRateQuestion":
+    "Posso informar a cotação que meu banco cobrou de verdade?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Sim. Digite os dois valores, o que você pagou e o que saiu da sua conta, e o Financy mantém a sua cotação em vez da cotação do dia.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "O Financy tem cotação diária para todas as moedas?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "Não. As cotações diárias gratuitas do Banco Central Europeu cobrem cerca de 30 moedas. Outras, como o dong vietnamita, precisam de uma fonte de cotações paga que o dono do servidor ativa; sem ela, os totais deixam esses valores de fora e avisam.",
+  "FeaturePageHouseholds.name": "Famílias",
+  "FeaturePageHouseholds.title": "Orçamento compartilhado para casais, cada um com login",
+  "FeaturePageHouseholds.description":
+    "Convide seu parceiro, sua parceira ou parentes para a mesma família. Cada um entra com seu login e função, e todos veem as mesmas contas e orçamentos.",
+  "FeaturePageHouseholds.h1": "Controle financeiro do casal, cada um com seu próprio login",
+  "FeaturePageHouseholds.answer":
+    "Sim. Uma família são as pessoas que dividem o dinheiro. Convide seu parceiro, sua parceira ou parentes, e cada pessoa entra com o próprio login e uma função, de leitor a dono, enquanto todos veem as mesmas contas, lançamentos e orçamentos.",
+  "FeaturePageHouseholds.summary": "Uma família, cada pessoa com o próprio login e função.",
+  "FeaturePageHouseholds.how1":
+    "Quem cria a família é o dono dela. O dono ou um administrador convida as pessoas com um link e escolhe a função de cada uma. Um leitor só vê. Um editor também adiciona e muda contas, lançamentos e orçamentos. Um administrador também gerencia os membros, e o dono pode transferir a família para outra pessoa.",
+  "FeaturePageHouseholds.how2":
+    "No app, a família se chama grupo. Um mesmo login pode fazer parte de várias famílias, como uma compartilhada e uma só sua, e você alterna entre elas. O registro de atividade mostra quem mudou o quê.",
+  "FeaturePageHouseholds.privateQuestion": "Posso esconder algumas contas do meu parceiro?",
+  "FeaturePageHouseholds.privateAnswer":
+    "Não. Todos numa família veem todas as contas e lançamentos dela. O dinheiro que você quer manter só para você fica numa família só sua, para a qual o mesmo login pode alternar.",
+  "FeaturePageHouseholds.viewerQuestion": "Alguém pode ver nosso orçamento sem poder mudar nada?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Sim. Dê a essa pessoa a função de leitor. Um leitor vê as contas, os lançamentos e os orçamentos, e o servidor recusa qualquer mudança que ele tente fazer.",
+  "FeaturePageHouseholds.handOverQuestion": "Posso transferir a família para meu parceiro?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Sim. O dono pode tornar outro membro o dono. Todos os registros continuam onde estão.",
+  "FeaturePageHouseholds.restoreQuestion": "Dá para recuperar uma família excluída?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Sim. Só o dono pode excluir uma família, e ele pode restaurá-la em até 30 dias.",
+  "FeaturePageLiveSync.name": "Sincronização ao vivo",
+  "FeaturePageLiveSync.title": "Orçamento sincronizado ao vivo em todos os dispositivos",
+  "FeaturePageLiveSync.description":
+    "Quando seu parceiro adiciona um lançamento, você vê na hora no celular. O Financy também abre sem internet e envia suas mudanças quando a conexão volta.",
+  "FeaturePageLiveSync.h1": "As mudanças aparecem no celular do seu parceiro sem recarregar",
+  "FeaturePageLiveSync.answer":
+    "Sim. Quando alguém da família adiciona ou muda alguma coisa, todos os outros veem na hora, em todos os dispositivos abertos. Um celular que estava offline ou em repouso se atualiza assim que volta a se conectar.",
+  "FeaturePageLiveSync.summary":
+    "As mudanças aparecem na hora em todos os dispositivos, mesmo depois de um tempo offline.",
+  "FeaturePageLiveSync.how1":
+    "Cada cópia aberta do Financy mantém uma conexão com o servidor. Quando alguém salva uma mudança, o servidor a envia na hora para todos da família. Um dispositivo que perdeu mudanças enquanto estava fora pede por elas quando volta.",
+  "FeaturePageLiveSync.how2":
+    "Instale o Financy pelo navegador no celular ou no computador, e ele abre sem internet, mostrando o que viu por último. Os lançamentos e as transferências que você adiciona, muda ou exclui offline esperam no dispositivo e são enviados quando você se reconecta.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "Posso adicionar um lançamento sem internet?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Sim. Os lançamentos e as transferências que você adiciona, muda ou exclui offline ficam guardados no seu dispositivo e são enviados ao servidor quando a conexão volta.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "Posso mudar contas ou orçamentos offline?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "Não. Contas, categorias e orçamentos aparecem offline como estavam da última vez, mas para mudá-los é preciso conexão.",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "Uma mudança feita offline pode sobrescrever a do meu parceiro?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "Não. Se o mesmo lançamento mudou no servidor nesse meio-tempo, o servidor recusa a sua mudança, e o seu dispositivo a guarda para você resolver. Nada é sobrescrito sozinho.",
+  "FeaturePageLiveSync.storesQuestion": "O Financy está na App Store ou no Google Play?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Ainda não. Hoje você instala o Financy pelo navegador no celular ou no computador, e ele abre sem internet.",
+  "FeaturePageSelfHosting.name": "Hospedagem própria",
+  "FeaturePageSelfHosting.title": "App de orçamento no seu próprio servidor",
+  "FeaturePageSelfHosting.description":
+    "Rode o Financy para sua família num servidor alugado ou seu, com Docker Compose. Seus registros ficam no seu servidor, e você paga só pelo servidor.",
+  "FeaturePageSelfHosting.h1": "Rode um app de controle financeiro no seu próprio servidor",
+  "FeaturePageSelfHosting.answer":
+    "Sim. O Financy roda com Docker Compose num servidor Ubuntu alugado ou seu. Sob a licença AGPL‑3.0, você paga só pelo servidor, e os registros da sua família ficam nele.",
+  "FeaturePageSelfHosting.summary": "Os registros da sua família no seu próprio servidor.",
+  "FeaturePageSelfHosting.how1":
+    "Você precisa de um servidor, um domínio e uma conta de e-mail para enviar os códigos a quem cria conta. Do seu computador, um único comando copia o Financy para o servidor, faz o build lá e o inicia. O certificado HTTPS é emitido e renovado sozinho.",
+  "FeaturePageSelfHosting.how2":
+    "Deixe a cobrança desligada, e todas as famílias no seu servidor recebem todos os recursos, sem limites. Ative o backup diário criptografado, e o guia de atualização leva você a cada nova versão.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion":
+    "Falta algum recurso no Financy hospedado no seu próprio servidor?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "Não. É o mesmo código. Com a cobrança desligada, todas as famílias no seu servidor recebem todos os recursos, sem limite de membros.",
+  "FeaturePageSelfHosting.mailQuestion":
+    "Preciso de uma conta de e-mail para hospedar o Financy por conta própria?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Sim. O Financy envia um código por e-mail a todos que criam conta, então o servidor precisa de uma conta SMTP de um provedor de e-mail. Sem ela, ninguém consegue criar conta.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "Posso levar minha família do financy.dev para meu próprio servidor?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Sim. O dono da família a exporta para um arquivo, e você importa esse arquivo no seu servidor como uma nova família.",
+  "FeaturePageSelfHosting.backupQuestion": "O Financy faz backup do meu servidor?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Sim. Ative o backup diário, e a cada 24 horas ele salva os registros e arquivos da sua família, criptografados, num armazenamento fora do servidor. O guia de backup também mostra como testar uma restauração.",
+  "FeaturePageSelfHosting.installerQuestion": "Tem instalador de um clique?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Ainda não. Você configura o Financy a partir do seu computador com Deno, rsync e git, e um único comando faz o deploy. O guia de hospedagem própria mostra cada passo.",
   "FeaturePageMissing.title": "Esta página de recurso não está aqui",
   "FeaturePageMissing.description":
     "Talvez tenha mudado de lugar. Todos os recursos estão na página de recursos.",
@@ -527,6 +652,20 @@ export default {
   "FeatureRecurring.fact3":
     "Criar um lançamento recorrente exige o plano Household; vê-los, nunca; o servidor confere",
   "FeatureRecurring.code": "Ler o código dos lançamentos recorrentes",
+  "FeatureMultiCurrency.nav": "Moedas",
+  "FeatureMultiCurrency.title": "Muitas moedas, um total só",
+  "FeatureMultiCurrency.lead":
+    "Escolha a moeda principal da família, e cada total é convertido para ela pela cotação do dia em que o dinheiro se moveu. Um lançamento em outra moeda guarda o próprio valor ao lado do valor convertido.",
+  "FeatureMultiCurrency.fact1":
+    "Cotações de referência diárias do Banco Central Europeu, via Frankfurter, sem precisar de chave",
+  "FeatureMultiCurrency.fact2":
+    "Um valor convertido é gravado uma vez, pela cotação da própria data, e nunca é reescrito",
+  "FeatureMultiCurrency.fact3":
+    "Uma moeda sem cotação fica fora do total e é nomeada, nunca contada como 0",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Valores de orçamento convertidos de outra moeda ainda não dizem “cerca de” nem a data da cotação",
+  "FeatureMultiCurrency.notYetOffline": "Ver as cotações sem internet",
+  "FeatureMultiCurrency.code": "Ler o domínio de dinheiro",
   "FeatureTransactions.nav": "Lançamentos",
   "FeatureTransactions.title": "Cada despesa e receita, na moeda em que você pagou",
   "FeatureTransactions.lead":

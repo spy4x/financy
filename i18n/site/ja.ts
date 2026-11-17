@@ -239,6 +239,8 @@ export default {
   "FeatureTeams.fact1": "すべてのデータは、世帯というひとつの境界で確認されます",
   "FeatureTeams.fact2": "各自は自分が属する世帯だけを見られます",
   "FeatureTeams.fact3": "招待、ロール変更、オーナー譲渡のそれぞれにテストがあります",
+  "FeatureTeams.notYetClosedSignUp": "新規登録を締め切ったサーバーで、招待から参加すること",
+  "FeatureTeams.notYetGroupWord": "アプリではまだ、世帯のことを「グループ」と呼んでいます",
   "FeatureTeams.code": "グループのドメインを読む",
   "FeatureExport.nav": "書き出し",
   "FeatureExport.title": "データは自分のもの",
@@ -257,6 +259,17 @@ export default {
   "FeatureLanguages.fact2": "数値と日付はブラウザ標準の Intl で表示します",
   "FeatureLanguages.fact3": "アラビア語のページは右から左に表示されます",
   "FeatureLanguages.code": "翻訳ガイドを読む",
+  "FeatureLiveSync.nav": "リアルタイム同期",
+  "FeatureLiveSync.title": "すべてのデバイスにすぐ反映、オフラインでも",
+  "FeatureLiveSync.lead":
+    "世帯の誰かが何かを変えると、ほかの全員の画面にもすぐ反映され、再読み込みは要りません。Financy をスマホやパソコンにインストールすれば、ネットワークがなくても開け、オンラインに戻ったときに追加した取引を送信します。",
+  "FeatureLiveSync.fact1": "標準の WebSocket と、すべての変更に付くシーケンス番号",
+  "FeatureLiveSync.fact2": "再接続したデバイスは、見逃した変更を取得します",
+  "FeatureLiveSync.fact3": "IndexedDB のローカルコピーと、冪等キー付きのオフライン変更キュー",
+  "FeatureLiveSync.notYetSetup": "ネットワークなしでの口座、カテゴリ、予算の変更",
+  "FeatureLiveSync.notYetRates": "ネットワークなしで見られる為替レート",
+  "FeatureLiveSync.notYetStores": "Google Play と App Store のアプリ",
+  "FeatureLiveSync.code": "リアルタイム同期の設計を読む",
   "FeatureDeploy.nav": "セルフホスト",
   "FeatureDeploy.title": "あなたのサーバーで動く",
   "FeatureDeploy.lead":
@@ -266,6 +279,7 @@ export default {
   "FeatureDeploy.fact3": "VictoriaMetrics、VictoriaLogs、Grafana によるメトリクス、ログ、アラート",
   "FeatureDeploy.fact4":
     "任意で有効にできる、データベースの毎日の暗号化バックアップと、文書化された復元手順",
+  "FeatureDeploy.notYetRehearsed": "新しいサーバーで実際に計測したインストール時間",
   "FeatureDeploy.code": "Composeファイルを読む",
   "FeaturesFaq.serverlessQuestion": "共有ホスティングやサーバーレスで Financy を動かせますか？",
   "FeaturesFaq.serverlessAnswer":
@@ -397,6 +411,113 @@ export default {
   "FeaturePage.otherFeatures": "ほかの機能",
   "FeaturePage.readMore": "{name}について詳しく読む",
   "FeaturePage.all": "すべての機能",
+  "FeaturePage.demo": "デモで試す（アカウント登録不要）",
+  "FeaturePageMultiCurrency.name": "複数通貨",
+  "FeaturePageMultiCurrency.title": "複数通貨のお金をひとつの合計で管理できる家計簿",
+  "FeaturePageMultiCurrency.description":
+    "口座はそれぞれの通貨のまま、すべての合計を世帯のメイン通貨で表示。お金の動いた日の為替レートで換算します。",
+  "FeaturePageMultiCurrency.h1": "複数通貨の残高を、ひとつの合計で見られますか？",
+  "FeaturePageMultiCurrency.answer":
+    "はい。口座はそれぞれの通貨のままで、Financy が日ごとの為替レートで世帯のメイン通貨に換算して合計します。別の通貨で支払った取引は、換算後の金額の隣に元の金額も残ります。",
+  "FeaturePageMultiCurrency.summary": "口座はそれぞれの通貨で、合計はすべてメイン通貨で。",
+  "FeaturePageMultiCurrency.how1":
+    "世帯でメイン通貨をひとつ選びます。Financy は毎日、欧州中央銀行の為替レートを取得します。口座と違う通貨で取引を追加すると、その取引の日付のレートで換算し、両方の金額を保存します。両方の金額を自分で入力すれば、そのレートがそのまま残ります。",
+  "FeaturePageMultiCurrency.how2":
+    "概要画面には、収入、支出、世帯の合計をメイン通貨で表示します。レートのない通貨があるときは、0 として数えずに合計から外し、そのことを表示します。",
+  "FeaturePageMultiCurrency.historyQuestion":
+    "為替レートが変わると、過去の取引の金額も変わりますか？",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "いいえ。別の通貨の取引は、その日付のレートで換算した金額を一度だけ保存します。あとから届いたレートで書き換わることはありません。",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion": "世帯のメイン通貨はあとから変更できますか？",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "はい。世帯の管理者かオーナーなら、いつでも変更できます。金額そのものは変わらず、それぞれの通貨のまま残り、合計だけが換算し直されます。",
+  "FeaturePageMultiCurrency.ownRateQuestion": "銀行で実際に適用された為替レートを入力できますか？",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "はい。支払った金額と口座から引き落とされた金額の両方を入力すると、Financy はその日のレートではなく、実際のレートを残します。",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "Financy はすべての通貨の為替レートを毎日取得できますか？",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "いいえ。欧州中央銀行の無料の日次レートが対応するのは約30通貨です。ベトナムドンなどほかの通貨には、サーバーの運営者が有効にする有料のレート提供元が必要です。それがない場合、その金額は合計から外し、そのことを表示します。",
+  "FeaturePageHouseholds.name": "世帯",
+  "FeaturePageHouseholds.title": "夫婦で共有できる家計簿、それぞれ自分のアカウントで",
+  "FeaturePageHouseholds.description":
+    "パートナーや家族をひとつの世帯に招待。各自が自分のアカウントとロールでログインし、全員が同じ口座と予算を見られます。",
+  "FeaturePageHouseholds.h1": "夫婦で家計簿を共有して、それぞれ自分のアカウントで使えますか？",
+  "FeaturePageHouseholds.answer":
+    "はい。世帯とは、お金を共有する人たちのことです。パートナーや家族を招待すると、各自が自分のアカウントと、閲覧者からオーナーまでのロールでログインし、全員が同じ口座、取引、予算を見られます。",
+  "FeaturePageHouseholds.summary": "ひとつの世帯で、各自が自分のアカウントとロールを持てます。",
+  "FeaturePageHouseholds.how1":
+    "世帯を作った人がオーナーになります。オーナーか管理者がリンクで招待し、各自のロールを選びます。閲覧者は見るだけです。編集者は口座、取引、予算の追加と変更もできます。管理者はメンバーの管理もでき、オーナーは世帯を譲渡できます。",
+  "FeaturePageHouseholds.how2":
+    "アプリでは世帯を「グループ」と呼びます。ひとつのアカウントで複数の世帯に入れるので、共有の世帯と自分だけの世帯を切り替えて使えます。アクティビティログで、誰が何を変えたかがわかります。",
+  "FeaturePageHouseholds.privateQuestion": "一部の口座をパートナーに見せないようにできますか？",
+  "FeaturePageHouseholds.privateAnswer":
+    "いいえ。世帯の全員が、その世帯のすべての口座と取引を見られます。自分だけで管理したいお金は自分だけの世帯に入れ、同じアカウントで切り替えて使います。",
+  "FeaturePageHouseholds.viewerQuestion": "家計簿を見るだけで、変更はできない人を招待できますか？",
+  "FeaturePageHouseholds.viewerAnswer":
+    "はい。閲覧者のロールを割り当ててください。閲覧者は口座、取引、予算を見られ、変更しようとしてもサーバーが拒否します。",
+  "FeaturePageHouseholds.handOverQuestion": "世帯をパートナーに譲渡できますか？",
+  "FeaturePageHouseholds.handOverAnswer":
+    "はい。オーナーはほかのメンバーをオーナーにできます。記録はすべてそのまま残ります。",
+  "FeaturePageHouseholds.restoreQuestion": "削除した世帯は元に戻せますか？",
+  "FeaturePageHouseholds.restoreAnswer":
+    "はい。世帯を削除できるのはオーナーだけで、オーナーは30日以内なら復元できます。",
+  "FeaturePageLiveSync.name": "リアルタイム同期",
+  "FeaturePageLiveSync.title": "家計簿をすべてのデバイスでリアルタイム同期",
+  "FeaturePageLiveSync.description":
+    "パートナーが取引を追加すると、自分のスマホにもすぐ表示されます。Financy はネットワークがなくても開け、オンラインに戻ると変更を送信します。",
+  "FeaturePageLiveSync.h1":
+    "家計簿の変更は、再読み込みしなくてもパートナーのスマホに反映されますか？",
+  "FeaturePageLiveSync.answer":
+    "はい。世帯の誰かが何かを追加・変更すると、ほかの全員の開いているすべてのデバイスにすぐ表示されます。オフラインやスリープ中だったスマホも、再接続するとすぐに追いつきます。",
+  "FeaturePageLiveSync.summary": "変更はすべてのデバイスにすぐ反映。オフラインのあとでも。",
+  "FeaturePageLiveSync.how1":
+    "開いている Financy はそれぞれサーバーとの接続を保ちます。誰かが変更を保存すると、サーバーはそれをすぐ世帯の全員へ送ります。離れている間に変更を見逃したデバイスは、戻ったときにそれを取りに行きます。",
+  "FeaturePageLiveSync.how2":
+    "Financy をブラウザからスマホやパソコンにインストールすると、ネットワークがなくても開け、最後に見た内容を表示します。オフラインで追加、変更、削除した取引と振替はデバイスで待機し、再接続したときに送信されます。",
+  "FeaturePageLiveSync.offlineEntriesQuestion":
+    "インターネットにつながっていなくても取引を追加できますか？",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "はい。オフラインで追加、変更、削除した取引と振替はデバイスに保存され、接続が戻るとサーバーへ送信されます。",
+  "FeaturePageLiveSync.offlineSetupQuestion": "オフラインで口座や予算を変更できますか？",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "いいえ。口座、カテゴリ、予算はオフラインでも最後に見た状態で表示されますが、変更するには接続が必要です。",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "オフラインでの変更が、パートナーの変更を上書きすることはありますか？",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "いいえ。その間に同じ取引がサーバーで変更されていたら、サーバーはこちらの変更を受け付けず、デバイスがその変更を残しておくので、あとで自分で解決できます。勝手に上書きされることはありません。",
+  "FeaturePageLiveSync.storesQuestion": "Financy は App Store や Google Play にありますか？",
+  "FeaturePageLiveSync.storesAnswer":
+    "まだです。今はブラウザから Financy をスマホやパソコンにインストールでき、ネットワークがなくても開けます。",
+  "FeaturePageSelfHosting.name": "セルフホスト",
+  "FeaturePageSelfHosting.title": "家計簿アプリを自分のサーバーでセルフホスト",
+  "FeaturePageSelfHosting.description":
+    "Docker Compose で、借りたサーバーや自前のサーバーで世帯の Financy を動かせます。記録は自分のサーバーに残り、かかるのはサーバー代だけです。",
+  "FeaturePageSelfHosting.h1": "家計簿アプリを自分のサーバーで動かせますか？",
+  "FeaturePageSelfHosting.answer":
+    "はい。Financy は、借りたサーバーでも自前のサーバーでも、Ubuntu なら Docker Compose で動きます。AGPL‑3.0 ライセンスなので費用はサーバー代だけで、世帯の記録はそのサーバーに残ります。",
+  "FeaturePageSelfHosting.summary": "世帯の記録を、自分のサーバーに。",
+  "FeaturePageSelfHosting.how1":
+    "必要なのはサーバー、ドメイン名、登録コードを送るためのメールアカウントです。自分のパソコンからコマンドをひとつ実行すると、Financy をサーバーにコピーし、そこでビルドして起動します。HTTPS 証明書は自動で発行・更新されます。",
+  "FeaturePageSelfHosting.how2":
+    "課金をオフのままにすると、サーバー上のすべての世帯がすべての機能を制限なしで使えます。毎日の暗号化バックアップを有効にでき、新しいリリースへはアップグレードガイドに沿って更新できます。",
+  "FeaturePageSelfHosting.sameFeaturesQuestion":
+    "セルフホスト版の Financy には、使えない機能がありますか？",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "いいえ。コードは同じです。課金をオフのままにすると、サーバー上のすべての世帯がすべての機能を使え、メンバー数の制限もありません。",
+  "FeaturePageSelfHosting.mailQuestion":
+    "Financy をセルフホストするには、メールアカウントが必要ですか？",
+  "FeaturePageSelfHosting.mailAnswer":
+    "はい。Financy は新規登録する人全員にコードをメールで送るので、サーバーにはメールサービスの SMTP アカウントが必要です。それがないと、誰もアカウントを作れません。",
+  "FeaturePageSelfHosting.moveQuestion": "financy.dev の世帯を自分のサーバーに移せますか？",
+  "FeaturePageSelfHosting.moveAnswer":
+    "はい。世帯のオーナーがファイルに書き出し、そのファイルを自分のサーバーで新しい世帯として取り込みます。",
+  "FeaturePageSelfHosting.backupQuestion": "Financy でサーバーをバックアップできますか？",
+  "FeaturePageSelfHosting.backupAnswer":
+    "はい。毎日のバックアップを有効にすると、24時間ごとに世帯の記録とファイルを暗号化して、サーバーの外にあるストレージへ保存します。バックアップガイドでは、復元テストの手順も説明しています。",
+  "FeaturePageSelfHosting.installerQuestion": "ワンクリックでインストールできますか？",
+  "FeaturePageSelfHosting.installerAnswer":
+    "まだです。Deno、rsync、git を使って自分のパソコンから Financy をセットアップし、コマンドひとつでデプロイします。セルフホストガイドで、すべての手順を説明しています。",
   "FeaturePageMissing.title": "この機能ページは見つかりません",
   "FeaturePageMissing.description":
     "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",
@@ -509,6 +630,18 @@ export default {
   "FeatureRecurring.fact3":
     "定期取引の追加には Household プランが必要です。閲覧には不要で、サーバーが確認します",
   "FeatureRecurring.code": "定期取引のコードを読む",
+  "FeatureMultiCurrency.nav": "通貨",
+  "FeatureMultiCurrency.title": "複数の通貨を、ひとつの合計に",
+  "FeatureMultiCurrency.lead":
+    "世帯のメイン通貨を選ぶと、すべての合計がお金の動いた日のレートでその通貨に換算されます。別の通貨の取引は、換算後の金額の隣に元の金額も残します。",
+  "FeatureMultiCurrency.fact1":
+    "欧州中央銀行の日次参照レートを Frankfurter 経由で取得（APIキー不要）",
+  "FeatureMultiCurrency.fact2": "換算した金額はその日付のレートで一度だけ保存し、書き換えません",
+  "FeatureMultiCurrency.fact3": "レートのない通貨は名前を示して合計から外し、0 として数えません",
+  "FeatureMultiCurrency.notYetBudgets":
+    "別の通貨から換算した予算の数字に、まだ「約」やレートの日付が表示されません",
+  "FeatureMultiCurrency.notYetOffline": "ネットワークなしで見られる為替レート",
+  "FeatureMultiCurrency.code": "お金のドメインのコードを読む",
   "FeatureTransactions.nav": "取引",
   "FeatureTransactions.title": "支出も収入も、支払った通貨のまま",
   "FeatureTransactions.lead":

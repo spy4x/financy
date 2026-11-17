@@ -245,6 +245,9 @@ export default {
   "FeatureTeams.fact2": "Cada persona ve solo los hogares a los que pertenece",
   "FeatureTeams.fact3":
     "Invitaciones, cambios de rol y transferencia de propiedad, cada uno con sus pruebas",
+  "FeatureTeams.notYetClosedSignUp":
+    "Unirse con una invitación cuando el registro del servidor está cerrado",
+  "FeatureTeams.notYetGroupWord": "La app aún dice «grupo» donde quiere decir hogar",
   "FeatureTeams.code": "Ver el dominio de grupos",
   "FeatureExport.nav": "Exportación",
   "FeatureExport.title": "Tus datos se van contigo",
@@ -264,6 +267,18 @@ export default {
   "FeatureLanguages.fact2": "Números y fechas con el Intl del propio navegador",
   "FeatureLanguages.fact3": "Las páginas en árabe se leen de derecha a izquierda",
   "FeatureLanguages.code": "Leer la guía de traducción",
+  "FeatureLiveSync.nav": "Sincronización en vivo",
+  "FeatureLiveSync.title": "En vivo en cada dispositivo, incluso sin conexión",
+  "FeatureLiveSync.lead":
+    "Cuando alguien del hogar cambia algo, los demás lo ven al momento, sin recargar. Instala Financy en tu móvil o tu ordenador: se abre sin conexión y envía los movimientos que añadiste en cuanto vuelves a tener conexión.",
+  "FeatureLiveSync.fact1": "Un WebSocket estándar, con un número de secuencia en cada cambio",
+  "FeatureLiveSync.fact2": "Un dispositivo que se reconecta recupera lo que se perdió",
+  "FeatureLiveSync.fact3":
+    "Una copia local en IndexedDB y una cola de cambios sin conexión con claves de idempotencia",
+  "FeatureLiveSync.notYetSetup": "Cambiar cuentas, categorías y presupuestos sin conexión",
+  "FeatureLiveSync.notYetRates": "Tipos de cambio que puedas consultar sin conexión",
+  "FeatureLiveSync.notYetStores": "Apps en Google Play y en la App Store",
+  "FeatureLiveSync.code": "Ver el diseño de la sincronización",
   "FeatureDeploy.nav": "Alojamiento propio",
   "FeatureDeploy.title": "Funciona en tu propio servidor",
   "FeatureDeploy.lead":
@@ -274,6 +289,7 @@ export default {
     "Métricas, registros y alertas con VictoriaMetrics, VictoriaLogs y Grafana",
   "FeatureDeploy.fact4":
     "Una copia de seguridad diaria y cifrada de la base de datos, opcional, con los pasos de restauración por escrito",
+  "FeatureDeploy.notYetRehearsed": "Un tiempo de instalación medido en un servidor recién creado",
   "FeatureDeploy.code": "Ver los archivos de Compose",
   "FeaturesFaq.serverlessQuestion": "¿Puedo ejecutar Financy en hosting compartido o serverless?",
   "FeaturesFaq.serverlessAnswer":
@@ -409,6 +425,117 @@ export default {
   "FeaturePage.otherFeatures": "Otras funciones",
   "FeaturePage.readMore": "Más sobre {name}",
   "FeaturePage.all": "Todas las funciones",
+  "FeaturePage.demo": "Pruébalo en la demo, sin registrarte",
+  "FeaturePageMultiCurrency.name": "Varias monedas",
+  "FeaturePageMultiCurrency.title": "Tu dinero en varias monedas, en un solo total",
+  "FeaturePageMultiCurrency.description":
+    "Lleva cada cuenta en su moneda y ve cada total en la moneda principal de tu hogar, al tipo de cambio del día en que se movió el dinero.",
+  "FeaturePageMultiCurrency.h1": "Ve tus saldos en varias monedas como un solo total",
+  "FeaturePageMultiCurrency.answer":
+    "Sí. Cada cuenta conserva su propia moneda, y Financy las suma en la moneda principal de tu hogar al tipo de cambio de cada día. Un movimiento pagado en otra moneda conserva su propio importe junto al convertido.",
+  "FeaturePageMultiCurrency.summary":
+    "Cada cuenta en su propia moneda, cada total en tu moneda principal.",
+  "FeaturePageMultiCurrency.how1":
+    "Tu hogar elige una moneda principal. Cada día, Financy obtiene los tipos de cambio del Banco Central Europeo. Cuando añades un movimiento en una moneda distinta de la de su cuenta, Financy lo convierte al tipo de cambio de la fecha del movimiento y guarda los dos importes. Si escribes tú los dos importes, se guarda tu propio tipo de cambio.",
+  "FeaturePageMultiCurrency.how2":
+    "El resumen muestra tus ingresos, tus gastos y el total del hogar en la moneda principal. Cuando una moneda no tiene tipo de cambio, el total la deja fuera y lo indica, en lugar de contarla como cero.",
+  "FeaturePageMultiCurrency.historyQuestion":
+    "¿Un nuevo tipo de cambio modifica mis movimientos pasados?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "No. Un movimiento en otra moneda guarda su importe convertido una sola vez, al tipo de cambio de su propia fecha. Un tipo de cambio posterior nunca lo reescribe.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "¿Podemos cambiar más adelante la moneda principal del hogar?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Sí. Un administrador o el propietario del hogar puede cambiarla en cualquier momento. Ningún importe cambia: cada uno se queda en su propia moneda, y solo los totales se vuelven a convertir.",
+  "FeaturePageMultiCurrency.ownRateQuestion":
+    "¿Puedo poner el tipo de cambio que me cobró mi banco?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Sí. Escribe los dos importes, lo que pagaste y lo que salió de tu cuenta, y Financy guarda tu propio tipo de cambio en lugar del tipo del día.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "¿Tiene Financy un tipo de cambio diario para todas las monedas?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "No. Los tipos de cambio diarios y gratuitos del Banco Central Europeo cubren unas 30 monedas. Otras, como el dong vietnamita, necesitan una fuente de pago que active el propietario del servidor; sin ella, los totales dejan fuera esos importes y lo indican.",
+  "FeaturePageHouseholds.name": "Hogares",
+  "FeaturePageHouseholds.title": "Presupuesto en pareja, cada uno con su acceso",
+  "FeaturePageHouseholds.description":
+    "Invita a tu pareja o a tu familia a un hogar. Cada persona entra con su propio acceso y su rol, y todos ven las mismas cuentas y presupuestos.",
+  "FeaturePageHouseholds.h1":
+    "Comparte el presupuesto con tu pareja, cada uno con su propio acceso",
+  "FeaturePageHouseholds.answer":
+    "Sí. Un hogar son las personas que comparten dinero. Invita a tu pareja o a tu familia: cada persona entra con su propio acceso y un rol, de lector a propietario, y todos ven las mismas cuentas, movimientos y presupuestos.",
+  "FeaturePageHouseholds.summary": "Un hogar, cada persona con su propio acceso y su rol.",
+  "FeaturePageHouseholds.how1":
+    "Quien crea un hogar es su propietario. El propietario o un administrador invita a otras personas con un enlace y elige el rol de cada una. Un lector solo consulta. Un editor, además, añade y cambia cuentas, movimientos y presupuestos. Un administrador, además, gestiona a los miembros, y el propietario puede transferir el hogar.",
+  "FeaturePageHouseholds.how2":
+    "La app llama grupo a un hogar. Una misma cuenta de usuario puede pertenecer a varios hogares, como uno compartido y otro solo tuyo, y pasas de uno a otro. El registro de actividad muestra quién cambió qué.",
+  "FeaturePageHouseholds.privateQuestion": "¿Puedo ocultarle algunas cuentas a mi pareja?",
+  "FeaturePageHouseholds.privateAnswer":
+    "No. Todos los miembros de un hogar ven todas sus cuentas y movimientos. El dinero que quieras llevar solo para ti va en un hogar propio, al que puedes cambiar con la misma cuenta de usuario.",
+  "FeaturePageHouseholds.viewerQuestion":
+    "¿Alguien puede ver nuestro presupuesto sin poder cambiarlo?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Sí. Dale el rol de lector. Un lector ve las cuentas, los movimientos y los presupuestos, y el servidor rechaza cualquier cambio que intente hacer.",
+  "FeaturePageHouseholds.handOverQuestion": "¿Puedo transferirle el hogar a mi pareja?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Sí. El propietario puede hacer propietario a otro miembro. Todos los registros se quedan donde están.",
+  "FeaturePageHouseholds.restoreQuestion": "¿Podemos recuperar un hogar eliminado?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Sí. Solo el propietario puede eliminar un hogar, y puede restaurarlo durante 30 días.",
+  "FeaturePageLiveSync.name": "Sincronización en vivo",
+  "FeaturePageLiveSync.title": "Tu presupuesto sincronizado en cada dispositivo",
+  "FeaturePageLiveSync.description":
+    "Cuando tu pareja añade un movimiento, aparece al momento en tu móvil. Financy también se abre sin conexión y envía tus cambios al recuperarla.",
+  "FeaturePageLiveSync.h1": "Los cambios aparecen en el móvil de tu pareja sin recargar",
+  "FeaturePageLiveSync.answer":
+    "Sí. Cuando alguien de tu hogar añade o cambia algo, los demás lo ven al momento en cada dispositivo abierto. Un móvil que estaba sin conexión o en reposo se pone al día en cuanto se reconecta.",
+  "FeaturePageLiveSync.summary":
+    "Los cambios aparecen al momento en cada dispositivo, incluso tras un rato sin conexión.",
+  "FeaturePageLiveSync.how1":
+    "Cada copia abierta de Financy mantiene una conexión con el servidor. Cuando alguien guarda un cambio, el servidor se lo envía al momento a todo el hogar. Un dispositivo que se perdió cambios mientras no estaba los pide al volver.",
+  "FeaturePageLiveSync.how2":
+    "Instala Financy desde el navegador en un móvil o un ordenador, y se abrirá sin conexión con lo último que vio. Los movimientos y las transferencias que añades, cambias o eliminas sin conexión esperan en el dispositivo y se envían al reconectarte.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "¿Puedo añadir un movimiento sin internet?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Sí. Los movimientos y las transferencias que añades, cambias o eliminas sin conexión se guardan en tu dispositivo y se envían al servidor cuando vuelve la conexión.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "¿Puedo cambiar cuentas o presupuestos sin conexión?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "No. Las cuentas, las categorías y los presupuestos se ven sin conexión tal como estaban la última vez, pero para cambiarlos hace falta conexión.",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "¿Un cambio hecho sin conexión puede sobrescribir el de mi pareja?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "No. Si el mismo movimiento cambió en el servidor mientras tanto, el servidor rechaza el tuyo y tu dispositivo lo guarda para que lo resuelvas. Nada se sobrescribe solo.",
+  "FeaturePageLiveSync.storesQuestion": "¿Está Financy en la App Store o en Google Play?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Todavía no. Por ahora instalas Financy desde el navegador en un móvil o un ordenador, y se abre sin conexión.",
+  "FeaturePageSelfHosting.name": "Alojamiento propio",
+  "FeaturePageSelfHosting.title": "Una app de presupuesto en tu propio servidor",
+  "FeaturePageSelfHosting.description":
+    "Instala Financy para tu hogar en un servidor que alquiles o tengas, con Docker Compose. Tus datos se quedan en tu servidor y solo pagas el servidor.",
+  "FeaturePageSelfHosting.h1": "Instala una app de presupuesto en tu propio servidor",
+  "FeaturePageSelfHosting.answer":
+    "Sí. Financy funciona con Docker Compose en un servidor Ubuntu que alquiles o tengas. Con la licencia AGPL‑3.0 solo pagas el servidor, y los datos de tu hogar se quedan en él.",
+  "FeaturePageSelfHosting.summary": "Los datos de tu hogar en tu propio servidor.",
+  "FeaturePageSelfHosting.how1":
+    "Necesitas un servidor, un dominio y una cuenta de correo para enviar los códigos de registro. Desde tu ordenador, un solo comando copia Financy al servidor, lo compila allí y lo arranca. Su certificado HTTPS se emite y se renueva solo.",
+  "FeaturePageSelfHosting.how2":
+    "Deja la facturación desactivada y cada hogar de tu servidor tendrá todas las funciones, sin límites. Activa la copia de seguridad diaria y cifrada, y la guía de actualización te lleva a cada nueva versión.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "¿Le falta alguna función a Financy autoalojado?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "No. Es el mismo código. Con la facturación desactivada, cada hogar de tu servidor tiene todas las funciones, sin límite de miembros.",
+  "FeaturePageSelfHosting.mailQuestion": "¿Necesito una cuenta de correo para alojar Financy?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Sí. Financy envía un código por correo a cada persona que se registra, así que el servidor necesita una cuenta SMTP de un proveedor de correo. Sin ella, nadie puede crear una cuenta de usuario.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "¿Puedo pasar mi hogar de financy.dev a mi propio servidor?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Sí. El propietario del hogar lo exporta a un archivo, y tú importas ese archivo en tu servidor como un hogar nuevo.",
+  "FeaturePageSelfHosting.backupQuestion":
+    "¿Financy puede hacer copias de seguridad de mi servidor?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Sí. Activa la copia de seguridad diaria: cada 24 horas guarda los datos y los archivos de tu hogar, cifrados, en un almacenamiento fuera del servidor. La guía de copias de seguridad también te acompaña en una restauración de prueba.",
+  "FeaturePageSelfHosting.installerQuestion": "¿Hay un instalador de un clic?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Todavía no. Preparas Financy desde tu ordenador con Deno, rsync y git, y un solo comando lo despliega. La guía de alojamiento propio explica cada paso.",
   "FeaturePageMissing.title": "Esta página de función no existe",
   "FeaturePageMissing.description":
     "Puede que se haya movido. Todas las funciones están en la página de funciones.",
@@ -530,6 +657,20 @@ export default {
   "FeatureRecurring.fact3":
     "Añadir un movimiento recurrente requiere el plan Household; verlos, nunca; lo comprueba el servidor",
   "FeatureRecurring.code": "Ver el código de los movimientos recurrentes",
+  "FeatureMultiCurrency.nav": "Monedas",
+  "FeatureMultiCurrency.title": "Muchas monedas, un solo total",
+  "FeatureMultiCurrency.lead":
+    "Elige la moneda principal de tu hogar y cada total se convierte a ella al tipo de cambio del día en que se movió el dinero. Un movimiento en otra moneda conserva su propio importe junto al convertido.",
+  "FeatureMultiCurrency.fact1":
+    "Tipos de referencia diarios del Banco Central Europeo, a través de Frankfurter, sin necesidad de clave",
+  "FeatureMultiCurrency.fact2":
+    "Un importe convertido se guarda una sola vez, al tipo de cambio de su propia fecha, y nunca se reescribe",
+  "FeatureMultiCurrency.fact3":
+    "Una moneda sin tipo de cambio queda fuera del total y se nombra; nunca cuenta como 0",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Las cifras del presupuesto convertidas de otra moneda aún no dicen «aprox.» ni la fecha del tipo de cambio",
+  "FeatureMultiCurrency.notYetOffline": "Tipos de cambio que puedas consultar sin conexión",
+  "FeatureMultiCurrency.code": "Ver el dominio del dinero",
   "FeatureTransactions.nav": "Movimientos",
   "FeatureTransactions.title": "Cada gasto e ingreso, en la moneda en que pagaste",
   "FeatureTransactions.lead":

@@ -507,7 +507,7 @@ export default {
     "Run Financy for your household on a server you rent or own, with Docker Compose. Your records stay on your server, and you pay only for the server.",
   "FeaturePageSelfHosting.h1": "Run a budget app on your own server",
   "FeaturePageSelfHosting.answer":
-    "Yes. Financy runs with Docker Compose on an Ubuntu server you rent or own. Under the AGPL-3.0 licence you pay only for the server, and your household's records stay on it.",
+    "Yes. Financy runs with Docker Compose on an Ubuntu server you rent or own. Under the AGPL‑3.0 licence you pay only for the server, and your household's records stay on it.",
   "FeaturePageSelfHosting.summary": "Your household's records on your own server.",
   "FeaturePageSelfHosting.how1":
     "You need a server, a domain name and a mail account for sending sign-up codes. From your own computer, one command copies Financy to the server, builds it there and starts it. Its HTTPS certificate is issued and renewed on its own.",

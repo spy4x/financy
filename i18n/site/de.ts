@@ -247,6 +247,9 @@ export default {
   "FeatureTeams.fact2": "Jede Person sieht nur die Haushalte, zu denen sie gehört",
   "FeatureTeams.fact3":
     "Einladungen, Rollenwechsel und Übertragung der Inhaberschaft, jeweils mit eigenen Tests",
+  "FeatureTeams.notYetClosedSignUp":
+    "Einer Einladung folgen, während die Registrierung auf dem Server geschlossen ist",
+  "FeatureTeams.notYetGroupWord": "Die App sagt noch „Gruppe“, wo sie den Haushalt meint",
   "FeatureTeams.code": "Code der Gruppen lesen",
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Deine Daten gehen mit dir",
@@ -266,6 +269,18 @@ export default {
   "FeatureLanguages.fact2": "Zahlen und Daten über das Intl des Browsers",
   "FeatureLanguages.fact3": "Arabische Seiten laufen von rechts nach links",
   "FeatureLanguages.code": "Übersetzungsanleitung lesen",
+  "FeatureLiveSync.nav": "Live-Sync",
+  "FeatureLiveSync.title": "Live auf jedem Gerät, auch offline",
+  "FeatureLiveSync.lead":
+    "Ändert eine Person im Haushalt etwas, sehen es alle anderen sofort, ohne Neuladen. Installiere Financy auf deinem Handy oder Computer: Es startet auch ohne Netz und sendet die Buchungen, die du eingetragen hast, sobald du wieder online bist.",
+  "FeatureLiveSync.fact1": "Ein Standard-WebSocket, mit einer Sequenznummer an jeder Änderung",
+  "FeatureLiveSync.fact2": "Ein Gerät, das sich neu verbindet, holt nach, was es verpasst hat",
+  "FeatureLiveSync.fact3":
+    "Eine lokale Kopie in IndexedDB und eine Warteschlange für Offline-Änderungen mit Idempotenzschlüsseln",
+  "FeatureLiveSync.notYetSetup": "Konten, Kategorien und Budgets ohne Netz ändern",
+  "FeatureLiveSync.notYetRates": "Wechselkurse, die du ohne Netz lesen kannst",
+  "FeatureLiveSync.notYetStores": "Apps bei Google Play und im App Store",
+  "FeatureLiveSync.code": "Echtzeit-Konzept lesen",
   "FeatureDeploy.nav": "Selbst hosten",
   "FeatureDeploy.title": "Läuft auf deinem eigenen Server",
   "FeatureDeploy.lead":
@@ -275,6 +290,7 @@ export default {
   "FeatureDeploy.fact3": "Metriken, Logs und Alarme mit VictoriaMetrics, VictoriaLogs und Grafana",
   "FeatureDeploy.fact4":
     "Ein optionales tägliches, verschlüsseltes Backup der Datenbank, mit schriftlicher Anleitung zur Wiederherstellung",
+  "FeatureDeploy.notYetRehearsed": "Eine gemessene Installationszeit auf einem frischen Server",
   "FeatureDeploy.code": "Compose-Dateien lesen",
   "FeaturesFaq.serverlessQuestion": "Läuft Financy auf Shared Hosting oder Serverless?",
   "FeaturesFaq.serverlessAnswer":
@@ -407,6 +423,113 @@ export default {
   "FeaturePage.otherFeatures": "Weitere Funktionen",
   "FeaturePage.readMore": "Mehr über {name} lesen",
   "FeaturePage.all": "Alle Funktionen",
+  "FeaturePage.demo": "In der Demo ausprobieren, ohne Benutzerkonto",
+  "FeaturePageMultiCurrency.name": "Mehrere Währungen",
+  "FeaturePageMultiCurrency.title": "Finanzen in mehreren Währungen als eine Summe verwalten",
+  "FeaturePageMultiCurrency.description":
+    "Jedes Konto in seiner eigenen Währung, jede Summe in der Hauptwährung deines Haushalts, umgerechnet zum Kurs des Tages, an dem das Geld floss.",
+  "FeaturePageMultiCurrency.h1": "Kontostände in mehreren Währungen als eine Summe sehen",
+  "FeaturePageMultiCurrency.answer":
+    "Ja. Jedes Konto behält seine eigene Währung, und Financy zählt alles zum Tageskurs in der Hauptwährung deines Haushalts zusammen. Eine Buchung, die in einer anderen Währung bezahlt wurde, behält ihren eigenen Betrag neben dem umgerechneten.",
+  "FeaturePageMultiCurrency.summary":
+    "Jedes Konto in seiner eigenen Währung, jede Summe in deiner Hauptwährung.",
+  "FeaturePageMultiCurrency.how1":
+    "Dein Haushalt wählt eine Hauptwährung. Jeden Tag holt Financy die Wechselkurse der Europäischen Zentralbank. Trägst du eine Buchung in einer anderen Währung als der ihres Kontos ein, rechnet Financy sie zum Kurs ihres eigenen Datums um und speichert beide Beträge. Gibst du beide Beträge selbst ein, gilt stattdessen dein eigener Kurs.",
+  "FeaturePageMultiCurrency.how2":
+    "Die Übersicht zeigt deine Einnahmen, deine Ausgaben und die Gesamtsumme des Haushalts in der Hauptwährung. Hat eine Währung keinen Kurs, lässt eine Summe sie weg und sagt das, statt sie als null zu zählen.",
+  "FeaturePageMultiCurrency.historyQuestion": "Ändert ein neuer Wechselkurs meine alten Buchungen?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "Nein. Eine Buchung in einer anderen Währung speichert ihren umgerechneten Betrag einmal, zum Kurs ihres eigenen Datums. Ein späterer Kurs ändert ihn nie.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "Können wir die Hauptwährung unseres Haushalts später ändern?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Ja. Ein Admin oder der Inhaber des Haushalts kann sie jederzeit ändern. Dabei ändert sich kein Betrag: Jeder bleibt in seiner eigenen Währung, nur die Summen werden neu umgerechnet.",
+  "FeaturePageMultiCurrency.ownRateQuestion":
+    "Kann ich den Kurs eintragen, den meine Bank wirklich berechnet hat?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Ja. Gib beide Beträge ein, was du bezahlt hast und was von deinem Konto abging, und Financy behält deinen eigenen Kurs statt des Tageskurses.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion": "Hat Financy für jede Währung einen Tageskurs?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "Nein. Die kostenlosen Tageskurse der Europäischen Zentralbank decken etwa 30 Währungen ab. Andere, etwa der vietnamesische Dong, brauchen eine kostenpflichtige Kursquelle, die der Betreiber des Servers einschaltet; ohne sie lassen Summen diese Beträge weg und sagen das.",
+  "FeaturePageHouseholds.name": "Haushalte",
+  "FeaturePageHouseholds.title": "Gemeinsames Budget für Paare, jede Person mit Login",
+  "FeaturePageHouseholds.description":
+    "Lade Partnerin, Partner oder Familie in einen Haushalt ein. Jede Person hat ihren eigenen Login und ihre Rolle, alle sehen dieselben Konten und Budgets.",
+  "FeaturePageHouseholds.h1": "Budget mit dem Partner teilen, jeder mit eigenem Login",
+  "FeaturePageHouseholds.answer":
+    "Ja. Ein Haushalt sind die Menschen, die sich Geld teilen. Lade deine Partnerin, deinen Partner oder die Familie ein: Jede Person meldet sich mit eigenem Login und einer Rolle von Betrachter bis Inhaber an, und alle sehen dieselben Konten, Buchungen und Budgets.",
+  "FeaturePageHouseholds.summary": "Ein Haushalt, jede Person mit eigenem Login und eigener Rolle.",
+  "FeaturePageHouseholds.how1":
+    "Wer einen Haushalt anlegt, ist sein Inhaber. Der Inhaber oder ein Admin lädt Personen per Link ein und wählt für jede eine Rolle. Ein Betrachter liest nur. Ein Bearbeiter legt außerdem Konten, Buchungen und Budgets an und ändert sie. Ein Admin verwaltet außerdem die Mitglieder, und der Inhaber kann den Haushalt übertragen.",
+  "FeaturePageHouseholds.how2":
+    "In der App heißt ein Haushalt Gruppe. Ein Login kann zu mehreren Haushalten gehören, etwa einem gemeinsamen und einem eigenen, und du wechselst zwischen ihnen. Das Aktivitätsprotokoll zeigt, wer was geändert hat.",
+  "FeaturePageHouseholds.privateQuestion": "Kann ich Konten vor meinem Partner verbergen?",
+  "FeaturePageHouseholds.privateAnswer":
+    "Nein. Alle im Haushalt sehen alle seine Konten und Buchungen. Geld, das du für dich behalten willst, gehört in einen eigenen Haushalt, zu dem du mit demselben Login wechseln kannst.",
+  "FeaturePageHouseholds.viewerQuestion": "Kann jemand unser Budget sehen, ohne es zu ändern?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Ja. Gib der Person die Rolle Betrachter. Ein Betrachter sieht die Konten, Buchungen und Budgets, und der Server lehnt jede Änderung ab, die er versucht.",
+  "FeaturePageHouseholds.handOverQuestion": "Kann ich den Haushalt an meinen Partner übertragen?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Ja. Der Inhaber kann ein anderes Mitglied zum Inhaber machen. Alle Einträge bleiben, wo sie sind.",
+  "FeaturePageHouseholds.restoreQuestion": "Können wir einen gelöschten Haushalt zurückholen?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Ja. Nur der Inhaber kann einen Haushalt löschen, und nur er kann ihn innerhalb von 30 Tagen wiederherstellen.",
+  "FeaturePageLiveSync.name": "Live-Sync",
+  "FeaturePageLiveSync.title": "Budget live auf allen Geräten synchronisieren",
+  "FeaturePageLiveSync.description":
+    "Trägt dein Partner eine Buchung ein, ist sie sofort auf deinem Handy. Financy startet auch offline und sendet Änderungen, sobald du wieder online bist.",
+  "FeaturePageLiveSync.h1": "Änderungen erscheinen ohne Neuladen auf dem Handy deines Partners",
+  "FeaturePageLiveSync.answer":
+    "Ja. Trägt jemand in deinem Haushalt etwas ein oder ändert etwas, sehen es alle anderen sofort auf jedem geöffneten Gerät. Ein Handy, das offline oder im Ruhezustand war, holt alles nach, sobald es wieder verbunden ist.",
+  "FeaturePageLiveSync.summary":
+    "Änderungen erscheinen sofort auf jedem Gerät, auch nach einer Zeit offline.",
+  "FeaturePageLiveSync.how1":
+    "Jedes geöffnete Financy hält eine Verbindung zum Server. Speichert jemand eine Änderung, schickt der Server sie sofort an alle im Haushalt. Ein Gerät, das Änderungen verpasst hat, während es weg war, fragt danach, sobald es zurück ist.",
+  "FeaturePageLiveSync.how2":
+    "Installiere Financy aus dem Browser auf Handy oder Computer, dann startet es auch ohne Netz und zeigt, was es zuletzt gesehen hat. Buchungen und Umbuchungen, die du offline einträgst, änderst oder löschst, warten auf dem Gerät und werden gesendet, sobald du wieder verbunden bist.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "Kann ich ohne Internet eine Buchung eintragen?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Ja. Buchungen und Umbuchungen, die du offline einträgst, änderst oder löschst, bleiben auf deinem Gerät und gehen an den Server, sobald die Verbindung wieder steht.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "Kann ich Konten oder Budgets offline ändern?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "Nein. Konten, Kategorien und Budgets erscheinen offline so, wie sie zuletzt zu sehen waren, aber ändern lassen sie sich nur mit Verbindung.",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "Kann eine Offline-Änderung die Änderung meines Partners überschreiben?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "Nein. Wurde dieselbe Buchung inzwischen auf dem Server geändert, lehnt der Server deine Änderung ab, und dein Gerät hebt sie auf, damit du den Konflikt klärst. Nichts wird von selbst überschrieben.",
+  "FeaturePageLiveSync.storesQuestion": "Gibt es Financy im App Store oder bei Google Play?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Noch nicht. Heute installierst du Financy aus dem Browser auf Handy oder Computer, und es startet auch ohne Netz.",
+  "FeaturePageSelfHosting.name": "Selbst hosten",
+  "FeaturePageSelfHosting.title": "Haushaltsbuch-App selbst hosten, auf deinem Server",
+  "FeaturePageSelfHosting.description":
+    "Betreibe Financy mit Docker Compose für deinen Haushalt auf einem gemieteten oder eigenen Server. Deine Daten bleiben dort, und du zahlst nur den Server.",
+  "FeaturePageSelfHosting.h1": "Haushaltsbuch-App auf dem eigenen Server betreiben",
+  "FeaturePageSelfHosting.answer":
+    "Ja. Financy läuft mit Docker Compose auf einem Ubuntu-Server, den du mietest oder besitzt. Unter der AGPL‑3.0-Lizenz zahlst du nur den Server, und die Daten deines Haushalts bleiben darauf.",
+  "FeaturePageSelfHosting.summary": "Die Daten deines Haushalts auf deinem eigenen Server.",
+  "FeaturePageSelfHosting.how1":
+    "Du brauchst einen Server, einen Domainnamen und ein E-Mail-Postfach, über das die Codes zur Registrierung verschickt werden. Von deinem eigenen Computer aus kopiert ein Befehl Financy auf den Server, baut es dort und startet es. Das HTTPS-Zertifikat wird automatisch ausgestellt und erneuert.",
+  "FeaturePageSelfHosting.how2":
+    "Lass die Abrechnung ausgeschaltet, und jeder Haushalt auf deinem Server bekommt alle Funktionen ohne Grenzen. Schalte das tägliche verschlüsselte Backup ein, und die Upgrade-Anleitung bringt dich zu jeder neuen Version.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "Fehlen dem selbst gehosteten Financy Funktionen?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "Nein. Es ist derselbe Code. Bleibt die Abrechnung ausgeschaltet, bekommt jeder Haushalt auf deinem Server alle Funktionen, ohne Grenze bei den Mitgliedern.",
+  "FeaturePageSelfHosting.mailQuestion":
+    "Brauche ich ein E-Mail-Postfach, um Financy selbst zu hosten?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Ja. Financy schickt jeder Person, die sich registriert, einen Code per E-Mail, deshalb braucht der Server einen SMTP-Zugang bei einem E-Mail-Anbieter. Ohne ihn kann niemand ein Benutzerkonto anlegen.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "Kann ich meinen Haushalt von financy.dev auf meinen eigenen Server umziehen?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Ja. Der Inhaber des Haushalts exportiert ihn in eine Datei, und du importierst diese Datei auf deinem Server als neuen Haushalt.",
+  "FeaturePageSelfHosting.backupQuestion": "Kann Financy meinen Server sichern?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Ja. Schalte das tägliche Backup ein, dann sichert es alle 24 Stunden die Daten und Dateien deines Haushalts verschlüsselt auf einem Speicher außerhalb des Servers. Die Backup-Anleitung führt dich auch durch eine Test-Wiederherstellung.",
+  "FeaturePageSelfHosting.installerQuestion": "Gibt es einen Ein-Klick-Installer?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Noch nicht. Du richtest Financy von deinem eigenen Computer aus mit Deno, rsync und git ein, und ein Befehl stellt es bereit. Die Anleitung zum Selbsthosten führt dich durch jeden Schritt.",
   "FeaturePageMissing.title": "Diese Funktionsseite gibt es hier nicht",
   "FeaturePageMissing.description":
     "Vielleicht ist sie umgezogen. Alle Funktionen findest du auf der Funktionsseite.",
@@ -527,6 +650,20 @@ export default {
   "FeatureRecurring.fact3":
     "Eine wiederkehrende Buchung anlegen braucht den Tarif Household; sie lesen nie, geprüft auf dem Server",
   "FeatureRecurring.code": "Code der wiederkehrenden Buchungen lesen",
+  "FeatureMultiCurrency.nav": "Währungen",
+  "FeatureMultiCurrency.title": "Viele Währungen, eine Summe",
+  "FeatureMultiCurrency.lead":
+    "Wähle die Hauptwährung deines Haushalts, und jede Summe wird zum Kurs des Tages umgerechnet, an dem das Geld geflossen ist. Eine Buchung in einer anderen Währung behält ihren eigenen Betrag neben dem umgerechneten.",
+  "FeatureMultiCurrency.fact1":
+    "Tägliche Referenzkurse der Europäischen Zentralbank über Frankfurter, ohne API-Schlüssel",
+  "FeatureMultiCurrency.fact2":
+    "Ein umgerechneter Betrag wird einmal gespeichert, zum Kurs seines eigenen Datums, und nie überschrieben",
+  "FeatureMultiCurrency.fact3":
+    "Eine Währung ohne Kurs bleibt aus einer Summe heraus und wird genannt, nie als 0 gezählt",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Budgetzahlen, die aus einer anderen Währung umgerechnet sind, zeigen noch kein „etwa“ und kein Kursdatum",
+  "FeatureMultiCurrency.notYetOffline": "Wechselkurse, die du ohne Netz lesen kannst",
+  "FeatureMultiCurrency.code": "Code der Geldbeträge lesen",
   "FeatureTransactions.nav": "Buchungen",
   "FeatureTransactions.title": "Jede Ausgabe und Einnahme, in der Währung, in der du bezahlt hast",
   "FeatureTransactions.lead":

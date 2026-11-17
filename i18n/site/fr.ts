@@ -248,6 +248,9 @@ export default {
   "FeatureTeams.fact2": "Chacun ne voit que les foyers dont il fait partie",
   "FeatureTeams.fact3":
     "Invitations, changements de rôle et transfert de propriété, chacun avec ses tests",
+  "FeatureTeams.notYetClosedSignUp":
+    "Rejoindre un foyer sur invitation quand les inscriptions du serveur sont fermées",
+  "FeatureTeams.notYetGroupWord": "L’app dit encore «groupe » là où elle parle du foyer",
   "FeatureTeams.code": "Lire le domaine des groupes",
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Vos données partent avec vous",
@@ -267,6 +270,19 @@ export default {
   "FeatureLanguages.fact2": "Les nombres et les dates via l’Intl du navigateur",
   "FeatureLanguages.fact3": "Les pages en arabe se lisent de droite à gauche",
   "FeatureLanguages.code": "Lire le guide de traduction",
+  "FeatureLiveSync.nav": "Synchro en direct",
+  "FeatureLiveSync.title": "En direct sur chaque appareil, même hors ligne",
+  "FeatureLiveSync.lead":
+    "Quand une personne du foyer change quelque chose, tous les autres le voient aussitôt, sans recharger la page. Installez Financy sur votre téléphone ou votre ordinateur : il s’ouvre hors ligne et envoie les opérations que vous avez ajoutées dès votre retour en ligne.",
+  "FeatureLiveSync.fact1":
+    "Un WebSocket standard, avec un numéro de séquence sur chaque changement",
+  "FeatureLiveSync.fact2": "Un appareil qui se reconnecte récupère ce qu’il a manqué",
+  "FeatureLiveSync.fact3":
+    "Une copie locale dans IndexedDB, et une file de changements hors ligne avec des clés d’idempotence",
+  "FeatureLiveSync.notYetSetup": "Modifier les comptes, les catégories et les budgets hors ligne",
+  "FeatureLiveSync.notYetRates": "Des taux de change consultables hors ligne",
+  "FeatureLiveSync.notYetStores": "Des apps sur Google Play et l’App Store",
+  "FeatureLiveSync.code": "Lire la conception du temps réel",
   "FeatureDeploy.nav": "Auto-hébergement",
   "FeatureDeploy.title": "Tourne sur votre propre serveur",
   "FeatureDeploy.lead":
@@ -277,6 +293,7 @@ export default {
     "Métriques, journaux et alertes avec VictoriaMetrics, VictoriaLogs et Grafana",
   "FeatureDeploy.fact4":
     "Une sauvegarde quotidienne et chiffrée de la base, en option, avec la restauration écrite pas à pas",
+  "FeatureDeploy.notYetRehearsed": "Un temps d’installation mesuré sur un serveur neuf",
   "FeatureDeploy.code": "Lire les fichiers Compose",
   "FeaturesFaq.serverlessQuestion":
     "Puis-je faire tourner Financy sur un hébergement mutualisé ou en serverless ?",
@@ -413,6 +430,120 @@ export default {
   "FeaturePage.otherFeatures": "Autres fonctionnalités",
   "FeaturePage.readMore": "En savoir plus : {name}",
   "FeaturePage.all": "Toutes les fonctionnalités",
+  "FeaturePage.demo": "Essayez dans la démo, sans créer de compte",
+  "FeaturePageMultiCurrency.name": "Plusieurs devises",
+  "FeaturePageMultiCurrency.title": "Suivre son argent en plusieurs devises, en un seul total",
+  "FeaturePageMultiCurrency.description":
+    "Gardez chaque compte dans sa devise et voyez chaque total dans la devise principale du foyer, au taux du jour où l’argent a bougé.",
+  "FeaturePageMultiCurrency.h1": "Voir ses soldes en plusieurs devises en un seul total",
+  "FeaturePageMultiCurrency.answer":
+    "Oui. Chaque compte garde sa propre devise, et Financy les additionne dans la devise principale de votre foyer, au taux de change de chaque jour. Une opération payée dans une autre devise garde son propre montant à côté du montant converti.",
+  "FeaturePageMultiCurrency.summary":
+    "Chaque compte dans sa devise, chaque total dans votre devise principale.",
+  "FeaturePageMultiCurrency.how1":
+    "Votre foyer choisit une devise principale. Chaque jour, Financy récupère les taux de change de la Banque centrale européenne. Quand vous ajoutez une opération dans une autre devise que celle de son compte, Financy la convertit au taux de la date de l’opération et enregistre les deux montants. Si vous saisissez vous-même les deux montants, c’est votre taux qui est gardé.",
+  "FeaturePageMultiCurrency.how2":
+    "L’écran d’accueil montre vos revenus, vos dépenses et le total du foyer dans la devise principale. Quand une devise n’a pas de taux, un total la laisse de côté et le signale, au lieu de la compter pour zéro.",
+  "FeaturePageMultiCurrency.historyQuestion":
+    "Un nouveau taux de change modifie-t-il mes anciennes opérations ?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "Non. Une opération dans une autre devise enregistre son montant converti une seule fois, au taux de sa propre date. Un taux arrivé plus tard ne le réécrit jamais.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "Peut-on changer plus tard la devise principale du foyer ?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Oui. Un administrateur ou le propriétaire du foyer peut la changer à tout moment. Aucun montant ne change : chacun reste dans sa devise, et seuls les totaux sont convertis à nouveau.",
+  "FeaturePageMultiCurrency.ownRateQuestion":
+    "Puis-je saisir le taux réellement appliqué par ma banque ?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Oui. Saisissez les deux montants, ce que vous avez payé et ce qui est sorti de votre compte, et Financy garde votre propre taux au lieu du taux du jour.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "Financy a-t-il un taux quotidien pour chaque devise ?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "Non. Les taux quotidiens gratuits de la Banque centrale européenne couvrent une trentaine de devises. Les autres, comme le dong vietnamien, demandent une source de taux payante que le propriétaire du serveur active ; sans elle, les totaux laissent ces montants de côté et le signalent.",
+  "FeaturePageHouseholds.name": "Foyers",
+  "FeaturePageHouseholds.title": "Un budget partagé en couple, chacun son identifiant",
+  "FeaturePageHouseholds.description":
+    "Invitez votre conjoint ou votre famille dans un foyer. Chacun se connecte avec son identifiant et son rôle, et tous voient les mêmes comptes et budgets.",
+  "FeaturePageHouseholds.h1": "Partager un budget en couple, chacun avec son propre identifiant",
+  "FeaturePageHouseholds.answer":
+    "Oui. Un foyer, ce sont les personnes qui partagent leur argent. Invitez votre conjoint ou votre famille : chacun se connecte avec son propre identifiant et un rôle, de lecteur à propriétaire, et tout le monde voit les mêmes comptes, opérations et budgets.",
+  "FeaturePageHouseholds.summary": "Un foyer, chacun avec son propre identifiant et son rôle.",
+  "FeaturePageHouseholds.how1":
+    "Celui qui crée un foyer en est le propriétaire. Le propriétaire ou un administrateur invite des personnes par un lien et choisit le rôle de chacune. Un lecteur ne fait que consulter. Un éditeur ajoute et modifie aussi les comptes, les opérations et les budgets. Un administrateur gère aussi les membres, et le propriétaire peut transférer le foyer.",
+  "FeaturePageHouseholds.how2":
+    "Dans l’app, un foyer s’appelle un groupe. Un même identifiant peut appartenir à plusieurs foyers, par exemple un foyer partagé et un foyer à vous, et vous passez de l’un à l’autre. Le journal d’activité montre qui a changé quoi.",
+  "FeaturePageHouseholds.privateQuestion": "Puis-je cacher certains comptes à mon conjoint ?",
+  "FeaturePageHouseholds.privateAnswer":
+    "Non. Chaque membre d’un foyer voit tous ses comptes et toutes ses opérations. L’argent que vous voulez garder pour vous va dans un foyer à vous, vers lequel le même identifiant peut basculer.",
+  "FeaturePageHouseholds.viewerQuestion":
+    "Quelqu’un peut-il voir notre budget sans pouvoir le modifier ?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Oui. Donnez-lui le rôle de lecteur. Un lecteur voit les comptes, les opérations et les budgets, et le serveur refuse toute modification qu’il tente.",
+  "FeaturePageHouseholds.handOverQuestion": "Puis-je transférer le foyer à mon conjoint ?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Oui. Le propriétaire peut faire d’un autre membre le propriétaire. Toutes les données restent en place.",
+  "FeaturePageHouseholds.restoreQuestion": "Peut-on récupérer un foyer supprimé ?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Oui. Seul le propriétaire peut supprimer un foyer, et il peut le restaurer pendant 30 jours.",
+  "FeaturePageLiveSync.name": "Synchro en direct",
+  "FeaturePageLiveSync.title": "Votre budget synchronisé en direct sur tous vos appareils",
+  "FeaturePageLiveSync.description":
+    "Une opération de votre conjoint apparaît aussitôt sur votre téléphone. Financy s’ouvre aussi hors ligne et envoie vos changements dès le retour du réseau.",
+  "FeaturePageLiveSync.h1":
+    "Les changements s’affichent sur le téléphone de votre conjoint sans recharger",
+  "FeaturePageLiveSync.answer":
+    "Oui. Quand quelqu’un de votre foyer ajoute ou modifie quelque chose, tous les autres le voient aussitôt sur chaque appareil ouvert. Un téléphone resté hors ligne ou en veille se met à jour dès qu’il se reconnecte.",
+  "FeaturePageLiveSync.summary":
+    "Les changements apparaissent aussitôt sur chaque appareil, même après une période hors ligne.",
+  "FeaturePageLiveSync.how1":
+    "Chaque copie ouverte de Financy garde une connexion avec le serveur. Quand quelqu’un enregistre un changement, le serveur l’envoie aussitôt à tout le foyer. Un appareil qui a manqué des changements pendant son absence les demande à son retour.",
+  "FeaturePageLiveSync.how2":
+    "Installez Financy depuis votre navigateur sur un téléphone ou un ordinateur : il s’ouvre hors ligne et affiche ce qu’il a vu en dernier. Les opérations et les virements que vous ajoutez, modifiez ou supprimez hors ligne attendent sur l’appareil et partent à la reconnexion.",
+  "FeaturePageLiveSync.offlineEntriesQuestion":
+    "Puis-je ajouter une opération sans connexion internet ?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Oui. Les opérations et les virements que vous ajoutez, modifiez ou supprimez hors ligne sont gardés sur votre appareil et envoyés au serveur au retour de la connexion.",
+  "FeaturePageLiveSync.offlineSetupQuestion":
+    "Puis-je modifier mes comptes ou mes budgets hors ligne ?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "Non. Les comptes, les catégories et les budgets s’affichent hors ligne tels qu’ils ont été vus en dernier, mais il faut une connexion pour les modifier.",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "Un changement fait hors ligne peut-il écraser celui de mon conjoint ?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "Non. Si la même opération a changé sur le serveur entre-temps, le serveur refuse la vôtre, et votre appareil la garde pour que vous tranchiez. Rien n’est écrasé automatiquement.",
+  "FeaturePageLiveSync.storesQuestion": "Financy est-il sur l’App Store ou Google Play ?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Pas encore. Aujourd’hui, vous installez Financy depuis votre navigateur sur un téléphone ou un ordinateur, et il s’ouvre hors ligne.",
+  "FeaturePageSelfHosting.name": "Auto-hébergement",
+  "FeaturePageSelfHosting.title": "Auto-héberger une application de budget sur son serveur",
+  "FeaturePageSelfHosting.description":
+    "Faites tourner Financy pour votre foyer avec Docker Compose, sur un serveur loué ou à vous. Vos données restent chez vous, et vous ne payez que le serveur.",
+  "FeaturePageSelfHosting.h1": "Héberger une application de budget sur son propre serveur",
+  "FeaturePageSelfHosting.answer":
+    "Oui. Financy tourne avec Docker Compose sur un serveur Ubuntu, loué ou à vous. Sous licence AGPL‑3.0, vous ne payez que le serveur, et les données de votre foyer y restent.",
+  "FeaturePageSelfHosting.summary": "Les données de votre foyer sur votre propre serveur.",
+  "FeaturePageSelfHosting.how1":
+    "Il vous faut un serveur, un nom de domaine et un compte de messagerie pour envoyer les codes d’inscription. Depuis votre ordinateur, une seule commande copie Financy sur le serveur, l’y compile et le démarre. Son certificat HTTPS est émis et renouvelé automatiquement.",
+  "FeaturePageSelfHosting.how2":
+    "Laissez la facturation désactivée, et chaque foyer de votre serveur a toutes les fonctionnalités, sans limite. Activez la sauvegarde quotidienne chiffrée, et le guide de mise à jour vous accompagne à chaque nouvelle version.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion":
+    "Manque-t-il des fonctionnalités à Financy en auto-hébergement ?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "Non. C’est le même code. Avec la facturation désactivée, chaque foyer de votre serveur a toutes les fonctionnalités, sans limite de membres.",
+  "FeaturePageSelfHosting.mailQuestion":
+    "Faut-il un compte de messagerie pour auto-héberger Financy ?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Oui. Financy envoie un code par e-mail à chaque personne qui crée un compte, donc le serveur a besoin d’un compte SMTP chez un fournisseur de messagerie. Sans lui, personne ne peut créer de compte.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "Puis-je déplacer mon foyer de financy.dev vers mon propre serveur ?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Oui. Le propriétaire du foyer l’exporte dans un fichier, et vous importez ce fichier sur votre serveur comme nouveau foyer.",
+  "FeaturePageSelfHosting.backupQuestion": "Financy peut-il sauvegarder mon serveur ?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Oui. Activez la sauvegarde quotidienne : toutes les 24 heures, elle enregistre les données et les fichiers de votre foyer, chiffrés, sur un stockage hors du serveur. Le guide de sauvegarde vous accompagne aussi dans un test de restauration.",
+  "FeaturePageSelfHosting.installerQuestion": "Existe-t-il un installateur en un clic ?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Pas encore. Vous installez Financy depuis votre ordinateur avec Deno, rsync et git, et une seule commande le déploie. Le guide d’auto-hébergement détaille chaque étape.",
   "FeaturePageMissing.title": "Cette page de fonctionnalité est introuvable",
   "FeaturePageMissing.description":
     "Elle a peut-être changé d’adresse. Toutes les fonctionnalités sont sur la page des fonctionnalités.",
@@ -532,6 +663,20 @@ export default {
   "FeatureRecurring.fact3":
     "Ajouter une opération récurrente demande le forfait Household ; les lire, jamais, et le serveur le vérifie",
   "FeatureRecurring.code": "Lire le code source des opérations récurrentes",
+  "FeatureMultiCurrency.nav": "Devises",
+  "FeatureMultiCurrency.title": "Plusieurs devises, un seul total",
+  "FeatureMultiCurrency.lead":
+    "Choisissez la devise principale de votre foyer, et chaque total y est converti au taux du jour où l’argent a bougé. Une opération dans une autre devise garde son propre montant à côté du montant converti.",
+  "FeatureMultiCurrency.fact1":
+    "Les taux de référence quotidiens de la Banque centrale européenne, via Frankfurter, sans clé à fournir",
+  "FeatureMultiCurrency.fact2":
+    "Un montant converti est enregistré une seule fois, au taux de sa propre date, et jamais réécrit",
+  "FeatureMultiCurrency.fact3":
+    "Une devise sans taux est exclue d’un total et nommée, jamais comptée pour 0",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Les montants de budget convertis depuis une autre devise n’indiquent pas encore «environ » ni la date du taux",
+  "FeatureMultiCurrency.notYetOffline": "Des taux de change consultables hors ligne",
+  "FeatureMultiCurrency.code": "Lire le domaine de la monnaie",
   "FeatureTransactions.nav": "Opérations",
   "FeatureTransactions.title": "Chaque dépense et chaque revenu, dans la devise payée",
   "FeatureTransactions.lead":

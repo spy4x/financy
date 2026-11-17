@@ -217,6 +217,8 @@ export default {
   "FeatureTeams.fact1": "家庭是检查所有数据的唯一边界",
   "FeatureTeams.fact2": "每个人只能看到自己所属的家庭",
   "FeatureTeams.fact3": "邀请、角色变更和所有权转让，各有自己的测试",
+  "FeatureTeams.notYetClosedSignUp": "服务器关闭注册时，通过邀请加入",
+  "FeatureTeams.notYetGroupWord": "应用里仍把家庭称作“群组”",
   "FeatureTeams.code": "阅读群组领域代码",
   "FeatureExport.nav": "导出",
   "FeatureExport.title": "你的数据，随你带走",
@@ -233,6 +235,17 @@ export default {
   "FeatureLanguages.fact2": "数字和日期使用浏览器自带的 Intl",
   "FeatureLanguages.fact3": "阿拉伯语页面从右向左阅读",
   "FeatureLanguages.code": "阅读翻译指南",
+  "FeatureLiveSync.nav": "实时同步",
+  "FeatureLiveSync.title": "每台设备实时同步，离线也能用",
+  "FeatureLiveSync.lead":
+    "家庭中有人改了内容，其他人会立刻看到，无需刷新。把 Financy 安装到手机或电脑上，没有网络也能打开，恢复联网后会发送你离线时添加的交易。",
+  "FeatureLiveSync.fact1": "标准 WebSocket，每次变更都带序号",
+  "FeatureLiveSync.fact2": "设备重新连接后会拉取错过的变更",
+  "FeatureLiveSync.fact3": "IndexedDB 中的本地副本，以及带幂等键的离线变更队列",
+  "FeatureLiveSync.notYetSetup": "离线修改账户、分类和预算",
+  "FeatureLiveSync.notYetRates": "离线查看汇率",
+  "FeatureLiveSync.notYetStores": "Google Play 和 App Store 中的应用",
+  "FeatureLiveSync.code": "阅读实时同步设计",
   "FeatureDeploy.nav": "自托管",
   "FeatureDeploy.title": "运行在你自己的服务器上",
   "FeatureDeploy.lead":
@@ -241,6 +254,7 @@ export default {
   "FeatureDeploy.fact2": "Postgres 和 Valkey 与应用一起运行",
   "FeatureDeploy.fact3": "用 VictoriaMetrics、VictoriaLogs 和 Grafana 提供指标、日志和告警",
   "FeatureDeploy.fact4": "可选的每日加密数据库备份，附有书面恢复步骤",
+  "FeatureDeploy.notYetRehearsed": "在全新服务器上实测的安装耗时",
   "FeatureDeploy.code": "阅读 Compose 文件",
   "FeaturesFaq.serverlessQuestion": "能在虚拟主机或无服务器平台上运行 Financy 吗？",
   "FeaturesFaq.serverlessAnswer":
@@ -363,6 +377,105 @@ export default {
   "FeaturePage.otherFeatures": "其他功能",
   "FeaturePage.readMore": "进一步了解{name}",
   "FeaturePage.all": "所有功能",
+  "FeaturePage.demo": "在演示版中试用，无需账号",
+  "FeaturePageMultiCurrency.name": "多币种",
+  "FeaturePageMultiCurrency.title": "多币种记账：所有货币汇总成一个总额",
+  "FeaturePageMultiCurrency.description":
+    "每个账户使用自己的币种，所有合计都按资金变动当天的汇率换算成家庭的主货币。",
+  "FeaturePageMultiCurrency.h1": "多种货币的余额，合成一个总额查看",
+  "FeaturePageMultiCurrency.answer":
+    "是的。每个账户保留自己的币种，Financy 按每天的汇率把它们换算成家庭的主货币再相加。用其他货币支付的交易，会在换算金额旁保留原始金额。",
+  "FeaturePageMultiCurrency.summary": "每个账户用自己的币种，所有合计用你的主货币。",
+  "FeaturePageMultiCurrency.how1":
+    "你的家庭选定一种主货币。Financy 每天获取欧洲央行的汇率。当你添加一笔与账户币种不同的交易时，Financy 按这笔交易当天的汇率换算，并保存两个金额。如果你自己填写两个金额，则保留你自己的汇率。",
+  "FeaturePageMultiCurrency.how2":
+    "概览页以主货币显示你的收入、支出和家庭总额。某种货币没有汇率时，合计会把它排除在外并加以说明，而不是按 0 计算。",
+  "FeaturePageMultiCurrency.historyQuestion": "汇率更新后，以前的交易会跟着变吗？",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "不会。用其他货币记的交易，只按交易当天的汇率换算并保存一次。之后出现的汇率不会改写它。",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion": "家庭的主货币以后还能更改吗？",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "可以。家庭的管理员或所有者随时都能更改。任何金额都不会变：每笔金额仍保留自己的币种，只有合计会重新换算。",
+  "FeaturePageMultiCurrency.ownRateQuestion": "能按银行实际收取的汇率记账吗？",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "可以。填写两个金额，即你支付的金额和从账户扣除的金额，Financy 就会保留你自己的汇率，而不用当天的汇率。",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion": "Financy 每种货币都有每日汇率吗？",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "不是。欧洲央行免费提供的每日汇率覆盖约 30 种货币。其他货币，比如越南盾，需要服务器所有者开启付费汇率源；没有的话，合计会排除这些金额并加以说明。",
+  "FeaturePageHouseholds.name": "家庭",
+  "FeaturePageHouseholds.title": "情侣共享预算：一起记账，每人独立账号",
+  "FeaturePageHouseholds.description":
+    "邀请伴侣或家人加入同一个家庭。每个人用自己的账号和角色登录，大家看到相同的账户和预算。",
+  "FeaturePageHouseholds.h1": "和伴侣共享预算，各用各的账号",
+  "FeaturePageHouseholds.answer":
+    "是的。家庭就是共同管钱的人。邀请伴侣或家人加入，每个人用自己的账号登录，拥有从查看者到所有者的某个角色，而大家看到的是同样的账户、交易和预算。",
+  "FeaturePageHouseholds.summary": "一个家庭，每人有自己的账号和角色。",
+  "FeaturePageHouseholds.how1":
+    "谁创建家庭，谁就是所有者。所有者或管理员通过链接邀请成员，并为每个人选择角色。查看者只能查看。编辑者还可以添加和修改账户、交易和预算。管理员还能管理成员，所有者可以转让家庭。",
+  "FeaturePageHouseholds.how2":
+    "应用中把家庭称为群组。一个账号可以属于多个家庭，比如一个共享的家庭和一个只属于你自己的家庭，并可在它们之间切换。活动日志记录谁改了什么。",
+  "FeaturePageHouseholds.privateQuestion": "能对伴侣隐藏某些账户吗？",
+  "FeaturePageHouseholds.privateAnswer":
+    "不能。家庭里的每个人都能看到它的全部账户和交易。想自己单独管理的钱，可以放到只属于你的家庭里，用同一个账号就能切换过去。",
+  "FeaturePageHouseholds.viewerQuestion": "能让别人只看我们的预算、不能修改吗？",
+  "FeaturePageHouseholds.viewerAnswer":
+    "可以。给对方分配查看者角色。查看者能看到账户、交易和预算，服务器会拒绝他们尝试的任何修改。",
+  "FeaturePageHouseholds.handOverQuestion": "能把家庭转让给伴侣吗？",
+  "FeaturePageHouseholds.handOverAnswer":
+    "可以。所有者可以把另一位成员设为所有者。所有记录都保持原样。",
+  "FeaturePageHouseholds.restoreQuestion": "删除的家庭还能恢复吗？",
+  "FeaturePageHouseholds.restoreAnswer": "可以。只有所有者能删除家庭，并且可以在 30 天内恢复。",
+  "FeaturePageLiveSync.name": "实时同步",
+  "FeaturePageLiveSync.title": "预算在每台设备上实时同步",
+  "FeaturePageLiveSync.description":
+    "伴侣添加一笔交易，你的手机上立刻就能看到。Financy 没有网络也能打开，恢复联网后会发送你的修改。",
+  "FeaturePageLiveSync.h1": "修改实时出现在伴侣的手机上，无需刷新",
+  "FeaturePageLiveSync.answer":
+    "是的。家庭中有人添加或修改内容时，其他人在每台打开的设备上都会立刻看到。离线或休眠的手机一重新联网，就会同步到最新。",
+  "FeaturePageLiveSync.summary": "修改立刻出现在每台设备上，离线一段时间后也一样。",
+  "FeaturePageLiveSync.how1":
+    "每个打开的 Financy 都与服务器保持连接。有人保存修改时，服务器会立即发送给家庭中的每个人。离开期间错过修改的设备，回来后会主动请求这些修改。",
+  "FeaturePageLiveSync.how2":
+    "在手机或电脑上通过浏览器安装 Financy，没有网络也能打开，显示上次看到的内容。离线时添加、修改或删除的交易和转账会先留在设备上，重新联网后再发送。",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "没有网络也能记账吗？",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "可以。离线时添加、修改或删除的交易和转账会保存在你的设备上，连接恢复后发送到服务器。",
+  "FeaturePageLiveSync.offlineSetupQuestion": "离线时能修改账户或预算吗？",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "不能。离线时账户、分类和预算按上次看到的样子显示，但修改它们需要联网。",
+  "FeaturePageLiveSync.overwriteQuestion": "离线时的修改会覆盖伴侣的修改吗？",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "不会。如果同一笔交易在此期间已在服务器上被修改，服务器会拒绝你的修改，你的设备会保留它，等你来处理。任何内容都不会被自动覆盖。",
+  "FeaturePageLiveSync.storesQuestion": "App Store 或 Google Play 上有 Financy 吗？",
+  "FeaturePageLiveSync.storesAnswer":
+    "还没有。目前你可以在手机或电脑上通过浏览器安装 Financy，没有网络也能打开。",
+  "FeaturePageSelfHosting.name": "自托管",
+  "FeaturePageSelfHosting.title": "在自己的服务器上部署记账应用",
+  "FeaturePageSelfHosting.description":
+    "用 Docker Compose 在你租用或自有的服务器上为家庭运行 Financy。记录留在你的服务器上，你只需为服务器付费。",
+  "FeaturePageSelfHosting.h1": "在自己的服务器上运行记账应用",
+  "FeaturePageSelfHosting.answer":
+    "是的。Financy 通过 Docker Compose 运行在你租用或自有的 Ubuntu 服务器上。依据 AGPL‑3.0 许可证，你只需为服务器付费，家庭的记录都保存在上面。",
+  "FeaturePageSelfHosting.summary": "家庭的记录，保存在你自己的服务器上。",
+  "FeaturePageSelfHosting.how1":
+    "你需要一台服务器、一个域名，以及一个用于发送注册验证码的邮箱账号。在你自己的电脑上，一条命令就能把 Financy 复制到服务器、在那里构建并启动。HTTPS 证书会自动签发和续期。",
+  "FeaturePageSelfHosting.how2":
+    "不开启计费，服务器上的每个家庭都能无限制地使用全部功能。你可以开启每日加密备份，升级指南会带你升级到每个新版本。",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "自托管版 Financy 会少功能吗？",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "不会。代码完全相同。不开启计费时，服务器上的每个家庭都能使用全部功能，成员数量也没有限制。",
+  "FeaturePageSelfHosting.mailQuestion": "自托管 Financy 需要邮箱账号吗？",
+  "FeaturePageSelfHosting.mailAnswer":
+    "需要。Financy 会给每个注册的人发送验证码邮件，所以服务器需要一个邮件服务商的 SMTP 账号。没有的话，谁都无法注册。",
+  "FeaturePageSelfHosting.moveQuestion": "能把家庭从 financy.dev 迁移到自己的服务器吗？",
+  "FeaturePageSelfHosting.moveAnswer":
+    "可以。家庭的所有者把它导出为文件，你再在自己的服务器上把这个文件作为新家庭导入。",
+  "FeaturePageSelfHosting.backupQuestion": "Financy 能备份我的服务器吗？",
+  "FeaturePageSelfHosting.backupAnswer":
+    "可以。开启每日备份后，它每 24 小时把家庭的记录和文件加密保存到服务器之外的存储中。备份指南还会带你完成一次恢复演练。",
+  "FeaturePageSelfHosting.installerQuestion": "有一键安装程序吗？",
+  "FeaturePageSelfHosting.installerAnswer":
+    "还没有。你需要在自己的电脑上用 Deno、rsync 和 git 设置 Financy，然后用一条命令完成部署。自托管指南会带你走完每一步。",
   "FeaturePageMissing.title": "这个功能页面不存在",
   "FeaturePageMissing.description": "这个页面可能已经搬家了。所有功能都在功能页上。",
   "FeaturePageMissing.action": "查看所有功能",
@@ -462,6 +575,16 @@ export default {
   "FeatureRecurring.fact2": "账户或分类归档后，规则会暂停并说明原因；问题解决后会补记错过的日期",
   "FeatureRecurring.fact3": "添加定期交易需要 Household 套餐；查看从不需要，由服务器检查",
   "FeatureRecurring.code": "阅读定期交易代码",
+  "FeatureMultiCurrency.nav": "多币种",
+  "FeatureMultiCurrency.title": "多种货币，一个总额",
+  "FeatureMultiCurrency.lead":
+    "选定家庭的主货币后，每个合计都会按资金变动当天的汇率换算成主货币。用其他货币记的交易，会在换算金额旁保留原始金额。",
+  "FeatureMultiCurrency.fact1": "每日参考汇率来自欧洲央行，通过 Frankfurter 获取，无需密钥",
+  "FeatureMultiCurrency.fact2": "换算金额按其自身日期的汇率只保存一次，从不改写",
+  "FeatureMultiCurrency.fact3": "没有汇率的货币会被排除在合计之外并列出，绝不按 0 计算",
+  "FeatureMultiCurrency.notYetBudgets": "从其他货币换算的预算数字，还不会标注“约”或汇率日期",
+  "FeatureMultiCurrency.notYetOffline": "离线查看汇率",
+  "FeatureMultiCurrency.code": "阅读货币代码",
   "FeatureTransactions.nav": "交易",
   "FeatureTransactions.title": "每一笔支出和收入，都按你付款的币种记录",
   "FeatureTransactions.lead":
