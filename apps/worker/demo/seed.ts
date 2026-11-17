@@ -17,6 +17,7 @@ import { attachmentObjectKey } from "@domain/notes"
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { NOTES_ON, type NotesSetup } from "@server/notes/setup.ts"
 import { ImportStatus } from "@domain/imports"
+import { parseRecurrence } from "@domain/recurring"
 import { sampleFile } from "./sample-files.ts"
 import { createSignIn } from "../../api/services/sign-in.ts"
 import {
@@ -288,7 +289,7 @@ async function seedImport(
 }
 
 /**
- * Groups, their members, tags, accounts, categories, entries, transfers, budgets, notes, promotions and
+ * Groups, their members, tags, accounts, categories, entries, transfers, budgets, repeating entries, notes, promotions and
  * pending invitations, each at its time; with `notes` off, no tags, notes, attachments or notes import, and an imported
  * group's import counts no tags or notes. `idOf` answers `null` for someone without an account: such a member is left out, a row
  * they wrote goes to a stand-in ({@link withStandIns}), and a group with such an owner is skipped.
@@ -508,6 +509,41 @@ async function seedGroups(
         { groupId, categoryId, month, amount, currency, expectedVersion: null },
         writer(budget.author),
       )
+    }
+    // Each repeat is made through the seed day, so the hourly job writes no past entries after a
+    // reseed and makes the next one on its next date.
+    const today = isoDateInTz(at(0), group.timeZone)
+    for (const rule of content.recurring) {
+      const id = uuidV7()
+      const when = at(rule.startAgo)
+      const startDate = isoDateInTz(when, group.timeZone)
+      const { kind, amount, memo } = rule
+      // The demo seeds its households directly: no plan applies to what it writes.
+      await db.recurringRule.create(
+        {
+          id,
+          groupId,
+          accountId: accountIds[rule.account],
+          categoryId: categoryIds.get(rule.category)!,
+          kind,
+          amount,
+          currency: content.accounts[rule.account].currency,
+          accountAmount: null,
+          memo,
+          rrule: parseRecurrence(`FREQ=MONTHLY;BYMONTHDAY=${rule.day}`, startDate),
+          startDate,
+          endDate: null,
+          count: null,
+          allowance: null,
+        },
+        writer(rule.author),
+      )
+      await sql`
+        UPDATE recurring_rules
+        SET made_through = ${today}::date, created_at = ${when}, updated_at = ${when}
+        WHERE id = ${id}
+      `
+      await dateAudit(sql, id, when)
     }
     const fromFile: string[] = []
     for (const note of notes.on ? content.notes : []) {

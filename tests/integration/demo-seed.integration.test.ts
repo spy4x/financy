@@ -12,6 +12,7 @@ import { WELCOME_NOTE_TITLE } from "@server/jobs/starter-data.ts"
 import { postgresFakePayments } from "@server/billing/fake-payments.ts"
 import { readOnboarding } from "@server/auth/onboarding.ts"
 import { createOutboxProcessor } from "@server/jobs/wiring.ts"
+import { makeRecurringEntries } from "@server/jobs/recurring-entries.ts"
 import { createPostgresAuthStore } from "@spy4x/server/auth/postgres"
 import { createListCrypto, DEV_SUBSCRIBERS_SECRET } from "@server/subscribers/subscribers.ts"
 import { createPostgresSubscriberStore } from "@spy4x/server/subscribers/postgres"
@@ -616,6 +617,82 @@ Deno.test("a visitor who signs up to the demo gets sample groups once and opens 
       SELECT COUNT(*)::int AS files FROM note_attachments
     `
     expect(after).toBe(attached.length)
+  })
+})
+
+Deno.test("the demo's and a visitor's households repeat rent and a subscription made through the seed day, so the job right after makes no entry", async () => {
+  await withSchema(async (sql) => {
+    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+    const userId = await signUpVisitor(sql, "visitor@example.net")
+    await drainJobs(sql)
+    const population = fakeDemoData(OPTIONS.dataSeed, NOW).groups
+    const sample = fakeWorkspace(OPTIONS.dataSeed)
+    const rules = await sql<
+      {
+        group: string
+        visitor: boolean
+        timeZone: string
+        account: string
+        category: string
+        kind: number
+        amount: string
+        currency: string
+        memo: string
+        rrule: string
+        startDate: string
+        madeThrough: string
+      }[]
+    >`
+      SELECT g.name AS group, g.time_zone,
+        EXISTS (
+          SELECT 1 FROM group_members m WHERE m.group_id = g.id AND m.user_id = ${userId}
+        ) AS visitor,
+        a.name AS account, c.name AS category, r.kind, r.amount, r.currency, r.memo, r.rrule,
+        to_char(r.start_date, 'YYYY-MM-DD') AS start_date,
+        to_char(r.made_through, 'YYYY-MM-DD') AS made_through
+      FROM recurring_rules r
+      JOIN groups g ON g.id = r.group_id
+      JOIN accounts a ON a.id = r.account_id
+      JOIN categories c ON c.id = r.category_id
+      ORDER BY g.created_at, g.id, r.id
+    `
+    expect(rules).toHaveLength(2 * (population.length + sample.length))
+    for (const [visitor, groups] of [[false, population], [true, sample]] as const) {
+      for (const group of groups) {
+        const rows = rules.filter((rule) => rule.group === group.name && rule.visitor === visitor)
+        expect(rows.map((row) => ({
+          account: row.account,
+          category: row.category,
+          kind: row.kind,
+          amount: Number(row.amount),
+          currency: row.currency,
+          memo: row.memo,
+          rrule: row.rrule,
+        }))).toEqual(group.recurring.map((rule) => ({
+          account: group.accounts[rule.account].name,
+          category: rule.category,
+          kind: rule.kind,
+          amount: rule.amount,
+          currency: group.accounts[rule.account].currency,
+          memo: rule.memo,
+          rrule: `FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=${rule.day}`,
+        })))
+        for (const row of rows) {
+          // Made through the household's today: the job's next date is after it.
+          expect(row.madeThrough).toBe(isoDateInTz(NOW, row.timeZone))
+          expect(row.startDate <= row.madeThrough).toBe(true)
+        }
+      }
+    }
+    const report = await makeRecurringEntries({
+      sql,
+      billing: { billingEnabled: false, graceDays: 0 },
+      log: () => {},
+      now: () => NOW,
+    })
+    expect(report).toEqual({ made: 0, paused: 0, blocked: 0, failed: 0, unexpected: 0 })
+    expect(await sql`SELECT 1 FROM transactions WHERE recurring_rule_id IS NOT NULL`)
+      .toHaveLength(0)
   })
 })
 
