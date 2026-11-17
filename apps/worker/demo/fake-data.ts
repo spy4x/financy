@@ -207,6 +207,26 @@ export interface FakeBudget {
   author: FakeMember
 }
 
+/**
+ * A monthly repeating entry of a demo household ({@link withRecurring}), in its account's own
+ * currency. The seed makes it through the seed day, so the hourly job writes no past entries.
+ */
+export interface FakeRecurringRule {
+  /** The account, by its index in the group's `accounts`. */
+  account: number
+  /** The expense category, by its name. */
+  category: string
+  kind: TransactionKind
+  /** Above zero, in the account currency's smallest unit. */
+  amount: number
+  memo: string
+  /** The day of the month it repeats on, 1 to 28, so every month has it. */
+  day: number
+  /** When it starts: its start date is that moment's day in the group's time zone. */
+  startAgo: number
+  author: FakeMember
+}
+
 export interface FakeGroup {
   name: string
   /**
@@ -228,6 +248,8 @@ export interface FakeGroup {
   transfers: FakeTransfer[]
   /** The household's monthly limits, each starting in the current month ({@link withBudgets}). */
   budgets: FakeBudget[]
+  /** The household's repeating entries ({@link withRecurring}). */
+  recurring: FakeRecurringRule[]
   notes: FakeNote[]
   /** Pending invitations: tied to an address, or `null` for a link anyone may use. */
   invitations: { email: string | null; role: GroupRole; author: FakeMember; createdAgo: number }[]
@@ -683,6 +705,7 @@ function fakeGroup(
     entries: [],
     transfers: [],
     budgets: [],
+    recurring: [],
     notes,
     invitations,
     promotions,
@@ -745,6 +768,7 @@ export function withStandIns(
       author: as(transfer.author, writer),
     })),
     budgets: group.budgets.map((budget) => ({ ...budget, author: as(budget.author, writer) })),
+    recurring: group.recurring.map((rule) => ({ ...rule, author: as(rule.author, writer) })),
     notes: group.notes.map((note) => ({
       ...note,
       author: as(note.author, writer),
@@ -946,8 +970,12 @@ export function fakeDemoData(seed: number, now: Date): FakeDemoData {
   const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
   const transferTools = randomTools(seed + TRANSFER_SEED_OFFSET)
   const budgetTools = randomTools(seed + BUDGET_SEED_OFFSET)
+  const recurringTools = randomTools(seed + RECURRING_SEED_OFFSET)
   const all = [...groups, ...small].map((group) =>
-    withBudgets(budgetTools, withTransfers(transferTools, withEntries(entryTools, group)), now)
+    withRecurring(
+      recurringTools,
+      withBudgets(budgetTools, withTransfers(transferTools, withEntries(entryTools, group)), now),
+    )
   )
   return { users, groups: all, subscriptions, ...newsletter, operator }
 }
@@ -1018,6 +1046,7 @@ export function fakeWorkspace(seed: number, now: Date = new Date()): FakeGroup[]
   const entryTools = randomTools(seed + ENTRY_SEED_OFFSET)
   const transferTools = randomTools(seed + TRANSFER_SEED_OFFSET)
   const budgetTools = randomTools(seed + BUDGET_SEED_OFFSET)
+  const recurringTools = randomTools(seed + RECURRING_SEED_OFFSET)
   return YOUR_ROLES.map(([index, role]) =>
     withSampleFiles(fakeGroup(
       tools,
@@ -1029,7 +1058,10 @@ export function fakeWorkspace(seed: number, now: Date = new Date()): FakeGroup[]
       taken,
     ))
   ).map((group) =>
-    withBudgets(budgetTools, withTransfers(transferTools, withEntries(entryTools, group)), now)
+    withRecurring(
+      recurringTools,
+      withBudgets(budgetTools, withTransfers(transferTools, withEntries(entryTools, group)), now),
+    )
   )
 }
 
@@ -1342,6 +1374,71 @@ function withBudgets(tools: Tools, group: FakeGroup, now: Date): FakeGroup {
     { category: `Food`, amount: FOOD_LIMIT, currency: `EUR`, author },
   ]
   return { ...group, entries: entries.sort((a, b) => b.ago - a.ago), budgets }
+}
+
+/** Repeating entries draw from a stream of their own, so adding them moved no other fake row. */
+const RECURRING_SEED_OFFSET = 666
+
+/** The rent {@link withRecurring} repeats: {@link ENTRY_PLANS}' rent, on one of the first days. */
+export const DEMO_RENT = {
+  ...ENTRY_PLANS.find((plan) => plan.memos.includes(`Rent`))!,
+  memo: `Rent`,
+  days: [1, 5],
+} as const
+
+/** The subscription {@link withRecurring} repeats on the dollar card, at x.99 dollars. */
+export const DEMO_SUBSCRIPTION = {
+  account: 1,
+  category: `Eating out`,
+  kind: TransactionKind.EXPENSE,
+  memo: `Coffee subscription`,
+  amount: [10_99, 15_99],
+  days: [1, 28],
+} as const
+
+/**
+ * `group` with two monthly repeating entries, {@link DEMO_RENT} on the euro account and
+ * {@link DEMO_SUBSCRIPTION} on the dollar card, each by its account's author. Each starts
+ * {@link ENTRY_MONTHS} months back, or on its account's creation day when the account is younger.
+ * The rent repeats the household's latest rent entry, or a drawn amount when it has none. Every
+ * draw happens either way, so no group's age moves another group's rules.
+ */
+function withRecurring(tools: Tools, group: FakeGroup): FakeGroup {
+  const rentSteps = tools.int(
+    DEMO_RENT.amount[0] / DEMO_RENT.step,
+    DEMO_RENT.amount[1] / DEMO_RENT.step,
+  )
+  const rentDay = tools.int(...DEMO_RENT.days)
+  const [low, high] = DEMO_SUBSCRIPTION.amount
+  const fee = low + tools.int(0, (high - low) / 100) * 100
+  const feeDay = tools.int(...DEMO_SUBSCRIPTION.days)
+  const latestRent = group.entries.findLast((entry) =>
+    entry.category === DEMO_RENT.category && entry.memo === DEMO_RENT.memo
+  )
+  const rule = (
+    plan: typeof DEMO_RENT | typeof DEMO_SUBSCRIPTION,
+    amount: number,
+    day: number,
+  ): FakeRecurringRule => {
+    const account = group.accounts[plan.account]
+    const { category, kind, memo } = plan
+    const startAgo = Math.min(account.createdAgo, ENTRY_MONTHS * ENTRY_MONTH)
+    return {
+      account: plan.account,
+      category,
+      kind,
+      amount,
+      memo,
+      day,
+      startAgo,
+      author: account.author,
+    }
+  }
+  const recurring = [
+    rule(DEMO_RENT, latestRent?.amount ?? rentSteps * DEMO_RENT.step, rentDay),
+    rule(DEMO_SUBSCRIPTION, fee, feeDay),
+  ]
+  return { ...group, recurring }
 }
 
 /** How many working days of exchange rates the demo holds. */

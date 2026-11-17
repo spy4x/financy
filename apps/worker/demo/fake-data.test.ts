@@ -2,6 +2,7 @@
 import { expect } from "@std/expect"
 import { deviceName } from "@spy4x/net/user-agent"
 import { AccountKind } from "@domain/accounts"
+import { CategoryKind } from "@domain/categories"
 import { BillingStatus } from "@domain/billing"
 import { GroupRole } from "@domain/groups"
 import { type EntryRateLookup, summarizeLedger, TransactionKind } from "@domain/transactions"
@@ -411,6 +412,7 @@ Deno.test("a visitor's sample groups on another day's population are written onl
         ...content.entries.map((entry) => entry.author),
         ...content.transfers.map((transfer) => transfer.author),
         ...content.budgets.map((budget) => budget.author),
+        ...content.recurring.map((rule) => rule.author),
         ...content.tags.map((tag) => tag.author),
         ...content.notes.flatMap((note) => [note.author, ...(note.edit ? [note.edit.by] : [])]),
       ]
@@ -779,6 +781,80 @@ Deno.test("a household with no rent this month gets an electricity bill dated th
   expect(kept).toBeGreaterThan(10)
   expect(firstNight1st).toBeGreaterThan(10)
   expect(firstNightBills).toBeGreaterThan(firstNight1st * 0.9)
+})
+
+Deno.test("every demo household repeats its euro rent and a dollar subscription monthly, in live expense categories, by a writer", () => {
+  const categories = new Map(
+    DEMO_CATEGORIES.flatMap((category) => [category, ...(category.children ?? [])])
+      .map((category) => [category.name, category]),
+  )
+  const groups = everyGroup()
+  expect(groups.length).toBeGreaterThan(20)
+  for (const group of groups) {
+    const [rent, subscription] = group.recurring
+    expect(group.recurring).toHaveLength(2)
+    expect(group.accounts[rent.account].currency).toBe(`EUR`)
+    expect([rent.account, rent.category, rent.memo]).toEqual([0, `Housing`, `Rent`])
+    expect(rent.amount % 100).toBe(0)
+    expect(rent.amount).toBeGreaterThanOrEqual(1_150_00)
+    expect(rent.amount).toBeLessThanOrEqual(1_350_00)
+    expect(group.accounts[subscription.account].currency).toBe(`USD`)
+    expect(subscription.account).toBe(1)
+    expect(subscription.amount % 100).toBe(99)
+    expect(subscription.amount).toBeGreaterThanOrEqual(10_99)
+    expect(subscription.amount).toBeLessThanOrEqual(15_99)
+    for (const rule of group.recurring) {
+      expect(rule.kind).toBe(TransactionKind.EXPENSE)
+      const category = categories.get(rule.category)!
+      expect(category.kind).toBe(CategoryKind.EXPENSE)
+      expect(category.archived ?? false).toBe(false)
+      expect(rule.day).toBeGreaterThanOrEqual(1)
+      expect(rule.day).toBeLessThanOrEqual(28)
+      expect(rule.author).not.toBe(`you`)
+      expect(rule.author).toBe(group.accounts[rule.account].author)
+    }
+  }
+})
+
+Deno.test("a repeating entry starts three months back, or on its account's creation day when the account is younger", () => {
+  let young = 0
+  let old = 0
+  for (const group of everyGroup()) {
+    for (const rule of group.recurring) {
+      const created = group.accounts[rule.account].createdAgo
+      expect(rule.startAgo).toBeGreaterThanOrEqual(0)
+      expect(rule.startAgo).toBeLessThanOrEqual(created)
+      if (created < ENTRY_MONTHS * ENTRY_MONTH) {
+        young++
+        expect(rule.startAgo).toBe(created)
+      } else {
+        old++
+        expect(rule.startAgo).toBe(ENTRY_MONTHS * ENTRY_MONTH)
+      }
+    }
+  }
+  expect(young).toBeGreaterThan(10)
+  expect(old).toBeGreaterThan(10)
+})
+
+Deno.test("a household's repeating rent is its latest rent entry, or a drawn one when it paid none", () => {
+  let paid = 0
+  let unpaid = 0
+  for (const group of everyGroup()) {
+    const rents = group.entries.filter((entry) => entry.memo === `Rent`)
+    if (rents.length > 0) {
+      paid++
+      expect(group.recurring[0].amount).toBe(rents[rents.length - 1].amount)
+    } else unpaid++
+  }
+  expect(paid).toBeGreaterThan(10)
+  expect(unpaid).toBeGreaterThan(0)
+})
+
+Deno.test("the same seed gives the same repeating entries, and another seed others", () => {
+  const rulesOf = (seed: number) => everyGroup([seed]).map((group) => group.recurring)
+  expect(rulesOf(7)).toEqual(rulesOf(7))
+  expect(rulesOf(7)).not.toEqual(rulesOf(8))
 })
 
 Deno.test("the demo's exchange rates are labelled as the demo's, never as the ECB's", () => {
