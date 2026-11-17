@@ -250,7 +250,7 @@ export default {
     "Invitations, changements de rôle et transfert de propriété, chacun avec ses tests",
   "FeatureTeams.notYetClosedSignUp":
     "Rejoindre un foyer sur invitation quand les inscriptions du serveur sont fermées",
-  "FeatureTeams.notYetGroupWord": "L’app dit encore «groupe » là où elle parle du foyer",
+  "FeatureTeams.notYetGroupWord": "L’app dit encore « groupe » là où elle parle du foyer",
   "FeatureTeams.code": "Lire le domaine des groupes",
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Vos données partent avec vous",
@@ -517,7 +517,7 @@ export default {
   "FeaturePageSelfHosting.name": "Auto-hébergement",
   "FeaturePageSelfHosting.title": "Auto-héberger une application de budget sur son serveur",
   "FeaturePageSelfHosting.description":
-    "Faites tourner Financy pour votre foyer avec Docker Compose, sur un serveur loué ou à vous. Vos données restent chez vous, et vous ne payez que le serveur.",
+    "Installez Financy pour votre foyer avec Docker Compose, sur un serveur loué ou à vous. Vos données restent chez vous, et vous ne payez que le serveur.",
   "FeaturePageSelfHosting.h1": "Héberger une application de budget sur son propre serveur",
   "FeaturePageSelfHosting.answer":
     "Oui. Financy tourne avec Docker Compose sur un serveur Ubuntu, loué ou à vous. Sous licence AGPL‑3.0, vous ne payez que le serveur, et les données de votre foyer y restent.",
@@ -674,7 +674,7 @@ export default {
   "FeatureMultiCurrency.fact3":
     "Une devise sans taux est exclue d’un total et nommée, jamais comptée pour 0",
   "FeatureMultiCurrency.notYetBudgets":
-    "Les montants de budget convertis depuis une autre devise n’indiquent pas encore «environ » ni la date du taux",
+    "Les montants de budget convertis depuis une autre devise n’indiquent pas encore « environ » ni la date du taux",
   "FeatureMultiCurrency.notYetOffline": "Des taux de change consultables hors ligne",
   "FeatureMultiCurrency.code": "Lire le domaine de la monnaie",
   "FeatureTransactions.nav": "Opérations",

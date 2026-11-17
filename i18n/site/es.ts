@@ -482,7 +482,7 @@ export default {
   "FeaturePageHouseholds.restoreAnswer":
     "Sí. Solo el propietario puede eliminar un hogar, y puede restaurarlo durante 30 días.",
   "FeaturePageLiveSync.name": "Sincronización en vivo",
-  "FeaturePageLiveSync.title": "Tu presupuesto sincronizado en cada dispositivo",
+  "FeaturePageLiveSync.title": "Tu presupuesto en vivo en cada dispositivo",
   "FeaturePageLiveSync.description":
     "Cuando tu pareja añade un movimiento, aparece al momento en tu móvil. Financy también se abre sin conexión y envía tus cambios al recuperarla.",
   "FeaturePageLiveSync.h1": "Los cambios aparecen en el móvil de tu pareja sin recargar",

@@ -584,7 +584,7 @@ export default {
   "FeatureMultiCurrency.fact3": "没有汇率的货币会被排除在合计之外并列出，绝不按 0 计算",
   "FeatureMultiCurrency.notYetBudgets": "从其他货币换算的预算数字，还不会标注“约”或汇率日期",
   "FeatureMultiCurrency.notYetOffline": "离线查看汇率",
-  "FeatureMultiCurrency.code": "阅读货币代码",
+  "FeatureMultiCurrency.code": "阅读资金领域代码",
   "FeatureTransactions.nav": "交易",
   "FeatureTransactions.title": "每一笔支出和收入，都按你付款的币种记录",
   "FeatureTransactions.lead":
