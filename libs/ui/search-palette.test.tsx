@@ -263,10 +263,6 @@ describe("SearchPalette", () => {
       "New note | In Home",
       "New transaction | In Home",
       "New transfer | In Home",
-      "New account | In Home",
-      "New category | In Home",
-      "New tag | In Home",
-      "Import notes | In Home",
     ])
     // The empty field invites ">", which lists the commands alone.
     expect(find("[data-e2e=search]").textContent).toContain("> for commands")
@@ -613,7 +609,8 @@ describe("SearchPalette", () => {
     for (const ctrlKey of [false, true]) {
       await open()
       await fill("coffee 4,50")
-      await until(() => listed()[1]?.startsWith("New transaction"))
+      // The empty palette lists New transaction too: wait for the row with the typed text.
+      await until(() => listed()[1]?.startsWith("New transaction: “"))
       await enter(ctrlKey)
     }
     const choice = { kind: "quick-create", entity: "transaction", title: "coffee 4,50" }

@@ -89,6 +89,7 @@ describe("SPA keyboard shortcuts", () => {
       navigate: () => {},
       openShortcuts: () => {},
       openNewNote: () => {},
+      openNewTransaction: null,
       activityGroupId: null,
       benchmarkPage: true,
     }).filter((row) => row.group === SHORTCUT_GROUPS.page)

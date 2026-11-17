@@ -46,6 +46,8 @@ import { OverviewView } from "./views/OverviewView.tsx"
 
 /** An address of the notes example: the notes, the tags, or a group's old notes links. */
 const NOTES_ADDRESS = /^\/(notes|tags)(\/|$)|^\/groups\/[^/]+\/notes/
+/** The markup of the `g n` hint the account menu draws: "G then N", each key in its own `kbd`. */
+const G_THEN_N = `<kbd[^>]*>G</kbd> then <kbd[^>]*>N</kbd>`
 
 afterEach(() => {
   configureModules({})
@@ -209,12 +211,12 @@ describe("the SPA with the notes off", () => {
 
     expect(hrefs(on).filter((href) => NOTES_ADDRESS.test(href)).length).toBeGreaterThan(0)
     expect(on).toContain(`data-e2e="new-note-dialog"`)
-    // The rail names each destination's `g` keys, from the same rows that bind them.
-    expect(on).toContain(`>Notes (G N)<`)
+    // The account menu's Notes names its `g` keys, from the same rows that bind them.
+    expect(on).toMatch(new RegExp(`>Notes<span[^>]*data-hotkey-hint[^>]*><kbd[^>]*>${G_THEN_N}`))
     expect(hrefs(off).filter((href) => NOTES_ADDRESS.test(href))).toEqual([])
     expect(off).not.toContain(`data-e2e="new-note-dialog"`)
     expect(hrefs(off)).toContain(OVERVIEW_PATHS.root)
-    expect(off).not.toContain(`(G N)`)
+    expect(off).not.toMatch(new RegExp(G_THEN_N))
     expect(off).toContain(`>Overview (G O)<`)
     newNoteStore.open.value = false
   })
