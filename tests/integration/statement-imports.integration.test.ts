@@ -184,13 +184,17 @@ async function preview(sql: postgres.Sql, h: Household, importId: string) {
   )
 }
 
-/** Confirms the import as its editor and runs the save job: the import, after it. */
+/**
+ * Confirms the import as its editor, with the rows to `keep` despite an overridable skip, and runs
+ * the save job: the import, after it.
+ */
 async function confirm(
   sql: postgres.Sql,
   h: Household,
   importId: string,
   choices?: Record<string, Record<string, string>>,
   setup: ImportJobSetup = NO_BILLING,
+  keep?: number[],
 ) {
   await handlers(sql).commit(
     new ImportCommitCommand({
@@ -199,6 +203,7 @@ async function confirm(
       importId,
       mapping: MAPPING,
       choices,
+      keep,
     }),
   )
   await importCommitJob(sql, setup)(job(importId))
@@ -947,6 +952,56 @@ Deno.test("statement transfers: a row saved before or matching a transfer gets n
     )
     expect(matched.skips).toEqual([SKIP_TRANSFER, null])
     expect(matched.transfers).toEqual([null, theirs])
+  })
+})
+
+Deno.test("statement transfers: a row matching a transfer side is saved when kept, with its remembered category; a row saved before stays skipped", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    // The household remembers Shopping for the gym, from a payment nine days before the transfer.
+    const first = await uploaded(sql, h, statement([[`2026-01-01`, `Gym Club`, -25_000]]))
+    await confirm(sql, h, first.id, { "1": { category: h.shopping } })
+    await new PostgresTransferRepository(sql).create(
+      {
+        groupId: h.groupId,
+        id: uuidV7(),
+        fromAccountId: h.bank,
+        toAccountId: h.savings,
+        sentAmount: 25_000,
+        memo: ``,
+        date: `2026-01-10`,
+        allowance: null,
+      } as Parameters<PostgresTransferRepository[`create`]>[0],
+      h.owner,
+    )
+    const file = statement([[`2026-01-10`, `Gym Club`, -25_000], [
+      `2026-01-11`,
+      `Coffee Bar`,
+      -450,
+    ]])
+
+    const read = await uploaded(sql, h, file)
+    const reviews = (await preview(sql, h, read.id)).reviews!
+    expect(reviews.map((review) => review.skip)).toEqual([SKIP_TRANSFER, null])
+    expect(reviews.map((review) => review.overridable)).toEqual([true, false])
+    expect(reviews[0].suggestions.category).toBe(h.shopping)
+    expect(await confirm(sql, h, read.id, undefined, NO_BILLING, [1])).toMatchObject({
+      savedCount: 2,
+      skippedCount: 0,
+    })
+    const kept = (await entries(sql, h.groupId)).filter((row) => row.date === `2026-01-10`)
+    expect(kept).toMatchObject([{ amount: -25_000, categoryId: h.shopping }])
+
+    const again = await uploaded(sql, h, file)
+    const twice = (await preview(sql, h, again.id)).reviews!
+    expect(twice.map((review) => review.skip)).toEqual([SKIP_SAVED_BEFORE, SKIP_SAVED_BEFORE])
+    expect(twice.map((review) => review.overridable)).toEqual([false, false])
+    const before = (await entries(sql, h.groupId)).length
+    expect(await confirm(sql, h, again.id, undefined, NO_BILLING, [1, 2])).toMatchObject({
+      savedCount: 0,
+      skippedCount: 2,
+    })
+    expect(await entries(sql, h.groupId)).toHaveLength(before)
   })
 })
 
