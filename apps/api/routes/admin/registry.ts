@@ -10,6 +10,7 @@ import { categoriesAdminModule } from "./categories.ts"
 import { entriesAdminModule } from "./entries.ts"
 import { transfersAdminModule } from "./transfers.ts"
 import { budgetsAdminModule } from "./budgets.ts"
+import { recurringAdminModule } from "./recurring.ts"
 import { billingAdminModule } from "./billing.ts"
 import { newsletterAdminModule } from "./newsletter.ts"
 import { blogAdminModule } from "./blog.ts"
@@ -36,6 +37,7 @@ export const ADMIN_API_MODULES: readonly AdminApiModule[] = [
   entriesAdminModule,
   transfersAdminModule,
   budgetsAdminModule,
+  recurringAdminModule,
   billingAdminModule,
   newsletterAdminModule,
   blogAdminModule,

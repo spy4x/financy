@@ -932,3 +932,43 @@ export function recurringRuleReferenceProblems(
   return problems
 }
 // #endregion Export file
+
+// #region Admin
+/** How many households the operator's repeating entries page lists, most live rules first. */
+export const ADMIN_RECURRING_HOUSEHOLD_LIMIT = 20
+
+/** One household of {@link AdminRecurringOverview}: how much it repeats, never what. */
+export interface AdminRecurringHousehold {
+  groupId: string
+  groupName: string
+  /** Its live rules: not deleted. */
+  rules: number
+  /** Its live rules the job stopped making entries for. */
+  paused: number
+  /** Its live entries a rule made, whether that rule is live, deleted or purged. */
+  made: number
+  /** `YYYY-MM-DD` in UTC, the latest change to any of its rules, a delete included. */
+  lastChangeDate: string
+}
+
+/**
+ * What the operator's repeating entries page shows: counts and days only. Never an amount, a
+ * currency, a memo, a schedule, an account or a category: they say what a household pays, how
+ * often and for what.
+ */
+export interface AdminRecurringOverview {
+  /** Households with at least one live rule. */
+  households: number
+  /** Live rules across every household. */
+  rules: number
+  /** Live rules that are paused, across every household. */
+  paused: number
+  /** Live entries a rule made, across every household. */
+  made: number
+  /**
+   * At most {@link ADMIN_RECURRING_HOUSEHOLD_LIMIT} households that have a rule, live or deleted
+   * and not yet purged: the most live rules first, then by id.
+   */
+  topHouseholds: AdminRecurringHousehold[]
+}
+// #endregion Admin
