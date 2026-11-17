@@ -432,7 +432,7 @@ export default {
   "FeaturePage.all": "Toutes les fonctionnalités",
   "FeaturePage.demo": "Essayez dans la démo, sans créer de compte",
   "FeaturePageMultiCurrency.name": "Plusieurs devises",
-  "FeaturePageMultiCurrency.title": "Suivre son argent en plusieurs devises, en un seul total",
+  "FeaturePageMultiCurrency.title": "Votre argent en plusieurs devises, un seul total",
   "FeaturePageMultiCurrency.description":
     "Gardez chaque compte dans sa devise et voyez chaque total dans la devise principale du foyer, au taux du jour où l’argent a bougé.",
   "FeaturePageMultiCurrency.h1": "Voir ses soldes en plusieurs devises en un seul total",
@@ -461,7 +461,7 @@ export default {
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "Non. Les taux quotidiens gratuits de la Banque centrale européenne couvrent une trentaine de devises. Les autres, comme le dong vietnamien, demandent une source de taux payante que le propriétaire du serveur active ; sans elle, les totaux laissent ces montants de côté et le signalent.",
   "FeaturePageHouseholds.name": "Foyers",
-  "FeaturePageHouseholds.title": "Un budget partagé en couple, chacun son identifiant",
+  "FeaturePageHouseholds.title": "Budget partagé en couple, chacun son identifiant",
   "FeaturePageHouseholds.description":
     "Invitez votre conjoint ou votre famille dans un foyer. Chacun se connecte avec son identifiant et son rôle, et tous voient les mêmes comptes et budgets.",
   "FeaturePageHouseholds.h1": "Partager un budget en couple, chacun avec son propre identifiant",
@@ -486,7 +486,7 @@ export default {
   "FeaturePageHouseholds.restoreAnswer":
     "Oui. Seul le propriétaire peut supprimer un foyer, et il peut le restaurer pendant 30 jours.",
   "FeaturePageLiveSync.name": "Synchro en direct",
-  "FeaturePageLiveSync.title": "Votre budget synchronisé en direct sur tous vos appareils",
+  "FeaturePageLiveSync.title": "Budget synchronisé en direct sur vos appareils",
   "FeaturePageLiveSync.description":
     "Une opération de votre conjoint apparaît aussitôt sur votre téléphone. Financy s’ouvre aussi hors ligne et envoie vos changements dès le retour du réseau.",
   "FeaturePageLiveSync.h1":
@@ -515,7 +515,7 @@ export default {
   "FeaturePageLiveSync.storesAnswer":
     "Pas encore. Aujourd’hui, vous installez Financy depuis votre navigateur sur un téléphone ou un ordinateur, et il s’ouvre hors ligne.",
   "FeaturePageSelfHosting.name": "Auto-hébergement",
-  "FeaturePageSelfHosting.title": "Auto-héberger une application de budget sur son serveur",
+  "FeaturePageSelfHosting.title": "Auto-héberger une appli de budget sur son serveur",
   "FeaturePageSelfHosting.description":
     "Installez Financy pour votre foyer avec Docker Compose, sur un serveur loué ou à vous. Vos données restent chez vous, et vous ne payez que le serveur.",
   "FeaturePageSelfHosting.h1": "Héberger une application de budget sur son propre serveur",

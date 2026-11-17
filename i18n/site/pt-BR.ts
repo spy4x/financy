@@ -453,7 +453,7 @@ export default {
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "Não. As cotações diárias gratuitas do Banco Central Europeu cobrem cerca de 30 moedas. Outras, como o dong vietnamita, precisam de uma fonte de cotações paga que o dono do servidor ativa; sem ela, os totais deixam esses valores de fora e avisam.",
   "FeaturePageHouseholds.name": "Famílias",
-  "FeaturePageHouseholds.title": "Orçamento compartilhado para casais, cada um com login",
+  "FeaturePageHouseholds.title": "Orçamento para casais, cada um com seu login",
   "FeaturePageHouseholds.description":
     "Convide seu parceiro, sua parceira ou parentes para a mesma família. Cada um entra com seu login e função, e todos veem as mesmas contas e orçamentos.",
   "FeaturePageHouseholds.h1": "Controle financeiro do casal, cada um com seu próprio login",
@@ -477,7 +477,7 @@ export default {
   "FeaturePageHouseholds.restoreAnswer":
     "Sim. Só o dono pode excluir uma família, e ele pode restaurá-la em até 30 dias.",
   "FeaturePageLiveSync.name": "Sincronização ao vivo",
-  "FeaturePageLiveSync.title": "Orçamento sincronizado ao vivo em todos os dispositivos",
+  "FeaturePageLiveSync.title": "Orçamento sincronizado ao vivo nos dispositivos",
   "FeaturePageLiveSync.description":
     "Quando seu parceiro adiciona um lançamento, você vê na hora no celular. O Financy também abre sem internet e envia suas mudanças quando a conexão volta.",
   "FeaturePageLiveSync.h1": "As mudanças aparecem no celular do seu parceiro sem recarregar",

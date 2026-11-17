@@ -12,6 +12,7 @@ import {
   featurePageIn,
   featurePageSections,
 } from "./features-data.tsx"
+import { SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import { pageMiddleware } from "./middleware.ts"
 import type { State } from "./utils.ts"
 import { siteEnglishText } from "@ui/site-text.ts"
@@ -123,10 +124,15 @@ describe("the feature pages", () => {
     expect(html).toContain(`<a href="https://demo.example.com/try" rel="nofollow"`)
   })
 
-  it("keeps each title under 60 characters with the site's name, and each description under 155", () => {
+  it("keeps each title under 60 characters with the site's name, and each description under 155, in every language", () => {
+    for (const language of SITE_LANGUAGES) {
+      for (const page of KEYED_PAGES.map((keys) => featurePageIn(siteTranslator(language), keys))) {
+        const label = `${language} ${page.slug}`
+        expect(`${page.title} · Financy`.length, `${label}: ${page.title}`).toBeLessThan(60)
+        expect(page.description.length, `${label}: ${page.description}`).toBeLessThan(155)
+      }
+    }
     for (const page of FEATURE_PAGES) {
-      expect(`${page.title} · Financy`.length, page.title).toBeLessThan(60)
-      expect(page.description.length, page.description).toBeLessThan(155)
       expect(page.description, page.slug).not.toMatch(/\bfree\b/i)
     }
   })

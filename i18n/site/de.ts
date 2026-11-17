@@ -425,7 +425,7 @@ export default {
   "FeaturePage.all": "Alle Funktionen",
   "FeaturePage.demo": "In der Demo ausprobieren, ohne Benutzerkonto",
   "FeaturePageMultiCurrency.name": "Mehrere Währungen",
-  "FeaturePageMultiCurrency.title": "Finanzen in mehreren Währungen als eine Summe verwalten",
+  "FeaturePageMultiCurrency.title": "Finanzen in mehreren Währungen als eine Summe",
   "FeaturePageMultiCurrency.description":
     "Jedes Konto in seiner eigenen Währung, jede Summe in der Hauptwährung deines Haushalts, umgerechnet zum Kurs des Tages, an dem das Geld floss.",
   "FeaturePageMultiCurrency.h1": "Kontostände in mehreren Währungen als eine Summe sehen",
@@ -452,7 +452,7 @@ export default {
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "Nein. Die kostenlosen Tageskurse der Europäischen Zentralbank decken etwa 30 Währungen ab. Andere, etwa der vietnamesische Dong, brauchen eine kostenpflichtige Kursquelle, die der Betreiber des Servers einschaltet; ohne sie lassen Summen diese Beträge weg und sagen das.",
   "FeaturePageHouseholds.name": "Haushalte",
-  "FeaturePageHouseholds.title": "Gemeinsames Budget für Paare, jede Person mit Login",
+  "FeaturePageHouseholds.title": "Gemeinsames Budget für Paare, jeder mit Login",
   "FeaturePageHouseholds.description":
     "Lade Partnerin, Partner oder Familie in einen Haushalt ein. Jede Person hat ihren eigenen Login und ihre Rolle, alle sehen dieselben Konten und Budgets.",
   "FeaturePageHouseholds.h1": "Budget mit dem Partner teilen, jeder mit eigenem Login",
@@ -502,7 +502,7 @@ export default {
   "FeaturePageLiveSync.storesAnswer":
     "Noch nicht. Heute installierst du Financy aus dem Browser auf Handy oder Computer, und es startet auch ohne Netz.",
   "FeaturePageSelfHosting.name": "Selbst hosten",
-  "FeaturePageSelfHosting.title": "Haushaltsbuch-App selbst hosten, auf deinem Server",
+  "FeaturePageSelfHosting.title": "Haushaltsbuch-App auf dem eigenen Server hosten",
   "FeaturePageSelfHosting.description":
     "Betreibe Financy mit Docker Compose für deinen Haushalt auf einem gemieteten oder eigenen Server. Deine Daten bleiben dort, und du zahlst nur den Server.",
   "FeaturePageSelfHosting.h1": "Haushaltsbuch-App auf dem eigenen Server betreiben",
