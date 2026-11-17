@@ -32,6 +32,7 @@ import { createAdminCategoriesRoutes } from "./categories.ts"
 import { createAdminEntriesRoutes } from "./entries.ts"
 import { createAdminTransfersRoutes } from "./transfers.ts"
 import { createAdminBudgetsRoutes } from "./budgets.ts"
+import { createAdminRecurringRoutes } from "./recurring.ts"
 import { ADMIN_API_MODULES } from "./registry.ts"
 import { CATALOG_DEFAULT_SETTINGS } from "@domain/catalog"
 import type { AdminRatesSnapshot } from "@domain/money"
@@ -167,6 +168,11 @@ function buildApp(
           limit: passThrough,
           read: () => (calls.push(["budgets"]), Promise.reject(new Error("not used"))),
         })
+      case `recurring`:
+        return createAdminRecurringRoutes({
+          limit: passThrough,
+          read: () => (calls.push(["recurring"]), Promise.reject(new Error("not used"))),
+        })
       case `rates`:
         return createAdminRatesRoutes({
           limit: passThrough,
@@ -255,6 +261,7 @@ const ROUTES = [
   { method: "GET", path: "/admin/entries" },
   { method: "GET", path: "/admin/transfers" },
   { method: "GET", path: "/admin/budgets" },
+  { method: "GET", path: "/admin/recurring" },
 ]
 
 function send(
@@ -360,6 +367,7 @@ describe("operator area routes", () => {
       "entries",
       "transfers",
       "budgets",
+      "recurring",
       "billing",
       "newsletter",
       "blog",

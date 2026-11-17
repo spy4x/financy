@@ -2427,4 +2427,33 @@ export default {
   "AdminBudgets.householdLastChange": "Letzte Änderung {date}",
   "AdminAccounts.withAliases": "Mit weiteren Namen",
   "AdminAccounts.withAliasesHint": "Mit mindestens einem weiteren Namen",
+  "AdminNav.recurring": "Wiederkehrende Buchungen",
+  "AdminRecurring.title": "Wiederkehrende Buchungen",
+  "AdminRecurring.subtitle":
+    "Wie Haushalte wiederkehrende Buchungen nutzen. Nur Zahlen: keine Beträge, Währungen, Notizen oder Zeitpläne.",
+  "AdminRecurring.retry": "Erneut versuchen",
+  "AdminRecurring.loading": "Zahlen werden geladen",
+  "AdminRecurring.none": "Noch keine wiederkehrenden Buchungen",
+  "AdminRecurring.noneHint":
+    "Die Zahlen erscheinen hier, sobald ein Haushalt seine erste wiederkehrende Buchung anlegt.",
+  "AdminRecurring.keyNumbers": "Kennzahlen",
+  "AdminRecurring.households": "Haushalte, die sie nutzen",
+  "AdminRecurring.householdsHint": "Mindestens eine wiederkehrende Buchung",
+  "AdminRecurring.rules": "Wiederkehrende Buchungen",
+  "AdminRecurring.rulesHint": "Nicht gelöscht, in allen Haushalten",
+  "AdminRecurring.paused": "Pausiert",
+  "AdminRecurring.pausedHint": "Erzeugen gerade keine Buchungen",
+  "AdminRecurring.made": "Erzeugte Buchungen",
+  "AdminRecurring.madeHint": "Von wiederkehrenden Buchungen erzeugt, nicht gelöscht",
+  "AdminRecurring.topHouseholds": "Haushalte",
+  "AdminRecurring.ruleCount": {
+    "one": "{count} wiederkehrende Buchung",
+    "other": "{count} wiederkehrende Buchungen",
+  },
+  "AdminRecurring.madeCount": {
+    "one": "{count} Buchung erzeugt",
+    "other": "{count} Buchungen erzeugt",
+  },
+  "AdminRecurring.pausedCount": { "one": "{count} pausiert", "other": "{count} pausiert" },
+  "AdminRecurring.householdLastChange": "Letzte Änderung {date}",
 } satisfies Catalog
