@@ -12,14 +12,20 @@ import type { FeatureSectionProps, FeatureTierProps } from "./components/feature
 import { DeployVisual } from "./components/features-visuals.tsx"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import type { Language } from "@domain/identity"
+import { DOCS_PATH } from "./docs-site.ts"
 import { DEFAULT_LANGUAGE, languageList, localePath } from "./languages.ts"
-import { REPOSITORY_URL } from "./site.tsx"
+import { REPOSITORY_URL, SELF_HOST_GUIDE } from "./site.tsx"
 import type { Site } from "./use-site.tsx"
 
 /** A file or folder of the repository on GitHub, for the "where in the code" links. */
 export function source(path: string): string {
   const kind = path.endsWith(`/`) ? `tree` : `blob`
   return `${REPOSITORY_URL}/${kind}/main/${path.replace(/\/$/, ``)}`
+}
+
+/** The repository's issue `number` on GitHub, for a "Not built yet" item. */
+function issue(number: number): string {
+  return `${REPOSITORY_URL}/issues/${number}`
 }
 
 /** A feature as the page lists it, without the side its picture goes on: the tier decides that. */
@@ -33,10 +39,9 @@ export interface Tier extends Omit<FeatureTierProps, "children"> {
 }
 
 /**
- * What works in Financy today, one tier, each claim checked against the code on 2026-11-16; the
- * "where in the code" link of each section points at it. Accounts, categories, transactions,
- * budgets and repeating entries are built; transfers are not yet, so they have no section: #105
- * rewrites this page as they land.
+ * What works in Financy today, one tier, each claim checked against the code on 2026-11-16, and
+ * the currencies, households, live sync and self-hosting sections on 2026-11-18; the "where in
+ * the code" link of each section points at it.
  */
 export function tiers({ t, language }: Site): readonly Tier[] {
   return [
@@ -115,6 +120,22 @@ export function tiers({ t, language }: Site): readonly Tier[] {
           code: { label: t.t(`FeatureRecurring.code`), href: source(`libs/domain/recurring/`) },
         },
         {
+          id: `multi-currency`,
+          nav: t.t(`FeatureMultiCurrency.nav`),
+          title: t.t(`FeatureMultiCurrency.title`),
+          lead: t.t(`FeatureMultiCurrency.lead`),
+          facts: [
+            t.t(`FeatureMultiCurrency.fact1`),
+            t.t(`FeatureMultiCurrency.fact2`),
+            t.t(`FeatureMultiCurrency.fact3`),
+          ],
+          notYet: [
+            { label: t.t(`FeatureMultiCurrency.notYetBudgets`), issue: issue(317) },
+            { label: t.t(`FeatureMultiCurrency.notYetOffline`), issue: issue(226) },
+          ],
+          code: { label: t.t(`FeatureMultiCurrency.code`), href: source(`libs/domain/money/`) },
+        },
+        {
           id: `sign-in`,
           nav: t.t(`FeatureSignIn.nav`),
           title: t.t(`FeatureSignIn.title`),
@@ -136,26 +157,34 @@ export function tiers({ t, language }: Site): readonly Tier[] {
             t.t(`FeatureTeams.fact2`),
             t.t(`FeatureTeams.fact3`),
           ],
+          notYet: [
+            {
+              label: t.t(`FeatureTeams.notYetClosedSignUp`),
+              issue: `https://github.com/spy4x/seed/issues/913`,
+            },
+            { label: t.t(`FeatureTeams.notYetGroupWord`), issue: issue(169) },
+          ],
           code: { label: t.t(`FeatureTeams.code`), href: source(`libs/domain/groups/`) },
         },
         {
-          id: `realtime`,
-          nav: t.t(`FeatureRealtime.nav`),
-          title: t.t(`FeatureRealtime.title`),
-          lead: t.t(`FeatureRealtime.lead`),
-          facts: [t.t(`FeatureRealtime.fact1`), t.t(`FeatureRealtime.fact2`)],
+          id: `live-sync`,
+          nav: t.t(`FeatureLiveSync.nav`),
+          title: t.t(`FeatureLiveSync.title`),
+          lead: t.t(`FeatureLiveSync.lead`),
+          facts: [
+            t.t(`FeatureLiveSync.fact1`),
+            t.t(`FeatureLiveSync.fact2`),
+            t.t(`FeatureLiveSync.fact3`),
+          ],
+          notYet: [
+            { label: t.t(`FeatureLiveSync.notYetSetup`) },
+            { label: t.t(`FeatureLiveSync.notYetRates`), issue: issue(226) },
+            { label: t.t(`FeatureLiveSync.notYetStores`), issue: issue(112) },
+          ],
           code: {
-            label: t.t(`FeatureRealtime.code`),
+            label: t.t(`FeatureLiveSync.code`),
             href: source(`docs/decisions/002-realtime-transport-and-sync.md`),
           },
-        },
-        {
-          id: `offline`,
-          nav: t.t(`FeatureOffline.nav`),
-          title: t.t(`FeatureOffline.title`),
-          lead: t.t(`FeatureOffline.lead`),
-          facts: [t.t(`FeatureOffline.fact1`), t.t(`FeatureOffline.fact2`)],
-          code: { label: t.t(`FeatureOffline.code`), href: source(`docs/offline.md`) },
         },
         {
           id: `export`,
@@ -191,6 +220,7 @@ export function tiers({ t, language }: Site): readonly Tier[] {
             t.t(`FeatureDeploy.fact3`),
             t.t(`FeatureDeploy.fact4`),
           ],
+          notYet: [{ label: t.t(`FeatureDeploy.notYetRehearsed`), issue: issue(310) }],
           code: { label: t.t(`FeatureDeploy.code`), href: source(`infra/compose/`) },
           visual: <DeployVisual />,
         },
@@ -220,19 +250,25 @@ export interface FeaturePage {
   feature?: string
   /** The page's last crumb and its card's title under "Other features". */
   name: string
-  /** The `<title>`, under 60 characters: "{Feature} for your SaaS, without {the usual cost}". */
+  /**
+   * The `<title>`, under 60 characters with " · Financy" after it: what the feature does for a
+   * household, in the words people search with.
+   */
   title: string
-  /** The meta description, under 155 characters, ending "Free and MIT-licensed." */
+  /**
+   * The meta description, under 155 characters: what a household gets, in plain words. It never
+   * puts "free" next to the cloud's price, since only self-hosting costs nothing.
+   */
   description: string
-  /** The searcher's phrase, as a statement. */
+  /** The searcher's question, as a statement. */
   h1: string
-  /** Two or three sentences: yes and how, then what it takes to adopt. */
+  /** Two or three sentences: "Yes." and how, quotable on their own. */
   answer: string
   /** One sentence for this page's card on the other feature pages. */
   summary: string
   /** "How it works", one or two short paragraphs. Empty, the section is not drawn. */
   how: readonly string[]
-  /** The written guide on GitHub, until the site has the docs. */
+  /** The written guide: a page of the site's docs, or a file on GitHub. */
   guide?: string
   /** The code "Read the code" opens, when the feature's own code link is a guide. */
   code?: string
@@ -242,187 +278,152 @@ export interface FeaturePage {
   updated: string
 }
 
-/** The runtime question, the same on every page that asks it. */
-const RUNTIME_QUESTION: Omit<FeatureQuestion, "id"> = {
-  question: `FeaturePage.runtimeQuestion`,
-  answer: `FeaturePage.runtimeAnswer`,
-}
-
 /**
  * The feature pages, in the order "Other features" lists them, with their words as catalog keys.
- * Every claim was checked against the code and docs on `main` on 2026-11-01, the realtime and
- * shortcuts pages on 2026-11-02.
+ * Every claim was checked against the code and docs on `main` on 2026-11-18; the pull request
+ * that added them lists each claim with the file behind it.
  */
 export const FEATURE_PAGES: readonly FeaturePage[] = [
   {
-    slug: `sign-in`,
-    name: `FeaturePageSignIn.name`,
-    title: `FeaturePageSignIn.title`,
-    description: `FeaturePageSignIn.description`,
-    h1: `FeaturePageSignIn.h1`,
-    answer: `FeaturePageSignIn.answer`,
-    summary: `FeaturePageSignIn.summary`,
-    how: [`FeaturePageSignIn.how1`, `FeaturePageSignIn.how2`],
-    guide: source(`docs/sign-in-providers.md`),
+    slug: `multi-currency`,
+    name: `FeaturePageMultiCurrency.name`,
+    title: `FeaturePageMultiCurrency.title`,
+    description: `FeaturePageMultiCurrency.description`,
+    h1: `FeaturePageMultiCurrency.h1`,
+    answer: `FeaturePageMultiCurrency.answer`,
+    summary: `FeaturePageMultiCurrency.summary`,
+    how: [`FeaturePageMultiCurrency.how1`, `FeaturePageMultiCurrency.how2`],
+    guide: `${DOCS_PATH}/exchange-rates`,
     questions: [
       {
-        id: `faq-auth-service`,
-        question: `FeaturePageSignIn.authServiceQuestion`,
-        answer: `FeaturePageSignIn.authServiceAnswer`,
+        id: `faq-history`,
+        question: `FeaturePageMultiCurrency.historyQuestion`,
+        answer: `FeaturePageMultiCurrency.historyAnswer`,
       },
       {
-        id: `faq-passkeys`,
-        question: `FeaturePageSignIn.passkeysQuestion`,
-        answer: `FeaturePageSignIn.passkeysAnswer`,
+        id: `faq-main-currency`,
+        question: `FeaturePageMultiCurrency.mainCurrencyQuestion`,
+        answer: `FeaturePageMultiCurrency.mainCurrencyAnswer`,
       },
       {
-        id: `faq-two-factor`,
-        question: `FeaturePageSignIn.twoFactorQuestion`,
-        answer: `FeaturePageSignIn.twoFactorAnswer`,
+        id: `faq-own-rate`,
+        question: `FeaturePageMultiCurrency.ownRateQuestion`,
+        answer: `FeaturePageMultiCurrency.ownRateAnswer`,
       },
       {
-        id: `faq-providers-off`,
-        question: `FeaturePageSignIn.providersOffQuestion`,
-        answer: `FeaturePageSignIn.providersOffAnswer`,
+        id: `faq-every-currency`,
+        question: `FeaturePageMultiCurrency.everyCurrencyQuestion`,
+        answer: `FeaturePageMultiCurrency.everyCurrencyAnswer`,
       },
-      { id: `faq-runtime`, ...RUNTIME_QUESTION },
     ],
-    updated: `2026-11-02`,
+    updated: `2026-11-18`,
   },
   {
-    slug: `groups`,
+    slug: `households`,
     feature: `teams`,
-    name: `FeaturePageGroups.name`,
-    title: `FeaturePageGroups.title`,
-    description: `FeaturePageGroups.description`,
-    h1: `FeaturePageGroups.h1`,
-    answer: `FeaturePageGroups.answer`,
-    summary: `FeaturePageGroups.summary`,
-    how: [`FeaturePageGroups.how1`, `FeaturePageGroups.how2`],
-    guide: source(`docs/aggregates.md`),
+    name: `FeaturePageHouseholds.name`,
+    title: `FeaturePageHouseholds.title`,
+    description: `FeaturePageHouseholds.description`,
+    h1: `FeaturePageHouseholds.h1`,
+    answer: `FeaturePageHouseholds.answer`,
+    summary: `FeaturePageHouseholds.summary`,
+    how: [`FeaturePageHouseholds.how1`, `FeaturePageHouseholds.how2`],
     questions: [
       {
-        id: `faq-personal-group`,
-        question: `FeaturePageGroups.personalGroupQuestion`,
-        answer: `FeaturePageGroups.personalGroupAnswer`,
+        id: `faq-private-accounts`,
+        question: `FeaturePageHouseholds.privateQuestion`,
+        answer: `FeaturePageHouseholds.privateAnswer`,
       },
       {
         id: `faq-viewer`,
-        question: `FeaturePageGroups.viewerQuestion`,
-        answer: `FeaturePageGroups.viewerAnswer`,
+        question: `FeaturePageHouseholds.viewerQuestion`,
+        answer: `FeaturePageHouseholds.viewerAnswer`,
+      },
+      {
+        id: `faq-hand-over`,
+        question: `FeaturePageHouseholds.handOverQuestion`,
+        answer: `FeaturePageHouseholds.handOverAnswer`,
       },
       {
         id: `faq-restore`,
-        question: `FeaturePageGroups.restoreQuestion`,
-        answer: `FeaturePageGroups.restoreAnswer`,
-      },
-      {
-        id: `faq-second-model`,
-        question: `FeaturePageGroups.secondModelQuestion`,
-        answer: `FeaturePageGroups.secondModelAnswer`,
+        question: `FeaturePageHouseholds.restoreQuestion`,
+        answer: `FeaturePageHouseholds.restoreAnswer`,
       },
     ],
-    updated: `2026-11-01`,
+    updated: `2026-11-18`,
   },
   {
-    slug: `realtime`,
-    name: `FeaturePageRealtime.name`,
-    title: `FeaturePageRealtime.title`,
-    description: `FeaturePageRealtime.description`,
-    h1: `FeaturePageRealtime.h1`,
-    answer: `FeaturePageRealtime.answer`,
-    summary: `FeaturePageRealtime.summary`,
-    how: [`FeaturePageRealtime.how1`, `FeaturePageRealtime.how2`],
-    guide: source(`docs/decisions/002-realtime-transport-and-sync.md`),
-    code: source(`apps/spa/src/realtime/`),
+    slug: `live-sync`,
+    name: `FeaturePageLiveSync.name`,
+    title: `FeaturePageLiveSync.title`,
+    description: `FeaturePageLiveSync.description`,
+    h1: `FeaturePageLiveSync.h1`,
+    answer: `FeaturePageLiveSync.answer`,
+    summary: `FeaturePageLiveSync.summary`,
+    how: [`FeaturePageLiveSync.how1`, `FeaturePageLiveSync.how2`],
     questions: [
       {
-        id: `faq-realtime`,
-        question: `FeaturePageRealtime.realtimeQuestion`,
-        answer: `FeaturePageRealtime.realtimeAnswer`,
+        id: `faq-offline-entries`,
+        question: `FeaturePageLiveSync.offlineEntriesQuestion`,
+        answer: `FeaturePageLiveSync.offlineEntriesAnswer`,
       },
       {
-        id: `faq-realtime-service`,
-        question: `FeaturePageRealtime.realtimeServiceQuestion`,
-        answer: `FeaturePageRealtime.realtimeServiceAnswer`,
+        id: `faq-offline-setup`,
+        question: `FeaturePageLiveSync.offlineSetupQuestion`,
+        answer: `FeaturePageLiveSync.offlineSetupAnswer`,
       },
       {
-        id: `faq-realtime-sleep`,
-        question: `FeaturePageRealtime.realtimeSleepQuestion`,
-        answer: `FeaturePageRealtime.realtimeSleepAnswer`,
+        id: `faq-overwrite`,
+        question: `FeaturePageLiveSync.overwriteQuestion`,
+        answer: `FeaturePageLiveSync.overwriteAnswer`,
       },
       {
-        id: `faq-realtime-off`,
-        question: `FeaturePageRealtime.realtimeOffQuestion`,
-        answer: `FeaturePageRealtime.realtimeOffAnswer`,
+        id: `faq-stores`,
+        question: `FeaturePageLiveSync.storesQuestion`,
+        answer: `FeaturePageLiveSync.storesAnswer`,
       },
     ],
-    updated: `2026-11-02`,
+    updated: `2026-11-18`,
   },
   {
-    slug: `offline`,
-    name: `FeaturePageOffline.name`,
-    title: `FeaturePageOffline.title`,
-    description: `FeaturePageOffline.description`,
-    h1: `FeaturePageOffline.h1`,
-    answer: `FeaturePageOffline.answer`,
-    summary: `FeaturePageOffline.summary`,
-    how: [`FeaturePageOffline.how1`, `FeaturePageOffline.how2`],
-    guide: source(`docs/offline.md`),
-    code: source(`apps/spa/src/offline/`),
+    slug: `self-hosting`,
+    feature: `deploy`,
+    name: `FeaturePageSelfHosting.name`,
+    title: `FeaturePageSelfHosting.title`,
+    description: `FeaturePageSelfHosting.description`,
+    h1: `FeaturePageSelfHosting.h1`,
+    answer: `FeaturePageSelfHosting.answer`,
+    summary: `FeaturePageSelfHosting.summary`,
+    how: [`FeaturePageSelfHosting.how1`, `FeaturePageSelfHosting.how2`],
+    guide: SELF_HOST_GUIDE,
     questions: [
       {
-        id: `faq-offline`,
-        question: `FeaturePageOffline.offlineQuestion`,
-        answer: `FeaturePageOffline.offlineAnswer`,
+        id: `faq-same-features`,
+        question: `FeaturePageSelfHosting.sameFeaturesQuestion`,
+        answer: `FeaturePageSelfHosting.sameFeaturesAnswer`,
       },
       {
-        id: `faq-offline-edits`,
-        question: `FeaturePageOffline.offlineEditsQuestion`,
-        answer: `FeaturePageOffline.offlineEditsAnswer`,
+        id: `faq-mail`,
+        question: `FeaturePageSelfHosting.mailQuestion`,
+        answer: `FeaturePageSelfHosting.mailAnswer`,
       },
       {
-        id: `faq-conflict`,
-        question: `FeaturePageOffline.conflictQuestion`,
-        answer: `FeaturePageOffline.conflictAnswer`,
-      },
-      {
-        id: `faq-remove-offline`,
-        question: `FeaturePageOffline.removeOfflineQuestion`,
-        answer: `FeaturePageOffline.removeOfflineAnswer`,
-      },
-    ],
-    updated: `2026-11-01`,
-  },
-  {
-    slug: `deploy`,
-    name: `FeaturePageDeploy.name`,
-    title: `FeaturePageDeploy.title`,
-    description: `FeaturePageDeploy.description`,
-    h1: `FeaturePageDeploy.h1`,
-    answer: `FeaturePageDeploy.answer`,
-    summary: `FeaturePageDeploy.summary`,
-    how: [`FeaturePageDeploy.how1`, `FeaturePageDeploy.how2`],
-    guide: source(`docs/deploy.md`),
-    questions: [
-      {
-        id: `faq-kubernetes`,
-        question: `FeaturePageDeploy.kubernetesQuestion`,
-        answer: `FeaturePageDeploy.kubernetesAnswer`,
-      },
-      {
-        id: `faq-several`,
-        question: `FeaturePageDeploy.severalQuestion`,
-        answer: `FeaturePageDeploy.severalAnswer`,
+        id: `faq-move`,
+        question: `FeaturePageSelfHosting.moveQuestion`,
+        answer: `FeaturePageSelfHosting.moveAnswer`,
       },
       {
         id: `faq-backup`,
-        question: `FeaturePageDeploy.backupQuestion`,
-        answer: `FeaturePageDeploy.backupAnswer`,
+        question: `FeaturePageSelfHosting.backupQuestion`,
+        answer: `FeaturePageSelfHosting.backupAnswer`,
       },
-      { id: `faq-runtime`, ...RUNTIME_QUESTION },
+      {
+        id: `faq-installer`,
+        question: `FeaturePageSelfHosting.installerQuestion`,
+        answer: `FeaturePageSelfHosting.installerAnswer`,
+      },
     ],
-    updated: `2026-11-02`,
+    updated: `2026-11-18`,
   },
 ]
 

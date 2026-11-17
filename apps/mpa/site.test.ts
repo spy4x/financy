@@ -28,6 +28,7 @@ import { NotYetList } from "./components/features-section.tsx"
 import { SiteLanguage } from "./use-site.tsx"
 import { SITE_PAGES, type SitePage } from "./pages.ts"
 import { DOC_SLUGS } from "./docs-site.ts"
+import { FEATURE_PAGES } from "./features-data.tsx"
 import { localePath, pathLanguage, SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import type { MpaConfig } from "./config.ts"
 import type { State } from "./utils.ts"
@@ -945,6 +946,9 @@ describe("the public website", () => {
         "/fr/features",
         "/ja/features",
         "/zh-CN/features",
+        ...FEATURE_PAGES.flatMap(({ slug }) =>
+          SITE_LANGUAGES.map((language) => localePath(language, `/features/${slug}`))
+        ),
         "/docs/api",
         "/docs",
         ...DOC_SLUGS.map((slug) => `/docs/${slug}`),
@@ -981,7 +985,10 @@ describe("the public website", () => {
     )
     expect(english).toEqual({
       "/": "2026-11-16T00:00:00.000Z",
-      "/features": "2026-11-16T00:00:00.000Z",
+      "/features": "2026-11-18T00:00:00.000Z",
+      ...Object.fromEntries(
+        FEATURE_PAGES.map(({ slug, updated }) => [`/features/${slug}`, `${updated}T00:00:00.000Z`]),
+      ),
       "/docs/api": "2026-10-23T00:00:00.000Z",
       // With no history to read, as under `deno test`, the guides and the changelog carry the day
       // they were first published.

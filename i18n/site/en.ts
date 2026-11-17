@@ -244,6 +244,9 @@ export default {
   "FeatureTeams.fact1": "The household is the one boundary every piece of data is checked against",
   "FeatureTeams.fact2": "Each person sees only the households they belong to",
   "FeatureTeams.fact3": "Invitations, role changes and ownership transfer, each with its own tests",
+  "FeatureTeams.notYetClosedSignUp":
+    "Joining from an invitation while the server's sign-up is closed",
+  "FeatureTeams.notYetGroupWord": "The app still says “group” where it means household",
   "FeatureTeams.code": "Read the groups domain",
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Your data leaves with you",
@@ -263,21 +266,18 @@ export default {
   "FeatureLanguages.fact2": "Numbers and dates through the browser's own Intl",
   "FeatureLanguages.fact3": "Arabic pages read right to left",
   "FeatureLanguages.code": "Read the translation guide",
-  "FeatureRealtime.nav": "Live sync",
-  "FeatureRealtime.title": "Changes show up on every device without a reload",
-  "FeatureRealtime.lead":
-    "When one person in the household changes something, everyone else sees it at once, on every open device. A laptop that wakes from sleep catches up on what it missed.",
-  "FeatureRealtime.fact1": "A standard WebSocket, with a sequence number on every change",
-  "FeatureRealtime.fact2": "A device that reconnects pulls what it missed",
-  "FeatureRealtime.code": "Read the realtime design",
-  "FeatureOffline.nav": "Offline app",
-  "FeatureOffline.title": "An app that opens with no network",
-  "FeatureOffline.lead":
-    "Install Financy on your phone or computer, and it opens with no network, showing what it last saw.",
-  "FeatureOffline.fact1":
-    "A local copy of each list in IndexedDB, and a write queue with idempotency keys",
-  "FeatureOffline.fact2": "“Keep mine” or “Use the server's” for each conflict",
-  "FeatureOffline.code": "Read docs/offline.md",
+  "FeatureLiveSync.nav": "Live sync",
+  "FeatureLiveSync.title": "Live on every device, even offline",
+  "FeatureLiveSync.lead":
+    "When one person in the household changes something, everyone else sees it at once, with no reload. Install Financy on your phone or computer, and it opens with no network and sends the transactions you added when you're back online.",
+  "FeatureLiveSync.fact1": "A standard WebSocket, with a sequence number on every change",
+  "FeatureLiveSync.fact2": "A device that reconnects pulls what it missed",
+  "FeatureLiveSync.fact3":
+    "A local copy in IndexedDB, and a queue of offline changes with idempotency keys",
+  "FeatureLiveSync.notYetSetup": "Changing accounts, categories and budgets with no network",
+  "FeatureLiveSync.notYetRates": "Exchange rates you can read with no network",
+  "FeatureLiveSync.notYetStores": "Apps in Google Play and the App Store",
+  "FeatureLiveSync.code": "Read the realtime design",
   "FeatureDeploy.nav": "Self-hosting",
   "FeatureDeploy.title": "Runs on your own server",
   "FeatureDeploy.lead":
@@ -287,6 +287,7 @@ export default {
   "FeatureDeploy.fact3": "Metrics, logs and alerts with VictoriaMetrics, VictoriaLogs and Grafana",
   "FeatureDeploy.fact4":
     "An opt-in daily encrypted backup of the database, with written restore steps",
+  "FeatureDeploy.notYetRehearsed": "An install time measured on a fresh server",
   "FeatureDeploy.code": "Read the Compose files",
   "FeaturesFaq.serverlessQuestion": "Can I run Financy on shared hosting or serverless?",
   "FeaturesFaq.serverlessAnswer":
@@ -423,135 +424,114 @@ export default {
   "FeaturePage.otherFeatures": "Other features",
   "FeaturePage.readMore": "Read more about {name}",
   "FeaturePage.all": "All features",
-  "FeaturePage.runtimeQuestion": "Does Seed run on Node or Bun?",
-  "FeaturePage.runtimeAnswer":
-    "Yes. The API, the background worker and the website run on Deno, Node or Bun, picked by one setting (APP_RUNTIME). Seed's own tasks run on Deno, which npm or Bun installs for you. See the runtimes section on the features page.",
+  "FeaturePage.demo": "Try it in the demo, no account needed",
+  "FeaturePageMultiCurrency.name": "Several currencies",
+  "FeaturePageMultiCurrency.title": "Track money in several currencies as one total",
+  "FeaturePageMultiCurrency.description":
+    "Keep each account in its own currency and see every total in your household's main one, converted at the rate of the day the money moved.",
+  "FeaturePageMultiCurrency.h1": "See balances in several currencies as one total",
+  "FeaturePageMultiCurrency.answer":
+    "Yes. Each account keeps its own currency, and Financy adds them up in your household's main currency at each day's exchange rate. A transaction paid in another currency keeps its own amount next to the converted one.",
+  "FeaturePageMultiCurrency.summary":
+    "Every account in its own currency, every total in your main one.",
+  "FeaturePageMultiCurrency.how1":
+    "Your household picks one main currency. Every day, Financy fetches the European Central Bank's exchange rates. When you add a transaction in another currency than its account's, Financy converts it at the rate of the transaction's own date and saves both amounts. Type both amounts yourself, and your own rate is kept instead.",
+  "FeaturePageMultiCurrency.how2":
+    "The overview shows your income, spending and the household's total in the main currency. When a currency has no rate, a total leaves it out and says so, rather than counting it as zero.",
+  "FeaturePageMultiCurrency.historyQuestion":
+    "Does a new exchange rate change my past transactions?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "No. A transaction in another currency saves its converted amount once, at the rate of its own date. A rate that comes later never rewrites it.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "Can we change our household's main currency later?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Yes. An admin or the owner of the household can change it at any time. No amount changes: each one stays in its own currency, and only the totals are converted again.",
+  "FeaturePageMultiCurrency.ownRateQuestion": "Can I enter the rate my bank actually charged?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Yes. Type both amounts, what you paid and what left your account, and Financy keeps your own rate instead of the day's rate.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "Does Financy have a daily rate for every currency?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "No. The European Central Bank's free daily rates cover about 30 currencies. Others, such as the Vietnamese dong, need a paid rate source that the server's owner turns on; without one, totals leave those amounts out and say so.",
+  "FeaturePageHouseholds.name": "Households",
+  "FeaturePageHouseholds.title": "A shared budget for couples, each with a login",
+  "FeaturePageHouseholds.description":
+    "Invite your partner or family into one household. Each person signs in with their own login and role, and everyone sees the same accounts and budgets.",
+  "FeaturePageHouseholds.h1": "Share a budget with your partner, each with your own login",
+  "FeaturePageHouseholds.answer":
+    "Yes. A household is the people who share money. Invite your partner or family, and each person signs in with their own login and a role, from viewer to owner, while everyone sees the same accounts, transactions and budgets.",
+  "FeaturePageHouseholds.summary": "One household, each person with their own login and role.",
+  "FeaturePageHouseholds.how1":
+    "Whoever creates a household owns it. The owner or an admin invites people with a link and picks each person's role. A viewer only reads. An editor also adds and changes accounts, transactions and budgets. An admin also manages the members, and the owner can hand the household over.",
+  "FeaturePageHouseholds.how2":
+    "The app calls a household a group. One login can belong to several households, such as a shared one and one of your own, and you switch between them. The activity log shows who changed what.",
+  "FeaturePageHouseholds.privateQuestion": "Can I keep some accounts hidden from my partner?",
+  "FeaturePageHouseholds.privateAnswer":
+    "No. Everyone in a household sees all of its accounts and transactions. Money you want to keep to yourself goes in a household of your own, which the same login can switch to.",
+  "FeaturePageHouseholds.viewerQuestion": "Can someone see our budget without changing it?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Yes. Give them the viewer role. A viewer sees the accounts, transactions and budgets, and the server refuses any change they try.",
+  "FeaturePageHouseholds.handOverQuestion": "Can I hand the household over to my partner?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Yes. The owner can make another member the owner. Every record stays where it is.",
+  "FeaturePageHouseholds.restoreQuestion": "Can we get a deleted household back?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Yes. Only the owner can delete a household, and the owner can restore it within 30 days.",
+  "FeaturePageLiveSync.name": "Live sync",
+  "FeaturePageLiveSync.title": "Live sync of your budget on every device",
+  "FeaturePageLiveSync.description":
+    "When your partner adds a transaction, it shows on your phone at once. Financy also opens with no network and sends your changes once you're back online.",
+  "FeaturePageLiveSync.h1": "Changes show on your partner's phone without reloading",
+  "FeaturePageLiveSync.answer":
+    "Yes. When someone in your household adds or changes something, everyone else sees it at once on every open device. A phone that was offline or asleep catches up as soon as it reconnects.",
+  "FeaturePageLiveSync.summary": "Changes show on every device at once, even after time offline.",
+  "FeaturePageLiveSync.how1":
+    "Each open copy of Financy keeps a connection to the server. When someone saves a change, the server sends it to everyone in the household straight away. A device that missed changes while it was away asks for them when it is back.",
+  "FeaturePageLiveSync.how2":
+    "Install Financy from your browser on a phone or computer, and it opens with no network, showing what it last saw. Transactions and transfers you add, change or delete offline wait on the device and are sent when you reconnect.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "Can I add a transaction with no internet?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Yes. Transactions and transfers you add, change or delete offline are kept on your device and sent to the server when the connection is back.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "Can I change accounts or budgets offline?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "No. Accounts, categories and budgets show offline as they were last seen, but changing them needs a connection.",
+  "FeaturePageLiveSync.overwriteQuestion": "Can a change made offline overwrite my partner's?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "No. If the same transaction changed on the server meanwhile, the server refuses yours, and your device keeps it for you to settle. Nothing is overwritten on its own.",
+  "FeaturePageLiveSync.storesQuestion": "Is Financy in the App Store or Google Play?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Not yet. Today you install Financy from your browser on a phone or computer, and it opens with no network.",
+  "FeaturePageSelfHosting.name": "Self-hosting",
+  "FeaturePageSelfHosting.title": "Run a budget app on your own server",
+  "FeaturePageSelfHosting.description":
+    "Run Financy for your household on a server you rent or own, with Docker Compose. Your records stay on your server, and you pay only for the server.",
+  "FeaturePageSelfHosting.h1": "Run a budget app on your own server",
+  "FeaturePageSelfHosting.answer":
+    "Yes. Financy runs with Docker Compose on an Ubuntu server you rent or own. Under the AGPL-3.0 licence you pay only for the server, and your household's records stay on it.",
+  "FeaturePageSelfHosting.summary": "Your household's records on your own server.",
+  "FeaturePageSelfHosting.how1":
+    "You need a server, a domain name and a mail account for sending sign-up codes. From your own computer, one command copies Financy to the server, builds it there and starts it. Its HTTPS certificate is issued and renewed on its own.",
+  "FeaturePageSelfHosting.how2":
+    "Leave billing off, and every household on your server gets every feature with no limits. Turn on the daily encrypted backup, and the upgrade guide moves you to each new release.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "Is the self-hosted Financy missing any features?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "No. It is the same code. With billing left off, every household on your server gets every feature, with no limit on members.",
+  "FeaturePageSelfHosting.mailQuestion": "Do I need a mail account to self-host Financy?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Yes. Financy emails a code to everyone who signs up, so the server needs an SMTP account from a mail provider. Without one, nobody can make an account.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "Can I move my household from financy.dev to my own server?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Yes. The household's owner exports it to a file, and you import that file on your server as a new household.",
+  "FeaturePageSelfHosting.backupQuestion": "Can Financy back up my server?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Yes. Turn on the daily backup, and every 24 hours it saves your household's records and files, encrypted, to storage outside the server. The backup guide also walks you through a test restore.",
+  "FeaturePageSelfHosting.installerQuestion": "Is there a one-click installer?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Not yet. You set Financy up from your own computer with Deno, rsync and git, and one command deploys it. The self-hosting guide walks through every step.",
   "FeaturePageMissing.title": "This feature page isn't here",
   "FeaturePageMissing.description": "It may have moved. Every feature is on the features page.",
   "FeaturePageMissing.action": "See all features",
-  "FeaturePageSignIn.name": "Sign-in",
-  "FeaturePageSignIn.title": "Sign-in for your SaaS, without an auth service",
-  "FeaturePageSignIn.description":
-    "Passkeys, sign-in codes by email, Google, GitHub and two-factor, checked by your own API with no auth service or fee per user. Free and MIT-licensed.",
-  "FeaturePageSignIn.h1": "Passkeys and sign-in for your SaaS, without an auth service",
-  "FeaturePageSignIn.answer":
-    "Seed signs people in with passkeys, sign-in codes by email, Google and GitHub, checked by its own API on your server, with no third-party auth service. Passwords, passkeys and sign-in codes work as soon as you deploy, with no fee per user; Google and GitHub each need two keys in the env file.",
-  "FeaturePageSignIn.summary":
-    "Passkeys, sign-in codes by email, Google, GitHub and two-factor, with no auth service.",
-  "FeaturePageSignIn.how1":
-    "The API checks every sign-in itself and answers with a signed session cookie. A passkey uses the browser's own WebAuthn: the server keeps only its public key, and each sign-in challenge works once. A sign-in code by email signs in or signs up, works once, for 10 minutes, only in the browser that asked, and is stored only as a hash.",
-  "FeaturePageSignIn.how2":
-    "An authenticator app adds two-factor sign-in. The profile lists every way into the account and every signed-in device, and changing a way in asks for proof and sends an email. A visitor can also start in a guest account and add a way to sign in later.",
-  "FeaturePageSignIn.authServiceQuestion": "Do I need an auth service?",
-  "FeaturePageSignIn.authServiceAnswer":
-    "No. Seed's own API checks passwords, passkeys, sign-in codes and the answers from Google and GitHub, on your server, so nothing is billed per user.",
-  "FeaturePageSignIn.passkeysQuestion": "Does Seed support passkeys?",
-  "FeaturePageSignIn.passkeysAnswer":
-    "Yes. People add a passkey on their profile and sign in with it; the server stores only its public key, and each sign-in challenge works once.",
-  "FeaturePageSignIn.twoFactorQuestion": "Does Seed have two-factor authentication?",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "Yes. An authenticator app adds a one-time code at sign-in, also after a sign-in with Google or GitHub.",
-  "FeaturePageSignIn.providersOffQuestion": "Can I leave Google or GitHub sign-in out?",
-  "FeaturePageSignIn.providersOffAnswer":
-    "Yes. Each one is off until both of its variables are set in the env file, so leaving them out turns it off.",
-  "FeaturePageGroups.name": "Groups and roles",
-  "FeaturePageGroups.title": "Groups and roles for your SaaS, without the plumbing",
-  "FeaturePageGroups.description":
-    "Groups with roles from viewer to owner, invitations, ownership transfer and an activity log, with one tenancy check for all data. Free and MIT-licensed.",
-  "FeaturePageGroups.h1": "Groups and roles for your SaaS, without building multi-tenancy",
-  "FeaturePageGroups.answer":
-    "Seed gives every account a personal group at sign-up, and people make shared groups, invite others and give them roles from viewer to owner. The group is the one tenancy boundary, so a feature you add passes the same check as soon as it copies the notes aggregate.",
-  "FeaturePageGroups.summary":
-    "Groups with roles from viewer to owner, invitations and an activity log.",
-  "FeaturePageGroups.how1":
-    "Every row of shared data belongs to a group, and the API checks the person's role in that group before it reads or writes. A viewer reads, an editor also changes the group's data, and an admin and the owner also manage members and read the activity log.",
-  "FeaturePageGroups.how2":
-    "The owner hands ownership over in one step, and a deleted group can be restored within 30 days. Only an account whose email address is confirmed can invite.",
-  "FeaturePageGroups.personalGroupQuestion": "Does every account get a group?",
-  "FeaturePageGroups.personalGroupAnswer":
-    "Yes. Each account gets a personal group at sign-up; a personal group and a shared one pass the same check.",
-  "FeaturePageGroups.viewerQuestion": "Can a viewer change a group's data?",
-  "FeaturePageGroups.viewerAnswer":
-    "No. A viewer reads the group's data; an editor, an admin or the owner can change it.",
-  "FeaturePageGroups.restoreQuestion": "Can a deleted group come back?",
-  "FeaturePageGroups.restoreAnswer":
-    "Yes. Its owner can restore it within 30 days; after that the worker removes it for good.",
-  "FeaturePageGroups.secondModelQuestion":
-    "Do I need a second permission system for my own features?",
-  "FeaturePageGroups.secondModelAnswer":
-    "No. A new aggregate copies the notes aggregate and its group check, so there is one permission model to keep.",
-  "FeaturePageRealtime.name": "Realtime sync",
-  "FeaturePageRealtime.title": "Realtime sync for your SaaS, without a hosted service",
-  "FeaturePageRealtime.description":
-    "A change saved in one tab shows in every other open tab of the group within a second, over a WebSocket from your own API. Free and MIT-licensed.",
-  "FeaturePageRealtime.h1": "Realtime updates for your SaaS, without a hosted realtime service",
-  "FeaturePageRealtime.answer":
-    "Seed sends each saved change to every open tab of the group over a WebSocket from its own API, so a note saved in one window shows in the others within a second, with no reload. It runs on your server with no realtime service to pay for; a feature you add gets it by copying the notes example.",
-  "FeaturePageRealtime.summary":
-    "A change saved in one tab shows in every other open tab, with no reload.",
-  "FeaturePageRealtime.how1":
-    "Each write is committed with the group's next sequence number, and the API pushes it to every member's open socket. A tab applies a change only when its number follows the last one it has; on a gap it asks the server for everything after its cursor, so a dropped message costs one extra request and never a wrong list.",
-  "FeaturePageRealtime.how2":
-    "A laptop that wakes from sleep reconnects and pulls what it missed. With the socket switched off, the app reads and writes over HTTP and checks for changes every 30 seconds.",
-  "FeaturePageRealtime.realtimeQuestion": "Does Seed update in realtime?",
-  "FeaturePageRealtime.realtimeAnswer":
-    "Yes. A saved change shows in every open tab of the group within a second, with no reload.",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "Do I need Pusher, Ably or another realtime service?",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "No. The WebSocket is served by Seed's own API on your server.",
-  "FeaturePageRealtime.realtimeSleepQuestion": "Does a tab catch up after the laptop sleeps?",
-  "FeaturePageRealtime.realtimeSleepAnswer":
-    "Yes. It reconnects and pulls every change after the last one it had.",
-  "FeaturePageRealtime.realtimeOffQuestion": "Can I turn realtime off?",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "Yes. Set SPA_REALTIME=false: the app then checks for changes every 30 seconds and works the same.",
-  "FeaturePageOffline.name": "Offline app",
-  "FeaturePageOffline.title": "Offline app for your SaaS, without building sync",
-  "FeaturePageOffline.description":
-    "An installable app that opens with no network, keeps every list on the device and queues edits until the connection returns. Free and MIT-licensed.",
-  "FeaturePageOffline.h1": "An offline-first app for your SaaS, without a sync engine to build",
-  "FeaturePageOffline.answer":
-    "Seed's app installs like a native one, opens with no network, shows every list it last saw and lets people add, edit and delete notes and tags offline. Your own feature picks one of three levels, online only, readable offline or writable offline, and follows the written recipe for it.",
-  "FeaturePageOffline.summary":
-    "An installable app that opens with no network and syncs when it returns.",
-  "FeaturePageOffline.how1":
-    'The device keeps an IndexedDB copy of each list, and writes wait in a queue with idempotency keys, so a change sent twice is applied once. A change the server cannot take shows as a conflict with "Keep mine" or "Use the server\'s"; nothing is overwritten on its own.',
-  "FeaturePageOffline.how2":
-    "A service worker keeps the app's page, scripts and styles, so it opens with no network. Sign-in, deleted items and two-factor set-up need the network.",
-  "FeaturePageOffline.offlineQuestion": "Does Seed work offline?",
-  "FeaturePageOffline.offlineAnswer":
-    "Yes. The app opens with no network and shows every list it last saw.",
-  "FeaturePageOffline.offlineEditsQuestion": "Can people edit while offline?",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "Yes. Notes and tags work offline; other changes need the network, and the screen says so.",
-  "FeaturePageOffline.conflictQuestion": "Does Seed catch two people changing the same note?",
-  "FeaturePageOffline.conflictAnswer":
-    'Yes. The later change shows as a conflict, and its author picks "Keep mine" or "Use the server\'s".',
-  "FeaturePageOffline.removeOfflineQuestion": "Can I remove offline support?",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "Yes. Turn it off with one switch, or delete one folder and follow the written checklist; a test fails when a step is missed.",
-  "FeaturePageDeploy.name": "Deploy",
-  "FeaturePageDeploy.title": "Deploy your SaaS, without a cloud platform bill",
-  "FeaturePageDeploy.description":
-    "Docker Compose on one Linux server you rent: Traefik, Postgres, Valkey, S3 files, monitoring and backups, deployed in one command. Free and MIT-licensed.",
-  "FeaturePageDeploy.h1": "Self-host your SaaS on one server, without a cloud platform bill",
-  "FeaturePageDeploy.answer":
-    "Seed runs on a Linux server you rent, with Docker Compose in development and production alike, and one command ships it. You prepare the server once with the written steps, then every later deploy is that command alone.",
-  "FeaturePageDeploy.summary": "One Linux server, Docker Compose and one command to deploy.",
-  "FeaturePageDeploy.how1":
-    "The deploy copies the project to the server over SSH and starts it with Compose; on every deploy a one-shot service applies the database migrations. Traefik sits in front and asks Let's Encrypt for each host's certificate.",
-  "FeaturePageDeploy.how2":
-    "Postgres, Valkey, an S3 file store, metrics, logs and dashboards with alerts run beside the apps, and several products can share one server behind the same proxy.",
-  "FeaturePageDeploy.kubernetesQuestion": "Do I need Kubernetes?",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "No. Docker Compose on one server runs the whole product, in development and in production.",
-  "FeaturePageDeploy.severalQuestion": "Can several products share one server?",
-  "FeaturePageDeploy.severalAnswer":
-    "Yes. They share one proxy, and each keeps its own directory, database and data; share a server only between products you trust alike.",
-  "FeaturePageDeploy.backupQuestion": "Is there a backup?",
-  "FeaturePageDeploy.backupAnswer":
-    "Yes. An opt-in daily encrypted restic backup of the database, with a written restore.",
   "ErrorPage.status": "See what works today",
   "HomeHero.notify": "Get notified",
   "HomeHero.selfHost": "Self-host Financy",
@@ -648,6 +628,20 @@ export default {
   "FeatureRecurring.fact3":
     "Adding a repeating entry needs the Household plan; reading them never does, checked on the server",
   "FeatureRecurring.code": "Read the repeating entries domain",
+  "FeatureMultiCurrency.nav": "Currencies",
+  "FeatureMultiCurrency.title": "Many currencies, one total",
+  "FeatureMultiCurrency.lead":
+    "Pick your household's main currency, and every total is converted into it at the rate of the day the money moved. A transaction in another currency keeps its own amount next to the converted one.",
+  "FeatureMultiCurrency.fact1":
+    "Daily reference rates from the European Central Bank, through Frankfurter, with no key needed",
+  "FeatureMultiCurrency.fact2":
+    "A converted amount is stored once, at the rate of its own date, and never rewritten",
+  "FeatureMultiCurrency.fact3":
+    "A currency with no rate is left out of a total and named, never counted as 0",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Budget figures converted from another currency don't say “about” or the rate's date yet",
+  "FeatureMultiCurrency.notYetOffline": "Exchange rates you can read with no network",
+  "FeatureMultiCurrency.code": "Read the money domain",
   "FeatureTransactions.nav": "Transactions",
   "FeatureTransactions.title": "Every expense and income, in the currency you paid",
   "FeatureTransactions.lead":

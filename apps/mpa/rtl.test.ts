@@ -33,7 +33,7 @@ const handler = new App<State>()
   .handler()
 
 /** The Arabic pages that draw arrows in their own content. */
-const ARABIC_PAGES = [`/ar`, `/ar/features/sign-in`]
+const ARABIC_PAGES = [`/ar`, `/ar/features/households`]
 
 /**
  * The class preact-icons gives a glyph that points along the reading direction; the built

@@ -252,19 +252,6 @@ export default {
   "FeatureLanguages.fact2": "الأرقام والتواريخ عبر Intl المدمج في المتصفح",
   "FeatureLanguages.fact3": "الصفحات العربية تُقرأ من اليمين إلى اليسار",
   "FeatureLanguages.code": "اقرأ دليل الترجمة",
-  "FeatureRealtime.nav": "المزامنة",
-  "FeatureRealtime.title": "تظهر التغييرات على كل جهاز دون إعادة تحميل",
-  "FeatureRealtime.lead":
-    "حين يغيّر أحد أفراد الأسرة شيئًا، يراه الآخرون فورًا على كل جهاز مفتوح. والحاسوب المحمول الذي يخرج من وضع السكون يجلب ما فاته.",
-  "FeatureRealtime.fact1": "WebSocket قياسي، برقم تسلسلي على كل تغيير",
-  "FeatureRealtime.fact2": "الجهاز الذي يعيد الاتصال يجلب ما فاته",
-  "FeatureRealtime.code": "اقرأ تصميم التحديث الفوري",
-  "FeatureOffline.nav": "التطبيق دون اتصال",
-  "FeatureOffline.title": "تطبيق يفتح دون شبكة",
-  "FeatureOffline.lead": "ثبّت Financy على هاتفك أو حاسوبك، فيفتح دون اتصال ويعرض آخر ما رآه.",
-  "FeatureOffline.fact1": "نسخة محلية من كل قائمة في IndexedDB، وطابور كتابة بمفاتيح عدم التكرار",
-  "FeatureOffline.fact2": "«احتفظ بنسختي» أو «استخدم نسخة الخادم» لكل تعارض",
-  "FeatureOffline.code": "اقرأ docs/offline.md",
   "FeatureDeploy.nav": "الاستضافة الذاتية",
   "FeatureDeploy.title": "يعمل على خادمك الخاص",
   "FeatureDeploy.lead":
@@ -410,132 +397,9 @@ export default {
   "FeaturePage.otherFeatures": "ميزات أخرى",
   "FeaturePage.readMore": "اقرأ المزيد عن {name}",
   "FeaturePage.all": "كل الميزات",
-  "FeaturePage.runtimeQuestion": "هل يعمل Seed على Node أو Bun؟",
-  "FeaturePage.runtimeAnswer":
-    "نعم. تعمل الواجهة البرمجية (API) والعامل الخلفي والموقع على Deno أو Node أو Bun، ويختار بينها إعداد واحد (APP_RUNTIME). أما مهام Seed فتعمل على Deno، ويثبّته لك npm أو Bun. اطّلع على قسم بيئات التشغيل في صفحة الميزات.",
   "FeaturePageMissing.title": "صفحة هذه الميزة غير موجودة",
   "FeaturePageMissing.description": "ربما انتقلت. كل الميزات موجودة في صفحة الميزات.",
   "FeaturePageMissing.action": "عرض كل الميزات",
-  "FeaturePageSignIn.name": "تسجيل الدخول",
-  "FeaturePageSignIn.title": "تسجيل الدخول لمنتج SaaS دون خدمة مصادقة خارجية",
-  "FeaturePageSignIn.description":
-    "مفاتيح المرور، ورموز تسجيل الدخول عبر البريد، وGoogle وGitHub، والتحقق بخطوتين، تتحقق منها واجهة API الخاصة بك دون خدمة مصادقة أو رسوم لكل مستخدم. مجاني بترخيص MIT.",
-  "FeaturePageSignIn.h1": "مفاتيح المرور وتسجيل الدخول لمنتج SaaS، دون خدمة مصادقة",
-  "FeaturePageSignIn.answer":
-    "يسجّل Seed دخول المستخدمين بمفاتيح المرور، ورموز تسجيل الدخول عبر البريد، وGoogle وGitHub، وتتحقق واجهة API الخاصة به من كل ذلك على خادمك، دون أي خدمة مصادقة خارجية. تعمل كلمات المرور ومفاتيح المرور ورموز تسجيل الدخول فور النشر، دون رسوم لكل مستخدم؛ ويحتاج كل من Google وGitHub إلى مفتاحين في ملف env.",
-  "FeaturePageSignIn.summary":
-    "مفاتيح المرور، ورموز تسجيل الدخول عبر البريد، وGoogle وGitHub، والتحقق بخطوتين، دون خدمة مصادقة.",
-  "FeaturePageSignIn.how1":
-    "تتحقق واجهة API بنفسها من كل تسجيل دخول، وتردّ بملف تعريف ارتباط (cookie) موقّع للجلسة. ويستخدم مفتاح المرور تقنية WebAuthn المدمجة في المتصفح: لا يحتفظ الخادم إلا بمفتاحه العام، وكل تحدٍّ لتسجيل الدخول صالح لمرة واحدة. أما رمز تسجيل الدخول عبر البريد فيسجّل الدخول أو ينشئ حسابًا، وهو صالح لمرة واحدة ولمدة 10 دقائق، في المتصفح الذي طلبه فقط، ولا يُخزَّن إلا على شكل تجزئة (hash).",
-  "FeaturePageSignIn.how2":
-    "يضيف تطبيق المصادقة التحقق بخطوتين. ويعرض الملف الشخصي كل طرق الدخول إلى حساب المستخدم وكل جهاز مسجّل دخوله، وتغيير أي طريقة دخول يتطلب إثبات الهوية ويرسل رسالة بريد. ويمكن للزائر أيضًا أن يبدأ بحساب ضيف ويضيف طريقة لتسجيل الدخول لاحقًا.",
-  "FeaturePageSignIn.authServiceQuestion": "هل أحتاج إلى خدمة مصادقة؟",
-  "FeaturePageSignIn.authServiceAnswer":
-    "لا. تتحقق واجهة API الخاصة بـSeed من كلمات المرور ومفاتيح المرور ورموز تسجيل الدخول وردود Google وGitHub على خادمك، فلا تدفع شيئًا لكل مستخدم.",
-  "FeaturePageSignIn.passkeysQuestion": "هل يدعم Seed مفاتيح المرور (passkeys)؟",
-  "FeaturePageSignIn.passkeysAnswer":
-    "نعم. يضيف الناس مفتاح مرور من ملفهم الشخصي ويسجّلون الدخول به؛ لا يخزّن الخادم إلا مفتاحه العام، وكل تحدٍّ لتسجيل الدخول يعمل مرة واحدة.",
-  "FeaturePageSignIn.twoFactorQuestion": "هل يدعم Seed المصادقة الثنائية (التحقق بخطوتين)؟",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "نعم. يضيف تطبيق المصادقة رمزًا لمرة واحدة عند تسجيل الدخول، حتى بعد تسجيل الدخول عبر Google أو GitHub.",
-  "FeaturePageSignIn.providersOffQuestion":
-    "هل يمكنني الاستغناء عن تسجيل الدخول عبر Google أو GitHub؟",
-  "FeaturePageSignIn.providersOffAnswer":
-    "نعم. كل منهما متوقف حتى يُضبط متغيّراه كلاهما في ملف env، فإن تركتهما بقي متوقفًا.",
-  "FeaturePageGroups.name": "المجموعات والأدوار",
-  "FeaturePageGroups.title": "مجموعات وأدوار لمنتج SaaS، دون بناء الأساس بنفسك",
-  "FeaturePageGroups.description":
-    "مجموعات بأدوار من قارئ إلى مالك، ودعوات، ونقل للملكية، وسجل نشاط، مع فحص واحد بين المستأجرين يشمل كل البيانات. مجاني بترخيص MIT.",
-  "FeaturePageGroups.h1": "مجموعات وأدوار لمنتج SaaS، دون بناء تعدد المستأجرين بنفسك",
-  "FeaturePageGroups.answer":
-    "يمنح Seed كل حساب مستخدم مجموعة شخصية عند إنشائه، وينشئ الناس مجموعات مشتركة، ويدعون غيرهم، ويمنحونهم أدوارًا من قارئ إلى مالك. المجموعة هي الحد الوحيد بين المستأجرين، فأي ميزة تضيفها تمر بالفحص نفسه بمجرد أن تنسخ ميزة الملاحظات.",
-  "FeaturePageGroups.summary": "مجموعات بأدوار من قارئ إلى مالك، ودعوات، وسجل نشاط.",
-  "FeaturePageGroups.how1":
-    "كل صف من البيانات المشتركة ينتمي إلى مجموعة، ويفحص الـAPI دور الشخص في تلك المجموعة قبل أن يقرأ أو يكتب. القارئ يقرأ، والمحرر يغيّر بيانات المجموعة أيضًا، والمسؤول والمالك يديران الأعضاء أيضًا ويقرآن سجل النشاط.",
-  "FeaturePageGroups.how2":
-    "ينقل المالك الملكية بخطوة واحدة، ويمكن استعادة المجموعة المحذوفة خلال 30 يومًا. ولا يستطيع الدعوة إلا حساب مستخدم أكّد بريده الإلكتروني.",
-  "FeaturePageGroups.personalGroupQuestion": "هل يحصل كل حساب مستخدم على مجموعة؟",
-  "FeaturePageGroups.personalGroupAnswer":
-    "نعم. يحصل كل حساب مستخدم على مجموعة شخصية عند إنشائه؛ والمجموعة الشخصية والمشتركة تمران بالفحص نفسه.",
-  "FeaturePageGroups.viewerQuestion": "هل يستطيع القارئ تغيير بيانات المجموعة؟",
-  "FeaturePageGroups.viewerAnswer":
-    "لا. يقرأ القارئ بيانات المجموعة؛ أما المحرر أو المسؤول أو المالك فيستطيع تغييرها.",
-  "FeaturePageGroups.restoreQuestion": "هل يمكن استعادة مجموعة محذوفة؟",
-  "FeaturePageGroups.restoreAnswer":
-    "نعم. يستطيع مالكها استعادتها خلال 30 يومًا؛ وبعد ذلك يحذفها العامل نهائيًا.",
-  "FeaturePageGroups.secondModelQuestion": "هل أحتاج إلى نظام صلاحيات ثانٍ لميزاتي الخاصة؟",
-  "FeaturePageGroups.secondModelAnswer":
-    "لا. الميزة الجديدة تنسخ ميزة الملاحظات وفحص المجموعة فيها، فيبقى لديك نموذج صلاحيات واحد تعتني به.",
-  "FeaturePageRealtime.name": "المزامنة الفورية",
-  "FeaturePageRealtime.title": "مزامنة فورية لمنتج SaaS، دون خدمة مستضافة",
-  "FeaturePageRealtime.description":
-    "التغيير المحفوظ في علامة تبويب يظهر خلال ثانية في كل علامة تبويب أخرى مفتوحة للمجموعة، عبر WebSocket من الـAPI الخاص بك. مجاني بترخيص MIT.",
-  "FeaturePageRealtime.h1": "تحديثات فورية لمنتج SaaS، دون خدمة تحديث فوري مستضافة",
-  "FeaturePageRealtime.answer":
-    "يرسل Seed كل تغيير محفوظ إلى كل علامة تبويب مفتوحة للمجموعة عبر WebSocket من الـAPI الخاص به، فالملاحظة المحفوظة في نافذة تظهر في النوافذ الأخرى خلال ثانية، دون إعادة تحميل. يعمل ذلك على خادمك دون خدمة تحديث فوري تدفع لها؛ وأي ميزة تضيفها تحصل عليه بنسخ مثال الملاحظات.",
-  "FeaturePageRealtime.summary":
-    "التغيير المحفوظ في علامة تبويب يظهر في كل علامة تبويب مفتوحة أخرى، دون إعادة تحميل.",
-  "FeaturePageRealtime.how1":
-    "تُحفظ كل عملية كتابة مع الرقم التسلسلي التالي للمجموعة، ويدفعها الـAPI إلى كل اتصال مفتوح لأعضائها. ولا تطبّق علامة التبويب التغيير إلا إذا تلا رقمُه آخرَ رقم لديها؛ وعند وجود فجوة تطلب من الخادم كل ما بعد مؤشرها، فالرسالة الضائعة تكلّف طلبًا إضافيًا واحدًا ولا تنتج قائمة خاطئة أبدًا.",
-  "FeaturePageRealtime.how2":
-    "الحاسوب المحمول الذي يستيقظ من السكون يعيد الاتصال ويجلب ما فاته. وإذا أُوقف الـWebSocket، يقرأ التطبيق ويكتب عبر HTTP ويتحقق من التغييرات كل 30 ثانية.",
-  "FeaturePageRealtime.realtimeQuestion": "هل يدعم Seed التحديث الفوري؟",
-  "FeaturePageRealtime.realtimeAnswer":
-    "نعم. يظهر التغيير المحفوظ في كل علامة تبويب مفتوحة للمجموعة خلال ثانية، دون إعادة تحميل.",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "هل أحتاج إلى Pusher أو Ably أو خدمة تحديث فوري أخرى؟",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "لا. يقدّم الـAPI الخاص بـSeed اتصال WebSocket من خادمك.",
-  "FeaturePageRealtime.realtimeSleepQuestion":
-    "هل تلحق علامة التبويب بما فاتها بعد سكون الحاسوب المحمول؟",
-  "FeaturePageRealtime.realtimeSleepAnswer": "نعم. تعيد الاتصال وتجلب كل تغيير بعد آخر تغيير لديها.",
-  "FeaturePageRealtime.realtimeOffQuestion": "هل يمكنني إيقاف التحديث الفوري؟",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "نعم. اضبط SPA_REALTIME=false: عندها يتحقق التطبيق من التغييرات كل 30 ثانية ويعمل بالطريقة نفسها.",
-  "FeaturePageOffline.name": "التطبيق دون اتصال",
-  "FeaturePageOffline.title": "منتج SaaS يعمل دون اتصال، دون بناء المزامنة بنفسك",
-  "FeaturePageOffline.description":
-    "تطبيق قابل للتثبيت يفتح دون شبكة، ويحفظ كل قائمة على الجهاز، ويضع التعديلات في قائمة انتظار حتى يعود الاتصال. مجاني بترخيص MIT.",
-  "FeaturePageOffline.h1": "تطبيق يعمل دون اتصال أولًا لمنتج SaaS، دون بناء محرك مزامنة",
-  "FeaturePageOffline.answer":
-    "يُثبَّت تطبيق Seed كأي تطبيق أصلي، ويفتح دون شبكة، ويعرض كل قائمة رآها آخر مرة، ويتيح للناس إضافة الملاحظات والوسوم وتعديلها وحذفها دون اتصال. وميزتك الخاصة تختار أحد ثلاثة مستويات: عبر الإنترنت فقط، أو قابلة للقراءة دون اتصال، أو قابلة للكتابة دون اتصال، وتتبع الوصفة المكتوبة لذلك المستوى.",
-  "FeaturePageOffline.summary": "تطبيق قابل للتثبيت يفتح دون شبكة، ويزامن حين تعود.",
-  "FeaturePageOffline.how1":
-    "يحتفظ الجهاز بنسخة IndexedDB من كل قائمة، وتنتظر عمليات الكتابة في قائمة انتظار بمفاتيح منع التكرار، فالتغيير المرسَل مرتين يُطبَّق مرة واحدة. والتغيير الذي لا يقبله الخادم يظهر كتعارض مع «الاحتفاظ بنسختي» أو «استخدام نسخة الخادم»؛ ولا يُكتب شيء فوق غيره من تلقاء نفسه.",
-  "FeaturePageOffline.how2":
-    "يحتفظ عامل الخدمة (service worker) بصفحة التطبيق وسكربتاته وأنماطه، فيفتح دون شبكة. أما تسجيل الدخول والعناصر المحذوفة وإعداد التحقق بخطوتين فتحتاج إلى الشبكة.",
-  "FeaturePageOffline.offlineQuestion": "هل يعمل Seed دون اتصال بالإنترنت؟",
-  "FeaturePageOffline.offlineAnswer": "نعم. يفتح التطبيق دون شبكة ويعرض كل قائمة رآها آخر مرة.",
-  "FeaturePageOffline.offlineEditsQuestion": "هل يمكن للناس التعديل دون اتصال؟",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "نعم. تعمل الملاحظات والوسوم دون اتصال؛ أما التغييرات الأخرى فتحتاج إلى الشبكة، والشاشة تخبرك بذلك.",
-  "FeaturePageOffline.conflictQuestion": "هل يكتشف Seed تعديل شخصين للملاحظة نفسها؟",
-  "FeaturePageOffline.conflictAnswer":
-    "نعم. يظهر التغيير اللاحق كتعارض، ويختار صاحبه «الاحتفاظ بنسختي» أو «استخدام نسخة الخادم».",
-  "FeaturePageOffline.removeOfflineQuestion": "هل يمكنني إزالة دعم العمل دون اتصال؟",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "نعم. أوقفه بإعداد واحد، أو احذف مجلدًا واحدًا واتبع قائمة الخطوات المكتوبة؛ ويفشل اختبار إذا فاتتك خطوة.",
-  "FeaturePageDeploy.name": "النشر",
-  "FeaturePageDeploy.title": "انشر منتج SaaS دون فاتورة منصة سحابية",
-  "FeaturePageDeploy.description":
-    "Docker Compose على خادم Linux واحد تستأجره: Traefik وPostgres وValkey وملفات S3 ومراقبة ونسخ احتياطي، تُنشر بأمر واحد. مجاني بترخيص MIT.",
-  "FeaturePageDeploy.h1": "استضف منتج SaaS بنفسك على خادم واحد، دون فاتورة منصة سحابية",
-  "FeaturePageDeploy.answer":
-    "يعمل Seed على خادم Linux تستأجره، باستخدام Docker Compose في التطوير والإنتاج على حد سواء، وأمر واحد ينشره. تجهّز الخادم مرة واحدة بالخطوات المكتوبة، ثم يصبح كل نشر لاحق ذلك الأمر وحده.",
-  "FeaturePageDeploy.summary": "خادم Linux واحد، وDocker Compose، وأمر واحد للنشر.",
-  "FeaturePageDeploy.how1":
-    "ينسخ النشر المشروع إلى الخادم عبر SSH ويشغّله بـCompose؛ وفي كل نشر تطبّق خدمة تعمل مرة واحدة ترحيلات قاعدة البيانات. ويقف Traefik في الواجهة ويطلب من Let's Encrypt شهادة لكل نطاق.",
-  "FeaturePageDeploy.how2":
-    "تعمل Postgres وValkey ومخزن ملفات S3 والمقاييس والسجلات ولوحات المتابعة مع التنبيهات بجانب التطبيقات، ويمكن لعدة منتجات أن تتشارك خادمًا واحدًا خلف الخادم الوكيل نفسه.",
-  "FeaturePageDeploy.kubernetesQuestion": "هل أحتاج إلى Kubernetes؟",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "لا. Docker Compose على خادم واحد يشغّل المنتج كله، في التطوير وفي الإنتاج.",
-  "FeaturePageDeploy.severalQuestion": "هل يمكن لعدة منتجات أن تتشارك خادمًا واحدًا؟",
-  "FeaturePageDeploy.severalAnswer":
-    "نعم. تتشارك خادمًا وكيلًا واحدًا، ولكل منها مجلده وقاعدة بياناته وبياناته؛ ولا تُشارك خادمًا إلا بين منتجات تثق بها بالقدر نفسه.",
-  "FeaturePageDeploy.backupQuestion": "هل يوجد نسخ احتياطي؟",
-  "FeaturePageDeploy.backupAnswer":
-    "نعم. نسخة احتياطية يومية مشفّرة لقاعدة البيانات عبر restic عند تفعيلها، مع خطوات استعادة مكتوبة.",
   "ErrorPage.status": "اطّلع على ما يعمل اليوم",
   "HomeHero.notify": "أعلمني",
   "HomeHero.selfHost": "استضف Financy بنفسك",

@@ -311,6 +311,17 @@ export const NAV_LINKS = [
   { label: `SiteNav.github`, href: REPOSITORY_URL, Icon: IconGitHub },
 ] as const
 
+/**
+ * The public demo's `/try`, which starts a guest account in sample data: on the demo's own host
+ * when `DEMO_ORIGIN` sets one (demo.financy.dev), else on the app. Its links carry
+ * `rel="nofollow"`, since opening it makes an account.
+ */
+export function demoHref(
+  { spaOrigin, demoOrigin = spaOrigin }: Pick<State, "spaOrigin" | "demoOrigin">,
+): string {
+  return `${demoOrigin}/try`
+}
+
 /** The self-hosting guide, the site's main action: the header's button and the home page's. */
 export const SELF_HOST_GUIDE = `${DOCS_PATH}/self-host`
 

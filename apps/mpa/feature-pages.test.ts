@@ -82,11 +82,53 @@ describe("the feature pages", () => {
     }
   })
 
-  it("leaves out Limits, and its On this page entry, when the feature has nothing not built yet", async () => {
-    const signIn = await get(`/features/sign-in`)
+  it("draws each page's Not built yet items under Limits, with their issue links", async () => {
+    for (const page of FEATURE_PAGES) {
+      const { html } = await get(`/features/${page.slug}`)
+      const limits = html.match(/<section id="limits"[\s\S]*?<\/section>/)?.[0] ?? ``
 
-    expect(sectionIds(signIn.html)).not.toContain(`limits`)
-    expect(onThisPage(signIn.html)).not.toContain(`limits`)
+      expect(onThisPage(html), page.slug).toContain(`limits`)
+      expect(limits, page.slug).toMatch(/<li/)
+      expect(limits, page.slug).toMatch(
+        /href="https:\/\/github\.com\/spy4x\/(financy|seed)\/issues\/\d+"/,
+      )
+    }
+  })
+
+  it("links each page to the public demo's guest start, kept away from crawlers", async () => {
+    for (const page of FEATURE_PAGES) {
+      const { html } = await get(`/features/${page.slug}`)
+
+      expect(html, page.slug).toMatch(
+        /<a href="https:\/\/app\.example\.com\/try" rel="nofollow"[^>]*data-e2e="feature-page-demo"/,
+      )
+    }
+  })
+
+  it("sends the demo link to the demo's own host when one is set", async () => {
+    const withDemo = new App<State>()
+      .use(
+        pageMiddleware(
+          { ...config, demoOrigin: `https://demo.example.com` },
+          () => Promise.reject(new Error("the page called the API")),
+          () => true,
+        ),
+      )
+      .appWrapper(view(AppWrapper))
+      .layout("*", view(Layout))
+      .get("{/:lang}?/features/:slug", feature.GET!)
+      .handler()
+    const html = await (await withDemo(new Request(`${site}/features/households`), info)).text()
+
+    expect(html).toContain(`<a href="https://demo.example.com/try" rel="nofollow"`)
+  })
+
+  it("keeps each title under 60 characters with the site's name, and each description under 155", () => {
+    for (const page of FEATURE_PAGES) {
+      expect(`${page.title} · Financy`.length, page.title).toBeLessThan(60)
+      expect(page.description.length, page.description).toBeLessThan(155)
+      expect(page.description, page.slug).not.toMatch(/\bfree\b/i)
+    }
   })
 
   it("lists only the sections that have something to say", () => {
@@ -143,16 +185,16 @@ describe("the feature pages", () => {
   })
 
   it("answers another language's address in that language, its language picker keeping the page", async () => {
-    const { status, html } = await get(`/fr/features/sign-in`)
+    const { status, html } = await get(`/fr/features/households`)
 
     expect(status).toBe(200)
     expect(html).toMatch(/<html [^>]*lang="fr"/)
     // The language picker goes to the same page in German, not to /de/features.
-    expect(html).toContain(`<a href="/de/features/sign-in" hreflang="de"`)
+    expect(html).toContain(`<a href="/de/features/households" hreflang="de"`)
   })
 
   it("keeps a French page's links to the other feature pages in French", async () => {
-    const { html } = await get(`/fr/features/sign-in`)
+    const { html } = await get(`/fr/features/households`)
     const band = html.match(/id="other-features-title"[\s\S]*?data-e2e="feature-page-all"/)?.[0] ??
       ``
     const others = [...band.matchAll(/<a [^>]*href="([^"]*\/features\/[^"#]+)"/g)]
@@ -173,7 +215,7 @@ describe("the feature pages", () => {
     expect(html).toMatch(/<meta name="robots" content="noindex/)
   })
 
-  it("describes each page as about Seed, with its trail and its visible questions", async () => {
+  it("describes each page as about Financy, with its trail and its visible questions", async () => {
     for (const page of FEATURE_PAGES) {
       const graph = jsonLdGraph((await get(`/features/${page.slug}`)).html)
       const types = graph.map((entity) => entity["@type"])
@@ -186,6 +228,13 @@ describe("the feature pages", () => {
         [entity["@type"]].flat().includes(`SoftwareApplication`)
       )!
       expect(webPage.about, page.slug).toEqual({ "@id": software["@id"] })
+      expect(software.name, page.slug).toBe(`Financy`)
+      const trail = graph.find((entity) => entity["@type"] === `BreadcrumbList`) as {
+        itemListElement: { name: string }[]
+      }
+      expect(trail.itemListElement.map(({ name }) => name), page.slug).toEqual(
+        [`Financy`, `Features`, page.name],
+      )
       const faq = graph.find((entity) => entity["@type"] === `FAQPage`) as {
         mainEntity: { name: string }[]
       }
@@ -193,12 +242,13 @@ describe("the feature pages", () => {
     }
   })
 
-  it("starts every answer with Yes, No or Not yet", () => {
+  it("starts every answer with Yes, No or Not yet, in words that stand alone", () => {
     for (const page of FEATURE_PAGES) {
       expect(page.questions.length, page.slug).toBeGreaterThanOrEqual(3)
       expect(page.questions.length, page.slug).toBeLessThanOrEqual(5)
-      for (const { answer } of page.questions) {
+      for (const { answer } of [...page.questions, { answer: page.answer }]) {
         expect(answer, page.slug).toMatch(/^(Yes|No|Not yet)\. /)
+        expect(answer, page.slug).not.toMatch(/\b(above|below|see)\b/i)
       }
     }
   })
@@ -215,13 +265,17 @@ describe("the feature pages", () => {
     }
   })
 
-  it("links no feature page from /features in any language while the pages still describe Seed", async () => {
-    for (const path of [`/features`, `/de/features`]) {
+  it("links every feature page from its section on /features, in the page's language", async () => {
+    for (const [path, prefix] of [[`/features`, ``], [`/de/features`, `/de`]]) {
       const { html } = await get(path)
 
-      expect(html, path).not.toContain(`data-e2e="feature-more-link"`)
-      for (const page of FEATURE_PAGES) {
-        expect(html, path).not.toMatch(new RegExp(`href="(/de)?/features/${page.slug}"`))
+      for (const keys of KEYED_PAGES) {
+        const section = html.match(
+          new RegExp(`<section id="${keys.feature ?? keys.slug}"[\\s\\S]*?</section>`),
+        )?.[0] ?? ``
+        expect(section, `${path} ${keys.slug}`).toMatch(
+          new RegExp(`<a href="${prefix}/features/${keys.slug}"[^>]*data-e2e="feature-more-link"`),
+        )
       }
     }
   })

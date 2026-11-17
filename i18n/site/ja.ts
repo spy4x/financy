@@ -257,22 +257,6 @@ export default {
   "FeatureLanguages.fact2": "数値と日付はブラウザ標準の Intl で表示します",
   "FeatureLanguages.fact3": "アラビア語のページは右から左に表示されます",
   "FeatureLanguages.code": "翻訳ガイドを読む",
-  "FeatureRealtime.nav": "リアルタイム同期",
-  "FeatureRealtime.title": "変更は再読み込みなしで全端末に表示",
-  "FeatureRealtime.lead":
-    "世帯の誰かが何かを変えると、ほかの人は開いているすべての端末ですぐに見られます。スリープから復帰したノートパソコンは、その間の変更を取り込みます。",
-  "FeatureRealtime.fact1": "標準の WebSocket で、変更ごとに通し番号が付きます",
-  "FeatureRealtime.fact2": "再接続した端末は見逃した分を取得します",
-  "FeatureRealtime.code": "リアルタイムの設計を読む",
-  "FeatureOffline.nav": "オフラインアプリ",
-  "FeatureOffline.title": "ネットワークなしで開けるアプリ",
-  "FeatureOffline.lead":
-    "Financy をスマホやパソコンにインストールすると、ネットワークがなくても開き、最後に見た内容を表示します。",
-  "FeatureOffline.fact1":
-    "各リストのローカルコピーを IndexedDB に持ち、べき等キー付きの書き込みキューを使います",
-  "FeatureOffline.fact2":
-    "競合ごとに「自分のバージョンを残す」か「サーバーのバージョンを使う」かを選択",
-  "FeatureOffline.code": "docs/offline.mdを読む",
   "FeatureDeploy.nav": "セルフホスト",
   "FeatureDeploy.title": "あなたのサーバーで動く",
   "FeatureDeploy.lead":
@@ -413,136 +397,10 @@ export default {
   "FeaturePage.otherFeatures": "ほかの機能",
   "FeaturePage.readMore": "{name}について詳しく読む",
   "FeaturePage.all": "すべての機能",
-  "FeaturePage.runtimeQuestion": "SeedはNodeやBunで動きますか？",
-  "FeaturePage.runtimeAnswer":
-    "はい。API、バックグラウンドのワーカー、Webサイトは、設定ひとつ（APP_RUNTIME）でDeno・Node・Bunのどれでも動きます。Seed自体のタスクはDenoで動きますが、DenoはnpmやBunが自動でインストールします。詳しくは機能ページのランタイムの項目をご覧ください。",
   "FeaturePageMissing.title": "この機能ページは見つかりません",
   "FeaturePageMissing.description":
     "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",
   "FeaturePageMissing.action": "すべての機能を見る",
-  "FeaturePageSignIn.name": "ログイン",
-  "FeaturePageSignIn.title": "SaaSのログイン機能を、認証サービスなしで",
-  "FeaturePageSignIn.description":
-    "パスキー、メールのログインコード、Google、GitHub、2段階認証。自分のAPIで検証するので、認証サービスもユーザー単位の料金も不要です。無料・MITライセンス。",
-  "FeaturePageSignIn.h1": "SaaSにパスキーとログイン機能を、認証サービスなしで",
-  "FeaturePageSignIn.answer":
-    "Seedは、パスキー、メールのログインコード、Google、GitHubでのログインに対応し、その検証はサーバー上の自前のAPIが行います。外部の認証サービスは使いません。パスワード、パスキー、ログインコードはデプロイした時点で使え、ユーザー単位の料金はかかりません。GoogleとGitHubは、それぞれenvファイルに2つのキーが必要です。",
-  "FeaturePageSignIn.summary":
-    "パスキー、メールのログインコード、Google、GitHub、2段階認証。認証サービスは不要です。",
-  "FeaturePageSignIn.how1":
-    "APIがすべてのログインを自ら検証し、署名付きのセッションCookieを返します。パスキーはブラウザ標準のWebAuthnを使い、サーバーが保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効です。メールのログインコードはログインにも登録にも使え、1回限り・10分間、リクエストしたブラウザでのみ有効で、ハッシュとしてのみ保存されます。",
-  "FeaturePageSignIn.how2":
-    "認証アプリを使えば2段階認証を追加できます。プロフィールには、アカウントに入るすべての方法とログイン中のすべてのデバイスが一覧表示され、ログイン方法を変更するときは本人確認を求めてメールで通知します。訪問者はゲストアカウントで始めて、あとからログイン方法を追加することもできます。",
-  "FeaturePageSignIn.authServiceQuestion": "認証サービスは必要ですか？",
-  "FeaturePageSignIn.authServiceAnswer":
-    "いいえ。パスワード、パスキー、ログインコード、そしてGoogleとGitHubからの応答は、Seed自身のAPIがサーバー上で検証するので、ユーザー単位の料金は一切かかりません。",
-  "FeaturePageSignIn.passkeysQuestion": "Seedはパスキーに対応していますか？",
-  "FeaturePageSignIn.passkeysAnswer":
-    "はい。ユーザーはプロフィールでパスキーを追加し、それでログインできます。サーバーが保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効です。",
-  "FeaturePageSignIn.twoFactorQuestion": "Seedに2段階認証はありますか？",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "はい。認証アプリのワンタイムコードをログイン時に求めます。GoogleやGitHubでログインした場合も同様です。",
-  "FeaturePageSignIn.providersOffQuestion":
-    "GoogleやGitHubでのログインを使わないこともできますか？",
-  "FeaturePageSignIn.providersOffAnswer":
-    "はい。どちらも、envファイルに2つの変数を両方設定するまではオフなので、設定しなければオフのままです。",
-  "FeaturePageGroups.name": "グループとロール",
-  "FeaturePageGroups.title": "SaaSのグループとロール（権限管理）を、作り込みなしで",
-  "FeaturePageGroups.description":
-    "閲覧者からオーナーまでのロール付きグループ、招待、オーナー権限の譲渡、アクティビティログ。すべてのデータを1つのテナントチェックで守ります。無料・MITライセンス。",
-  "FeaturePageGroups.h1": "SaaSのグループとロールを、マルチテナントを自作せずに",
-  "FeaturePageGroups.answer":
-    "Seedは登録時にすべてのアカウントに個人用グループを作ります。ユーザーは共有グループを作り、ほかの人を招待して、閲覧者からオーナーまでのロールを割り当てられます。テナントの境界はグループの1つだけなので、追加した機能も、メモの集約をコピーした時点で同じチェックを通ります。",
-  "FeaturePageGroups.summary":
-    "閲覧者からオーナーまでのロール付きグループ、招待、アクティビティログ。",
-  "FeaturePageGroups.how1":
-    "共有データのすべての行はいずれかのグループに属し、APIは読み書きの前に、そのグループでのその人のロールを確認します。閲覧者は読むだけ、編集者はグループのデータも変更でき、管理者とオーナーはさらにメンバーを管理し、アクティビティログを読めます。",
-  "FeaturePageGroups.how2":
-    "オーナーはワンステップでオーナー権限を譲渡でき、削除したグループは30日以内なら復元できます。招待できるのは、メールアドレスを確認済みのアカウントだけです。",
-  "FeaturePageGroups.personalGroupQuestion": "すべてのアカウントにグループがありますか？",
-  "FeaturePageGroups.personalGroupAnswer":
-    "はい。各アカウントには登録時に個人用グループが作られます。個人用グループも共有グループも、同じチェックを通ります。",
-  "FeaturePageGroups.viewerQuestion": "閲覧者はグループのデータを変更できますか？",
-  "FeaturePageGroups.viewerAnswer":
-    "いいえ。閲覧者はグループのデータを読むだけです。変更できるのは編集者、管理者、オーナーです。",
-  "FeaturePageGroups.restoreQuestion": "削除したグループは元に戻せますか？",
-  "FeaturePageGroups.restoreAnswer":
-    "はい。オーナーが30日以内に復元できます。それを過ぎると、ワーカーが完全に削除します。",
-  "FeaturePageGroups.secondModelQuestion": "自分の機能のために、2つ目の権限システムが必要ですか？",
-  "FeaturePageGroups.secondModelAnswer":
-    "いいえ。新しい集約はメモの集約とそのグループチェックをコピーするので、管理する権限モデルは1つだけです。",
-  "FeaturePageRealtime.name": "リアルタイム同期",
-  "FeaturePageRealtime.title": "SaaSのリアルタイム同期を、外部サービスなしで",
-  "FeaturePageRealtime.description":
-    "あるタブで保存した変更が、グループのほかの開いているタブに1秒以内に表示されます。自前のAPIからWebSocketで送ります。無料・MITライセンス。",
-  "FeaturePageRealtime.h1": "SaaSにリアルタイム更新を、ホスト型のリアルタイムサービスなしで",
-  "FeaturePageRealtime.answer":
-    "Seedは、保存された変更を自前のAPIからWebSocketで、グループの開いているすべてのタブに送ります。あるウィンドウで保存したメモは、再読み込みなしで1秒以内にほかのウィンドウにも表示されます。自分のサーバーで動くので、料金のかかるリアルタイムサービスは不要です。追加した機能も、メモの例をコピーすればこの仕組みを使えます。",
-  "FeaturePageRealtime.summary":
-    "あるタブで保存した変更が、再読み込みなしでほかの開いているタブすべてに表示されます。",
-  "FeaturePageRealtime.how1":
-    "各書き込みはグループの次の連番とともにコミットされ、APIはそれを各メンバーの開いているソケットに送ります。タブが変更を適用するのは、その番号が手元の最後の番号の次であるときだけです。番号が飛んでいれば、カーソル以降のすべてをサーバーに問い合わせるので、メッセージが1つ失われてもリクエストが1回増えるだけで、リストが間違うことはありません。",
-  "FeaturePageRealtime.how2":
-    "スリープから復帰したノートPCは再接続し、見逃した分を取得します。ソケットをオフにすると、アプリはHTTPで読み書きし、30秒ごとに変更を確認します。",
-  "FeaturePageRealtime.realtimeQuestion": "Seedはリアルタイムで更新されますか？",
-  "FeaturePageRealtime.realtimeAnswer":
-    "はい。保存した変更は、再読み込みなしで1秒以内に、グループの開いているすべてのタブに表示されます。",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "PusherやAblyなどのリアルタイムサービスは必要ですか？",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "いいえ。WebSocketは、自分のサーバー上でSeed自身のAPIが提供します。",
-  "FeaturePageRealtime.realtimeSleepQuestion": "ノートPCがスリープしたあと、タブは追いつきますか？",
-  "FeaturePageRealtime.realtimeSleepAnswer":
-    "はい。再接続して、手元にある最後の変更以降のすべての変更を取得します。",
-  "FeaturePageRealtime.realtimeOffQuestion": "リアルタイムをオフにできますか？",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "はい。SPA_REALTIME=falseを設定してください。アプリは30秒ごとに変更を確認するようになり、同じように動きます。",
-  "FeaturePageOffline.name": "オフラインアプリ",
-  "FeaturePageOffline.title": "SaaSのオフライン対応アプリを、同期を自作せずに",
-  "FeaturePageOffline.description":
-    "ネットワークなしで開けるインストール可能なアプリ。すべてのリストを端末に保存し、接続が戻るまで編集をキューにためます。無料・MITライセンス。",
-  "FeaturePageOffline.h1": "SaaSにオフラインファーストのアプリを、同期エンジンを作らずに",
-  "FeaturePageOffline.answer":
-    "Seedのアプリはネイティブアプリのようにインストールでき、ネットワークなしでも開けて、最後に表示したすべてのリストを表示します。オフラインでもメモとタグを追加・編集・削除できます。自分の機能は、オンラインのみ、オフラインで閲覧可、オフラインで書き込み可の3段階から1つを選び、それぞれ用意された手順に従います。",
-  "FeaturePageOffline.summary":
-    "ネットワークなしで開けて、接続が戻ると同期するインストール可能なアプリ。",
-  "FeaturePageOffline.how1":
-    "端末は各リストのIndexedDBコピーを持ち、書き込みは冪等キー付きのキューで待機するので、2回送られた変更も適用されるのは1回だけです。サーバーが受け付けられない変更は競合として表示され、「自分のバージョンを残す」か「サーバーの内容を使う」かを選べます。勝手に上書きされることはありません。",
-  "FeaturePageOffline.how2":
-    "サービスワーカーがアプリのページ、スクリプト、スタイルを保存しておくので、ネットワークなしでも開けます。ログイン、削除済みのアイテム、2段階認証の設定にはネットワークが必要です。",
-  "FeaturePageOffline.offlineQuestion": "Seedはオフラインで使えますか？",
-  "FeaturePageOffline.offlineAnswer":
-    "はい。アプリはネットワークなしでも開けて、最後に表示したすべてのリストを表示します。",
-  "FeaturePageOffline.offlineEditsQuestion": "オフライン中に編集できますか？",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "はい。メモとタグはオフラインでも使えます。それ以外の変更にはネットワークが必要で、画面にそう表示されます。",
-  "FeaturePageOffline.conflictQuestion": "2人が同じメモを変更したら、Seedは検知しますか？",
-  "FeaturePageOffline.conflictAnswer":
-    "はい。あとの変更が競合として表示され、その変更をした人が「自分のバージョンを残す」か「サーバーの内容を使う」かを選びます。",
-  "FeaturePageOffline.removeOfflineQuestion": "オフライン対応を取り除けますか？",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "はい。スイッチ1つでオフにするか、フォルダを1つ削除して用意されたチェックリストに従います。手順が抜けているとテストが失敗します。",
-  "FeaturePageDeploy.name": "デプロイ",
-  "FeaturePageDeploy.title": "SaaSのデプロイを、クラウドプラットフォームの請求なしで",
-  "FeaturePageDeploy.description":
-    "借りたLinuxサーバー1台でDocker Compose。Traefik、Postgres、Valkey、S3ファイル、監視、バックアップをコマンド1つでデプロイします。無料・MITライセンス。",
-  "FeaturePageDeploy.h1": "SaaSをサーバー1台でセルフホスト、クラウドプラットフォームの請求なしで",
-  "FeaturePageDeploy.answer":
-    "Seedは借りたLinuxサーバーで動き、開発でも本番でもDocker Composeを使って、コマンド1つでデプロイできます。サーバーの準備は文書化された手順で一度だけ行い、それ以降のデプロイはそのコマンドだけです。",
-  "FeaturePageDeploy.summary": "Linuxサーバー1台、Docker Compose、デプロイはコマンド1つ。",
-  "FeaturePageDeploy.how1":
-    "デプロイはSSHでプロジェクトをサーバーにコピーし、Composeで起動します。デプロイのたびに、1回だけ動くサービスがデータベースのマイグレーションを適用します。前段にはTraefikがあり、ホストごとの証明書をLet's Encryptに要求します。",
-  "FeaturePageDeploy.how2":
-    "Postgres、Valkey、S3ファイルストア、メトリクス、ログ、アラート付きのダッシュボードがアプリと並んで動き、複数のプロダクトが同じプロキシの背後で1台のサーバーを共有できます。",
-  "FeaturePageDeploy.kubernetesQuestion": "Kubernetesは必要ですか？",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "いいえ。開発でも本番でも、サーバー1台のDocker Composeでプロダクト全体が動きます。",
-  "FeaturePageDeploy.severalQuestion": "複数のプロダクトで1台のサーバーを共有できますか？",
-  "FeaturePageDeploy.severalAnswer":
-    "はい。プロキシは共有し、ディレクトリ、データベース、データはそれぞれ別に持ちます。サーバーを共有するのは、同じくらい信頼できるプロダクト同士だけにしてください。",
-  "FeaturePageDeploy.backupQuestion": "バックアップはありますか？",
-  "FeaturePageDeploy.backupAnswer":
-    "はい。オプトインで、データベースの暗号化resticバックアップを毎日取れます。復元手順も文書化されています。",
   "ErrorPage.status": "今できることを見る",
   "HomeHero.notify": "通知を受け取る",
   "HomeHero.selfHost": "Financy をセルフホスト",
