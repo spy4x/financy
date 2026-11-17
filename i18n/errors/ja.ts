@@ -274,6 +274,8 @@ export default {
   "ImportPlace.categories": "カテゴリ",
   "ImportPlace.categoriesEntry": "カテゴリ{index}",
   "Reason.BUDGET_INCOME_CATEGORY": "予算を設定できるのは支出カテゴリーだけです。",
+  "Reason.BUDGET_OVER_PARENT": "この上限は、親カテゴリーの上限の残りを超えています。",
+  "Reason.BUDGET_UNDER_CHILDREN": "この上限は、サブカテゴリーの上限の合計を下回っています。",
   "Reason.CATEGORY_ARCHIVED":
     "このカテゴリーはアーカイブ済みです。予算を設定するには、アーカイブを解除してください。",
 } satisfies Catalog

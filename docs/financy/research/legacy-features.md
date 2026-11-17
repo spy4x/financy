@@ -263,6 +263,14 @@ account and the direction on update (`+index.ts:626-638`).
 prefilled from the group's defaults (`docs/1.principles.md` section 3). This is the product's
 main promise for quick entry and holds on the web, in Telegram and offline.
 
+**R20. A subcategory's limit fits in its parent's.** In a month of limits where the parent has a
+limit of its own, a subcategory's limit is at most the parent's limit less the other live
+subcategories' limits that month (their limits, not their spending), converted to the parent's
+currency at the month's rate (R6); one with no rate is left out and named (R8). A parent's own
+limit is never below its live subcategories' sum. A parent whose limit is its subcategories' sum
+caps nothing, and removing a limit is always allowed. Only the month being set is checked. New in
+the rebuild (spy4x/financy#358); the old product had no hierarchy (R13).
+
 ## 3. Data model sketch for the rebuild
 
 Every row carries Seed's columns: a UUID version 7 `id`, `group_id` where scoped, `version`,

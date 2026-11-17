@@ -18,7 +18,7 @@ import { AccountError, AccountVersionConflictError } from "@domain/accounts"
 import { CategoryError, CategoryVersionConflictError } from "@domain/categories"
 import { TransactionError, TransactionVersionConflictError } from "@domain/transactions"
 import { TransferError, TransferVersionConflictError } from "@domain/transfers"
-import { BudgetError, BudgetVersionConflictError } from "@domain/budgets"
+import { BudgetBoundError, BudgetError, BudgetVersionConflictError } from "@domain/budgets"
 import { RecurringRuleError, RecurringRuleVersionConflictError } from "@domain/recurring"
 import { HouseholdError, HouseholdVersionConflictError } from "@domain/money"
 import { PlanError, toPlanRefusal } from "@domain/billing"
@@ -134,8 +134,11 @@ export function toRequestError(error: unknown): RealtimeRequestError | null {
     })
   }
   if (error instanceof BudgetError) {
+    // A bound refusal (R20) carries the bound, so the dialog can name the amount.
     const details = error instanceof BudgetVersionConflictError
       ? { code: error.code, currentVersion: error.currentVersion }
+      : error instanceof BudgetBoundError
+      ? { code: error.code, bound: error.bound }
       : { code: error.code }
     return new RealtimeRequestError(BUDGET_ERROR_CODES[error.code], error.message, details, {
       reason: error.code,
@@ -386,6 +389,8 @@ const BUDGET_ERROR_CODES: Record<
   "bad_request" | "forbidden" | "not_found" | "conflict"
 > = {
   BUDGET_INCOME_CATEGORY: "bad_request",
+  BUDGET_OVER_PARENT: "conflict",
+  BUDGET_UNDER_CHILDREN: "conflict",
   CATEGORY_ARCHIVED: "conflict",
   CATEGORY_NOT_FOUND: "not_found",
   GROUP_NOT_FOUND: "not_found",

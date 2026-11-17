@@ -296,5 +296,7 @@ export default {
   "ImportPlace.categories": "الفئات",
   "ImportPlace.categoriesEntry": "الفئة {index}",
   "Reason.BUDGET_INCOME_CATEGORY": "يمكن تحديد ميزانية لفئة مصروفات فقط.",
+  "Reason.BUDGET_OVER_PARENT": "هذا الحد أكبر مما يتركه حد الفئة الرئيسية.",
+  "Reason.BUDGET_UNDER_CHILDREN": "هذا الحد أقل من مجموع حدود فئاتها الفرعية.",
   "Reason.CATEGORY_ARCHIVED": "هذه الفئة في الأرشيف. أخرجها من الأرشيف لتحديد ميزانية.",
 } satisfies Catalog

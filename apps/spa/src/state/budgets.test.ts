@@ -292,6 +292,42 @@ describe("budgets store", () => {
     expect(store.budgets.value?.rows).toHaveLength(1)
   })
 
+  it("shows a limit past its parent's allowance under the amount with the bound, not a generic error, and reads the month again (R20)", async () => {
+    const { store, server, refuse } = harness()
+    await store.open(groupId, "2026-11")
+    store.startEdit("rent")
+    store.change(10_001)
+    const bound = { amount: 10_000, currency: "EUR", leftOut: [] }
+    server.set("2026-11", [row("food", { amount: 50_000, currency: "EUR" })])
+    refuse(
+      new RealtimeRequestError("conflict", "Over", { code: "BUDGET_OVER_PARENT", bound }),
+    )
+
+    expect(await store.save()).toBe(false)
+    expect(store.form.value).toMatchObject({
+      amount: 10_001,
+      bound: { code: "BUDGET_OVER_PARENT", limit: bound },
+      error: null,
+    })
+    expect(store.budgets.value?.rows).toHaveLength(1)
+    store.change(10_000)
+    expect(store.form.value?.bound).toBeNull()
+  })
+
+  it("shows a parent's limit under its subcategories' sum under the amount with that sum (R20)", async () => {
+    const { store, refuse } = harness()
+    await store.open(groupId, "2026-11")
+    store.startEdit("food")
+    store.change(1_000)
+    const bound = { amount: 20_000, currency: "EUR", leftOut: ["JPY"] }
+    refuse(
+      new RealtimeRequestError("conflict", "Under", { code: "BUDGET_UNDER_CHILDREN", bound }),
+    )
+
+    expect(await store.save()).toBe(false)
+    expect(store.form.value?.bound).toEqual({ code: "BUDGET_UNDER_CHILDREN", limit: bound })
+  })
+
   it("tells a failed save from a failed removal", async () => {
     const { store, refuse } = harness()
     await store.open(groupId, "2026-11")

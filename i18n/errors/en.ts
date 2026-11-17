@@ -273,5 +273,7 @@ export default {
   "ImportPlace.categories": "Categories",
   "ImportPlace.categoriesEntry": "Category {index}",
   "Reason.BUDGET_INCOME_CATEGORY": "Only an expense category can have a budget.",
+  "Reason.BUDGET_OVER_PARENT": "This limit is more than its parent category's limit leaves for it.",
+  "Reason.BUDGET_UNDER_CHILDREN": "This limit is less than its subcategories' limits add up to.",
   "Reason.CATEGORY_ARCHIVED": "This category is archived. Unarchive it to set a budget.",
 } satisfies Catalog

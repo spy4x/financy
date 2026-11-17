@@ -2750,6 +2750,13 @@ export default {
     "Cette catégorie a été archivée ou supprimée : elle ne peut donc pas avoir de plafond.",
   "BudgetDialog.saveFailed": "Le plafond n’a pas pu être enregistré. Réessayez.",
   "BudgetDialog.removeFailed": "Le plafond n’a pas pu être retiré. Réessayez.",
+  "BudgetDialog.allowance": "Il reste jusqu’à {amount} dans {parent}.",
+  "BudgetDialog.allowanceLeftOut":
+    "Il reste jusqu’à {amount} dans {parent}. Les plafonds en {currencies} ne sont pas comptés : pas encore de taux de change pour ces devises.",
+  "BudgetDialog.overParent":
+    "C’est plus que ce qu’il reste dans {parent}. Saisissez au maximum {amount}.",
+  "BudgetDialog.underChildren":
+    "Les plafonds de ses sous-catégories totalisent {amount}. Saisissez au moins ce montant, ou baissez d’abord les leurs.",
   "BudgetRemove.title": "Retirer le plafond de {name} ?",
   "BudgetRemove.message":
     "À partir de {month}, {name} n’a plus de plafond. Les mois précédents gardent le leur. Vous pouvez le fixer de nouveau à tout moment.",

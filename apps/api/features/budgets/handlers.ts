@@ -1,9 +1,12 @@
 import type { CommandHandler, QueryHandler } from "@spy4x/platform/cqrs"
 import {
+  assertBudgetFits,
   assertCanReadBudgets,
   assertCanSetBudgetMethod,
   assertCanWriteBudgets,
+  type Budget,
   type BudgetLimit,
+  BudgetMethod,
   budgetMethodAt,
   BudgetMethodSetCommand,
   type BudgetMonth,
@@ -49,15 +52,37 @@ export interface BudgetHandlerDependencies {
  * row: an editor or above writes, and a stranger is told the household does not exist. The
  * repository checks the role again inside the write's transaction, so a set that races a removal
  * or a demotion is refused too. No currency is the household's base currency; a removal has none.
+ * In a month of limits, a limit past its parent's or under its subcategories' is refused (R20)
+ * against the month's limits as read before the write: a sibling set at the same instant can
+ * still pass, an accepted race.
  */
 export function createBudgetSetHandler(
-  { budgets, groups, settings }: BudgetHandlerDependencies,
+  { budgets, groups, settings, rate, now }: BudgetHandlerDependencies,
 ): CommandHandler<BudgetSetCommand> {
   return async ({ data }) => {
     assertCanWriteBudgets(await groups.roleOf(data.groupId, data.actor.userId))
     const currency = data.amount === null
       ? null
       : data.currency ?? (await settings.get(data.groupId)).baseCurrency
+    if (data.amount !== null && currency !== null) {
+      const [categories, rows, methods, timeZone] = await Promise.all([
+        budgets.categories(data.groupId),
+        budgets.limitsAt(data.groupId, data.month),
+        budgets.methodsUpTo(data.groupId, data.month),
+        budgets.timeZoneOf(data.groupId),
+      ])
+      if (budgetMethodAt(methods, data.month) === BudgetMethod.LIMITS) {
+        const last = endOfMonth(`${data.month}-01`)
+        const today = isoDateInTz(now(), groupTimeZone({ timeZone }))
+        await assertBudgetFits({
+          categoryId: data.categoryId,
+          limit: { amount: data.amount, currency },
+          categories,
+          limits: limitsOf(rows),
+          rateDate: last < today ? last : today,
+        }, rate)
+      }
+    }
     const budget = await budgets.set(
       {
         groupId: data.groupId,
@@ -72,6 +97,17 @@ export function createBudgetSetHandler(
     )
     return { budget }
   }
+}
+
+/** Each category's limit in effect, from `limitsAt`'s rows; a removal's row sets none. */
+function limitsOf(rows: readonly Budget[]): Map<string, BudgetLimit> {
+  const limits = new Map<string, BudgetLimit>()
+  for (const row of rows) {
+    if (row.amount !== null && row.currency !== null) {
+      limits.set(row.categoryId, { amount: row.amount, currency: row.currency })
+    }
+  }
+  return limits
 }
 
 /** The household's current month, `YYYY-MM`, in its time zone (R14). */
@@ -157,12 +193,7 @@ export function createBudgetMonthHandler(
       budgets.limitsAt(data.groupId, month),
       budgets.methodsUpTo(data.groupId, month),
     ])
-    const limits = new Map<string, BudgetLimit>()
-    for (const row of rows) {
-      if (row.amount !== null && row.currency !== null) {
-        limits.set(row.categoryId, { amount: row.amount, currency: row.currency })
-      }
-    }
+    const limits = limitsOf(rows)
     const today = isoDateInTz(clock.now, timeZone)
     const limitsMonth = await budgetMonth(
       { month, from: period.from, to: period.to, today, baseCurrency, categories, limits },
@@ -174,6 +205,10 @@ export function createBudgetMonthHandler(
     const method = budgetMethodAt(methods, month)
     const read: BudgetMonth = {
       ...limitsMonth,
+      // R20 holds in a month of limits only: an envelope's assignment is never capped.
+      rows: method === BudgetMethod.LIMITS
+        ? limitsMonth.rows
+        : limitsMonth.rows.map(({ allowance: _allowance, ...row }) => row),
       method,
       methodVersion: methods.find((row) => row.month === month)?.version ?? null,
     }

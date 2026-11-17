@@ -4,11 +4,13 @@ import type postgres from "postgres"
 import { AccountKind } from "@domain/accounts"
 import {
   BudgetBand,
+  BudgetBoundError,
   BudgetError,
   BudgetLimitSource,
   BudgetMethod,
   BudgetMonthQuery,
   type BudgetMoveInput,
+  BudgetSetCommand,
 } from "@domain/budgets"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import { UserMFAStatus } from "@domain/identity"
@@ -20,7 +22,10 @@ import { PostgresCategoryRepository } from "@server/categories/postgres-category
 import { PostgresRateRepository } from "@server/money/postgres-rate-repository.ts"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
-import { createBudgetMonthHandler } from "../../apps/api/features/budgets/handlers.ts"
+import {
+  createBudgetMonthHandler,
+  createBudgetSetHandler,
+} from "../../apps/api/features/budgets/handlers.ts"
 import { holdMemberChange, stillWaiting, team, withSchema } from "./group-team.ts"
 import { expectVersion7Ids } from "./ids.ts"
 
@@ -800,6 +805,67 @@ Deno.test("budget methods and moves against Postgres", async (t) => {
         expect(december).toMatchObject({ readyToAssign: 48000, methodVersion: null })
       },
     )
+  })
+})
+
+Deno.test("budget set: a subcategory's limit fits in its parent's, read from Postgres (R20)", async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const budgets = new PostgresBudgetRepository(sql)
+    const coffee = await h.category("Coffee", CategoryKind.EXPENSE, h.food)
+    const set = createBudgetSetHandler({
+      budgets,
+      groups: {
+        roleOf: async (groupId, userId) =>
+          (await h.repository.getForMember(groupId, userId))?.role ?? null,
+      },
+      settings: { get: () => Promise.resolve({ baseCurrency: "USD" }) },
+      ledger: () => Promise.reject(new Error("a set reads no ledger")),
+      ledgerMonths: () => Promise.reject(new Error("a set reads no ledger")),
+      rate: () => Promise.resolve(null),
+      now: () => new Date("2026-11-10T12:00:00Z"),
+    })
+    const limit = (categoryId: string, amount: number, expectedVersion: number | null = null) =>
+      refusal(set(
+        new BudgetSetCommand({
+          actor: { userId: h.editor, userMfa: UserMFAStatus.NOT_CONFIGURED } as never,
+          groupId: h.groupId,
+          categoryId,
+          month: "2026-11",
+          amount,
+          expectedVersion,
+          requestId: uuidV7(),
+        }),
+      ))
+    await budgets.set({
+      groupId: h.groupId,
+      categoryId: h.food,
+      month: "2026-10",
+      amount: 30000,
+      currency: "USD",
+      expectedVersion: null,
+    }, h.editor)
+    expect(await limit(h.groceries, 20000)).toBeNull()
+
+    const over = await limit(coffee, 10001)
+    const exact = await limit(coffee, 10000)
+    const under = await limit(h.food, 29999)
+
+    expect(over).toBeInstanceOf(BudgetBoundError)
+    expect(over).toMatchObject({
+      code: "BUDGET_OVER_PARENT",
+      bound: { amount: 10000, currency: "USD", leftOut: [] },
+    })
+    expect(exact).toBeNull()
+    expect(under).toMatchObject({
+      code: "BUDGET_UNDER_CHILDREN",
+      bound: { amount: 30000, currency: "USD", leftOut: [] },
+    })
+    const amounts = await sql<{ categoryId: string; amount: string }[]>`
+      SELECT category_id, amount::text FROM budgets
+      WHERE group_id = ${h.groupId} AND category_id = ${coffee}
+    `
+    expect(amounts).toEqual([{ categoryId: coffee, amount: "10000" }])
   })
 })
 

@@ -239,5 +239,7 @@ export default {
   "ImportPlace.categories": "分类",
   "ImportPlace.categoriesEntry": "分类 {index}",
   "Reason.BUDGET_INCOME_CATEGORY": "只有支出分类可以设置预算。",
+  "Reason.BUDGET_OVER_PARENT": "这个限额超出了上级分类限额的剩余部分。",
+  "Reason.BUDGET_UNDER_CHILDREN": "这个限额低于其子分类限额之和。",
   "Reason.CATEGORY_ARCHIVED": "这个分类已归档，请先取消归档再设置预算。",
 } satisfies Catalog

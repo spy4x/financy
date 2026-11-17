@@ -14,15 +14,18 @@ import { endOfMonth } from "@spy4x/time/date"
 import type { ExchangeRate } from "@spy4x/platform/universal/money"
 import {
   assertBudgetCategory,
+  assertBudgetFits,
   assertCanReadBudgets,
   assertCanSetBudgetMethod,
   assertCanWriteBudgets,
   BUDGET_AMOUNT_MAX,
   BUDGET_WIDGET_IDS,
   BUDGET_WIDGETS,
+  budgetAllowance,
   type BudgetAssignment,
   BudgetBand,
   budgetBand,
+  BudgetBoundError,
   type BudgetCategory,
   budgetExportProblems,
   type BudgetLimit,
@@ -305,6 +308,7 @@ describe("a month of bars", () => {
         band: BudgetBand.GREEN,
         percent: 16,
         leftOut: [],
+        allowance: { amount: 50000, currency: "EUR", leftOut: [] },
       },
     ])
   })
@@ -1143,5 +1147,153 @@ describe("how a month's budgets stand", () => {
         method: BudgetMethod.ENVELOPES,
       })).tooLarge,
     ).toBe(true)
+  })
+})
+
+describe("a subcategory's limit inside its parent's (R20)", () => {
+  /** November's limits as `limitsAt` returns them, read on 5 December: rates of 30 November. */
+  const family = (
+    limits: Record<string, BudgetLimit>,
+    categories: BudgetCategory[] = CATEGORIES,
+  ) => ({ categories, limits: new Map(Object.entries(limits)), rateDate: "2026-11-30" })
+  const usd = (amount: number): BudgetLimit => ({ amount, currency: "USD" })
+  const RATES = { "USD:EUR:2026-11-30": "0.9" }
+  /** The refusal `assertBudgetFits` throws, or `null` when it takes the limit. */
+  async function refusal(
+    categoryId: string,
+    limit: BudgetLimit | null,
+    limits: Record<string, BudgetLimit>,
+    categories: BudgetCategory[] = CATEGORIES,
+  ) {
+    try {
+      await assertBudgetFits(
+        { categoryId, limit, ...family(limits, categories) },
+        readers([], RATES).rate,
+      )
+      return null
+    } catch (error) {
+      if (!(error instanceof BudgetBoundError)) throw error
+      return { code: error.code, bound: error.bound }
+    }
+  }
+
+  it("leaves a child what its parent's own limit has after the other children's limits", async () => {
+    const allowance = await budgetAllowance(
+      cafes,
+      family({ [food]: eur(30000), [groceries]: eur(20000), [cafes]: eur(5000) }),
+      readers([]).rate,
+    )
+
+    expect(allowance).toEqual({ amount: 10000, currency: "EUR", leftOut: [] })
+  })
+
+  it("takes exactly the allowance and refuses one cent more, naming the allowance", async () => {
+    const limits = { [food]: eur(30000), [groceries]: eur(20000) }
+
+    expect(await refusal(cafes, eur(10000), limits)).toBeNull()
+    expect(await refusal(cafes, eur(10001), limits)).toEqual({
+      code: "BUDGET_OVER_PARENT",
+      bound: { amount: 10000, currency: "EUR", leftOut: [] },
+    })
+  })
+
+  it("puts no cap on a child whose parent has no limit of its own", async () => {
+    const limits = { [groceries]: eur(20000) }
+
+    expect(await budgetAllowance(cafes, family(limits), readers([]).rate)).toBeNull()
+    expect(await refusal(cafes, eur(BUDGET_AMOUNT_MAX), limits)).toBeNull()
+  })
+
+  it("puts no cap on a child whose parent is archived, as the month shows it on its own", async () => {
+    const limits = { [food]: eur(100), [groceries]: eur(20000) }
+
+    expect(await refusal(cafes, eur(50000), limits, archiving(food))).toBeNull()
+  })
+
+  it("converts siblings and the asked amount to the parent's currency at the month's rate", async () => {
+    const limits = { [food]: eur(30000), [groceries]: usd(20000) }
+
+    expect(await budgetAllowance(cafes, family(limits), readers([], RATES).rate)).toEqual({
+      amount: 12000,
+      currency: "EUR",
+      leftOut: [],
+    })
+    expect(await refusal(cafes, usd(13000), limits)).toBeNull()
+    expect(await refusal(cafes, usd(14000), limits)).toMatchObject({
+      code: "BUDGET_OVER_PARENT",
+      bound: { amount: 12000, currency: "EUR" },
+    })
+  })
+
+  it("leaves a sibling with no rate out of the sum and names its currency, never counting it as zero (R8)", async () => {
+    const limits = { [food]: eur(30000), [groceries]: { amount: 5000, currency: "JPY" } }
+
+    expect(await budgetAllowance(cafes, family(limits), readers([]).rate)).toEqual({
+      amount: 30000,
+      currency: "EUR",
+      leftOut: ["JPY"],
+    })
+  })
+
+  it("ignores an archived sibling's limit", async () => {
+    const limits = { [food]: eur(30000), [groceries]: eur(20000) }
+
+    expect(
+      await budgetAllowance(cafes, family(limits, archiving(groceries)), readers([]).rate),
+    ).toEqual({ amount: 30000, currency: "EUR", leftOut: [] })
+  })
+
+  it("leaves nothing, never less than nothing, when the siblings already use the parent's limit", async () => {
+    const limits = { [food]: eur(10000), [groceries]: eur(20000) }
+
+    expect(await budgetAllowance(cafes, family(limits), readers([]).rate)).toMatchObject({
+      amount: 0,
+    })
+    expect(await refusal(cafes, eur(1), limits)).toMatchObject({ code: "BUDGET_OVER_PARENT" })
+  })
+
+  it("refuses a parent's own limit below its live children's limits, naming their sum", async () => {
+    const limits = { [groceries]: eur(20000), [cafes]: usd(10000) }
+
+    expect(await refusal(food, eur(29000), limits)).toBeNull()
+    expect(await refusal(food, eur(28999), limits)).toEqual({
+      code: "BUDGET_UNDER_CHILDREN",
+      bound: { amount: 29000, currency: "EUR", leftOut: [] },
+    })
+    expect(await refusal(food, eur(1), limits, archiving(groceries))).toMatchObject({
+      bound: { amount: 9000 },
+    })
+  })
+
+  it("names a child's currency with no rate in the parent's floor, leaving it out", async () => {
+    const limits = { [groceries]: eur(20000), [cafes]: { amount: 5000, currency: "JPY" } }
+
+    expect(await refusal(food, eur(1), limits)).toEqual({
+      code: "BUDGET_UNDER_CHILDREN",
+      bound: { amount: 20000, currency: "EUR", leftOut: ["JPY"] },
+    })
+  })
+
+  it("never refuses removing a limit, from a child or a parent", async () => {
+    const limits = { [food]: eur(100), [groceries]: eur(20000), [cafes]: eur(9000) }
+
+    expect(await refusal(cafes, null, limits)).toBeNull()
+    expect(await refusal(food, null, limits)).toBeNull()
+  })
+
+  it("gives each child row of a month its allowance, and a parent or a free child none", async () => {
+    const month = await budgetMonth(
+      november({ [food]: eur(30000), [groceries]: eur(20000), [rent]: eur(1) }),
+      readers([]),
+    )
+    const free = await budgetMonth(november({ [groceries]: eur(20000) }), readers([]))
+    const allowanceOf = (read: BudgetMonth, id: string) =>
+      read.rows.find((row) => row.categoryId === id)?.allowance
+
+    expect(allowanceOf(month, cafes)).toEqual({ amount: 10000, currency: "EUR", leftOut: [] })
+    expect(allowanceOf(month, groceries)).toEqual({ amount: 30000, currency: "EUR", leftOut: [] })
+    expect(allowanceOf(month, food)).toBeUndefined()
+    expect(allowanceOf(month, rent)).toBeUndefined()
+    expect(allowanceOf(free, cafes)).toBeUndefined()
   })
 })

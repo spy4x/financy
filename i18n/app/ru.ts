@@ -2761,6 +2761,12 @@ export default {
     "Эту категорию архивировали или удалили, поэтому лимит для неё задать нельзя.",
   "BudgetDialog.saveFailed": "Не удалось сохранить лимит. Попробуйте снова.",
   "BudgetDialog.removeFailed": "Не удалось убрать лимит. Попробуйте снова.",
+  "BudgetDialog.allowance": "Можно до {amount}: столько осталось в «{parent}».",
+  "BudgetDialog.allowanceLeftOut":
+    "Можно до {amount}: столько осталось в «{parent}». Лимиты в {currencies} не учтены: для них ещё нет курса.",
+  "BudgetDialog.overParent": "Это больше, чем осталось в «{parent}». Введите не больше {amount}.",
+  "BudgetDialog.underChildren":
+    "Лимиты подкатегорий в сумме — {amount}. Введите не меньше или сначала уменьшите их.",
   "BudgetRemove.title": "Убрать лимит для «{name}»?",
   "BudgetRemove.message":
     "Начиная с этого месяца ({month}), у «{name}» нет лимита. У прошлых месяцев лимиты остаются. Его можно задать снова в любой момент.",

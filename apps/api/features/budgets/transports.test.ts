@@ -430,6 +430,70 @@ for (const [via, open] of TRANSPORTS) {
       as.shutdown()
     })
 
+    it("refuses a subcategory's limit past what its parent's own limit leaves, naming that allowance (R20)", async () => {
+      const s = stack()
+      const cafes = uuidV7()
+      s.categories.set(cafes, { groupId, kind: CategoryKind.EXPENSE, parentId: food })
+      const as = open(s, EDITOR)
+      await as.command("budget.set", limit({ amount: 30000 }))
+      await as.command("budget.set", limit({ categoryId: groceries, amount: 20000 }))
+
+      const over = await as.command("budget.set", limit({ categoryId: cafes, amount: 10001 }))
+      const month = await as.query("budget.month", { groupId, month: "2026-11" })
+      const exact = await as.command("budget.set", limit({ categoryId: cafes, amount: 10000 }))
+
+      expect(over).toEqual({
+        kind: "server.error",
+        code: "conflict",
+        message: "The limit is more than its parent category's limit leaves",
+        reason: "BUDGET_OVER_PARENT",
+        details: {
+          code: "BUDGET_OVER_PARENT",
+          bound: { amount: 10000, currency: "USD", leftOut: [] },
+        },
+      })
+      expect(rowOf(month, cafes)).toMatchObject({
+        allowance: { amount: 10000, currency: "USD", leftOut: [] },
+      })
+      expect(rowOf(month, food)).not.toHaveProperty("allowance")
+      expect(exact).toMatchObject({ payload: { budget: { amount: 10000 } } })
+      expect(s.budgets.writes).toBe(3)
+      as.shutdown()
+    })
+
+    it("refuses lowering a parent's own limit below its subcategories' limits, naming their sum, and never a removal (R20)", async () => {
+      const s = stack()
+      const as = open(s, EDITOR)
+      await as.command("budget.set", limit({ amount: 30000 }))
+      await as.command("budget.set", limit({ categoryId: groceries, amount: 20000 }))
+
+      const under = await as.command("budget.set", limit({ amount: 19999, expectedVersion: 1 }))
+      const removal = await as.command("budget.set", limit({ amount: null, expectedVersion: 1 }))
+
+      expect(under).toMatchObject({
+        kind: "server.error",
+        code: "conflict",
+        details: {
+          code: "BUDGET_UNDER_CHILDREN",
+          bound: { amount: 20000, currency: "USD", leftOut: [] },
+        },
+      })
+      expect(removal).toMatchObject({ payload: { budget: { amount: null, version: 2 } } })
+      as.shutdown()
+    })
+
+    it("puts no cap on a subcategory whose parent's limit is its subcategories' sum (R20)", async () => {
+      const s = stack()
+      const as = open(s, EDITOR)
+
+      const set = await as.command("budget.set", limit({ categoryId: groceries, amount: 999999 }))
+      const month = await as.query("budget.month", { groupId, month: "2026-11" })
+
+      expect(set).toMatchObject({ payload: { budget: { amount: 999999 } } })
+      expect(rowOf(month, groceries)).not.toHaveProperty("allowance")
+      as.shutdown()
+    })
+
     it("refuses a set at a version the month's row no longer has, with the current one", async () => {
       const s = stack()
       const as = open(s, EDITOR)
@@ -580,6 +644,23 @@ for (const [via, open] of TRANSPORTS) {
       })
       expect(s.budgets.writes).toBe(2)
       for (const as of [owner, admin, editor, viewer, stranger]) as.shutdown()
+    })
+
+    it("caps no envelope's assignment by its parent's, and shows no allowance, in a month of envelopes (R20)", async () => {
+      const s = stack()
+      const owner = open(s, OWNER)
+      await switchTo(owner, BudgetMethod.ENVELOPES)
+      await owner.command("budget.set", limit({ month: "2026-12", amount: 100 }))
+
+      const child = await owner.command(
+        "budget.set",
+        limit({ categoryId: groceries, month: "2026-12", amount: 20000 }),
+      )
+      const month = await owner.query("budget.month", { groupId, month: "2026-12" })
+
+      expect(child).toMatchObject({ payload: { budget: { amount: 20000 } } })
+      expect(rowOf(month, groceries)).not.toHaveProperty("allowance")
+      owner.shutdown()
     })
 
     it("refuses a switch at a version the current month's row no longer has, with the current one", async () => {
