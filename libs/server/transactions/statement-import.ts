@@ -44,7 +44,12 @@ import { hasUnsafeTextCharacters } from "@spy4x/platform/universal/text"
 import { UUID_PATTERN, uuidV7 } from "@spy4x/platform/universal/uuid"
 import { parseIsoDate } from "@spy4x/time/date"
 import { recordTombstones } from "@server/groups/group-changes.ts"
-import { cellOf, importKind, type ImportRow } from "@server/imports/import-kind.ts"
+import {
+  cellOf,
+  importKind,
+  type ImportReview,
+  type ImportRow,
+} from "@server/imports/import-kind.ts"
 import { memoryKey, rememberedCategories, rememberPayees } from "./payee-memory.ts"
 import { countPlanTransactions } from "./plan-count.ts"
 
@@ -503,18 +508,20 @@ async function categoryKinds(
  * stored entry matches one row only, so two equal rows in one file (two coffees on a day) are both
  * saved the first time and both skipped the next. A row left after that is skipped when it matches
  * a side of a live transfer of the account, the same amount within three days; each side matches
- * one row, and each row takes the nearest side still free. A row left to save gets the category
+ * one row, and each row takes the nearest side still free. That skip is a guess, since an expense
+ * may equal an unrelated transfer, so the review marks it overridable and the person may keep the
+ * row; "Saved before" is final. A row left to save, or one the person may keep, gets the category
  * the household's payee memory holds for its payee as a suggestion, when that category fits the
- * row's sign, and, as its `transfer`, the entry it is likely the other side of: in another live
- * account of the same currency, the opposite amount within three days, each entry proposed for one
- * row, each row taking the nearest still free.
+ * row's sign. A row left to save also gets, as its `transfer`, the entry it is likely the other
+ * side of: in another live account of the same currency, the opposite amount within three days,
+ * each entry proposed for one row, each row taking the nearest still free.
  */
 async function reviewStatement(
   tx: postgres.TransactionSql,
   values: readonly StatementValue[],
   groupId: string,
   options: StatementOptions,
-): Promise<{ skip: string | null; suggestions: Record<string, string> }[]> {
+): Promise<ImportReview[]> {
   const dates = values.map((value) => value.date).sort()
   const from = dates[0]
   const to = dates[dates.length - 1]
@@ -607,13 +614,14 @@ async function reviewStatement(
   return skips.map((skip, index) => {
     const category = memory.get(keys[index])
     const kind = values[index].amount < 0 ? TransactionKind.EXPENSE : TransactionKind.INCOME
+    const overridable = skip === SKIP_TRANSFER
     const suggestions: Record<string, string> = {}
-    if (skip === null && category && categoryFitsKind(kind, category.kind)) {
+    if ((skip === null || overridable) && category && categoryFitsKind(kind, category.kind)) {
       suggestions.category = category.id
     }
     const transfer = transfers[index]
     if (transfer) suggestions.transfer = transfer
-    return { skip, suggestions }
+    return { skip, suggestions, overridable }
   })
 }
 

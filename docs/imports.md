@@ -211,8 +211,10 @@ from the bytes, never the file name.
   an entry without one (typed by hand, or brought back from an export), since another reference
   is another payment. Each stored entry matches one row, so two equal rows in one file are both
   saved the first time. A row is skipped as "Matches a transfer"
-  when a live transfer into or out of the account has its amount within 3 days. A row left to
-  save is proposed as a transfer (its `transfer` suggestion is that entry's id) when another live
+  when a live transfer into or out of the account has its amount within 3 days. That skip is
+  overridable, since an expense may equal an unrelated transfer: a row the person keeps is saved
+  as an entry, with its payee memory's category as a suggestion. "Saved before" is final. A row
+  left to save is proposed as a transfer (its `transfer` suggestion is that entry's id) when another live
   account of the household in the same currency has a live entry of the opposite amount within 3
   days, such as the savings account's entry of money from this one, saved from that account's
   statement or typed by hand. Each entry is proposed for one row, and each row takes the nearest
