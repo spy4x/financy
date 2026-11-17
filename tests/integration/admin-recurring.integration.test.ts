@@ -203,9 +203,11 @@ Deno.test("the operator's repeating entries API answers counts and days only: no
 
 Deno.test("the operator's repeating entries read ranks households by live rules, then by id, and stops at the limit", async () => {
   await withSchema(async (sql) => {
-    const two = await household(sql, "Two")
-    await two.rule()
-    await two.rule()
+    // Ids grow in the order the households are made, so an order by id alone would put the one
+    // household too many first and the one with the most rules last.
+    // The one household too many: its only rule is deleted, so it has the fewest live rules.
+    const none = await household(sql, "None")
+    await none.rule({ deletedAt: `2026-12-02T00:00:00Z` })
     const ones = []
     for (let i = 0; i < ADMIN_RECURRING_HOUSEHOLD_LIMIT - 1; i++) {
       const one = await household(sql, `One ${i}`)
@@ -213,9 +215,9 @@ Deno.test("the operator's repeating entries read ranks households by live rules,
       ones.push(one.groupId)
     }
     ones.sort()
-    // The one household too many: its only rule is deleted, so it has the fewest live rules.
-    const none = await household(sql, "None")
-    await none.rule({ deletedAt: `2026-12-02T00:00:00Z` })
+    const two = await household(sql, "Two")
+    await two.rule()
+    await two.rule()
 
     const { households, topHouseholds } = await readAdminRecurring(sql)
 
