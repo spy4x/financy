@@ -113,6 +113,7 @@ const GO_TO_ALIASES: Readonly<Record<string, readonly string[]>> = {
   audit: [`history`, `log`, `changes`, `журнал`, `аудит`, `история`],
   jobs: [`queue`, `background jobs`, `tasks`, `задачи`, `очередь`],
   system: [`health`, `server`, `status`, `система`, `сервер`, `состояние`],
+  recurring: [`recurring`, `rules`, `repeat`, `повторяющиеся`, `регулярные`],
   "api-tokens": [`tokens`, `api keys`, `keys`, `токены`, `ключи api`],
   "blog-channels": [`channels`, `social`, `каналы`, `соцсети`],
   "blog-needs-sharing": [`share`, `to share`, `поделиться`, `не опубликованные`],
