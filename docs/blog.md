@@ -378,7 +378,7 @@ published now or moved to another time, unless the operator unticks it or the ne
 
 Beside the description and the "In short" points, a post has an **Intro**, two or three sentences
 that open its newsletter issue and its Dev.to copy but do not show on its page, and a **Related
-feature**, the slug of one of the website's feature pages (`realtime` for `/features/realtime`),
+feature**, the slug of one of the website's feature pages (`households` for `/features/households`),
 which the post links under its byline. The website shows no link for a slug it has no page for.
 Both are kept in the post's earlier versions.
 
