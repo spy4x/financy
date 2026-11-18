@@ -245,6 +245,9 @@ export default {
   "FeatureTeams.fact2": "Cada persona ve solo los hogares a los que pertenece",
   "FeatureTeams.fact3":
     "Invitaciones, cambios de rol y transferencia de propiedad, cada uno con sus pruebas",
+  "FeatureTeams.notYetClosedSignUp":
+    "Unirse con una invitación cuando el registro del servidor está cerrado",
+  "FeatureTeams.notYetGroupWord": "La app aún dice «grupo» donde quiere decir hogar",
   "FeatureTeams.code": "Ver el dominio de grupos",
   "FeatureExport.nav": "Exportación",
   "FeatureExport.title": "Tus datos se van contigo",
@@ -264,21 +267,18 @@ export default {
   "FeatureLanguages.fact2": "Números y fechas con el Intl del propio navegador",
   "FeatureLanguages.fact3": "Las páginas en árabe se leen de derecha a izquierda",
   "FeatureLanguages.code": "Leer la guía de traducción",
-  "FeatureRealtime.nav": "Sincronización",
-  "FeatureRealtime.title": "Los cambios aparecen en cada dispositivo sin recargar",
-  "FeatureRealtime.lead":
-    "Cuando alguien del hogar cambia algo, los demás lo ven al instante en cada dispositivo abierto. Un portátil que sale de la suspensión se pone al día con lo que se perdió.",
-  "FeatureRealtime.fact1": "Un WebSocket estándar, con un número de secuencia en cada cambio",
-  "FeatureRealtime.fact2": "Un dispositivo que se reconecta recupera lo que no vio",
-  "FeatureRealtime.code": "Ver el diseño del tiempo real",
-  "FeatureOffline.nav": "App sin conexión",
-  "FeatureOffline.title": "Una aplicación que abre sin red",
-  "FeatureOffline.lead":
-    "Instala Financy en tu móvil o tu ordenador: se abre sin conexión y muestra lo último que vio.",
-  "FeatureOffline.fact1":
-    "Una copia local de cada lista en IndexedDB y una cola de escritura con claves de idempotencia",
-  "FeatureOffline.fact2": "«Quedarme con el mío» o «Usar el otro» en cada conflicto",
-  "FeatureOffline.code": "Leer docs/offline.md",
+  "FeatureLiveSync.nav": "Sincronización en vivo",
+  "FeatureLiveSync.title": "En vivo en cada dispositivo, incluso sin conexión",
+  "FeatureLiveSync.lead":
+    "Cuando alguien del hogar cambia algo, los demás lo ven al momento, sin recargar. Instala Financy en tu móvil o tu ordenador: se abre sin conexión y envía los movimientos que añadiste en cuanto vuelves a tener conexión.",
+  "FeatureLiveSync.fact1": "Un WebSocket estándar, con un número de secuencia en cada cambio",
+  "FeatureLiveSync.fact2": "Un dispositivo que se reconecta recupera lo que se perdió",
+  "FeatureLiveSync.fact3":
+    "Una copia local en IndexedDB y una cola de cambios sin conexión con claves de idempotencia",
+  "FeatureLiveSync.notYetSetup": "Cambiar cuentas, categorías y presupuestos sin conexión",
+  "FeatureLiveSync.notYetRates": "Tipos de cambio que puedas consultar sin conexión",
+  "FeatureLiveSync.notYetStores": "Apps en Google Play y en la App Store",
+  "FeatureLiveSync.code": "Ver el diseño de la sincronización",
   "FeatureDeploy.nav": "Alojamiento propio",
   "FeatureDeploy.title": "Funciona en tu propio servidor",
   "FeatureDeploy.lead":
@@ -289,6 +289,7 @@ export default {
     "Métricas, registros y alertas con VictoriaMetrics, VictoriaLogs y Grafana",
   "FeatureDeploy.fact4":
     "Una copia de seguridad diaria y cifrada de la base de datos, opcional, con los pasos de restauración por escrito",
+  "FeatureDeploy.notYetRehearsed": "Un tiempo de instalación medido en un servidor recién creado",
   "FeatureDeploy.code": "Ver los archivos de Compose",
   "FeaturesFaq.serverlessQuestion": "¿Puedo ejecutar Financy en hosting compartido o serverless?",
   "FeaturesFaq.serverlessAnswer":
@@ -424,143 +425,121 @@ export default {
   "FeaturePage.otherFeatures": "Otras funciones",
   "FeaturePage.readMore": "Más sobre {name}",
   "FeaturePage.all": "Todas las funciones",
-  "FeaturePage.runtimeQuestion": "¿Seed funciona con Node o Bun?",
-  "FeaturePage.runtimeAnswer":
-    "Sí. La API, el worker en segundo plano y el sitio web funcionan con Deno, Node o Bun, según un solo ajuste (APP_RUNTIME). Las tareas propias de Seed se ejecutan con Deno, que npm o Bun instalan por ti. Consulta la sección de runtimes en la página de funciones.",
+  "FeaturePage.demo": "Pruébalo en la demo, sin registrarte",
+  "FeaturePageMultiCurrency.name": "Varias monedas",
+  "FeaturePageMultiCurrency.title": "Tu dinero en varias monedas, en un solo total",
+  "FeaturePageMultiCurrency.description":
+    "Lleva cada cuenta en su moneda y ve cada total en la moneda principal de tu hogar, al tipo de cambio del día en que se movió el dinero.",
+  "FeaturePageMultiCurrency.h1": "Ve tus saldos en varias monedas como un solo total",
+  "FeaturePageMultiCurrency.answer":
+    "Sí. Cada cuenta conserva su propia moneda, y Financy las suma en la moneda principal de tu hogar al tipo de cambio de cada día. Un movimiento pagado en otra moneda conserva su propio importe junto al convertido.",
+  "FeaturePageMultiCurrency.summary":
+    "Cada cuenta en su propia moneda, cada total en tu moneda principal.",
+  "FeaturePageMultiCurrency.how1":
+    "Tu hogar elige una moneda principal. Cada día, Financy obtiene los tipos de cambio del Banco Central Europeo. Cuando añades un movimiento en una moneda distinta de la de su cuenta, Financy lo convierte al tipo de cambio de la fecha del movimiento y guarda los dos importes. Si escribes tú los dos importes, se guarda tu propio tipo de cambio.",
+  "FeaturePageMultiCurrency.how2":
+    "El resumen muestra tus ingresos, tus gastos y el total del hogar en la moneda principal. Cuando una moneda no tiene tipo de cambio, el total la deja fuera y lo indica, en lugar de contarla como cero.",
+  "FeaturePageMultiCurrency.historyQuestion":
+    "¿Un nuevo tipo de cambio modifica mis movimientos pasados?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "No. Un movimiento en otra moneda guarda su importe convertido una sola vez, al tipo de cambio de su propia fecha. Un tipo de cambio posterior nunca lo reescribe.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "¿Podemos cambiar más adelante la moneda principal del hogar?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Sí. Un administrador o el propietario del hogar puede cambiarla en cualquier momento. Ningún importe cambia: cada uno se queda en su propia moneda, y solo los totales se vuelven a convertir.",
+  "FeaturePageMultiCurrency.ownRateQuestion":
+    "¿Puedo poner el tipo de cambio que me cobró mi banco?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Sí. Escribe los dos importes, lo que pagaste y lo que salió de tu cuenta, y Financy guarda tu propio tipo de cambio en lugar del tipo del día.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "¿Tiene Financy un tipo de cambio diario para todas las monedas?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "No. Los tipos de cambio diarios y gratuitos del Banco Central Europeo cubren unas 30 monedas. Otras, como el dong vietnamita, necesitan una fuente de pago que active el propietario del servidor; sin ella, los totales dejan fuera esos importes y lo indican.",
+  "FeaturePageHouseholds.name": "Hogares",
+  "FeaturePageHouseholds.title": "Presupuesto en pareja, cada uno con su acceso",
+  "FeaturePageHouseholds.description":
+    "Invita a tu pareja o a tu familia a un hogar. Cada persona entra con su propio acceso y su rol, y todos ven las mismas cuentas y presupuestos.",
+  "FeaturePageHouseholds.h1":
+    "Comparte el presupuesto con tu pareja, cada uno con su propio acceso",
+  "FeaturePageHouseholds.answer":
+    "Sí. Un hogar son las personas que comparten dinero. Invita a tu pareja o a tu familia: cada persona entra con su propio acceso y un rol, de lector a propietario, y todos ven las mismas cuentas, movimientos y presupuestos.",
+  "FeaturePageHouseholds.summary": "Un hogar, cada persona con su propio acceso y su rol.",
+  "FeaturePageHouseholds.how1":
+    "Quien crea un hogar es su propietario. El propietario o un administrador invita a otras personas con un enlace y elige el rol de cada una. Un lector solo consulta. Un editor, además, añade y cambia cuentas, movimientos y presupuestos. Un administrador, además, gestiona a los miembros, y el propietario puede transferir el hogar.",
+  "FeaturePageHouseholds.how2":
+    "La app llama grupo a un hogar. Una misma cuenta de usuario puede pertenecer a varios hogares, como uno compartido y otro solo tuyo, y pasas de uno a otro. El registro de actividad muestra quién cambió qué.",
+  "FeaturePageHouseholds.privateQuestion": "¿Puedo ocultarle algunas cuentas a mi pareja?",
+  "FeaturePageHouseholds.privateAnswer":
+    "No. Todos los miembros de un hogar ven todas sus cuentas y movimientos. El dinero que quieras llevar solo para ti va en un hogar propio, al que puedes cambiar con la misma cuenta de usuario.",
+  "FeaturePageHouseholds.viewerQuestion":
+    "¿Alguien puede ver nuestro presupuesto sin poder cambiarlo?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Sí. Dale el rol de lector. Un lector ve las cuentas, los movimientos y los presupuestos, y el servidor rechaza cualquier cambio que intente hacer.",
+  "FeaturePageHouseholds.handOverQuestion": "¿Puedo transferirle el hogar a mi pareja?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Sí. El propietario puede hacer propietario a otro miembro. Todos los registros se quedan donde están.",
+  "FeaturePageHouseholds.restoreQuestion": "¿Podemos recuperar un hogar eliminado?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Sí. Solo el propietario puede eliminar un hogar, y puede restaurarlo durante 30 días.",
+  "FeaturePageLiveSync.name": "Sincronización en vivo",
+  "FeaturePageLiveSync.title": "Tu presupuesto en vivo en cada dispositivo",
+  "FeaturePageLiveSync.description":
+    "Cuando tu pareja añade un movimiento, aparece al momento en tu móvil. Financy también se abre sin conexión y envía tus cambios al recuperarla.",
+  "FeaturePageLiveSync.h1": "Los cambios aparecen en el móvil de tu pareja sin recargar",
+  "FeaturePageLiveSync.answer":
+    "Sí. Cuando alguien de tu hogar añade o cambia algo, los demás lo ven al momento en cada dispositivo abierto. Un móvil que estaba sin conexión o en reposo se pone al día en cuanto se reconecta.",
+  "FeaturePageLiveSync.summary":
+    "Los cambios aparecen al momento en cada dispositivo, incluso tras un rato sin conexión.",
+  "FeaturePageLiveSync.how1":
+    "Cada copia abierta de Financy mantiene una conexión con el servidor. Cuando alguien guarda un cambio, el servidor se lo envía al momento a todo el hogar. Un dispositivo que se perdió cambios mientras no estaba los pide al volver.",
+  "FeaturePageLiveSync.how2":
+    "Instala Financy desde el navegador en un móvil o un ordenador, y se abrirá sin conexión con lo último que vio. Los movimientos y las transferencias que añades, cambias o eliminas sin conexión esperan en el dispositivo y se envían al reconectarte.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "¿Puedo añadir un movimiento sin internet?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Sí. Los movimientos y las transferencias que añades, cambias o eliminas sin conexión se guardan en tu dispositivo y se envían al servidor cuando vuelve la conexión.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "¿Puedo cambiar cuentas o presupuestos sin conexión?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "No. Las cuentas, las categorías y los presupuestos se ven sin conexión tal como estaban la última vez, pero para cambiarlos hace falta conexión.",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "¿Un cambio hecho sin conexión puede sobrescribir el de mi pareja?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "No. Si el mismo movimiento cambió en el servidor mientras tanto, el servidor rechaza el tuyo y tu dispositivo lo guarda para que lo resuelvas. Nada se sobrescribe solo.",
+  "FeaturePageLiveSync.storesQuestion": "¿Está Financy en la App Store o en Google Play?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Todavía no. Por ahora instalas Financy desde el navegador en un móvil o un ordenador, y se abre sin conexión.",
+  "FeaturePageSelfHosting.name": "Alojamiento propio",
+  "FeaturePageSelfHosting.title": "Una app de presupuesto en tu propio servidor",
+  "FeaturePageSelfHosting.description":
+    "Instala Financy para tu hogar en un servidor que alquiles o tengas, con Docker Compose. Tus datos se quedan en tu servidor y solo pagas el servidor.",
+  "FeaturePageSelfHosting.h1": "Instala una app de presupuesto en tu propio servidor",
+  "FeaturePageSelfHosting.answer":
+    "Sí. Financy funciona con Docker Compose en un servidor Ubuntu que alquiles o tengas. Con la licencia AGPL‑3.0 solo pagas el servidor, y los datos de tu hogar se quedan en él.",
+  "FeaturePageSelfHosting.summary": "Los datos de tu hogar en tu propio servidor.",
+  "FeaturePageSelfHosting.how1":
+    "Necesitas un servidor, un dominio y una cuenta de correo para enviar los códigos de registro. Desde tu ordenador, un solo comando copia Financy al servidor, lo compila allí y lo arranca. Su certificado HTTPS se emite y se renueva solo.",
+  "FeaturePageSelfHosting.how2":
+    "Deja la facturación desactivada y cada hogar de tu servidor tendrá todas las funciones, sin límites. Activa la copia de seguridad diaria y cifrada, y la guía de actualización te lleva a cada nueva versión.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "¿Le falta alguna función a Financy autoalojado?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "No. Es el mismo código. Con la facturación desactivada, cada hogar de tu servidor tiene todas las funciones, sin límite de miembros.",
+  "FeaturePageSelfHosting.mailQuestion": "¿Necesito una cuenta de correo para alojar Financy?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Sí. Financy envía un código por correo a cada persona que se registra, así que el servidor necesita una cuenta SMTP de un proveedor de correo. Sin ella, nadie puede crear una cuenta de usuario.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "¿Puedo pasar mi hogar de financy.dev a mi propio servidor?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Sí. El propietario del hogar lo exporta a un archivo, y tú importas ese archivo en tu servidor como un hogar nuevo.",
+  "FeaturePageSelfHosting.backupQuestion":
+    "¿Financy puede hacer copias de seguridad de mi servidor?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Sí. Activa la copia de seguridad diaria: cada 24 horas guarda los datos y los archivos de tu hogar, cifrados, en un almacenamiento fuera del servidor. La guía de copias de seguridad también te acompaña en una restauración de prueba.",
+  "FeaturePageSelfHosting.installerQuestion": "¿Hay un instalador de un clic?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Todavía no. Preparas Financy desde tu ordenador con Deno, rsync y git, y un solo comando lo despliega. La guía de alojamiento propio explica cada paso.",
   "FeaturePageMissing.title": "Esta página de función no existe",
   "FeaturePageMissing.description":
     "Puede que se haya movido. Todas las funciones están en la página de funciones.",
   "FeaturePageMissing.action": "Ver todas las funciones",
-  "FeaturePageSignIn.name": "Inicio de sesión",
-  "FeaturePageSignIn.title": "Autenticación para tu SaaS, sin servicio externo",
-  "FeaturePageSignIn.description":
-    "Llaves de acceso, códigos por correo, Google, GitHub y verificación en dos pasos, comprobados por tu propia API, sin servicio de autenticación ni pago por usuario. Gratis y con licencia MIT.",
-  "FeaturePageSignIn.h1":
-    "Llaves de acceso e inicio de sesión para tu SaaS, sin servicio de autenticación",
-  "FeaturePageSignIn.answer":
-    "Seed inicia la sesión de la gente con llaves de acceso, códigos de inicio de sesión por correo, Google y GitHub, y lo comprueba su propia API en tu servidor, sin ningún servicio de autenticación de terceros. Las contraseñas, las llaves de acceso y los códigos de inicio de sesión funcionan en cuanto despliegas, sin pago por usuario; Google y GitHub necesitan dos claves cada uno en el archivo env.",
-  "FeaturePageSignIn.summary":
-    "Llaves de acceso, códigos por correo, Google, GitHub y verificación en dos pasos, sin servicio de autenticación.",
-  "FeaturePageSignIn.how1":
-    "La API comprueba cada inicio de sesión por sí misma y responde con una cookie de sesión firmada. Una llave de acceso usa el WebAuthn del propio navegador: el servidor guarda solo su clave pública, y cada desafío de inicio de sesión sirve una sola vez. Un código de inicio de sesión por correo sirve para entrar o para registrarse, funciona una sola vez durante 10 minutos, solo en el navegador que lo pidió, y se guarda solo como hash.",
-  "FeaturePageSignIn.how2":
-    "Una app de autenticación añade la verificación en dos pasos. El perfil muestra cada forma de entrar en la cuenta de usuario y cada dispositivo con la sesión iniciada, y cambiar una forma de entrar pide una prueba y envía un correo. Un visitante también puede empezar con una cuenta de invitado y añadir un método de inicio de sesión más tarde.",
-  "FeaturePageSignIn.authServiceQuestion": "¿Necesito un servicio de autenticación?",
-  "FeaturePageSignIn.authServiceAnswer":
-    "No. La propia API de Seed comprueba las contraseñas, las llaves de acceso, los códigos de inicio de sesión y las respuestas de Google y GitHub en tu servidor, así que no se cobra nada por usuario.",
-  "FeaturePageSignIn.passkeysQuestion": "¿Seed admite llaves de acceso (passkeys)?",
-  "FeaturePageSignIn.passkeysAnswer":
-    "Sí. La gente añade una llave de acceso en su perfil e inicia sesión con ella; el servidor guarda solo su clave pública, y cada desafío de inicio de sesión sirve una sola vez.",
-  "FeaturePageSignIn.twoFactorQuestion": "¿Seed tiene verificación en dos pasos (2FA)?",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "Sí. Una app de autenticación añade un código de un solo uso al iniciar sesión, también después de entrar con Google o GitHub.",
-  "FeaturePageSignIn.providersOffQuestion":
-    "¿Puedo prescindir del inicio de sesión con Google o GitHub?",
-  "FeaturePageSignIn.providersOffAnswer":
-    "Sí. Cada uno está desactivado hasta que defines sus dos variables en el archivo env, así que si no las defines, queda desactivado.",
-  "FeaturePageGroups.name": "Grupos y roles",
-  "FeaturePageGroups.title": "Grupos y roles para tu SaaS, sin programarlo desde cero",
-  "FeaturePageGroups.description":
-    "Grupos con roles de lector a propietario, invitaciones, cesión de propiedad y registro de actividad, con un solo control de inquilino. Gratis y MIT.",
-  "FeaturePageGroups.h1": "Grupos y roles para tu SaaS, sin construir la arquitectura multi-tenant",
-  "FeaturePageGroups.answer":
-    "Seed da a cada cuenta de usuario un grupo personal al registrarse, y la gente crea grupos compartidos, invita a otras personas y les da roles de lector a propietario. El grupo es el único límite entre inquilinos, así que una función que añadas pasa la misma comprobación en cuanto copia el agregado de notas.",
-  "FeaturePageGroups.summary":
-    "Grupos con roles de lector a propietario, invitaciones y registro de actividad.",
-  "FeaturePageGroups.how1":
-    "Cada fila de datos compartidos pertenece a un grupo, y la API comprueba el rol de la persona en ese grupo antes de leer o escribir. Un lector lee; un editor además cambia los datos del grupo; un administrador y el propietario además gestionan los miembros y leen el registro de actividad.",
-  "FeaturePageGroups.how2":
-    "El propietario cede la propiedad en un solo paso, y un grupo eliminado se puede restaurar durante 30 días. Solo una cuenta de usuario con el correo electrónico confirmado puede invitar.",
-  "FeaturePageGroups.personalGroupQuestion": "¿Cada cuenta de usuario recibe un grupo?",
-  "FeaturePageGroups.personalGroupAnswer":
-    "Sí. Cada cuenta de usuario recibe un grupo personal al registrarse; un grupo personal y uno compartido pasan la misma comprobación.",
-  "FeaturePageGroups.viewerQuestion": "¿Un lector puede cambiar los datos de un grupo?",
-  "FeaturePageGroups.viewerAnswer":
-    "No. Un lector lee los datos del grupo; un editor, un administrador o el propietario pueden cambiarlos.",
-  "FeaturePageGroups.restoreQuestion": "¿Se puede recuperar un grupo eliminado?",
-  "FeaturePageGroups.restoreAnswer":
-    "Sí. Su propietario puede restaurarlo durante 30 días; después, el proceso en segundo plano lo elimina definitivamente.",
-  "FeaturePageGroups.secondModelQuestion":
-    "¿Necesito un segundo sistema de permisos para mis propias funciones?",
-  "FeaturePageGroups.secondModelAnswer":
-    "No. Un agregado nuevo copia el agregado de notas y su comprobación de grupo, así que solo hay un modelo de permisos que mantener.",
-  "FeaturePageRealtime.name": "Sincronización en tiempo real",
-  "FeaturePageRealtime.title": "Sincronización en tiempo real para tu SaaS, sin terceros",
-  "FeaturePageRealtime.description":
-    "Un cambio guardado en una pestaña aparece en las demás pestañas abiertas del grupo en menos de un segundo, por WebSocket desde tu API. Gratis y MIT.",
-  "FeaturePageRealtime.h1":
-    "Actualizaciones en tiempo real para tu SaaS, sin un servicio externo de tiempo real",
-  "FeaturePageRealtime.answer":
-    "Seed envía cada cambio guardado a todas las pestañas abiertas del grupo por un WebSocket de su propia API, así que una nota guardada en una ventana aparece en las demás en menos de un segundo, sin recargar. Funciona en tu servidor, sin ningún servicio de tiempo real que pagar; una función que añadas lo obtiene copiando el ejemplo de notas.",
-  "FeaturePageRealtime.summary":
-    "Un cambio guardado en una pestaña aparece en las demás pestañas abiertas, sin recargar.",
-  "FeaturePageRealtime.how1":
-    "Cada escritura se confirma con el siguiente número de secuencia del grupo, y la API la envía al socket abierto de cada miembro. Una pestaña aplica un cambio solo cuando su número sigue al último que tiene; si falta alguno, pide al servidor todo lo posterior a su cursor, así que un mensaje perdido cuesta una petición más y nunca una lista equivocada.",
-  "FeaturePageRealtime.how2":
-    "Un portátil que sale de la suspensión se reconecta y descarga lo que se perdió. Con el socket desactivado, la aplicación lee y escribe por HTTP y busca cambios cada 30 segundos.",
-  "FeaturePageRealtime.realtimeQuestion": "¿Seed se actualiza en tiempo real?",
-  "FeaturePageRealtime.realtimeAnswer":
-    "Sí. Un cambio guardado aparece en todas las pestañas abiertas del grupo en menos de un segundo, sin recargar.",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "¿Necesito Pusher, Ably u otro servicio de tiempo real?",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "No. El WebSocket lo sirve la propia API de Seed en tu servidor.",
-  "FeaturePageRealtime.realtimeSleepQuestion":
-    "¿Una pestaña se pone al día cuando el portátil sale de la suspensión?",
-  "FeaturePageRealtime.realtimeSleepAnswer":
-    "Sí. Se reconecta y descarga todos los cambios posteriores al último que tenía.",
-  "FeaturePageRealtime.realtimeOffQuestion": "¿Puedo desactivar el tiempo real?",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "Sí. Define SPA_REALTIME=false: la aplicación buscará cambios cada 30 segundos y funcionará igual.",
-  "FeaturePageOffline.name": "App sin conexión",
-  "FeaturePageOffline.title": "App sin conexión para tu SaaS, sin crear la sincronización",
-  "FeaturePageOffline.description":
-    "Una app instalable que abre sin red, guarda cada lista en el dispositivo y pone en cola los cambios hasta que vuelve la conexión. Gratis y MIT.",
-  "FeaturePageOffline.h1":
-    "Una app offline-first para tu SaaS, sin construir un motor de sincronización",
-  "FeaturePageOffline.answer":
-    "La aplicación de Seed se instala como una nativa, abre sin red, muestra cada lista tal como la vio por última vez y permite añadir, editar y eliminar notas y etiquetas sin conexión. Cada función tuya elige uno de tres niveles (solo en línea, legible sin conexión o editable sin conexión) y sigue la receta escrita para ese nivel.",
-  "FeaturePageOffline.summary":
-    "Una app instalable que abre sin red y se sincroniza cuando vuelve la conexión.",
-  "FeaturePageOffline.how1":
-    "El dispositivo guarda una copia de cada lista en IndexedDB, y las escrituras esperan en una cola con claves de idempotencia, así que un cambio enviado dos veces se aplica una sola vez. Un cambio que el servidor no puede aceptar aparece como un conflicto con «Quedarme con el mío» o «Usar la del servidor»; nada se sobrescribe por sí solo.",
-  "FeaturePageOffline.how2":
-    "Un service worker guarda la página, los scripts y los estilos de la aplicación, así que abre sin red. El inicio de sesión, los elementos eliminados y la configuración de la verificación en dos pasos necesitan red.",
-  "FeaturePageOffline.offlineQuestion": "¿Seed funciona sin conexión?",
-  "FeaturePageOffline.offlineAnswer":
-    "Sí. La aplicación abre sin red y muestra cada lista tal como la vio por última vez.",
-  "FeaturePageOffline.offlineEditsQuestion": "¿Se puede editar sin conexión?",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "Sí. Las notas y las etiquetas funcionan sin conexión; los demás cambios necesitan red, y la pantalla lo indica.",
-  "FeaturePageOffline.conflictQuestion": "¿Seed detecta cuando dos personas cambian la misma nota?",
-  "FeaturePageOffline.conflictAnswer":
-    "Sí. El cambio posterior aparece como un conflicto, y su autor elige «Quedarme con el mío» o «Usar la del servidor».",
-  "FeaturePageOffline.removeOfflineQuestion": "¿Puedo quitar el modo sin conexión?",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "Sí. Desactívalo con un solo ajuste, o borra una carpeta y sigue la lista de pasos escrita; una prueba falla si te saltas un paso.",
-  "FeaturePageDeploy.name": "Despliegue",
-  "FeaturePageDeploy.title": "Despliega tu SaaS sin la factura de una plataforma cloud",
-  "FeaturePageDeploy.description":
-    "Docker Compose en un servidor Linux que alquilas: Traefik, Postgres, Valkey, archivos en S3, monitorización y backups, con un solo comando. Gratis y MIT.",
-  "FeaturePageDeploy.h1":
-    "Autoaloja tu SaaS en un solo servidor, sin la factura de una plataforma cloud",
-  "FeaturePageDeploy.answer":
-    "Seed funciona en un servidor Linux que alquilas, con Docker Compose tanto en desarrollo como en producción, y un solo comando lo despliega. Preparas el servidor una vez siguiendo los pasos escritos, y a partir de ahí cada despliegue es solo ese comando.",
-  "FeaturePageDeploy.summary":
-    "Un servidor Linux, Docker Compose y un solo comando para desplegar.",
-  "FeaturePageDeploy.how1":
-    "El despliegue copia el proyecto al servidor por SSH y lo arranca con Compose; en cada despliegue, un servicio que se ejecuta una sola vez aplica las migraciones de la base de datos. Traefik va delante y pide a Let's Encrypt el certificado de cada host.",
-  "FeaturePageDeploy.how2":
-    "Postgres, Valkey, un almacén de archivos S3, métricas, logs y paneles con alertas funcionan junto a las aplicaciones, y varios productos pueden compartir un servidor detrás del mismo proxy.",
-  "FeaturePageDeploy.kubernetesQuestion": "¿Necesito Kubernetes?",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "No. Docker Compose en un solo servidor ejecuta el producto entero, en desarrollo y en producción.",
-  "FeaturePageDeploy.severalQuestion": "¿Pueden varios productos compartir un servidor?",
-  "FeaturePageDeploy.severalAnswer":
-    "Sí. Comparten un proxy, y cada uno mantiene su propio directorio, base de datos y datos; comparte un servidor solo entre productos en los que confíes por igual.",
-  "FeaturePageDeploy.backupQuestion": "¿Hay copias de seguridad?",
-  "FeaturePageDeploy.backupAnswer":
-    "Sí. Una copia de seguridad diaria y cifrada de la base de datos con restic, opcional, y un procedimiento de restauración por escrito.",
   "ErrorPage.status": "Ver qué funciona hoy",
   "HomeHero.notify": "Avísame",
   "HomeHero.selfHost": "Aloja Financy tú mismo",
@@ -678,6 +657,20 @@ export default {
   "FeatureRecurring.fact3":
     "Añadir un movimiento recurrente requiere el plan Household; verlos, nunca; lo comprueba el servidor",
   "FeatureRecurring.code": "Ver el código de los movimientos recurrentes",
+  "FeatureMultiCurrency.nav": "Monedas",
+  "FeatureMultiCurrency.title": "Muchas monedas, un solo total",
+  "FeatureMultiCurrency.lead":
+    "Elige la moneda principal de tu hogar y cada total se convierte a ella al tipo de cambio del día en que se movió el dinero. Un movimiento en otra moneda conserva su propio importe junto al convertido.",
+  "FeatureMultiCurrency.fact1":
+    "Tipos de referencia diarios del Banco Central Europeo, a través de Frankfurter, sin necesidad de clave",
+  "FeatureMultiCurrency.fact2":
+    "Un importe convertido se guarda una sola vez, al tipo de cambio de su propia fecha, y nunca se reescribe",
+  "FeatureMultiCurrency.fact3":
+    "Una moneda sin tipo de cambio queda fuera del total y se nombra; nunca cuenta como 0",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Las cifras del presupuesto convertidas de otra moneda aún no dicen «aprox.» ni la fecha del tipo de cambio",
+  "FeatureMultiCurrency.notYetOffline": "Tipos de cambio que puedas consultar sin conexión",
+  "FeatureMultiCurrency.code": "Ver el dominio del dinero",
   "FeatureTransactions.nav": "Movimientos",
   "FeatureTransactions.title": "Cada gasto e ingreso, en la moneda en que pagaste",
   "FeatureTransactions.lead":

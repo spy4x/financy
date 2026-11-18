@@ -239,6 +239,8 @@ export default {
   "FeatureTeams.fact1": "すべてのデータは、世帯というひとつの境界で確認されます",
   "FeatureTeams.fact2": "各自は自分が属する世帯だけを見られます",
   "FeatureTeams.fact3": "招待、ロール変更、オーナー譲渡のそれぞれにテストがあります",
+  "FeatureTeams.notYetClosedSignUp": "新規登録を締め切ったサーバーで、招待から参加すること",
+  "FeatureTeams.notYetGroupWord": "アプリではまだ、世帯のことを「グループ」と呼んでいます",
   "FeatureTeams.code": "グループのドメインを読む",
   "FeatureExport.nav": "書き出し",
   "FeatureExport.title": "データは自分のもの",
@@ -257,22 +259,17 @@ export default {
   "FeatureLanguages.fact2": "数値と日付はブラウザ標準の Intl で表示します",
   "FeatureLanguages.fact3": "アラビア語のページは右から左に表示されます",
   "FeatureLanguages.code": "翻訳ガイドを読む",
-  "FeatureRealtime.nav": "リアルタイム同期",
-  "FeatureRealtime.title": "変更は再読み込みなしで全端末に表示",
-  "FeatureRealtime.lead":
-    "世帯の誰かが何かを変えると、ほかの人は開いているすべての端末ですぐに見られます。スリープから復帰したノートパソコンは、その間の変更を取り込みます。",
-  "FeatureRealtime.fact1": "標準の WebSocket で、変更ごとに通し番号が付きます",
-  "FeatureRealtime.fact2": "再接続した端末は見逃した分を取得します",
-  "FeatureRealtime.code": "リアルタイムの設計を読む",
-  "FeatureOffline.nav": "オフラインアプリ",
-  "FeatureOffline.title": "ネットワークなしで開けるアプリ",
-  "FeatureOffline.lead":
-    "Financy をスマホやパソコンにインストールすると、ネットワークがなくても開き、最後に見た内容を表示します。",
-  "FeatureOffline.fact1":
-    "各リストのローカルコピーを IndexedDB に持ち、べき等キー付きの書き込みキューを使います",
-  "FeatureOffline.fact2":
-    "競合ごとに「自分のバージョンを残す」か「サーバーのバージョンを使う」かを選択",
-  "FeatureOffline.code": "docs/offline.mdを読む",
+  "FeatureLiveSync.nav": "リアルタイム同期",
+  "FeatureLiveSync.title": "すべてのデバイスにすぐ反映、オフラインでも",
+  "FeatureLiveSync.lead":
+    "世帯の誰かが何かを変えると、ほかの全員の画面にもすぐ反映され、再読み込みは要りません。Financy をスマホやパソコンにインストールすれば、ネットワークがなくても開け、オンラインに戻ったときに追加した取引を送信します。",
+  "FeatureLiveSync.fact1": "標準の WebSocket と、すべての変更に付くシーケンス番号",
+  "FeatureLiveSync.fact2": "再接続したデバイスは、見逃した変更を取得します",
+  "FeatureLiveSync.fact3": "IndexedDB のローカルコピーと、冪等キー付きのオフライン変更キュー",
+  "FeatureLiveSync.notYetSetup": "ネットワークなしでの口座、カテゴリ、予算の変更",
+  "FeatureLiveSync.notYetRates": "ネットワークなしで見られる為替レート",
+  "FeatureLiveSync.notYetStores": "Google Play と App Store のアプリ",
+  "FeatureLiveSync.code": "リアルタイム同期の設計を読む",
   "FeatureDeploy.nav": "セルフホスト",
   "FeatureDeploy.title": "あなたのサーバーで動く",
   "FeatureDeploy.lead":
@@ -282,6 +279,7 @@ export default {
   "FeatureDeploy.fact3": "VictoriaMetrics、VictoriaLogs、Grafana によるメトリクス、ログ、アラート",
   "FeatureDeploy.fact4":
     "任意で有効にできる、データベースの毎日の暗号化バックアップと、文書化された復元手順",
+  "FeatureDeploy.notYetRehearsed": "新しいサーバーで実際に計測したインストール時間",
   "FeatureDeploy.code": "Composeファイルを読む",
   "FeaturesFaq.serverlessQuestion": "共有ホスティングやサーバーレスで Financy を動かせますか？",
   "FeaturesFaq.serverlessAnswer":
@@ -413,136 +411,117 @@ export default {
   "FeaturePage.otherFeatures": "ほかの機能",
   "FeaturePage.readMore": "{name}について詳しく読む",
   "FeaturePage.all": "すべての機能",
-  "FeaturePage.runtimeQuestion": "SeedはNodeやBunで動きますか？",
-  "FeaturePage.runtimeAnswer":
-    "はい。API、バックグラウンドのワーカー、Webサイトは、設定ひとつ（APP_RUNTIME）でDeno・Node・Bunのどれでも動きます。Seed自体のタスクはDenoで動きますが、DenoはnpmやBunが自動でインストールします。詳しくは機能ページのランタイムの項目をご覧ください。",
+  "FeaturePage.demo": "デモで試す（アカウント登録不要）",
+  "FeaturePageMultiCurrency.name": "複数通貨",
+  "FeaturePageMultiCurrency.title": "複数通貨のお金をひとつの合計で管理できる家計簿",
+  "FeaturePageMultiCurrency.description":
+    "口座はそれぞれの通貨のまま、すべての合計を世帯のメイン通貨で表示。お金の動いた日の為替レートで換算します。",
+  "FeaturePageMultiCurrency.h1": "複数通貨の残高を、ひとつの合計で見られますか？",
+  "FeaturePageMultiCurrency.answer":
+    "はい。口座はそれぞれの通貨のままで、Financy が日ごとの為替レートで世帯のメイン通貨に換算して合計します。別の通貨で支払った取引は、換算後の金額の隣に元の金額も残ります。",
+  "FeaturePageMultiCurrency.summary": "口座はそれぞれの通貨で、合計はすべてメイン通貨で。",
+  "FeaturePageMultiCurrency.how1":
+    "世帯でメイン通貨をひとつ選びます。Financy は毎日、欧州中央銀行の為替レートを取得します。口座と違う通貨で取引を追加すると、その取引の日付のレートで換算し、両方の金額を保存します。両方の金額を自分で入力すれば、そのレートがそのまま残ります。",
+  "FeaturePageMultiCurrency.how2":
+    "概要画面には、収入、支出、世帯の合計をメイン通貨で表示します。レートのない通貨があるときは、0 として数えずに合計から外し、そのことを表示します。",
+  "FeaturePageMultiCurrency.historyQuestion":
+    "為替レートが変わると、過去の取引の金額も変わりますか？",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "いいえ。別の通貨の取引は、その日付のレートで換算した金額を一度だけ保存します。あとから届いたレートで書き換わることはありません。",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion": "世帯のメイン通貨はあとから変更できますか？",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "はい。世帯の管理者かオーナーなら、いつでも変更できます。金額そのものは変わらず、それぞれの通貨のまま残り、合計だけが換算し直されます。",
+  "FeaturePageMultiCurrency.ownRateQuestion": "銀行で実際に適用された為替レートを入力できますか？",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "はい。支払った金額と口座から引き落とされた金額の両方を入力すると、Financy はその日のレートではなく、実際のレートを残します。",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "Financy はすべての通貨の為替レートを毎日取得できますか？",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "いいえ。欧州中央銀行の無料の日次レートが対応するのは約30通貨です。ベトナムドンなどほかの通貨には、サーバーの運営者が有効にする有料のレート提供元が必要です。それがない場合、その金額は合計から外し、そのことを表示します。",
+  "FeaturePageHouseholds.name": "世帯",
+  "FeaturePageHouseholds.title": "夫婦で共有できる家計簿、それぞれ自分のアカウントで",
+  "FeaturePageHouseholds.description":
+    "パートナーや家族をひとつの世帯に招待。各自が自分のアカウントとロールでログインし、全員が同じ口座と予算を見られます。",
+  "FeaturePageHouseholds.h1": "夫婦で家計簿を共有して、それぞれ自分のアカウントで使えますか？",
+  "FeaturePageHouseholds.answer":
+    "はい。世帯とは、お金を共有する人たちのことです。パートナーや家族を招待すると、各自が自分のアカウントと、閲覧者からオーナーまでのロールでログインし、全員が同じ口座、取引、予算を見られます。",
+  "FeaturePageHouseholds.summary": "ひとつの世帯で、各自が自分のアカウントとロールを持てます。",
+  "FeaturePageHouseholds.how1":
+    "世帯を作った人がオーナーになります。オーナーか管理者がリンクで招待し、各自のロールを選びます。閲覧者は見るだけです。編集者は口座、取引、予算の追加と変更もできます。管理者はメンバーの管理もでき、オーナーは世帯を譲渡できます。",
+  "FeaturePageHouseholds.how2":
+    "アプリでは世帯を「グループ」と呼びます。ひとつのアカウントで複数の世帯に入れるので、共有の世帯と自分だけの世帯を切り替えて使えます。アクティビティログで、誰が何を変えたかがわかります。",
+  "FeaturePageHouseholds.privateQuestion": "一部の口座をパートナーに見せないようにできますか？",
+  "FeaturePageHouseholds.privateAnswer":
+    "いいえ。世帯の全員が、その世帯のすべての口座と取引を見られます。自分だけで管理したいお金は自分だけの世帯に入れ、同じアカウントで切り替えて使います。",
+  "FeaturePageHouseholds.viewerQuestion": "家計簿を見るだけで、変更はできない人を招待できますか？",
+  "FeaturePageHouseholds.viewerAnswer":
+    "はい。閲覧者のロールを割り当ててください。閲覧者は口座、取引、予算を見られ、変更しようとしてもサーバーが拒否します。",
+  "FeaturePageHouseholds.handOverQuestion": "世帯をパートナーに譲渡できますか？",
+  "FeaturePageHouseholds.handOverAnswer":
+    "はい。オーナーはほかのメンバーをオーナーにできます。記録はすべてそのまま残ります。",
+  "FeaturePageHouseholds.restoreQuestion": "削除した世帯は元に戻せますか？",
+  "FeaturePageHouseholds.restoreAnswer":
+    "はい。世帯を削除できるのはオーナーだけで、オーナーは30日以内なら復元できます。",
+  "FeaturePageLiveSync.name": "リアルタイム同期",
+  "FeaturePageLiveSync.title": "家計簿をすべてのデバイスでリアルタイム同期",
+  "FeaturePageLiveSync.description":
+    "パートナーが取引を追加すると、自分のスマホにもすぐ表示されます。Financy はネットワークがなくても開け、オンラインに戻ると変更を送信します。",
+  "FeaturePageLiveSync.h1":
+    "家計簿の変更は、再読み込みしなくてもパートナーのスマホに反映されますか？",
+  "FeaturePageLiveSync.answer":
+    "はい。世帯の誰かが何かを追加・変更すると、ほかの全員の開いているすべてのデバイスにすぐ表示されます。オフラインやスリープ中だったスマホも、再接続するとすぐに追いつきます。",
+  "FeaturePageLiveSync.summary": "変更はすべてのデバイスにすぐ反映。オフラインのあとでも。",
+  "FeaturePageLiveSync.how1":
+    "開いている Financy はそれぞれサーバーとの接続を保ちます。誰かが変更を保存すると、サーバーはそれをすぐ世帯の全員へ送ります。離れている間に変更を見逃したデバイスは、戻ったときにそれを取りに行きます。",
+  "FeaturePageLiveSync.how2":
+    "Financy をブラウザからスマホやパソコンにインストールすると、ネットワークがなくても開け、最後に見た内容を表示します。オフラインで追加、変更、削除した取引と振替はデバイスで待機し、再接続したときに送信されます。",
+  "FeaturePageLiveSync.offlineEntriesQuestion":
+    "インターネットにつながっていなくても取引を追加できますか？",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "はい。オフラインで追加、変更、削除した取引と振替はデバイスに保存され、接続が戻るとサーバーへ送信されます。",
+  "FeaturePageLiveSync.offlineSetupQuestion": "オフラインで口座や予算を変更できますか？",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "いいえ。口座、カテゴリ、予算はオフラインでも最後に見た状態で表示されますが、変更するには接続が必要です。",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "オフラインでの変更が、パートナーの変更を上書きすることはありますか？",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "いいえ。その間に同じ取引がサーバーで変更されていたら、サーバーはこちらの変更を受け付けず、デバイスがその変更を残しておくので、あとで自分で解決できます。勝手に上書きされることはありません。",
+  "FeaturePageLiveSync.storesQuestion": "Financy は App Store や Google Play にありますか？",
+  "FeaturePageLiveSync.storesAnswer":
+    "まだです。今はブラウザから Financy をスマホやパソコンにインストールでき、ネットワークがなくても開けます。",
+  "FeaturePageSelfHosting.name": "セルフホスト",
+  "FeaturePageSelfHosting.title": "家計簿アプリを自分のサーバーでセルフホスト",
+  "FeaturePageSelfHosting.description":
+    "Docker Compose で、借りたサーバーや自前のサーバーで世帯の Financy を動かせます。記録は自分のサーバーに残り、かかるのはサーバー代だけです。",
+  "FeaturePageSelfHosting.h1": "家計簿アプリを自分のサーバーで動かせますか？",
+  "FeaturePageSelfHosting.answer":
+    "はい。Financy は、借りたサーバーでも自前のサーバーでも、Ubuntu なら Docker Compose で動きます。AGPL‑3.0 ライセンスなので費用はサーバー代だけで、世帯の記録はそのサーバーに残ります。",
+  "FeaturePageSelfHosting.summary": "世帯の記録を、自分のサーバーに。",
+  "FeaturePageSelfHosting.how1":
+    "必要なのはサーバー、ドメイン名、登録コードを送るためのメールアカウントです。自分のパソコンからコマンドをひとつ実行すると、Financy をサーバーにコピーし、そこでビルドして起動します。HTTPS 証明書は自動で発行・更新されます。",
+  "FeaturePageSelfHosting.how2":
+    "課金をオフのままにすると、サーバー上のすべての世帯がすべての機能を制限なしで使えます。毎日の暗号化バックアップを有効にでき、新しいリリースへはアップグレードガイドに沿って更新できます。",
+  "FeaturePageSelfHosting.sameFeaturesQuestion":
+    "セルフホスト版の Financy には、使えない機能がありますか？",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "いいえ。コードは同じです。課金をオフのままにすると、サーバー上のすべての世帯がすべての機能を使え、メンバー数の制限もありません。",
+  "FeaturePageSelfHosting.mailQuestion":
+    "Financy をセルフホストするには、メールアカウントが必要ですか？",
+  "FeaturePageSelfHosting.mailAnswer":
+    "はい。Financy は新規登録する人全員にコードをメールで送るので、サーバーにはメールサービスの SMTP アカウントが必要です。それがないと、誰もアカウントを作れません。",
+  "FeaturePageSelfHosting.moveQuestion": "financy.dev の世帯を自分のサーバーに移せますか？",
+  "FeaturePageSelfHosting.moveAnswer":
+    "はい。世帯のオーナーがファイルに書き出し、そのファイルを自分のサーバーで新しい世帯として取り込みます。",
+  "FeaturePageSelfHosting.backupQuestion": "Financy でサーバーをバックアップできますか？",
+  "FeaturePageSelfHosting.backupAnswer":
+    "はい。毎日のバックアップを有効にすると、24時間ごとに世帯の記録とファイルを暗号化して、サーバーの外にあるストレージへ保存します。バックアップガイドでは、復元テストの手順も説明しています。",
+  "FeaturePageSelfHosting.installerQuestion": "ワンクリックでインストールできますか？",
+  "FeaturePageSelfHosting.installerAnswer":
+    "まだです。Deno、rsync、git を使って自分のパソコンから Financy をセットアップし、コマンドひとつでデプロイします。セルフホストガイドで、すべての手順を説明しています。",
   "FeaturePageMissing.title": "この機能ページは見つかりません",
   "FeaturePageMissing.description":
     "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",
   "FeaturePageMissing.action": "すべての機能を見る",
-  "FeaturePageSignIn.name": "ログイン",
-  "FeaturePageSignIn.title": "SaaSのログイン機能を、認証サービスなしで",
-  "FeaturePageSignIn.description":
-    "パスキー、メールのログインコード、Google、GitHub、2段階認証。自分のAPIで検証するので、認証サービスもユーザー単位の料金も不要です。無料・MITライセンス。",
-  "FeaturePageSignIn.h1": "SaaSにパスキーとログイン機能を、認証サービスなしで",
-  "FeaturePageSignIn.answer":
-    "Seedは、パスキー、メールのログインコード、Google、GitHubでのログインに対応し、その検証はサーバー上の自前のAPIが行います。外部の認証サービスは使いません。パスワード、パスキー、ログインコードはデプロイした時点で使え、ユーザー単位の料金はかかりません。GoogleとGitHubは、それぞれenvファイルに2つのキーが必要です。",
-  "FeaturePageSignIn.summary":
-    "パスキー、メールのログインコード、Google、GitHub、2段階認証。認証サービスは不要です。",
-  "FeaturePageSignIn.how1":
-    "APIがすべてのログインを自ら検証し、署名付きのセッションCookieを返します。パスキーはブラウザ標準のWebAuthnを使い、サーバーが保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効です。メールのログインコードはログインにも登録にも使え、1回限り・10分間、リクエストしたブラウザでのみ有効で、ハッシュとしてのみ保存されます。",
-  "FeaturePageSignIn.how2":
-    "認証アプリを使えば2段階認証を追加できます。プロフィールには、アカウントに入るすべての方法とログイン中のすべてのデバイスが一覧表示され、ログイン方法を変更するときは本人確認を求めてメールで通知します。訪問者はゲストアカウントで始めて、あとからログイン方法を追加することもできます。",
-  "FeaturePageSignIn.authServiceQuestion": "認証サービスは必要ですか？",
-  "FeaturePageSignIn.authServiceAnswer":
-    "いいえ。パスワード、パスキー、ログインコード、そしてGoogleとGitHubからの応答は、Seed自身のAPIがサーバー上で検証するので、ユーザー単位の料金は一切かかりません。",
-  "FeaturePageSignIn.passkeysQuestion": "Seedはパスキーに対応していますか？",
-  "FeaturePageSignIn.passkeysAnswer":
-    "はい。ユーザーはプロフィールでパスキーを追加し、それでログインできます。サーバーが保存するのは公開鍵だけで、ログインのチャレンジは1回限り有効です。",
-  "FeaturePageSignIn.twoFactorQuestion": "Seedに2段階認証はありますか？",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "はい。認証アプリのワンタイムコードをログイン時に求めます。GoogleやGitHubでログインした場合も同様です。",
-  "FeaturePageSignIn.providersOffQuestion":
-    "GoogleやGitHubでのログインを使わないこともできますか？",
-  "FeaturePageSignIn.providersOffAnswer":
-    "はい。どちらも、envファイルに2つの変数を両方設定するまではオフなので、設定しなければオフのままです。",
-  "FeaturePageGroups.name": "グループとロール",
-  "FeaturePageGroups.title": "SaaSのグループとロール（権限管理）を、作り込みなしで",
-  "FeaturePageGroups.description":
-    "閲覧者からオーナーまでのロール付きグループ、招待、オーナー権限の譲渡、アクティビティログ。すべてのデータを1つのテナントチェックで守ります。無料・MITライセンス。",
-  "FeaturePageGroups.h1": "SaaSのグループとロールを、マルチテナントを自作せずに",
-  "FeaturePageGroups.answer":
-    "Seedは登録時にすべてのアカウントに個人用グループを作ります。ユーザーは共有グループを作り、ほかの人を招待して、閲覧者からオーナーまでのロールを割り当てられます。テナントの境界はグループの1つだけなので、追加した機能も、メモの集約をコピーした時点で同じチェックを通ります。",
-  "FeaturePageGroups.summary":
-    "閲覧者からオーナーまでのロール付きグループ、招待、アクティビティログ。",
-  "FeaturePageGroups.how1":
-    "共有データのすべての行はいずれかのグループに属し、APIは読み書きの前に、そのグループでのその人のロールを確認します。閲覧者は読むだけ、編集者はグループのデータも変更でき、管理者とオーナーはさらにメンバーを管理し、アクティビティログを読めます。",
-  "FeaturePageGroups.how2":
-    "オーナーはワンステップでオーナー権限を譲渡でき、削除したグループは30日以内なら復元できます。招待できるのは、メールアドレスを確認済みのアカウントだけです。",
-  "FeaturePageGroups.personalGroupQuestion": "すべてのアカウントにグループがありますか？",
-  "FeaturePageGroups.personalGroupAnswer":
-    "はい。各アカウントには登録時に個人用グループが作られます。個人用グループも共有グループも、同じチェックを通ります。",
-  "FeaturePageGroups.viewerQuestion": "閲覧者はグループのデータを変更できますか？",
-  "FeaturePageGroups.viewerAnswer":
-    "いいえ。閲覧者はグループのデータを読むだけです。変更できるのは編集者、管理者、オーナーです。",
-  "FeaturePageGroups.restoreQuestion": "削除したグループは元に戻せますか？",
-  "FeaturePageGroups.restoreAnswer":
-    "はい。オーナーが30日以内に復元できます。それを過ぎると、ワーカーが完全に削除します。",
-  "FeaturePageGroups.secondModelQuestion": "自分の機能のために、2つ目の権限システムが必要ですか？",
-  "FeaturePageGroups.secondModelAnswer":
-    "いいえ。新しい集約はメモの集約とそのグループチェックをコピーするので、管理する権限モデルは1つだけです。",
-  "FeaturePageRealtime.name": "リアルタイム同期",
-  "FeaturePageRealtime.title": "SaaSのリアルタイム同期を、外部サービスなしで",
-  "FeaturePageRealtime.description":
-    "あるタブで保存した変更が、グループのほかの開いているタブに1秒以内に表示されます。自前のAPIからWebSocketで送ります。無料・MITライセンス。",
-  "FeaturePageRealtime.h1": "SaaSにリアルタイム更新を、ホスト型のリアルタイムサービスなしで",
-  "FeaturePageRealtime.answer":
-    "Seedは、保存された変更を自前のAPIからWebSocketで、グループの開いているすべてのタブに送ります。あるウィンドウで保存したメモは、再読み込みなしで1秒以内にほかのウィンドウにも表示されます。自分のサーバーで動くので、料金のかかるリアルタイムサービスは不要です。追加した機能も、メモの例をコピーすればこの仕組みを使えます。",
-  "FeaturePageRealtime.summary":
-    "あるタブで保存した変更が、再読み込みなしでほかの開いているタブすべてに表示されます。",
-  "FeaturePageRealtime.how1":
-    "各書き込みはグループの次の連番とともにコミットされ、APIはそれを各メンバーの開いているソケットに送ります。タブが変更を適用するのは、その番号が手元の最後の番号の次であるときだけです。番号が飛んでいれば、カーソル以降のすべてをサーバーに問い合わせるので、メッセージが1つ失われてもリクエストが1回増えるだけで、リストが間違うことはありません。",
-  "FeaturePageRealtime.how2":
-    "スリープから復帰したノートPCは再接続し、見逃した分を取得します。ソケットをオフにすると、アプリはHTTPで読み書きし、30秒ごとに変更を確認します。",
-  "FeaturePageRealtime.realtimeQuestion": "Seedはリアルタイムで更新されますか？",
-  "FeaturePageRealtime.realtimeAnswer":
-    "はい。保存した変更は、再読み込みなしで1秒以内に、グループの開いているすべてのタブに表示されます。",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "PusherやAblyなどのリアルタイムサービスは必要ですか？",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "いいえ。WebSocketは、自分のサーバー上でSeed自身のAPIが提供します。",
-  "FeaturePageRealtime.realtimeSleepQuestion": "ノートPCがスリープしたあと、タブは追いつきますか？",
-  "FeaturePageRealtime.realtimeSleepAnswer":
-    "はい。再接続して、手元にある最後の変更以降のすべての変更を取得します。",
-  "FeaturePageRealtime.realtimeOffQuestion": "リアルタイムをオフにできますか？",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "はい。SPA_REALTIME=falseを設定してください。アプリは30秒ごとに変更を確認するようになり、同じように動きます。",
-  "FeaturePageOffline.name": "オフラインアプリ",
-  "FeaturePageOffline.title": "SaaSのオフライン対応アプリを、同期を自作せずに",
-  "FeaturePageOffline.description":
-    "ネットワークなしで開けるインストール可能なアプリ。すべてのリストを端末に保存し、接続が戻るまで編集をキューにためます。無料・MITライセンス。",
-  "FeaturePageOffline.h1": "SaaSにオフラインファーストのアプリを、同期エンジンを作らずに",
-  "FeaturePageOffline.answer":
-    "Seedのアプリはネイティブアプリのようにインストールでき、ネットワークなしでも開けて、最後に表示したすべてのリストを表示します。オフラインでもメモとタグを追加・編集・削除できます。自分の機能は、オンラインのみ、オフラインで閲覧可、オフラインで書き込み可の3段階から1つを選び、それぞれ用意された手順に従います。",
-  "FeaturePageOffline.summary":
-    "ネットワークなしで開けて、接続が戻ると同期するインストール可能なアプリ。",
-  "FeaturePageOffline.how1":
-    "端末は各リストのIndexedDBコピーを持ち、書き込みは冪等キー付きのキューで待機するので、2回送られた変更も適用されるのは1回だけです。サーバーが受け付けられない変更は競合として表示され、「自分のバージョンを残す」か「サーバーの内容を使う」かを選べます。勝手に上書きされることはありません。",
-  "FeaturePageOffline.how2":
-    "サービスワーカーがアプリのページ、スクリプト、スタイルを保存しておくので、ネットワークなしでも開けます。ログイン、削除済みのアイテム、2段階認証の設定にはネットワークが必要です。",
-  "FeaturePageOffline.offlineQuestion": "Seedはオフラインで使えますか？",
-  "FeaturePageOffline.offlineAnswer":
-    "はい。アプリはネットワークなしでも開けて、最後に表示したすべてのリストを表示します。",
-  "FeaturePageOffline.offlineEditsQuestion": "オフライン中に編集できますか？",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "はい。メモとタグはオフラインでも使えます。それ以外の変更にはネットワークが必要で、画面にそう表示されます。",
-  "FeaturePageOffline.conflictQuestion": "2人が同じメモを変更したら、Seedは検知しますか？",
-  "FeaturePageOffline.conflictAnswer":
-    "はい。あとの変更が競合として表示され、その変更をした人が「自分のバージョンを残す」か「サーバーの内容を使う」かを選びます。",
-  "FeaturePageOffline.removeOfflineQuestion": "オフライン対応を取り除けますか？",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "はい。スイッチ1つでオフにするか、フォルダを1つ削除して用意されたチェックリストに従います。手順が抜けているとテストが失敗します。",
-  "FeaturePageDeploy.name": "デプロイ",
-  "FeaturePageDeploy.title": "SaaSのデプロイを、クラウドプラットフォームの請求なしで",
-  "FeaturePageDeploy.description":
-    "借りたLinuxサーバー1台でDocker Compose。Traefik、Postgres、Valkey、S3ファイル、監視、バックアップをコマンド1つでデプロイします。無料・MITライセンス。",
-  "FeaturePageDeploy.h1": "SaaSをサーバー1台でセルフホスト、クラウドプラットフォームの請求なしで",
-  "FeaturePageDeploy.answer":
-    "Seedは借りたLinuxサーバーで動き、開発でも本番でもDocker Composeを使って、コマンド1つでデプロイできます。サーバーの準備は文書化された手順で一度だけ行い、それ以降のデプロイはそのコマンドだけです。",
-  "FeaturePageDeploy.summary": "Linuxサーバー1台、Docker Compose、デプロイはコマンド1つ。",
-  "FeaturePageDeploy.how1":
-    "デプロイはSSHでプロジェクトをサーバーにコピーし、Composeで起動します。デプロイのたびに、1回だけ動くサービスがデータベースのマイグレーションを適用します。前段にはTraefikがあり、ホストごとの証明書をLet's Encryptに要求します。",
-  "FeaturePageDeploy.how2":
-    "Postgres、Valkey、S3ファイルストア、メトリクス、ログ、アラート付きのダッシュボードがアプリと並んで動き、複数のプロダクトが同じプロキシの背後で1台のサーバーを共有できます。",
-  "FeaturePageDeploy.kubernetesQuestion": "Kubernetesは必要ですか？",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "いいえ。開発でも本番でも、サーバー1台のDocker Composeでプロダクト全体が動きます。",
-  "FeaturePageDeploy.severalQuestion": "複数のプロダクトで1台のサーバーを共有できますか？",
-  "FeaturePageDeploy.severalAnswer":
-    "はい。プロキシは共有し、ディレクトリ、データベース、データはそれぞれ別に持ちます。サーバーを共有するのは、同じくらい信頼できるプロダクト同士だけにしてください。",
-  "FeaturePageDeploy.backupQuestion": "バックアップはありますか？",
-  "FeaturePageDeploy.backupAnswer":
-    "はい。オプトインで、データベースの暗号化resticバックアップを毎日取れます。復元手順も文書化されています。",
   "ErrorPage.status": "今できることを見る",
   "HomeHero.notify": "通知を受け取る",
   "HomeHero.selfHost": "Financy をセルフホスト",
@@ -651,6 +630,18 @@ export default {
   "FeatureRecurring.fact3":
     "定期取引の追加には Household プランが必要です。閲覧には不要で、サーバーが確認します",
   "FeatureRecurring.code": "定期取引のコードを読む",
+  "FeatureMultiCurrency.nav": "通貨",
+  "FeatureMultiCurrency.title": "複数の通貨を、ひとつの合計に",
+  "FeatureMultiCurrency.lead":
+    "世帯のメイン通貨を選ぶと、すべての合計がお金の動いた日のレートでその通貨に換算されます。別の通貨の取引は、換算後の金額の隣に元の金額も残します。",
+  "FeatureMultiCurrency.fact1":
+    "欧州中央銀行の日次参照レートを Frankfurter 経由で取得（APIキー不要）",
+  "FeatureMultiCurrency.fact2": "換算した金額はその日付のレートで一度だけ保存し、書き換えません",
+  "FeatureMultiCurrency.fact3": "レートのない通貨は名前を示して合計から外し、0 として数えません",
+  "FeatureMultiCurrency.notYetBudgets":
+    "別の通貨から換算した予算の数字に、まだ「約」やレートの日付が表示されません",
+  "FeatureMultiCurrency.notYetOffline": "ネットワークなしで見られる為替レート",
+  "FeatureMultiCurrency.code": "お金のドメインのコードを読む",
   "FeatureTransactions.nav": "取引",
   "FeatureTransactions.title": "支出も収入も、支払った通貨のまま",
   "FeatureTransactions.lead":

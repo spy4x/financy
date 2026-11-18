@@ -248,6 +248,9 @@ export default {
   "FeatureTeams.fact2": "Chacun ne voit que les foyers dont il fait partie",
   "FeatureTeams.fact3":
     "Invitations, changements de rôle et transfert de propriété, chacun avec ses tests",
+  "FeatureTeams.notYetClosedSignUp":
+    "Rejoindre un foyer sur invitation quand les inscriptions du serveur sont fermées",
+  "FeatureTeams.notYetGroupWord": "L’app dit encore « groupe » là où elle parle du foyer",
   "FeatureTeams.code": "Lire le domaine des groupes",
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Vos données partent avec vous",
@@ -267,23 +270,19 @@ export default {
   "FeatureLanguages.fact2": "Les nombres et les dates via l’Intl du navigateur",
   "FeatureLanguages.fact3": "Les pages en arabe se lisent de droite à gauche",
   "FeatureLanguages.code": "Lire le guide de traduction",
-  "FeatureRealtime.nav": "Synchronisation",
-  "FeatureRealtime.title": "Les changements apparaissent sur chaque appareil sans recharger",
-  "FeatureRealtime.lead":
-    "Quand une personne du foyer change quelque chose, les autres le voient aussitôt, sur chaque appareil ouvert. Un portable qui sort de veille rattrape ce qu’il a manqué.",
-  "FeatureRealtime.fact1":
+  "FeatureLiveSync.nav": "Synchro en direct",
+  "FeatureLiveSync.title": "En direct sur chaque appareil, même hors ligne",
+  "FeatureLiveSync.lead":
+    "Quand une personne du foyer change quelque chose, tous les autres le voient aussitôt, sans recharger la page. Installez Financy sur votre téléphone ou votre ordinateur : il s’ouvre hors ligne et envoie les opérations que vous avez ajoutées dès votre retour en ligne.",
+  "FeatureLiveSync.fact1":
     "Un WebSocket standard, avec un numéro de séquence sur chaque changement",
-  "FeatureRealtime.fact2": "Un appareil qui se reconnecte récupère ce qu’il a manqué",
-  "FeatureRealtime.code": "Lire la conception du temps réel",
-  "FeatureOffline.nav": "Application hors ligne",
-  "FeatureOffline.title": "Une application qui s’ouvre sans réseau",
-  "FeatureOffline.lead":
-    "Installez Financy sur votre téléphone ou votre ordinateur : il s’ouvre hors ligne et affiche ce qu’il a vu en dernier.",
-  "FeatureOffline.fact1":
-    "Une copie locale de chaque liste dans IndexedDB, et une file d’écriture avec des clés d’idempotence",
-  "FeatureOffline.fact2":
-    "« Garder ma version » ou « Prendre l’autre version » pour chaque conflit",
-  "FeatureOffline.code": "Lire docs/offline.md",
+  "FeatureLiveSync.fact2": "Un appareil qui se reconnecte récupère ce qu’il a manqué",
+  "FeatureLiveSync.fact3":
+    "Une copie locale dans IndexedDB, et une file de changements hors ligne avec des clés d’idempotence",
+  "FeatureLiveSync.notYetSetup": "Modifier les comptes, les catégories et les budgets hors ligne",
+  "FeatureLiveSync.notYetRates": "Des taux de change consultables hors ligne",
+  "FeatureLiveSync.notYetStores": "Des apps sur Google Play et l’App Store",
+  "FeatureLiveSync.code": "Lire la conception du temps réel",
   "FeatureDeploy.nav": "Auto-hébergement",
   "FeatureDeploy.title": "Tourne sur votre propre serveur",
   "FeatureDeploy.lead":
@@ -294,6 +293,7 @@ export default {
     "Métriques, journaux et alertes avec VictoriaMetrics, VictoriaLogs et Grafana",
   "FeatureDeploy.fact4":
     "Une sauvegarde quotidienne et chiffrée de la base, en option, avec la restauration écrite pas à pas",
+  "FeatureDeploy.notYetRehearsed": "Un temps d’installation mesuré sur un serveur neuf",
   "FeatureDeploy.code": "Lire les fichiers Compose",
   "FeaturesFaq.serverlessQuestion":
     "Puis-je faire tourner Financy sur un hébergement mutualisé ou en serverless ?",
@@ -430,143 +430,124 @@ export default {
   "FeaturePage.otherFeatures": "Autres fonctionnalités",
   "FeaturePage.readMore": "En savoir plus : {name}",
   "FeaturePage.all": "Toutes les fonctionnalités",
-  "FeaturePage.runtimeQuestion": "Seed tourne-t-il sur Node ou Bun ?",
-  "FeaturePage.runtimeAnswer":
-    "Oui. L’API, le worker d’arrière-plan et le site web tournent sur Deno, Node ou Bun, au choix d’un seul réglage (APP_RUNTIME). Les tâches de Seed tournent sur Deno, que npm ou Bun installe pour vous. Voir la section sur les environnements d’exécution de la page des fonctionnalités.",
+  "FeaturePage.demo": "Essayez dans la démo, sans créer de compte",
+  "FeaturePageMultiCurrency.name": "Plusieurs devises",
+  "FeaturePageMultiCurrency.title": "Votre argent en plusieurs devises, un seul total",
+  "FeaturePageMultiCurrency.description":
+    "Gardez chaque compte dans sa devise et voyez chaque total dans la devise principale du foyer, au taux du jour où l’argent a bougé.",
+  "FeaturePageMultiCurrency.h1": "Voir ses soldes en plusieurs devises en un seul total",
+  "FeaturePageMultiCurrency.answer":
+    "Oui. Chaque compte garde sa propre devise, et Financy les additionne dans la devise principale de votre foyer, au taux de change de chaque jour. Une opération payée dans une autre devise garde son propre montant à côté du montant converti.",
+  "FeaturePageMultiCurrency.summary":
+    "Chaque compte dans sa devise, chaque total dans votre devise principale.",
+  "FeaturePageMultiCurrency.how1":
+    "Votre foyer choisit une devise principale. Chaque jour, Financy récupère les taux de change de la Banque centrale européenne. Quand vous ajoutez une opération dans une autre devise que celle de son compte, Financy la convertit au taux de la date de l’opération et enregistre les deux montants. Si vous saisissez vous-même les deux montants, c’est votre taux qui est gardé.",
+  "FeaturePageMultiCurrency.how2":
+    "L’écran d’accueil montre vos revenus, vos dépenses et le total du foyer dans la devise principale. Quand une devise n’a pas de taux, un total la laisse de côté et le signale, au lieu de la compter pour zéro.",
+  "FeaturePageMultiCurrency.historyQuestion":
+    "Un nouveau taux de change modifie-t-il mes anciennes opérations ?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "Non. Une opération dans une autre devise enregistre son montant converti une seule fois, au taux de sa propre date. Un taux arrivé plus tard ne le réécrit jamais.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "Peut-on changer plus tard la devise principale du foyer ?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Oui. Un administrateur ou le propriétaire du foyer peut la changer à tout moment. Aucun montant ne change : chacun reste dans sa devise, et seuls les totaux sont convertis à nouveau.",
+  "FeaturePageMultiCurrency.ownRateQuestion":
+    "Puis-je saisir le taux réellement appliqué par ma banque ?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Oui. Saisissez les deux montants, ce que vous avez payé et ce qui est sorti de votre compte, et Financy garde votre propre taux au lieu du taux du jour.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "Financy a-t-il un taux quotidien pour chaque devise ?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "Non. Les taux quotidiens gratuits de la Banque centrale européenne couvrent une trentaine de devises. Les autres, comme le dong vietnamien, demandent une source de taux payante que le propriétaire du serveur active ; sans elle, les totaux laissent ces montants de côté et le signalent.",
+  "FeaturePageHouseholds.name": "Foyers",
+  "FeaturePageHouseholds.title": "Budget partagé en couple, chacun son identifiant",
+  "FeaturePageHouseholds.description":
+    "Invitez votre conjoint ou votre famille dans un foyer. Chacun se connecte avec son identifiant et son rôle, et tous voient les mêmes comptes et budgets.",
+  "FeaturePageHouseholds.h1": "Partager un budget en couple, chacun avec son propre identifiant",
+  "FeaturePageHouseholds.answer":
+    "Oui. Un foyer, ce sont les personnes qui partagent leur argent. Invitez votre conjoint ou votre famille : chacun se connecte avec son propre identifiant et un rôle, de lecteur à propriétaire, et tout le monde voit les mêmes comptes, opérations et budgets.",
+  "FeaturePageHouseholds.summary": "Un foyer, chacun avec son propre identifiant et son rôle.",
+  "FeaturePageHouseholds.how1":
+    "Celui qui crée un foyer en est le propriétaire. Le propriétaire ou un administrateur invite des personnes par un lien et choisit le rôle de chacune. Un lecteur ne fait que consulter. Un éditeur ajoute et modifie aussi les comptes, les opérations et les budgets. Un administrateur gère aussi les membres, et le propriétaire peut transférer le foyer.",
+  "FeaturePageHouseholds.how2":
+    "Dans l’app, un foyer s’appelle un groupe. Un même identifiant peut appartenir à plusieurs foyers, par exemple un foyer partagé et un foyer à vous, et vous passez de l’un à l’autre. Le journal d’activité montre qui a changé quoi.",
+  "FeaturePageHouseholds.privateQuestion": "Puis-je cacher certains comptes à mon conjoint ?",
+  "FeaturePageHouseholds.privateAnswer":
+    "Non. Chaque membre d’un foyer voit tous ses comptes et toutes ses opérations. L’argent que vous voulez garder pour vous va dans un foyer à vous, vers lequel le même identifiant peut basculer.",
+  "FeaturePageHouseholds.viewerQuestion":
+    "Quelqu’un peut-il voir notre budget sans pouvoir le modifier ?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Oui. Donnez-lui le rôle de lecteur. Un lecteur voit les comptes, les opérations et les budgets, et le serveur refuse toute modification qu’il tente.",
+  "FeaturePageHouseholds.handOverQuestion": "Puis-je transférer le foyer à mon conjoint ?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Oui. Le propriétaire peut faire d’un autre membre le propriétaire. Toutes les données restent en place.",
+  "FeaturePageHouseholds.restoreQuestion": "Peut-on récupérer un foyer supprimé ?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Oui. Seul le propriétaire peut supprimer un foyer, et il peut le restaurer pendant 30 jours.",
+  "FeaturePageLiveSync.name": "Synchro en direct",
+  "FeaturePageLiveSync.title": "Budget synchronisé en direct sur vos appareils",
+  "FeaturePageLiveSync.description":
+    "Une opération de votre conjoint apparaît aussitôt sur votre téléphone. Financy s’ouvre aussi hors ligne et envoie vos changements dès le retour du réseau.",
+  "FeaturePageLiveSync.h1":
+    "Les changements s’affichent sur le téléphone de votre conjoint sans recharger",
+  "FeaturePageLiveSync.answer":
+    "Oui. Quand quelqu’un de votre foyer ajoute ou modifie quelque chose, tous les autres le voient aussitôt sur chaque appareil ouvert. Un téléphone resté hors ligne ou en veille se met à jour dès qu’il se reconnecte.",
+  "FeaturePageLiveSync.summary":
+    "Les changements apparaissent aussitôt sur chaque appareil, même après une période hors ligne.",
+  "FeaturePageLiveSync.how1":
+    "Chaque copie ouverte de Financy garde une connexion avec le serveur. Quand quelqu’un enregistre un changement, le serveur l’envoie aussitôt à tout le foyer. Un appareil qui a manqué des changements pendant son absence les demande à son retour.",
+  "FeaturePageLiveSync.how2":
+    "Installez Financy depuis votre navigateur sur un téléphone ou un ordinateur : il s’ouvre hors ligne et affiche ce qu’il a vu en dernier. Les opérations et les virements que vous ajoutez, modifiez ou supprimez hors ligne attendent sur l’appareil et partent à la reconnexion.",
+  "FeaturePageLiveSync.offlineEntriesQuestion":
+    "Puis-je ajouter une opération sans connexion internet ?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Oui. Les opérations et les virements que vous ajoutez, modifiez ou supprimez hors ligne sont gardés sur votre appareil et envoyés au serveur au retour de la connexion.",
+  "FeaturePageLiveSync.offlineSetupQuestion":
+    "Puis-je modifier mes comptes ou mes budgets hors ligne ?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "Non. Les comptes, les catégories et les budgets s’affichent hors ligne tels qu’ils ont été vus en dernier, mais il faut une connexion pour les modifier.",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "Un changement fait hors ligne peut-il écraser celui de mon conjoint ?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "Non. Si la même opération a changé sur le serveur entre-temps, le serveur refuse la vôtre, et votre appareil la garde pour que vous tranchiez. Rien n’est écrasé automatiquement.",
+  "FeaturePageLiveSync.storesQuestion": "Financy est-il sur l’App Store ou Google Play ?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Pas encore. Aujourd’hui, vous installez Financy depuis votre navigateur sur un téléphone ou un ordinateur, et il s’ouvre hors ligne.",
+  "FeaturePageSelfHosting.name": "Auto-hébergement",
+  "FeaturePageSelfHosting.title": "Auto-héberger une appli de budget sur son serveur",
+  "FeaturePageSelfHosting.description":
+    "Installez Financy pour votre foyer avec Docker Compose, sur un serveur loué ou à vous. Vos données restent chez vous, et vous ne payez que le serveur.",
+  "FeaturePageSelfHosting.h1": "Héberger une application de budget sur son propre serveur",
+  "FeaturePageSelfHosting.answer":
+    "Oui. Financy tourne avec Docker Compose sur un serveur Ubuntu, loué ou à vous. Sous licence AGPL‑3.0, vous ne payez que le serveur, et les données de votre foyer y restent.",
+  "FeaturePageSelfHosting.summary": "Les données de votre foyer sur votre propre serveur.",
+  "FeaturePageSelfHosting.how1":
+    "Il vous faut un serveur, un nom de domaine et un compte de messagerie pour envoyer les codes d’inscription. Depuis votre ordinateur, une seule commande copie Financy sur le serveur, l’y compile et le démarre. Son certificat HTTPS est émis et renouvelé automatiquement.",
+  "FeaturePageSelfHosting.how2":
+    "Laissez la facturation désactivée, et chaque foyer de votre serveur a toutes les fonctionnalités, sans limite. Activez la sauvegarde quotidienne chiffrée, et le guide de mise à jour vous accompagne à chaque nouvelle version.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion":
+    "Manque-t-il des fonctionnalités à Financy en auto-hébergement ?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "Non. C’est le même code. Avec la facturation désactivée, chaque foyer de votre serveur a toutes les fonctionnalités, sans limite de membres.",
+  "FeaturePageSelfHosting.mailQuestion":
+    "Faut-il un compte de messagerie pour auto-héberger Financy ?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Oui. Financy envoie un code par e-mail à chaque personne qui crée un compte, donc le serveur a besoin d’un compte SMTP chez un fournisseur de messagerie. Sans lui, personne ne peut créer de compte.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "Puis-je déplacer mon foyer de financy.dev vers mon propre serveur ?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Oui. Le propriétaire du foyer l’exporte dans un fichier, et vous importez ce fichier sur votre serveur comme nouveau foyer.",
+  "FeaturePageSelfHosting.backupQuestion": "Financy peut-il sauvegarder mon serveur ?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Oui. Activez la sauvegarde quotidienne : toutes les 24 heures, elle enregistre les données et les fichiers de votre foyer, chiffrés, sur un stockage hors du serveur. Le guide de sauvegarde vous accompagne aussi dans un test de restauration.",
+  "FeaturePageSelfHosting.installerQuestion": "Existe-t-il un installateur en un clic ?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Pas encore. Vous installez Financy depuis votre ordinateur avec Deno, rsync et git, et une seule commande le déploie. Le guide d’auto-hébergement détaille chaque étape.",
   "FeaturePageMissing.title": "Cette page de fonctionnalité est introuvable",
   "FeaturePageMissing.description":
     "Elle a peut-être changé d’adresse. Toutes les fonctionnalités sont sur la page des fonctionnalités.",
   "FeaturePageMissing.action": "Voir toutes les fonctionnalités",
-  "FeaturePageSignIn.name": "Connexion",
-  "FeaturePageSignIn.title": "Authentification pour votre SaaS, sans service externe",
-  "FeaturePageSignIn.description":
-    "Clés d’accès, codes de connexion par e-mail, Google, GitHub et 2FA, vérifiés par votre API, sans service tiers ni frais par utilisateur. Gratuit, licence MIT.",
-  "FeaturePageSignIn.h1":
-    "Clés d’accès et connexion pour votre SaaS, sans service d’authentification",
-  "FeaturePageSignIn.answer":
-    "Seed connecte les utilisateurs par clé d’accès, par code de connexion envoyé par e-mail, avec Google et avec GitHub, et sa propre API vérifie chaque connexion sur votre serveur, sans service d’authentification tiers. Mots de passe, clés d’accès et codes de connexion fonctionnent dès le déploiement, sans frais par utilisateur ; Google et GitHub demandent chacun deux clés dans le fichier env.",
-  "FeaturePageSignIn.summary":
-    "Clés d’accès, codes de connexion par e-mail, Google, GitHub et double authentification, sans service d’authentification.",
-  "FeaturePageSignIn.how1":
-    "L’API vérifie elle-même chaque connexion et répond avec un cookie de session signé. Une clé d’accès utilise le WebAuthn du navigateur : le serveur ne garde que sa clé publique, et chaque défi de connexion ne sert qu’une fois. Un code de connexion envoyé par e-mail connecte ou crée le compte, ne sert qu’une fois, reste valable 10 minutes, uniquement dans le navigateur qui l’a demandé, et n’est stocké que sous forme de hachage.",
-  "FeaturePageSignIn.how2":
-    "Une application d’authentification ajoute la double authentification. Le profil liste chaque méthode de connexion au compte utilisateur et chaque appareil connecté, et changer une méthode de connexion demande une preuve et envoie un e-mail. Un visiteur peut aussi commencer dans un compte invité et ajouter une méthode de connexion plus tard.",
-  "FeaturePageSignIn.authServiceQuestion": "Ai-je besoin d’un service d’authentification ?",
-  "FeaturePageSignIn.authServiceAnswer":
-    "Non. La propre API de Seed vérifie les mots de passe, les clés d’accès, les codes de connexion et les réponses de Google et de GitHub, sur votre serveur : rien n’est facturé par utilisateur.",
-  "FeaturePageSignIn.passkeysQuestion": "Seed prend-il en charge les clés d’accès (passkeys) ?",
-  "FeaturePageSignIn.passkeysAnswer":
-    "Oui. Les utilisateurs ajoutent une clé d’accès dans leur profil et s’en servent pour se connecter ; le serveur ne stocke que sa clé publique, et chaque défi de connexion ne sert qu’une fois.",
-  "FeaturePageSignIn.twoFactorQuestion": "Seed propose-t-il la double authentification (2FA) ?",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "Oui. Une application d’authentification ajoute un code à usage unique à la connexion, y compris après une connexion avec Google ou GitHub.",
-  "FeaturePageSignIn.providersOffQuestion":
-    "Puis-je me passer de la connexion avec Google ou GitHub ?",
-  "FeaturePageSignIn.providersOffAnswer":
-    "Oui. Chacune reste désactivée tant que ses deux variables ne sont pas définies dans le fichier env : il suffit de les omettre pour la désactiver.",
-  "FeaturePageGroups.name": "Groupes et rôles",
-  "FeaturePageGroups.title": "Groupes et rôles pour votre SaaS, déjà branchés",
-  "FeaturePageGroups.description":
-    "Groupes et rôles de lecteur à propriétaire, invitations, transfert de propriété, journal d’activité, un seul contrôle multi-tenant. Gratuit, licence MIT.",
-  "FeaturePageGroups.h1": "Groupes et rôles pour votre SaaS, sans développer le multi-tenant",
-  "FeaturePageGroups.answer":
-    "Seed donne à chaque compte utilisateur un groupe personnel à l’inscription, et les utilisateurs créent des groupes partagés, invitent d’autres personnes et leur attribuent un rôle, de lecteur à propriétaire. Le groupe est l’unique frontière entre locataires : une fonctionnalité que vous ajoutez passe la même vérification dès qu’elle copie l’agrégat des notes.",
-  "FeaturePageGroups.summary":
-    "Groupes avec rôles de lecteur à propriétaire, invitations et journal d’activité.",
-  "FeaturePageGroups.how1":
-    "Chaque ligne de données partagées appartient à un groupe, et l’API vérifie le rôle de la personne dans ce groupe avant toute lecture ou écriture. Un lecteur lit, un éditeur modifie aussi les données du groupe, et un administrateur et le propriétaire gèrent en plus les membres et lisent le journal d’activité.",
-  "FeaturePageGroups.how2":
-    "Le propriétaire transfère la propriété en une étape, et un groupe supprimé peut être restauré pendant 30 jours. Seul un compte utilisateur dont l’adresse e-mail est confirmée peut inviter.",
-  "FeaturePageGroups.personalGroupQuestion": "Chaque compte utilisateur a-t-il un groupe ?",
-  "FeaturePageGroups.personalGroupAnswer":
-    "Oui. Chaque compte utilisateur reçoit un groupe personnel à l’inscription ; un groupe personnel et un groupe partagé passent la même vérification.",
-  "FeaturePageGroups.viewerQuestion": "Un lecteur peut-il modifier les données d’un groupe ?",
-  "FeaturePageGroups.viewerAnswer":
-    "Non. Un lecteur lit les données du groupe ; un éditeur, un administrateur ou le propriétaire peut les modifier.",
-  "FeaturePageGroups.restoreQuestion": "Un groupe supprimé peut-il être restauré ?",
-  "FeaturePageGroups.restoreAnswer":
-    "Oui. Son propriétaire peut le restaurer pendant 30 jours ; ensuite, le worker le supprime définitivement.",
-  "FeaturePageGroups.secondModelQuestion":
-    "Me faut-il un second système de permissions pour mes propres fonctionnalités ?",
-  "FeaturePageGroups.secondModelAnswer":
-    "Non. Un nouvel agrégat copie l’agrégat des notes et sa vérification de groupe : il n’y a qu’un seul modèle de permissions à maintenir.",
-  "FeaturePageRealtime.name": "Synchronisation en temps réel",
-  "FeaturePageRealtime.title": "Temps réel pour votre SaaS, sans service hébergé",
-  "FeaturePageRealtime.description":
-    "Une modification enregistrée dans un onglet apparaît en moins d’une seconde dans les autres, via un WebSocket de votre API. Gratuit, licence MIT.",
-  "FeaturePageRealtime.h1":
-    "Mises à jour en temps réel pour votre SaaS, sans service temps réel hébergé",
-  "FeaturePageRealtime.answer":
-    "Seed envoie chaque modification enregistrée à tous les onglets ouverts du groupe via un WebSocket de sa propre API : une note enregistrée dans une fenêtre apparaît dans les autres en moins d’une seconde, sans rechargement. Tout tourne sur votre serveur, sans service temps réel à payer ; une fonctionnalité que vous ajoutez en profite en copiant l’exemple des notes.",
-  "FeaturePageRealtime.summary":
-    "Une modification enregistrée dans un onglet apparaît dans tous les autres, sans rechargement.",
-  "FeaturePageRealtime.how1":
-    "Chaque écriture est validée avec le numéro de séquence suivant du groupe, et l’API la pousse sur le socket ouvert de chaque membre. Un onglet n’applique une modification que si son numéro suit le dernier qu’il a reçu ; s’il en manque un, il demande au serveur tout ce qui suit son curseur : un message perdu coûte une requête de plus, jamais une liste fausse.",
-  "FeaturePageRealtime.how2":
-    "Un ordinateur portable qui sort de veille se reconnecte et récupère ce qu’il a manqué. Avec le socket désactivé, l’application lit et écrit en HTTP et vérifie les modifications toutes les 30 secondes.",
-  "FeaturePageRealtime.realtimeQuestion": "Seed se met-il à jour en temps réel ?",
-  "FeaturePageRealtime.realtimeAnswer":
-    "Oui. Une modification enregistrée apparaît en moins d’une seconde dans chaque onglet ouvert du groupe, sans rechargement.",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "Ai-je besoin de Pusher, d’Ably ou d’un autre service temps réel ?",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "Non. Le WebSocket est servi par la propre API de Seed, sur votre serveur.",
-  "FeaturePageRealtime.realtimeSleepQuestion":
-    "Un onglet rattrape-t-il son retard quand l’ordinateur sort de veille ?",
-  "FeaturePageRealtime.realtimeSleepAnswer":
-    "Oui. Il se reconnecte et récupère chaque modification qui suit la dernière qu’il avait.",
-  "FeaturePageRealtime.realtimeOffQuestion": "Puis-je désactiver le temps réel ?",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "Oui. Définissez SPA_REALTIME=false : l’application vérifie alors les modifications toutes les 30 secondes et fonctionne de la même façon.",
-  "FeaturePageOffline.name": "Application hors ligne",
-  "FeaturePageOffline.title": "Mode hors ligne pour votre SaaS, sans coder la synchro",
-  "FeaturePageOffline.description":
-    "Application installable qui s’ouvre sans réseau, garde chaque liste sur l’appareil et envoie les modifications au retour du réseau. Gratuit, licence MIT.",
-  "FeaturePageOffline.h1":
-    "Une application offline-first pour votre SaaS, sans moteur de synchronisation à écrire",
-  "FeaturePageOffline.answer":
-    "L’application de Seed s’installe comme une application native, s’ouvre sans réseau, affiche chaque liste telle qu’elle l’a vue en dernier et permet d’ajouter, de modifier et de supprimer des notes et des étiquettes hors ligne. Votre propre fonctionnalité choisit l’un des trois niveaux, en ligne uniquement, lisible hors ligne ou modifiable hors ligne, et suit la recette écrite correspondante.",
-  "FeaturePageOffline.summary":
-    "Une application installable qui s’ouvre sans réseau et se synchronise à son retour.",
-  "FeaturePageOffline.how1":
-    "L’appareil garde une copie IndexedDB de chaque liste, et les écritures attendent dans une file avec des clés d’idempotence : une modification envoyée deux fois n’est appliquée qu’une fois. Une modification que le serveur ne peut pas accepter apparaît comme un conflit, avec « Garder ma version » ou « Utiliser celle du serveur » ; rien n’est écrasé automatiquement.",
-  "FeaturePageOffline.how2":
-    "Un service worker garde la page, les scripts et les styles de l’application : elle s’ouvre donc sans réseau. La connexion, les éléments supprimés et la configuration de la double authentification demandent le réseau.",
-  "FeaturePageOffline.offlineQuestion": "Seed fonctionne-t-il hors ligne ?",
-  "FeaturePageOffline.offlineAnswer":
-    "Oui. L’application s’ouvre sans réseau et affiche chaque liste telle qu’elle l’a vue en dernier.",
-  "FeaturePageOffline.offlineEditsQuestion": "Peut-on modifier des données hors ligne ?",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "Oui. Les notes et les étiquettes fonctionnent hors ligne ; les autres modifications demandent le réseau, et l’écran l’indique.",
-  "FeaturePageOffline.conflictQuestion":
-    "Seed détecte-t-il quand deux personnes modifient la même note ?",
-  "FeaturePageOffline.conflictAnswer":
-    "Oui. La modification la plus tardive apparaît comme un conflit, et son auteur choisit « Garder ma version » ou « Utiliser celle du serveur ».",
-  "FeaturePageOffline.removeOfflineQuestion": "Puis-je retirer le mode hors ligne ?",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "Oui. Désactivez-le avec un seul paramètre, ou supprimez un dossier et suivez la checklist écrite ; un test échoue si une étape est oubliée.",
-  "FeaturePageDeploy.name": "Déploiement",
-  "FeaturePageDeploy.title": "Déployez votre SaaS sans facture de plateforme cloud",
-  "FeaturePageDeploy.description":
-    "Docker Compose sur un serveur Linux loué : Traefik, Postgres, Valkey, fichiers S3, supervision et sauvegardes, en une commande. Gratuit, licence MIT.",
-  "FeaturePageDeploy.h1":
-    "Auto-hébergez votre SaaS sur un seul serveur, sans facture de plateforme cloud",
-  "FeaturePageDeploy.answer":
-    "Seed tourne sur un serveur Linux que vous louez, avec Docker Compose en développement comme en production, et une seule commande le déploie. Vous préparez le serveur une fois en suivant les étapes écrites ; ensuite, chaque déploiement se résume à cette commande.",
-  "FeaturePageDeploy.summary": "Un serveur Linux, Docker Compose et une commande pour déployer.",
-  "FeaturePageDeploy.how1":
-    "Le déploiement copie le projet sur le serveur via SSH et le démarre avec Compose ; à chaque déploiement, un service ponctuel applique les migrations de la base de données. Traefik est en frontal et demande à Let's Encrypt le certificat de chaque hôte.",
-  "FeaturePageDeploy.how2":
-    "Postgres, Valkey, un stockage de fichiers S3, des métriques, des logs et des tableaux de bord avec alertes tournent à côté des applications, et plusieurs produits peuvent partager un même serveur derrière le même proxy.",
-  "FeaturePageDeploy.kubernetesQuestion": "Ai-je besoin de Kubernetes ?",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "Non. Docker Compose sur un seul serveur fait tourner tout le produit, en développement comme en production.",
-  "FeaturePageDeploy.severalQuestion": "Plusieurs produits peuvent-ils partager un serveur ?",
-  "FeaturePageDeploy.severalAnswer":
-    "Oui. Ils partagent un même proxy, et chacun garde son propre dossier, sa base de données et ses données ; ne partagez un serveur qu’entre des produits auxquels vous faites autant confiance.",
-  "FeaturePageDeploy.backupQuestion": "Y a-t-il une sauvegarde ?",
-  "FeaturePageDeploy.backupAnswer":
-    "Oui. Une sauvegarde restic quotidienne et chiffrée de la base de données, à activer, avec une procédure de restauration écrite.",
   "ErrorPage.status": "Voir ce qui marche aujourd’hui",
   "HomeHero.notify": "Me prévenir",
   "HomeHero.selfHost": "Héberger Financy soi-même",
@@ -682,6 +663,20 @@ export default {
   "FeatureRecurring.fact3":
     "Ajouter une opération récurrente demande le forfait Household ; les lire, jamais, et le serveur le vérifie",
   "FeatureRecurring.code": "Lire le code source des opérations récurrentes",
+  "FeatureMultiCurrency.nav": "Devises",
+  "FeatureMultiCurrency.title": "Plusieurs devises, un seul total",
+  "FeatureMultiCurrency.lead":
+    "Choisissez la devise principale de votre foyer, et chaque total y est converti au taux du jour où l’argent a bougé. Une opération dans une autre devise garde son propre montant à côté du montant converti.",
+  "FeatureMultiCurrency.fact1":
+    "Les taux de référence quotidiens de la Banque centrale européenne, via Frankfurter, sans clé à fournir",
+  "FeatureMultiCurrency.fact2":
+    "Un montant converti est enregistré une seule fois, au taux de sa propre date, et jamais réécrit",
+  "FeatureMultiCurrency.fact3":
+    "Une devise sans taux est exclue d’un total et nommée, jamais comptée pour 0",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Les montants de budget convertis depuis une autre devise n’indiquent pas encore « environ » ni la date du taux",
+  "FeatureMultiCurrency.notYetOffline": "Des taux de change consultables hors ligne",
+  "FeatureMultiCurrency.code": "Lire le domaine de la monnaie",
   "FeatureTransactions.nav": "Opérations",
   "FeatureTransactions.title": "Chaque dépense et chaque revenu, dans la devise payée",
   "FeatureTransactions.lead":

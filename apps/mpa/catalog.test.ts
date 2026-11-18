@@ -535,7 +535,7 @@ describe("the website's routes", () => {
     const expected: Record<string, string> = {
       "/blog/some-post": `./routes/[[lang]]/blog/[slug].tsx`,
       "/docs/catalog": `./routes/[[lang]]/docs/[slug].tsx`,
-      "/features/realtime": `./routes/[[lang]]/features/[slug].tsx`,
+      "/features/households": `./routes/[[lang]]/features/[slug].tsx`,
       "/de/pricing": `./routes/[[lang]]/pricing.tsx`,
       "/de/blog": `./routes/[[lang]]/blog/index.tsx`,
       "/docs/api": `./routes/[[lang]]/docs/api.tsx`,

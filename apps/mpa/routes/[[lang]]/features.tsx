@@ -10,7 +10,7 @@ import { siteEnglishText } from "@ui/site-text.ts"
 import { Band } from "../../components/band.tsx"
 import { FeatureSection, FeatureTier } from "../../components/features-section.tsx"
 import { SectionIntro } from "../../components/section-intro.tsx"
-import { tiers } from "../../features-data.tsx"
+import { FEATURE_PAGES, featurePath, tiers } from "../../features-data.tsx"
 import {
   PERSON_JSON_LD,
   REPOSITORY_URL,
@@ -28,7 +28,7 @@ import { define } from "../../utils.ts"
  * The day this page's feature list or wording last changed: the hero's "Updated" line and the
  * sitemap's `lastmod`. Change it with them.
  */
-export const FEATURES_UPDATED = `2026-11-16`
+export const FEATURES_UPDATED = `2026-11-18`
 
 /** The page's title and description in the language of `t`. */
 export function featuresHead(t: Translator<string>): { title: string; description: string } {
@@ -108,7 +108,7 @@ function Hero(): JSX.Element {
 
 /**
  * `/features`: what works in Financy today, each with what people notice, what a developer gets
- * and a link to the code, then the questions.
+ * and a link to the code, a feature with a page of its own linking to it, then the questions.
  */
 export default define.page(function Features({ state }) {
   const site = useSite()
@@ -135,9 +135,19 @@ export default define.page(function Features({ state }) {
         <div class="flex min-w-0 flex-col gap-16 lg:col-span-9 xl:col-span-10">
           {sections.map(({ features, ...tier }) => (
             <FeatureTier key={tier.id} {...tier}>
-              {features.map(({ nav: _nav, ...feature }, index) => (
-                <FeatureSection key={feature.id} {...feature} flip={index % 2 === 1} />
-              ))}
+              {features.map(({ nav: _nav, ...feature }, index) => {
+                const page = FEATURE_PAGES.find((page) =>
+                  (page.feature ?? page.slug) === feature.id
+                )
+                return (
+                  <FeatureSection
+                    key={feature.id}
+                    {...feature}
+                    more={page && { href: featurePath(page.slug, site.language) }}
+                    flip={index % 2 === 1}
+                  />
+                )
+              })}
             </FeatureTier>
           ))}
         </div>

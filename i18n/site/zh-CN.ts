@@ -217,6 +217,8 @@ export default {
   "FeatureTeams.fact1": "家庭是检查所有数据的唯一边界",
   "FeatureTeams.fact2": "每个人只能看到自己所属的家庭",
   "FeatureTeams.fact3": "邀请、角色变更和所有权转让，各有自己的测试",
+  "FeatureTeams.notYetClosedSignUp": "服务器关闭注册时，通过邀请加入",
+  "FeatureTeams.notYetGroupWord": "应用里仍把家庭称作“群组”",
   "FeatureTeams.code": "阅读群组领域代码",
   "FeatureExport.nav": "导出",
   "FeatureExport.title": "你的数据，随你带走",
@@ -233,19 +235,17 @@ export default {
   "FeatureLanguages.fact2": "数字和日期使用浏览器自带的 Intl",
   "FeatureLanguages.fact3": "阿拉伯语页面从右向左阅读",
   "FeatureLanguages.code": "阅读翻译指南",
-  "FeatureRealtime.nav": "实时同步",
-  "FeatureRealtime.title": "改动无需刷新，即刻出现在每台设备上",
-  "FeatureRealtime.lead":
-    "家庭中有人改了什么，其他人会立刻在每台打开的设备上看到。从睡眠中唤醒的笔记本电脑会自动补上错过的内容。",
-  "FeatureRealtime.fact1": "标准 WebSocket，每次改动都带有序号",
-  "FeatureRealtime.fact2": "重新连接的设备会拉取错过的内容",
-  "FeatureRealtime.code": "阅读实时同步设计",
-  "FeatureOffline.nav": "离线应用",
-  "FeatureOffline.title": "没有网络也能打开的应用",
-  "FeatureOffline.lead": "把 Financy 安装到手机或电脑上，没网也能打开，并显示上次看到的内容。",
-  "FeatureOffline.fact1": "每个列表在 IndexedDB 中有本地副本，写入队列带有幂等键",
-  "FeatureOffline.fact2": "每个冲突都可以选择“保留我的版本”或“使用服务器版本”",
-  "FeatureOffline.code": "阅读 docs/offline.md",
+  "FeatureLiveSync.nav": "实时同步",
+  "FeatureLiveSync.title": "每台设备实时同步，离线也能用",
+  "FeatureLiveSync.lead":
+    "家庭中有人改了内容，其他人会立刻看到，无需刷新。把 Financy 安装到手机或电脑上，没有网络也能打开，恢复联网后会发送你离线时添加的交易。",
+  "FeatureLiveSync.fact1": "标准 WebSocket，每次变更都带序号",
+  "FeatureLiveSync.fact2": "设备重新连接后会拉取错过的变更",
+  "FeatureLiveSync.fact3": "IndexedDB 中的本地副本，以及带幂等键的离线变更队列",
+  "FeatureLiveSync.notYetSetup": "离线修改账户、分类和预算",
+  "FeatureLiveSync.notYetRates": "离线查看汇率",
+  "FeatureLiveSync.notYetStores": "Google Play 和 App Store 中的应用",
+  "FeatureLiveSync.code": "阅读实时同步设计",
   "FeatureDeploy.nav": "自托管",
   "FeatureDeploy.title": "运行在你自己的服务器上",
   "FeatureDeploy.lead":
@@ -254,6 +254,7 @@ export default {
   "FeatureDeploy.fact2": "Postgres 和 Valkey 与应用一起运行",
   "FeatureDeploy.fact3": "用 VictoriaMetrics、VictoriaLogs 和 Grafana 提供指标、日志和告警",
   "FeatureDeploy.fact4": "可选的每日加密数据库备份，附有书面恢复步骤",
+  "FeatureDeploy.notYetRehearsed": "在全新服务器上实测的安装耗时",
   "FeatureDeploy.code": "阅读 Compose 文件",
   "FeaturesFaq.serverlessQuestion": "能在虚拟主机或无服务器平台上运行 Financy 吗？",
   "FeaturesFaq.serverlessAnswer":
@@ -376,130 +377,108 @@ export default {
   "FeaturePage.otherFeatures": "其他功能",
   "FeaturePage.readMore": "进一步了解{name}",
   "FeaturePage.all": "所有功能",
-  "FeaturePage.runtimeQuestion": "Seed 能在 Node 或 Bun 上运行吗？",
-  "FeaturePage.runtimeAnswer":
-    "可以。API、后台 worker 和网站都能在 Deno、Node 或 Bun 上运行，由一项设置（APP_RUNTIME）决定。Seed 自己的任务运行在 Deno 上，npm 或 Bun 会替你装好它。详见功能页面的“运行时”部分。",
+  "FeaturePage.demo": "在演示版中试用，无需账号",
+  "FeaturePageMultiCurrency.name": "多币种",
+  "FeaturePageMultiCurrency.title": "多币种记账：所有货币汇总成一个总额",
+  "FeaturePageMultiCurrency.description":
+    "每个账户使用自己的币种，所有合计都按资金变动当天的汇率换算成家庭的主货币。",
+  "FeaturePageMultiCurrency.h1": "多种货币的余额，合成一个总额查看",
+  "FeaturePageMultiCurrency.answer":
+    "是的。每个账户保留自己的币种，Financy 按每天的汇率把它们换算成家庭的主货币再相加。用其他货币支付的交易，会在换算金额旁保留原始金额。",
+  "FeaturePageMultiCurrency.summary": "每个账户用自己的币种，所有合计用你的主货币。",
+  "FeaturePageMultiCurrency.how1":
+    "你的家庭选定一种主货币。Financy 每天获取欧洲央行的汇率。当你添加一笔与账户币种不同的交易时，Financy 按这笔交易当天的汇率换算，并保存两个金额。如果你自己填写两个金额，则保留你自己的汇率。",
+  "FeaturePageMultiCurrency.how2":
+    "概览页以主货币显示你的收入、支出和家庭总额。某种货币没有汇率时，合计会把它排除在外并加以说明，而不是按 0 计算。",
+  "FeaturePageMultiCurrency.historyQuestion": "汇率更新后，以前的交易会跟着变吗？",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "不会。用其他货币记的交易，只按交易当天的汇率换算并保存一次。之后出现的汇率不会改写它。",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion": "家庭的主货币以后还能更改吗？",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "可以。家庭的管理员或所有者随时都能更改。任何金额都不会变：每笔金额仍保留自己的币种，只有合计会重新换算。",
+  "FeaturePageMultiCurrency.ownRateQuestion": "能按银行实际收取的汇率记账吗？",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "可以。填写两个金额，即你支付的金额和从账户扣除的金额，Financy 就会保留你自己的汇率，而不用当天的汇率。",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion": "Financy 每种货币都有每日汇率吗？",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "不是。欧洲央行免费提供的每日汇率覆盖约 30 种货币。其他货币，比如越南盾，需要服务器所有者开启付费汇率源；没有的话，合计会排除这些金额并加以说明。",
+  "FeaturePageHouseholds.name": "家庭",
+  "FeaturePageHouseholds.title": "情侣共享预算：一起记账，每人独立账号",
+  "FeaturePageHouseholds.description":
+    "邀请伴侣或家人加入同一个家庭。每个人用自己的账号和角色登录，大家看到相同的账户和预算。",
+  "FeaturePageHouseholds.h1": "和伴侣共享预算，各用各的账号",
+  "FeaturePageHouseholds.answer":
+    "是的。家庭就是共同管钱的人。邀请伴侣或家人加入，每个人用自己的账号登录，拥有从查看者到所有者的某个角色，而大家看到的是同样的账户、交易和预算。",
+  "FeaturePageHouseholds.summary": "一个家庭，每人有自己的账号和角色。",
+  "FeaturePageHouseholds.how1":
+    "谁创建家庭，谁就是所有者。所有者或管理员通过链接邀请成员，并为每个人选择角色。查看者只能查看。编辑者还可以添加和修改账户、交易和预算。管理员还能管理成员，所有者可以转让家庭。",
+  "FeaturePageHouseholds.how2":
+    "应用中把家庭称为群组。一个账号可以属于多个家庭，比如一个共享的家庭和一个只属于你自己的家庭，并可在它们之间切换。活动日志记录谁改了什么。",
+  "FeaturePageHouseholds.privateQuestion": "能对伴侣隐藏某些账户吗？",
+  "FeaturePageHouseholds.privateAnswer":
+    "不能。家庭里的每个人都能看到它的全部账户和交易。想自己单独管理的钱，可以放到只属于你的家庭里，用同一个账号就能切换过去。",
+  "FeaturePageHouseholds.viewerQuestion": "能让别人只看我们的预算、不能修改吗？",
+  "FeaturePageHouseholds.viewerAnswer":
+    "可以。给对方分配查看者角色。查看者能看到账户、交易和预算，服务器会拒绝他们尝试的任何修改。",
+  "FeaturePageHouseholds.handOverQuestion": "能把家庭转让给伴侣吗？",
+  "FeaturePageHouseholds.handOverAnswer":
+    "可以。所有者可以把另一位成员设为所有者。所有记录都保持原样。",
+  "FeaturePageHouseholds.restoreQuestion": "删除的家庭还能恢复吗？",
+  "FeaturePageHouseholds.restoreAnswer": "可以。只有所有者能删除家庭，并且可以在 30 天内恢复。",
+  "FeaturePageLiveSync.name": "实时同步",
+  "FeaturePageLiveSync.title": "预算在每台设备上实时同步",
+  "FeaturePageLiveSync.description":
+    "伴侣添加一笔交易，你的手机上立刻就能看到。Financy 没有网络也能打开，恢复联网后会发送你的修改。",
+  "FeaturePageLiveSync.h1": "修改实时出现在伴侣的手机上，无需刷新",
+  "FeaturePageLiveSync.answer":
+    "是的。家庭中有人添加或修改内容时，其他人在每台打开的设备上都会立刻看到。离线或休眠的手机一重新联网，就会同步到最新。",
+  "FeaturePageLiveSync.summary": "修改立刻出现在每台设备上，离线一段时间后也一样。",
+  "FeaturePageLiveSync.how1":
+    "每个打开的 Financy 都与服务器保持连接。有人保存修改时，服务器会立即发送给家庭中的每个人。离开期间错过修改的设备，回来后会主动请求这些修改。",
+  "FeaturePageLiveSync.how2":
+    "在手机或电脑上通过浏览器安装 Financy，没有网络也能打开，显示上次看到的内容。离线时添加、修改或删除的交易和转账会先留在设备上，重新联网后再发送。",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "没有网络也能记账吗？",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "可以。离线时添加、修改或删除的交易和转账会保存在你的设备上，连接恢复后发送到服务器。",
+  "FeaturePageLiveSync.offlineSetupQuestion": "离线时能修改账户或预算吗？",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "不能。离线时账户、分类和预算按上次看到的样子显示，但修改它们需要联网。",
+  "FeaturePageLiveSync.overwriteQuestion": "离线时的修改会覆盖伴侣的修改吗？",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "不会。如果同一笔交易在此期间已在服务器上被修改，服务器会拒绝你的修改，你的设备会保留它，等你来处理。任何内容都不会被自动覆盖。",
+  "FeaturePageLiveSync.storesQuestion": "App Store 或 Google Play 上有 Financy 吗？",
+  "FeaturePageLiveSync.storesAnswer":
+    "还没有。目前你可以在手机或电脑上通过浏览器安装 Financy，没有网络也能打开。",
+  "FeaturePageSelfHosting.name": "自托管",
+  "FeaturePageSelfHosting.title": "在自己的服务器上部署记账应用",
+  "FeaturePageSelfHosting.description":
+    "用 Docker Compose 在你租用或自有的服务器上为家庭运行 Financy。记录留在你的服务器上，你只需为服务器付费。",
+  "FeaturePageSelfHosting.h1": "在自己的服务器上运行记账应用",
+  "FeaturePageSelfHosting.answer":
+    "是的。Financy 通过 Docker Compose 运行在你租用或自有的 Ubuntu 服务器上。依据 AGPL‑3.0 许可证，你只需为服务器付费，家庭的记录都保存在上面。",
+  "FeaturePageSelfHosting.summary": "家庭的记录，保存在你自己的服务器上。",
+  "FeaturePageSelfHosting.how1":
+    "你需要一台服务器、一个域名，以及一个用于发送注册验证码的邮箱账号。在你自己的电脑上，一条命令就能把 Financy 复制到服务器、在那里构建并启动。HTTPS 证书会自动签发和续期。",
+  "FeaturePageSelfHosting.how2":
+    "不开启计费，服务器上的每个家庭都能无限制地使用全部功能。你可以开启每日加密备份，升级指南会带你升级到每个新版本。",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "自托管版 Financy 会少功能吗？",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "不会。代码完全相同。不开启计费时，服务器上的每个家庭都能使用全部功能，成员数量也没有限制。",
+  "FeaturePageSelfHosting.mailQuestion": "自托管 Financy 需要邮箱账号吗？",
+  "FeaturePageSelfHosting.mailAnswer":
+    "需要。Financy 会给每个注册的人发送验证码邮件，所以服务器需要一个邮件服务商的 SMTP 账号。没有的话，谁都无法注册。",
+  "FeaturePageSelfHosting.moveQuestion": "能把家庭从 financy.dev 迁移到自己的服务器吗？",
+  "FeaturePageSelfHosting.moveAnswer":
+    "可以。家庭的所有者把它导出为文件，你再在自己的服务器上把这个文件作为新家庭导入。",
+  "FeaturePageSelfHosting.backupQuestion": "Financy 能备份我的服务器吗？",
+  "FeaturePageSelfHosting.backupAnswer":
+    "可以。开启每日备份后，它每 24 小时把家庭的记录和文件加密保存到服务器之外的存储中。备份指南还会带你完成一次恢复演练。",
+  "FeaturePageSelfHosting.installerQuestion": "有一键安装程序吗？",
+  "FeaturePageSelfHosting.installerAnswer":
+    "还没有。你需要在自己的电脑上用 Deno、rsync 和 git 设置 Financy，然后用一条命令完成部署。自托管指南会带你走完每一步。",
   "FeaturePageMissing.title": "这个功能页面不存在",
   "FeaturePageMissing.description": "这个页面可能已经搬家了。所有功能都在功能页上。",
   "FeaturePageMissing.action": "查看所有功能",
-  "FeaturePageSignIn.name": "登录",
-  "FeaturePageSignIn.title": "SaaS 登录认证方案：无需第三方认证服务",
-  "FeaturePageSignIn.description":
-    "通行密钥、邮箱登录验证码、Google、GitHub 登录和双重验证，全部由你自己的 API 校验，无需认证服务，也不按用户收费。免费，MIT 许可。",
-  "FeaturePageSignIn.h1": "SaaS 通行密钥与登录认证，无需第三方认证服务",
-  "FeaturePageSignIn.answer":
-    "Seed 支持通行密钥、邮箱登录验证码、Google 和 GitHub 登录，全部由它自己的 API 在你的服务器上校验，不依赖第三方认证服务。密码、通行密钥和登录验证码部署后即可使用，不按用户收费；Google 和 GitHub 登录各需在 env 文件中填写两个密钥。",
-  "FeaturePageSignIn.summary":
-    "通行密钥、邮箱登录验证码、Google、GitHub 和双重验证，无需认证服务。",
-  "FeaturePageSignIn.how1":
-    "每次登录都由 API 自己校验，并返回一个签名的会话 Cookie。通行密钥使用浏览器自带的 WebAuthn：服务器只保存其公钥，每个登录挑战只能使用一次。邮箱登录验证码可用于登录或注册，只能使用一次，有效期 10 分钟，仅限发起请求的浏览器使用，且只以哈希形式存储。",
-  "FeaturePageSignIn.how2":
-    "身份验证器应用可以开启双重验证。个人资料页列出了进入账号的每种方式和每台已登录的设备；更改登录方式时需要验证身份，并会发送邮件通知。访客也可以先用访客账号开始，之后再添加登录方式。",
-  "FeaturePageSignIn.authServiceQuestion": "我需要第三方认证服务吗？",
-  "FeaturePageSignIn.authServiceAnswer":
-    "不需要。Seed 自己的 API 在你的服务器上校验密码、通行密钥、登录验证码以及 Google 和 GitHub 返回的结果，所以不会按用户计费。",
-  "FeaturePageSignIn.passkeysQuestion": "Seed 支持通行密钥吗？",
-  "FeaturePageSignIn.passkeysAnswer":
-    "是的。用户可以在个人资料页添加通行密钥并用它登录；服务器只保存其公钥，每个登录挑战只能使用一次。",
-  "FeaturePageSignIn.twoFactorQuestion": "Seed 支持双重验证（2FA）吗？",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "是的。身份验证器应用会在登录时要求输入一次性验证码，使用 Google 或 GitHub 登录后也一样。",
-  "FeaturePageSignIn.providersOffQuestion": "可以不启用 Google 或 GitHub 登录吗？",
-  "FeaturePageSignIn.providersOffAnswer":
-    "可以。每种方式在 env 文件中设置好它的两个变量之前都处于关闭状态，不设置就等于关闭。",
-  "FeaturePageGroups.name": "群组和角色",
-  "FeaturePageGroups.title": "SaaS 群组和角色权限：开箱即用，无需自己搭建",
-  "FeaturePageGroups.description":
-    "带角色的群组（从查看者到所有者）、邀请、所有权转让和活动日志，所有数据共用一套租户隔离检查。免费，MIT 许可。",
-  "FeaturePageGroups.h1": "SaaS 群组与角色权限，无需自己实现多租户",
-  "FeaturePageGroups.answer":
-    "Seed 在注册时为每个账号创建一个个人群组，用户还可以创建共享群组、邀请他人，并分配从查看者到所有者的角色。群组是唯一的租户边界，所以你新增的功能只要复制笔记聚合，就会通过同一套检查。",
-  "FeaturePageGroups.summary": "带角色的群组（从查看者到所有者）、邀请和活动日志。",
-  "FeaturePageGroups.how1":
-    "每一行共享数据都属于一个群组，API 在读取或写入之前会检查此人在该群组中的角色。查看者只能读取；编辑者还能修改群组的数据；管理员和所有者还能管理成员和查看活动日志。",
-  "FeaturePageGroups.how2":
-    "所有者一步即可转让所有权，已删除的群组可在 30 天内恢复。只有邮箱已验证的账号才能发出邀请。",
-  "FeaturePageGroups.personalGroupQuestion": "每个账号都有群组吗？",
-  "FeaturePageGroups.personalGroupAnswer":
-    "是的。每个账号注册时都会获得一个个人群组；个人群组和共享群组通过的是同一套检查。",
-  "FeaturePageGroups.viewerQuestion": "查看者能修改群组的数据吗？",
-  "FeaturePageGroups.viewerAnswer":
-    "不能。查看者只能读取群组的数据；编辑者、管理员或所有者才能修改。",
-  "FeaturePageGroups.restoreQuestion": "已删除的群组还能恢复吗？",
-  "FeaturePageGroups.restoreAnswer":
-    "可以。所有者可在 30 天内恢复它；超过 30 天后，Worker 会将其永久删除。",
-  "FeaturePageGroups.secondModelQuestion": "我自己的功能需要另做一套权限系统吗？",
-  "FeaturePageGroups.secondModelAnswer":
-    "不需要。新的聚合会复制笔记聚合及其群组检查，所以只需维护一套权限模型。",
-  "FeaturePageRealtime.name": "实时同步",
-  "FeaturePageRealtime.title": "SaaS 实时同步：无需第三方托管服务",
-  "FeaturePageRealtime.description":
-    "在一个标签页保存的更改，一秒内就会通过你自己 API 的 WebSocket 显示在群组的其他所有已打开标签页中。免费，MIT 许可。",
-  "FeaturePageRealtime.h1": "SaaS 实时更新，无需托管的实时推送服务",
-  "FeaturePageRealtime.answer":
-    "Seed 通过它自己 API 的 WebSocket，把每次保存的更改发送到群组的每个已打开标签页，所以在一个窗口保存的笔记，一秒内就会显示在其他窗口中，无需刷新。它运行在你的服务器上，不需要为实时服务付费；你新增的功能只要复制笔记示例就能获得这项能力。",
-  "FeaturePageRealtime.summary":
-    "在一个标签页保存的更改，会显示在其他所有已打开的标签页中，无需刷新。",
-  "FeaturePageRealtime.how1":
-    "每次写入都会带着群组的下一个序号提交，API 会把它推送到每位成员已打开的连接。标签页只有在更改的序号紧接着自己已有的最后一个序号时才会应用它；如果出现缺口，就向服务器请求游标之后的所有内容，所以丢失一条消息只会多一次请求，列表绝不会出错。",
-  "FeaturePageRealtime.how2":
-    "笔记本电脑从睡眠中唤醒后会重新连接，并拉取错过的内容。关闭 WebSocket 后，应用通过 HTTP 读写，每 30 秒检查一次更改。",
-  "FeaturePageRealtime.realtimeQuestion": "Seed 支持实时更新吗？",
-  "FeaturePageRealtime.realtimeAnswer":
-    "是的。保存的更改一秒内就会显示在群组的每个已打开标签页中，无需刷新。",
-  "FeaturePageRealtime.realtimeServiceQuestion": "我需要 Pusher、Ably 或其他实时服务吗？",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "不需要。WebSocket 由 Seed 自己的 API 在你的服务器上提供。",
-  "FeaturePageRealtime.realtimeSleepQuestion": "笔记本电脑睡眠后，标签页能追上错过的更改吗？",
-  "FeaturePageRealtime.realtimeSleepAnswer":
-    "可以。它会重新连接，并拉取它最后一次收到的更改之后的所有更改。",
-  "FeaturePageRealtime.realtimeOffQuestion": "可以关闭实时同步吗？",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "可以。设置 SPA_REALTIME=false：应用会改为每 30 秒检查一次更改，用起来完全一样。",
-  "FeaturePageOffline.name": "离线应用",
-  "FeaturePageOffline.title": "SaaS 离线应用：无需自己开发同步",
-  "FeaturePageOffline.description":
-    "可安装的应用，没有网络也能打开，所有列表都保存在设备上，编辑内容会排队等待，直到网络恢复。免费，MIT 许可。",
-  "FeaturePageOffline.h1": "SaaS 离线优先应用，无需自己开发同步引擎",
-  "FeaturePageOffline.answer":
-    "Seed 的应用可以像原生应用一样安装，没有网络也能打开，显示上次看到的每个列表，并允许用户离线添加、编辑和删除笔记和标签。你自己的功能可以从三个级别中选一个：仅在线、离线可读或离线可写，并按照对应的书面步骤实现。",
-  "FeaturePageOffline.summary": "可安装的应用，没有网络也能打开，网络恢复后自动同步。",
-  "FeaturePageOffline.how1":
-    "设备在 IndexedDB 中保存每个列表的副本，写入操作带着幂等键在队列中等待，所以同一更改发送两次也只会生效一次。服务器无法接受的更改会显示为冲突，可以选择“保留我的版本”或“使用服务器版本”；任何内容都不会被自动覆盖。",
-  "FeaturePageOffline.how2":
-    "Service Worker 会缓存应用的页面、脚本和样式，所以没有网络也能打开。登录、已删除的项目和双重验证设置需要联网。",
-  "FeaturePageOffline.offlineQuestion": "Seed 能离线使用吗？",
-  "FeaturePageOffline.offlineAnswer": "是的。应用没有网络也能打开，并显示上次看到的每个列表。",
-  "FeaturePageOffline.offlineEditsQuestion": "离线时可以编辑吗？",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "可以。笔记和标签可以离线使用；其他更改需要联网，界面上会注明。",
-  "FeaturePageOffline.conflictQuestion": "两个人同时修改同一条笔记，Seed 能发现吗？",
-  "FeaturePageOffline.conflictAnswer":
-    "是的。后提交的更改会显示为冲突，由它的作者选择“保留我的版本”或“使用服务器版本”。",
-  "FeaturePageOffline.removeOfflineQuestion": "可以去掉离线支持吗？",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "可以。用一个开关关闭它，或者删除一个文件夹并按照书面清单操作；漏掉某一步时，会有测试失败。",
-  "FeaturePageDeploy.name": "部署",
-  "FeaturePageDeploy.title": "SaaS 自托管部署：不用付云平台账单",
-  "FeaturePageDeploy.description":
-    "在你租用的一台 Linux 服务器上用 Docker Compose 运行：Traefik、Postgres、Valkey、S3 文件存储、监控和备份，一条命令完成部署。免费，MIT 许可。",
-  "FeaturePageDeploy.h1": "在一台服务器上自托管你的 SaaS，不用付云平台账单",
-  "FeaturePageDeploy.answer":
-    "Seed 运行在你租用的一台 Linux 服务器上，开发和生产环境都使用 Docker Compose，一条命令即可上线。你只需按书面步骤准备一次服务器，之后每次部署都只需这一条命令。",
-  "FeaturePageDeploy.summary": "一台 Linux 服务器、Docker Compose，一条命令完成部署。",
-  "FeaturePageDeploy.how1":
-    "部署时通过 SSH 把项目复制到服务器，再用 Compose 启动；每次部署都会由一个一次性服务执行数据库迁移。Traefik 位于最前端，为每个域名向 Let's Encrypt 申请证书。",
-  "FeaturePageDeploy.how2":
-    "Postgres、Valkey、S3 文件存储、指标、日志以及带告警的仪表盘都与应用并行运行，多个产品还可以在同一个代理后面共用一台服务器。",
-  "FeaturePageDeploy.kubernetesQuestion": "我需要 Kubernetes 吗？",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "不需要。在一台服务器上用 Docker Compose 就能运行整个产品，开发和生产环境都一样。",
-  "FeaturePageDeploy.severalQuestion": "多个产品可以共用一台服务器吗？",
-  "FeaturePageDeploy.severalAnswer":
-    "可以。它们共用一个代理，各自保留自己的目录、数据库和数据；只让你同样信任的产品共用一台服务器。",
-  "FeaturePageDeploy.backupQuestion": "有备份吗？",
-  "FeaturePageDeploy.backupAnswer":
-    "有。可选开启的每日加密 restic 数据库备份，并附有书面恢复步骤。",
   "ErrorPage.status": "看看现在有哪些功能可用",
   "HomeHero.notify": "上线时通知我",
   "HomeHero.selfHost": "自托管 Financy",
@@ -596,6 +575,16 @@ export default {
   "FeatureRecurring.fact2": "账户或分类归档后，规则会暂停并说明原因；问题解决后会补记错过的日期",
   "FeatureRecurring.fact3": "添加定期交易需要 Household 套餐；查看从不需要，由服务器检查",
   "FeatureRecurring.code": "阅读定期交易代码",
+  "FeatureMultiCurrency.nav": "多币种",
+  "FeatureMultiCurrency.title": "多种货币，一个总额",
+  "FeatureMultiCurrency.lead":
+    "选定家庭的主货币后，每个合计都会按资金变动当天的汇率换算成主货币。用其他货币记的交易，会在换算金额旁保留原始金额。",
+  "FeatureMultiCurrency.fact1": "每日参考汇率来自欧洲央行，通过 Frankfurter 获取，无需密钥",
+  "FeatureMultiCurrency.fact2": "换算金额按其自身日期的汇率只保存一次，从不改写",
+  "FeatureMultiCurrency.fact3": "没有汇率的货币会被排除在合计之外并列出，绝不按 0 计算",
+  "FeatureMultiCurrency.notYetBudgets": "从其他货币换算的预算数字，还不会标注“约”或汇率日期",
+  "FeatureMultiCurrency.notYetOffline": "离线查看汇率",
+  "FeatureMultiCurrency.code": "阅读资金领域代码",
   "FeatureTransactions.nav": "交易",
   "FeatureTransactions.title": "每一笔支出和收入，都按你付款的币种记录",
   "FeatureTransactions.lead":

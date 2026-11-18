@@ -236,6 +236,8 @@ export default {
   "FeatureTeams.fact1": "الأسرة هي الحدّ الوحيد الذي تُفحص على أساسه كل البيانات",
   "FeatureTeams.fact2": "يرى كل شخص الأُسر التي ينتمي إليها فقط",
   "FeatureTeams.fact3": "الدعوات وتغيير الأدوار ونقل الملكية، ولكلٍّ منها اختباراته",
+  "FeatureTeams.notYetClosedSignUp": "الانضمام عبر دعوة بينما إنشاء الحسابات مغلق على الخادم",
+  "FeatureTeams.notYetGroupWord": "ما زال التطبيق يقول «مجموعة» حيث يقصد الأسرة",
   "FeatureTeams.code": "اقرأ شيفرة المجموعات",
   "FeatureExport.nav": "التصدير",
   "FeatureExport.title": "بياناتك ترحل معك",
@@ -252,19 +254,18 @@ export default {
   "FeatureLanguages.fact2": "الأرقام والتواريخ عبر Intl المدمج في المتصفح",
   "FeatureLanguages.fact3": "الصفحات العربية تُقرأ من اليمين إلى اليسار",
   "FeatureLanguages.code": "اقرأ دليل الترجمة",
-  "FeatureRealtime.nav": "المزامنة",
-  "FeatureRealtime.title": "تظهر التغييرات على كل جهاز دون إعادة تحميل",
-  "FeatureRealtime.lead":
-    "حين يغيّر أحد أفراد الأسرة شيئًا، يراه الآخرون فورًا على كل جهاز مفتوح. والحاسوب المحمول الذي يخرج من وضع السكون يجلب ما فاته.",
-  "FeatureRealtime.fact1": "WebSocket قياسي، برقم تسلسلي على كل تغيير",
-  "FeatureRealtime.fact2": "الجهاز الذي يعيد الاتصال يجلب ما فاته",
-  "FeatureRealtime.code": "اقرأ تصميم التحديث الفوري",
-  "FeatureOffline.nav": "التطبيق دون اتصال",
-  "FeatureOffline.title": "تطبيق يفتح دون شبكة",
-  "FeatureOffline.lead": "ثبّت Financy على هاتفك أو حاسوبك، فيفتح دون اتصال ويعرض آخر ما رآه.",
-  "FeatureOffline.fact1": "نسخة محلية من كل قائمة في IndexedDB، وطابور كتابة بمفاتيح عدم التكرار",
-  "FeatureOffline.fact2": "«احتفظ بنسختي» أو «استخدم نسخة الخادم» لكل تعارض",
-  "FeatureOffline.code": "اقرأ docs/offline.md",
+  "FeatureLiveSync.nav": "المزامنة الفورية",
+  "FeatureLiveSync.title": "مباشر على كل جهاز، حتى دون اتصال",
+  "FeatureLiveSync.lead":
+    "حين يغيّر أحد أفراد الأسرة شيئًا، يراه الآخرون فورًا دون إعادة تحميل الصفحة. ثبّت Financy على هاتفك أو حاسوبك، فيفتح دون اتصال بالشبكة ويرسل المعاملات التي أضفتها حين يعود الاتصال.",
+  "FeatureLiveSync.fact1": "اتصال WebSocket قياسي، مع رقم تسلسلي لكل تغيير",
+  "FeatureLiveSync.fact2": "الجهاز الذي يعاود الاتصال يجلب ما فاته",
+  "FeatureLiveSync.fact3":
+    "نسخة محلية في IndexedDB، وقائمة انتظار للتغييرات دون اتصال، لكلٍّ منها مفتاح يمنع تكرارها",
+  "FeatureLiveSync.notYetSetup": "تغيير الحسابات والفئات والميزانيات دون اتصال",
+  "FeatureLiveSync.notYetRates": "أسعار صرف يمكنك قراءتها دون اتصال",
+  "FeatureLiveSync.notYetStores": "تطبيقات في Google Play وApp Store",
+  "FeatureLiveSync.code": "اقرأ تصميم المزامنة الفورية",
   "FeatureDeploy.nav": "الاستضافة الذاتية",
   "FeatureDeploy.title": "يعمل على خادمك الخاص",
   "FeatureDeploy.lead":
@@ -274,6 +275,7 @@ export default {
   "FeatureDeploy.fact3": "المقاييس والسجلات والتنبيهات عبر VictoriaMetrics وVictoriaLogs وGrafana",
   "FeatureDeploy.fact4":
     "نسخة احتياطية يومية مشفّرة اختيارية لقاعدة البيانات، مع خطوات استعادة مكتوبة",
+  "FeatureDeploy.notYetRehearsed": "مدة تثبيت مقيسة على خادم جديد",
   "FeatureDeploy.code": "اقرأ ملفات Compose",
   "FeaturesFaq.serverlessQuestion":
     "هل يمكنني تشغيل Financy على استضافة مشتركة أو منصة بلا خوادم (serverless)؟",
@@ -410,132 +412,109 @@ export default {
   "FeaturePage.otherFeatures": "ميزات أخرى",
   "FeaturePage.readMore": "اقرأ المزيد عن {name}",
   "FeaturePage.all": "كل الميزات",
-  "FeaturePage.runtimeQuestion": "هل يعمل Seed على Node أو Bun؟",
-  "FeaturePage.runtimeAnswer":
-    "نعم. تعمل الواجهة البرمجية (API) والعامل الخلفي والموقع على Deno أو Node أو Bun، ويختار بينها إعداد واحد (APP_RUNTIME). أما مهام Seed فتعمل على Deno، ويثبّته لك npm أو Bun. اطّلع على قسم بيئات التشغيل في صفحة الميزات.",
+  "FeaturePage.demo": "جرّبه في النسخة التجريبية، دون إنشاء حساب",
+  "FeaturePageMultiCurrency.name": "عملات متعددة",
+  "FeaturePageMultiCurrency.title": "تتبّع أموالك بعدة عملات في مجموع واحد",
+  "FeaturePageMultiCurrency.description":
+    "احفظ كل حساب بعملته، وشاهد كل مجموع بالعملة الرئيسية لأسرتك، محوّلًا بسعر صرف اليوم الذي تحرّك فيه المال.",
+  "FeaturePageMultiCurrency.h1": "هل يمكنني رؤية أرصدتي بعدة عملات في مجموع واحد؟",
+  "FeaturePageMultiCurrency.answer":
+    "نعم. يحتفظ كل حساب بعملته، ويجمعها Financy بالعملة الرئيسية لأسرتك بسعر صرف كل يوم. والمعاملة المدفوعة بعملة أخرى تحتفظ بمبلغها الأصلي بجانب المبلغ المحوَّل.",
+  "FeaturePageMultiCurrency.summary": "كل حساب بعملته، وكل مجموع بعملتك الرئيسية.",
+  "FeaturePageMultiCurrency.how1":
+    "تختار أسرتك عملة رئيسية واحدة. ويجلب Financy كل يوم أسعار الصرف من البنك المركزي الأوروبي. وحين تضيف معاملة بعملة غير عملة حسابها، يحوّلها Financy بسعر صرف تاريخ المعاملة نفسه ويحفظ المبلغين. وإن كتبت المبلغين بنفسك، يُحفظ سعرك أنت بدلًا من ذلك.",
+  "FeaturePageMultiCurrency.how2":
+    "تعرض النظرة العامة دخلك وإنفاقك ومجموع الأسرة بالعملة الرئيسية. وحين لا يكون لعملة ما سعر صرف، يستبعدها المجموع ويذكر ذلك، بدلًا من احتسابها صفرًا.",
+  "FeaturePageMultiCurrency.historyQuestion": "هل يغيّر سعر الصرف الجديد معاملاتي السابقة؟",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "لا. تحفظ المعاملة بعملة أخرى مبلغها المحوَّل مرة واحدة، بسعر صرف تاريخها. ولا يغيّره أي سعر يأتي لاحقًا أبدًا.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion": "هل يمكننا تغيير العملة الرئيسية لأسرتنا لاحقًا؟",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "نعم. يستطيع مسؤول الأسرة أو مالكها تغييرها في أي وقت. لا يتغيّر أي مبلغ: يبقى كلٌّ بعملته، ولا يُعاد تحويل إلا المجاميع.",
+  "FeaturePageMultiCurrency.ownRateQuestion": "هل يمكنني إدخال سعر الصرف الذي احتسبه مصرفي فعلًا؟",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "نعم. اكتب المبلغين، ما دفعته وما خرج من حسابك، فيحتفظ Financy بسعرك أنت بدلًا من سعر ذلك اليوم.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion": "هل لدى Financy سعر صرف يومي لكل عملة؟",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "لا. تغطي الأسعار اليومية المجانية من البنك المركزي الأوروبي نحو 30 عملة. أما غيرها، مثل الدونغ الفيتنامي، فتحتاج إلى مصدر أسعار مدفوع يفعّله مالك الخادم؛ ومن دونه تستبعد المجاميع تلك المبالغ وتذكر ذلك.",
+  "FeaturePageHouseholds.name": "الأُسر",
+  "FeaturePageHouseholds.title": "ميزانية مشتركة للزوجين، ولكلٍّ حساب مستخدم خاص",
+  "FeaturePageHouseholds.description":
+    "ادعُ شريكك أو عائلتك إلى أسرة واحدة. يسجّل كل شخص الدخول بحساب مستخدم ودور خاصّين به، ويرى الجميع الحسابات والميزانيات نفسها.",
+  "FeaturePageHouseholds.h1": "هل يمكنني مشاركة ميزانية مع شريكي، ولكلٍّ منا حساب مستخدم خاص؟",
+  "FeaturePageHouseholds.answer":
+    "نعم. الأسرة هي الأشخاص الذين يتشاركون المال. ادعُ شريكك أو عائلتك، فيسجّل كل شخص الدخول بحساب المستخدم الخاص به وبدور من القارئ إلى المالك، بينما يرى الجميع الحسابات والمعاملات والميزانيات نفسها.",
+  "FeaturePageHouseholds.summary": "أسرة واحدة، ولكل شخص حساب مستخدم ودور خاصّان به.",
+  "FeaturePageHouseholds.how1":
+    "من ينشئ الأسرة يملكها. يدعو المالك أو المسؤول الأشخاص برابط ويختار دور كل منهم. القارئ يقرأ فقط. والمحرر يضيف أيضًا الحسابات والمعاملات والميزانيات ويغيّرها. والمسؤول يدير الأعضاء أيضًا، ويستطيع المالك نقل ملكية الأسرة إلى غيره.",
+  "FeaturePageHouseholds.how2":
+    "يسمّي التطبيق الأسرة «مجموعة». ويمكن لحساب مستخدم واحد أن ينتمي إلى عدة أُسر، كأسرة مشتركة وأخرى خاصة بك، وتنتقل بينها. ويُظهر سجل النشاط من غيّر ماذا.",
+  "FeaturePageHouseholds.privateQuestion": "هل يمكنني إخفاء بعض الحسابات عن شريكي؟",
+  "FeaturePageHouseholds.privateAnswer":
+    "لا. يرى كل من في الأسرة جميع حساباتها ومعاملاتها. أما المال الذي تريد إبقاءه لنفسك فمكانه أسرة خاصة بك، تنتقل إليها بحساب المستخدم نفسه.",
+  "FeaturePageHouseholds.viewerQuestion": "هل يمكن لشخص رؤية ميزانيتنا دون تغييرها؟",
+  "FeaturePageHouseholds.viewerAnswer":
+    "نعم. امنحه دور القارئ. يرى القارئ الحسابات والمعاملات والميزانيات، ويرفض الخادم أي تغيير يحاوله.",
+  "FeaturePageHouseholds.handOverQuestion": "هل يمكنني نقل ملكية الأسرة إلى شريكي؟",
+  "FeaturePageHouseholds.handOverAnswer":
+    "نعم. يستطيع المالك أن يجعل عضوًا آخر مالكًا. ويبقى كل سجل في مكانه.",
+  "FeaturePageHouseholds.restoreQuestion": "هل يمكننا استعادة أسرة محذوفة؟",
+  "FeaturePageHouseholds.restoreAnswer":
+    "نعم. لا يحذف الأسرة إلا مالكها، ويستطيع المالك استعادتها خلال 30 يومًا.",
+  "FeaturePageLiveSync.name": "المزامنة الفورية",
+  "FeaturePageLiveSync.title": "مزامنة فورية لميزانيتك على كل أجهزتك",
+  "FeaturePageLiveSync.description":
+    "حين يضيف شريكك معاملة، تظهر على هاتفك فورًا. ويفتح Financy أيضًا دون اتصال، ويرسل تغييراتك حين يعود الاتصال.",
+  "FeaturePageLiveSync.h1": "هل تظهر التغييرات على هاتف شريكي دون إعادة تحميل؟",
+  "FeaturePageLiveSync.answer":
+    "نعم. حين يضيف أحد أفراد أسرتك شيئًا أو يغيّره، يراه الآخرون فورًا على كل جهاز مفتوح. والهاتف الذي كان دون اتصال أو في وضع السكون يلحق بما فاته فور عودة الاتصال.",
+  "FeaturePageLiveSync.summary": "تظهر التغييرات على كل جهاز فورًا، حتى بعد فترة دون اتصال.",
+  "FeaturePageLiveSync.how1":
+    "تحتفظ كل نسخة مفتوحة من Financy باتصال بالخادم. وحين يحفظ أحدهم تغييرًا، يرسله الخادم إلى كل أفراد الأسرة مباشرةً. والجهاز الذي فاتته تغييرات أثناء غيابه يطلبها حين يعود.",
+  "FeaturePageLiveSync.how2":
+    "ثبّت Financy من متصفحك على هاتف أو حاسوب، فيفتح دون اتصال ويعرض آخر ما رآه. والمعاملات والتحويلات التي تضيفها أو تغيّرها أو تحذفها دون اتصال تنتظر على الجهاز، وتُرسل حين يعود الاتصال.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "هل يمكنني إضافة معاملة دون إنترنت؟",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "نعم. المعاملات والتحويلات التي تضيفها أو تغيّرها أو تحذفها دون اتصال تُحفظ على جهازك، وتُرسل إلى الخادم حين يعود الاتصال.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "هل يمكنني تغيير الحسابات أو الميزانيات دون اتصال؟",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "لا. تظهر الحسابات والفئات والميزانيات دون اتصال كما كانت آخر مرة، لكن تغييرها يحتاج إلى اتصال.",
+  "FeaturePageLiveSync.overwriteQuestion": "هل يمكن لتغيير أجريته دون اتصال أن يمحو تغيير شريكي؟",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "لا. إن تغيّرت المعاملة نفسها على الخادم في الأثناء، يرفض الخادم تغييرك، ويحتفظ به جهازك لتحسم الأمر بنفسك. لا يُمحى شيء من تلقاء نفسه.",
+  "FeaturePageLiveSync.storesQuestion": "هل Financy متوفر في App Store أو Google Play؟",
+  "FeaturePageLiveSync.storesAnswer":
+    "ليس بعد. اليوم تثبّت Financy من متصفحك على هاتف أو حاسوب، ويفتح دون اتصال.",
+  "FeaturePageSelfHosting.name": "الاستضافة الذاتية",
+  "FeaturePageSelfHosting.title": "شغّل تطبيق ميزانية على خادمك الخاص",
+  "FeaturePageSelfHosting.description":
+    "شغّل Financy لأسرتك على خادم تستأجره أو تملكه، باستخدام Docker Compose. تبقى سجلاتك على خادمك، ولا تدفع إلا ثمن الخادم.",
+  "FeaturePageSelfHosting.h1": "هل يمكنني تشغيل تطبيق ميزانية على خادمي الخاص؟",
+  "FeaturePageSelfHosting.answer":
+    "نعم. يعمل Financy باستخدام Docker Compose على خادم Ubuntu تستأجره أو تملكه. وبموجب رخصة AGPL‑3.0 لا تدفع إلا ثمن الخادم، وتبقى سجلات أسرتك عليه.",
+  "FeaturePageSelfHosting.summary": "سجلات أسرتك على خادمك الخاص.",
+  "FeaturePageSelfHosting.how1":
+    "تحتاج إلى خادم واسم نطاق وحساب بريد لإرسال رموز إنشاء الحساب. ومن حاسوبك، ينسخ أمر واحد Financy إلى الخادم ويبنيه هناك ويشغّله. وتُصدَر شهادة HTTPS الخاصة به وتُجدَّد تلقائيًا.",
+  "FeaturePageSelfHosting.how2":
+    "اترك الفوترة معطّلة، فتحصل كل أسرة على خادمك على كل الميزات بلا حدود. فعّل النسخ الاحتياطي اليومي المشفّر، واتّبع دليل الترقية للانتقال إلى كل إصدار جديد.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion": "هل تنقص نسخةَ Financy المستضافة ذاتيًا أي ميزات؟",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "لا. إنها الشيفرة نفسها. ومع ترك الفوترة معطّلة، تحصل كل أسرة على خادمك على كل الميزات، دون حد لعدد الأعضاء.",
+  "FeaturePageSelfHosting.mailQuestion": "هل أحتاج إلى حساب بريد لاستضافة Financy ذاتيًا؟",
+  "FeaturePageSelfHosting.mailAnswer":
+    "نعم. يرسل Financy رمزًا بالبريد الإلكتروني إلى كل من ينشئ حسابًا، لذا يحتاج الخادم إلى حساب SMTP لدى مزوّد بريد. ومن دونه لا يستطيع أحد إنشاء حساب.",
+  "FeaturePageSelfHosting.moveQuestion": "هل يمكنني نقل أسرتي من financy.dev إلى خادمي الخاص؟",
+  "FeaturePageSelfHosting.moveAnswer":
+    "نعم. يصدّر مالك الأسرة بياناتها إلى ملف، ثم تستورد ذلك الملف على خادمك كأسرة جديدة.",
+  "FeaturePageSelfHosting.backupQuestion": "هل يستطيع Financy نسخ خادمي احتياطيًا؟",
+  "FeaturePageSelfHosting.backupAnswer":
+    "نعم. فعّل النسخ الاحتياطي اليومي، فيحفظ كل 24 ساعة سجلات أسرتك وملفاتها، مشفّرة، في مساحة تخزين خارج الخادم. ويرشدك دليل النسخ الاحتياطي أيضًا خلال استعادة تجريبية.",
+  "FeaturePageSelfHosting.installerQuestion": "هل يوجد مثبّت بنقرة واحدة؟",
+  "FeaturePageSelfHosting.installerAnswer":
+    "ليس بعد. تُعِدّ Financy من حاسوبك باستخدام Deno وrsync وgit، وأمر واحد ينشره. ويرشدك دليل الاستضافة الذاتية خطوة بخطوة.",
   "FeaturePageMissing.title": "صفحة هذه الميزة غير موجودة",
   "FeaturePageMissing.description": "ربما انتقلت. كل الميزات موجودة في صفحة الميزات.",
   "FeaturePageMissing.action": "عرض كل الميزات",
-  "FeaturePageSignIn.name": "تسجيل الدخول",
-  "FeaturePageSignIn.title": "تسجيل الدخول لمنتج SaaS دون خدمة مصادقة خارجية",
-  "FeaturePageSignIn.description":
-    "مفاتيح المرور، ورموز تسجيل الدخول عبر البريد، وGoogle وGitHub، والتحقق بخطوتين، تتحقق منها واجهة API الخاصة بك دون خدمة مصادقة أو رسوم لكل مستخدم. مجاني بترخيص MIT.",
-  "FeaturePageSignIn.h1": "مفاتيح المرور وتسجيل الدخول لمنتج SaaS، دون خدمة مصادقة",
-  "FeaturePageSignIn.answer":
-    "يسجّل Seed دخول المستخدمين بمفاتيح المرور، ورموز تسجيل الدخول عبر البريد، وGoogle وGitHub، وتتحقق واجهة API الخاصة به من كل ذلك على خادمك، دون أي خدمة مصادقة خارجية. تعمل كلمات المرور ومفاتيح المرور ورموز تسجيل الدخول فور النشر، دون رسوم لكل مستخدم؛ ويحتاج كل من Google وGitHub إلى مفتاحين في ملف env.",
-  "FeaturePageSignIn.summary":
-    "مفاتيح المرور، ورموز تسجيل الدخول عبر البريد، وGoogle وGitHub، والتحقق بخطوتين، دون خدمة مصادقة.",
-  "FeaturePageSignIn.how1":
-    "تتحقق واجهة API بنفسها من كل تسجيل دخول، وتردّ بملف تعريف ارتباط (cookie) موقّع للجلسة. ويستخدم مفتاح المرور تقنية WebAuthn المدمجة في المتصفح: لا يحتفظ الخادم إلا بمفتاحه العام، وكل تحدٍّ لتسجيل الدخول صالح لمرة واحدة. أما رمز تسجيل الدخول عبر البريد فيسجّل الدخول أو ينشئ حسابًا، وهو صالح لمرة واحدة ولمدة 10 دقائق، في المتصفح الذي طلبه فقط، ولا يُخزَّن إلا على شكل تجزئة (hash).",
-  "FeaturePageSignIn.how2":
-    "يضيف تطبيق المصادقة التحقق بخطوتين. ويعرض الملف الشخصي كل طرق الدخول إلى حساب المستخدم وكل جهاز مسجّل دخوله، وتغيير أي طريقة دخول يتطلب إثبات الهوية ويرسل رسالة بريد. ويمكن للزائر أيضًا أن يبدأ بحساب ضيف ويضيف طريقة لتسجيل الدخول لاحقًا.",
-  "FeaturePageSignIn.authServiceQuestion": "هل أحتاج إلى خدمة مصادقة؟",
-  "FeaturePageSignIn.authServiceAnswer":
-    "لا. تتحقق واجهة API الخاصة بـSeed من كلمات المرور ومفاتيح المرور ورموز تسجيل الدخول وردود Google وGitHub على خادمك، فلا تدفع شيئًا لكل مستخدم.",
-  "FeaturePageSignIn.passkeysQuestion": "هل يدعم Seed مفاتيح المرور (passkeys)؟",
-  "FeaturePageSignIn.passkeysAnswer":
-    "نعم. يضيف الناس مفتاح مرور من ملفهم الشخصي ويسجّلون الدخول به؛ لا يخزّن الخادم إلا مفتاحه العام، وكل تحدٍّ لتسجيل الدخول يعمل مرة واحدة.",
-  "FeaturePageSignIn.twoFactorQuestion": "هل يدعم Seed المصادقة الثنائية (التحقق بخطوتين)؟",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "نعم. يضيف تطبيق المصادقة رمزًا لمرة واحدة عند تسجيل الدخول، حتى بعد تسجيل الدخول عبر Google أو GitHub.",
-  "FeaturePageSignIn.providersOffQuestion":
-    "هل يمكنني الاستغناء عن تسجيل الدخول عبر Google أو GitHub؟",
-  "FeaturePageSignIn.providersOffAnswer":
-    "نعم. كل منهما متوقف حتى يُضبط متغيّراه كلاهما في ملف env، فإن تركتهما بقي متوقفًا.",
-  "FeaturePageGroups.name": "المجموعات والأدوار",
-  "FeaturePageGroups.title": "مجموعات وأدوار لمنتج SaaS، دون بناء الأساس بنفسك",
-  "FeaturePageGroups.description":
-    "مجموعات بأدوار من قارئ إلى مالك، ودعوات، ونقل للملكية، وسجل نشاط، مع فحص واحد بين المستأجرين يشمل كل البيانات. مجاني بترخيص MIT.",
-  "FeaturePageGroups.h1": "مجموعات وأدوار لمنتج SaaS، دون بناء تعدد المستأجرين بنفسك",
-  "FeaturePageGroups.answer":
-    "يمنح Seed كل حساب مستخدم مجموعة شخصية عند إنشائه، وينشئ الناس مجموعات مشتركة، ويدعون غيرهم، ويمنحونهم أدوارًا من قارئ إلى مالك. المجموعة هي الحد الوحيد بين المستأجرين، فأي ميزة تضيفها تمر بالفحص نفسه بمجرد أن تنسخ ميزة الملاحظات.",
-  "FeaturePageGroups.summary": "مجموعات بأدوار من قارئ إلى مالك، ودعوات، وسجل نشاط.",
-  "FeaturePageGroups.how1":
-    "كل صف من البيانات المشتركة ينتمي إلى مجموعة، ويفحص الـAPI دور الشخص في تلك المجموعة قبل أن يقرأ أو يكتب. القارئ يقرأ، والمحرر يغيّر بيانات المجموعة أيضًا، والمسؤول والمالك يديران الأعضاء أيضًا ويقرآن سجل النشاط.",
-  "FeaturePageGroups.how2":
-    "ينقل المالك الملكية بخطوة واحدة، ويمكن استعادة المجموعة المحذوفة خلال 30 يومًا. ولا يستطيع الدعوة إلا حساب مستخدم أكّد بريده الإلكتروني.",
-  "FeaturePageGroups.personalGroupQuestion": "هل يحصل كل حساب مستخدم على مجموعة؟",
-  "FeaturePageGroups.personalGroupAnswer":
-    "نعم. يحصل كل حساب مستخدم على مجموعة شخصية عند إنشائه؛ والمجموعة الشخصية والمشتركة تمران بالفحص نفسه.",
-  "FeaturePageGroups.viewerQuestion": "هل يستطيع القارئ تغيير بيانات المجموعة؟",
-  "FeaturePageGroups.viewerAnswer":
-    "لا. يقرأ القارئ بيانات المجموعة؛ أما المحرر أو المسؤول أو المالك فيستطيع تغييرها.",
-  "FeaturePageGroups.restoreQuestion": "هل يمكن استعادة مجموعة محذوفة؟",
-  "FeaturePageGroups.restoreAnswer":
-    "نعم. يستطيع مالكها استعادتها خلال 30 يومًا؛ وبعد ذلك يحذفها العامل نهائيًا.",
-  "FeaturePageGroups.secondModelQuestion": "هل أحتاج إلى نظام صلاحيات ثانٍ لميزاتي الخاصة؟",
-  "FeaturePageGroups.secondModelAnswer":
-    "لا. الميزة الجديدة تنسخ ميزة الملاحظات وفحص المجموعة فيها، فيبقى لديك نموذج صلاحيات واحد تعتني به.",
-  "FeaturePageRealtime.name": "المزامنة الفورية",
-  "FeaturePageRealtime.title": "مزامنة فورية لمنتج SaaS، دون خدمة مستضافة",
-  "FeaturePageRealtime.description":
-    "التغيير المحفوظ في علامة تبويب يظهر خلال ثانية في كل علامة تبويب أخرى مفتوحة للمجموعة، عبر WebSocket من الـAPI الخاص بك. مجاني بترخيص MIT.",
-  "FeaturePageRealtime.h1": "تحديثات فورية لمنتج SaaS، دون خدمة تحديث فوري مستضافة",
-  "FeaturePageRealtime.answer":
-    "يرسل Seed كل تغيير محفوظ إلى كل علامة تبويب مفتوحة للمجموعة عبر WebSocket من الـAPI الخاص به، فالملاحظة المحفوظة في نافذة تظهر في النوافذ الأخرى خلال ثانية، دون إعادة تحميل. يعمل ذلك على خادمك دون خدمة تحديث فوري تدفع لها؛ وأي ميزة تضيفها تحصل عليه بنسخ مثال الملاحظات.",
-  "FeaturePageRealtime.summary":
-    "التغيير المحفوظ في علامة تبويب يظهر في كل علامة تبويب مفتوحة أخرى، دون إعادة تحميل.",
-  "FeaturePageRealtime.how1":
-    "تُحفظ كل عملية كتابة مع الرقم التسلسلي التالي للمجموعة، ويدفعها الـAPI إلى كل اتصال مفتوح لأعضائها. ولا تطبّق علامة التبويب التغيير إلا إذا تلا رقمُه آخرَ رقم لديها؛ وعند وجود فجوة تطلب من الخادم كل ما بعد مؤشرها، فالرسالة الضائعة تكلّف طلبًا إضافيًا واحدًا ولا تنتج قائمة خاطئة أبدًا.",
-  "FeaturePageRealtime.how2":
-    "الحاسوب المحمول الذي يستيقظ من السكون يعيد الاتصال ويجلب ما فاته. وإذا أُوقف الـWebSocket، يقرأ التطبيق ويكتب عبر HTTP ويتحقق من التغييرات كل 30 ثانية.",
-  "FeaturePageRealtime.realtimeQuestion": "هل يدعم Seed التحديث الفوري؟",
-  "FeaturePageRealtime.realtimeAnswer":
-    "نعم. يظهر التغيير المحفوظ في كل علامة تبويب مفتوحة للمجموعة خلال ثانية، دون إعادة تحميل.",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "هل أحتاج إلى Pusher أو Ably أو خدمة تحديث فوري أخرى؟",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "لا. يقدّم الـAPI الخاص بـSeed اتصال WebSocket من خادمك.",
-  "FeaturePageRealtime.realtimeSleepQuestion":
-    "هل تلحق علامة التبويب بما فاتها بعد سكون الحاسوب المحمول؟",
-  "FeaturePageRealtime.realtimeSleepAnswer": "نعم. تعيد الاتصال وتجلب كل تغيير بعد آخر تغيير لديها.",
-  "FeaturePageRealtime.realtimeOffQuestion": "هل يمكنني إيقاف التحديث الفوري؟",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "نعم. اضبط SPA_REALTIME=false: عندها يتحقق التطبيق من التغييرات كل 30 ثانية ويعمل بالطريقة نفسها.",
-  "FeaturePageOffline.name": "التطبيق دون اتصال",
-  "FeaturePageOffline.title": "منتج SaaS يعمل دون اتصال، دون بناء المزامنة بنفسك",
-  "FeaturePageOffline.description":
-    "تطبيق قابل للتثبيت يفتح دون شبكة، ويحفظ كل قائمة على الجهاز، ويضع التعديلات في قائمة انتظار حتى يعود الاتصال. مجاني بترخيص MIT.",
-  "FeaturePageOffline.h1": "تطبيق يعمل دون اتصال أولًا لمنتج SaaS، دون بناء محرك مزامنة",
-  "FeaturePageOffline.answer":
-    "يُثبَّت تطبيق Seed كأي تطبيق أصلي، ويفتح دون شبكة، ويعرض كل قائمة رآها آخر مرة، ويتيح للناس إضافة الملاحظات والوسوم وتعديلها وحذفها دون اتصال. وميزتك الخاصة تختار أحد ثلاثة مستويات: عبر الإنترنت فقط، أو قابلة للقراءة دون اتصال، أو قابلة للكتابة دون اتصال، وتتبع الوصفة المكتوبة لذلك المستوى.",
-  "FeaturePageOffline.summary": "تطبيق قابل للتثبيت يفتح دون شبكة، ويزامن حين تعود.",
-  "FeaturePageOffline.how1":
-    "يحتفظ الجهاز بنسخة IndexedDB من كل قائمة، وتنتظر عمليات الكتابة في قائمة انتظار بمفاتيح منع التكرار، فالتغيير المرسَل مرتين يُطبَّق مرة واحدة. والتغيير الذي لا يقبله الخادم يظهر كتعارض مع «الاحتفاظ بنسختي» أو «استخدام نسخة الخادم»؛ ولا يُكتب شيء فوق غيره من تلقاء نفسه.",
-  "FeaturePageOffline.how2":
-    "يحتفظ عامل الخدمة (service worker) بصفحة التطبيق وسكربتاته وأنماطه، فيفتح دون شبكة. أما تسجيل الدخول والعناصر المحذوفة وإعداد التحقق بخطوتين فتحتاج إلى الشبكة.",
-  "FeaturePageOffline.offlineQuestion": "هل يعمل Seed دون اتصال بالإنترنت؟",
-  "FeaturePageOffline.offlineAnswer": "نعم. يفتح التطبيق دون شبكة ويعرض كل قائمة رآها آخر مرة.",
-  "FeaturePageOffline.offlineEditsQuestion": "هل يمكن للناس التعديل دون اتصال؟",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "نعم. تعمل الملاحظات والوسوم دون اتصال؛ أما التغييرات الأخرى فتحتاج إلى الشبكة، والشاشة تخبرك بذلك.",
-  "FeaturePageOffline.conflictQuestion": "هل يكتشف Seed تعديل شخصين للملاحظة نفسها؟",
-  "FeaturePageOffline.conflictAnswer":
-    "نعم. يظهر التغيير اللاحق كتعارض، ويختار صاحبه «الاحتفاظ بنسختي» أو «استخدام نسخة الخادم».",
-  "FeaturePageOffline.removeOfflineQuestion": "هل يمكنني إزالة دعم العمل دون اتصال؟",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "نعم. أوقفه بإعداد واحد، أو احذف مجلدًا واحدًا واتبع قائمة الخطوات المكتوبة؛ ويفشل اختبار إذا فاتتك خطوة.",
-  "FeaturePageDeploy.name": "النشر",
-  "FeaturePageDeploy.title": "انشر منتج SaaS دون فاتورة منصة سحابية",
-  "FeaturePageDeploy.description":
-    "Docker Compose على خادم Linux واحد تستأجره: Traefik وPostgres وValkey وملفات S3 ومراقبة ونسخ احتياطي، تُنشر بأمر واحد. مجاني بترخيص MIT.",
-  "FeaturePageDeploy.h1": "استضف منتج SaaS بنفسك على خادم واحد، دون فاتورة منصة سحابية",
-  "FeaturePageDeploy.answer":
-    "يعمل Seed على خادم Linux تستأجره، باستخدام Docker Compose في التطوير والإنتاج على حد سواء، وأمر واحد ينشره. تجهّز الخادم مرة واحدة بالخطوات المكتوبة، ثم يصبح كل نشر لاحق ذلك الأمر وحده.",
-  "FeaturePageDeploy.summary": "خادم Linux واحد، وDocker Compose، وأمر واحد للنشر.",
-  "FeaturePageDeploy.how1":
-    "ينسخ النشر المشروع إلى الخادم عبر SSH ويشغّله بـCompose؛ وفي كل نشر تطبّق خدمة تعمل مرة واحدة ترحيلات قاعدة البيانات. ويقف Traefik في الواجهة ويطلب من Let's Encrypt شهادة لكل نطاق.",
-  "FeaturePageDeploy.how2":
-    "تعمل Postgres وValkey ومخزن ملفات S3 والمقاييس والسجلات ولوحات المتابعة مع التنبيهات بجانب التطبيقات، ويمكن لعدة منتجات أن تتشارك خادمًا واحدًا خلف الخادم الوكيل نفسه.",
-  "FeaturePageDeploy.kubernetesQuestion": "هل أحتاج إلى Kubernetes؟",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "لا. Docker Compose على خادم واحد يشغّل المنتج كله، في التطوير وفي الإنتاج.",
-  "FeaturePageDeploy.severalQuestion": "هل يمكن لعدة منتجات أن تتشارك خادمًا واحدًا؟",
-  "FeaturePageDeploy.severalAnswer":
-    "نعم. تتشارك خادمًا وكيلًا واحدًا، ولكل منها مجلده وقاعدة بياناته وبياناته؛ ولا تُشارك خادمًا إلا بين منتجات تثق بها بالقدر نفسه.",
-  "FeaturePageDeploy.backupQuestion": "هل يوجد نسخ احتياطي؟",
-  "FeaturePageDeploy.backupAnswer":
-    "نعم. نسخة احتياطية يومية مشفّرة لقاعدة البيانات عبر restic عند تفعيلها، مع خطوات استعادة مكتوبة.",
   "ErrorPage.status": "اطّلع على ما يعمل اليوم",
   "HomeHero.notify": "أعلمني",
   "HomeHero.selfHost": "استضف Financy بنفسك",
@@ -644,6 +623,19 @@ export default {
   "FeatureRecurring.fact3":
     "إضافة معاملة متكررة تتطلب خطة Household؛ أما قراءتها فلا تتطلبها أبدًا، ويتحقق الخادم من ذلك",
   "FeatureRecurring.code": "اقرأ شيفرة المعاملات المتكررة",
+  "FeatureMultiCurrency.nav": "العملات",
+  "FeatureMultiCurrency.title": "عملات كثيرة، ومجموع واحد",
+  "FeatureMultiCurrency.lead":
+    "اختر العملة الرئيسية لأسرتك، فيُحوَّل إليها كل مجموع بسعر صرف اليوم الذي تحرّك فيه المال. والمعاملة بعملة أخرى تحتفظ بمبلغها الأصلي بجانب المبلغ المحوَّل.",
+  "FeatureMultiCurrency.fact1":
+    "أسعار مرجعية يومية من البنك المركزي الأوروبي عبر Frankfurter، دون حاجة إلى مفتاح",
+  "FeatureMultiCurrency.fact2": "يُخزَّن المبلغ المحوَّل مرة واحدة، بسعر صرف تاريخه، ولا يُعاد حسابه أبدًا",
+  "FeatureMultiCurrency.fact3":
+    "العملة التي لا سعر لها تُستبعد من المجموع وتُذكر باسمها، ولا تُحسب صفرًا أبدًا",
+  "FeatureMultiCurrency.notYetBudgets":
+    "أرقام الميزانية المحوّلة من عملة أخرى لا تقول «تقريبًا» ولا تذكر تاريخ السعر بعد",
+  "FeatureMultiCurrency.notYetOffline": "أسعار صرف يمكنك قراءتها دون اتصال",
+  "FeatureMultiCurrency.code": "اقرأ شيفرة المال",
   "FeatureTransactions.nav": "المعاملات",
   "FeatureTransactions.title": "كل مصروف ودخل، بالعملة التي دفعت بها",
   "FeatureTransactions.lead":
