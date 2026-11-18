@@ -540,6 +540,69 @@ export default {
   "FeaturePageMissing.description":
     "Puede que se haya movido. Todas las funciones están en la página de funciones.",
   "FeaturePageMissing.action": "Ver todas las funciones",
+  "FeaturePage.comingFrom": "¿Vienes de {name}? <compare>Lee la comparativa</compare>.",
+  "SiteFooter.alternatives": "Alternativas",
+  "Alternatives.crumb": "Alternativas",
+  "Alternatives.title": "Financy frente a otras apps de finanzas",
+  "Alternatives.description":
+    "Comparativas de Financy con otras apps para controlar tu dinero. Cada una dice cuándo te conviene más la otra, con datos fechados y con fuente.",
+  "Alternatives.h1": "Financy frente a las herramientas que ya conoces",
+  "Alternatives.lead":
+    "Cada página dice primero cuándo te conviene más la otra herramienta, y enlaza cada dato sobre ella a su propia documentación.",
+  "Alternative.checked": "Comprobado el <time>{date}</time>",
+  "Alternative.glance": "De un vistazo",
+  "Alternative.caption": "Financy y {name}, cara a cara",
+  "Alternative.better": "Cuándo te conviene otra herramienta",
+  "Alternative.moving": "Cómo pasarte desde {name}",
+  "Alternative.next": "Prueba Financy",
+  "Alternative.demo": "Probar la demo",
+  "Alternative.selfHost": "Leer la guía para alojarlo tú",
+  "Alternative.all": "Todas las comparativas",
+  "AlternativeFirefly.title": "Alternativa a Firefly III para parejas",
+  "AlternativeFirefly.description":
+    "Firefly III da un solo acceso por administración. En Financy la pareja comparte un hogar, cada uno con su acceso, en cualquier moneda.",
+  "AlternativeFirefly.h1": "Una alternativa a Firefly III para el presupuesto en pareja",
+  "AlternativeFirefly.answer":
+    "Quédate en Firefly III si llevas tus cuentas solo o quieres contabilidad por partida doble. Elige Financy si tu pareja debe entrar con su propio acceso y tu dinero está en varias monedas.",
+  "AlternativeFirefly.rowLogins":
+    "Cada miembro de la pareja entra con su propio acceso y ve las mismas cuentas",
+  "AlternativeFirefly.rowLoginsNote":
+    "Firefly III: un acceso por administración; compartir está previsto.",
+  "AlternativeFirefly.rowCurrencies": "Cuentas en varias monedas",
+  "AlternativeFirefly.rowTotal": "Un total convertido a una moneda principal",
+  "AlternativeFirefly.rowNoRate":
+    "Una moneda sin tipo de cambio queda fuera del total, y se indica",
+  "AlternativeFirefly.rowNoRateNote": "Firefly III usa un tipo de 1 cuando no tiene ninguno.",
+  "AlternativeFirefly.rowDoubleEntry": "Contabilidad por partida doble",
+  "AlternativeFirefly.rowImport": "Importar extractos bancarios desde archivo",
+  "AlternativeFirefly.rowImportNote": "Firefly III: con su Data Importer, que va aparte.",
+  "AlternativeFirefly.rowSelfHost": "Gratis para alojarlo tú, con licencia AGPL-3.0",
+  "AlternativeFirefly.sourceFaq": "FAQ de Firefly III",
+  "AlternativeFirefly.sourceCurrencies": "Docs de Firefly III: monedas",
+  "AlternativeFirefly.sourceRates": "Docs de Firefly III: tipos de cambio",
+  "AlternativeFirefly.sourceReadme": "README de Firefly III",
+  "AlternativeFirefly.sourceImporter": "Docs de Firefly III: importar CSV",
+  "AlternativeFirefly.method":
+    "Cada dato sobre Firefly III sale de su propia documentación o de su README, enlazado en su fila. Las filas de Financy recogen solo lo que ya funciona en la app. Revisamos cada fila cada tres meses y solo entonces cambiamos la fecha. ¿Ves algo desactualizado? Escribe a <mail>{email}</mail>.",
+  "AlternativeFirefly.fit":
+    "Financy no es contabilidad por partida doble y no se sincroniza automáticamente con el banco.",
+  "AlternativeFirefly.better":
+    "Para la partida doble, quédate en <firefly>Firefly III</firefly> o mira <gnucash>GnuCash</gnucash>, <beancount>Beancount</beancount> o <hledger>hledger</hledger>. Si buscas una app de código abierto parecida a Financy, la más cercana es <sure>Sure</sure>: también AGPL-3.0, y la alojas tú con Docker.",
+  "AlternativeFirefly.moving":
+    "Todavía no hay un importador directo desde Firefly III. Exporta tus movimientos de Firefly III a un archivo CSV e impórtalo en Financy, igual que un extracto bancario.",
+  "AlternativeFirefly.loginQuestion":
+    "¿Podemos usar Firefly III en pareja, cada uno con su propio acceso?",
+  "AlternativeFirefly.loginAnswer":
+    "Hoy no. La FAQ de Firefly III dice que cada administración está ligada a un solo usuario, así que una pareja comparte un usuario y una contraseña; está previsto un modelo para compartir. En Financy cada uno entra con su propio acceso y su rol, y ambos ven las mismas cuentas.",
+  "AlternativeFirefly.doubleEntryQuestion": "¿Financy usa partida doble como Firefly III?",
+  "AlternativeFirefly.doubleEntryAnswer":
+    "No. En Financy una cuenta guarda dinero, una categoría dice por qué se movió y una transferencia es un solo registro con dos lados. Para la partida doble, quédate en Firefly III o prueba GnuCash, Beancount o hledger.",
+  "AlternativeFirefly.dataQuestion": "¿Puedo llevar mis datos de Firefly III a Financy?",
+  "AlternativeFirefly.dataAnswer":
+    "Todavía no hay un importador directo. Exporta tus movimientos de Firefly III a CSV e importa el archivo en Financy.",
+  "AlternativeFirefly.costQuestion": "¿Cuánto cuesta cada uno?",
+  "AlternativeFirefly.costAnswer":
+    "Los dos son gratis si los alojas tú, con licencia AGPL-3.0. Según la FAQ de Firefly III, su creador no ofrece una versión alojada. La nube de Financy será un plan de pago.",
   "ErrorPage.status": "Ver qué funciona hoy",
   "HomeHero.notify": "Avísame",
   "HomeHero.selfHost": "Aloja Financy tú mismo",

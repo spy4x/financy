@@ -515,6 +515,66 @@ export default {
   "FeaturePageMissing.title": "صفحة هذه الميزة غير موجودة",
   "FeaturePageMissing.description": "ربما انتقلت. كل الميزات موجودة في صفحة الميزات.",
   "FeaturePageMissing.action": "عرض كل الميزات",
+  "FeaturePage.comingFrom": "هل تنتقل من {name}؟ <compare>اقرأ المقارنة</compare>.",
+  "SiteFooter.alternatives": "البدائل",
+  "Alternatives.crumb": "البدائل",
+  "Alternatives.title": "مقارنة Financy بتطبيقات المال الأخرى",
+  "Alternatives.description":
+    "مقارنات بين Financy وتطبيقات أخرى لإدارة المال. تذكر كل مقارنة أولًا متى تكون الأداة الأخرى الخيار الأفضل، بحقائق موثّقة ومؤرّخة.",
+  "Alternatives.h1": "مقارنة Financy بالأدوات التي تعرفها",
+  "Alternatives.lead":
+    "تذكر كل صفحة أولًا متى تناسبك الأداة الأخرى أكثر، وتربط كل معلومة عنها بوثائقها الرسمية.",
+  "Alternative.checked": "تم التحقق في <time>{date}</time>",
+  "Alternative.glance": "نظرة سريعة",
+  "Alternative.caption": "Financy مقابل {name}",
+  "Alternative.better": "متى تناسبك أداة أخرى أكثر",
+  "Alternative.moving": "الانتقال من {name}",
+  "Alternative.next": "جرّب Financy",
+  "Alternative.demo": "جرّب النسخة التجريبية",
+  "Alternative.selfHost": "اقرأ دليل الاستضافة الذاتية",
+  "Alternative.all": "كل المقارنات",
+  "AlternativeFirefly.title": "بديل Firefly III للأزواج",
+  "AlternativeFirefly.description":
+    "يمنح Firefly III كل إدارة مالية تسجيل دخول واحدًا. أما Financy فيتيح للشريكين ميزانية مشتركة، لكلٍّ منهما حسابه، وبأي مزيج من العملات.",
+  "AlternativeFirefly.h1": "بديل Firefly III للأزواج وللميزانية المشتركة",
+  "AlternativeFirefly.answer":
+    "ابقَ على Firefly III إن كنت تدير مالك وحدك أو تريد القيد المزدوج. واختر Financy إن أردت أن يسجّل شريكك الدخول بحسابه الخاص وكانت أموالكما موزعة على عدة عملات.",
+  "AlternativeFirefly.rowLogins": "يسجّل كل شريك الدخول بحسابه الخاص ويرى الحسابات نفسها",
+  "AlternativeFirefly.rowLoginsNote":
+    "Firefly III: تسجيل دخول واحد لكل إدارة مالية؛ والمشاركة مخطط لها.",
+  "AlternativeFirefly.rowCurrencies": "حسابات بعدة عملات",
+  "AlternativeFirefly.rowTotal": "مجموع محوَّل إلى عملة رئيسية واحدة",
+  "AlternativeFirefly.rowNoRate": "العملة التي لا سعر صرف لها تُستبعد من المجموع ويُذكر ذلك",
+  "AlternativeFirefly.rowNoRateNote": "يستخدم Firefly III سعرًا قدره 1 حين لا يتوفر سعر.",
+  "AlternativeFirefly.rowDoubleEntry": "محاسبة القيد المزدوج",
+  "AlternativeFirefly.rowImport": "استيراد ملفات كشوف الحساب البنكية",
+  "AlternativeFirefly.rowImportNote": "Firefly III: عبر أداة Data Importer المنفصلة.",
+  "AlternativeFirefly.rowSelfHost": "استضافة ذاتية مجانية بترخيص AGPL-3.0",
+  "AlternativeFirefly.sourceFaq": "الأسئلة الشائعة لـ Firefly III",
+  "AlternativeFirefly.sourceCurrencies": "وثائق Firefly III: العملات",
+  "AlternativeFirefly.sourceRates": "وثائق Firefly III: أسعار الصرف",
+  "AlternativeFirefly.sourceReadme": "ملف README لـ Firefly III",
+  "AlternativeFirefly.sourceImporter": "وثائق Firefly III: استيراد CSV",
+  "AlternativeFirefly.method":
+    "كل معلومة عن Firefly III مأخوذة من وثائقه الرسمية أو من ملف README الخاص به، ومربوطة في صفها. ولا تذكر صفوف Financy إلا ما يعمل في التطبيق اليوم. نعيد التحقق من كل صف كل ثلاثة أشهر، ولا نغيّر التاريخ إلا حينها. هل لاحظت معلومة قديمة؟ راسلنا على <mail>{email}</mail>.",
+  "AlternativeFirefly.fit": "Financy ليس برنامج محاسبة بالقيد المزدوج، ولا يتزامن تلقائيًا مع البنك.",
+  "AlternativeFirefly.better":
+    "للقيد المزدوج، ابقَ على <firefly>Firefly III</firefly> أو اطّلع على <gnucash>GnuCash</gnucash> أو <beancount>Beancount</beancount> أو <hledger>hledger</hledger>. وإن أردت تطبيقًا مفتوح المصدر يشبه Financy في شكله، فأقربها <sure>Sure</sure>: بترخيص AGPL-3.0 أيضًا، ويُستضاف ذاتيًا عبر Docker.",
+  "AlternativeFirefly.moving":
+    "لا يوجد بعد استيراد مباشر من Firefly III. صدّر معاملاتك من Firefly III إلى ملف CSV، ثم استورد هذا الملف في Financy كما تستورد كشف حساب بنكي.",
+  "AlternativeFirefly.loginQuestion":
+    "هل يمكنني أنا وشريكي استخدام Firefly III، لكلٍّ منا تسجيل دخوله الخاص؟",
+  "AlternativeFirefly.loginAnswer":
+    "ليس اليوم. تقول الأسئلة الشائعة لـ Firefly III إن كل إدارة مالية مقفلة على مستخدم واحد، لذا يتشارك الزوجان اسم مستخدم وكلمة مرور واحدة؛ ونموذج المشاركة مخطط له. في Financy يسجّل كلٌّ منكما الدخول بحسابه ودوره، وتريان الحسابات نفسها.",
+  "AlternativeFirefly.doubleEntryQuestion": "هل يعتمد Financy القيد المزدوج مثل Firefly III؟",
+  "AlternativeFirefly.doubleEntryAnswer":
+    "لا. في Financy يحفظ الحساب المال، وتوضح الفئة سبب حركته، والتحويل سجل واحد له طرفان. للقيد المزدوج، ابقَ على Firefly III أو جرّب GnuCash أو Beancount أو hledger.",
+  "AlternativeFirefly.dataQuestion": "هل يمكنني نقل بياناتي من Firefly III إلى Financy؟",
+  "AlternativeFirefly.dataAnswer":
+    "لا يوجد بعد استيراد مباشر. صدّر معاملاتك من Firefly III بصيغة CSV واستورد الملف في Financy.",
+  "AlternativeFirefly.costQuestion": "كم تكلفة كلٍّ منهما؟",
+  "AlternativeFirefly.costAnswer":
+    "كلاهما مجاني للاستضافة الذاتية بترخيص AGPL-3.0. وبحسب الأسئلة الشائعة لـ Firefly III، لا يقدّم مطوّره نسخة مستضافة. أما سحابة Financy فستكون خطة مدفوعة.",
   "ErrorPage.status": "اطّلع على ما يعمل اليوم",
   "HomeHero.notify": "أعلمني",
   "HomeHero.selfHost": "استضف Financy بنفسك",
