@@ -522,6 +522,69 @@ export default {
   "FeaturePageMissing.description":
     "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",
   "FeaturePageMissing.action": "すべての機能を見る",
+  "FeaturePage.comingFrom": "{name} からの乗り換えですか？<compare>比較を読む</compare>",
+  "SiteFooter.alternatives": "他のツールとの比較",
+  "Alternatives.crumb": "他のツールとの比較",
+  "Alternatives.title": "Financy と他の家計簿アプリの比較",
+  "Alternatives.description":
+    "Financy と他の家計簿アプリを並べて比較します。どの比較も、相手のツールのほうが合う場合を先に書き、出典と日付つきの事実だけを載せています。",
+  "Alternatives.h1": "Financy と、よく知られたツールの比較",
+  "Alternatives.lead":
+    "どのページも、相手のツールのほうが合う場合をまず書き、そのツールについての事実はすべて公式ドキュメントにリンクしています。",
+  "Alternative.checked": "<time>{date}</time> に確認",
+  "Alternative.glance": "ひと目で比較",
+  "Alternative.caption": "Financy と {name} の比較",
+  "Alternative.better": "他のツールのほうが合う場合",
+  "Alternative.moving": "{name} からの移行",
+  "Alternative.next": "Financy を試す",
+  "Alternative.demo": "デモを試す",
+  "Alternative.selfHost": "セルフホストのガイドを読む",
+  "Alternative.all": "すべての比較",
+  "AlternativeFirefly.title": "夫婦で使える Firefly III 代替アプリ",
+  "AlternativeFirefly.description":
+    "Firefly III は帳簿 1 つにつきログインが 1 つです。Financy なら家計簿を共有し、夫婦それぞれが自分のログインで、複数の通貨を扱えます。",
+  "AlternativeFirefly.h1": "夫婦で家計簿を共有できる Firefly III 代替",
+  "AlternativeFirefly.answer":
+    "ひとりで家計を管理するなら、または複式簿記を使いたいなら、Firefly III のままがおすすめです。パートナーにも自分のログインで入ってほしい、お金が複数の通貨にまたがっているなら、Financy を選んでください。",
+  "AlternativeFirefly.rowLogins": "パートナーそれぞれが自分のログインで入り、同じ口座を見られる",
+  "AlternativeFirefly.rowLoginsNote":
+    "Firefly III：帳簿 1 つにログイン 1 つ。共有機能は計画中です。",
+  "AlternativeFirefly.rowCurrencies": "複数の通貨の口座",
+  "AlternativeFirefly.rowTotal": "1 つのメイン通貨に換算した合計",
+  "AlternativeFirefly.rowTotalNote":
+    "Firefly III：為替レートを有効にするまで、換算はオフのままです。",
+  "AlternativeFirefly.rowNoRate": "為替レートのない通貨は合計から外し、そのことを表示",
+  "AlternativeFirefly.rowNoRateNote": "Firefly III はレートがないとき 1 として計算します。",
+  "AlternativeFirefly.rowDoubleEntry": "複式簿記",
+  "AlternativeFirefly.rowImport": "銀行の明細ファイルの取り込み",
+  "AlternativeFirefly.rowImportNote":
+    "Financy：アプリにはまだありません。Firefly III：別アプリの Data Importer を使います。",
+  "AlternativeFirefly.rowSelfHost": "AGPL-3.0 のもと無料でセルフホスト",
+  "AlternativeFirefly.sourceFaq": "Firefly III の FAQ",
+  "AlternativeFirefly.sourceCurrencies": "Firefly III ドキュメント：通貨",
+  "AlternativeFirefly.sourceRates": "Firefly III ドキュメント：為替レート",
+  "AlternativeFirefly.sourceReadme": "Firefly III の README",
+  "AlternativeFirefly.sourceImporter": "Firefly III ドキュメント：データの取り込み",
+  "AlternativeFirefly.method":
+    "Firefly III についての事実は、すべて Firefly III 自身のドキュメントか README から取り、各行にリンクしています。Financy の行には、今日アプリで動くものだけを載せています。各行は 3 か月ごとに確認し直し、日付はそのときだけ変えます。古くなった情報を見つけたら、<mail>{email}</mail> までお知らせください。",
+  "AlternativeFirefly.fit":
+    "Financy は複式簿記の会計ソフトではなく、銀行との自動同期もなく、銀行の明細の取り込みにもまだ対応していません。",
+  "AlternativeFirefly.better":
+    "複式簿記が必要なら、<firefly>Firefly III</firefly> のままにするか、<gnucash>GnuCash</gnucash>、<beancount>Beancount</beancount>、<hledger>hledger</hledger> を検討してください。Financy に近い形のオープンソースアプリなら、いちばん近いのは <sure>Sure</sure> です。こちらも AGPL-3.0 で、Docker でセルフホストします。",
+  "AlternativeFirefly.moving":
+    "Financy はまだ Firefly III からエクスポートしたデータを取り込めないため、現時点では履歴をアプリに移せません。履歴が大切な場合は、当面 Firefly III を使い続けてください。",
+  "AlternativeFirefly.loginQuestion": "Firefly III を夫婦で、それぞれ自分のログインで使えますか？",
+  "AlternativeFirefly.loginAnswer":
+    "今はできません。Firefly III の FAQ によると、帳簿は 1 人のユーザーに固定されているため、夫婦は 1 つのユーザー名とパスワードを共有することになります。共有の仕組みは計画中です。Financy なら、それぞれが自分のログインとロールで入り、2 人とも同じ口座を見られます。",
+  "AlternativeFirefly.doubleEntryQuestion": "Financy は Firefly III のような複式簿記ですか？",
+  "AlternativeFirefly.doubleEntryAnswer":
+    "いいえ。Financy では、口座がお金を持ち、カテゴリがお金の動いた理由を表し、振替は 2 つの側を持つ 1 件の記録です。複式簿記が必要なら、Firefly III のままにするか、GnuCash、Beancount、hledger を試してください。",
+  "AlternativeFirefly.dataQuestion": "Firefly III のデータを Financy に移せますか？",
+  "AlternativeFirefly.dataAnswer":
+    "まだできません。現時点では、Firefly III からエクスポートしたデータを Financy のアプリに取り込むことはできません。",
+  "AlternativeFirefly.costQuestion": "それぞれの料金は？",
+  "AlternativeFirefly.costAnswer":
+    "どちらも AGPL-3.0 で、セルフホストなら無料です。Firefly III の FAQ によると、開発者はホスティング版を提供していません。Financy のクラウドは有料プランになる予定です。",
   "ErrorPage.status": "今できることを見る",
   "HomeHero.notify": "通知を受け取る",
   "HomeHero.selfHost": "Financy をセルフホスト",

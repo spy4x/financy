@@ -534,6 +534,70 @@ export default {
   "FeaturePageMissing.description":
     "Vielleicht ist sie umgezogen. Alle Funktionen findest du auf der Funktionsseite.",
   "FeaturePageMissing.action": "Alle Funktionen ansehen",
+  "FeaturePage.comingFrom": "Kommst du von {name}? <compare>Lies den Vergleich</compare>.",
+  "SiteFooter.alternatives": "Alternativen",
+  "Alternatives.crumb": "Alternativen",
+  "Alternatives.title": "Financy im Vergleich mit anderen Finanz-Apps",
+  "Alternatives.description":
+    "Financy im direkten Vergleich mit anderen Haushaltsbuch-Apps. Jeder Vergleich sagt, wann das andere Tool besser passt, mit belegten, datierten Fakten.",
+  "Alternatives.h1": "Financy im Vergleich mit den Tools, die du kennst",
+  "Alternatives.lead":
+    "Jede Seite sagt zuerst, wann das andere Tool besser zu dir passt, und verlinkt jede Aussage darüber mit der Dokumentation dieses Tools.",
+  "Alternative.checked": "Geprüft am <time>{date}</time>",
+  "Alternative.glance": "Auf einen Blick",
+  "Alternative.caption": "Financy und {name} im Vergleich",
+  "Alternative.better": "Wann ein anderes Tool besser passt",
+  "Alternative.moving": "Umstieg von {name}",
+  "Alternative.next": "Financy ausprobieren",
+  "Alternative.demo": "Demo ausprobieren",
+  "Alternative.selfHost": "Anleitung zum Selbsthosten lesen",
+  "Alternative.all": "Alle Vergleiche",
+  "AlternativeFirefly.title": "Firefly III Alternative für Paare",
+  "AlternativeFirefly.description":
+    "Firefly III gibt jeder Verwaltung nur einen Login. Mit Financy führt ihr ein gemeinsames Haushaltsbuch, jede Person mit eigenem Login, in allen Währungen.",
+  "AlternativeFirefly.h1": "Eine Firefly III Alternative für Paare",
+  "AlternativeFirefly.answer":
+    "Bleib bei Firefly III, wenn du dein Geld allein verwaltest oder doppelte Buchführung willst. Nimm Financy, wenn sich deine Partnerin oder dein Partner mit eigenem Login anmelden soll und euer Geld in mehreren Währungen liegt.",
+  "AlternativeFirefly.rowLogins":
+    "Jede Person meldet sich mit eigenem Login an und sieht dieselben Konten",
+  "AlternativeFirefly.rowLoginsNote": "Firefly III: ein Login pro Verwaltung; Teilen ist geplant.",
+  "AlternativeFirefly.rowCurrencies": "Konten in mehreren Währungen",
+  "AlternativeFirefly.rowTotal": "Eine Gesamtsumme, umgerechnet in eine Hauptwährung",
+  "AlternativeFirefly.rowTotalNote":
+    "Firefly III: Die Umrechnung ist aus, bis du die Wechselkurse einschaltest.",
+  "AlternativeFirefly.rowNoRate": "Eine Währung ohne Wechselkurs fehlt in der Summe, mit Hinweis",
+  "AlternativeFirefly.rowNoRateNote": "Firefly III rechnet ohne Kurs mit einem Kurs von 1.",
+  "AlternativeFirefly.rowDoubleEntry": "Doppelte Buchführung",
+  "AlternativeFirefly.rowImport": "Kontoauszüge als Datei importieren",
+  "AlternativeFirefly.rowImportNote":
+    "Financy: noch nicht in der App. Firefly III: über den separaten Data Importer.",
+  "AlternativeFirefly.rowSelfHost": "Kostenlos selbst hosten unter AGPL-3.0",
+  "AlternativeFirefly.sourceFaq": "Firefly III FAQ",
+  "AlternativeFirefly.sourceCurrencies": "Firefly III Doku: Währungen",
+  "AlternativeFirefly.sourceRates": "Firefly III Doku: Wechselkurse",
+  "AlternativeFirefly.sourceReadme": "Firefly III README",
+  "AlternativeFirefly.sourceImporter": "Firefly III Doku: Daten importieren",
+  "AlternativeFirefly.method":
+    "Jede Aussage über Firefly III stammt aus der Dokumentation oder dem README von Firefly III und ist in ihrer Zeile verlinkt. Die Zeilen von Financy nennen nur, was heute in der App funktioniert. Wir prüfen jede Zeile alle drei Monate neu und ändern erst dann das Datum. Etwas ist veraltet? Schreib an <mail>{email}</mail>.",
+  "AlternativeFirefly.fit":
+    "Financy ist keine doppelte Buchführung, hat keine automatische Synchronisierung mit der Bank und kann noch keine Kontoauszüge importieren.",
+  "AlternativeFirefly.better":
+    "Für doppelte Buchführung bleib bei <firefly>Firefly III</firefly> oder sieh dir <gnucash>GnuCash</gnucash>, <beancount>Beancount</beancount> oder <hledger>hledger</hledger> an. Suchst du ein Open-Source-Tool, das wie Financy aufgebaut ist, kommt <sure>Sure</sure> am nächsten: ebenfalls AGPL-3.0 und mit Docker selbst gehostet.",
+  "AlternativeFirefly.moving":
+    "Financy kann einen Export aus Firefly III noch nicht importieren, du kannst deine Historie also heute nicht in die App übernehmen. Wenn dir deine Historie wichtig ist, bleib vorerst bei Firefly III.",
+  "AlternativeFirefly.loginQuestion":
+    "Können wir Firefly III zu zweit nutzen, jede Person mit eigenem Login?",
+  "AlternativeFirefly.loginAnswer":
+    "Heute nicht. Laut FAQ von Firefly III gehört jede Verwaltung genau einem Nutzer, also teilt ein Paar Benutzername und Passwort; ein Modell zum Teilen ist geplant. In Financy meldet sich jede Person mit eigenem Login und eigener Rolle an, und ihr seht beide dieselben Konten.",
+  "AlternativeFirefly.doubleEntryQuestion": "Nutzt Financy doppelte Buchführung wie Firefly III?",
+  "AlternativeFirefly.doubleEntryAnswer":
+    "Nein. In Financy hält ein Konto Geld, eine Kategorie sagt, wofür es geflossen ist, und eine Umbuchung ist ein Eintrag mit zwei Seiten. Für doppelte Buchführung bleib bei Firefly III oder probier GnuCash, Beancount oder hledger.",
+  "AlternativeFirefly.dataQuestion": "Kann ich meine Daten aus Firefly III in Financy übernehmen?",
+  "AlternativeFirefly.dataAnswer":
+    "Noch nicht. Financy kann einen Export aus Firefly III derzeit nicht in der App importieren.",
+  "AlternativeFirefly.costQuestion": "Was kosten die beiden?",
+  "AlternativeFirefly.costAnswer":
+    "Beide kannst du unter AGPL-3.0 kostenlos selbst hosten. Laut FAQ von Firefly III bietet sein Entwickler keine gehostete Version an. Die Cloud von Financy wird ein kostenpflichtiger Tarif.",
   "ErrorPage.status": "Ansehen, was heute funktioniert",
   "HomeHero.notify": "Benachrichtigen lassen",
   "HomeHero.selfHost": "Financy selbst hosten",

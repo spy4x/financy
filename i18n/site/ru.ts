@@ -526,6 +526,69 @@ export default {
   "FeaturePageMissing.description":
     "Возможно, её перенесли. Все возможности — на странице возможностей.",
   "FeaturePageMissing.action": "Смотреть все возможности",
+  "FeaturePage.comingFrom": "Переходите с {name}? <compare>Прочитайте сравнение</compare>.",
+  "SiteFooter.alternatives": "Альтернативы",
+  "Alternatives.crumb": "Альтернативы",
+  "Alternatives.title": "Financy и другие приложения для учёта финансов",
+  "Alternatives.description":
+    "Сравнения Financy с другими приложениями для учёта денег. В каждом сказано, когда лучше выбрать другое, а у фактов есть источник и дата.",
+  "Alternatives.h1": "Financy в сравнении с привычными инструментами",
+  "Alternatives.lead":
+    "Каждая страница сначала говорит, когда вам больше подойдёт другой инструмент, и каждый факт о нём ведёт на его собственную документацию.",
+  "Alternative.checked": "Проверено <time>{date}</time>",
+  "Alternative.glance": "Коротко о главном",
+  "Alternative.caption": "Financy и {name}: сравнение",
+  "Alternative.better": "Когда лучше подойдёт другой инструмент",
+  "Alternative.moving": "Переход с {name}",
+  "Alternative.next": "Попробуйте Financy",
+  "Alternative.demo": "Открыть демо",
+  "Alternative.selfHost": "Руководство по установке на свой сервер",
+  "Alternative.all": "Все сравнения",
+  "AlternativeFirefly.title": "Аналог Firefly III для семейного бюджета",
+  "AlternativeFirefly.description":
+    "В Firefly III на один учёт — один логин. В Financy пара ведёт общий семейный бюджет: у каждого свой логин, валюты любые.",
+  "AlternativeFirefly.h1": "Аналог Firefly III для пары и семейного бюджета",
+  "AlternativeFirefly.answer":
+    "Оставайтесь на Firefly III, если ведёте учёт в одиночку или вам нужна двойная запись. Выбирайте Financy, если партнёр должен входить под своим логином, а деньги лежат в нескольких валютах.",
+  "AlternativeFirefly.rowLogins": "Каждый партнёр входит под своим логином и видит те же счета",
+  "AlternativeFirefly.rowLoginsNote": "Firefly III: один логин на учёт; общий доступ в планах.",
+  "AlternativeFirefly.rowCurrencies": "Счета в разных валютах",
+  "AlternativeFirefly.rowTotal": "Итог, пересчитанный в одну основную валюту",
+  "AlternativeFirefly.rowTotalNote":
+    "Firefly III: пересчёт выключен, пока вы не включите курсы валют.",
+  "AlternativeFirefly.rowNoRate": "Валюта без курса не входит в итог и указывается отдельно",
+  "AlternativeFirefly.rowNoRateNote": "Firefly III без курса считает курс равным 1.",
+  "AlternativeFirefly.rowDoubleEntry": "Двойная запись",
+  "AlternativeFirefly.rowImport": "Импорт банковских выписок из файлов",
+  "AlternativeFirefly.rowImportNote":
+    "Financy: в приложении пока нет. Firefly III: через отдельный Data Importer.",
+  "AlternativeFirefly.rowSelfHost": "Бесплатно на своём сервере под AGPL-3.0",
+  "AlternativeFirefly.sourceFaq": "FAQ Firefly III",
+  "AlternativeFirefly.sourceCurrencies": "Документация Firefly III: валюты",
+  "AlternativeFirefly.sourceRates": "Документация Firefly III: курсы валют",
+  "AlternativeFirefly.sourceReadme": "README Firefly III",
+  "AlternativeFirefly.sourceImporter": "Документация Firefly III: импорт данных",
+  "AlternativeFirefly.method":
+    "Каждый факт о Firefly III взят из его собственной документации или README, ссылка — в строке таблицы. В строках Financy только то, что работает в приложении уже сегодня. Мы перепроверяем каждую строку раз в три месяца и только тогда меняем дату. Заметили устаревшее? Напишите на <mail>{email}</mail>.",
+  "AlternativeFirefly.fit":
+    "Financy — не бухгалтерия с двойной записью. В нём нет автоматической синхронизации с банком, и импортировать банковские выписки он пока не умеет.",
+  "AlternativeFirefly.better":
+    "Если нужна двойная запись, оставайтесь на <firefly>Firefly III</firefly> или посмотрите <gnucash>GnuCash</gnucash>, <beancount>Beancount</beancount> и <hledger>hledger</hledger>. Ближе всего к Financy по устройству среди открытых приложений — <sure>Sure</sure>: тоже AGPL-3.0, и ставится на свой сервер через Docker.",
+  "AlternativeFirefly.moving":
+    "Financy пока не умеет импортировать выгрузку из Firefly III, поэтому перенести историю в приложение сегодня нельзя. Если история для вас важна, пока оставайтесь на Firefly III.",
+  "AlternativeFirefly.loginQuestion":
+    "Можно ли вести Firefly III вдвоём, каждому под своим логином?",
+  "AlternativeFirefly.loginAnswer":
+    "Пока нет. В FAQ Firefly III сказано, что каждый учёт привязан к одному пользователю, поэтому паре приходится делить один логин и пароль; общий доступ в планах. В Financy каждый из вас входит под своим логином и со своей ролью, а счета вы видите одни и те же.",
+  "AlternativeFirefly.doubleEntryQuestion": "Financy ведёт двойную запись, как Firefly III?",
+  "AlternativeFirefly.doubleEntryAnswer":
+    "Нет. В Financy на счёте лежат деньги, категория объясняет, откуда они пришли или куда ушли, а перевод — одна запись с двумя сторонами. Для двойной записи оставайтесь на Firefly III или попробуйте GnuCash, Beancount или hledger.",
+  "AlternativeFirefly.dataQuestion": "Можно ли перенести данные из Firefly III в Financy?",
+  "AlternativeFirefly.dataAnswer":
+    "Пока нет. Сейчас в приложении Financy нельзя импортировать выгрузку из Firefly III.",
+  "AlternativeFirefly.costQuestion": "Сколько они стоят?",
+  "AlternativeFirefly.costAnswer":
+    "Оба бесплатны на своём сервере под AGPL-3.0. Как сказано в FAQ Firefly III, его автор не предлагает облачную версию. Облако Financy будет платным тарифом.",
   "ErrorPage.status": "Что работает сегодня",
   "HomeHero.notify": "Сообщить о запуске",
   "HomeHero.selfHost": "Развернуть Financy у себя",
