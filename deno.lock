@@ -15,10 +15,11 @@
     "jsr:@spy4x/caldav@^1.129.0": "1.129.1",
     "jsr:@spy4x/email@1.127.0": "1.127.0",
     "jsr:@spy4x/email@^1.127.0": "1.127.0",
+    "jsr:@spy4x/email@^1.129.1": "1.129.1",
     "jsr:@spy4x/integrations@1.127.0": "1.127.0",
     "jsr:@spy4x/integrations@^1.127.0": "1.127.0",
     "jsr:@spy4x/net@1.127.0": "1.127.0",
-    "jsr:@spy4x/net@^1.127.0": "1.127.0",
+    "jsr:@spy4x/net@^1.127.0": "1.129.1",
     "jsr:@spy4x/net@^1.129.1": "1.129.1",
     "jsr:@spy4x/platform@1.127.0": "1.127.0",
     "jsr:@spy4x/platform@^1.126.0": "1.129.1",
@@ -43,13 +44,13 @@
     "jsr:@spy4x/search@^1.126.0": "1.127.0",
     "jsr:@spy4x/server@1.127.0": "1.127.0",
     "jsr:@spy4x/time@1.129.0": "1.129.0",
-    "jsr:@spy4x/time@^1.126.0": "1.129.0",
-    "jsr:@spy4x/time@^1.127.0": "1.129.0",
-    "jsr:@spy4x/time@^1.129.0": "1.129.0",
+    "jsr:@spy4x/time@^1.126.0": "1.129.1",
+    "jsr:@spy4x/time@^1.127.0": "1.129.1",
+    "jsr:@spy4x/time@^1.129.0": "1.129.1",
     "jsr:@spy4x/time@^1.129.1": "1.129.1",
     "jsr:@spy4x/validation@1.127.0": "1.127.0",
-    "jsr:@spy4x/validation@^1.126.0": "1.127.0",
-    "jsr:@spy4x/validation@^1.127.0": "1.127.0",
+    "jsr:@spy4x/validation@^1.126.0": "1.129.1",
+    "jsr:@spy4x/validation@^1.127.0": "1.129.1",
     "jsr:@spy4x/validation@^1.129.1": "1.129.1",
     "jsr:@std/assert@^1.0.14": "1.0.19",
     "jsr:@std/assert@^1.0.15": "1.0.19",
@@ -238,6 +239,12 @@
         "npm:nodemailer"
       ]
     },
+    "@spy4x/email@1.129.1": {
+      "integrity": "0b37ad5fb9a3eb4f82c514cff89470a2be0e10fe36d9d8ce6ac2904934525756",
+      "dependencies": [
+        "jsr:@spy4x/time@^1.129.1"
+      ]
+    },
     "@spy4x/integrations@1.127.0": {
       "integrity": "24db8505946ccb79d0c26a92188e1c3a68cf9b41c8dab449db5b2504137bdd07",
       "dependencies": [
@@ -278,6 +285,7 @@
       "integrity": "35edcc2ce963cd52dab09c6928f4c0b10a63c569b8dae07e4eeb40461e0647df",
       "dependencies": [
         "jsr:@hono/hono",
+        "jsr:@spy4x/email@^1.129.1",
         "jsr:@spy4x/net@^1.129.1",
         "jsr:@spy4x/time@^1.129.1",
         "jsr:@spy4x/validation@^1.129.1",
