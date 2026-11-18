@@ -1686,9 +1686,27 @@ Deno.test("a group's first log row is dated when the group was made: hours or we
 })
 
 // Keep this test last: it drops the templates every test above clones.
-Deno.test("the run drops its template databases and a dead run's stale ones, and nothing else", async () => {
-  // A filtered run may have built none, and this test must always have one to drop.
-  await migratedTemplate()
+Deno.test("the run drops each clone, its template databases and a dead run's stale ones, and nothing else", async () => {
+  /** Runs `body` on a clone and answers the clone's name. */
+  const cloneOf = async (body: () => void) => {
+    let name = ""
+    await withSchema(async (sql) => {
+      const [row] = await sql<{ name: string }[]>`SELECT current_database() AS name`
+      name = row.name
+      body()
+    }).catch((error) => expect(error.message).toBe("failed on purpose"))
+    expect(name).not.toBe("")
+    return name
+  }
+  const passed = await cloneOf(() => {})
+  const failed = await cloneOf(() => {
+    throw new Error("failed on purpose")
+  })
+  expect(await existingDatabases([passed, failed])).toEqual([])
+
+  // Each fixture was built once, however many tests started from it.
+  expect(runTemplates).toHaveLength(templates.size)
+
   const aged = (prefix: string, hours: number) => {
     const createdAt = (Date.now() - hours * 60 * 60_000).toString(16).padStart(12, "0")
     return `${prefix}${createdAt}${"0".repeat(20)}`
