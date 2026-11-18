@@ -1,6 +1,6 @@
 // A feature page exists in every language the site serves: its words are keys of the `site`
 // catalog, named in `features-data.tsx`.
-import type { ComponentChildren, JSX } from "preact"
+import type { JSX } from "preact"
 import type { Context } from "@spy4x/preact-server"
 import type { Language } from "@domain/identity"
 import type { Translator } from "@spy4x/platform/universal/i18n"
@@ -12,7 +12,9 @@ import { FeatureCard } from "@spy4x/preact-ui/feature-card"
 import { useFormat } from "@spy4x/preact-ui/format"
 import { OnThisPage } from "@spy4x/preact-ui/on-this-page"
 import { breadcrumbListJsonLd, faqPageJsonLd } from "@spy4x/platform/universal/seo"
+import { ALTERNATIVES } from "../../../alternatives-data.ts"
 import { Band } from "../../../components/band.tsx"
+import { HEADING, LINK, Section } from "../../../components/page-section.tsx"
 import { FactList, NotYetList } from "../../../components/features-section.tsx"
 import {
   type Feature,
@@ -135,41 +137,6 @@ function CodePath({ path }: { path: string }) {
   )
 }
 
-const HEADING =
-  `scroll-mt-16 text-2xl font-semibold tracking-tight text-balance break-words hyphens-auto`
-
-const LINK =
-  `inline-flex min-h-11 items-center gap-1 font-medium text-primary underline-offset-4 hover:underline`
-
-/** A section's `h2`, with a "Link to this section" link shown on hover and on focus. */
-function SectionHeading({ id, children }: { id: string; children: ComponentChildren }) {
-  const { t } = useSite()
-  return (
-    <div class="group/heading flex items-baseline gap-2">
-      <h2 id={`${id}-title`} class={HEADING}>{children}</h2>
-      <a
-        href={`#${id}`}
-        aria-label={t.t(`FeaturePage.sectionLink`)}
-        class="rounded-sm px-1 text-muted opacity-0 group-hover/heading:opacity-100 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-focus [@media(hover:none)]:opacity-100"
-      >
-        <span aria-hidden="true">#</span>
-      </a>
-    </div>
-  )
-}
-
-/** One section of the page, labelled by its heading. */
-function Section(
-  { id, label, children }: { id: string; label: string; children: ComponentChildren },
-) {
-  return (
-    <section id={id} aria-labelledby={`${id}-title`} class="flex scroll-mt-16 flex-col gap-4">
-      <SectionHeading id={id}>{label}</SectionHeading>
-      {children}
-    </section>
-  )
-}
-
 /**
  * The page in its fixed order: trail, heading, date, answer, then What you get, How it works,
  * Limits and Questions, each only when it has something to say, then the other features. From
@@ -184,6 +151,7 @@ function FeaturePageBody({ page, demo }: { page: FeaturePage; demo: string }): J
   const code = page.code ?? feature.code.href
   const drawn = new Set(sections.map(({ id }) => id))
   const label = (id: string) => sections.find((section) => section.id === id)?.label ?? ``
+  const comparison = ALTERNATIVES.find(({ features }) => features.includes(page.slug))
   return (
     <>
       <article
@@ -214,6 +182,20 @@ function FeaturePageBody({ page, demo }: { page: FeaturePage; demo: string }): J
               {t.t(`FeaturePage.demo`)} <IconArrowRight class="size-4" aria-hidden="true" />
             </a>
           </p>
+          {comparison && (
+            <p class="text-pretty text-muted" data-e2e="feature-page-comparison">
+              {rich(`FeaturePage.comingFrom`, {
+                compare: (text) => (
+                  <a
+                    href={href(`/alternatives/${comparison.slug}`)}
+                    class="font-medium text-primary underline underline-offset-4"
+                  >
+                    {text}
+                  </a>
+                ),
+              }, { name: comparison.competitor })}
+            </p>
+          )}
         </header>
         <div class="mt-8 xl:col-start-3 xl:row-span-2 xl:row-start-1 xl:mt-0">
           <OnThisPage
@@ -310,7 +292,7 @@ function OtherFeatures({ current }: { current: string }): JSX.Element {
 }
 
 /** The 404 of an address with no feature page, and the way to every feature. */
-function renderNotFound(ctx: Context<State>): Response | Promise<Response> {
+export function renderNotFound(ctx: Context<State>): Response | Promise<Response> {
   const t = siteTranslator(ctx.state.language)
   return ctx.render(
     <SiteFrame

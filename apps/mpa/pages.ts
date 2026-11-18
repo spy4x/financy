@@ -10,6 +10,13 @@ import { CHANGELOG_HEAD } from "./routes/[[lang]]/changelog.tsx"
 import { DOCS_HEAD } from "./routes/[[lang]]/docs/index.tsx"
 import { docTitle } from "./routes/[[lang]]/docs/[slug].tsx"
 import { FEATURE_PAGES, featurePageIn, featurePath } from "./features-data.tsx"
+import {
+  alternativeIn,
+  alternativePath,
+  ALTERNATIVES,
+  ALTERNATIVES_UPDATED,
+} from "./alternatives-data.ts"
+import { ALTERNATIVES_HEAD } from "./routes/[[lang]]/alternatives/index.tsx"
 import { siteEnglishText } from "@ui/site-text.ts"
 
 /** One public page, as `sitemap.xml` and `llms.txt` describe it. */
@@ -71,6 +78,22 @@ const FEATURE_SITE_PAGES: readonly SitePage[] = FEATURE_PAGES.map((keys) => {
 })
 
 /**
+ * The comparisons' hub, dated by its newest comparison, then every comparison
+ * (`/alternatives/<slug>`), each dated by the day its rows were checked.
+ */
+const ALTERNATIVE_SITE_PAGES: readonly SitePage[] = [
+  sitePage(
+    `/alternatives`,
+    ALTERNATIVES_HEAD,
+    ALTERNATIVES_UPDATED,
+  ),
+  ...ALTERNATIVES.map((keys) => {
+    const page = alternativeIn(siteEnglishText(), keys)
+    return sitePage(alternativePath(page.slug), page, page.checked)
+  }),
+]
+
+/**
  * The website's public pages, in the order a visitor meets them. It lives apart from `site.tsx`
  * because it reads every page's head, and every page imports `site.tsx`. `/pricing` is left out
  * while it still describes Seed: #87 rewrites it for Financy and lists it again.
@@ -79,6 +102,7 @@ export const SITE_PAGES: readonly SitePage[] = [
   sitePage(`/`, HOME_HEAD, HOME_UPDATED),
   sitePage(`/features`, FEATURES_HEAD, FEATURES_UPDATED),
   ...FEATURE_SITE_PAGES,
+  ...ALTERNATIVE_SITE_PAGES,
   sitePage(API_DOCS_PATH, API_DOCS_HEAD, API_DOCS_HEAD.updated, true),
   sitePage(DOCS_PATH, DOCS_HEAD, day(DOC_PAGES.map(({ updated }) => updated).sort().at(-1)), true),
   ...DOC_PAGES,
