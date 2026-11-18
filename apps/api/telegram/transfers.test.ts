@@ -757,6 +757,26 @@ describe(`/transfer in the Telegram bot`, () => {
       expect(bot.buttons()).toHaveLength(PICK_MAX + 1)
     })
 
+    it(`asks for the sent amount in the from account's currency, naming that account`, async () => {
+      const bot = transferBot()
+
+      await picked(bot, bot.f.cash, bot.f.wallet)
+
+      expect(bot.shown().at(-1)).toBe(EN.askSent(bot.f.cash.currency, bot.f.cash.name))
+    })
+
+    it(`refuses a from account archived before the to account is picked`, async () => {
+      const bot = transferBot()
+      await bot.send(`/transfer`)
+      await bot.press(bot.data(label(bot.f.cash)))
+      bot.archive(bot.f.cash.id)
+
+      await bot.press(bot.data(label(bot.f.savings)))
+
+      expect(bot.shown().at(-1)).toBe(EN.unavailable)
+      expect(bot.draft().toAccountId).toBeNull()
+    })
+
     it(`keeps every button's data within Telegram's 64 bytes`, async () => {
       const bot = transferBot({ ownerSelection: { groupId: HOME, version: 0 } })
       const sizes: number[] = []
@@ -1329,6 +1349,45 @@ describe(`/transfer in the Telegram bot`, () => {
 
       expect(bot.shown().at(-1)).toBe(EN.stale)
       expect(bot.draft()).toEqual(draft)
+    })
+
+    it(`reads an entry's draft under a transfer button's tag as no draft`, async () => {
+      const bot = transferBot()
+      await bot.send(`/transfer`)
+      const cancel = bot.data(EN.cancel)
+      const { id } = bot.draft()
+      await bot.send(`/expense 12.50`)
+      bot.patchDraft({ id })
+
+      await bot.press(cancel)
+
+      expect(bot.shown().at(-1)).toBe(EN.stale)
+      expect(bot.draft().kind).toBeDefined()
+    })
+
+    it(`reads a transfer's draft under an entry button's tag as no draft`, async () => {
+      const bot = transferBot()
+      await bot.send(`/expense 12.50`)
+      const entrySave = bot.data(EN.save)
+      const { id } = bot.draft()
+      await bot.send(`/transfer`)
+      bot.patchDraft({ id })
+
+      await bot.press(entrySave)
+
+      expect(bot.shown().at(-1)).toBe(entryText(`en`).stale)
+      expect([...bot.transactions.transactions.values()]).toEqual([])
+    })
+
+    it(`reads a stored draft marked for another talk as no draft`, async () => {
+      const bot = transferBot()
+      await bot.send(`/transfer`)
+      const cash = bot.data(label(bot.f.cash))
+      bot.patchDraft({ talk: `entry` })
+
+      await bot.press(cash)
+
+      expect(bot.shown().at(-1)).toBe(EN.stale)
     })
 
     it(`keeps typed text out of the talk /transfer replaced`, async () => {
