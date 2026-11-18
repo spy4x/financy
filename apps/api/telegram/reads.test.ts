@@ -647,6 +647,17 @@ describe(`who may read a household`, () => {
 
       expect(reply).toBe(EN.t(`TelegramBot.notMember`))
     })
+
+    it(`${command} does not call another failure a lost membership`, async () => {
+      const bot = readBot({
+        accounts: [cash()],
+        afterSelection: () => {
+          throw new GroupError(`ROLE_INSUFFICIENT`, `Not allowed`)
+        },
+      })
+
+      await expect(bot.ask(command)).rejects.toThrow(`Not allowed`)
+    })
   }
 
   it(`names the household it read, so a person in several knows which one answered`, async () => {
