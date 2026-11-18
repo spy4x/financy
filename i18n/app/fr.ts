@@ -2757,7 +2757,7 @@ export default {
     "Taux de change (1 unité de la devise du compte en devise principale)",
   "TransactionSpreadsheet.rateDate": "Date du taux",
   "TransactionSpreadsheet.rateSource": "Source du taux",
-  "TransactionSpreadsheet.accountAmount": "Montant sur le compte",
+  "TransactionSpreadsheet.accountAmount": "Montant en devise du compte",
   "TransactionSpreadsheet.accountCurrency": "Devise du compte",
   "TransactionSpreadsheet.addedBy": "Ajouté par",
   "TransferSpreadsheet.date": "Date",

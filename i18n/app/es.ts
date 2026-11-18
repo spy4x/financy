@@ -2701,7 +2701,7 @@ export default {
   "TransferSpreadsheet.toAccount": "Cuenta de destino",
   "TransferSpreadsheet.receivedAmount": "Importe recibido",
   "TransferSpreadsheet.receivedCurrency": "Moneda recibida",
-  "TransferSpreadsheet.impliedRate": "Tipo implícito (recibido por 1 unidad enviada)",
+  "TransferSpreadsheet.impliedRate": "Tipo de cambio implícito (recibido por cada unidad enviada)",
   "TransferSpreadsheet.note": "Concepto",
   "GroupSpreadsheets.yes": "Sí",
   "GroupSpreadsheets.no": "No",
