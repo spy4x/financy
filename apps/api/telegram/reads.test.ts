@@ -381,6 +381,31 @@ describe(`/balance in the Telegram bot`, () => {
     expect(reply).toContain(EN.t(`TelegramBot.moreCurrencies`, { count: 4 }))
   })
 
+  it(`shows the total and the count alone when every account is archived`, async () => {
+    const bot = readBot({
+      accounts: [account(`Old`, `USD`, { startingBalance: 2_500, archivedAt: AT })],
+    })
+
+    const reply = await bot.ask(`/balance`)
+
+    expect(reply.split(`\n`)).toEqual([
+      iso(`Home`),
+      `Total: ${usd(2_500)}`,
+      EN.t(`AccountWidgets.archived`, { count: 1 }),
+    ])
+  })
+
+  it(`writes amounts in the person's region format, else in Telegram's language`, async () => {
+    const german = iso(formatMoney(10_000, `USD`, `de`, { decimals: 2 }))
+
+    const saved = await readBot({ accounts: [cash()], locale: `de` }).ask(`/balance`)
+    const reported = await readBot({ accounts: [cash()] })
+      .ask(`/balance`, TELEGRAM_USER_ID, `de`)
+
+    expect(saved).toContain(`Total: ${german}`)
+    expect(reported).toContain(german)
+  })
+
   it(`says the household has no account when it has none`, async () => {
     const bot = readBot()
 
@@ -554,6 +579,25 @@ describe(`/month in the Telegram bot`, () => {
     expect(reply).toContain(EN.t(`MoneyWidgets.spendingTooLarge`))
     expect(reply).toContain(EN.t(`MoneyWidgets.netTooLarge`))
     expect(reply).not.toMatch(/\$/)
+  })
+})
+
+describe(`/month when only the ranking is too large`, () => {
+  it(`keeps the figures and lists no category`, async () => {
+    const dollars = cash()
+    const first = category(`First`, CategoryKind.EXPENSE)
+    const second = category(`Second`, CategoryKind.EXPENSE)
+    const refunded = category(`Refunded`, CategoryKind.EXPENSE)
+    const bot = readBot({ accounts: [dollars], categories: [first, second, refunded] })
+    await bot.entry(dollars, first, TransactionKind.EXPENSE, Number.MAX_SAFE_INTEGER)
+    await bot.entry(dollars, second, TransactionKind.EXPENSE, Number.MAX_SAFE_INTEGER)
+    await bot.entry(dollars, refunded, TransactionKind.INCOME, Number.MAX_SAFE_INTEGER)
+
+    const reply = await bot.ask(`/month`)
+
+    expect(reply).toContain(`Spending: ${usd(Number.MAX_SAFE_INTEGER)}`)
+    expect(reply).toContain(EN.t(`MoneyWidgets.spendingTooLarge`))
+    expect(reply).not.toContain(iso(`First`))
   })
 })
 
