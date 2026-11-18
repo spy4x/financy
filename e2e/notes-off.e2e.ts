@@ -83,22 +83,21 @@ test.describe("the notes switched off", () => {
       const field = page.locator(`[data-e2e=search]`).getByRole(`combobox`)
       await page.keyboard.press(`Control+k`)
       await expect(field).toBeFocused()
-      const palette = page.locator(`[data-e2e=search]`)
-      // New group matches neither query, so its row going away shows the list followed the query.
-      const newGroup = palette.getByRole(`option`, { name: `New group`, exact: true })
-      await expect(newGroup).toBeVisible()
-      const listed = await paletteRows(page)
-      for (const query of [`note`, `tag`]) {
-        await field.fill(``)
-        await expect(newGroup).toBeVisible()
+      // ">" lists every command, Go to included. Theme is listed there and for none of the queries
+      // below, so its row going away shows the list followed the query.
+      const theme = page.locator(`[data-e2e=search]`).getByRole(`option`, {
+        name: `Theme`,
+        exact: true,
+      })
+      const listed: string[] = []
+      for (const query of [``, `note`, `tag`]) {
+        await field.fill(`>`)
+        await expect(theme).toBeVisible()
+        listed.push(...await paletteRows(page))
         await field.fill(query)
-        await expect(newGroup).toHaveCount(0)
+        await expect(theme).toHaveCount(0)
         listed.push(...await paletteRows(page))
       }
-      // Only ">" lists every command, Go to included; Theme, absent before it, shows it has arrived.
-      await field.fill(`>`)
-      await expect(palette.getByRole(`option`, { name: `Theme`, exact: true })).toBeVisible()
-      listed.push(...await paletteRows(page))
       expect(listed.filter((row) => NOTES_ROW.test(row))).toEqual([])
     } finally {
       await cleanup(request, email)
