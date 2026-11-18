@@ -45,7 +45,18 @@ The ZIP has three kinds of file:
 
 A group's owner downloads the group's own spreadsheets apart from this, from the group: one CSV per
 aggregate, also in UTF-8 with a byte order mark, its headings in the person's language
-([Make it exportable](aggregate-lifecycle.md#make-it-exportable)).
+([Make it exportable](aggregate-lifecycle.md#make-it-exportable)). Financy adds three:
+
+- `accounts.csv`: each live account with its starting balance and its balance today, the one the
+  accounts screen shows;
+- `categories.csv`: each category, a subcategory naming its parent;
+- `budgets.csv`: a row per category for each month a limit applies, with the limit and that month's
+  spending as the Budgets screen shows them, in the limit's currency. It runs from the earliest
+  limit through the household's current month, at most the last 240 months. Envelope figures are
+  not in it.
+
+Every amount is an exact decimal in its currency's own decimals. A balance too large for a safe
+integer is left empty rather than rounded.
 
 It holds only what is about the person or made by them, never another person's data or a secret:
 

@@ -16,7 +16,10 @@ import { makeRecurringEntries } from "@server/jobs/recurring-entries.ts"
 import { createPostgresAuthStore } from "@spy4x/server/auth/postgres"
 import { createListCrypto, DEV_SUBSCRIBERS_SECRET } from "@server/subscribers/subscribers.ts"
 import { createPostgresSubscriberStore } from "@spy4x/server/subscribers/postgres"
-import { AppDbBase } from "../../apps/api/services/db-base.ts"
+import { PostgresGroupPorter } from "@server/groups/postgres-group-porter.ts"
+import { parseCsv } from "@spy4x/platform/universal/csv"
+import { unzipSync } from "fflate"
+import { AppDbBase, PORTABLE_AGGREGATES } from "../../apps/api/services/db-base.ts"
 import { createBudgetMonthHandler } from "../../apps/api/features/budgets/handlers.ts"
 import { BudgetBand, BudgetLimitSource, BudgetMonthQuery } from "@domain/budgets"
 import { createApiApp } from "../../apps/api/app.ts"
@@ -525,6 +528,43 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
         .toHaveLength(1)
       expect(bands.filter((band) => band === BudgetBand.GREEN)).toHaveLength(1)
     }
+  })
+})
+
+Deno.test("the demo household's spreadsheets hold its accounts, categories and budgets", async () => {
+  await withSchema(async (sql) => {
+    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+    const [{ groupId, userId }] = await sql<{ groupId: string; userId: number }[]>`
+      SELECT b.group_id, MIN(m.user_id) AS user_id FROM budgets b
+      JOIN group_members m ON m.group_id = b.group_id
+      GROUP BY b.group_id ORDER BY b.group_id LIMIT 1
+    `
+    const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
+    const file = await porter.exportGroup(groupId, userId, undefined, {
+      format: "csv",
+      language: "de",
+    })
+    const pieces: BlobPart[] = []
+    for await (const piece of file.chunks) pieces.push(piece as BlobPart)
+    const zip = unzipSync(new Uint8Array(await new Blob(pieces).arrayBuffer()))
+    const rowsOf = (name: string) => {
+      const parsed = parseCsv(new TextDecoder().decode(zip[name]))
+      if (!parsed.ok) throw new Error(`${name} is not a CSV file`)
+      return parsed.value
+    }
+
+    const [accountHeadings, ...accounts] = rowsOf("accounts.csv")
+    expect(accountHeadings[4]).toBe("Kontostand heute")
+    expect(accounts.length).toBeGreaterThan(0)
+    const [categoryHeadings, ...categories] = rowsOf("categories.csv")
+    expect(categoryHeadings[2]).toBe("Oberkategorie")
+    const names = new Set(categories.map(([name]) => name))
+    const parents = categories.flatMap(([_name, _kind, parent]) => parent === "" ? [] : [parent])
+    expect(parents.length).toBeGreaterThan(0)
+    for (const parent of parents) expect(names.has(parent)).toBe(true)
+    const [budgetHeadings, ...budgets] = rowsOf("budgets.csv")
+    expect(budgetHeadings[3]).toBe("Währung des Limits")
+    expect(budgets.length).toBeGreaterThan(0)
   })
 })
 
