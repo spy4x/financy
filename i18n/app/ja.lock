@@ -61,6 +61,12 @@ AccountMessages.limit	17fb67cd2cf41449
 AccountMessages.load	b6339ecf82de2d2f
 AccountMessages.nameRequired	e23f1b00c513d649
 AccountMessages.save	55d53fbfd8e41661
+AccountSpreadsheet.archived	bdb86505f8062d15
+AccountSpreadsheet.balanceToday	4ca0737c9fbf17eb
+AccountSpreadsheet.currency	3ac1a9ec4fa7a9fa
+AccountSpreadsheet.name	dcd1d5223f73b3a9
+AccountSpreadsheet.startingBalance	1f3a9c56ba9fb50e
+AccountSpreadsheet.type	baaddf70fb5d432b
 AccountWidgets.archived	04fd66d8185f1bfe
 AccountWidgets.error	6e9b8ca31d37142e
 AccountWidgets.link	7e2dae92348b8b7c
@@ -333,6 +339,12 @@ BudgetDialog.underChildren	b772390cfa978961
 BudgetRemove.confirm	a21627c6bf0bf717
 BudgetRemove.message	19b41c87608d1a0a
 BudgetRemove.title	5a3c68775c14150d
+BudgetSpreadsheet.category	292c06f0045a45d0
+BudgetSpreadsheet.currency	1797e779ef7e9107
+BudgetSpreadsheet.leftOut	4d73464bb5d63546
+BudgetSpreadsheet.limit	674b0ed54bf76673
+BudgetSpreadsheet.month	310ca503ef36f177
+BudgetSpreadsheet.spent	679652fd13c58c93
 BudgetWidgets.allOnTrack	fa186513a482c946
 BudgetWidgets.error	b1ec669f596551ea
 BudgetWidgets.link	8a6f1bf072c774c5
@@ -475,6 +487,10 @@ CategoryMessages.save	428501be6e00cdd3
 CategoryMessages.treeChanged	09f9bcd62fd5acb4
 CategoryParts.expense	a0417ba8010e8728
 CategoryParts.income	51595db919140d6d
+CategorySpreadsheet.archived	bdb86505f8062d15
+CategorySpreadsheet.kind	f5387f9bb6ed7031
+CategorySpreadsheet.name	dcd1d5223f73b3a9
+CategorySpreadsheet.parent	68cc64147838206b
 CodeStep.dead	deefe8573b168783
 CodeStep.deadTitle	1d05b7ddaf5d58d2
 CodeStep.differentEmail	b7337027ef1f69f1
@@ -912,8 +928,10 @@ GroupPicker.menu	4e8d467dd755ee8e
 GroupPicker.new	df796c655f6f5ed4
 GroupPicker.sheetHeading	34ca0e76608842ff
 GroupPicker.tip	7de5ae49b9765b99
+GroupSpreadsheets.no	1ea442a134b2a184
 GroupSpreadsheets.notSpreadsheets	cadd23232e3de41d
 GroupSpreadsheets.readme	541e4f79676f4022
+GroupSpreadsheets.yes	85a39ab345d672ff
 GroupTransfer.cancel	19766ed6ccb2f4a3
 GroupTransfer.explanation	592e57b0d0602343
 GroupTransfer.failed	952fc777dd1c025d
