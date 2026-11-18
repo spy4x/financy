@@ -88,7 +88,8 @@ like every job.
 
 A product edits one file, `apps/api/telegram/commands.ts`. Each command has a name, the description
 the command menu shows, and a handler that gets the linked person. Financy's commands are
-`/expense` and `/income` (`apps/api/telegram/entries.ts`, below); one of them looks like this:
+`/expense` and `/income` (`apps/api/telegram/entries.ts`, below) and `/balance` and `/month`
+(`apps/api/telegram/reads.ts`, below); one of them looks like this:
 
 ```ts
 {
@@ -122,6 +123,25 @@ The buses refuse a viewer, a removed member, another household's account or cate
 plan, and the bot says why in one line. A talk lives 15 minutes; a button of an older or finished
 talk says so and changes nothing. The entry's id is made when the talk starts, so a double tap on
 Save saves once.
+
+## Read balances and the month
+
+`/balance` and `/month` answer for the selected household, name it on the first line and change
+nothing. Any member can use them, a viewer included. Their figures come from the reads behind the
+overview's cards, so the chat and the app show the same numbers.
+
+- `/balance` gives the household total, then each open account in its own currency. Archived
+  accounts are in the total and only counted. A long list ends in "And 3 more accounts", because
+  Telegram refuses a message over 4096 characters.
+- `/month` gives this month's income, spending and net, in the household's time zone, and the five
+  categories that spent most.
+- A converted figure says "about" and names the date of its rate or coin price. A currency with no
+  rate is named and never counted as zero. A figure too large to be exact gets a sentence instead
+  of a number.
+- Sent in the middle of `/expense`, either command answers and the talk goes on: the next typed
+  amount still belongs to the draft.
+
+## Rules for every command
 
 - Put `account.actor` on every command and query. The buses check it as for any other client.
 - Commands answer in a private chat only. In a group, the bot says so and runs nothing, because
