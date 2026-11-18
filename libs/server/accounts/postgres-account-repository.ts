@@ -24,6 +24,7 @@ import {
 import { writeAuditEvent } from "@server/groups/audit.ts"
 import type { AuditDetails, GroupRole } from "@domain/groups"
 import { assertRoomFor } from "@domain/billing"
+import { accountBalance } from "./account-balance.ts"
 
 /** A row as postgres.js reads it: the two BIGINT columns come as decimal text. */
 interface AccountRow extends postgres.Row, Omit<Account, "startingBalance"> {
@@ -86,7 +87,8 @@ async function assertWriterNow(
  * write of the same household wait, then count this one.
  *
  * The balance is computed here, in SQL, for one household: the starting balance plus the
- * account's live entries and transfers dated on or before the day asked (R9, {@link balanceOf}).
+ * account's live entries and transfers dated on or before the day asked (R9,
+ * {@link accountBalance}).
  * An account's currency is fixed once an entry or a transfer names it (R10), and an account an
  * entry or a transfer names, live or in the trash, is archived rather than deleted.
  */
@@ -95,7 +97,7 @@ export class PostgresAccountRepository implements AccountRepository {
 
   async list(groupId: string, deleted = false, on?: string): Promise<ListedAccount[]> {
     const rows = await this.sql<ListedAccountRow[]>`
-      SELECT ${this.columns()}, ${this.balanceOf(on)} AS balance
+      SELECT ${this.columns()}, ${accountBalance(this.sql, on)} AS balance
       FROM accounts
       WHERE group_id = ${groupId}
         AND ${deleted ? this.sql`deleted_at IS NOT NULL` : this.sql`deleted_at IS NULL`}
@@ -107,7 +109,7 @@ export class PostgresAccountRepository implements AccountRepository {
   async get(groupId: string, id: string, on?: string): Promise<ListedAccount | null> {
     const row = (
       await this.sql<ListedAccountRow[]>`
-        SELECT ${this.columns()}, ${this.balanceOf(on)} AS balance
+        SELECT ${this.columns()}, ${accountBalance(this.sql, on)} AS balance
         FROM accounts
         WHERE id = ${id} AND group_id = ${groupId} AND deleted_at IS NULL
       `
@@ -439,36 +441,6 @@ export class PostgresAccountRepository implements AccountRepository {
     )[0]
     if (!current) throw new AccountError("ACCOUNT_NOT_FOUND", "Account not found")
     throw new AccountVersionConflictError(current.version)
-  }
-
-  /**
-   * The balance of the `accounts` row in scope, as decimal text: the starting balance plus the
-   * account's live entries, minus what its live transfers sent and plus what they brought in (R5),
-   * all dated on or before `on` (`YYYY-MM-DD`), by default today in the household's time zone (R9,
-   * R14).
-   */
-  private balanceOf(on?: string) {
-    const day = on === undefined
-      ? this.sql`(
-          SELECT (CURRENT_TIMESTAMP AT TIME ZONE groups.time_zone)::date
-          FROM groups WHERE groups.id = accounts.group_id
-        )`
-      : this.sql`${on}::date`
-    return this.sql`(
-      accounts.starting_balance + COALESCE((
-        SELECT sum(transactions.account_amount) FROM transactions
-        WHERE transactions.account_id = accounts.id AND transactions.deleted_at IS NULL
-          AND transactions.date <= ${day}
-      ), 0) - COALESCE((
-        SELECT sum(transfers.sent_amount) FROM transfers
-        WHERE transfers.from_account_id = accounts.id AND transfers.deleted_at IS NULL
-          AND transfers.date <= ${day}
-      ), 0) + COALESCE((
-        SELECT sum(transfers.received_amount) FROM transfers
-        WHERE transfers.to_account_id = accounts.id AND transfers.deleted_at IS NULL
-          AND transfers.date <= ${day}
-      ), 0)
-    )::text`
   }
 
   private columns() {
