@@ -383,8 +383,14 @@ Deno.test(`the budgets spreadsheet ends at the household's current month in its 
 Deno.test(`the budgets spreadsheet has no row for a limit that starts after the current month`, async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
-    await h.limit(await h.category(`Food`), `2026-04`, 50000, `USD`)
+    await h.limit(await h.category(`Trips`), `2026-04`, 50000, `USD`)
     expect(await budgetRows(sql, h.groupId)).toEqual([])
+
+    // Nor once another category's limit has started the run.
+    await h.limit(await h.category(`Food`), `2026-03`, 50000, `USD`)
+    expect((await budgetRows(sql, h.groupId)).map(([month, name]) => [month, name])).toEqual([
+      [`2026-03`, `Food`],
+    ])
   })
 })
 
