@@ -288,7 +288,7 @@ export default {
   "FeatureTelegramBot.fact2":
     "/balance y /month no cambian nada, y también puede usarlos un lector",
   "FeatureTelegramBot.fact3":
-    "Los comandos solo funcionan en un chat privado; en un grupo, el bot te pide que le escribas en privado",
+    "/expense, /income, /balance y /month solo funcionan en un chat privado; en un grupo, el bot te pide que le escribas en privado",
   "FeatureTelegramBot.fact4":
     "Para vincularlo hace falta un código de un solo uso que dura 10 minutos",
   "FeatureTelegramBot.notYetTransfer": "Registrar una transferencia desde el bot",
@@ -626,10 +626,10 @@ export default {
     "Envía /expense o /income y el bot te pide el importe. Con los botones cambias la cuenta o la categoría, y «Guardar» anota el movimiento. /balance y /month consultan tus cifras y no cambian nada.",
   "FeaturePageTelegramBot.selfHostQuestion": "¿El bot funciona en un servidor propio?",
   "FeaturePageTelegramBot.selfHostAnswer":
-    "Sí. Crea un bot con BotFather, de Telegram, y pon su token en los ajustes de tu servidor. Mientras no haya un token, el bot sigue apagado y el resto de Financy funciona sin él.",
+    "Sí. Crea un bot con BotFather, de Telegram, y pon su token, su nombre de usuario y un secreto de webhook en los ajustes de tu servidor. Mientras no haya un token, el bot sigue apagado y el resto de Financy funciona sin él.",
   "FeaturePageTelegramBot.groupQuestion": "¿Puedo usar el bot en un chat de grupo?",
   "FeaturePageTelegramBot.groupAnswer":
-    "No. Los comandos solo funcionan en un chat privado, porque una respuesta mostraría las cifras de tu hogar a todo el grupo.",
+    "No. /expense, /income, /balance y /month solo funcionan en un chat privado, porque una respuesta mostraría las cifras de tu hogar a todo el grupo.",
   "FeaturePageTelegramBot.transferQuestion": "¿Puedo registrar una transferencia desde el bot?",
   "FeaturePageTelegramBot.transferAnswer":
     "Todavía no. El bot añade gastos e ingresos. Las transferencias entre cuentas se registran en la app de Financy.",

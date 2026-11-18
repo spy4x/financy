@@ -274,7 +274,7 @@ export default {
     "يحفظ الأمر ‎/expense 12.50 المصروف فورًا إن كان آخر مصروف لك يحدّد الفئة",
   "FeatureTelegramBot.fact2": "لا يغيّر الأمران ‎/balance و‎/month شيئًا، ويستطيع القارئ استخدامهما أيضًا",
   "FeatureTelegramBot.fact3":
-    "تعمل الأوامر في المحادثة الخاصة فقط، وفي المجموعات يطلب منك البوت مراسلته في محادثة خاصة",
+    "تعمل الأوامر ‎/expense و‎/income و‎/balance و‎/month في المحادثة الخاصة فقط، وفي المجموعات يطلب منك البوت مراسلته في محادثة خاصة",
   "FeatureTelegramBot.fact4": "يتطلب الربط رمزًا لمرة واحدة صالحًا لمدة 10 دقائق",
   "FeatureTelegramBot.notYetTransfer": "تسجيل تحويل من البوت",
   "FeatureTelegramBot.notYetVoice": "رسائل صوتية وصور إيصالات تتحوّل إلى معاملات",
@@ -595,10 +595,10 @@ export default {
     "أرسل ‎/expense أو ‎/income فيسألك البوت عن المبلغ. تغيّر الأزرار الحساب أو الفئة، ويسجّل زر «حفظ» المعاملة. أما ‎/balance و‎/month فيعرضان أرقامك دون تغيير أي شيء.",
   "FeaturePageTelegramBot.selfHostQuestion": "هل يعمل البوت على خادم أستضيفه بنفسي؟",
   "FeaturePageTelegramBot.selfHostAnswer":
-    "نعم. أنشئ بوتًا عبر BotFather في Telegram، وضع رمزه المميز في إعدادات خادمك. وإلى أن تضيف الرمز يبقى البوت معطّلًا، ويعمل باقي Financy دونه.",
+    "نعم. أنشئ بوتًا عبر BotFather في Telegram، وضع رمزه المميز واسم المستخدم الخاص به وسرّ webhook في إعدادات خادمك. وإلى أن تضيف الرمز يبقى البوت معطّلًا، ويعمل باقي Financy دونه.",
   "FeaturePageTelegramBot.groupQuestion": "هل يمكنني استخدام البوت في محادثة جماعية؟",
   "FeaturePageTelegramBot.groupAnswer":
-    "لا. لا تعمل الأوامر إلا في محادثة خاصة، لأن الرد في مجموعة سيكشف أرقام أسرتك لكل من فيها.",
+    "لا. لا تعمل الأوامر ‎/expense و‎/income و‎/balance و‎/month إلا في محادثة خاصة، لأن الرد في مجموعة سيكشف أرقام أسرتك لكل من فيها.",
   "FeaturePageTelegramBot.transferQuestion": "هل يمكنني تسجيل تحويل من البوت؟",
   "FeaturePageTelegramBot.transferAnswer":
     "ليس بعد. يضيف البوت المصروفات والدخل فقط. سجّل التحويل بين الحسابات في تطبيق Financy.",

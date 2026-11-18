@@ -287,7 +287,7 @@ export default {
     "/expense 12,50 salva na hora quando sua última despesa já indica a categoria",
   "FeatureTelegramBot.fact2": "/balance e /month não mudam nada, e até um leitor pode usá-los",
   "FeatureTelegramBot.fact3":
-    "Os comandos só funcionam em chat privado; em grupo, o bot pede que você escreva para ele no privado",
+    "/expense, /income, /balance e /month só funcionam em chat privado; em grupo, o bot pede que você escreva para ele no privado",
   "FeatureTelegramBot.fact4": "A vinculação usa um código de uso único, válido por 10 minutos",
   "FeatureTelegramBot.notYetTransfer": "Registrar uma transferência pelo bot",
   "FeatureTelegramBot.notYetVoice": "Mensagens de voz e fotos de recibos que viram lançamentos",
@@ -616,10 +616,10 @@ export default {
     "Envie /expense ou /income, e o bot pede o valor. Os botões mudam a conta ou a categoria, e Salvar grava o lançamento. /balance e /month mostram seus números e não mudam nada.",
   "FeaturePageTelegramBot.selfHostQuestion": "O bot funciona num servidor que eu mesmo hospedo?",
   "FeaturePageTelegramBot.selfHostAnswer":
-    "Sim. Crie um bot com o BotFather do Telegram e coloque o token dele nas configurações do seu servidor. Enquanto não houver token, o bot fica desligado e o resto do Financy funciona normalmente.",
+    "Sim. Crie um bot com o BotFather do Telegram e coloque o token, o nome de usuário dele e um segredo de webhook nas configurações do seu servidor. Enquanto não houver token, o bot fica desligado e o resto do Financy funciona normalmente.",
   "FeaturePageTelegramBot.groupQuestion": "Posso usar o bot num grupo?",
   "FeaturePageTelegramBot.groupAnswer":
-    "Não. Os comandos só funcionam em chat privado, porque uma resposta mostraria os números da sua família para todo mundo no grupo.",
+    "Não. /expense, /income, /balance e /month só funcionam em chat privado, porque uma resposta mostraria os números da sua família para todo mundo no grupo.",
   "FeaturePageTelegramBot.transferQuestion": "Posso registrar uma transferência pelo bot?",
   "FeaturePageTelegramBot.transferAnswer":
     "Ainda não. O bot adiciona despesas e receitas. Registre transferências entre contas no app do Financy.",

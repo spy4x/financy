@@ -292,7 +292,7 @@ export default {
   "FeatureTelegramBot.fact2":
     "/balance et /month ne modifient rien, et un lecteur peut aussi les utiliser",
   "FeatureTelegramBot.fact3":
-    "Les commandes ne fonctionnent qu’en conversation privée. Dans un groupe, le bot vous invite à lui écrire en privé",
+    "/expense, /income, /balance et /month ne fonctionnent qu’en conversation privée. Dans un groupe, le bot vous invite à lui écrire en privé",
   "FeatureTelegramBot.fact4": "L’association passe par un code à usage unique valable 10 minutes",
   "FeatureTelegramBot.notYetTransfer": "Enregistrer un virement depuis le bot",
   "FeatureTelegramBot.notYetVoice":
@@ -637,10 +637,10 @@ export default {
   "FeaturePageTelegramBot.selfHostQuestion":
     "Le bot fonctionne-t-il sur un serveur que j’héberge moi-même ?",
   "FeaturePageTelegramBot.selfHostAnswer":
-    "Oui. Créez un bot avec BotFather, l’outil de Telegram, et ajoutez son jeton aux paramètres de votre serveur. Tant qu’aucun jeton n’est défini, le bot reste désactivé et le reste de Financy fonctionne sans lui.",
+    "Oui. Créez un bot avec BotFather, l’outil de Telegram, et ajoutez son jeton, son nom d’utilisateur et un secret de webhook aux paramètres de votre serveur. Tant qu’aucun jeton n’est défini, le bot reste désactivé et le reste de Financy fonctionne sans lui.",
   "FeaturePageTelegramBot.groupQuestion": "Puis-je utiliser le bot dans un groupe Telegram ?",
   "FeaturePageTelegramBot.groupAnswer":
-    "Non. Les commandes ne fonctionnent qu’en conversation privée, car une réponse montrerait les chiffres de votre foyer à tout le groupe.",
+    "Non. /expense, /income, /balance et /month ne fonctionnent qu’en conversation privée, car une réponse montrerait les chiffres de votre foyer à tout le groupe.",
   "FeaturePageTelegramBot.transferQuestion": "Puis-je enregistrer un virement depuis le bot ?",
   "FeaturePageTelegramBot.transferAnswer":
     "Pas encore. Le bot ajoute des dépenses et des revenus. Pour enregistrer un virement entre comptes, passez par l’app Financy.",

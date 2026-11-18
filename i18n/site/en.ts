@@ -286,7 +286,7 @@ export default {
     "/expense 12.50 saves at once when your last expense gives the category",
   "FeatureTelegramBot.fact2": "/balance and /month change nothing, and a viewer can use them too",
   "FeatureTelegramBot.fact3":
-    "Commands work only in a private chat; in a group the bot asks you to message it privately",
+    "/expense, /income, /balance and /month work only in a private chat; in a group the bot asks you to message it privately",
   "FeatureTelegramBot.fact4": "Linking takes a one-time code that lasts 10 minutes",
   "FeatureTelegramBot.notYetTransfer": "Recording a transfer from the bot",
   "FeatureTelegramBot.notYetVoice": "Voice notes and receipt photos that become entries",
@@ -612,10 +612,10 @@ export default {
     "Send /expense or /income and the bot asks for the amount. Buttons change the account or the category, and Save writes the entry. /balance and /month read your figures and change nothing.",
   "FeaturePageTelegramBot.selfHostQuestion": "Does the bot work on a server I host myself?",
   "FeaturePageTelegramBot.selfHostAnswer":
-    "Yes. Create a bot with Telegram's BotFather and put its token in your server's settings. Until a token is set, the bot stays off and the rest of Financy works without it.",
+    "Yes. Create a bot with Telegram's BotFather, then put its token, its username and a webhook secret in your server's settings. Until a token is set, the bot stays off and the rest of Financy works without it.",
   "FeaturePageTelegramBot.groupQuestion": "Can I use the bot in a group chat?",
   "FeaturePageTelegramBot.groupAnswer":
-    "No. Commands work only in a private chat, because a reply would show your household's figures to everyone in the group.",
+    "No. /expense, /income, /balance and /month work only in a private chat, because a reply would show your household's figures to everyone in the group.",
   "FeaturePageTelegramBot.transferQuestion": "Can I record a transfer from the bot?",
   "FeaturePageTelegramBot.transferAnswer":
     "Not yet. The bot adds expenses and income. Record a transfer between accounts in the Financy app.",

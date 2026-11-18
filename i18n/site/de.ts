@@ -289,7 +289,7 @@ export default {
     "/expense 12,50 speichert sofort, wenn deine letzte Ausgabe die Kategorie vorgibt",
   "FeatureTelegramBot.fact2": "/balance und /month ändern nichts und stehen auch Betrachtern offen",
   "FeatureTelegramBot.fact3":
-    "Befehle funktionieren nur im privaten Chat; in einer Gruppe bittet dich der Bot, ihm privat zu schreiben",
+    "/expense, /income, /balance und /month funktionieren nur im privaten Chat; in einer Gruppe bittet dich der Bot, ihm privat zu schreiben",
   "FeatureTelegramBot.fact4": "Zum Verknüpfen dient ein Einmalcode, der 10 Minuten gilt",
   "FeatureTelegramBot.notYetTransfer": "Umbuchungen über den Bot eintragen",
   "FeatureTelegramBot.notYetVoice": "Sprachnachrichten und Belegfotos, aus denen Buchungen werden",
@@ -619,10 +619,10 @@ export default {
     "Sende /expense oder /income, und der Bot fragt nach dem Betrag. Über Buttons änderst du Konto oder Kategorie, und „Speichern“ legt die Buchung an. /balance und /month zeigen deine Zahlen und ändern nichts.",
   "FeaturePageTelegramBot.selfHostQuestion": "Funktioniert der Bot auch auf meinem eigenen Server?",
   "FeaturePageTelegramBot.selfHostAnswer":
-    "Ja. Erstelle mit dem BotFather von Telegram einen Bot und trag sein Token in die Einstellungen deines Servers ein. Solange kein Token gesetzt ist, bleibt der Bot aus, und der Rest von Financy läuft ohne ihn.",
+    "Ja. Erstelle mit dem BotFather von Telegram einen Bot und trag sein Token, seinen Benutzernamen und ein Webhook-Secret in die Einstellungen deines Servers ein. Solange kein Token gesetzt ist, bleibt der Bot aus, und der Rest von Financy läuft ohne ihn.",
   "FeaturePageTelegramBot.groupQuestion": "Kann ich den Bot in einem Gruppenchat nutzen?",
   "FeaturePageTelegramBot.groupAnswer":
-    "Nein. Befehle funktionieren nur im privaten Chat, denn sonst sähen alle in der Gruppe die Zahlen deines Haushalts.",
+    "Nein. /expense, /income, /balance und /month funktionieren nur im privaten Chat, denn sonst sähen alle in der Gruppe die Zahlen deines Haushalts.",
   "FeaturePageTelegramBot.transferQuestion": "Kann ich mit dem Bot eine Umbuchung eintragen?",
   "FeaturePageTelegramBot.transferAnswer":
     "Noch nicht. Der Bot trägt Ausgaben und Einnahmen ein. Umbuchungen zwischen Konten erfasst du in der Financy-App.",
