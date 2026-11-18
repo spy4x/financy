@@ -2089,6 +2089,7 @@ TelegramBot.confirmName	4ccb363cd44a5955
 TelegramBot.confirmNameAddress	86ddf21a99423ad4
 TelegramBot.entryStale	c66c8e1b7a92e728
 TelegramBot.expense	a0417ba8010e8728
+TelegramBot.figure	228959acecadf2e1
 TelegramBot.hello	4532677d7510937c
 TelegramBot.helloName	1c14016dbd418f58
 TelegramBot.howToLink	3e9410102d6ae5b4
@@ -2096,11 +2097,14 @@ TelegramBot.income	51595db919140d6d
 TelegramBot.invalid	f83a3234ffb8d5a8
 TelegramBot.linkButton	a6a32dbc5618ea39
 TelegramBot.linked	472c0c007c2096d5
+TelegramBot.moreAccounts	0c3229fe0416b32e
+TelegramBot.moreCurrencies	9b71ac7d823cf8e7
 TelegramBot.needCategory	6ed35be664493b20
 TelegramBot.noAccount	41eb3a26d3e901a7
 TelegramBot.noCategories	f83b36c085d5f159
 TelegramBot.noCategory	5ac67c4f4b3d9f56
 TelegramBot.noHousehold	a49c3122cd3ee951
+TelegramBot.noTotal	177836bd2ac7886e
 TelegramBot.notAmount	99ee9a1e3476a6cf
 TelegramBot.notLinked	b5bfcb21f06fceac
 TelegramBot.notMember	6e08fd66545cc61b

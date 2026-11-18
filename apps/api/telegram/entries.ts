@@ -158,7 +158,7 @@ export function readAmount(
 }
 
 /** `code` when `Intl` knows it as a locale, else `en`. Telegram's language code is untrusted. */
-function knownLocale(code: string | null | undefined): string {
+export function knownLocale(code: string | null | undefined): string {
   try {
     return (code && Intl.NumberFormat.supportedLocalesOf(code)[0]) || `en`
   } catch {

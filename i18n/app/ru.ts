@@ -2201,6 +2201,20 @@ export default {
   "TelegramBot.planFull": "В тарифе этой семьи нет места для новых операций.",
   "TelegramBot.entryStale":
     "Эта операция уже завершена или устарела. Отправьте /expense или /income, чтобы начать новую.",
+  "TelegramBot.figure": "{label}: {value}",
+  "TelegramBot.noTotal": "Итога пока нет: ни один счёт не удалось пересчитать в основную валюту.",
+  "TelegramBot.moreAccounts": {
+    "one": "И ещё {count} счёт",
+    "few": "И ещё {count} счёта",
+    "many": "И ещё {count} счетов",
+    "other": "И ещё {count} счёта",
+  },
+  "TelegramBot.moreCurrencies": {
+    "one": "ещё {count}",
+    "few": "ещё {count}",
+    "many": "ещё {count}",
+    "other": "ещё {count}",
+  },
   "UndoToast.title": "Заметка удалена",
   "UndoToast.deleted": "«{title}» перемещена в удалённые.",
   "UndoToast.deletedUntitled": "Заметка перемещена в удалённые.",

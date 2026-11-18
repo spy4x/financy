@@ -2116,6 +2116,18 @@ export default {
   "TelegramBot.planFull": "El plan de este hogar no tiene sitio para más movimientos.",
   "TelegramBot.entryStale":
     "Este movimiento ya terminó o caducó. Envía /expense o /income para empezar otro.",
+  "TelegramBot.figure": "{label}: {value}",
+  "TelegramBot.noTotal": "Todavía no hay total: no se pudo convertir ninguna de estas cuentas.",
+  "TelegramBot.moreAccounts": {
+    "one": "Y {count} cuenta más",
+    "many": "Y {count} cuentas más",
+    "other": "Y {count} cuentas más",
+  },
+  "TelegramBot.moreCurrencies": {
+    "one": "{count} más",
+    "many": "{count} más",
+    "other": "{count} más",
+  },
   "UndoToast.title": "Nota eliminada",
   "UndoToast.deleted": "Se eliminó «{title}».",
   "UndoToast.deletedUntitled": "Se eliminó la nota.",

@@ -2172,6 +2172,18 @@ export default {
   "TelegramBot.planFull": "Le forfait de ce foyer n'a plus de place pour d'autres opérations.",
   "TelegramBot.entryStale":
     "Cette opération est déjà terminée ou a expiré. Envoyez /expense ou /income pour en commencer une nouvelle.",
+  "TelegramBot.figure": "{label} : {value}",
+  "TelegramBot.noTotal": "Pas encore de total : aucun de ces comptes n’a pu être converti.",
+  "TelegramBot.moreAccounts": {
+    "one": "Et {count} autre compte",
+    "many": "Et {count} autres comptes",
+    "other": "Et {count} autres comptes",
+  },
+  "TelegramBot.moreCurrencies": {
+    "one": "{count} autre",
+    "many": "{count} autres",
+    "other": "{count} autres",
+  },
   "UndoToast.title": "Note supprimée",
   "UndoToast.deleted": "« {title} » a été supprimée.",
   "UndoToast.deletedUntitled": "La note a été supprimée.",

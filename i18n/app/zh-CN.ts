@@ -1713,6 +1713,14 @@ export default {
   "TelegramBot.unavailable": "该账户或分类在这个家庭中不可用。",
   "TelegramBot.planFull": "这个家庭的套餐已没有空间添加更多交易。",
   "TelegramBot.entryStale": "这笔交易已完成或已过期。发送 /expense 或 /income 重新开始。",
+  "TelegramBot.figure": "{label}：{value}",
+  "TelegramBot.noTotal": "暂时算不出合计：这些账户的余额都无法换算。",
+  "TelegramBot.moreAccounts": {
+    "other": "还有 {count} 个账户",
+  },
+  "TelegramBot.moreCurrencies": {
+    "other": "其他 {count} 个币种",
+  },
   "UndoToast.title": "笔记已删除",
   "UndoToast.deleted": "“{title}”已删除。",
   "UndoToast.deletedUntitled": "笔记已删除。",

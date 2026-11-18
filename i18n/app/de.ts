@@ -2049,6 +2049,16 @@ export default {
   "TelegramBot.planFull": "Der Tarif dieses Haushalts hat keinen Platz für weitere Buchungen.",
   "TelegramBot.entryStale":
     "Diese Buchung ist schon abgeschlossen oder abgelaufen. Schick /expense oder /income, um eine neue zu beginnen.",
+  "TelegramBot.figure": "{label}: {value}",
+  "TelegramBot.noTotal": "Eine Summe gibt es noch nicht: Keines dieser Konten ließ sich umrechnen.",
+  "TelegramBot.moreAccounts": {
+    "one": "Und {count} weiteres Konto",
+    "other": "Und {count} weitere Konten",
+  },
+  "TelegramBot.moreCurrencies": {
+    "one": "noch {count} Währung",
+    "other": "noch {count} Währungen",
+  },
   "UndoToast.title": "Notiz gelöscht",
   "UndoToast.deleted": "„{title}“ wurde gelöscht.",
   "UndoToast.deletedUntitled": "Die Notiz wurde gelöscht.",
