@@ -544,7 +544,7 @@ export default {
     "Comparações do Financy com outros apps de controle financeiro. Cada uma diz quando a outra ferramenta é a melhor escolha, com fatos datados e fonte.",
   "Alternatives.h1": "Financy comparado às ferramentas que você conhece",
   "Alternatives.lead":
-    "Cada página diz primeiro quando a outra ferramenta combina mais com você, e liga cada fato sobre ela à documentação da própria ferramenta.",
+    "Cada página diz primeiro quando a outra ferramenta combina mais com você, e cada fato sobre ela tem link para a documentação da própria ferramenta.",
   "Alternative.checked": "Verificado em <time>{date}</time>",
   "Alternative.glance": "Visão rápida",
   "Alternative.caption": "Financy e {name}, lado a lado",
@@ -556,7 +556,7 @@ export default {
   "Alternative.all": "Todas as comparações",
   "AlternativeFirefly.title": "Alternativa ao Firefly III para casais",
   "AlternativeFirefly.description":
-    "O Firefly III dá um só login por administração. No Financy, o casal divide uma família, cada um com o próprio login, em qualquer mistura de moedas.",
+    "O Firefly III dá um só login por administração. No Financy, o casal controla as finanças juntos, cada um com o próprio login, em várias moedas.",
   "AlternativeFirefly.h1": "Uma alternativa ao Firefly III para o controle financeiro de casal",
   "AlternativeFirefly.answer":
     "Fique no Firefly III se você controla o dinheiro sozinho ou quer contabilidade de partidas dobradas. Escolha o Financy se seu parceiro ou parceira deve entrar com o próprio login e seu dinheiro está em várias moedas.",
@@ -591,7 +591,7 @@ export default {
     "Hoje não. O FAQ do Firefly III diz que cada administração fica presa a um só usuário, então o casal divide um usuário e uma senha; um modelo de compartilhamento está planejado. No Financy cada um entra com o próprio login e a própria função, e os dois veem as mesmas contas.",
   "AlternativeFirefly.doubleEntryQuestion": "O Financy usa partidas dobradas como o Firefly III?",
   "AlternativeFirefly.doubleEntryAnswer":
-    "Não. No Financy uma conta guarda dinheiro, uma categoria diz por que ele se moveu, e uma transferência é um único registro com dois lados. Para partidas dobradas, fique no Firefly III ou experimente o GnuCash, o Beancount ou o hledger.",
+    "Não. No Financy uma conta guarda dinheiro, uma categoria diz por que o dinheiro entrou ou saiu, e uma transferência é um único registro com dois lados. Para partidas dobradas, fique no Firefly III ou experimente o GnuCash, o Beancount ou o hledger.",
   "AlternativeFirefly.dataQuestion": "Posso trazer meus dados do Firefly III para o Financy?",
   "AlternativeFirefly.dataAnswer":
     "Ainda não há importação direta. Exporte seus lançamentos do Firefly III em CSV e importe o arquivo no Financy.",

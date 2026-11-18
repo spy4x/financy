@@ -560,7 +560,7 @@ export default {
   "Alternative.all": "Todas las comparativas",
   "AlternativeFirefly.title": "Alternativa a Firefly III para parejas",
   "AlternativeFirefly.description":
-    "Firefly III da un solo acceso por administración. En Financy la pareja comparte un hogar, cada uno con su acceso, en cualquier moneda.",
+    "Firefly III da un solo acceso por administración. En Financy la pareja lleva un presupuesto común, cada uno con su acceso, en cualquier moneda.",
   "AlternativeFirefly.h1": "Una alternativa a Firefly III para el presupuesto en pareja",
   "AlternativeFirefly.answer":
     "Quédate en Firefly III si llevas tus cuentas solo o quieres contabilidad por partida doble. Elige Financy si tu pareja debe entrar con su propio acceso y tu dinero está en varias monedas.",
@@ -572,7 +572,8 @@ export default {
   "AlternativeFirefly.rowTotal": "Un total convertido a una moneda principal",
   "AlternativeFirefly.rowNoRate":
     "Una moneda sin tipo de cambio queda fuera del total, y se indica",
-  "AlternativeFirefly.rowNoRateNote": "Firefly III usa un tipo de 1 cuando no tiene ninguno.",
+  "AlternativeFirefly.rowNoRateNote":
+    "Firefly III usa un tipo de cambio de 1 cuando no tiene ninguno.",
   "AlternativeFirefly.rowDoubleEntry": "Contabilidad por partida doble",
   "AlternativeFirefly.rowImport": "Importar extractos bancarios desde archivo",
   "AlternativeFirefly.rowImportNote": "Firefly III: con su Data Importer, que va aparte.",

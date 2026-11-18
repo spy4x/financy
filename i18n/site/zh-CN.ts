@@ -481,7 +481,7 @@ export default {
   "FeaturePageMissing.action": "查看所有功能",
   "FeaturePage.comingFrom": "从 {name} 迁移过来？<compare>阅读对比</compare>。",
   "SiteFooter.alternatives": "替代方案对比",
-  "Alternatives.crumb": "对比",
+  "Alternatives.crumb": "替代方案对比",
   "Alternatives.title": "Financy 与其他记账应用对比",
   "Alternatives.description":
     "Financy 与其他记账应用的逐项对比。每篇都先说明什么情况下另一款工具更合适，所有事实都注明出处和日期。",
@@ -499,12 +499,12 @@ export default {
   "Alternative.all": "所有对比",
   "AlternativeFirefly.title": "适合伴侣共同记账的 Firefly III 替代",
   "AlternativeFirefly.description":
-    "Firefly III 每个账本只有一个登录。Financy 让伴侣共享家庭记账，每人有自己的登录，支持任意多种货币。",
+    "Firefly III 每个账本只对应一个账号。Financy 让伴侣共享家庭记账，每人用自己的账号登录，支持任意多种货币。",
   "AlternativeFirefly.h1": "适合两个人共享家庭记账的 Firefly III 替代",
   "AlternativeFirefly.answer":
     "如果你一个人记账，或者想要复式记账，就继续用 Firefly III。如果你希望伴侣用自己的账号登录，而你们的钱分布在多种货币里，就选 Financy。",
   "AlternativeFirefly.rowLogins": "伴侣各自用自己的账号登录，看到同样的账户",
-  "AlternativeFirefly.rowLoginsNote": "Firefly III：每个账本一个登录；共享功能在计划中。",
+  "AlternativeFirefly.rowLoginsNote": "Firefly III：每个账本一个账号；共享功能在计划中。",
   "AlternativeFirefly.rowCurrencies": "多种货币的账户",
   "AlternativeFirefly.rowTotal": "换算成一种主货币的总额",
   "AlternativeFirefly.rowNoRate": "没有汇率的货币不计入总额，并会注明",
@@ -512,7 +512,7 @@ export default {
   "AlternativeFirefly.rowDoubleEntry": "复式记账",
   "AlternativeFirefly.rowImport": "导入银行对账单文件",
   "AlternativeFirefly.rowImportNote": "Firefly III：需通过单独的 Data Importer。",
-  "AlternativeFirefly.rowSelfHost": "以 AGPL-3.0 免费自托管",
+  "AlternativeFirefly.rowSelfHost": "基于 AGPL-3.0，可免费自托管",
   "AlternativeFirefly.sourceFaq": "Firefly III 常见问题",
   "AlternativeFirefly.sourceCurrencies": "Firefly III 文档：货币",
   "AlternativeFirefly.sourceRates": "Firefly III 文档：汇率",
@@ -536,7 +536,7 @@ export default {
     "目前还没有直接导入的功能。从 Firefly III 把交易导出为 CSV，再把文件导入 Financy。",
   "AlternativeFirefly.costQuestion": "两者各要多少钱？",
   "AlternativeFirefly.costAnswer":
-    "两者都以 AGPL-3.0 免费自托管。根据 Firefly III 的常见问题，它的作者不提供托管版本。Financy 的云服务将是付费套餐。",
+    "两者都基于 AGPL-3.0，可免费自托管。根据 Firefly III 的常见问题，它的作者不提供托管版本。Financy 的云服务将是付费套餐。",
   "ErrorPage.status": "看看现在有哪些功能可用",
   "HomeHero.notify": "上线时通知我",
   "HomeHero.selfHost": "自托管 Financy",

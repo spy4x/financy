@@ -539,7 +539,7 @@ export default {
   "Alternatives.crumb": "Alternativen",
   "Alternatives.title": "Financy im Vergleich mit anderen Finanz-Apps",
   "Alternatives.description":
-    "Financy im direkten Vergleich mit anderen Haushaltsbuch-Apps. Jeder Vergleich sagt, wann das andere Tool besser passt, mit belegten Fakten.",
+    "Financy im direkten Vergleich mit anderen Haushaltsbuch-Apps. Jeder Vergleich sagt, wann das andere Tool besser passt, mit belegten, datierten Fakten.",
   "Alternatives.h1": "Financy im Vergleich mit den Tools, die du kennst",
   "Alternatives.lead":
     "Jede Seite sagt zuerst, wann das andere Tool besser zu dir passt, und verlinkt jede Aussage darüber mit der Dokumentation dieses Tools.",
@@ -554,7 +554,7 @@ export default {
   "Alternative.all": "Alle Vergleiche",
   "AlternativeFirefly.title": "Firefly III Alternative für Paare",
   "AlternativeFirefly.description":
-    "Firefly III gibt jeder Verwaltung einen Login. Mit Financy führt ihr ein gemeinsames Haushaltsbuch, jede Person mit Login, in jeder Währung.",
+    "Firefly III gibt jeder Verwaltung nur einen Login. Mit Financy führt ihr ein gemeinsames Haushaltsbuch, jede Person mit eigenem Login, in allen Währungen.",
   "AlternativeFirefly.h1": "Eine Firefly III Alternative für Paare",
   "AlternativeFirefly.answer":
     "Bleib bei Firefly III, wenn du dein Geld allein verwaltest oder doppelte Buchführung willst. Nimm Financy, wenn sich deine Partnerin oder dein Partner mit eigenem Login anmelden soll und euer Geld in mehreren Währungen liegt.",
@@ -562,7 +562,7 @@ export default {
     "Jede Person meldet sich mit eigenem Login an und sieht dieselben Konten",
   "AlternativeFirefly.rowLoginsNote": "Firefly III: ein Login pro Verwaltung; Teilen ist geplant.",
   "AlternativeFirefly.rowCurrencies": "Konten in mehreren Währungen",
-  "AlternativeFirefly.rowTotal": "Eine Gesamtsumme in einer Hauptwährung",
+  "AlternativeFirefly.rowTotal": "Eine Gesamtsumme, umgerechnet in eine Hauptwährung",
   "AlternativeFirefly.rowNoRate": "Eine Währung ohne Wechselkurs fehlt in der Summe, mit Hinweis",
   "AlternativeFirefly.rowNoRateNote": "Firefly III rechnet ohne Kurs mit einem Kurs von 1.",
   "AlternativeFirefly.rowDoubleEntry": "Doppelte Buchführung",

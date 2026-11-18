@@ -522,9 +522,9 @@ export default {
   "FeaturePageMissing.description":
     "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",
   "FeaturePageMissing.action": "すべての機能を見る",
-  "FeaturePage.comingFrom": "{name} から乗り換えますか？<compare>比較を読む</compare>",
-  "SiteFooter.alternatives": "他ツールとの比較",
-  "Alternatives.crumb": "比較",
+  "FeaturePage.comingFrom": "{name} からの乗り換えですか？<compare>比較を読む</compare>",
+  "SiteFooter.alternatives": "他のツールとの比較",
+  "Alternatives.crumb": "他のツールとの比較",
   "Alternatives.title": "Financy と他の家計簿アプリの比較",
   "Alternatives.description":
     "Financy と他の家計簿アプリを並べて比較します。どの比較も、相手のツールのほうが合う場合を先に書き、出典と日付つきの事実だけを載せています。",
@@ -542,13 +542,13 @@ export default {
   "Alternative.all": "すべての比較",
   "AlternativeFirefly.title": "夫婦で使える Firefly III 代替アプリ",
   "AlternativeFirefly.description":
-    "Firefly III は管理データ 1 つにつきログインが 1 つです。Financy なら家計簿を共有し、夫婦それぞれが自分のログインで、複数の通貨を扱えます。",
+    "Firefly III は帳簿 1 つにつきログインが 1 つです。Financy なら家計簿を共有し、夫婦それぞれが自分のログインで、複数の通貨を扱えます。",
   "AlternativeFirefly.h1": "夫婦で家計簿を共有できる Firefly III 代替",
   "AlternativeFirefly.answer":
     "ひとりで家計を管理するなら、または複式簿記を使いたいなら、Firefly III のままがおすすめです。パートナーにも自分のログインで入ってほしい、お金が複数の通貨にまたがっているなら、Financy を選んでください。",
   "AlternativeFirefly.rowLogins": "パートナーそれぞれが自分のログインで入り、同じ口座を見られる",
   "AlternativeFirefly.rowLoginsNote":
-    "Firefly III：管理データ 1 つにログイン 1 つ。共有機能は計画中です。",
+    "Firefly III：帳簿 1 つにログイン 1 つ。共有機能は計画中です。",
   "AlternativeFirefly.rowCurrencies": "複数の通貨の口座",
   "AlternativeFirefly.rowTotal": "1 つのメイン通貨に換算した合計",
   "AlternativeFirefly.rowNoRate": "為替レートのない通貨は合計から外し、そのことを表示",
@@ -556,7 +556,7 @@ export default {
   "AlternativeFirefly.rowDoubleEntry": "複式簿記",
   "AlternativeFirefly.rowImport": "銀行の明細ファイルの取り込み",
   "AlternativeFirefly.rowImportNote": "Firefly III：別アプリの Data Importer を使います。",
-  "AlternativeFirefly.rowSelfHost": "AGPL-3.0 で無料でセルフホスト",
+  "AlternativeFirefly.rowSelfHost": "AGPL-3.0 のもと無料でセルフホスト",
   "AlternativeFirefly.sourceFaq": "Firefly III の FAQ",
   "AlternativeFirefly.sourceCurrencies": "Firefly III ドキュメント：通貨",
   "AlternativeFirefly.sourceRates": "Firefly III ドキュメント：為替レート",
@@ -572,7 +572,7 @@ export default {
     "Firefly III から直接取り込む機能はまだありません。Firefly III から取引を CSV ファイルに書き出し、銀行の明細と同じように Financy に取り込んでください。",
   "AlternativeFirefly.loginQuestion": "Firefly III を夫婦で、それぞれ自分のログインで使えますか？",
   "AlternativeFirefly.loginAnswer":
-    "今はできません。Firefly III の FAQ によると、管理データは 1 人のユーザーに固定されているため、夫婦は 1 つのユーザー名とパスワードを共有することになります。共有の仕組みは計画中です。Financy なら、それぞれが自分のログインとロールで入り、2 人とも同じ口座を見られます。",
+    "今はできません。Firefly III の FAQ によると、帳簿は 1 人のユーザーに固定されているため、夫婦は 1 つのユーザー名とパスワードを共有することになります。共有の仕組みは計画中です。Financy なら、それぞれが自分のログインとロールで入り、2 人とも同じ口座を見られます。",
   "AlternativeFirefly.doubleEntryQuestion": "Financy は Firefly III のような複式簿記ですか？",
   "AlternativeFirefly.doubleEntryAnswer":
     "いいえ。Financy では、口座がお金を持ち、カテゴリがお金の動いた理由を表し、振替は 2 つの側を持つ 1 件の記録です。複式簿記が必要なら、Firefly III のままにするか、GnuCash、Beancount、hledger を試してください。",

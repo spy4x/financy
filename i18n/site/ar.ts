@@ -535,16 +535,16 @@ export default {
   "Alternative.all": "كل المقارنات",
   "AlternativeFirefly.title": "بديل Firefly III للأزواج",
   "AlternativeFirefly.description":
-    "يمنح Firefly III كل إدارة مالية تسجيل دخول واحدًا. أما Financy فيتيح للشريكين ميزانية مشتركة، لكلٍّ منهما حسابه، وبأي مزيج من العملات.",
+    "يمنح Firefly III كل إدارة مالية تسجيل دخول واحدًا. أما Financy فيتيح للشريكين ميزانية مشتركة، لكلٍّ منهما تسجيل دخوله، وبأي مزيج من العملات.",
   "AlternativeFirefly.h1": "بديل Firefly III للأزواج وللميزانية المشتركة",
   "AlternativeFirefly.answer":
-    "ابقَ على Firefly III إن كنت تدير مالك وحدك أو تريد القيد المزدوج. واختر Financy إن أردت أن يسجّل شريكك الدخول بحسابه الخاص وكانت أموالكما موزعة على عدة عملات.",
-  "AlternativeFirefly.rowLogins": "يسجّل كل شريك الدخول بحسابه الخاص ويرى الحسابات نفسها",
+    "ابقَ على Firefly III إن كنت تدير مالك وحدك أو تريد القيد المزدوج. واختر Financy إن أردت أن يسجّل شريكك الدخول بحساب المستخدم الخاص به وكانت أموالكما موزعة على عدة عملات.",
+  "AlternativeFirefly.rowLogins": "يسجّل كل شريك الدخول بحساب المستخدم الخاص به ويرى الحسابات نفسها",
   "AlternativeFirefly.rowLoginsNote":
     "Firefly III: تسجيل دخول واحد لكل إدارة مالية؛ والمشاركة مخطط لها.",
   "AlternativeFirefly.rowCurrencies": "حسابات بعدة عملات",
   "AlternativeFirefly.rowTotal": "مجموع محوَّل إلى عملة رئيسية واحدة",
-  "AlternativeFirefly.rowNoRate": "العملة التي لا سعر صرف لها تُستبعد من المجموع ويُذكر ذلك",
+  "AlternativeFirefly.rowNoRate": "العملة التي لا سعر صرف لها تُستبعد من المجموع ويُذكر اسمها",
   "AlternativeFirefly.rowNoRateNote": "يستخدم Firefly III سعرًا قدره 1 حين لا يتوفر سعر.",
   "AlternativeFirefly.rowDoubleEntry": "محاسبة القيد المزدوج",
   "AlternativeFirefly.rowImport": "استيراد ملفات كشوف الحساب البنكية",
@@ -565,7 +565,7 @@ export default {
   "AlternativeFirefly.loginQuestion":
     "هل يمكنني أنا وشريكي استخدام Firefly III، لكلٍّ منا تسجيل دخوله الخاص؟",
   "AlternativeFirefly.loginAnswer":
-    "ليس اليوم. تقول الأسئلة الشائعة لـ Firefly III إن كل إدارة مالية مقفلة على مستخدم واحد، لذا يتشارك الزوجان اسم مستخدم وكلمة مرور واحدة؛ ونموذج المشاركة مخطط له. في Financy يسجّل كلٌّ منكما الدخول بحسابه ودوره، وتريان الحسابات نفسها.",
+    "ليس اليوم. تقول الأسئلة الشائعة لـ Firefly III إن كل إدارة مالية مقفلة على مستخدم واحد، لذا يتشارك الزوجان اسم مستخدم وكلمة مرور واحدة؛ ونموذج المشاركة مخطط له. في Financy يسجّل كلٌّ منكما الدخول بحساب المستخدم الخاص به ودوره، وتريان الحسابات نفسها.",
   "AlternativeFirefly.doubleEntryQuestion": "هل يعتمد Financy القيد المزدوج مثل Firefly III؟",
   "AlternativeFirefly.doubleEntryAnswer":
     "لا. في Financy يحفظ الحساب المال، وتوضح الفئة سبب حركته، والتحويل سجل واحد له طرفان. للقيد المزدوج، ابقَ على Firefly III أو جرّب GnuCash أو Beancount أو hledger.",

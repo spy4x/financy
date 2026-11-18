@@ -561,7 +561,7 @@ export default {
   "Alternative.glance": "En un coup d’œil",
   "Alternative.caption": "Financy et {name}, côte à côte",
   "Alternative.better": "Quand un autre outil convient mieux",
-  "Alternative.moving": "Quitter {name}",
+  "Alternative.moving": "Migrer depuis {name}",
   "Alternative.next": "Essayez Financy",
   "Alternative.demo": "Essayer la démo",
   "Alternative.selfHost": "Lire le guide d’auto-hébergement",
@@ -582,7 +582,7 @@ export default {
   "AlternativeFirefly.rowNoRateNote": "Firefly III applique un taux de 1 quand il n’en a pas.",
   "AlternativeFirefly.rowDoubleEntry": "Comptabilité en partie double",
   "AlternativeFirefly.rowImport": "Importer des relevés bancaires en fichier",
-  "AlternativeFirefly.rowImportNote": "Firefly III : via son Data Importer, à part.",
+  "AlternativeFirefly.rowImportNote": "Firefly III : via Data Importer, un outil séparé.",
   "AlternativeFirefly.rowSelfHost": "Auto-hébergement gratuit sous AGPL-3.0",
   "AlternativeFirefly.sourceFaq": "FAQ de Firefly III",
   "AlternativeFirefly.sourceCurrencies": "Docs Firefly III : devises",
@@ -603,7 +603,7 @@ export default {
     "Pas aujourd’hui. La FAQ de Firefly III indique que chaque administration est liée à un seul utilisateur : un couple partage donc un nom d’utilisateur et un mot de passe ; un modèle de partage est prévu. Dans Financy, chacun se connecte avec son propre identifiant et son rôle, et vous voyez tous les deux les mêmes comptes.",
   "AlternativeFirefly.doubleEntryQuestion": "Financy est-il en partie double comme Firefly III ?",
   "AlternativeFirefly.doubleEntryAnswer":
-    "Non. Dans Financy, un compte contient de l’argent, une catégorie dit pourquoi il a bougé, et un virement est une seule écriture à deux côtés. Pour la partie double, restez sur Firefly III ou essayez GnuCash, Beancount ou hledger.",
+    "Non. Dans Financy, un compte contient de l’argent, une catégorie dit pourquoi il a bougé, et un virement est une seule opération à deux côtés. Pour la partie double, restez sur Firefly III ou essayez GnuCash, Beancount ou hledger.",
   "AlternativeFirefly.dataQuestion": "Puis-je importer mes données Firefly III dans Financy ?",
   "AlternativeFirefly.dataAnswer":
     "Il n’existe pas encore d’import direct. Exportez vos opérations de Firefly III en CSV et importez le fichier dans Financy.",
