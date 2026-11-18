@@ -611,7 +611,7 @@ export default {
     "Sim. Vincule sua conta do Telegram no seu perfil do Financy e envie /expense num chat privado. O bot pede o valor, mostra a conta e a categoria e salva o lançamento quando você toca em Salvar.",
   "FeaturePageTelegramBot.summary": "Adicione lançamentos e veja seus saldos num chat privado.",
   "FeaturePageTelegramBot.how1":
-    "No seu perfil do Financy, toque em Vincular Telegram e abra o chat. O código vale por 10 minutos e funciona uma única vez, e o bot mostra a qual conta de usuário ele pertence antes de você tocar em Vincular.",
+    "No seu perfil do Financy, toque em Vincular Telegram e abra o chat. O código vale por 10 minutos e funciona uma única vez, e o bot mostra a qual conta de usuário o código pertence antes de você tocar em Vincular.",
   "FeaturePageTelegramBot.how2":
     "Envie /expense ou /income, e o bot pede o valor. Os botões mudam a conta ou a categoria, e Salvar grava o lançamento. /balance e /month mostram seus números e não mudam nada.",
   "FeaturePageTelegramBot.selfHostQuestion": "O bot funciona num servidor que eu mesmo hospedo?",

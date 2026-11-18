@@ -596,7 +596,7 @@ export default {
   "FeaturePageTelegramBot.name": "Telegram-бот",
   "FeaturePageTelegramBot.title": "Учёт расходов и проверка баланса в Telegram",
   "FeaturePageTelegramBot.description":
-    "Добавляйте расходы и доходы в личном чате Telegram, узнавайте балансы и итоги месяца. Операции сразу попадают в вашу семью.",
+    "Добавляйте расходы и доходы в личном чате Telegram, узнавайте балансы и итоги месяца. Операции сразу появляются в учёте вашей семьи.",
   "FeaturePageTelegramBot.h1": "Можно ли добавить расход через Telegram?",
   "FeaturePageTelegramBot.answer":
     "Да. Привяжите Telegram в профиле Financy и отправьте /expense в личном чате. Бот спросит сумму, покажет счёт и категорию и сохранит операцию, когда вы нажмёте «Сохранить».",

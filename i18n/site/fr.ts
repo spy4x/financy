@@ -594,15 +594,15 @@ export default {
   "FeaturePageBudgets.name": "Budgets",
   "FeaturePageBudgets.title": "Fixer un plafond de budget mensuel par catégorie",
   "FeaturePageBudgets.description":
-    "Fixez un plafond de dépenses mensuel par catégorie et suivez-le en direct avec votre foyer. Il continue jusqu’à ce que vous le changiez.",
+    "Fixez un plafond de dépenses mensuel par catégorie et suivez-le en direct avec votre foyer. Il reste en vigueur jusqu’à ce que vous le changiez.",
   "FeaturePageBudgets.h1": "Puis-je fixer un plafond mensuel par catégorie ?",
   "FeaturePageBudgets.answer":
-    "Oui. Fixez un plafond mensuel sur n’importe quelle catégorie de dépenses : Financy montre ce qui a été dépensé par rapport à ce plafond, en direct pour tout le foyer. Le plafond continue les mois suivants jusqu’à ce que vous le changiez.",
+    "Oui. Fixez un plafond mensuel sur n’importe quelle catégorie de dépenses : Financy montre ce qui a été dépensé par rapport à ce plafond, en direct pour tout le foyer. Le plafond reste en vigueur les mois suivants, jusqu’à ce que vous le changiez.",
   "FeaturePageBudgets.summary": "Un plafond mensuel par catégorie, en direct pour tout le foyer.",
   "FeaturePageBudgets.how1":
     "Ouvrez Budgets, choisissez une catégorie de dépenses et saisissez son plafond. Il s’applique à partir de ce mois-là, et les mois précédents gardent leurs plafonds. La dépense du mois, ce sont ses dépenses moins les remboursements.",
   "FeaturePageBudgets.how2":
-    "La barre vous alerte dès 80 % du plafond et montre de combien vous l’avez dépassé. Le plafond d’une sous‑catégorie ne peut pas dépasser ce qu’il reste du plafond de sa catégorie parente.",
+    "La barre vous alerte dès 80 % du plafond et montre de combien vous l’avez dépassé. Le plafond d’une sous-catégorie ne peut pas dépasser ce qu’il reste du plafond de sa catégorie parente.",
   "FeaturePageBudgets.rollOverQuestion":
     "L’argent non dépensé est-il reporté sur le mois suivant ?",
   "FeaturePageBudgets.rollOverAnswer":

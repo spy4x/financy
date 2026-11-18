@@ -274,7 +274,7 @@ export default {
     "يحفظ الأمر ‎/expense 12.50 المصروف فورًا إن كان آخر مصروف لك يحدّد الفئة",
   "FeatureTelegramBot.fact2": "لا يغيّر الأمران ‎/balance و‎/month شيئًا، ويستطيع القارئ استخدامهما أيضًا",
   "FeatureTelegramBot.fact3":
-    "تعمل الأوامر في المحادثة الخاصة فقط، وفي المجموعات يطلب منك البوت مراسلته على الخاص",
+    "تعمل الأوامر في المحادثة الخاصة فقط، وفي المجموعات يطلب منك البوت مراسلته في محادثة خاصة",
   "FeatureTelegramBot.fact4": "يتطلب الربط رمزًا لمرة واحدة صالحًا لمدة 10 دقائق",
   "FeatureTelegramBot.notYetTransfer": "تسجيل تحويل من البوت",
   "FeatureTelegramBot.notYetVoice": "رسائل صوتية وصور إيصالات تتحوّل إلى معاملات",
@@ -584,7 +584,7 @@ export default {
   "FeaturePageTelegramBot.name": "بوت Telegram",
   "FeaturePageTelegramBot.title": "أضف مصروفاتك وتابع أرصدتك من Telegram",
   "FeaturePageTelegramBot.description":
-    "أضف مصروفًا أو دخلًا من محادثة خاصة على Telegram، واطلب أرصدتك وأرقام هذا الشهر. وتصل المعاملات إلى أسرتك مباشرةً.",
+    "أضف مصروفًا أو دخلًا من محادثة خاصة على Telegram، واطلب أرصدتك وأرقام هذا الشهر. وتُسجَّل المعاملات في بيانات أسرتك مباشرةً.",
   "FeaturePageTelegramBot.h1": "هل يمكنني إضافة مصروف من Telegram؟",
   "FeaturePageTelegramBot.answer":
     "نعم. اربط حساب Telegram من ملفك الشخصي في Financy، ثم أرسل ‎/expense في محادثة خاصة. يسألك البوت عن المبلغ، ويعرض الحساب والفئة، ويحفظ المعاملة حين تضغط «حفظ».",

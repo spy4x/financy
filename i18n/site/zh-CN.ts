@@ -249,7 +249,7 @@ export default {
   "FeatureTelegramBot.nav": "Telegram 机器人",
   "FeatureTelegramBot.title": "在 Telegram 聊天里记一笔支出",
   "FeatureTelegramBot.lead":
-    "只需关联一次 Telegram 账号，之后发送 /expense 或 /income 就能记一笔，发送 /balance 或 /month 就能查看你的收支数字。机器人以你的身份操作，权限与你在家庭中的角色相同。",
+    "只需关联一次 Telegram 账号，之后发送 /expense 或 /income 就能记一笔，发送 /balance 或 /month 就能查看你的余额和本月收支。机器人以你的身份操作，权限与你在家庭中的角色相同。",
   "FeatureTelegramBot.fact1": "上一笔支出能确定分类时，/expense 12.50 会立即保存",
   "FeatureTelegramBot.fact2": "/balance 和 /month 不会改动任何内容，查看者也能使用",
   "FeatureTelegramBot.fact3": "命令只能在私聊中使用，在群聊中机器人会提示你改用私聊",
@@ -497,7 +497,7 @@ export default {
     "可以。添加一笔转账，选择两个账户，填写转出金额。到账金额可以自己填，也可以留空，由 Financy 按转账当天的汇率换算。两个金额都会保存，并各自使用所在账户的币种。",
   "FeaturePageTransfers.summary": "记录账户之间的资金转移，两边的金额都保留。",
   "FeaturePageTransfers.how1":
-    "选择转出账户和转入账户，然后填写转出金额。两个账户币种不同时，还会多出一栏到账金额。填写它就能保留银行实际收取的汇率，留空则按转账当天的汇率换算。如果 Financy 没有当天的汇率，会请你自己填写金额。",
+    "选择转出账户和转入账户，然后填写转出金额。两个账户币种不同时，还会多出一栏到账金额。填写它就能保留银行实际使用的汇率，留空则按转账当天的汇率换算。如果 Financy 没有当天的汇率，会请你自己填写金额。",
   "FeaturePageTransfers.how2":
     "每个账户的余额按各自的金额变动。转账没有分类，所以你的收入、支出和预算都不受影响。",
   "FeaturePageTransfers.spendingQuestion": "转账会算作支出或收入吗？",
@@ -505,7 +505,7 @@ export default {
     "不会。转账没有分类，不计入任何收入或支出数字，预算也一样。变动的只有两个账户的余额。",
   "FeaturePageTransfers.ownAmountQuestion": "能填写实际到账的金额吗？",
   "FeaturePageTransfers.ownAmountAnswer":
-    "可以。填写转入账户实际收到的金额，Financy 会原样保存，不再换算。银行实际收取的汇率也就留下了记录。",
+    "可以。填写转入账户实际收到的金额，Financy 会原样保存，不再换算。银行实际使用的汇率也就留下了记录。",
   "FeaturePageTransfers.feeQuestion": "转账时能记录银行手续费吗？",
   "FeaturePageTransfers.feeAnswer":
     "不能。转账只有转出金额和到账金额，没有手续费这一栏。银行收取的手续费，请另记一笔支出。",
@@ -544,13 +544,13 @@ export default {
   "FeaturePageTelegramBot.name": "Telegram 机器人",
   "FeaturePageTelegramBot.title": "在 Telegram 里记账、查余额",
   "FeaturePageTelegramBot.description":
-    "在 Telegram 私聊中添加支出或收入，查询余额和本月收支。每一笔都会直接记入你的家庭。",
+    "在 Telegram 私聊中添加支出或收入，查询余额和本月收支。每一笔都会直接记入你的家庭账本。",
   "FeaturePageTelegramBot.h1": "能在 Telegram 里记一笔支出吗？",
   "FeaturePageTelegramBot.answer":
     "可以。在 Financy 的个人资料中关联 Telegram 账号，然后在私聊中发送 /expense。机器人会询问金额，并显示账户和分类，你点击“保存”后这笔交易就记好了。",
   "FeaturePageTelegramBot.summary": "在私聊中记账、查看余额。",
   "FeaturePageTelegramBot.how1":
-    "在 Financy 的个人资料中点击“关联 Telegram”，然后打开聊天。关联码 10 分钟内有效，只能使用一次；在你点击“关联”之前，机器人会告诉你它属于哪个账号。",
+    "在 Financy 的个人资料中点击“关联 Telegram”，然后打开聊天。关联码 10 分钟内有效，只能使用一次；在你点击“关联”之前，机器人会告诉你这个关联码属于哪个账号。",
   "FeaturePageTelegramBot.how2":
     "发送 /expense 或 /income，机器人会询问金额。用按钮可以更换账户或分类，点击“保存”就记好了。/balance 和 /month 只读取你的数字，不会改动任何内容。",
   "FeaturePageTelegramBot.selfHostQuestion": "在自己托管的服务器上也能用机器人吗？",
@@ -751,7 +751,7 @@ export default {
   "FeatureTransfers.nav": "转账",
   "FeatureTransfers.title": "在你自己的账户之间转移资金",
   "FeatureTransfers.lead":
-    "记录资金从一个账户转到另一个账户，可以是同一币种，也可以跨两种币种。每个账户保留自己的金额，银行实际收取的汇率也就留下了记录。",
+    "记录资金从一个账户转到另一个账户，可以是同一币种，也可以跨两种币种。每个账户保留自己的金额，银行实际使用的汇率也就留下了记录。",
   "FeatureTransfers.fact1": "跨币种转账时，到账金额留空会按转账当天的汇率换算",
   "FeatureTransfers.fact2": "转账没有分类，不计入任何收入或支出数字",
   "FeatureTransfers.fact3": "离线添加的转账会先保存在设备上，恢复联网后再发送",

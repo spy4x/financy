@@ -621,7 +621,7 @@ export default {
   "FeaturePageTelegramBot.summary":
     "Añade movimientos y consulta tus saldos desde un chat privado.",
   "FeaturePageTelegramBot.how1":
-    "En tu perfil de Financy, pulsa «Vincular Telegram» y abre el chat. El código sirve una sola vez, durante 10 minutos, y el bot te dice a qué cuenta de usuario pertenece antes de que pulses «Vincular».",
+    "En tu perfil de Financy, pulsa «Vincular Telegram» y abre el chat. El código sirve una sola vez, durante 10 minutos, y el bot te dice a qué cuenta de usuario pertenece ese código antes de que pulses «Vincular».",
   "FeaturePageTelegramBot.how2":
     "Envía /expense o /income y el bot te pide el importe. Con los botones cambias la cuenta o la categoría, y «Guardar» anota el movimiento. /balance y /month consultan tus cifras y no cambian nada.",
   "FeaturePageTelegramBot.selfHostQuestion": "¿El bot funciona en un servidor propio?",
