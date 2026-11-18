@@ -889,7 +889,7 @@ Deno.test(`the transactions spreadsheet guards a memo a spreadsheet would run as
   })
 })
 
-Deno.test(`the transactions spreadsheet reads an income unsigned and in the person's language`, async () => {
+Deno.test(`the transactions spreadsheet words an income and its headings in the person's language`, async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
     await storedEntry(sql, h, {
