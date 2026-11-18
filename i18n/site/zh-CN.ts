@@ -507,24 +507,27 @@ export default {
   "AlternativeFirefly.rowLoginsNote": "Firefly III：每个账本一个账号；共享功能在计划中。",
   "AlternativeFirefly.rowCurrencies": "多种货币的账户",
   "AlternativeFirefly.rowTotal": "换算成一种主货币的总额",
+  "AlternativeFirefly.rowTotalNote": "Firefly III：在你开启汇率之前，换算功能处于关闭状态。",
   "AlternativeFirefly.rowNoRate": "没有汇率的货币不计入总额，并会注明",
   "AlternativeFirefly.rowNoRateNote": "Firefly III 没有汇率时按 1 计算。",
   "AlternativeFirefly.rowDoubleEntry": "复式记账",
   "AlternativeFirefly.rowImport": "导入银行对账单文件",
-  "AlternativeFirefly.rowImportNote": "Firefly III：需通过单独的 Data Importer。",
+  "AlternativeFirefly.rowImportNote":
+    "Financy：应用中暂不支持。Firefly III：需通过单独的 Data Importer。",
   "AlternativeFirefly.rowSelfHost": "基于 AGPL-3.0，可免费自托管",
   "AlternativeFirefly.sourceFaq": "Firefly III 常见问题",
   "AlternativeFirefly.sourceCurrencies": "Firefly III 文档：货币",
   "AlternativeFirefly.sourceRates": "Firefly III 文档：汇率",
   "AlternativeFirefly.sourceReadme": "Firefly III README",
-  "AlternativeFirefly.sourceImporter": "Firefly III 文档：CSV 导入",
+  "AlternativeFirefly.sourceImporter": "Firefly III 文档：导入数据",
   "AlternativeFirefly.method":
     "关于 Firefly III 的每条事实都来自 Firefly III 自己的文档或 README，并在所在行附上链接。Financy 的各行只列出应用里今天已经可用的功能。我们每三个月重新核实每一行，只在那时更新日期。发现过时的内容？请写信到 <mail>{email}</mail>。",
-  "AlternativeFirefly.fit": "Financy 不是复式记账软件，也没有自动银行同步。",
+  "AlternativeFirefly.fit":
+    "Financy 不是复式记账软件，没有自动银行同步，目前也还不能导入银行对账单。",
   "AlternativeFirefly.better":
     "如果需要复式记账，就继续用 <firefly>Firefly III</firefly>，或者看看 <gnucash>GnuCash</gnucash>、<beancount>Beancount</beancount> 或 <hledger>hledger</hledger>。如果你想要一款形态和 Financy 相近的开源应用，最接近的是 <sure>Sure</sure>：同样是 AGPL-3.0，用 Docker 自托管。",
   "AlternativeFirefly.moving":
-    "目前还没有从 Firefly III 直接导入的功能。从 Firefly III 把交易导出为 CSV 文件，再像导入银行对账单一样把它导入 Financy。",
+    "Financy 目前还不能导入 Firefly III 的导出文件，所以现在无法把你的历史记录迁移到应用中。如果你很看重历史记录，暂时先继续使用 Firefly III。",
   "AlternativeFirefly.loginQuestion": "我和伴侣能各用自己的账号使用 Firefly III 吗？",
   "AlternativeFirefly.loginAnswer":
     "目前不能。Firefly III 的常见问题里说，每个账本只绑定一个用户，所以两个人只能共用一个用户名和密码；共享模式在计划中。在 Financy 里，你们每人用自己的账号和角色登录，看到同样的账户。",
@@ -533,7 +536,7 @@ export default {
     "不是。在 Financy 里，账户存放资金，分类说明钱为什么流动，转账是一条有两端的记录。如果需要复式记账，就继续用 Firefly III，或者试试 GnuCash、Beancount 或 hledger。",
   "AlternativeFirefly.dataQuestion": "能把 Firefly III 的数据搬到 Financy 吗？",
   "AlternativeFirefly.dataAnswer":
-    "目前还没有直接导入的功能。从 Firefly III 把交易导出为 CSV，再把文件导入 Financy。",
+    "暂时不行。目前无法在 Financy 应用中导入 Firefly III 的导出文件。",
   "AlternativeFirefly.costQuestion": "两者各要多少钱？",
   "AlternativeFirefly.costAnswer":
     "两者都基于 AGPL-3.0，可免费自托管。根据 Firefly III 的常见问题，它的作者不提供托管版本。Financy 的云服务将是付费套餐。",

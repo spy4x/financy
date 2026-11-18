@@ -6,7 +6,7 @@ const SOURCES = [
   `https://docs.firefly-iii.org/references/faq/firefly-iii/general/`,
   `https://docs.firefly-iii.org/how-to/firefly-iii/features/currencies/`,
   `https://docs.firefly-iii.org/explanation/financial-concepts/exchange-rates/`,
-  `https://docs.firefly-iii.org/how-to/data-importer/import/csv/`,
+  `https://docs.firefly-iii.org/tutorials/firefly-iii/importing-data/`,
   `https://github.com/firefly-iii/firefly-iii`,
 ]
 /** English and the one right-to-left language: each prefix the pages are checked under. */

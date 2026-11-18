@@ -578,25 +578,28 @@ export default {
     "Firefly III : un identifiant par administration ; le partage est prévu.",
   "AlternativeFirefly.rowCurrencies": "Des comptes dans plusieurs devises",
   "AlternativeFirefly.rowTotal": "Un total converti dans une devise principale",
+  "AlternativeFirefly.rowTotalNote":
+    "Firefly III : la conversion reste désactivée tant que vous n’activez pas les taux de change.",
   "AlternativeFirefly.rowNoRate": "Une devise sans taux de change est exclue du total, et signalée",
   "AlternativeFirefly.rowNoRateNote": "Firefly III applique un taux de 1 quand il n’en a pas.",
   "AlternativeFirefly.rowDoubleEntry": "Comptabilité en partie double",
   "AlternativeFirefly.rowImport": "Importer des relevés bancaires en fichier",
-  "AlternativeFirefly.rowImportNote": "Firefly III : via Data Importer, un outil séparé.",
+  "AlternativeFirefly.rowImportNote":
+    "Financy : pas encore dans l’application. Firefly III : via Data Importer, un outil séparé.",
   "AlternativeFirefly.rowSelfHost": "Auto-hébergement gratuit sous AGPL-3.0",
   "AlternativeFirefly.sourceFaq": "FAQ de Firefly III",
   "AlternativeFirefly.sourceCurrencies": "Docs Firefly III : devises",
   "AlternativeFirefly.sourceRates": "Docs Firefly III : taux de change",
   "AlternativeFirefly.sourceReadme": "README de Firefly III",
-  "AlternativeFirefly.sourceImporter": "Docs Firefly III : import CSV",
+  "AlternativeFirefly.sourceImporter": "Docs Firefly III : importer des données",
   "AlternativeFirefly.method":
     "Chaque fait sur Firefly III provient de sa propre documentation ou de son README, en lien dans sa ligne. Les lignes de Financy ne listent que ce qui fonctionne déjà dans l’appli. Nous revérifions chaque ligne tous les trois mois et ne changeons la date qu’à ce moment-là. Une info dépassée ? Écrivez à <mail>{email}</mail>.",
   "AlternativeFirefly.fit":
-    "Financy n’est pas une comptabilité en partie double et n’a pas de synchronisation bancaire automatique.",
+    "Financy n’est pas une comptabilité en partie double, n’a pas de synchronisation bancaire automatique et ne peut pas encore importer de relevés bancaires.",
   "AlternativeFirefly.better":
     "Pour la partie double, restez sur <firefly>Firefly III</firefly> ou regardez <gnucash>GnuCash</gnucash>, <beancount>Beancount</beancount> ou <hledger>hledger</hledger>. Si vous cherchez une appli open source pensée comme Financy, la plus proche est <sure>Sure</sure> : elle aussi sous AGPL-3.0, et auto-hébergée avec Docker.",
   "AlternativeFirefly.moving":
-    "Il n’existe pas encore d’import direct depuis Firefly III. Exportez vos opérations de Firefly III dans un fichier CSV, puis importez ce fichier dans Financy, comme un relevé bancaire.",
+    "Financy ne peut pas encore importer un export de Firefly III : vous ne pouvez donc pas transférer votre historique dans l’application aujourd’hui. Si votre historique compte pour vous, restez sur Firefly III pour le moment.",
   "AlternativeFirefly.loginQuestion":
     "Peut-on utiliser Firefly III à deux, chacun avec son identifiant ?",
   "AlternativeFirefly.loginAnswer":
@@ -606,7 +609,7 @@ export default {
     "Non. Dans Financy, un compte contient de l’argent, une catégorie dit pourquoi il a bougé, et un virement est une seule opération à deux côtés. Pour la partie double, restez sur Firefly III ou essayez GnuCash, Beancount ou hledger.",
   "AlternativeFirefly.dataQuestion": "Puis-je importer mes données Firefly III dans Financy ?",
   "AlternativeFirefly.dataAnswer":
-    "Il n’existe pas encore d’import direct. Exportez vos opérations de Firefly III en CSV et importez le fichier dans Financy.",
+    "Pas encore. Aujourd’hui, Financy ne peut pas importer un export de Firefly III dans l’application.",
   "AlternativeFirefly.costQuestion": "Combien coûte chacun ?",
   "AlternativeFirefly.costAnswer":
     "Les deux sont gratuits en auto-hébergement, sous AGPL-3.0. D’après la FAQ de Firefly III, son créateur ne propose pas de version hébergée. Le cloud de Financy sera une offre payante.",

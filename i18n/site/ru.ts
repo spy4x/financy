@@ -554,25 +554,28 @@ export default {
   "AlternativeFirefly.rowLoginsNote": "Firefly III: один логин на учёт; общий доступ в планах.",
   "AlternativeFirefly.rowCurrencies": "Счета в разных валютах",
   "AlternativeFirefly.rowTotal": "Итог, пересчитанный в одну основную валюту",
+  "AlternativeFirefly.rowTotalNote":
+    "Firefly III: пересчёт выключен, пока вы не включите курсы валют.",
   "AlternativeFirefly.rowNoRate": "Валюта без курса не входит в итог и указывается отдельно",
   "AlternativeFirefly.rowNoRateNote": "Firefly III без курса считает курс равным 1.",
   "AlternativeFirefly.rowDoubleEntry": "Двойная запись",
   "AlternativeFirefly.rowImport": "Импорт банковских выписок из файлов",
-  "AlternativeFirefly.rowImportNote": "Firefly III: через отдельный Data Importer.",
+  "AlternativeFirefly.rowImportNote":
+    "Financy: в приложении пока нет. Firefly III: через отдельный Data Importer.",
   "AlternativeFirefly.rowSelfHost": "Бесплатно на своём сервере под AGPL-3.0",
   "AlternativeFirefly.sourceFaq": "FAQ Firefly III",
   "AlternativeFirefly.sourceCurrencies": "Документация Firefly III: валюты",
   "AlternativeFirefly.sourceRates": "Документация Firefly III: курсы валют",
   "AlternativeFirefly.sourceReadme": "README Firefly III",
-  "AlternativeFirefly.sourceImporter": "Документация Firefly III: импорт CSV",
+  "AlternativeFirefly.sourceImporter": "Документация Firefly III: импорт данных",
   "AlternativeFirefly.method":
     "Каждый факт о Firefly III взят из его собственной документации или README, ссылка — в строке таблицы. В строках Financy только то, что работает в приложении уже сегодня. Мы перепроверяем каждую строку раз в три месяца и только тогда меняем дату. Заметили устаревшее? Напишите на <mail>{email}</mail>.",
   "AlternativeFirefly.fit":
-    "Financy — не бухгалтерия с двойной записью, и автоматической синхронизации с банком в нём нет.",
+    "Financy — не бухгалтерия с двойной записью: автоматической синхронизации с банком в нём нет, а импортировать банковские выписки он пока не умеет.",
   "AlternativeFirefly.better":
     "Если нужна двойная запись, оставайтесь на <firefly>Firefly III</firefly> или посмотрите <gnucash>GnuCash</gnucash>, <beancount>Beancount</beancount> и <hledger>hledger</hledger>. Ближе всего к Financy по устройству среди открытых приложений — <sure>Sure</sure>: тоже AGPL-3.0, и ставится на свой сервер через Docker.",
   "AlternativeFirefly.moving":
-    "Прямого импорта из Firefly III пока нет. Выгрузите операции из Firefly III в CSV-файл и импортируйте его в Financy так же, как банковскую выписку.",
+    "Financy пока не умеет импортировать выгрузку из Firefly III, поэтому перенести историю в приложение сегодня нельзя. Если история для вас важна, пока оставайтесь на Firefly III.",
   "AlternativeFirefly.loginQuestion":
     "Можно ли вести Firefly III вдвоём, каждому под своим логином?",
   "AlternativeFirefly.loginAnswer":
@@ -582,7 +585,7 @@ export default {
     "Нет. В Financy на счёте лежат деньги, категория объясняет, откуда они пришли или куда ушли, а перевод — одна запись с двумя сторонами. Для двойной записи оставайтесь на Firefly III или попробуйте GnuCash, Beancount или hledger.",
   "AlternativeFirefly.dataQuestion": "Можно ли перенести данные из Firefly III в Financy?",
   "AlternativeFirefly.dataAnswer":
-    "Прямого импорта пока нет. Выгрузите операции из Firefly III в CSV и импортируйте файл в Financy.",
+    "Пока нет. Сейчас в приложении Financy нельзя импортировать выгрузку из Firefly III.",
   "AlternativeFirefly.costQuestion": "Сколько они стоят?",
   "AlternativeFirefly.costAnswer":
     "Оба бесплатны на своём сервере под AGPL-3.0. Как сказано в FAQ Firefly III, его автор не предлагает облачную версию. Облако Financy будет платным тарифом.",

@@ -12,6 +12,7 @@ import { SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import { pageMiddleware } from "./middleware.ts"
 import type { State } from "./utils.ts"
 import { siteEnglishText } from "@ui/site-text.ts"
+import { importKindView } from "@ui/import-kinds.ts"
 
 const english = siteEnglishText()
 /** The comparisons in English. */
@@ -180,6 +181,13 @@ describe("the comparison pages", () => {
         expect(page.description.length, `${label}: ${page.description}`).toBeLessThan(155)
       }
     }
+  })
+
+  it("claims statement import for Financy only once the app has a screen for it", () => {
+    const row = KEYED.flatMap((page) => page.rows)
+      .find((row) => row.capability === `AlternativeFirefly.rowImport`)
+    const screen = importKindView(`bank-statement`, true)
+    expect(row?.values[0]).toBe(screen === null ? `no` : `yes`)
   })
 
   it("links back from each feature page a comparison names, in the page's language", async () => {

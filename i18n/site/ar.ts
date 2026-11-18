@@ -544,24 +544,27 @@ export default {
     "Firefly III: تسجيل دخول واحد لكل إدارة مالية؛ والمشاركة مخطط لها.",
   "AlternativeFirefly.rowCurrencies": "حسابات بعدة عملات",
   "AlternativeFirefly.rowTotal": "مجموع محوَّل إلى عملة رئيسية واحدة",
+  "AlternativeFirefly.rowTotalNote": "Firefly III: يبقى التحويل معطَّلًا حتى تفعّل أسعار الصرف.",
   "AlternativeFirefly.rowNoRate": "العملة التي لا سعر صرف لها تُستبعد من المجموع ويُذكر اسمها",
   "AlternativeFirefly.rowNoRateNote": "يستخدم Firefly III سعرًا قدره 1 حين لا يتوفر سعر.",
   "AlternativeFirefly.rowDoubleEntry": "محاسبة القيد المزدوج",
   "AlternativeFirefly.rowImport": "استيراد ملفات كشوف الحساب البنكية",
-  "AlternativeFirefly.rowImportNote": "Firefly III: عبر أداة Data Importer المنفصلة.",
+  "AlternativeFirefly.rowImportNote":
+    "Financy: غير متاح في التطبيق بعد. Firefly III: عبر أداة Data Importer المنفصلة.",
   "AlternativeFirefly.rowSelfHost": "استضافة ذاتية مجانية بترخيص AGPL-3.0",
   "AlternativeFirefly.sourceFaq": "الأسئلة الشائعة لـ Firefly III",
   "AlternativeFirefly.sourceCurrencies": "وثائق Firefly III: العملات",
   "AlternativeFirefly.sourceRates": "وثائق Firefly III: أسعار الصرف",
   "AlternativeFirefly.sourceReadme": "ملف README لـ Firefly III",
-  "AlternativeFirefly.sourceImporter": "وثائق Firefly III: استيراد CSV",
+  "AlternativeFirefly.sourceImporter": "وثائق Firefly III: استيراد البيانات",
   "AlternativeFirefly.method":
     "كل معلومة عن Firefly III مأخوذة من وثائقه الرسمية أو من ملف README الخاص به، ومربوطة في صفها. ولا تذكر صفوف Financy إلا ما يعمل في التطبيق اليوم. نعيد التحقق من كل صف كل ثلاثة أشهر، ولا نغيّر التاريخ إلا حينها. هل لاحظت معلومة قديمة؟ راسلنا على <mail>{email}</mail>.",
-  "AlternativeFirefly.fit": "Financy ليس برنامج محاسبة بالقيد المزدوج، ولا يتزامن تلقائيًا مع البنك.",
+  "AlternativeFirefly.fit":
+    "Financy ليس برنامج محاسبة بالقيد المزدوج، ولا يتزامن تلقائيًا مع البنك، ولا يمكنه بعد استيراد كشوف الحساب البنكية.",
   "AlternativeFirefly.better":
     "للقيد المزدوج، ابقَ على <firefly>Firefly III</firefly> أو اطّلع على <gnucash>GnuCash</gnucash> أو <beancount>Beancount</beancount> أو <hledger>hledger</hledger>. وإن أردت تطبيقًا مفتوح المصدر يشبه Financy في شكله، فأقربها <sure>Sure</sure>: بترخيص AGPL-3.0 أيضًا، ويُستضاف ذاتيًا عبر Docker.",
   "AlternativeFirefly.moving":
-    "لا يوجد بعد استيراد مباشر من Firefly III. صدّر معاملاتك من Firefly III إلى ملف CSV، ثم استورد هذا الملف في Financy كما تستورد كشف حساب بنكي.",
+    "لا يستطيع Financy بعد استيراد ملف مُصدَّر من Firefly III، لذا لا يمكنك اليوم نقل سجلك إلى التطبيق. إذا كان سجلك مهمًا لك، فابقَ على Firefly III في الوقت الحالي.",
   "AlternativeFirefly.loginQuestion":
     "هل يمكنني أنا وشريكي استخدام Firefly III، لكلٍّ منا تسجيل دخوله الخاص؟",
   "AlternativeFirefly.loginAnswer":
@@ -571,7 +574,7 @@ export default {
     "لا. في Financy يحفظ الحساب المال، وتوضح الفئة سبب حركته، والتحويل سجل واحد له طرفان. للقيد المزدوج، ابقَ على Firefly III أو جرّب GnuCash أو Beancount أو hledger.",
   "AlternativeFirefly.dataQuestion": "هل يمكنني نقل بياناتي من Firefly III إلى Financy؟",
   "AlternativeFirefly.dataAnswer":
-    "لا يوجد بعد استيراد مباشر. صدّر معاملاتك من Firefly III بصيغة CSV واستورد الملف في Financy.",
+    "ليس بعد. لا يستطيع Financy اليوم استيراد ملف مُصدَّر من Firefly III داخل التطبيق.",
   "AlternativeFirefly.costQuestion": "كم تكلفة كلٍّ منهما؟",
   "AlternativeFirefly.costAnswer":
     "كلاهما مجاني للاستضافة الذاتية بترخيص AGPL-3.0. وبحسب الأسئلة الشائعة لـ Firefly III، لا يقدّم مطوّره نسخة مستضافة. أما سحابة Financy فستكون خطة مدفوعة.",

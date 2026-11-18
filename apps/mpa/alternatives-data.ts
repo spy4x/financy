@@ -75,7 +75,7 @@ const FIREFLY = {
   faq: `https://docs.firefly-iii.org/references/faq/firefly-iii/general/`,
   currencies: `https://docs.firefly-iii.org/how-to/firefly-iii/features/currencies/`,
   rates: `https://docs.firefly-iii.org/explanation/financial-concepts/exchange-rates/`,
-  importer: `https://docs.firefly-iii.org/how-to/data-importer/import/csv/`,
+  importer: `https://docs.firefly-iii.org/tutorials/firefly-iii/importing-data/`,
   readme: `https://github.com/firefly-iii/firefly-iii`,
 } as const
 
@@ -107,7 +107,8 @@ export const ALTERNATIVES: readonly Alternative[] = [
       {
         capability: `AlternativeFirefly.rowTotal`,
         values: [`yes`, `yes`],
-        source: { label: `AlternativeFirefly.sourceCurrencies`, href: FIREFLY.currencies },
+        note: `AlternativeFirefly.rowTotalNote`,
+        source: { label: `AlternativeFirefly.sourceRates`, href: FIREFLY.rates },
       },
       {
         capability: `AlternativeFirefly.rowNoRate`,
@@ -122,7 +123,7 @@ export const ALTERNATIVES: readonly Alternative[] = [
       },
       {
         capability: `AlternativeFirefly.rowImport`,
-        values: [`yes`, `partial`],
+        values: [`no`, `partial`],
         note: `AlternativeFirefly.rowImportNote`,
         source: { label: `AlternativeFirefly.sourceImporter`, href: FIREFLY.importer },
       },

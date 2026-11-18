@@ -562,26 +562,29 @@ export default {
     "Firefly III: one login per administration; sharing is planned.",
   "AlternativeFirefly.rowCurrencies": "Accounts in several currencies",
   "AlternativeFirefly.rowTotal": "A total converted to one main currency",
+  "AlternativeFirefly.rowTotalNote":
+    "Firefly III: conversion is off until you turn on exchange rates.",
   "AlternativeFirefly.rowNoRate":
     "A currency with no exchange rate is left out of the total and named",
   "AlternativeFirefly.rowNoRateNote": "Firefly III uses a rate of 1 when it has none.",
   "AlternativeFirefly.rowDoubleEntry": "Double-entry bookkeeping",
   "AlternativeFirefly.rowImport": "Import bank statement files",
-  "AlternativeFirefly.rowImportNote": "Firefly III: through its separate Data Importer.",
+  "AlternativeFirefly.rowImportNote":
+    "Financy: not in the app yet. Firefly III: through its separate Data Importer.",
   "AlternativeFirefly.rowSelfHost": "Free to self-host under AGPL-3.0",
   "AlternativeFirefly.sourceFaq": "Firefly III FAQ",
   "AlternativeFirefly.sourceCurrencies": "Firefly III docs: currencies",
   "AlternativeFirefly.sourceRates": "Firefly III docs: exchange rates",
   "AlternativeFirefly.sourceReadme": "Firefly III README",
-  "AlternativeFirefly.sourceImporter": "Firefly III docs: CSV import",
+  "AlternativeFirefly.sourceImporter": "Firefly III docs: importing data",
   "AlternativeFirefly.method":
     "Every Firefly III fact comes from Firefly III's own documentation or README, linked in its row. Financy's rows list only what works in the app today. We re-check every row every three months and change the date only then. Spotted something out of date? Write to <mail>{email}</mail>.",
   "AlternativeFirefly.fit":
-    "Financy is not double-entry accounting and has no automatic bank sync.",
+    "Financy is not double-entry accounting, has no automatic bank sync and cannot import bank statements yet.",
   "AlternativeFirefly.better":
     "For double-entry bookkeeping, stay on <firefly>Firefly III</firefly>, or look at <gnucash>GnuCash</gnucash>, <beancount>Beancount</beancount> or <hledger>hledger</hledger>. If you want an open-source tracker shaped like Financy, <sure>Sure</sure> is the closest: also AGPL-3.0, and self-hosted with Docker.",
   "AlternativeFirefly.moving":
-    "There is no direct importer from Firefly III yet. Export your transactions from Firefly III as a CSV file, then import that file in Financy, the same way you import a bank statement.",
+    "Financy cannot import a Firefly III export yet, so you cannot move your history into the app today. If your history matters to you, stay on Firefly III for now.",
   "AlternativeFirefly.loginQuestion":
     "Can my partner and I use Firefly III, each with our own login?",
   "AlternativeFirefly.loginAnswer":
@@ -591,7 +594,7 @@ export default {
     "No. In Financy an account holds money, a category says why it moved, and a transfer is one record with two sides. For double-entry, stay on Firefly III, or try GnuCash, Beancount or hledger.",
   "AlternativeFirefly.dataQuestion": "Can I bring my Firefly III data to Financy?",
   "AlternativeFirefly.dataAnswer":
-    "There is no direct importer yet. Export your transactions from Firefly III as CSV and import the file into Financy.",
+    "Not yet. Financy cannot import a Firefly III export in the app today.",
   "AlternativeFirefly.costQuestion": "What does each cost?",
   "AlternativeFirefly.costAnswer":
     "Both are free to self-host under AGPL-3.0. Firefly III's FAQ says its maker runs no hosted version. Financy's cloud will be a paid plan.",
