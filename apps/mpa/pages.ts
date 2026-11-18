@@ -9,6 +9,7 @@ import { DOC_SLUGS, DOCS_PATH, readDoc } from "./docs-site.ts"
 import { CHANGELOG_HEAD } from "./routes/[[lang]]/changelog.tsx"
 import { DOCS_HEAD } from "./routes/[[lang]]/docs/index.tsx"
 import { docTitle } from "./routes/[[lang]]/docs/[slug].tsx"
+import { AUDIENCE_PAGES, audiencePageIn, audiencePath } from "./audience-data.ts"
 import { FEATURE_PAGES, featurePageIn, featurePath } from "./features-data.tsx"
 import {
   alternativeIn,
@@ -77,6 +78,12 @@ const FEATURE_SITE_PAGES: readonly SitePage[] = FEATURE_PAGES.map((keys) => {
   return sitePage(featurePath(page.slug), page, page.updated)
 })
 
+/** Every audience page (`/for/<slug>`), with its English head and the day its words changed. */
+const AUDIENCE_SITE_PAGES: readonly SitePage[] = AUDIENCE_PAGES.map((keys) => {
+  const page = audiencePageIn(siteEnglishText(), keys)
+  return sitePage(audiencePath(page.slug), page, page.updated)
+})
+
 /**
  * The comparisons' hub, dated by its newest comparison, then every comparison
  * (`/alternatives/<slug>`), each dated by the day its rows were checked.
@@ -102,6 +109,7 @@ export const SITE_PAGES: readonly SitePage[] = [
   sitePage(`/`, HOME_HEAD, HOME_UPDATED),
   sitePage(`/features`, FEATURES_HEAD, FEATURES_UPDATED),
   ...FEATURE_SITE_PAGES,
+  ...AUDIENCE_SITE_PAGES,
   ...ALTERNATIVE_SITE_PAGES,
   sitePage(API_DOCS_PATH, API_DOCS_HEAD, API_DOCS_HEAD.updated, true),
   sitePage(DOCS_PATH, DOCS_HEAD, day(DOC_PAGES.map(({ updated }) => updated).sort().at(-1)), true),

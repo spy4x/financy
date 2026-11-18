@@ -615,6 +615,11 @@ function footerGroups(
       links: [
         { label: t.t(`SiteNav.features`), href: href(`/features`) },
         { label: t.t(`SiteFooter.alternatives`), href: href(`/alternatives`) },
+        // Written out: `audience-data.ts` reads the prices from a page that imports this file.
+        { label: t.t(`AudienceExpats.name`), href: href(`/for/expats`) },
+        { label: t.t(`AudienceCouples.name`), href: href(`/for/couples`) },
+        { label: t.t(`AudienceFamilies.name`), href: href(`/for/families`) },
+        { label: t.t(`AudienceSmallBusiness.name`), href: href(`/for/small-business`) },
         ...(blog ? [{ label: t.t(`SiteNav.blog`), href: href(BLOG_PATH) }] : []),
       ],
     },
