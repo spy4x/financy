@@ -572,7 +572,7 @@ export default {
   "AlternativeFirefly.better":
     "複式簿記が必要なら、<firefly>Firefly III</firefly> のままにするか、<gnucash>GnuCash</gnucash>、<beancount>Beancount</beancount>、<hledger>hledger</hledger> を検討してください。Financy に近い形のオープンソースアプリなら、いちばん近いのは <sure>Sure</sure> です。こちらも AGPL-3.0 で、Docker でセルフホストします。",
   "AlternativeFirefly.moving":
-    "Financy はまだ Firefly III のエクスポートを取り込めないため、現時点では履歴をアプリに移せません。履歴が大切な場合は、当面 Firefly III を使い続けてください。",
+    "Financy はまだ Firefly III からエクスポートしたデータを取り込めないため、現時点では履歴をアプリに移せません。履歴が大切な場合は、当面 Firefly III を使い続けてください。",
   "AlternativeFirefly.loginQuestion": "Firefly III を夫婦で、それぞれ自分のログインで使えますか？",
   "AlternativeFirefly.loginAnswer":
     "今はできません。Firefly III の FAQ によると、帳簿は 1 人のユーザーに固定されているため、夫婦は 1 つのユーザー名とパスワードを共有することになります。共有の仕組みは計画中です。Financy なら、それぞれが自分のログインとロールで入り、2 人とも同じ口座を見られます。",
@@ -581,7 +581,7 @@ export default {
     "いいえ。Financy では、口座がお金を持ち、カテゴリがお金の動いた理由を表し、振替は 2 つの側を持つ 1 件の記録です。複式簿記が必要なら、Firefly III のままにするか、GnuCash、Beancount、hledger を試してください。",
   "AlternativeFirefly.dataQuestion": "Firefly III のデータを Financy に移せますか？",
   "AlternativeFirefly.dataAnswer":
-    "まだできません。現時点では、Financy のアプリで Firefly III のエクスポートを取り込むことはできません。",
+    "まだできません。現時点では、Firefly III からエクスポートしたデータを Financy のアプリに取り込むことはできません。",
   "AlternativeFirefly.costQuestion": "それぞれの料金は？",
   "AlternativeFirefly.costAnswer":
     "どちらも AGPL-3.0 で、セルフホストなら無料です。Firefly III の FAQ によると、開発者はホスティング版を提供していません。Financy のクラウドは有料プランになる予定です。",

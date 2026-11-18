@@ -580,11 +580,11 @@ export default {
   "AlternativeFirefly.method":
     "Jede Aussage über Firefly III stammt aus der Dokumentation oder dem README von Firefly III und ist in ihrer Zeile verlinkt. Die Zeilen von Financy nennen nur, was heute in der App funktioniert. Wir prüfen jede Zeile alle drei Monate neu und ändern erst dann das Datum. Etwas ist veraltet? Schreib an <mail>{email}</mail>.",
   "AlternativeFirefly.fit":
-    "Financy ist keine doppelte Buchführung, hat keinen automatischen Bankabgleich und kann noch keine Kontoauszüge importieren.",
+    "Financy ist keine doppelte Buchführung, hat keine automatische Synchronisierung mit der Bank und kann noch keine Kontoauszüge importieren.",
   "AlternativeFirefly.better":
     "Für doppelte Buchführung bleib bei <firefly>Firefly III</firefly> oder sieh dir <gnucash>GnuCash</gnucash>, <beancount>Beancount</beancount> oder <hledger>hledger</hledger> an. Suchst du ein Open-Source-Tool, das wie Financy aufgebaut ist, kommt <sure>Sure</sure> am nächsten: ebenfalls AGPL-3.0 und mit Docker selbst gehostet.",
   "AlternativeFirefly.moving":
-    "Financy kann einen Export aus Firefly III noch nicht importieren, du kannst deinen Verlauf also heute nicht in die App übernehmen. Wenn dir dein Verlauf wichtig ist, bleib vorerst bei Firefly III.",
+    "Financy kann einen Export aus Firefly III noch nicht importieren, du kannst deine Historie also heute nicht in die App übernehmen. Wenn dir deine Historie wichtig ist, bleib vorerst bei Firefly III.",
   "AlternativeFirefly.loginQuestion":
     "Können wir Firefly III zu zweit nutzen, jede Person mit eigenem Login?",
   "AlternativeFirefly.loginAnswer":

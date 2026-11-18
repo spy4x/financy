@@ -507,7 +507,7 @@ export default {
   "AlternativeFirefly.rowLoginsNote": "Firefly III：每个账本一个账号；共享功能在计划中。",
   "AlternativeFirefly.rowCurrencies": "多种货币的账户",
   "AlternativeFirefly.rowTotal": "换算成一种主货币的总额",
-  "AlternativeFirefly.rowTotalNote": "Firefly III：在你开启汇率之前，换算功能处于关闭状态。",
+  "AlternativeFirefly.rowTotalNote": "Firefly III：要先开启汇率，换算功能才会打开。",
   "AlternativeFirefly.rowNoRate": "没有汇率的货币不计入总额，并会注明",
   "AlternativeFirefly.rowNoRateNote": "Firefly III 没有汇率时按 1 计算。",
   "AlternativeFirefly.rowDoubleEntry": "复式记账",
@@ -527,7 +527,7 @@ export default {
   "AlternativeFirefly.better":
     "如果需要复式记账，就继续用 <firefly>Firefly III</firefly>，或者看看 <gnucash>GnuCash</gnucash>、<beancount>Beancount</beancount> 或 <hledger>hledger</hledger>。如果你想要一款形态和 Financy 相近的开源应用，最接近的是 <sure>Sure</sure>：同样是 AGPL-3.0，用 Docker 自托管。",
   "AlternativeFirefly.moving":
-    "Financy 目前还不能导入 Firefly III 的导出文件，所以现在无法把你的历史记录迁移到应用中。如果你很看重历史记录，暂时先继续使用 Firefly III。",
+    "Financy 目前还不能导入 Firefly III 的导出文件，所以现在无法把你的历史记录迁移到应用中。如果你很看重历史记录，就先继续用 Firefly III 吧。",
   "AlternativeFirefly.loginQuestion": "我和伴侣能各用自己的账号使用 Firefly III 吗？",
   "AlternativeFirefly.loginAnswer":
     "目前不能。Firefly III 的常见问题里说，每个账本只绑定一个用户，所以两个人只能共用一个用户名和密码；共享模式在计划中。在 Financy 里，你们每人用自己的账号和角色登录，看到同样的账户。",

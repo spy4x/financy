@@ -564,7 +564,7 @@ export default {
   "AlternativeFirefly.better":
     "للقيد المزدوج، ابقَ على <firefly>Firefly III</firefly> أو اطّلع على <gnucash>GnuCash</gnucash> أو <beancount>Beancount</beancount> أو <hledger>hledger</hledger>. وإن أردت تطبيقًا مفتوح المصدر يشبه Financy في شكله، فأقربها <sure>Sure</sure>: بترخيص AGPL-3.0 أيضًا، ويُستضاف ذاتيًا عبر Docker.",
   "AlternativeFirefly.moving":
-    "لا يستطيع Financy بعد استيراد ملف مُصدَّر من Firefly III، لذا لا يمكنك اليوم نقل سجلك إلى التطبيق. إذا كان سجلك مهمًا لك، فابقَ على Firefly III في الوقت الحالي.",
+    "لا يستطيع Financy بعد استيراد ملف مُصدَّر من Firefly III، لذا لا يمكنك اليوم نقل سجلك المالي إلى التطبيق. إذا كان هذا السجل مهمًا لك، فابقَ على Firefly III في الوقت الحالي.",
   "AlternativeFirefly.loginQuestion":
     "هل يمكنني أنا وشريكي استخدام Firefly III، لكلٍّ منا تسجيل دخوله الخاص؟",
   "AlternativeFirefly.loginAnswer":
