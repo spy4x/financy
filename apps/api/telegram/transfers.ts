@@ -408,7 +408,6 @@ export function createTransferCommands(
       stored = found.transfer
     }
     await drop(ctx, account)
-    await ctx.conversation.end()
     const text = words.stored({
       sent: money(draft, stored.sentAmount, from.currency),
       from: isolate(from.name),
