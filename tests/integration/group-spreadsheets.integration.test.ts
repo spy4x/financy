@@ -143,7 +143,64 @@ async function sheets(sql: postgres.Sql, h: Household, language = `en`) {
     accounts: read(`accounts.csv`),
     categories: read(`categories.csv`),
     budgets: read(`budgets.csv`),
+    transactions: read(`transactions.csv`),
+    transfers: read(`transfers.csv`),
   }
+}
+
+/** An entry with every stored fact stated; a positive `accountAmount` is an income. */
+async function storedEntry(sql: postgres.Sql, h: Household, entry: {
+  accountId: string
+  categoryId: string
+  amount: number
+  currency: string
+  accountAmount: number
+  date: string
+  memo?: string
+  createdBy?: number | null
+}) {
+  const kind = entry.amount < 0 ? TransactionKind.EXPENSE : TransactionKind.INCOME
+  const createdBy = entry.createdBy === undefined ? h.owner : entry.createdBy
+  await sql`
+    INSERT INTO transactions (id, group_id, account_id, category_id, kind, account_amount, amount,
+      currency, converted, memo, date, change_sequence, created_by_user_id, updated_by_user_id)
+    VALUES (${uuidV7()}, ${h.groupId}, ${entry.accountId}, ${entry.categoryId}, ${kind},
+      ${entry.accountAmount}, ${entry.amount}, ${entry.currency}, false, ${entry.memo ?? ``},
+      ${entry.date}, 1, ${createdBy}, ${createdBy})
+  `
+}
+
+/** A transfer whose two amounts may differ, between accounts of two currencies. */
+async function storedTransfer(sql: postgres.Sql, h: Household, transfer: {
+  fromId: string
+  toId: string
+  sent: number
+  received: number
+  date: string
+  memo?: string
+}) {
+  await sql`
+    INSERT INTO transfers (id, group_id, from_account_id, to_account_id, sent_amount,
+      received_amount, converted, memo, date, change_sequence, created_by_user_id,
+      updated_by_user_id)
+    VALUES (${uuidV7()}, ${h.groupId}, ${transfer.fromId}, ${transfer.toId}, ${transfer.sent},
+      ${transfer.received}, false, ${transfer.memo ?? ``}, ${transfer.date}, 1, ${h.owner},
+      ${h.owner})
+  `
+}
+
+/** The household's main currency, which a new household has as its default until it is set. */
+async function baseCurrency(sql: postgres.Sql, h: Household, currency: string) {
+  await sql`
+    INSERT INTO household_settings (group_id, base_currency) VALUES (${h.groupId}, ${currency})
+    ON CONFLICT (group_id) DO UPDATE SET base_currency = ${currency}
+  `
+}
+
+/** Columns of `transactions.csv` that hold the conversion, by name. */
+function conversion(row: string[]) {
+  const [baseAmount, base, rate, rateDate, rateSource] = row.slice(8, 13)
+  return { baseAmount, base, rate, rateDate, rateSource }
 }
 
 /** The rows of `budgets.csv` at `now`, as their cells read. */
@@ -522,5 +579,475 @@ Deno.test(`the spreadsheets never show another household's rows`, async () => {
     expect(new Set(rows.map(([_month, name]) => name))).toEqual(new Set([`Our category`]))
     expect(new Set(rows.map(([_month, _name, _limit, _currency, spent]) => spent)))
       .toEqual(new Set([`0.00`]))
+  })
+})
+
+/** A stored rate from the euro on `date`, from `source`. */
+async function storedRate(
+  sql: postgres.Sql,
+  quote: string,
+  rate: string,
+  date: string,
+  source: string = RATE_SOURCES.ecb,
+) {
+  await sql`
+    INSERT INTO exchange_rates (id, base, quote, rate, rate_date, source)
+    VALUES (${uuidV7()}, ${ECB_BASE}, ${quote}, ${rate}, ${date}, ${source})
+  `
+}
+
+/** Adds a person with `name` to the household; an empty name leaves them unnamed. */
+async function member(sql: postgres.Sql, h: Household, firstName: string, lastName = ``) {
+  const userId = await insertUser(sql)
+  await sql`
+    UPDATE users SET first_name = ${firstName || null}, last_name = ${lastName || null}
+    WHERE id = ${userId}
+  `
+  await sql`
+    INSERT INTO group_members (group_id, user_id, role, added_by_user_id)
+    VALUES (${h.groupId}, ${userId}, ${GroupRole.EDITOR}, ${h.owner})
+  `
+  return userId
+}
+
+Deno.test(`the transactions spreadsheet shows a ¥1,500 expense from a yen account in a euro household`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedRate(sql, `JPY`, `160`, `2026-03-01`)
+    const yen = await h.account(`Yen`, `JPY`)
+    const food = await h.category(`Food`)
+    const groceries = await h.category(`Groceries`, food)
+    await storedEntry(sql, h, {
+      accountId: yen,
+      categoryId: groceries,
+      amount: -1500,
+      currency: `JPY`,
+      accountAmount: -1500,
+      date: `2026-03-02`,
+      memo: `Market`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(transactions.slice(1)).toEqual([[
+      `2026-03-02`,
+      `Expense`,
+      `Yen`,
+      `Groceries`,
+      `Food`,
+      `Market`,
+      `1500`,
+      `JPY`,
+      `9.38`,
+      `EUR`,
+      `0.00625`,
+      `2026-03-01`,
+      `ECB`,
+      `1500`,
+      `JPY`,
+      `Unnamed member`,
+    ]])
+  })
+})
+
+Deno.test(`the transactions spreadsheet writes 0.00012345 BTC in full, never with an exponent`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const bitcoin = await h.account(`Bitcoin`, `BTC`, 0, AccountKind.CRYPTO)
+    await storedEntry(sql, h, {
+      accountId: bitcoin,
+      categoryId: await h.category(`Food`),
+      amount: -12345,
+      currency: `BTC`,
+      accountAmount: -12345,
+      date: `2026-03-02`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(transactions[1][6]).toBe(`0.00012345`)
+    expect(transactions[1][13]).toBe(`0.00012345`)
+  })
+})
+
+Deno.test(`the transactions spreadsheet counts a yen entry paid from a euro account at the account's euros, with no rate`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedRate(sql, `JPY`, `160`, `2026-03-01`)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Euro`, `EUR`),
+      categoryId: await h.category(`Food`),
+      amount: -1500,
+      currency: `JPY`,
+      accountAmount: -1200,
+      date: `2026-03-02`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(conversion(transactions[1])).toEqual({
+      baseAmount: `12.00`,
+      base: `EUR`,
+      rate: ``,
+      rateDate: ``,
+      rateSource: ``,
+    })
+  })
+})
+
+Deno.test(`the transactions spreadsheet counts an entry typed in the main currency at the typed amount, with no rate`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedRate(sql, `USD`, `1.25`, `2026-03-01`)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Dollars`, `USD`),
+      categoryId: await h.category(`Food`),
+      amount: -1000,
+      currency: `EUR`,
+      accountAmount: -1300,
+      date: `2026-03-02`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(conversion(transactions[1])).toEqual({
+      baseAmount: `10.00`,
+      base: `EUR`,
+      rate: ``,
+      rateDate: ``,
+      rateSource: ``,
+    })
+  })
+})
+
+Deno.test(`the transactions spreadsheet converts a yen entry from a dollar account at the dollar's rate`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedRate(sql, `USD`, `1.25`, `2026-03-01`)
+    // The typed yen would come to 9.38 euros at this rate; the ledger never uses it.
+    await storedRate(sql, `JPY`, `160`, `2026-03-01`)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Dollars`, `USD`),
+      categoryId: await h.category(`Food`),
+      amount: -1500,
+      currency: `JPY`,
+      accountAmount: -1000,
+      date: `2026-03-02`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(conversion(transactions[1])).toEqual({
+      baseAmount: `8.00`,
+      base: `EUR`,
+      rate: `0.8`,
+      rateDate: `2026-03-01`,
+      rateSource: `ECB`,
+    })
+  })
+})
+
+Deno.test(`the transactions spreadsheet quotes the rate from the account's currency whichever way it is stored`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await baseCurrency(sql, h, `USD`)
+    await storedRate(sql, `USD`, `1.25`, `2026-03-01`)
+    await storedRate(sql, `GBP`, `0.5`, `2026-03-01`)
+    const food = await h.category(`Food`)
+    // Stored from the euro, as this pair is asked for.
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Euro`, `EUR`),
+      categoryId: food,
+      amount: -1000,
+      currency: `EUR`,
+      accountAmount: -1000,
+      date: `2026-03-02`,
+    })
+    // Derived through the euro: 1.25 / 0.5.
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Pounds`, `GBP`),
+      categoryId: food,
+      amount: -1000,
+      currency: `GBP`,
+      accountAmount: -1000,
+      date: `2026-03-03`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(transactions.slice(1).map((row) => [row[7], row[8], row[10]])).toEqual([
+      [`EUR`, `12.50`, `1.25`],
+      [`GBP`, `25.00`, `2.5`],
+    ])
+  })
+})
+
+Deno.test(`the transactions spreadsheet keeps an entry with no rate and leaves its conversion cells empty`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Dong`, `VND`),
+      categoryId: await h.category(`Food`),
+      amount: -2500000,
+      currency: `VND`,
+      accountAmount: -2500000,
+      date: `2026-03-02`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(transactions).toHaveLength(2)
+    expect(transactions[1][6]).toBe(`2500000`)
+    expect(conversion(transactions[1])).toEqual({
+      baseAmount: ``,
+      base: `EUR`,
+      rate: ``,
+      rateDate: ``,
+      rateSource: ``,
+    })
+  })
+})
+
+Deno.test(`the transactions spreadsheet leaves a fallback rate's value out and keeps its amount, date and source`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedRate(sql, `VND`, `30000`, `2026-03-01`, RATE_SOURCES.fallback)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Dong`, `VND`),
+      categoryId: await h.category(`Food`),
+      amount: -3000000,
+      currency: `VND`,
+      accountAmount: -3000000,
+      date: `2026-03-02`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(conversion(transactions[1])).toEqual({
+      baseAmount: `100.00`,
+      base: `EUR`,
+      rate: ``,
+      rateDate: `2026-03-01`,
+      rateSource: `ExchangeRate-API`,
+    })
+  })
+})
+
+Deno.test(`the transactions spreadsheet names the demo's rates and shows any other source as stored`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedRate(sql, `USD`, `1.25`, `2026-03-01`, RATE_SOURCES.demo)
+    await storedRate(sql, `GBP`, `0.5`, `2026-03-01`, `manual`)
+    const food = await h.category(`Food`)
+    for (const [name, currency, date] of [[`D`, `USD`, `2026-03-02`], [`P`, `GBP`, `2026-03-03`]]) {
+      await storedEntry(sql, h, {
+        accountId: await h.account(name, currency),
+        categoryId: food,
+        amount: -1000,
+        currency,
+        accountAmount: -1000,
+        date,
+      })
+    }
+    const { transactions } = await sheets(sql, h)
+    expect(transactions.slice(1).map((row) => row[12])).toEqual([`Demo`, `manual`])
+  })
+})
+
+Deno.test(`the transactions spreadsheet names who added an entry only while they are a member`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const named = await member(sql, h, `Ada`, `Lovelace`)
+    const unnamed = await member(sql, h, ``)
+    const removed = await member(sql, h, `Grace`, `Hopper`)
+    await sql`DELETE FROM group_members WHERE group_id = ${h.groupId} AND user_id = ${removed}`
+    const closed = await member(sql, h, `Alan`, `Turing`)
+    await sql`UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ${closed}`
+    const account = await h.account(`Main`, `EUR`)
+    const category = await h.category(`Food`)
+    const creators = [named, unnamed, removed, closed, null]
+    for (const [index, createdBy] of creators.entries()) {
+      await storedEntry(sql, h, {
+        accountId: account,
+        categoryId: category,
+        amount: -100,
+        currency: `EUR`,
+        accountAmount: -100,
+        date: `2026-03-0${index + 1}`,
+        createdBy,
+      })
+    }
+    const { transactions } = await sheets(sql, h)
+    expect(transactions.slice(1).map((row) => row[15])).toEqual([
+      `Ada Lovelace`,
+      `Unnamed member`,
+      `Former member`,
+      `Former member`,
+      `Former member`,
+    ])
+  })
+})
+
+Deno.test(`the transactions spreadsheet guards a memo a spreadsheet would run as a formula`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Main`, `EUR`),
+      categoryId: await h.category(`Food`),
+      amount: -100,
+      currency: `EUR`,
+      accountAmount: -100,
+      date: `2026-03-02`,
+      memo: `=HYPERLINK("http://example.com")`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(transactions[1][5]).toBe(`'=HYPERLINK("http://example.com")`)
+  })
+})
+
+Deno.test(`the transactions spreadsheet reads an income unsigned and in the person's language`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Main`, `EUR`),
+      categoryId: await h.category(`Salary`, null, CategoryKind.INCOME),
+      amount: 250000,
+      currency: `EUR`,
+      accountAmount: 250000,
+      date: `2026-03-02`,
+    })
+    const { transactions, transfers } = await sheets(sql, h, `ru`)
+    expect(transactions[0].slice(0, 3)).toEqual([`Дата`, `Тип`, `Счёт`])
+    expect(transactions[0][8]).toBe(`Сумма в основной валюте`)
+    expect(transfers[0][7]).toBe(`Расчётный курс (зачислено за 1 отправленную единицу)`)
+    expect([transactions[1][1], transactions[1][6]]).toEqual([`Доход`, `2500.00`])
+  })
+})
+
+Deno.test(`the transfers spreadsheet shows both amounts and the implied rate on one row`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const dollars = await h.account(`Dollars`, `USD`)
+    const yen = await h.account(`Yen`, `JPY`)
+    await storedTransfer(sql, h, {
+      fromId: dollars,
+      toId: yen,
+      sent: 10000,
+      received: 15000,
+      date: `2026-03-02`,
+      memo: `Trip`,
+    })
+    await storedTransfer(sql, h, {
+      fromId: yen,
+      toId: dollars,
+      sent: 15000,
+      received: 10000,
+      date: `2026-03-03`,
+    })
+    const { transfers } = await sheets(sql, h)
+    expect(transfers.slice(1)).toEqual([
+      [`2026-03-02`, `Dollars`, `100.00`, `USD`, `Yen`, `15000`, `JPY`, `150`, `Trip`],
+      [
+        `2026-03-03`,
+        `Yen`,
+        `15000`,
+        `JPY`,
+        `Dollars`,
+        `100.00`,
+        `USD`,
+        `0.0066666666666666666667`,
+        ``,
+      ],
+    ])
+  })
+})
+
+Deno.test(`the transfers spreadsheet leaves the implied rate empty between two accounts of one currency`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await h.transfer(
+      await h.account(`Main`, `EUR`),
+      await h.account(`Savings`, `EUR`),
+      5000,
+      `2026-03-02`,
+    )
+    const { transfers } = await sheets(sql, h)
+    expect(transfers.slice(1)).toEqual([
+      [`2026-03-02`, `Main`, `50.00`, `EUR`, `Savings`, `50.00`, `EUR`, ``, ``],
+    ])
+  })
+})
+
+Deno.test(`the entry and transfer spreadsheets leave out deleted rows and other households`, async () => {
+  await withSchema(async (sql) => {
+    const theirs = await household(sql, `Theirs`)
+    const theirMain = await theirs.account(`Their main`, `EUR`)
+    await theirs.entry(theirMain, await theirs.category(`Their food`), -500, `EUR`, `2026-03-02`)
+    await theirs.transfer(
+      theirMain,
+      await theirs.account(`Their savings`, `EUR`),
+      500,
+      `2026-03-02`,
+    )
+
+    const ours = await household(sql)
+    const main = await ours.account(`Main`, `EUR`)
+    const savings = await ours.account(`Savings`, `EUR`)
+    const food = await ours.category(`Food`)
+    await ours.entry(main, food, -100, `EUR`, `2026-03-02`)
+    await ours.entry(main, food, -200, `EUR`, `2026-03-03`)
+    await ours.transfer(main, savings, 300, `2026-03-02`)
+    await ours.transfer(main, savings, 400, `2026-03-03`)
+    await sql`
+      UPDATE transactions SET deleted_at = CURRENT_TIMESTAMP
+      WHERE group_id = ${ours.groupId} AND date = '2026-03-03'
+    `
+    await sql`
+      UPDATE transfers SET deleted_at = CURRENT_TIMESTAMP
+      WHERE group_id = ${ours.groupId} AND date = '2026-03-03'
+    `
+
+    const { transactions, transfers } = await sheets(sql, ours)
+    expect(transactions.slice(1).map((row) => [row[2], row[6]])).toEqual([[`Main`, `1.00`]])
+    expect(transfers.slice(1).map((row) => [row[1], row[2]])).toEqual([[`Main`, `3.00`]])
+  })
+})
+
+Deno.test(`the entry and transfer spreadsheets lose and repeat no row past one page, oldest first`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const main = await h.account(`Main`, `EUR`)
+    const savings = await h.account(`Savings`, `EUR`)
+    const food = await h.category(`Food`)
+    const count = 2_100
+    // Three days, so a page boundary falls inside a day and the id must break the tie.
+    const dateOf = (index: number) => `2026-03-0${(index % 3) + 1}`
+    const common = {
+      group_id: h.groupId,
+      converted: false,
+      change_sequence: 1,
+      created_by_user_id: h.owner,
+      updated_by_user_id: h.owner,
+    }
+    const entries = Array.from({ length: count }, (_, index) => ({
+      ...common,
+      id: uuidV7(),
+      account_id: main,
+      category_id: food,
+      kind: TransactionKind.EXPENSE,
+      account_amount: -100,
+      amount: -100,
+      currency: `EUR`,
+      memo: `entry ${index}`,
+      date: dateOf(index),
+    }))
+    const moves = Array.from({ length: count }, (_, index) => ({
+      ...common,
+      id: uuidV7(),
+      from_account_id: main,
+      to_account_id: savings,
+      sent_amount: 100,
+      received_amount: 100,
+      memo: `transfer ${index}`,
+      date: dateOf(index),
+    }))
+    for (let start = 0; start < count; start += 500) {
+      await sql`INSERT INTO transactions ${sql(entries.slice(start, start + 500))}`
+      await sql`INSERT INTO transfers ${sql(moves.slice(start, start + 500))}`
+    }
+
+    const { transactions, transfers } = await sheets(sql, h)
+    const expected = (noun: string) =>
+      Array.from({ length: count }, (_, index) => `${noun} ${index}`).sort()
+    const entryRows = transactions.slice(1)
+    expect(entryRows.map((row) => row[5]).sort()).toEqual(expected(`entry`))
+    expect(entryRows.map((row) => row[0])).toEqual(entryRows.map((row) => row[0]).sort())
+    const transferRows = transfers.slice(1)
+    expect(transferRows.map((row) => row[8]).sort()).toEqual(expected(`transfer`))
+    expect(transferRows.map((row) => row[0])).toEqual(transferRows.map((row) => row[0]).sort())
   })
 })
