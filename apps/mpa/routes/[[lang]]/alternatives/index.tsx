@@ -88,7 +88,7 @@ function AlternativesBody(): JSX.Element {
             <h2 class="text-lg font-semibold text-balance break-words hyphens-auto sm:text-xl">
               <a
                 href={href(`/alternatives/${page.slug}`)}
-                class="inline-flex min-h-11 items-center text-foreground underline-offset-4 hover:text-primary hover:underline sm:min-h-9"
+                class="inline-flex min-h-11 items-center text-primary underline-offset-4 hover:underline sm:min-h-9"
               >
                 {page.title}
               </a>
