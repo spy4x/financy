@@ -127,6 +127,13 @@ describe("the audience pages", () => {
         }
       })
 
+      it("gives both demo buttons a 44 px touch target", async () => {
+        const { html } = await get(`/for/${page.slug}`)
+        const buttons = html.match(/<a[^>]*data-e2e="audience-demo(-end)?"[^>]*>/g) ?? []
+        expect(buttons.length).toBe(2)
+        for (const button of buttons) expect(button).toMatch(/class="[^"]*\bmin-h-11\b/)
+      })
+
       it("links the other three audience pages and never itself", async () => {
         const { html } = await get(`/for/${page.slug}`)
         const also = html.slice(html.indexOf(`data-e2e="audience-also"`))

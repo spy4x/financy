@@ -98,7 +98,8 @@ function DemoButton({ slug, demo, e2e }: { slug: string; demo: string; e2e: stri
     href: demo,
     rel: `nofollow`,
     size: `lg` as const,
-    class: `w-full sm:w-auto`,
+    // `lg` alone is 40 px tall; a touch target needs 44.
+    class: `min-h-11 w-full sm:w-auto`,
     children: t.t(`AudiencePage.demo`),
     "data-e2e": e2e,
     "data-umami-event": `try-demo`,
