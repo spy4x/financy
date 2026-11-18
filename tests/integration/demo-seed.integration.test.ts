@@ -75,14 +75,15 @@ import {
   readAdminNewsletterStats,
 } from "@server/subscribers/admin-newsletter.ts"
 import { SAMPLE_CATALOG_ITEMS, SAMPLE_CATALOG_SOURCES } from "@server/catalog/sample-catalog.ts"
-import { NOTES_OFF, NOTES_ON } from "@server/notes/setup.ts"
+import { NOTES_OFF } from "@server/notes/setup.ts"
 
 /**
  * The public demo's seed, sample groups, wipe and reset (docs/demo.md) against a real Postgres with every
  * migration applied, plus the migration history table the runner keeps in a migrated database.
  *
- * Needs `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME` (recipe in docs/handoff.md). It fails when
- * they are missing rather than skipping.
+ * Needs `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME` (recipe in docs/handoff.md), and a user who
+ * may create databases: each test runs on its own clone of a template. It fails when they are
+ * missing rather than skipping.
  */
 
 const MIGRATIONS_DIR = "libs/server/db/migrations"
@@ -105,33 +106,162 @@ const DEV_OPTIONS: DemoSeedOptions = { ...OPTIONS, adminPassword: PASSWORD }
 /** A day whose fake data the reset picks: the demo's date there is 2026-10-20. */
 const DAY = new Date("2026-10-20T12:00:00Z")
 
-/** Runs `body` against a fresh schema with every migration applied, and drops the schema after. */
-async function withSchema(body: (sql: postgres.Sql) => Promise<void>): Promise<void> {
+/** The demo's administrators as the worker reads them from the env, the owner's included. */
+const DEMO_ADMINS = { pepper: PEPPER, privatePassword: PASSWORD }
+
+/** Each test's own database. */
+const CLONE_PREFIX = "demo_test_"
+/** The databases tests are cloned from. Only names with this prefix are ever swept. */
+const TEMPLATE_PREFIX = "demo_template_"
+/** A template this old belongs to a run that died or was filtered: no run lasts this long. */
+const STALE_TEMPLATE_MS = 2 * 60 * 60_000
+
+/** The starting points several tests share, each built once by the real function. */
+const FIXTURES = {
+  seeded: async (sql: postgres.Sql) => {
+    expect(await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)).toBe(true)
+  },
+  seededDev: async (sql: postgres.Sql) => {
+    expect(await seedDemo(new AppDbBase({ sql }), sql, DEV_OPTIONS)).toBe(true)
+  },
+  resetPlain: (sql: postgres.Sql) =>
+    resetDemo(sql, { subscribers: SUBSCRIBERS, admins: null }, DAY),
+  resetAdmins: (sql: postgres.Sql) =>
+    resetDemo(sql, { subscribers: SUBSCRIBERS, admins: DEMO_ADMINS }, DAY),
+}
+
+/** Every template this run built, by what it holds, so each is built once. */
+const templates = new Map<string, Promise<string>>()
+/** The names of the templates this run created, for the file's last test to drop. */
+const runTemplates: string[] = []
+
+/** Runs `body` on a connection to `database`, by default the server's own, and closes it after. */
+async function connected<T>(
+  body: (sql: postgres.Sql) => Promise<T>,
+  database?: string,
+): Promise<T> {
   const settings = buildPostgresOptions(requireDbConnection())
-  const admin = postgres({ ...settings, max: 1, onnotice: () => {} })
-  const schema = `demo_test_${uuidV7().replaceAll("-", "")}`
   const sql = postgres({
     ...settings,
+    database: database ?? settings.db,
     max: 10,
     transform: postgres.camel,
-    connection: { options: `-c search_path=${schema}` },
+    // A test database needs no crash safety, and the commit wait was most of the seed's time.
+    connection: { options: "-c synchronous_commit=off" },
     onnotice: () => {},
   })
   try {
-    await admin`CREATE SCHEMA ${admin(schema)}`
-    const names = [...Deno.readDirSync(MIGRATIONS_DIR)].map((entry) => entry.name).sort()
-    for (const name of names) {
-      await sql.unsafe(await Deno.readTextFile(`${MIGRATIONS_DIR}/${name}`))
-    }
-    // What the migration runner keeps in a migrated database; the wipe must leave it alone.
-    await sql`CREATE TABLE migrations (name text PRIMARY KEY)`
-    await sql`INSERT INTO migrations ${sql(names.map((name) => ({ name })))}`
-    await body(sql)
+    return await body(sql)
   } finally {
     await sql.end({ timeout: 5 })
-    await admin`DROP SCHEMA IF EXISTS ${admin(schema)} CASCADE`
-    await admin.end({ timeout: 5 })
   }
+}
+
+/** Creates the database `name`, as a copy of `template` when one is given. */
+async function createDatabase(name: string, template?: string): Promise<void> {
+  await connected((admin) =>
+    template
+      ? admin`CREATE DATABASE ${admin(name)} TEMPLATE ${admin(template)}`
+      : admin`CREATE DATABASE ${admin(name)}`
+  )
+}
+
+/** Drops the database `name`, closing whatever a failed test left connected to it. */
+async function dropDatabase(name: string): Promise<void> {
+  await connected((admin) => admin`DROP DATABASE IF EXISTS ${admin(name)} WITH (FORCE)`)
+}
+
+/** Which of `names` exist on the server, sorted. */
+function existingDatabases(names: string[]): Promise<string[]> {
+  return connected(async (admin) => {
+    const rows = await admin<{ datname: string }[]>`
+      SELECT datname FROM pg_database WHERE datname IN ${admin(names)} ORDER BY datname COLLATE "C"
+    `
+    return rows.map((row) => row.datname)
+  })
+}
+
+/** Drops the templates of runs that ended without the file's last test; a uuidV7 name dates each. */
+async function sweepStaleTemplates(): Promise<void> {
+  const rows = await connected((admin) =>
+    admin<{ datname: string }[]>`
+      SELECT datname FROM pg_database WHERE starts_with(datname, ${TEMPLATE_PREFIX})
+    `
+  )
+  for (const { datname } of rows) {
+    const start = TEMPLATE_PREFIX.length
+    const createdAt = parseInt(datname.slice(start, start + 12), 16)
+    if (Date.now() - createdAt > STALE_TEMPLATE_MS) await dropDatabase(datname)
+  }
+}
+
+/** Applies every migration and writes the history table the migration runner keeps. */
+async function migrate(sql: postgres.Sql): Promise<void> {
+  const names = [...Deno.readDirSync(MIGRATIONS_DIR)].map((entry) => entry.name).sort()
+  for (const name of names) {
+    await sql.unsafe(await Deno.readTextFile(`${MIGRATIONS_DIR}/${name}`))
+  }
+  // What the migration runner keeps in a migrated database; the wipe must leave it alone.
+  await sql`CREATE TABLE migrations (name text PRIMARY KEY)`
+  await sql`INSERT INTO migrations ${sql(names.map((name) => ({ name })))}`
+}
+
+/** Makes a template from `source`, fills it, and closes its connections so it can be cloned. */
+async function buildTemplate(
+  fill: (sql: postgres.Sql) => Promise<void>,
+  source?: string,
+): Promise<string> {
+  const name = `${TEMPLATE_PREFIX}${uuidV7().replaceAll("-", "")}`
+  await createDatabase(name, source)
+  runTemplates.push(name)
+  await connected(fill, name)
+  return name
+}
+
+/** The template under `key`, built by `build` the first time it is asked for. */
+function memoisedTemplate(key: string, build: () => Promise<string>): Promise<string> {
+  const template = templates.get(key) ?? build()
+  templates.set(key, template)
+  return template
+}
+
+/** The migrated, empty template. Building it first clears what dead runs left behind. */
+function migratedTemplate(): Promise<string> {
+  return memoisedTemplate("migrated", async () => {
+    await sweepStaleTemplates()
+    return await buildTemplate(migrate)
+  })
+}
+
+/** Runs `body` on its own copy of `template`, and drops the copy after, also when `body` fails. */
+async function withClone(
+  template: string,
+  body: (sql: postgres.Sql) => Promise<void>,
+): Promise<void> {
+  const name = `${CLONE_PREFIX}${uuidV7().replaceAll("-", "")}`
+  await createDatabase(name, template)
+  try {
+    await connected(body, name)
+  } finally {
+    await dropDatabase(name)
+  }
+}
+
+/** Runs `body` against a fresh database with every migration applied, and drops it after. */
+async function withSchema(body: (sql: postgres.Sql) => Promise<void>): Promise<void> {
+  await withClone(await migratedTemplate(), body)
+}
+
+/** Runs `body` against a private copy of `fixture`, which it may change freely. */
+async function withSnapshot(
+  fixture: keyof typeof FIXTURES,
+  body: (sql: postgres.Sql) => Promise<void>,
+): Promise<void> {
+  const snapshot = await memoisedTemplate(
+    fixture,
+    async () => await buildTemplate(FIXTURES[fixture], await migratedTemplate()),
+  )
+  await withClone(snapshot, body)
 }
 
 interface Counts extends postgres.Row {
@@ -286,9 +416,7 @@ async function accountOf(sql: postgres.Sql, address: string) {
 }
 
 Deno.test("the public demo's seed creates no administrator, operator history or backup", async () => {
-  await withSchema(async (sql) => {
-    expect(await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)).toBe(true)
-
+  await withSnapshot("seeded", async (sql) => {
     // The public demo has no administrator: its password would be public.
     expect(await sql`SELECT 1 FROM auth_keys WHERE email = ${DEV_ADMIN_EMAIL}`).toHaveLength(0)
     expect(await sql`SELECT 1 FROM users WHERE role >= ${UserRole.OPERATOR}`).toHaveLength(0)
@@ -303,9 +431,7 @@ Deno.test("the public demo's seed creates no administrator, operator history or 
 })
 
 Deno.test("the development seed adds an administrator", async () => {
-  await withSchema(async (sql) => {
-    expect(await seedDemo(new AppDbBase({ sql }), sql, DEV_OPTIONS)).toBe(true)
-
+  await withSnapshot("seededDev", async (sql) => {
     expect(await canSignIn(sql, DEV_ADMIN_EMAIL, PASSWORD)).toBe(true)
     expect(await canSignIn(sql, DEV_ADMIN_EMAIL, `${PASSWORD}x`)).toBe(false)
     const account = await accountOf(sql, DEV_ADMIN_EMAIL)
@@ -316,8 +442,7 @@ Deno.test("the development seed adds an administrator", async () => {
 })
 
 Deno.test("the demo seed fills the database with the fake data", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     const data = fakeDemoData(OPTIONS.dataSeed, NOW)
     const people = FAKE_COUNTS.users
 
@@ -532,8 +657,7 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
 })
 
 Deno.test("the demo household's spreadsheets hold its accounts, categories and budgets", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     const [{ groupId, userId }] = await sql<{ groupId: string; userId: number }[]>`
       SELECT b.group_id, MIN(m.user_id) AS user_id FROM budgets b
       JOIN group_members m ON m.group_id = b.group_id
@@ -569,9 +693,8 @@ Deno.test("the demo household's spreadsheets hold its accounts, categories and b
 })
 
 Deno.test("the demo seed run again writes nothing but the administrator's role", async () => {
-  await withSchema(async (sql) => {
+  await withSnapshot("seededDev", async (sql) => {
     const db = new AppDbBase({ sql })
-    await seedDemo(db, sql, DEV_OPTIONS)
     const seeded = await count(sql)
     await sql`UPDATE users SET role = ${UserRole.VIEWER}`
     await sql`UPDATE auth_keys SET proven_at = NULL WHERE email = ${DEV_ADMIN_EMAIL}`
@@ -586,8 +709,7 @@ Deno.test("the demo seed run again writes nothing but the administrator's role",
 })
 
 Deno.test("a visitor who signs up to the demo gets sample groups once and opens the busy one", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     const userId = await signUpVisitor(sql, "visitor@example.net")
     const files = fakeFiles()
     await drainJobs(sql, OPTIONS.dataSeed, files)
@@ -661,8 +783,7 @@ Deno.test("a visitor who signs up to the demo gets sample groups once and opens 
 })
 
 Deno.test("the demo's and a visitor's households repeat rent and a subscription made through the seed day, so the job right after makes no entry", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     const userId = await signUpVisitor(sql, "visitor@example.net")
     await drainJobs(sql)
     const population = fakeDemoData(OPTIONS.dataSeed, NOW).groups
@@ -737,8 +858,7 @@ Deno.test("the demo's and a visitor's households repeat rent and a subscription 
 })
 
 Deno.test("a visitor still gets the group they own when the population is of another day", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     const userId = await signUpVisitor(sql, "late@example.net")
     // The sample groups of the next day's seed: few of its fake people have accounts today.
     const next = OPTIONS.dataSeed + 1
@@ -793,8 +913,7 @@ Deno.test("the demo seed fails when sign-up refuses an account that does not exi
 })
 
 Deno.test("the wipe empties every table but the kept ones, keeps the blog, its old addresses, its earlier versions, where it was shared, the contact links and the real rate history but not the sample rates or an earlier seed's copies of them, queues every stored file for deletion, and never reuses an id", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     await sql`INSERT INTO backup_status (target, succeeded_at) VALUES ('database', now())`
     const [{ before }] = await sql<{ before: number }[]>`SELECT max(id) AS before FROM users`
     // Posts loaded from files: Financy keeps none, so the Lighthouse run's fixture post.
@@ -961,9 +1080,8 @@ async function websiteReader(sql: postgres.Sql, email: string, { leaves = false 
 }
 
 Deno.test("a real newsletter subscriber survives two nightly resets, which leave the same 90 fake subscribers", async () => {
-  await withSchema(async (sql) => {
+  await withSnapshot("resetPlain", async (sql) => {
     const list = DEFAULT_SUBSCRIBER_LIST
-    await resetDemo(sql, { subscribers: SUBSCRIBERS, admins: null }, DAY)
     await websiteReader(sql, `reader@seed.test`)
     const left = await websiteReader(sql, `left@seed.test`, { leaves: true })
     await sql`
@@ -1024,15 +1142,11 @@ Deno.test("the reset wipes, seeds again and schedules the nightly cleanup", asyn
   })
 })
 
-/** The demo's administrators as the worker reads them from the env, the owner's included. */
-const DEMO_ADMINS = { pepper: PEPPER, privatePassword: PASSWORD }
 /** Both administrators, as the worker asks for them with the private password set. */
 const BOTH = { privateAdmin: true, publicAdmin: true }
 
 Deno.test("the reset seeds the private administrator, who signs in with the API's pepper", async () => {
-  await withSchema(async (sql) => {
-    await resetDemo(sql, { subscribers: SUBSCRIBERS, admins: DEMO_ADMINS }, DAY)
-
+  await withSnapshot("resetAdmins", async (sql) => {
     expect(await canSignIn(sql, DEV_ADMIN_EMAIL, PASSWORD)).toBe(true)
     const account = await accountOf(sql, DEV_ADMIN_EMAIL)
     expect(account.role).toBe(UserRole.ADMIN)
@@ -1080,8 +1194,7 @@ Deno.test("the reset seeds the visitors' administrator with its published passwo
 })
 
 Deno.test("the visitors' administrator's session cookie works on the admin host only", async () => {
-  await withSchema(async (sql) => {
-    await resetDemo(sql, { subscribers: SUBSCRIBERS, admins: DEMO_ADMINS }, DAY)
+  await withSnapshot("resetAdmins", async (sql) => {
     await signUpVisitor(sql, "visitor@example.net")
     const store = createPostgresAuthStore(sql)
     const signIn = createSignIn({
@@ -1144,8 +1257,7 @@ Deno.test("the visitors' administrator's session cookie works on the admin host 
 })
 
 Deno.test("with the administrators, any other operator still makes the worker seed again", async () => {
-  await withSchema(async (sql) => {
-    await resetDemo(sql, { subscribers: SUBSCRIBERS, admins: DEMO_ADMINS }, DAY)
+  await withSnapshot("resetAdmins", async (sql) => {
     await signUpVisitor(sql, "visitor@example.net")
     await new AppDbBase({ sql }).admin.setRoleByAddress(
       "visitor@example.net",
@@ -1158,9 +1270,7 @@ Deno.test("with the administrators, any other operator still makes the worker se
 })
 
 Deno.test("a demo without the private administrator is seeded again once it is configured", async () => {
-  await withSchema(async (sql) => {
-    await resetDemo(sql, { subscribers: SUBSCRIBERS, admins: null }, DAY)
-
+  await withSnapshot("resetPlain", async (sql) => {
     expect(await isDemoSeeded(sql, DAY)).toBe(true)
     expect(await isDemoSeeded(sql, DAY, { privateAdmin: true, publicAdmin: false })).toBe(false)
   })
@@ -1218,9 +1328,7 @@ Deno.test("what a visitor can start with a seeded address between the wipe and t
 })
 
 Deno.test("the demo seed's history fills the admin panel's screens", async (t) => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
-
+  await withSnapshot("seeded", async (sql) => {
     await t.step(
       "the seed spreads sign-ups and activity over the dashboard's 30 days",
       async () => {
@@ -1342,8 +1450,7 @@ Deno.test("the seeds' audit rows are never after now and have ids in the order o
 })
 
 Deno.test("the development billing provider tells the seeded customers' payments", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, DEV_OPTIONS)
+  await withSnapshot("seededDev", async (sql) => {
     const payments = postgresFakePayments(sql)
     const subscriptions = await sql<{
       id: string
@@ -1384,9 +1491,7 @@ Deno.test("the development billing provider tells the seeded customers' payments
 })
 
 Deno.test("the development seed adds the operator's refund, blocks and a recent backup", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, DEV_OPTIONS)
-
+  await withSnapshot("seededDev", async (sql) => {
     const [{ groupId }] = await sql<{ groupId: string }[]>`
       SELECT substring(a.identifier from 'group:([^ ]+)') AS group_id
       FROM auth_audits a WHERE a.event_type = ${BILLING_AUDIT_EVENTS.paymentRefunded}
@@ -1415,8 +1520,7 @@ Deno.test("the development seed adds the operator's refund, blocks and a recent 
 })
 
 Deno.test("a visitor's sample groups have notes on different days, by several people in the ones it joined and by the partner in its own", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     const userId = await signUpVisitor(sql, "visitor@example.net")
     await drainJobs(sql)
 
@@ -1529,8 +1633,7 @@ Deno.test("with notes off, a visitor's sample groups have members but no notes, 
 })
 
 Deno.test("with notes off, the reset wipes yesterday's notes and seeds the demo without any", async () => {
-  await withSchema(async (sql) => {
-    await resetDemo(sql, { subscribers: SUBSCRIBERS, admins: null, notes: NOTES_ON }, DAY)
+  await withSnapshot("resetPlain", async (sql) => {
     expect((await notesRows(sql)).notes).toBeGreaterThan(0)
 
     await resetDemo(sql, { subscribers: SUBSCRIBERS, admins: null, notes: NOTES_OFF }, DAY)
@@ -1542,8 +1645,7 @@ Deno.test("with notes off, the reset wipes yesterday's notes and seeds the demo 
 })
 
 Deno.test("a group's first log row is dated when the group was made: hours or weeks back in the demo, now for a visitor's sample groups", async () => {
-  await withSchema(async (sql) => {
-    await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
+  await withSnapshot("seeded", async (sql) => {
     const userId = await signUpVisitor(sql, "visitor@example.net")
     await drainJobs(sql)
 
@@ -1581,4 +1683,31 @@ Deno.test("a group's first log row is dated when the group was made: hours or we
       expect(Date.now() - group.created.valueOf()).toBeLessThan(60_000)
     }
   })
+})
+
+// Keep this test last: it drops the templates every test above clones.
+Deno.test("the run drops its template databases and a dead run's stale ones, and nothing else", async () => {
+  // A filtered run may have built none, and this test must always have one to drop.
+  await migratedTemplate()
+  const aged = (prefix: string, hours: number) => {
+    const createdAt = (Date.now() - hours * 60 * 60_000).toString(16).padStart(12, "0")
+    return `${prefix}${createdAt}${"0".repeat(20)}`
+  }
+  const stale = aged(TEMPLATE_PREFIX, 3)
+  const recent = aged(TEMPLATE_PREFIX, 1)
+  const unrelated = aged("demo_unrelated_", 3)
+  const planted = [stale, recent, unrelated]
+  try {
+    for (const name of planted) await createDatabase(name)
+
+    await sweepStaleTemplates()
+
+    expect(await existingDatabases(planted)).toEqual([recent, unrelated].sort())
+  } finally {
+    for (const name of planted) await dropDatabase(name)
+  }
+
+  expect(await existingDatabases(runTemplates)).toHaveLength(runTemplates.length)
+  for (const name of runTemplates) await dropDatabase(name)
+  expect(await existingDatabases(runTemplates)).toEqual([])
 })
