@@ -794,6 +794,31 @@ Deno.test(`the transactions spreadsheet keeps an entry with no rate and leaves i
   })
 })
 
+Deno.test(`the transactions spreadsheet keeps an entry whose converted amount is too large and leaves its conversion cells empty`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    // Two euros to the dollar doubles the largest amount an entry can hold.
+    await storedRate(sql, `USD`, `0.5`, `2026-03-01`)
+    await storedEntry(sql, h, {
+      accountId: await h.account(`Dollars`, `USD`),
+      categoryId: await h.category(`Food`),
+      amount: -Number.MAX_SAFE_INTEGER,
+      currency: `USD`,
+      accountAmount: -Number.MAX_SAFE_INTEGER,
+      date: `2026-03-02`,
+    })
+    const { transactions } = await sheets(sql, h)
+    expect(transactions[1][6]).toBe(`90071992547409.91`)
+    expect(conversion(transactions[1])).toEqual({
+      baseAmount: ``,
+      base: `EUR`,
+      rate: ``,
+      rateDate: ``,
+      rateSource: ``,
+    })
+  })
+})
+
 Deno.test(`the transactions spreadsheet leaves a fallback rate's value out and keeps its amount, date and source`, async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
