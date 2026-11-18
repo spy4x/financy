@@ -1423,4 +1423,21 @@ describe(`/transfer in the Telegram bot`, () => {
       })
     }
   })
+
+  describe(`a button no handler knows in the middle of a talk`, () => {
+    it(`stays silent, keeps the step and still takes the typed amount`, async () => {
+      const bot = transferBot()
+      await picked(bot, bot.f.cash, bot.f.savings)
+      const before = bot.shown().length
+
+      await bot.press(`gone:1`)
+
+      expect(bot.shown().length).toBe(before)
+      expect(bot.draft().step).toBe(`sent`)
+
+      await bot.send(`12.50`)
+
+      expect(bot.draft()).toMatchObject({ step: `summary`, sentAmount: 1250 })
+    })
+  })
 })
