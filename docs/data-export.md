@@ -45,7 +45,7 @@ The ZIP has three kinds of file:
 
 A group's owner downloads the group's own spreadsheets apart from this, from the group: one CSV per
 aggregate, also in UTF-8 with a byte order mark, its headings in the person's language
-([Make it exportable](aggregate-lifecycle.md#make-it-exportable)). Financy adds three:
+([Make it exportable](aggregate-lifecycle.md#make-it-exportable)). Financy adds five:
 
 - `accounts.csv`: each live account with its starting balance and its balance today, the one the
   accounts screen shows;
@@ -56,7 +56,19 @@ aggregate, also in UTF-8 with a byte order mark, its headings in the person's la
   whole month's entries, so a row can name a currency its own category never spent in. A parent
   whose limit comes from its subcategories has a row too, so adding up the limit column counts
   those subcategories twice. It runs from the earliest limit through the household's current month,
-  at most the last 240 months. Envelope figures are not in it.
+  at most the last 240 months. Envelope figures are not in it;
+- `transactions.csv`: each live entry, oldest first, with the amount as typed, what moved in the
+  account and the amount in the household's main currency. Amounts are unsigned, and the type column
+  says whether the entry is an expense or an income. The main-currency amount follows the app's
+  ledger: the amount typed when it is in the main currency, else what moved in the account, converted
+  at that day's rate when the account is in another currency. So the rate is from the account's
+  currency to the main currency, and it is empty when no conversion was needed. An entry with no rate
+  keeps its row with empty conversion cells. A rate from the paid fallback provider is left out,
+  because its terms forbid passing it on; the converted amount, the rate's date and its source stay.
+  Adding up the rounded rows can differ slightly from a screen's total, because the ledger rounds
+  once per day and category;
+- `transfers.csv`: each live transfer, oldest first, with both amounts and, between two currencies,
+  how much of the received currency one unit of the sent currency bought.
 
 Every amount is an exact decimal in its currency's own decimals. A balance too large for a safe
 integer is left empty rather than rounded.

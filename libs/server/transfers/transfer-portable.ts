@@ -4,7 +4,11 @@ import {
   type TransferExportEntry,
   transferReferenceProblems,
 } from "@domain/transfers"
+import { amountDecimals } from "@domain/money"
 import { portable } from "@server/groups/portable.ts"
+import { amountCell } from "@server/money/spreadsheet-amount.ts"
+import { type CsvDecimal, csvDecimal } from "@spy4x/platform/universal/csv"
+import { crossRate, type ExchangeRate, moneyDecimalString } from "@spy4x/platform/universal/money"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 
 /** Transfers one page of the export reads. */
@@ -13,6 +17,56 @@ const READ_PAGE = 1_000
 /** Rows one statement writes: well under Postgres's 65,535 parameters at fourteen columns a row. */
 const WRITE_BATCH = 1_000
 
+/** The currency the two legs of an implied rate share: ISO 4217's code for "no currency". */
+const IMPLIED_RATE_COMMON = `XXX`
+
+/** A row of `transfers.csv`: what a person reads, in their words. */
+interface TransferSpreadsheetRow {
+  date: string
+  fromAccount: string
+  sentAmount: CsvDecimal | string
+  sentCurrency: string
+  toAccount: string
+  receivedAmount: CsvDecimal | string
+  receivedCurrency: string
+  impliedRate: CsvDecimal | string
+  note: string
+}
+
+/** A transfer as `transfers.csv` reads it, its two amounts exact. */
+interface TransferSpreadsheetRecord {
+  id: string
+  date: string
+  fromName: string
+  fromCurrency: string
+  toName: string
+  toCurrency: string
+  sentAmount: string
+  receivedAmount: string
+  memo: string
+}
+
+/**
+ * How much of the received currency one unit of the sent currency bought, as an exact decimal.
+ * Empty between two accounts of one currency: the two legs then share both currencies, which
+ * `crossRate` refuses.
+ */
+function impliedRateCell(transfer: TransferSpreadsheetRecord): CsvDecimal | string {
+  const { fromCurrency, toCurrency, date } = transfer
+  const leg = (quote: string, amount: string): ExchangeRate => ({
+    base: IMPLIED_RATE_COMMON,
+    quote,
+    rate: moneyDecimalString(Number(amount), amountDecimals(quote)),
+    date,
+    source: ``,
+  })
+  const implied = crossRate(
+    leg(fromCurrency, transfer.sentAmount),
+    leg(toCurrency, transfer.receivedAmount),
+  )
+  return implied.ok ? csvDecimal(implied.value.rate) : ``
+}
+
 /**
  * Transfers in a household's export file: every live transfer as the server stored it, both
  * amounts and the conversion flag included, so an import never converts again (R4). Deleted
@@ -20,9 +74,10 @@ const WRITE_BATCH = 1_000
  * accounts, which the registry writes before it. A transfer whose account the file lacks, one from
  * an account to itself, or one between two accounts of one currency whose amounts differ refuses
  * the whole import. They count against the new household's `maxTransactions`, together with its
- * entries.
+ * entries. In the spreadsheets, `transfers.csv` has a row per live transfer, oldest first, with both
+ * amounts and the rate they imply.
  */
-export const transferPortable = portable<TransferExportEntry>({
+export const transferPortable = portable<TransferExportEntry, TransferSpreadsheetRow>({
   kind: "transfers",
   one: "transfer",
   other: "transfers",
@@ -53,6 +108,60 @@ export const transferPortable = portable<TransferExportEntry>({
       if (rows.length < READ_PAGE) return
       after = rows[rows.length - 1].id
     }
+  },
+  csv: {
+    columns: [
+      { key: "date", header: "TransferSpreadsheet.date" },
+      { key: "fromAccount", header: "TransferSpreadsheet.fromAccount" },
+      { key: "sentAmount", header: "TransferSpreadsheet.sentAmount" },
+      { key: "sentCurrency", header: "TransferSpreadsheet.sentCurrency" },
+      { key: "toAccount", header: "TransferSpreadsheet.toAccount" },
+      { key: "receivedAmount", header: "TransferSpreadsheet.receivedAmount" },
+      { key: "receivedCurrency", header: "TransferSpreadsheet.receivedCurrency" },
+      { key: "impliedRate", header: "TransferSpreadsheet.impliedRate" },
+      { key: "note", header: "TransferSpreadsheet.note" },
+    ],
+    async *read(sql, groupId) {
+      let after: { date: string; id: string } | null = null
+      while (true) {
+        const transfers: TransferSpreadsheetRecord[] = await sql<TransferSpreadsheetRecord[]>`
+          SELECT transfers.id, to_char(transfers.date, 'YYYY-MM-DD') AS date,
+            sender.name AS from_name, sender.currency AS from_currency,
+            receiver.name AS to_name, receiver.currency AS to_currency,
+            transfers.sent_amount::text AS sent_amount,
+            transfers.received_amount::text AS received_amount, transfers.memo
+          FROM transfers
+          INNER JOIN accounts AS sender
+            ON sender.id = transfers.from_account_id AND sender.group_id = transfers.group_id
+          INNER JOIN accounts AS receiver
+            ON receiver.id = transfers.to_account_id AND receiver.group_id = transfers.group_id
+          WHERE transfers.group_id = ${groupId} AND transfers.deleted_at IS NULL
+            ${
+          after === null
+            ? sql``
+            : sql`AND (transfers.date, transfers.id) > (${after.date}::date, ${after.id}::uuid)`
+        }
+          ORDER BY transfers.date, transfers.id
+          LIMIT ${READ_PAGE}
+        `
+        if (transfers.length > 0) {
+          yield transfers.map((transfer) => ({
+            date: transfer.date,
+            fromAccount: transfer.fromName,
+            sentAmount: amountCell(transfer.sentAmount, transfer.fromCurrency),
+            sentCurrency: transfer.fromCurrency,
+            toAccount: transfer.toName,
+            receivedAmount: amountCell(transfer.receivedAmount, transfer.toCurrency),
+            receivedCurrency: transfer.toCurrency,
+            impliedRate: impliedRateCell(transfer),
+            note: transfer.memo,
+          }))
+        }
+        if (transfers.length < READ_PAGE) return
+        const last: TransferSpreadsheetRecord = transfers[transfers.length - 1]
+        after = { date: last.date, id: last.id }
+      }
+    },
   },
   async write(sql, transfers, context) {
     const ids = new Map<string, string>()
