@@ -238,7 +238,7 @@ Deno.test(`the spreadsheets of a household are in the ZIP under headings in its 
       `Лимит`,
       `Валюта лимита`,
       `Потрачено`,
-      `Не учтённые валюты (нет курса)`,
+      `Неучтённые валюты (нет курса)`,
     ])
   })
 })

@@ -2592,7 +2592,7 @@ export default {
   "BudgetSpreadsheet.limit": "Limit",
   "BudgetSpreadsheet.currency": "Währung des Limits",
   "BudgetSpreadsheet.spent": "Ausgegeben",
-  "BudgetSpreadsheet.leftOut": "Fehlende Währungen (kein Wechselkurs)",
+  "BudgetSpreadsheet.leftOut": "Nicht berücksichtigte Währungen (kein Wechselkurs)",
   "GroupSpreadsheets.yes": "Ja",
   "GroupSpreadsheets.no": "Nein",
   "NoteSpreadsheet.id": "ID",
