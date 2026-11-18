@@ -403,7 +403,7 @@
     // #region Git Hooks
     "hooks:install": {
       "command": "git config core.hooksPath .githooks",
-      "description": "Turns on .githooks/pre-push, which refuses a push while check is red, in every worktree"
+      "description": "Turns on .githooks/pre-push, which refuses a push that fails its check, in every worktree"
     }
     // #endregion Git Hooks
   },
