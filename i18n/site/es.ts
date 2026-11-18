@@ -826,10 +826,10 @@ export default {
     "Resumen de Financy del mes de un hogar compartido, con los ingresos, los gastos y lo que queda.",
   "AudienceCouples.caption": "Datos de ejemplo. Tu pareja y tú ven el mismo mes.",
   "AudienceFamilies.name": "Familias",
-  "AudienceFamilies.title": "Presupuesto familiar en varias monedas",
+  "AudienceFamilies.title": "App de presupuesto familiar autoalojada",
   "AudienceFamilies.description":
     "¿El presupuesto familiar en tu propio servidor? Financy funciona con Docker Compose bajo AGPL‑3.0, con todas las funciones y sin límite de miembros.",
-  "AudienceFamilies.h1": "Presupuesto familiar en varias monedas, en tu propio servidor",
+  "AudienceFamilies.h1": "Una app de presupuesto para toda la familia, en tu propio servidor",
   "AudienceFamilies.answer":
     "Tu familia quiere un solo presupuesto, en un servidor que controlas tú. Financy funciona con Docker Compose, con todas las funciones y sin límite de miembros, y cada persona entra con su propia cuenta de usuario y su rol.",
   "AudienceFamilies.how1":
@@ -843,15 +843,16 @@ export default {
   "AudienceFamilies.adminDetail": "Además, gestiona los miembros.",
   "AudienceFamilies.ownerTerm": "Propietario",
   "AudienceFamilies.ownerDetail": "Además, puede transferir el hogar.",
-  "AudienceFamilies.limit1": "Ofrecer cuentas infantiles o asignaciones.",
+  "AudienceFamilies.limit1": "Ofrecer cuentas de usuario para niños o dinero de bolsillo.",
   "AudienceFamilies.limit2": "Ocultar cuentas a otros miembros.",
   "AudienceFamilies.limit3": "Conectarse a tu banco: los movimientos los añades tú.",
   "AudienceFamilies.q1": "¿A Financy autoalojado le falta alguna función?",
   "AudienceFamilies.a1":
     "No. Es el mismo código, con todas las funciones y sin límite de miembros.",
-  "AudienceFamilies.q2": "¿Mis hijos pueden tener su propia cuenta o una asignación?",
+  "AudienceFamilies.q2":
+    "¿Mis hijos pueden tener su propia cuenta de usuario o dinero de bolsillo?",
   "AudienceFamilies.a2":
-    "No. Financy no tiene cuentas infantiles ni asignaciones. Quien se une es un miembro normal, e incluso el rol de lector muestra todas las cuentas y movimientos del hogar, así que tenlo en cuenta al decidir.",
+    "No. Financy no tiene cuentas de usuario para niños ni dinero de bolsillo. Quien se une es un miembro normal, e incluso el rol de lector muestra todas las cuentas y movimientos del hogar, así que tenlo en cuenta al decidir.",
   "AudienceFamilies.q3": "¿Pueden unirse más de seis personas a un hogar?",
   "AudienceFamilies.a3":
     "Sí, en tu propio servidor, donde Financy no tiene límite de miembros. La nube de Financy permite hasta 6 miembros por hogar.",

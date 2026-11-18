@@ -799,7 +799,7 @@ export default {
   "AudienceCouples.h1":
     "Budget de couple : suivez l’argent commun et l’argent séparé dans une seule appli",
   "AudienceCouples.answer":
-    "Vous partagez une partie de votre argent avec votre conjoint et gardez le reste séparé. Dans Financy, cela veut dire deux foyers : chaque membre d’un foyer voit tous ses comptes et toutes ses opérations, donc l’argent séparé va dans un second foyer dont votre conjoint n’est pas membre. Un seul identifiant permet de passer de l’un à l’autre.",
+    "Vous partagez une partie de votre argent avec votre conjoint et gardez le reste séparé. Dans Financy, cela veut dire deux foyers : chaque membre d’un foyer voit tous les comptes et toutes les opérations de ce foyer, donc l’argent séparé va dans un second foyer dont votre conjoint n’est pas membre. Un seul identifiant permet de passer de l’un à l’autre.",
   "AudienceCouples.how1":
     "Créez un foyer pour l’argent que vous partagez et invitez votre conjoint par un lien, comme administrateur, pour que vous puissiez le gérer tous les deux. Vous voyez les mêmes comptes et les mêmes budgets, et les changements s’affichent en direct sur chaque appareil ouvert.",
   "AudienceCouples.how2":
@@ -819,10 +819,10 @@ export default {
     "Se connecter à votre banque : vous saisissez vous-même vos opérations.",
   "AudienceCouples.q1": "Puis-je cacher un compte à mon conjoint dans un foyer partagé ?",
   "AudienceCouples.a1":
-    "Non. Chaque membre d’un foyer voit tous ses comptes et toutes ses opérations. Gardez l’argent séparé dans un second foyer, et passez-y avec le même identifiant.",
+    "Non. Chaque membre d’un foyer voit tous les comptes et toutes les opérations de ce foyer. Gardez l’argent séparé dans un second foyer, et passez-y avec le même identifiant.",
   "AudienceCouples.q2": "Un second foyer cache-t-il mon argent à mon conjoint ?",
   "AudienceCouples.a2":
-    "Non. Il garde cet argent en dehors de votre foyer commun, mais ce n’est pas un endroit sûr pour ce que votre conjoint ne doit pas découvrir. Toute personne qui peut ouvrir votre appareil connecté peut passer sur ce foyer.",
+    "Non. Il garde cet argent en dehors de votre foyer commun, mais ce n’est pas un endroit sûr pour ce que votre conjoint ne doit pas découvrir. Toute personne qui a accès à un appareil où votre session est ouverte peut passer sur ce foyer.",
   "AudienceCouples.q3": "Un second foyer coûte-t-il plus cher sur le cloud Financy ?",
   "AudienceCouples.a3":
     "Oui. Chaque foyer a son propre forfait, à {monthly} par mois ou {yearly} par an. Inviter votre conjoint dans un foyer ne coûte rien de plus.",
@@ -906,7 +906,7 @@ export default {
     "Oui. Donnez-lui le rôle de lecteur, qui permet seulement de consulter.",
   "AudienceSmallBusiness.q3": "Puis-je séparer l’argent de l’entreprise de mon argent personnel ?",
   "AudienceSmallBusiness.a3":
-    "Oui. Mettez chacun dans son propre groupe, et un seul identifiant permet de passer de l’un à l’autre. Chaque membre d’un groupe voit tous ses comptes et toutes ses opérations.",
+    "Oui. Mettez chacun dans son propre groupe, et un seul identifiant permet de passer de l’un à l’autre. Chaque membre d’un groupe voit tous les comptes et toutes les opérations de ce groupe.",
   "AudienceSmallBusiness.q4": "Financy se connecte-t-il à notre banque ?",
   "AudienceSmallBusiness.a4":
     "Non. Financy n’a pas de synchronisation bancaire : vous saisissez vous-même vos opérations. Les opérations récurrentes couvrent celles qui reviennent régulièrement.",

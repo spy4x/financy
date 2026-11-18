@@ -670,7 +670,7 @@ export default {
   "AudienceExpats.how1":
     "钱放在哪里，就为哪里添加一个账户，比如一个欧元工资账户和一个泰铢本地账户。每个账户保留自己的币种，合计按家庭的主货币显示。",
   "AudienceExpats.how2":
-    "用其他货币付款时，这笔交易会保留两个金额。两个金额都由你自己填写，Financy 就会保留银行实际收取的汇率。之后的汇率绝不会改写它，跨币种转账也会记录转出和转入两边。",
+    "用其他货币付款时，这笔交易会保留两个金额。两个金额都由你自己填写，Financy 就会保留银行实际使用的汇率。之后的汇率绝不会改写它，跨币种转账也会记录转出和转入两边。",
   "AudienceExpats.how3":
     "换算后的合计使用公开发布的每日汇率，所以可能与银行实际收取的金额略有出入。",
   "AudienceExpats.blockTitle": "哪些货币可以自动换算",
@@ -678,8 +678,8 @@ export default {
   "AudienceExpats.limit1": "连接你的银行：交易需要你自己添加。",
   "AudienceExpats.limit2": "导入银行对账单（目前还不支持）。",
   "AudienceExpats.limit3": "提供财务或税务建议。",
-  "AudienceExpats.q1": "可以记录银行实际收取的汇率吗？",
-  "AudienceExpats.a1": "可以。在其他货币的交易上填写两个金额，Financy 就会保留银行实际收取的汇率。",
+  "AudienceExpats.q1": "可以记录银行实际使用的汇率吗？",
+  "AudienceExpats.a1": "可以。在其他货币的交易上填写两个金额，Financy 就会保留银行实际使用的汇率。",
   "AudienceExpats.q2": "新汇率会改变我以前的交易吗？",
   "AudienceExpats.a2": "不会。其他货币的交易会保留两个金额，之后的汇率绝不会改写它。",
   "AudienceExpats.q3": "Financy 能换算所有货币吗？",
@@ -691,21 +691,21 @@ export default {
   "AudienceCouples.name": "情侣和夫妻",
   "AudienceCouples.title": "情侣记账：共同和各自的钱分开管",
   "AudienceCouples.description":
-    "有些钱一起花，有些钱分开管？两人共用一个 Financy 家庭，再为自己的钱单独建一个家庭，一个账号就能切换。",
+    "有些钱一起花，有些钱分开管？两人共用一个 Financy 群组，再为自己的钱单独建一个群组，一个账号就能切换。",
   "AudienceCouples.h1": "情侣记账：共同的钱和各自的钱，在一个应用里分开管",
   "AudienceCouples.answer":
-    "你和伴侣有些钱共用，有些钱分开。在 Financy 里，这就是两个家庭：家庭里的每个人都能看到它的所有账户和交易，所以分开的钱要放进第二个家庭，你的伴侣不是这个家庭的成员。用一个账号就能在两个家庭之间切换。",
+    "你和伴侣有些钱共用，有些钱分开。在 Financy 里，这就是两个群组：群组里的每个人都能看到它的所有账户和交易，所以分开的钱要放进第二个群组，你的伴侣不是这个群组的成员。用一个账号就能在两个群组之间切换。",
   "AudienceCouples.how1":
     "为共用的钱创建一个家庭，通过链接邀请伴侣并设为管理员，这样你们都能管理它。你们看到的是相同的账户和预算，任何改动都会实时显示在每台打开的设备上。",
   "AudienceCouples.how2":
     "为每个共用的分类设定每月限额，并为固定开销添加定期交易。应用里把家庭称作“群组”。",
   "AudienceCouples.blockTitle": "我们的、我的和你的",
   "AudienceCouples.oursTerm": "我们的",
-  "AudienceCouples.oursDetail": "你们两人都加入的家庭。",
+  "AudienceCouples.oursDetail": "你们两人都加入的群组。",
   "AudienceCouples.mineTerm": "我的",
-  "AudienceCouples.mineDetail": "只属于你自己的家庭。",
+  "AudienceCouples.mineDetail": "只属于你自己的群组。",
   "AudienceCouples.yoursTerm": "你的",
-  "AudienceCouples.yoursDetail": "只属于伴侣自己的家庭。",
+  "AudienceCouples.yoursDetail": "只属于伴侣自己的群组。",
   "AudienceCouples.blockNote":
     "在 Financy 云端，每个家庭都有自己的套餐，每月 {monthly} 或每年 {yearly}。云端注册尚未开放。自托管免费。",
   "AudienceCouples.limit1": "在共用的家庭里隐藏某个账户。",
@@ -713,13 +713,13 @@ export default {
   "AudienceCouples.limit3": "连接你的银行：交易需要你自己添加。",
   "AudienceCouples.q1": "在共用的家庭里，可以对伴侣隐藏某个账户吗？",
   "AudienceCouples.a1":
-    "不可以。家庭里的每个人都能看到它的所有账户和交易。分开的钱请放在第二个家庭里，用同一个账号切换过去。",
-  "AudienceCouples.q2": "第二个家庭能让这笔钱对伴侣保密吗？",
+    "不可以。群组里的每个人都能看到它的所有账户和交易。分开的钱请放在第二个群组里，用同一个账号切换过去。",
+  "AudienceCouples.q2": "第二个群组能让这笔钱对伴侣保密吗？",
   "AudienceCouples.a2":
     "不能。它只是把这笔钱和共用的家庭分开，但任何不能让伴侣发现的内容，放在这里都不安全。只要能打开你已登录的设备，任何人都可以切换过去。",
-  "AudienceCouples.q3": "在 Financy 云端，第二个家庭要额外付费吗？",
+  "AudienceCouples.q3": "在 Financy 云端，第二个群组要额外付费吗？",
   "AudienceCouples.a3":
-    "要。每个家庭都有自己的套餐，每月 {monthly} 或每年 {yearly}。邀请伴侣加入家庭不额外收费。",
+    "要。每个群组都有自己的套餐，每月 {monthly} 或每年 {yearly}。邀请伴侣加入群组不额外收费。",
   "AudienceCouples.q4": "Financy 能帮我们分摊账单吗？",
   "AudienceCouples.a4":
     "不能。Financy 没有分摊账单的功能。它只是让家庭里的每个人看到相同的账户和交易。",
@@ -771,7 +771,7 @@ export default {
   "AudienceSmallBusiness.how1":
     "和你一起工作的人共用一个群组。通过链接邀请他们，并为每人分配角色。",
   "AudienceSmallBusiness.how2":
-    "每个账户保留自己的币种，合计按群组的主货币显示。用其他货币付款时会保留两个金额；两个金额都填写，就能保留银行实际收取的汇率。",
+    "每个账户保留自己的币种，合计按群组的主货币显示。用其他货币付款时会保留两个金额；两个金额都填写，就能保留银行实际使用的汇率。",
   "AudienceSmallBusiness.how3":
     "为每个支出分类设定每月限额，并为固定开销添加定期交易。群组的所有者随时可以把它导出为文件。",
   "AudienceSmallBusiness.blockTitle": "Financy 适合做什么",

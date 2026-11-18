@@ -839,16 +839,16 @@ export default {
   "AudienceFamilies.adminTerm": "Administrador",
   "AudienceFamilies.adminDetail": "Também gerencia os membros.",
   "AudienceFamilies.ownerTerm": "Dono",
-  "AudienceFamilies.ownerDetail": "Também transfere a família para outra pessoa.",
-  "AudienceFamilies.limit1": "Oferecer contas para crianças ou mesadas.",
+  "AudienceFamilies.ownerDetail": "Também transfere a função de dono para outra pessoa.",
+  "AudienceFamilies.limit1": "Oferecer contas de usuário para crianças ou mesadas.",
   "AudienceFamilies.limit2": "Esconder contas de outros membros.",
   "AudienceFamilies.limit3":
     "Conectar ao seu banco: você adiciona os lançamentos por conta própria.",
   "AudienceFamilies.q1": "Falta algum recurso no Financy auto-hospedado?",
   "AudienceFamilies.a1": "Não. É o mesmo código, com todos os recursos e sem limite de membros.",
-  "AudienceFamilies.q2": "Meu filho ou minha filha pode ter conta própria ou mesada?",
+  "AudienceFamilies.q2": "Meu filho ou minha filha pode ter conta de usuário própria ou mesada?",
   "AudienceFamilies.a2":
-    "Não. O Financy não tem contas para crianças nem mesadas. Quem entra é um membro comum, e até a função de leitor mostra todas as contas e todos os lançamentos da família, então decida levando isso em conta.",
+    "Não. O Financy não tem contas de usuário para crianças nem mesadas. Quem entra é um membro comum, e até a função de leitor mostra todas as contas e todos os lançamentos da família, então decida levando isso em conta.",
   "AudienceFamilies.q3": "Mais de seis pessoas podem entrar na mesma família?",
   "AudienceFamilies.a3":
     "Sim, no seu próprio servidor, onde o Financy não tem limite de membros. A nuvem do Financy permite até 6 membros por família.",

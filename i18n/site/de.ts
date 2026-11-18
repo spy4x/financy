@@ -835,15 +835,15 @@ export default {
   "AudienceFamilies.adminDetail": "Verwaltet zusätzlich die Mitglieder.",
   "AudienceFamilies.ownerTerm": "Inhaber",
   "AudienceFamilies.ownerDetail": "Kann den Haushalt zusätzlich übertragen.",
-  "AudienceFamilies.limit1": "Kinderkonten oder Taschengeld anbieten.",
+  "AudienceFamilies.limit1": "Benutzerkonten für Kinder oder Taschengeld anbieten.",
   "AudienceFamilies.limit2": "Konten vor anderen Mitgliedern verbergen.",
   "AudienceFamilies.limit3": "Sich mit deiner Bank verbinden: Du trägst Buchungen selbst ein.",
   "AudienceFamilies.q1": "Fehlen dem selbst gehosteten Financy Funktionen?",
   "AudienceFamilies.a1":
     "Nein. Es ist derselbe Code, mit allen Funktionen und ohne Mitgliederlimit.",
-  "AudienceFamilies.q2": "Kann mein Kind ein eigenes Konto oder Taschengeld bekommen?",
+  "AudienceFamilies.q2": "Kann mein Kind ein eigenes Benutzerkonto oder Taschengeld bekommen?",
   "AudienceFamilies.a2":
-    "Nein. Financy hat keine Kinderkonten und kein Taschengeld. Wer beitritt, ist ein normales Mitglied, und selbst die Rolle Betrachter zeigt alle Konten und Buchungen des Haushalts. Bedenke das bei deiner Entscheidung.",
+    "Nein. Financy hat keine Benutzerkonten für Kinder und kein Taschengeld. Wer beitritt, ist ein normales Mitglied, und selbst die Rolle Betrachter zeigt alle Konten und Buchungen des Haushalts. Bedenke das bei deiner Entscheidung.",
   "AudienceFamilies.q3": "Können mehr als sechs Personen einem Haushalt beitreten?",
   "AudienceFamilies.a3":
     "Ja, auf deinem eigenen Server, denn dort hat Financy kein Mitgliederlimit. In der Financy-Cloud sind bis zu 6 Mitglieder pro Haushalt möglich.",
@@ -891,7 +891,7 @@ export default {
   "AudienceSmallBusiness.a2": "Ja. Gib ihnen die Rolle Betrachter, die nur lesen darf.",
   "AudienceSmallBusiness.q3": "Kann ich geschäftliches und privates Geld trennen?",
   "AudienceSmallBusiness.a3":
-    "Ja. Lege für beides eine eigene Gruppe an, und mit einem Login wechselst du zwischen ihnen. Alle in einer Gruppe sehen sämtliche Konten und Buchungen.",
+    "Ja. Lege für beides jeweils eine eigene Gruppe an, und mit einem Login wechselst du zwischen ihnen. Alle in einer Gruppe sehen sämtliche Konten und Buchungen.",
   "AudienceSmallBusiness.q4": "Verbindet sich Financy mit unserer Bank?",
   "AudienceSmallBusiness.a4":
     "Nein. Financy hat keine Bankanbindung, du trägst Buchungen also selbst ein. Regelmäßige Zahlungen deckst du mit wiederkehrenden Buchungen ab.",
