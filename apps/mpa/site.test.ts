@@ -7,6 +7,7 @@ import AppWrapper from "./routes/_app.tsx"
 import Layout from "./routes/_layout.tsx"
 import Features from "./routes/[[lang]]/features.tsx"
 import { handler as featurePage } from "./routes/[[lang]]/features/[slug].tsx"
+import { handler as audiencePage } from "./routes/[[lang]]/for/[slug].tsx"
 import { handler as alternativesHub } from "./routes/[[lang]]/alternatives/index.tsx"
 import { handler as alternativePage } from "./routes/[[lang]]/alternatives/[slug].tsx"
 import Home, { HOME_HEAD, STATUS_UPDATED } from "./routes/index.tsx"
@@ -30,6 +31,7 @@ import { NotYetList } from "./components/features-section.tsx"
 import { SiteLanguage } from "./use-site.tsx"
 import { SITE_PAGES, type SitePage } from "./pages.ts"
 import { DOC_SLUGS } from "./docs-site.ts"
+import { AUDIENCE_PAGES } from "./audience-data.ts"
 import { FEATURE_PAGES } from "./features-data.tsx"
 import { ALTERNATIVES, ALTERNATIVES_UPDATED } from "./alternatives-data.ts"
 import { localePath, pathLanguage, SITE_LANGUAGES, siteTranslator } from "./languages.ts"
@@ -73,6 +75,7 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .route("/", { component: view(Home) })
     .route("{/:lang}?/features", { component: view(Features) })
     .get("{/:lang}?/features/:slug", featurePage.GET!)
+    .get("{/:lang}?/for/:slug", audiencePage.GET!)
     .get("{/:lang}?/alternatives", alternativesHub.GET!)
     .get("{/:lang}?/alternatives/:slug", alternativePage.GET!)
     .route("/pricing", { component: view(Pricing) })
@@ -954,6 +957,9 @@ describe("the public website", () => {
         ...FEATURE_PAGES.flatMap(({ slug }) =>
           SITE_LANGUAGES.map((language) => localePath(language, `/features/${slug}`))
         ),
+        ...AUDIENCE_PAGES.flatMap(({ slug }) =>
+          SITE_LANGUAGES.map((language) => localePath(language, `/for/${slug}`))
+        ),
         ...SITE_LANGUAGES.map((language) => localePath(language, `/alternatives`)),
         ...ALTERNATIVES.flatMap(({ slug }) =>
           SITE_LANGUAGES.map((language) => localePath(language, `/alternatives/${slug}`))
@@ -997,6 +1003,9 @@ describe("the public website", () => {
       "/features": "2026-11-19T00:00:00.000Z",
       ...Object.fromEntries(
         FEATURE_PAGES.map(({ slug, updated }) => [`/features/${slug}`, `${updated}T00:00:00.000Z`]),
+      ),
+      ...Object.fromEntries(
+        AUDIENCE_PAGES.map(({ slug, updated }) => [`/for/${slug}`, `${updated}T00:00:00.000Z`]),
       ),
       "/alternatives": `${ALTERNATIVES_UPDATED}T00:00:00.000Z`,
       ...Object.fromEntries(

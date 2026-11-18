@@ -715,4 +715,158 @@ export default {
   "FeatureTransactions.fact3": "支出カテゴリに入れた収入は返金になります",
   "FeatureTransactions.fact4": "削除した取引は 30 日間は元に戻せます",
   "FeatureTransactions.code": "取引のコードを読む",
+  "AudiencePage.demo": "デモを試す",
+  "AudiencePage.demoNote": "サンプルデータで動き、アカウント登録は不要です。",
+  "AudiencePage.limits": "Financy にできないこと",
+  "AudiencePage.also": "こんな方にも",
+  "AudiencePage.listTitle": "状況に合わせて使える Financy",
+  "AudienceExpats.name": "海外在住の方",
+  "AudienceExpats.title": "海外在住の家計簿：複数の通貨をまとめて管理",
+  "AudienceExpats.description":
+    "収入と支出で通貨が違う方へ。Financy は口座ごとの通貨をそのまま保ち、メイン通貨でひとつの合計を表示します。",
+  "AudienceExpats.h1": "海外在住の家計簿：収入と支出の通貨が違っても、合計はひとつ",
+  "AudienceExpats.answer":
+    "収入はある通貨、支出は別の通貨。これでは、どの残高を見ても家計の全体がつかめません。Financy は口座ごとの通貨をそのまま保ち、世帯のメイン通貨で合計します。",
+  "AudienceExpats.how1":
+    "お金を置いている場所ごとに口座を追加します。たとえば、ユーロの給与口座とタイバーツの現地口座です。口座はそれぞれの通貨のままで、合計は世帯のメイン通貨で表示されます。",
+  "AudienceExpats.how2":
+    "別の通貨で支払うと、取引には両方の金額が残ります。両方を自分で入力すれば、銀行が実際に適用したレートをそのまま残せます。あとのレートで書き換わることはなく、通貨をまたぐ振替では両側の金額を記録します。",
+  "AudienceExpats.how3":
+    "換算後の合計には公表されている日次レートを使うため、銀行で実際に請求された額とは少し異なる場合があります。",
+  "AudienceExpats.blockTitle": "自動で換算できる通貨",
+  "AudienceExpats.blockBody":
+    "欧州中央銀行の日次レートが対応している通貨は次のとおりです：{codes}。",
+  "AudienceExpats.limit1": "銀行との連携。取引はご自身で入力します。",
+  "AudienceExpats.limit2": "銀行明細の取り込み（まだ対応していません）。",
+  "AudienceExpats.limit3": "金融や税金に関するアドバイス。",
+  "AudienceExpats.q1": "銀行で実際に適用されたレートを記録できますか？",
+  "AudienceExpats.a1":
+    "はい。別の通貨の取引で両方の金額を入力すると、銀行が実際に適用したレートをそのまま残せます。",
+  "AudienceExpats.q2": "為替レートが変わると、過去の取引も変わりますか？",
+  "AudienceExpats.a2":
+    "いいえ。別の通貨の取引には両方の金額が残り、あとのレートで書き換わることはありません。",
+  "AudienceExpats.q3": "Financy はすべての通貨を換算できますか？",
+  "AudienceExpats.a3": "いいえ。欧州中央銀行の日次レートが対応しているのは約30通貨です。",
+  "AudienceExpats.q4": "銀行明細を Financy に取り込めますか？",
+  "AudienceExpats.a4":
+    "まだできません。現在は取引をご自身で入力します。繰り返す取引は、定期取引で記録できます。",
+  "AudienceExpats.alt":
+    "Financy の口座画面。サンプルの口座がそれぞれの通貨で並び、その上にひとつの合計が表示されています。",
+  "AudienceExpats.caption": "サンプルデータです。口座はそれぞれの通貨のままです。",
+  "AudienceCouples.name": "夫婦・カップル",
+  "AudienceCouples.title": "夫婦の家計簿：共通のお金と個人のお金を分ける",
+  "AudienceCouples.description":
+    "共有するお金と分けておきたいお金がある方へ。Financy なら、2人の世帯と自分用の世帯をひとつのログインで使い分けられます。",
+  "AudienceCouples.h1": "夫婦の家計簿：共通のお金と個人のお金を、ひとつのアプリで分けて管理",
+  "AudienceCouples.answer":
+    "パートナーと共有するお金もあれば、分けておきたいお金もあります。Financy では、これを2つの世帯で管理します。世帯のメンバーは全員、その世帯のすべての口座と取引を見られるので、分けておくお金は、パートナーがメンバーになっていない別の世帯に入れます。ひとつのログインで切り替えられます。",
+  "AudienceCouples.how1":
+    "共有するお金の世帯を作り、パートナーをリンクで管理者として招待すれば、2人とも世帯を管理できます。同じ口座と予算を見られ、変更は開いているすべてのデバイスにすぐ反映されます。",
+  "AudienceCouples.how2":
+    "共有するカテゴリごとに月の上限を設定し、決まった支出は定期取引に登録します。アプリでは世帯を「グループ」と呼びます。",
+  "AudienceCouples.blockTitle": "2人のお金、自分のお金、相手のお金",
+  "AudienceCouples.oursTerm": "2人のお金",
+  "AudienceCouples.oursDetail": "2人ともメンバーになっている世帯。",
+  "AudienceCouples.mineTerm": "自分のお金",
+  "AudienceCouples.mineDetail": "自分だけがメンバーの世帯。",
+  "AudienceCouples.yoursTerm": "相手のお金",
+  "AudienceCouples.yoursDetail": "パートナーだけがメンバーの世帯。",
+  "AudienceCouples.blockNote":
+    "Financy のクラウドでは、世帯ごとにプランが必要で、料金は月 {monthly} または年 {yearly} です。クラウドの新規登録はまだ受け付けていません。セルフホストは無料です。",
+  "AudienceCouples.limit1": "共有の世帯の中で、特定の口座を隠すこと。",
+  "AudienceCouples.limit2": "割り勘や、誰がいくら払うべきかの計算。",
+  "AudienceCouples.limit3": "銀行との連携。取引はご自身で入力します。",
+  "AudienceCouples.q1": "共有の世帯で、パートナーに口座を隠せますか？",
+  "AudienceCouples.a1":
+    "いいえ。世帯のメンバーは全員、その世帯のすべての口座と取引を見られます。分けておきたいお金は別の世帯に入れ、同じログインで切り替えてください。",
+  "AudienceCouples.q2": "別の世帯に入れておけば、パートナーに知られずに済みますか？",
+  "AudienceCouples.a2":
+    "いいえ。そのお金を共有の世帯から分けることはできますが、パートナーに絶対に見つかってはいけないものを置く安全な場所ではありません。ログインしたままのデバイスを開ける人なら、誰でもその世帯に切り替えられます。",
+  "AudienceCouples.q3": "Financy のクラウドでは、2つ目の世帯に追加料金がかかりますか？",
+  "AudienceCouples.a3":
+    "はい。世帯ごとにプランが必要で、料金は月 {monthly} または年 {yearly} です。世帯にパートナーを招待しても、追加料金はかかりません。",
+  "AudienceCouples.q4": "Financy で割り勘はできますか？",
+  "AudienceCouples.a4":
+    "いいえ。Financy に割り勘の機能はありません。世帯の全員に、同じ口座と取引を表示します。",
+  "AudienceCouples.alt":
+    "共有の世帯の1か月を示す Financy の概要画面。収入、支出、残りの金額が表示されています。",
+  "AudienceCouples.caption": "サンプルデータです。2人とも同じ月の内容を見られます。",
+  "AudienceFamilies.name": "家族",
+  "AudienceFamilies.title": "家族で使える家計簿アプリをセルフホスト",
+  "AudienceFamilies.description":
+    "家族の家計を自分で管理するサーバーに置きたい方へ。Financy は AGPL-3.0 で、Docker Compose で動きます。すべての機能が使え、メンバー数の上限もありません。",
+  "AudienceFamilies.h1": "家族みんなで使える家計簿アプリを、自分のサーバーでセルフホスト",
+  "AudienceFamilies.answer":
+    "家族でひとつの家計を、自分で管理するサーバーで扱いたい。Financy は Docker Compose で動き、すべての機能が使えてメンバー数の上限もなく、一人ひとりが自分のログインとロールで利用します。",
+  "AudienceFamilies.how1":
+    "1人が自分たちのサーバーで Docker Compose を使って Financy を動かし、バックアップを管理します。ほかの人はログインするだけです。",
+  "AudienceFamilies.how2":
+    "カテゴリごとに月の上限を設定し、カテゴリを親カテゴリの下にまとめ、決まった支払いは定期取引に登録します。Financy はブラウザからインストールでき、オフラインでも開けます。オフラインで追加した取引は、再接続したときに送信されます。アプリでは世帯を「グループ」と呼びます。",
+  "AudienceFamilies.blockTitle": "ロールごとにできること",
+  "AudienceFamilies.editorTerm": "編集者",
+  "AudienceFamilies.editorDetail": "口座、取引、予算の追加と変更ができます。",
+  "AudienceFamilies.adminTerm": "管理者",
+  "AudienceFamilies.adminDetail": "メンバーの管理もできます。",
+  "AudienceFamilies.ownerTerm": "オーナー",
+  "AudienceFamilies.ownerDetail": "世帯の譲渡もできます。",
+  "AudienceFamilies.limit1": "子ども用アカウントやお小遣いの機能。",
+  "AudienceFamilies.limit2": "ほかのメンバーから口座を隠すこと。",
+  "AudienceFamilies.limit3": "銀行との連携。取引はご自身で入力します。",
+  "AudienceFamilies.q1": "セルフホスト版の Financy に足りない機能はありますか？",
+  "AudienceFamilies.a1": "いいえ。同じコードで、すべての機能が使え、メンバー数の上限もありません。",
+  "AudienceFamilies.q2": "子どもに専用のアカウントを持たせたり、お小遣いを管理したりできますか？",
+  "AudienceFamilies.a2":
+    "いいえ。Financy に子ども用アカウントやお小遣いの機能はありません。参加した人は通常のメンバーとなり、閲覧者のロールでも世帯のすべての口座と取引が見えます。その点を踏まえて判断してください。",
+  "AudienceFamilies.q3": "1つの世帯に7人以上で参加できますか？",
+  "AudienceFamilies.a3":
+    "はい。自分のサーバーなら、Financy にメンバー数の上限はありません。Financy のクラウドでは、1世帯あたり最大6人までです。",
+  "AudienceFamilies.q4": "世帯を Financy のクラウドから自分のサーバーに移せますか？",
+  "AudienceFamilies.a4":
+    "はい。世帯のオーナーがファイルに書き出し、そのファイルを自分のサーバーで新しい世帯として取り込みます。",
+  "AudienceFamilies.alt":
+    "Financy のメンバー画面。サンプルの大人がそれぞれのロールとともに並んでいます。",
+  "AudienceFamilies.caption": "サンプルデータです。一人ひとりに自分のログインとロールがあります。",
+  "AudienceSmallBusiness.name": "小規模事業",
+  "AudienceSmallBusiness.title": "フリーランスと小規模事業の外貨支出管理",
+  "AudienceSmallBusiness.description":
+    "複数の通貨にまたがる共有の支出を記録できます。Financy は会計ソフトではなく、複式簿記の帳簿、請求書、税務レポートの機能はありません。",
+  "AudienceSmallBusiness.h1": "フリーランスと小規模事業の外貨支出を、複数の通貨のまま管理",
+  "AudienceSmallBusiness.answer":
+    "フリーランスや小規模事業で、支出が複数の通貨にまたがっている。Financy なら、その支出をひとつの場所にまとめ、ひとつの合計で確認できます。",
+  "AudienceSmallBusiness.notAccounting":
+    "Financy は会計ソフトではありません。複式簿記の帳簿、請求書、税務レポートの機能はありません。これらには、会計担当者が使うツールをお使いください。",
+  "AudienceSmallBusiness.how1":
+    "一緒に仕事をする全員で、ひとつのグループを共有します。リンクで招待し、一人ひとりにロールを割り当てます。",
+  "AudienceSmallBusiness.how2":
+    "口座はそれぞれの通貨のままで、合計はグループのメイン通貨で表示されます。別の通貨での支払いには両方の金額が残り、両方を入力すれば、銀行が実際に適用したレートをそのまま残せます。",
+  "AudienceSmallBusiness.how3":
+    "支出カテゴリごとに月の上限を設定し、決まった支出は定期取引に登録します。グループのオーナーは、いつでもグループをファイルに書き出せます。",
+  "AudienceSmallBusiness.blockTitle": "Financy の使いどころ",
+  "AudienceSmallBusiness.useTitle": "Financy で管理するもの",
+  "AudienceSmallBusiness.use1": "複数の通貨にまたがる共有の支出",
+  "AudienceSmallBusiness.use2": "カテゴリごとの月の上限",
+  "AudienceSmallBusiness.keepTitle": "会計担当者のツールで管理するもの",
+  "AudienceSmallBusiness.keep1": "帳簿",
+  "AudienceSmallBusiness.keep2": "請求書",
+  "AudienceSmallBusiness.keep3": "税務レポート",
+  "AudienceSmallBusiness.limit1": "複式簿記の帳簿をつけること。",
+  "AudienceSmallBusiness.limit2": "請求書の送付。",
+  "AudienceSmallBusiness.limit3": "税務レポートの作成。",
+  "AudienceSmallBusiness.limit4": "銀行との連携。取引はご自身で入力します。",
+  "AudienceSmallBusiness.q1": "Financy は会計ソフトの代わりになりますか？",
+  "AudienceSmallBusiness.a1":
+    "いいえ。Financy は会計ソフトではありません。複式簿記の帳簿、請求書、税務レポートの機能はありません。これらには、会計担当者が使うツールをお使いください。",
+  "AudienceSmallBusiness.q2": "同僚に、変更はできない形で支出を見てもらえますか？",
+  "AudienceSmallBusiness.a2":
+    "はい。閲覧者のロールを割り当ててください。閲覧者は見ることだけができます。",
+  "AudienceSmallBusiness.q3": "事業のお金と個人のお金を分けて管理できますか？",
+  "AudienceSmallBusiness.a3":
+    "はい。それぞれを別のグループに入れれば、ひとつのログインで切り替えられます。グループのメンバーは全員、そのグループのすべての口座と取引を見られます。",
+  "AudienceSmallBusiness.q4": "Financy は銀行と連携しますか？",
+  "AudienceSmallBusiness.a4":
+    "いいえ。Financy に銀行との同期機能はないため、取引はご自身で入力します。繰り返す取引は、定期取引で記録できます。",
+  "AudienceSmallBusiness.alt":
+    "Financy の取引画面。サンプルの支出が並び、別の通貨での支払いには両方の金額が表示されています。",
+  "AudienceSmallBusiness.caption":
+    "サンプルデータです。別の通貨での支払いには両方の金額が残ります。",
 } satisfies Catalog

@@ -748,4 +748,162 @@ export default {
   "FeatureTransactions.fact3": "Un ingreso en una categoría de gastos es un reembolso",
   "FeatureTransactions.fact4": "Un movimiento eliminado se puede restaurar durante 30 días",
   "FeatureTransactions.code": "Ver el código de los movimientos",
+  "AudiencePage.demo": "Probar la demo",
+  "AudiencePage.demoNote": "Datos de ejemplo, sin crear una cuenta de usuario.",
+  "AudiencePage.limits": "Lo que Financy no hace",
+  "AudiencePage.also": "También para",
+  "AudiencePage.listTitle": "Financy para tu situación",
+  "AudienceExpats.name": "Expatriados",
+  "AudienceExpats.title": "Gastos en dos monedas si vives en el extranjero",
+  "AudienceExpats.description":
+    "¿Ganas en una moneda y gastas en otra? Financy mantiene cada cuenta en su propia moneda y te muestra un único total en tu moneda principal.",
+  "AudienceExpats.h1": "Gastos en dos monedas si vives en el extranjero, con un solo total",
+  "AudienceExpats.answer":
+    "Ganas en una moneda y gastas en otra, así que ningún saldo te dice por sí solo cómo vas. Financy mantiene cada cuenta en su propia moneda y las suma en la moneda principal de tu hogar.",
+  "AudienceExpats.how1":
+    "Añade una cuenta por cada sitio donde tengas dinero, como una cuenta de sueldo en euros y una cuenta local en baht tailandeses. Cada una conserva su moneda, y los totales se muestran en la moneda principal de tu hogar.",
+  "AudienceExpats.how2":
+    "Cuando pagas en otra moneda, el movimiento guarda los dos importes. Escribe tú ambos y Financy conservará el tipo de cambio que tu banco aplicó de verdad. Un tipo posterior nunca lo reescribe, y una transferencia entre monedas registra los dos lados.",
+  "AudienceExpats.how3":
+    "Los totales convertidos usan un tipo de cambio diario publicado, así que pueden diferir un poco de lo que te cobró tu banco.",
+  "AudienceExpats.blockTitle": "Qué monedas se convierten solas",
+  "AudienceExpats.blockBody":
+    "Los tipos de cambio diarios del Banco Central Europeo cubren estas monedas: {codes}.",
+  "AudienceExpats.limit1": "Conectarse a tu banco: los movimientos los añades tú.",
+  "AudienceExpats.limit2": "Importar extractos bancarios, por ahora.",
+  "AudienceExpats.limit3": "Dar asesoramiento financiero o fiscal.",
+  "AudienceExpats.q1": "¿Puedo registrar el tipo de cambio que me aplicó mi banco?",
+  "AudienceExpats.a1":
+    "Sí. Escribe los dos importes en un movimiento en otra moneda y Financy conservará el tipo de cambio que tu banco aplicó de verdad.",
+  "AudienceExpats.q2": "¿Un nuevo tipo de cambio modifica mis movimientos anteriores?",
+  "AudienceExpats.a2":
+    "No. Un movimiento en otra moneda conserva los dos importes, y un tipo posterior nunca lo reescribe.",
+  "AudienceExpats.q3": "¿Financy convierte todas las monedas?",
+  "AudienceExpats.a3":
+    "No. Los tipos de cambio diarios del Banco Central Europeo cubren unas 30 monedas.",
+  "AudienceExpats.q4": "¿Puedo importar mis extractos bancarios a Financy?",
+  "AudienceExpats.a4":
+    "Todavía no. Por ahora añades los movimientos tú, y los movimientos recurrentes cubren los habituales.",
+  "AudienceExpats.alt":
+    "Pantalla de cuentas de Financy con cuentas de ejemplo, cada una en su propia moneda, bajo un único total.",
+  "AudienceExpats.caption": "Datos de ejemplo. Cada cuenta conserva su propia moneda.",
+  "AudienceCouples.name": "Parejas",
+  "AudienceCouples.title": "Finanzas en pareja: dinero común y separado",
+  "AudienceCouples.description":
+    "¿Compartes parte del dinero y otra la mantienes separada? Usa un hogar de Financy en común y otro para tu dinero, con una sola cuenta de usuario.",
+  "AudienceCouples.h1": "Finanzas en pareja: dinero común y separado en una sola app",
+  "AudienceCouples.answer":
+    "Compartes parte de tu dinero con tu pareja y otra parte la mantienes separada. En Financy, eso son dos hogares: todos los miembros de un hogar ven todas sus cuentas y movimientos, así que el dinero separado va en un segundo hogar del que tu pareja no es miembro. Con una sola cuenta de usuario cambias de uno a otro.",
+  "AudienceCouples.how1":
+    "Crea un hogar para el dinero en común e invita a tu pareja con un enlace, con el rol de administrador, para que también pueda gestionarlo. Tu pareja y tú ven las mismas cuentas y presupuestos, y los cambios aparecen al momento en todos los dispositivos abiertos.",
+  "AudienceCouples.how2":
+    "Fija un límite mensual para cada categoría en común y añade movimientos recurrentes para los gastos fijos. En la app, un hogar se llama grupo.",
+  "AudienceCouples.blockTitle": "Lo nuestro, lo mío y lo tuyo",
+  "AudienceCouples.oursTerm": "Lo nuestro",
+  "AudienceCouples.oursDetail": "Un hogar que compartes con tu pareja.",
+  "AudienceCouples.mineTerm": "Lo mío",
+  "AudienceCouples.mineDetail": "Un hogar solo tuyo.",
+  "AudienceCouples.yoursTerm": "Lo tuyo",
+  "AudienceCouples.yoursDetail": "Un hogar solo de tu pareja.",
+  "AudienceCouples.blockNote":
+    "En la nube de Financy, cada hogar tiene su propio plan, a {monthly} al mes o {yearly} al año. El registro en la nube todavía no está abierto. Alojarlo tú es gratis.",
+  "AudienceCouples.limit1": "Ocultar una cuenta dentro de un hogar compartido.",
+  "AudienceCouples.limit2": "Repartir gastos o calcular quién debe a quién.",
+  "AudienceCouples.limit3": "Conectarse a tu banco: los movimientos los añades tú.",
+  "AudienceCouples.q1": "¿Puedo ocultarle una cuenta a mi pareja en un hogar compartido?",
+  "AudienceCouples.a1":
+    "No. Todos los miembros de un hogar ven todas sus cuentas y movimientos. Guarda el dinero separado en un segundo hogar y cambia a él con la misma cuenta de usuario.",
+  "AudienceCouples.q2": "¿Un segundo hogar oculta mi dinero a mi pareja?",
+  "AudienceCouples.a2":
+    "No. Mantiene ese dinero fuera del hogar que compartes, pero no es un lugar seguro para nada que tu pareja no deba encontrar. Cualquiera que pueda abrir tu dispositivo con la sesión iniciada puede cambiar a él.",
+  "AudienceCouples.q3": "¿Un segundo hogar cuesta más en la nube de Financy?",
+  "AudienceCouples.a3":
+    "Sí. Cada hogar tiene su propio plan, a {monthly} al mes o {yearly} al año. Invitar a tu pareja a un hogar no cuesta nada más.",
+  "AudienceCouples.q4": "¿Financy reparte los gastos entre mi pareja y yo?",
+  "AudienceCouples.a4":
+    "No. Financy no reparte gastos. Muestra a todos los miembros de un hogar las mismas cuentas y movimientos.",
+  "AudienceCouples.alt":
+    "Resumen de Financy del mes de un hogar compartido, con los ingresos, los gastos y lo que queda.",
+  "AudienceCouples.caption": "Datos de ejemplo. Tu pareja y tú ven el mismo mes.",
+  "AudienceFamilies.name": "Familias",
+  "AudienceFamilies.title": "App de presupuesto familiar autoalojada",
+  "AudienceFamilies.description":
+    "¿El presupuesto familiar en tu propio servidor? Financy funciona con Docker Compose bajo AGPL‑3.0, con todas las funciones y sin límite de miembros.",
+  "AudienceFamilies.h1": "Una app de presupuesto para toda la familia, en tu propio servidor",
+  "AudienceFamilies.answer":
+    "Tu familia quiere un solo presupuesto, en un servidor que controlas tú. Financy funciona con Docker Compose, con todas las funciones y sin límite de miembros, y cada persona entra con su propia cuenta de usuario y su rol.",
+  "AudienceFamilies.how1":
+    "Una persona pone en marcha Financy en tu propio servidor con Docker Compose y se encarga de las copias de seguridad. El resto solo tiene que iniciar sesión.",
+  "AudienceFamilies.how2":
+    "Fija límites mensuales por categoría, agrupa categorías bajo una principal y añade movimientos recurrentes para los pagos habituales. Financy se instala desde el navegador y se abre sin conexión, y los movimientos añadidos sin conexión se envían al recuperarla. En la app, un hogar se llama grupo.",
+  "AudienceFamilies.blockTitle": "Quién puede hacer qué",
+  "AudienceFamilies.editorTerm": "Editor",
+  "AudienceFamilies.editorDetail": "Añade y cambia cuentas, movimientos y presupuestos.",
+  "AudienceFamilies.adminTerm": "Administrador",
+  "AudienceFamilies.adminDetail": "Además, gestiona los miembros.",
+  "AudienceFamilies.ownerTerm": "Propietario",
+  "AudienceFamilies.ownerDetail": "Además, puede transferir el hogar.",
+  "AudienceFamilies.limit1": "Ofrecer cuentas de usuario para niños o dinero de bolsillo.",
+  "AudienceFamilies.limit2": "Ocultar cuentas a otros miembros.",
+  "AudienceFamilies.limit3": "Conectarse a tu banco: los movimientos los añades tú.",
+  "AudienceFamilies.q1": "¿A Financy autoalojado le falta alguna función?",
+  "AudienceFamilies.a1":
+    "No. Es el mismo código, con todas las funciones y sin límite de miembros.",
+  "AudienceFamilies.q2":
+    "¿Mis hijos pueden tener su propia cuenta de usuario o dinero de bolsillo?",
+  "AudienceFamilies.a2":
+    "No. Financy no tiene cuentas de usuario para niños ni dinero de bolsillo. Quien se une es un miembro normal, e incluso el rol de lector muestra todas las cuentas y movimientos del hogar, así que tenlo en cuenta al decidir.",
+  "AudienceFamilies.q3": "¿Pueden unirse más de seis personas a un hogar?",
+  "AudienceFamilies.a3":
+    "Sí, en tu propio servidor, donde Financy no tiene límite de miembros. La nube de Financy permite hasta 6 miembros por hogar.",
+  "AudienceFamilies.q4": "¿Puedo pasar nuestro hogar de la nube de Financy a mi propio servidor?",
+  "AudienceFamilies.a4":
+    "Sí. El propietario del hogar lo exporta a un archivo, y tú importas ese archivo en tu servidor como un hogar nuevo.",
+  "AudienceFamilies.alt":
+    "Pantalla de miembros de Financy con personas adultas de ejemplo, cada una con su rol.",
+  "AudienceFamilies.caption":
+    "Datos de ejemplo. Cada persona tiene su propia cuenta de usuario y su rol.",
+  "AudienceSmallBusiness.name": "Pequeñas empresas",
+  "AudienceSmallBusiness.title": "Gastos de autónomos y pymes en varias monedas",
+  "AudienceSmallBusiness.description":
+    "Controla gastos compartidos en varias monedas. Financy no es software de contabilidad: no tiene partida doble, facturas ni informes fiscales.",
+  "AudienceSmallBusiness.h1": "Gastos de autónomos y pequeñas empresas en varias monedas",
+  "AudienceSmallBusiness.answer":
+    "Trabajas por tu cuenta o llevas una pequeña empresa, y tus gastos pasan por varias monedas. Financy reúne esos gastos en un solo lugar, con un único total.",
+  "AudienceSmallBusiness.notAccounting":
+    "Financy no es software de contabilidad: no tiene contabilidad por partida doble, facturas ni informes fiscales. Para eso, sigue usando la herramienta de quien lleva tu contabilidad.",
+  "AudienceSmallBusiness.how1":
+    "Todas las personas con las que trabajas comparten un grupo. Invítalas con un enlace y dale un rol a cada una.",
+  "AudienceSmallBusiness.how2":
+    "Cada cuenta conserva su propia moneda, y los totales se muestran en la moneda principal del grupo. Un pago en otra moneda guarda los dos importes, y si escribes ambos se conserva el tipo de cambio que el banco aplicó de verdad.",
+  "AudienceSmallBusiness.how3":
+    "Fija un límite mensual para cada categoría de gastos y añade movimientos recurrentes para los gastos fijos. El propietario del grupo puede exportarlo a un archivo en cualquier momento.",
+  "AudienceSmallBusiness.blockTitle": "Dónde encaja Financy",
+  "AudienceSmallBusiness.useTitle": "Usa Financy para",
+  "AudienceSmallBusiness.use1": "Gastos compartidos en varias monedas",
+  "AudienceSmallBusiness.use2": "Límites mensuales por categoría",
+  "AudienceSmallBusiness.keepTitle": "Usa la herramienta de quien lleva tu contabilidad para",
+  "AudienceSmallBusiness.keep1": "Tu libro de contabilidad",
+  "AudienceSmallBusiness.keep2": "Facturas",
+  "AudienceSmallBusiness.keep3": "Informes fiscales",
+  "AudienceSmallBusiness.limit1": "Llevar una contabilidad por partida doble.",
+  "AudienceSmallBusiness.limit2": "Enviar facturas.",
+  "AudienceSmallBusiness.limit3": "Preparar informes fiscales.",
+  "AudienceSmallBusiness.limit4": "Conectarse a tu banco: los movimientos los añades tú.",
+  "AudienceSmallBusiness.q1": "¿Financy puede sustituir a mi software de contabilidad?",
+  "AudienceSmallBusiness.a1":
+    "No. Financy no es software de contabilidad: no tiene contabilidad por partida doble, facturas ni informes fiscales. Para eso, sigue usando la herramienta de quien lleva tu contabilidad.",
+  "AudienceSmallBusiness.q2":
+    "¿Alguien con quien trabajo puede ver nuestros gastos sin cambiarlos?",
+  "AudienceSmallBusiness.a2": "Sí. Dale el rol de lector, que solo permite consultar.",
+  "AudienceSmallBusiness.q3": "¿Puedo separar el dinero del negocio del dinero personal?",
+  "AudienceSmallBusiness.a3":
+    "Sí. Pon cada uno en su propio grupo y cambia de uno a otro con una sola cuenta de usuario. Todos los miembros de un grupo ven todas sus cuentas y movimientos.",
+  "AudienceSmallBusiness.q4": "¿Financy se conecta a nuestro banco?",
+  "AudienceSmallBusiness.a4":
+    "No. Financy no se sincroniza con el banco, así que los movimientos los añades tú. Los movimientos recurrentes cubren los habituales.",
+  "AudienceSmallBusiness.alt":
+    "Pantalla de movimientos de Financy con gastos de ejemplo, incluido un pago en otra moneda con los dos importes.",
+  "AudienceSmallBusiness.caption":
+    "Datos de ejemplo. Un pago en otra moneda guarda los dos importes.",
 } satisfies Catalog

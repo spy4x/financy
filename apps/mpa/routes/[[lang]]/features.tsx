@@ -7,8 +7,10 @@ import { PageHero } from "@spy4x/preact-ui/page-hero"
 import { faqPageJsonLd } from "@spy4x/platform/universal/seo"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import { siteEnglishText } from "@ui/site-text.ts"
+import { AUDIENCE_PAGES, audiencePath } from "../../audience-data.ts"
 import { Band } from "../../components/band.tsx"
 import { FeatureSection, FeatureTier } from "../../components/features-section.tsx"
+import { LINK } from "../../components/page-section.tsx"
 import { SectionIntro } from "../../components/section-intro.tsx"
 import { FEATURE_PAGES, featurePath, tiers } from "../../features-data.tsx"
 import {
@@ -152,6 +154,18 @@ export default define.page(function Features({ state }) {
           ))}
         </div>
       </div>
+      <Band id="audiences" labelledBy="audiences-title">
+        <div class="flex flex-col gap-4" data-e2e="features-audiences">
+          <SectionIntro id="audiences-title" title={t.t(`AudiencePage.listTitle`)} />
+          <ul class="flex flex-wrap gap-x-6">
+            {AUDIENCE_PAGES.map((page) => (
+              <li key={page.slug}>
+                <a href={audiencePath(page.slug, site.language)} class={LINK}>{t.t(page.name)}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Band>
       <Band tone="alt" id="faq" labelledBy="faq-title" width="3xl">
         <div class="flex flex-col gap-8">
           <SectionIntro

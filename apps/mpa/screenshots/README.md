@@ -33,20 +33,29 @@ A screen that fails is listed at the end and the run exits 1; the others are sti
 - Photographs each screen in light and dark with reduced motion, a hidden caret, no transitions,
   and a clock fixed a few minutes after the data was made, so every time reads "3 minutes ago".
 
-| Screen             | Form               | Delivered widths          |
-| ------------------ | ------------------ | ------------------------- |
-| `notes`            | desktop and mobile | 1280, 800, 640 / 780, 390 |
-| `profile-security` | desktop            | 1280, 800, 640            |
-| `group-members`    | desktop            | 1280, 800, 640            |
-| `billing`          | desktop            | 1280, 800, 640            |
-| `billing-plan`     | mobile, plan only  | 780, 390                  |
-| `notifications`    | desktop            | 1280, 800, 640            |
-| `activity`         | desktop            | 1280, 800, 640            |
-| `sign-in`          | mobile             | 780, 390                  |
+| Screen               | Form               | Delivered widths          |
+| -------------------- | ------------------ | ------------------------- |
+| `notes`              | desktop and mobile | 1280, 800, 640 / 780, 390 |
+| `profile-security`   | desktop            | 1280, 800, 640            |
+| `group-members`      | desktop            | 1280, 800, 640            |
+| `billing`            | desktop            | 1280, 800, 640            |
+| `billing-plan`       | mobile, plan only  | 780, 390                  |
+| `notifications`      | desktop            | 1280, 800, 640            |
+| `activity`           | desktop            | 1280, 800, 640            |
+| `sign-in`            | mobile             | 780, 390                  |
+| `for-expats`         | mobile, cropped    | 780, 390                  |
+| `for-couples`        | mobile, cropped    | 780, 390                  |
+| `for-families`       | mobile, cropped    | 780, 390                  |
+| `for-small-business` | mobile, cropped    | 780, 390                  |
 
 Desktop is a 1280×800 viewport at device scale 2, mobile a 390×844 viewport at device scale 3.
 `billing-plan` keeps only the 390×208 part of the phone's billing tab that shows the plan, which is
 all the home page's billing card draws.
+
+The `for-*` crops are the audience pages' (`/for/<slug>`). They show the group "Sample household":
+four adults and accounts in EUR, USD, GBP and THB only. The stack needs a daily rate for those
+currencies, which its worker fetches; a screen that says a rate is missing fails the run. The height
+of each crop is also in `audience-data.ts`, at twice the size.
 
 ## Feature loops
 
