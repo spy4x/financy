@@ -366,6 +366,49 @@ Deno.test(`the budgets spreadsheet shows each month's limit and spending as the 
   })
 })
 
+Deno.test(`the budgets spreadsheet gives a parent a row when its limit comes from its subcategories`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const main = await h.account(`Main`, `USD`)
+    const home = await h.category(`Home`)
+    const rent = await h.category(`Rent`, home)
+    await h.limit(rent, `2026-03`, 30000, `USD`)
+    await h.entry(main, rent, -1000, `USD`, `2026-03-02`)
+    expect(await budgetRows(sql, h.groupId)).toEqual([
+      [`2026-03`, `Home`, `300.00`, `USD`, `10.00`],
+      [`2026-03`, `Home / Rent`, `300.00`, `USD`, `10.00`],
+    ])
+  })
+})
+
+Deno.test(`the budgets spreadsheet has no row for an archived category, past months included`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const food = await h.category(`Food`)
+    const old = await h.category(`Old`)
+    await h.limit(food, `2026-03`, 50000, `USD`)
+    await h.limit(old, `2026-01`, 9000, `USD`)
+    await h.categories.archive(
+      { groupId: h.groupId, id: old, archived: true, expectedVersion: 1, allowance: null },
+      h.owner,
+    )
+    expect(await budgetRows(sql, h.groupId)).toEqual([[`2026-03`, `Food`, `500.00`, `USD`, `0.00`]])
+  })
+})
+
+Deno.test(`the budgets spreadsheet leaves spending in a currency with no rate out of spent`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    const usd = await h.account(`Main`, `USD`)
+    const eur = await h.account(`Euro`, `EUR`)
+    const food = await h.category(`Food`)
+    await h.limit(food, `2026-03`, 50000, `USD`)
+    await h.entry(usd, food, -500, `USD`, `2026-03-02`)
+    await h.entry(eur, food, -900, `EUR`, `2026-03-03`)
+    expect(await budgetRows(sql, h.groupId)).toEqual([[`2026-03`, `Food`, `500.00`, `USD`, `5.00`]])
+  })
+})
+
 Deno.test(`the budgets spreadsheet ends at the household's current month in its time zone`, async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
