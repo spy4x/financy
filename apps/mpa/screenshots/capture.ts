@@ -165,6 +165,8 @@ type StorageState = Awaited<ReturnType<BrowserContext["storageState"]>>
 /** What the screens need from the seeding. */
 export interface Seeded {
   groupId: string
+  /** The sample household the audience pages (`/for/<slug>`) show. */
+  householdId: string
   noteIds: string[]
   /** The moment every page's clock is fixed at, a few minutes after the data was made. */
   now: Date
@@ -266,6 +268,67 @@ async function upgradeToPro(page: Page, groupId: string): Promise<void> {
   await expectOk(`Pro for ${groupId}`, webhook)
 }
 
+/**
+ * Builds the household the audience pages show: four adults, and accounts in the euro, the dollar,
+ * the pound and the baht only, the currencies the free daily rates cover. Two payments in another
+ * currency state both amounts, so they keep the rate the bank charged.
+ */
+async function seedHousehold(ada: Page, adaId: number): Promise<string> {
+  const groupId = await createGroup(ada, "Sample household")
+  await upgradeToPro(ada, groupId)
+  await addMember(ada, GRACE, groupId, 3)
+  await addMember(ada, MARGARET, groupId, 2)
+  await addMember(ada, LINUS, groupId, 1)
+  const call = async (operation: string, data: Record<string, unknown>) => {
+    const response = await ada.request.post(`${APP}/api/call/${operation}`, {
+      headers: { ...sameOrigin(), "x-realtime-user": String(adaId), "idempotency-key": uuidV7() },
+      data: { groupId, id: uuidV7(), ...data },
+    })
+    await expectOk(`${operation} ${JSON.stringify(data)}`, response)
+  }
+  const account = async (name: string, kind: number, currency: string, balance: number) => {
+    const id = uuidV7()
+    await call(`account.create`, { id, name, kind, currency, startingBalance: balance })
+    return id
+  }
+  const category = async (name: string, kind: number, icon: string, color: string) => {
+    const id = uuidV7()
+    await call(`category.create`, { id, name, kind, icon, color, parentId: null })
+    return id
+  }
+  const salary = await account("Salary account", 2, "EUR", 420_000)
+  await account("Dollar savings", 4, "USD", 1_250_000)
+  await account("London account", 2, "GBP", 184_000)
+  await account("Bangkok account", 2, "THB", 8_650_000)
+  const income = await category("Salary", 2, "shopping-cart", "#16a34a")
+  const home = await category("Rent", 1, "shopping-cart", "#2563eb")
+  const food = await category("Groceries", 1, "shopping-cart", "#d97706")
+  const travel = await category("Travel", 1, "shopping-cart", "#9333ea")
+  const entries = [
+    { categoryId: income, kind: 2, amount: 380_000, currency: "EUR", memo: "Monthly salary" },
+    { categoryId: home, kind: 1, amount: 110_000, currency: "EUR", memo: "Rent" },
+    { categoryId: food, kind: 1, amount: 28_640, currency: "EUR", memo: "Weekly groceries" },
+    {
+      categoryId: travel,
+      kind: 1,
+      amount: 185_000,
+      currency: "THB",
+      accountAmount: 4_920,
+      memo: "Hotel in Bangkok",
+    },
+    {
+      categoryId: travel,
+      kind: 1,
+      amount: 8_400,
+      currency: "GBP",
+      accountAmount: 9_860,
+      memo: "Train in London",
+    },
+  ]
+  for (const entry of entries) await call(`transaction.create`, { accountId: salary, ...entry })
+  return groupId
+}
+
 /** Builds everything the screens show. Each person has a browser context of their own. */
 export async function seed(
   browser: Browser,
@@ -328,6 +391,7 @@ export async function seed(
 
   // Ada's inbox: an invitation, a role change and a group handed over.
   const apollo = await createGroup(margaret, "Apollo Guidance")
+  await upgradeToPro(margaret, apollo)
   const invitation = await margaret.request.post(`${APP}/api/groups/${apollo}/invitations`, {
     headers: sameOrigin(),
     data: { role: 1, email: ADA.email },
@@ -369,9 +433,11 @@ export async function seed(
     data: "null",
   })
   await expectOk("first-steps card dismissal", dismissed)
+  const householdId = await seedHousehold(ada, adaId)
 
   return {
     groupId,
+    householdId,
     noteIds,
     now: new Date(Date.now() + 3 * 60_000),
     appState: await ada.context().storageState(),
@@ -452,6 +518,17 @@ interface Screen {
   open(page: Page, seeded: Seeded): Promise<void>
   /** The part of the viewport the picture keeps; the whole viewport when absent. */
   clip?: Clip
+  /** Shows the sample household instead of the group "Acme Studio". */
+  household?: boolean
+}
+
+/** Makes `groupId` the group the app opens with. */
+async function selectGroup(page: Page, groupId: string): Promise<void> {
+  const selected = await page.request.put(`${APP}/api/groups/selected`, {
+    headers: sameOrigin(),
+    data: { groupId },
+  })
+  await expectOk(`selected group ${groupId}`, selected)
 }
 
 /** The group's Billing tab, scrolled so the tab's title sits at the top. */
@@ -536,6 +613,55 @@ const SCREENS: Screen[] = [
       await page.locator("[data-e2e=auth-form-login]").fill(ADA.email)
     },
   },
+  {
+    name: "for-expats",
+    forms: ["mobile"],
+    household: true,
+    // From the title to the end of the savings card: all four accounts the total adds up.
+    clip: { x: 0, y: 0, width: 390, height: 634 },
+    async open(page) {
+      await gotoApp(page, "/accounts", page.locator("[data-e2e=accounts-total-amount]"))
+    },
+  },
+  {
+    name: "for-couples",
+    forms: ["mobile"],
+    household: true,
+    // From the title to the end of the spending card, below net and income.
+    clip: { x: 0, y: 0, width: 390, height: 634 },
+    async open(page, seeded) {
+      await gotoApp(
+        page,
+        `/overview/${seeded.householdId}`,
+        page.locator(`[data-e2e="overview-widget-money.income"]`),
+      )
+    },
+  },
+  {
+    name: "for-families",
+    forms: ["mobile"],
+    household: true,
+    // The four members alone: the invitations below them stay out of the picture.
+    clip: { x: 0, y: 176, width: 390, height: 440 },
+    async open(page, seeded) {
+      await gotoApp(
+        page,
+        `/groups/${seeded.householdId}/members`,
+        page.locator("[data-e2e=group-member]").nth(3),
+      )
+      await scrollToTop(page.locator("[data-e2e=group-section-members]"))
+    },
+  },
+  {
+    name: "for-small-business",
+    forms: ["mobile"],
+    household: true,
+    // From the title to the end of the second payment, each with both amounts.
+    clip: { x: 0, y: 0, width: 390, height: 548 },
+    async open(page) {
+      await gotoApp(page, "/transactions", page.getByText("Hotel in Bangkok"))
+    },
+  },
 ]
 
 /** Runs `shoot`, recording a failure instead of stopping, so one broken screen does not hide others. */
@@ -562,7 +688,14 @@ async function captureScreens(browser: Browser, contexts: BrowserContext[], seed
             state: signedOut ? undefined : seeded.appState,
           })
           try {
+            if (!signedOut) {
+              await selectGroup(page, screen.household ? seeded.householdId : seeded.groupId)
+            }
             await screen.open(page, seeded)
+            // A public page never shows a total that leaves money out for want of a rate.
+            if (screen.household && await page.getByText(/no exchange rate/i).count()) {
+              throw new Error(`the stack has no rate for EUR, USD, GBP or THB`)
+            }
             await snap(page, name, screen.clip)
           } finally {
             await page.context().close()

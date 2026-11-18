@@ -718,4 +718,155 @@ export default {
   "FeatureTransactions.fact3": "Income in an expense category is a refund",
   "FeatureTransactions.fact4": "A deleted transaction can be restored for 30 days",
   "FeatureTransactions.code": "Read the transactions domain",
+  "AudiencePage.demo": "Try the demo",
+  "AudiencePage.demoNote": "Sample data, no account needed.",
+  "AudiencePage.limits": "What Financy does not do",
+  "AudiencePage.also": "Also for",
+  "AudiencePage.listTitle": "Financy for your situation",
+  "AudienceExpats.name": "Expats",
+  "AudienceExpats.title": "Budget in two currencies when you live abroad",
+  "AudienceExpats.description":
+    "Earn in one currency and spend in another? Financy keeps each account in its own currency and shows one total in your main currency.",
+  "AudienceExpats.h1": "Earn in one currency, spend in another, and see one total",
+  "AudienceExpats.answer":
+    "You earn in one currency and spend in another, so no single balance shows where you stand. Financy keeps each account in its own currency and adds them up in your household's main currency.",
+  "AudienceExpats.how1":
+    "Add an account for each place your money sits, such as a salary account in euros and a local account in Thai baht. Each keeps its own currency, and totals show in your household's main currency.",
+  "AudienceExpats.how2":
+    "When you pay in another currency, the transaction keeps both amounts. Type both yourself, and Financy keeps the rate your bank really charged. A later rate never rewrites it, and a transfer across currencies records both sides.",
+  "AudienceExpats.how3":
+    "Converted totals use a published daily rate, so they can differ a little from what your bank charged.",
+  "AudienceExpats.blockTitle": "Which currencies convert on their own",
+  "AudienceExpats.blockBody":
+    "The European Central Bank's daily rates cover these currencies: {codes}.",
+  "AudienceExpats.limit1": "Connect to your bank: you add transactions yourself.",
+  "AudienceExpats.limit2": "Import bank statements yet.",
+  "AudienceExpats.limit3": "Give financial or tax advice.",
+  "AudienceExpats.q1": "Can I record the rate my bank really charged?",
+  "AudienceExpats.a1":
+    "Yes. Type both amounts on a transaction in another currency, and Financy keeps the rate your bank really charged.",
+  "AudienceExpats.q2": "Will a new exchange rate change my past transactions?",
+  "AudienceExpats.a2":
+    "No. A transaction in another currency keeps both amounts, and a later rate never rewrites it.",
+  "AudienceExpats.q3": "Does Financy convert every currency?",
+  "AudienceExpats.a3": "No. The European Central Bank's daily rates cover about 30 currencies.",
+  "AudienceExpats.q4": "Can I import my bank statements into Financy?",
+  "AudienceExpats.a4":
+    "Not yet. Today you add transactions yourself, and repeating entries cover the regular ones.",
+  "AudienceExpats.alt":
+    "Financy's accounts screen with sample accounts, each in its own currency, under one total.",
+  "AudienceExpats.caption": "Sample data. Each account keeps its own currency.",
+  "AudienceCouples.name": "Couples",
+  "AudienceCouples.title": "Budget app for couples: shared and separate money",
+  "AudienceCouples.description":
+    "Share some money and keep some separate? Use one Financy household together and a second for your own money, on one login.",
+  "AudienceCouples.h1": "Track shared and separate money as a couple in one app",
+  "AudienceCouples.answer":
+    "You share some money with your partner and keep some separate. In Financy, that means two households: everyone in a household sees all of its accounts and transactions, so separate money goes in a second household your partner is not a member of. One login switches between them.",
+  "AudienceCouples.how1":
+    "Create a household for the money you share and invite your partner with a link, as an admin, so you can both manage it. You see the same accounts and budgets, and changes show live on every open device.",
+  "AudienceCouples.how2":
+    "Set a monthly limit for each category you share, and add repeating entries for regular costs. The app calls a household a group.",
+  "AudienceCouples.blockTitle": "Ours, mine and yours",
+  "AudienceCouples.oursTerm": "Ours",
+  "AudienceCouples.oursDetail": "A household you both belong to.",
+  "AudienceCouples.mineTerm": "Mine",
+  "AudienceCouples.mineDetail": "A household of your own.",
+  "AudienceCouples.yoursTerm": "Yours",
+  "AudienceCouples.yoursDetail": "A household of your partner's own.",
+  "AudienceCouples.blockNote":
+    "On the Financy cloud, each household has its own plan at {monthly} a month or {yearly} a year. Cloud sign-up is not open yet. Self-hosting is free.",
+  "AudienceCouples.limit1": "Hide an account inside a shared household.",
+  "AudienceCouples.limit2": "Split bills or work out who owes whom.",
+  "AudienceCouples.limit3": "Connect to your bank: you add transactions yourself.",
+  "AudienceCouples.q1": "Can I hide an account from my partner in a shared household?",
+  "AudienceCouples.a1":
+    "No. Everyone in a household sees all its accounts and transactions. Keep separate money in a second household, and switch to it with the same login.",
+  "AudienceCouples.q2": "Does a second household keep money private from my partner?",
+  "AudienceCouples.a2":
+    "No. It keeps that money out of your shared household, but it is not a safe place for anything your partner must not find. Anyone who can open your signed-in device can switch to it.",
+  "AudienceCouples.q3": "Does a second household cost extra on the Financy cloud?",
+  "AudienceCouples.a3":
+    "Yes. Each household has its own plan, at {monthly} a month or {yearly} a year. Inviting your partner to a household costs nothing more.",
+  "AudienceCouples.q4": "Does Financy split bills between us?",
+  "AudienceCouples.a4":
+    "No. Financy has no bill splitting. It shows everyone in a household the same accounts and transactions.",
+  "AudienceCouples.alt":
+    "Financy's overview of a shared household's month, with income, spending and what is left.",
+  "AudienceCouples.caption": "Sample data. You both see the same month.",
+  "AudienceFamilies.name": "Families",
+  "AudienceFamilies.title": "Self-hosted budget app for the whole family",
+  "AudienceFamilies.description":
+    "Want your family's budget on a server you control? Financy runs with Docker Compose under AGPL-3.0, with every feature and no member limit.",
+  "AudienceFamilies.h1": "A budget app your whole family shares, on your own server",
+  "AudienceFamilies.answer":
+    "Your family wants one budget, on a server you control. Financy runs with Docker Compose, with every feature and no member limit, and each person signs in with their own login and role.",
+  "AudienceFamilies.how1":
+    "One person runs Financy on your own server with Docker Compose and looks after its backups. Everyone else just signs in.",
+  "AudienceFamilies.how2":
+    "Set monthly limits per category, group categories under a parent, and add repeating entries for regular bills. Financy installs from the browser and opens offline, and transactions added offline are sent on reconnect. The app calls a household a group.",
+  "AudienceFamilies.blockTitle": "Who can do what",
+  "AudienceFamilies.editorTerm": "Editor",
+  "AudienceFamilies.editorDetail": "Adds and changes accounts, transactions and budgets.",
+  "AudienceFamilies.adminTerm": "Admin",
+  "AudienceFamilies.adminDetail": "Also manages members.",
+  "AudienceFamilies.ownerTerm": "Owner",
+  "AudienceFamilies.ownerDetail": "Also hands the household over.",
+  "AudienceFamilies.limit1": "Offer child accounts or allowances.",
+  "AudienceFamilies.limit2": "Hide accounts from other members.",
+  "AudienceFamilies.limit3": "Connect to your bank: you add transactions yourself.",
+  "AudienceFamilies.q1": "Is self-hosted Financy missing any features?",
+  "AudienceFamilies.a1": "No. It is the same code, with every feature and no member limit.",
+  "AudienceFamilies.q2": "Can my child have their own account or an allowance?",
+  "AudienceFamilies.a2":
+    "No. Financy has no child accounts or allowances. Anyone who joins is an ordinary member, and even the viewer role shows every account and transaction in the household, so decide with that in mind.",
+  "AudienceFamilies.q3": "Can more than six people join one household?",
+  "AudienceFamilies.a3":
+    "Yes, on your own server, where Financy has no member limit. The Financy cloud allows up to 6 members per household.",
+  "AudienceFamilies.q4": "Can I move our household from the Financy cloud to my own server?",
+  "AudienceFamilies.a4":
+    "Yes. The household's owner exports it to a file, and you import that file on your server as a new household.",
+  "AudienceFamilies.alt": "Financy's members screen with sample adults, each with a role.",
+  "AudienceFamilies.caption": "Sample data. Each person has their own login and role.",
+  "AudienceSmallBusiness.name": "Small business",
+  "AudienceSmallBusiness.title": "Small-business spending in several currencies",
+  "AudienceSmallBusiness.description":
+    "Track shared spending in several currencies. Financy is not accounting software: no double-entry ledger, invoices or tax reports.",
+  "AudienceSmallBusiness.h1": "Track freelance or small-business spending in several currencies",
+  "AudienceSmallBusiness.answer":
+    "You freelance or run a small business, and your spending crosses currencies. Financy keeps that spending in one place, with one total.",
+  "AudienceSmallBusiness.notAccounting":
+    "Financy is not accounting software: it has no double-entry ledger, invoices or tax reports. Keep your accountant's tool for that.",
+  "AudienceSmallBusiness.how1":
+    "Everyone you work with shares one group. Invite people with a link and give each a role.",
+  "AudienceSmallBusiness.how2":
+    "Each account keeps its own currency, and totals show in the group's main currency. A payment in another currency keeps both amounts, and typing both keeps the rate the bank really charged.",
+  "AudienceSmallBusiness.how3":
+    "Set a monthly limit for each spending category and add repeating entries for regular costs. The group's owner can export it to a file at any time.",
+  "AudienceSmallBusiness.blockTitle": "Where Financy fits",
+  "AudienceSmallBusiness.useTitle": "Use Financy for",
+  "AudienceSmallBusiness.use1": "Shared spending across currencies",
+  "AudienceSmallBusiness.use2": "Monthly limits per category",
+  "AudienceSmallBusiness.keepTitle": "Keep your accountant's tool for",
+  "AudienceSmallBusiness.keep1": "Your ledger",
+  "AudienceSmallBusiness.keep2": "Invoices",
+  "AudienceSmallBusiness.keep3": "Tax reports",
+  "AudienceSmallBusiness.limit1": "Keep a double-entry ledger.",
+  "AudienceSmallBusiness.limit2": "Send invoices.",
+  "AudienceSmallBusiness.limit3": "Prepare tax reports.",
+  "AudienceSmallBusiness.limit4": "Connect to your bank: you add transactions yourself.",
+  "AudienceSmallBusiness.q1": "Can Financy replace my accounting software?",
+  "AudienceSmallBusiness.a1":
+    "No. Financy is not accounting software: it has no double-entry ledger, invoices or tax reports. Keep your accountant's tool for that.",
+  "AudienceSmallBusiness.q2": "Can a colleague see our spending without changing it?",
+  "AudienceSmallBusiness.a2": "Yes. Give them the viewer role, which reads only.",
+  "AudienceSmallBusiness.q3": "Can I keep business money apart from personal money?",
+  "AudienceSmallBusiness.a3":
+    "Yes. Put each in its own group, and one login switches between them. Everyone in a group sees all its accounts and transactions.",
+  "AudienceSmallBusiness.q4": "Does Financy connect to our bank?",
+  "AudienceSmallBusiness.a4":
+    "No. Financy has no bank sync, so you add transactions yourself. Repeating entries cover the regular ones.",
+  "AudienceSmallBusiness.alt":
+    "Financy's transactions screen with sample spending, including a payment in another currency with both amounts.",
+  "AudienceSmallBusiness.caption": "Sample data. A payment in another currency keeps both amounts.",
 } satisfies Catalog

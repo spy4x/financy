@@ -738,4 +738,165 @@ export default {
   "FeatureTransactions.fact3": "Eine Einnahme in einer Ausgabenkategorie ist eine Erstattung",
   "FeatureTransactions.fact4": "Eine gelöschte Buchung lässt sich 30 Tage lang wiederherstellen",
   "FeatureTransactions.code": "Code der Buchungen lesen",
+  "AudiencePage.demo": "Demo ausprobieren",
+  "AudiencePage.demoNote": "Beispieldaten, kein Benutzerkonto nötig.",
+  "AudiencePage.limits": "Was Financy nicht kann",
+  "AudiencePage.also": "Auch für",
+  "AudiencePage.listTitle": "Financy für deine Situation",
+  "AudienceExpats.name": "Expats",
+  "AudienceExpats.title": "Haushaltsbuch in mehreren Währungen für Expats",
+  "AudienceExpats.description":
+    "Verdienst du in einer Währung und gibst in einer anderen aus? Financy führt jedes Konto in seiner Währung und zeigt eine Summe in deiner Hauptwährung.",
+  "AudienceExpats.h1": "In einer Währung verdienen, in einer anderen ausgeben, eine Summe sehen",
+  "AudienceExpats.answer":
+    "Du verdienst in einer Währung und gibst in einer anderen aus, deshalb zeigt dir kein einzelner Kontostand, wo du stehst. Financy führt jedes Konto in seiner eigenen Währung und rechnet alles in der Hauptwährung deines Haushalts zusammen.",
+  "AudienceExpats.how1":
+    "Lege für jeden Ort, an dem dein Geld liegt, ein Konto an, etwa ein Gehaltskonto in Euro und ein lokales Konto in thailändischen Baht. Jedes behält seine eigene Währung, und Summen erscheinen in der Hauptwährung deines Haushalts.",
+  "AudienceExpats.how2":
+    "Zahlst du in einer anderen Währung, behält die Buchung beide Beträge. Gib beide selbst ein, dann speichert Financy den Kurs, den deine Bank wirklich berechnet hat. Ein späterer Kurs überschreibt ihn nie, und eine Umbuchung zwischen zwei Währungen hält beide Seiten fest.",
+  "AudienceExpats.how3":
+    "Umgerechnete Summen nutzen einen veröffentlichten Tageskurs und können daher etwas von dem abweichen, was deine Bank berechnet hat.",
+  "AudienceExpats.blockTitle": "Welche Währungen automatisch umgerechnet werden",
+  "AudienceExpats.blockBody":
+    "Die Tageskurse der Europäischen Zentralbank decken diese Währungen ab: {codes}.",
+  "AudienceExpats.limit1": "Sich mit deiner Bank verbinden: Du trägst Buchungen selbst ein.",
+  "AudienceExpats.limit2": "Noch keine Kontoauszüge importieren.",
+  "AudienceExpats.limit3": "Dich finanziell oder steuerlich beraten.",
+  "AudienceExpats.q1": "Kann ich den Kurs festhalten, den meine Bank wirklich berechnet hat?",
+  "AudienceExpats.a1":
+    "Ja. Gib bei einer Buchung in einer anderen Währung beide Beträge ein, dann speichert Financy den Kurs, den deine Bank wirklich berechnet hat.",
+  "AudienceExpats.q2": "Ändert ein neuer Wechselkurs meine früheren Buchungen?",
+  "AudienceExpats.a2":
+    "Nein. Eine Buchung in einer anderen Währung behält beide Beträge, und ein späterer Kurs überschreibt sie nie.",
+  "AudienceExpats.q3": "Rechnet Financy jede Währung um?",
+  "AudienceExpats.a3":
+    "Nein. Die Tageskurse der Europäischen Zentralbank decken rund 30 Währungen ab.",
+  "AudienceExpats.q4": "Kann ich meine Kontoauszüge in Financy importieren?",
+  "AudienceExpats.a4":
+    "Noch nicht. Aktuell trägst du Buchungen selbst ein, und regelmäßige Zahlungen deckst du mit wiederkehrenden Buchungen ab.",
+  "AudienceExpats.alt":
+    "Die Kontenübersicht von Financy mit Beispielkonten, jedes in seiner eigenen Währung, unter einer Gesamtsumme.",
+  "AudienceExpats.caption": "Beispieldaten. Jedes Konto behält seine eigene Währung.",
+  "AudienceCouples.name": "Paare",
+  "AudienceCouples.title": "Haushaltsbuch für Paare: gemeinsam und getrennt",
+  "AudienceCouples.description":
+    "Etwas Geld gemeinsam, etwas getrennt? Nutzt einen Financy-Haushalt zusammen und einen zweiten für dein eigenes Geld, mit einem Login.",
+  "AudienceCouples.h1": "Gemeinsames und getrenntes Geld als Paar in einer App verwalten",
+  "AudienceCouples.answer":
+    "Einen Teil deines Geldes teilst du mit deiner Partnerin oder deinem Partner, einen Teil hältst du getrennt. In Financy sind das zwei Haushalte: Alle in einem Haushalt sehen sämtliche Konten und Buchungen, deshalb kommt getrenntes Geld in einen zweiten Haushalt, in dem deine Partnerin oder dein Partner kein Mitglied ist. Mit einem Login wechselst du zwischen beiden.",
+  "AudienceCouples.how1":
+    "Erstelle einen Haushalt für das Geld, das ihr teilt, und lade deine Partnerin oder deinen Partner per Link als Admin ein, damit ihr ihn beide verwalten könnt. Ihr seht dieselben Konten und Budgets, und Änderungen erscheinen live auf jedem geöffneten Gerät.",
+  "AudienceCouples.how2":
+    "Lege für jede gemeinsame Kategorie ein Monatslimit fest und füge wiederkehrende Buchungen für regelmäßige Kosten hinzu. In der App heißt ein Haushalt „Gruppe“.",
+  "AudienceCouples.blockTitle": "Unser Geld, mein Geld, dein Geld",
+  "AudienceCouples.oursTerm": "Unser Geld",
+  "AudienceCouples.oursDetail": "Ein Haushalt, zu dem ihr beide gehört.",
+  "AudienceCouples.mineTerm": "Mein Geld",
+  "AudienceCouples.mineDetail": "Ein Haushalt nur für dich.",
+  "AudienceCouples.yoursTerm": "Dein Geld",
+  "AudienceCouples.yoursDetail": "Ein Haushalt nur für deine Partnerin oder deinen Partner.",
+  "AudienceCouples.blockNote":
+    "In der Financy-Cloud hat jeder Haushalt seinen eigenen Tarif für {monthly} im Monat oder {yearly} im Jahr. Die Registrierung für die Cloud ist noch nicht geöffnet. Selbst hosten ist kostenlos.",
+  "AudienceCouples.limit1": "Ein Konto in einem gemeinsamen Haushalt verbergen.",
+  "AudienceCouples.limit2": "Kosten aufteilen oder ausrechnen, wer wem etwas schuldet.",
+  "AudienceCouples.limit3": "Sich mit deiner Bank verbinden: Du trägst Buchungen selbst ein.",
+  "AudienceCouples.q1":
+    "Kann ich in einem gemeinsamen Haushalt ein Konto vor meiner Partnerin oder meinem Partner verbergen?",
+  "AudienceCouples.a1":
+    "Nein. Alle in einem Haushalt sehen sämtliche Konten und Buchungen. Getrenntes Geld gehört in einen zweiten Haushalt, zu dem du mit demselben Login wechselst.",
+  "AudienceCouples.q2":
+    "Bleibt Geld in einem zweiten Haushalt vor meiner Partnerin oder meinem Partner verborgen?",
+  "AudienceCouples.a2":
+    "Nein. Er hält das Geld aus eurem gemeinsamen Haushalt heraus, ist aber kein sicherer Ort für etwas, das deine Partnerin oder dein Partner auf keinen Fall finden darf. Wer dein angemeldetes Gerät öffnen kann, kann zu ihm wechseln.",
+  "AudienceCouples.q3": "Kostet ein zweiter Haushalt in der Financy-Cloud extra?",
+  "AudienceCouples.a3":
+    "Ja. Jeder Haushalt hat seinen eigenen Tarif für {monthly} im Monat oder {yearly} im Jahr. Deine Partnerin oder deinen Partner in einen Haushalt einzuladen kostet nichts extra.",
+  "AudienceCouples.q4": "Teilt Financy unsere Kosten zwischen uns auf?",
+  "AudienceCouples.a4":
+    "Nein. Financy kann keine Kosten aufteilen. Alle in einem Haushalt sehen dieselben Konten und Buchungen.",
+  "AudienceCouples.alt":
+    "Die Monatsübersicht eines gemeinsamen Haushalts in Financy mit Einnahmen, Ausgaben und dem, was übrig ist.",
+  "AudienceCouples.caption": "Beispieldaten. Ihr seht beide denselben Monat.",
+  "AudienceFamilies.name": "Familien",
+  "AudienceFamilies.title": "Haushaltsbuch für die Familie, selbst gehostet",
+  "AudienceFamilies.description":
+    "Das Familienbudget auf einem Server, den du kontrollierst? Financy läuft mit Docker Compose unter AGPL‑3.0, mit allen Funktionen und ohne Mitgliederlimit.",
+  "AudienceFamilies.h1": "Eine Budget-App für die ganze Familie, auf deinem eigenen Server",
+  "AudienceFamilies.answer":
+    "Deine Familie möchte ein gemeinsames Budget auf einem Server, den du kontrollierst. Financy läuft mit Docker Compose, mit allen Funktionen und ohne Mitgliederlimit, und jede Person meldet sich mit eigenem Login und eigener Rolle an.",
+  "AudienceFamilies.how1":
+    "Eine Person betreibt Financy mit Docker Compose auf eurem eigenen Server und kümmert sich um die Backups. Alle anderen melden sich einfach an.",
+  "AudienceFamilies.how2":
+    "Lege Monatslimits pro Kategorie fest, fasse Kategorien unter einer Oberkategorie zusammen und füge wiederkehrende Buchungen für regelmäßige Rechnungen hinzu. Financy lässt sich aus dem Browser installieren und startet auch offline, und offline eingetragene Buchungen werden gesendet, sobald du wieder online bist. In der App heißt ein Haushalt „Gruppe“.",
+  "AudienceFamilies.blockTitle": "Wer was darf",
+  "AudienceFamilies.editorTerm": "Bearbeiter",
+  "AudienceFamilies.editorDetail": "Legt Konten, Buchungen und Budgets an und ändert sie.",
+  "AudienceFamilies.adminTerm": "Admin",
+  "AudienceFamilies.adminDetail": "Verwaltet zusätzlich die Mitglieder.",
+  "AudienceFamilies.ownerTerm": "Inhaber",
+  "AudienceFamilies.ownerDetail": "Kann den Haushalt zusätzlich übertragen.",
+  "AudienceFamilies.limit1": "Benutzerkonten für Kinder oder Taschengeld anbieten.",
+  "AudienceFamilies.limit2": "Konten vor anderen Mitgliedern verbergen.",
+  "AudienceFamilies.limit3": "Sich mit deiner Bank verbinden: Du trägst Buchungen selbst ein.",
+  "AudienceFamilies.q1": "Fehlen dem selbst gehosteten Financy Funktionen?",
+  "AudienceFamilies.a1":
+    "Nein. Es ist derselbe Code, mit allen Funktionen und ohne Mitgliederlimit.",
+  "AudienceFamilies.q2": "Kann mein Kind ein eigenes Benutzerkonto oder Taschengeld bekommen?",
+  "AudienceFamilies.a2":
+    "Nein. Financy hat keine Benutzerkonten für Kinder und kein Taschengeld. Wer beitritt, ist ein normales Mitglied, und selbst die Rolle Betrachter zeigt alle Konten und Buchungen des Haushalts. Bedenke das bei deiner Entscheidung.",
+  "AudienceFamilies.q3": "Können mehr als sechs Personen einem Haushalt beitreten?",
+  "AudienceFamilies.a3":
+    "Ja, auf deinem eigenen Server, denn dort hat Financy kein Mitgliederlimit. In der Financy-Cloud sind bis zu 6 Mitglieder pro Haushalt möglich.",
+  "AudienceFamilies.q4":
+    "Kann ich unseren Haushalt aus der Financy-Cloud auf meinen eigenen Server umziehen?",
+  "AudienceFamilies.a4":
+    "Ja. Der Inhaber des Haushalts exportiert ihn in eine Datei, und du importierst diese Datei auf deinem Server als neuen Haushalt.",
+  "AudienceFamilies.alt":
+    "Die Mitgliederansicht von Financy mit erwachsenen Beispielpersonen, jede mit einer Rolle.",
+  "AudienceFamilies.caption":
+    "Beispieldaten. Jede Person hat ihr eigenes Login und ihre eigene Rolle.",
+  "AudienceSmallBusiness.name": "Kleinunternehmen",
+  "AudienceSmallBusiness.title": "Kleinunternehmen: Ausgaben in mehreren Währungen",
+  "AudienceSmallBusiness.description":
+    "Erfasse gemeinsame Ausgaben in mehreren Währungen. Financy ist keine Buchhaltungssoftware: keine doppelte Buchführung, Rechnungen oder Steuerberichte.",
+  "AudienceSmallBusiness.h1":
+    "Ausgaben als Freelancer oder Kleinunternehmen in mehreren Währungen erfassen",
+  "AudienceSmallBusiness.answer":
+    "Du arbeitest freiberuflich oder führst ein kleines Unternehmen, und deine Ausgaben laufen über mehrere Währungen. Financy hält diese Ausgaben an einem Ort zusammen, mit einer Summe.",
+  "AudienceSmallBusiness.notAccounting":
+    "Financy ist keine Buchhaltungssoftware: Es gibt keine doppelte Buchführung, keine Rechnungen und keine Steuerberichte. Dafür behältst du das Programm deiner Buchhaltung.",
+  "AudienceSmallBusiness.how1":
+    "Alle, mit denen du zusammenarbeitest, teilen sich eine Gruppe. Lade Leute per Link ein und gib jeder Person eine Rolle.",
+  "AudienceSmallBusiness.how2":
+    "Jedes Konto behält seine eigene Währung, und Summen erscheinen in der Hauptwährung der Gruppe. Eine Zahlung in einer anderen Währung behält beide Beträge, und wenn du beide eingibst, bleibt der Kurs erhalten, den die Bank wirklich berechnet hat.",
+  "AudienceSmallBusiness.how3":
+    "Lege für jede Ausgabenkategorie ein Monatslimit fest und füge wiederkehrende Buchungen für regelmäßige Kosten hinzu. Der Inhaber der Gruppe kann sie jederzeit in eine Datei exportieren.",
+  "AudienceSmallBusiness.blockTitle": "Wofür Financy passt",
+  "AudienceSmallBusiness.useTitle": "Financy nutzt du für",
+  "AudienceSmallBusiness.use1": "Gemeinsame Ausgaben in mehreren Währungen",
+  "AudienceSmallBusiness.use2": "Monatslimits pro Kategorie",
+  "AudienceSmallBusiness.keepTitle": "Das Programm deiner Buchhaltung nutzt du weiter für",
+  "AudienceSmallBusiness.keep1": "Deine Buchführung",
+  "AudienceSmallBusiness.keep2": "Rechnungen",
+  "AudienceSmallBusiness.keep3": "Steuerberichte",
+  "AudienceSmallBusiness.limit1": "Bücher nach der doppelten Buchführung führen.",
+  "AudienceSmallBusiness.limit2": "Rechnungen verschicken.",
+  "AudienceSmallBusiness.limit3": "Steuerberichte erstellen.",
+  "AudienceSmallBusiness.limit4": "Sich mit deiner Bank verbinden: Du trägst Buchungen selbst ein.",
+  "AudienceSmallBusiness.q1": "Kann Financy meine Buchhaltungssoftware ersetzen?",
+  "AudienceSmallBusiness.a1":
+    "Nein. Financy ist keine Buchhaltungssoftware: Es gibt keine doppelte Buchführung, keine Rechnungen und keine Steuerberichte. Dafür behältst du das Programm deiner Buchhaltung.",
+  "AudienceSmallBusiness.q2":
+    "Können Kolleginnen und Kollegen unsere Ausgaben sehen, ohne sie zu ändern?",
+  "AudienceSmallBusiness.a2": "Ja. Gib ihnen die Rolle Betrachter, die nur lesen darf.",
+  "AudienceSmallBusiness.q3": "Kann ich geschäftliches und privates Geld trennen?",
+  "AudienceSmallBusiness.a3":
+    "Ja. Lege für beides jeweils eine eigene Gruppe an, und mit einem Login wechselst du zwischen ihnen. Alle in einer Gruppe sehen sämtliche Konten und Buchungen.",
+  "AudienceSmallBusiness.q4": "Verbindet sich Financy mit unserer Bank?",
+  "AudienceSmallBusiness.a4":
+    "Nein. Financy hat keine Bankanbindung, du trägst Buchungen also selbst ein. Regelmäßige Zahlungen deckst du mit wiederkehrenden Buchungen ab.",
+  "AudienceSmallBusiness.alt":
+    "Die Buchungsansicht von Financy mit Beispielausgaben, darunter eine Zahlung in einer anderen Währung mit beiden Beträgen.",
+  "AudienceSmallBusiness.caption":
+    "Beispieldaten. Eine Zahlung in einer anderen Währung behält beide Beträge.",
 } satisfies Catalog
