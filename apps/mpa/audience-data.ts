@@ -302,7 +302,7 @@ export function audiencePath(slug: string, language: Language = DEFAULT_LANGUAGE
 function blockIn(t: Translator<string>, block: AudienceBlock): AudienceBlock {
   const values = {
     ...householdValues(t.language),
-    codes: new Intl.ListFormat(t.language, { style: `short` }).format(ECB_CURRENCIES),
+    codes: new Intl.ListFormat(t.language, { style: `long` }).format(ECB_CURRENCIES),
   }
   const title = t.t(block.title)
   if (block.kind === `text`) return { ...block, title, body: t.t(block.body, values) }

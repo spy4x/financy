@@ -6,7 +6,6 @@ import AppWrapper from "./routes/_app.tsx"
 import Layout from "./routes/_layout.tsx"
 import { handler as audience } from "./routes/[[lang]]/for/[slug].tsx"
 import { handler as feature } from "./routes/[[lang]]/features/[slug].tsx"
-import FeaturesPage from "./routes/[[lang]]/features.tsx"
 import { planPrice } from "./routes/[[lang]]/pricing.tsx"
 import { handler as sitemap } from "./routes/sitemap.xml.ts"
 import { AUDIENCE_PAGES as KEYED, audiencePageIn, ECB_CURRENCIES } from "./audience-data.ts"
@@ -42,7 +41,6 @@ const handler = new App<State>()
   .get("/sitemap.xml", sitemap.GET!)
   .get("{/:lang}?/for/:slug", audience.GET!)
   .get("{/:lang}?/features/:slug", feature.GET!)
-  .get("{/:lang}?/features", view(FeaturesPage) as never)
   .handler()
 
 async function get(path: string) {

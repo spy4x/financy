@@ -829,16 +829,16 @@ export default {
   "AudienceFamilies.alt": "Financy's members screen with sample adults, each with a role.",
   "AudienceFamilies.caption": "Sample data. Each person has their own login and role.",
   "AudienceSmallBusiness.name": "Small business",
-  "AudienceSmallBusiness.title": "Freelancer and team spending in several currencies",
+  "AudienceSmallBusiness.title": "Small-business spending in several currencies",
   "AudienceSmallBusiness.description":
     "Track shared spending in several currencies. Financy is not accounting software: no double-entry ledger, invoices or tax reports.",
-  "AudienceSmallBusiness.h1": "Track freelance or small-team spending in several currencies",
+  "AudienceSmallBusiness.h1": "Track freelance or small-business spending in several currencies",
   "AudienceSmallBusiness.answer":
-    "You freelance or run a small team, and your spending crosses currencies. Financy keeps that spending in one place, with one total.",
+    "You freelance or run a small business, and your spending crosses currencies. Financy keeps that spending in one place, with one total.",
   "AudienceSmallBusiness.notAccounting":
     "Financy is not accounting software: it has no double-entry ledger, invoices or tax reports. Keep your accountant's tool for that.",
   "AudienceSmallBusiness.how1":
-    "Your team shares one group. Invite people with a link and give each a role.",
+    "Everyone you work with shares one group. Invite people with a link and give each a role.",
   "AudienceSmallBusiness.how2":
     "Each account keeps its own currency, and totals show in the group's main currency. A payment in another currency keeps both amounts, and typing both keeps the rate the bank really charged.",
   "AudienceSmallBusiness.how3":
@@ -858,7 +858,7 @@ export default {
   "AudienceSmallBusiness.q1": "Can Financy replace my accounting software?",
   "AudienceSmallBusiness.a1":
     "No. Financy is not accounting software: it has no double-entry ledger, invoices or tax reports. Keep your accountant's tool for that.",
-  "AudienceSmallBusiness.q2": "Can a team member see our spending without changing it?",
+  "AudienceSmallBusiness.q2": "Can a colleague see our spending without changing it?",
   "AudienceSmallBusiness.a2": "Yes. Give them the viewer role, which reads only.",
   "AudienceSmallBusiness.q3": "Can I keep business money apart from personal money?",
   "AudienceSmallBusiness.a3":
