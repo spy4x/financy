@@ -172,14 +172,20 @@ describe("the audience pages", () => {
   })
 
   it("shows the couples page the Household plan's current prices", async () => {
-    const plan = PLANS.find(({ yearlyAmount }) => yearlyAmount) as { amount: number }
-    const original = plan.amount
+    const plan = PLANS.find(({ yearlyAmount }) => yearlyAmount) as {
+      amount: number
+      yearlyAmount: number
+    }
+    const { amount, yearlyAmount } = plan
     try {
-      plan.amount = original + 700
+      plan.amount = amount + 700
+      plan.yearlyAmount = yearlyAmount + 9_300
       const { html } = await get(`/for/couples`)
       expect(html).toContain(planPrice(plan.amount, `USD`, `en`))
+      expect(html).toContain(planPrice(plan.yearlyAmount, `USD`, `en`))
     } finally {
-      plan.amount = original
+      plan.amount = amount
+      plan.yearlyAmount = yearlyAmount
     }
   })
 
