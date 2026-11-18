@@ -87,8 +87,8 @@ shared ones. Delete those of pages the product deleted, and point the rest at th
 
 - `/compare` and `/pt-BR/compare`, gone with `/compare`;
 - `/admin`, if the product drops the admin panel's page;
-- `/features/sign-in`, `/features/realtime` and `/features/shortcuts`: the product's own feature
-  slugs from `features-data.tsx`;
+- Seed's three feature pages (`/features/<slug>`): the product's own feature slugs from
+  `features-data.tsx`;
 - `/docs/api`, `/docs/get-started` and `/docs/capacity`: guides listed in the product's
   `docs-list.ts`. With `NOTES=false`, `/docs/api` answers 404, so delete it.
 

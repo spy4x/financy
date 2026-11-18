@@ -558,18 +558,18 @@ describe("a blog post", () => {
   })
 
   it("links its related feature's page under the byline by the page's name, and nothing for an unknown one (#733)", async () => {
-    const linked = { ...FULL, relatedFeature: `realtime` }
+    const linked = { ...FULL, relatedFeature: `live-sync` }
     const { body } = await (await blogSite(answers(linked))).get("/blog/cron-jobs")
-    expect(linkNamed(body, `Related feature: Realtime sync →`)).toMatch(
-      /^<a href="\/features\/realtime" class="[^"]*min-h-11/,
+    expect(linkNamed(body, `Related feature: Live sync →`)).toMatch(
+      /^<a href="\/features\/live-sync" class="[^"]*min-h-11/,
     )
 
-    const german = { ...GERMAN_FULL, relatedFeature: `realtime` }
+    const german = { ...GERMAN_FULL, relatedFeature: `live-sync` }
     const de = await (await blogSite({
       ...listing([GERMAN]),
       [`/api/blog/posts/hallo-welt`]: () => Response.json({ post: german, readNext: [] }),
     })).get("/de/blog/hallo-welt")
-    expect(de.body).toMatch(/<a href="\/de\/features\/realtime"[^>]*>Passende Funktion: /)
+    expect(de.body).toMatch(/<a href="\/de\/features\/live-sync"[^>]*>Passende Funktion: /)
 
     for (const relatedFeature of [null, `no-such-feature`]) {
       const { body } = await (await blogSite(answers({ ...FULL, relatedFeature }))).get(

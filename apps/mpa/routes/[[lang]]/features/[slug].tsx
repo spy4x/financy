@@ -26,6 +26,7 @@ import {
 } from "../../../features-data.tsx"
 import { localePath, siteTranslator } from "../../../languages.ts"
 import {
+  demoHref,
   PERSON_JSON_LD,
   REPOSITORY_URL,
   sectionLinks,
@@ -47,8 +48,6 @@ export const FEATURE_NOT_FOUND = {
 /**
  * One feature's page, built from {@link FEATURE_PAGES} and the feature of the same id that
  * `/features` draws, in the address's language; an unknown slug, `constructor` too, answers 404.
- * While its words still describe Seed, it is left out of the sitemap and `/features`; it opens
- * only from the blog. #105 rewrites the pages for Financy.
  */
 export const handler = define.handlers({
   GET(ctx) {
@@ -69,7 +68,7 @@ export const handler = define.handlers({
           jsonLd: pageJsonLd(t, ctx.state.webAppOrigin, page, language),
         }}
       >
-        <FeaturePageBody page={page} />
+        <FeaturePageBody page={page} demo={demoHref(ctx.state)} />
       </SiteFrame>,
     )
   },
@@ -174,9 +173,10 @@ function Section(
 /**
  * The page in its fixed order: trail, heading, date, answer, then What you get, How it works,
  * Limits and Questions, each only when it has something to say, then the other features. From
- * 1280 px "On this page" stands beside the body, in the blog post's grid.
+ * 1280 px "On this page" stands beside the body, in the blog post's grid. `demo` is the public
+ * demo's address, linked under the answer.
  */
-function FeaturePageBody({ page }: { page: FeaturePage }): JSX.Element {
+function FeaturePageBody({ page, demo }: { page: FeaturePage; demo: string }): JSX.Element {
   const { t, href, rich } = useSite()
   const feature = useFeature(page.feature ?? page.slug)
   const format = useFormat().utc()
@@ -208,6 +208,11 @@ function FeaturePageBody({ page }: { page: FeaturePage }): JSX.Element {
           </p>
           <p class="text-lg text-pretty text-foreground" data-e2e="feature-page-answer">
             {page.answer}
+          </p>
+          <p>
+            <a href={demo} rel="nofollow" class={LINK} data-e2e="feature-page-demo">
+              {t.t(`FeaturePage.demo`)} <IconArrowRight class="size-4" aria-hidden="true" />
+            </a>
           </p>
         </header>
         <div class="mt-8 xl:col-start-3 xl:row-span-2 xl:row-start-1 xl:mt-0">

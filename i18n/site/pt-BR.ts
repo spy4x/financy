@@ -245,6 +245,9 @@ export default {
   "FeatureTeams.fact2": "Cada pessoa vê só as famílias de que faz parte",
   "FeatureTeams.fact3":
     "Convites, troca de funções e transferência de dono, cada um com seus próprios testes",
+  "FeatureTeams.notYetClosedSignUp":
+    "Aceitar um convite enquanto a criação de contas no servidor está fechada",
+  "FeatureTeams.notYetGroupWord": "O app ainda diz “grupo” onde quer dizer família",
   "FeatureTeams.code": "Ler o domínio de grupos",
   "FeatureExport.nav": "Exportação",
   "FeatureExport.title": "Seus dados vão com você",
@@ -264,21 +267,18 @@ export default {
   "FeatureLanguages.fact2": "Números e datas pelo Intl do próprio navegador",
   "FeatureLanguages.fact3": "As páginas em árabe são lidas da direita para a esquerda",
   "FeatureLanguages.code": "Ler o guia de tradução",
-  "FeatureRealtime.nav": "Sincronização",
-  "FeatureRealtime.title": "Mudanças aparecem em todo dispositivo sem recarregar",
-  "FeatureRealtime.lead":
-    "Quando alguém da família muda algo, os outros veem na hora, em todo dispositivo aberto. Um notebook que sai da suspensão recupera o que perdeu.",
-  "FeatureRealtime.fact1": "Um WebSocket padrão, com um número de sequência em cada mudança",
-  "FeatureRealtime.fact2": "Um dispositivo que reconecta busca o que perdeu",
-  "FeatureRealtime.code": "Ler o design do tempo real",
-  "FeatureOffline.nav": "App offline",
-  "FeatureOffline.title": "Um app que abre sem internet",
-  "FeatureOffline.lead":
-    "Instale o Financy no celular ou no computador: ele abre offline e mostra o que viu por último.",
-  "FeatureOffline.fact1":
-    "Uma cópia local de cada lista no IndexedDB, e uma fila de gravação com chaves de idempotência",
-  "FeatureOffline.fact2": "“Manter a minha versão” ou “Usar a outra versão” em cada conflito",
-  "FeatureOffline.code": "Ler docs/offline.md",
+  "FeatureLiveSync.nav": "Sincronização ao vivo",
+  "FeatureLiveSync.title": "Ao vivo em todos os dispositivos, até offline",
+  "FeatureLiveSync.lead":
+    "Quando alguém da família muda alguma coisa, todos os outros veem na hora, sem recarregar. Instale o Financy no celular ou no computador: ele abre sem internet e envia os lançamentos que você adicionou assim que você volta a ficar online.",
+  "FeatureLiveSync.fact1": "Um WebSocket padrão, com um número de sequência em cada mudança",
+  "FeatureLiveSync.fact2": "Um dispositivo que se reconecta busca o que perdeu",
+  "FeatureLiveSync.fact3":
+    "Uma cópia local no IndexedDB e uma fila de mudanças offline com chaves de idempotência",
+  "FeatureLiveSync.notYetSetup": "Mudar contas, categorias e orçamentos sem internet",
+  "FeatureLiveSync.notYetRates": "Ver as cotações sem internet",
+  "FeatureLiveSync.notYetStores": "Apps no Google Play e na App Store",
+  "FeatureLiveSync.code": "Ler o projeto da sincronização em tempo real",
   "FeatureDeploy.nav": "Hospedagem própria",
   "FeatureDeploy.title": "Roda no seu próprio servidor",
   "FeatureDeploy.lead":
@@ -288,6 +288,7 @@ export default {
   "FeatureDeploy.fact3": "Métricas, logs e alertas com VictoriaMetrics, VictoriaLogs e Grafana",
   "FeatureDeploy.fact4":
     "Um backup diário e criptografado do banco, opcional, com os passos de restauração por escrito",
+  "FeatureDeploy.notYetRehearsed": "Um tempo de instalação medido num servidor novo",
   "FeatureDeploy.code": "Ler os arquivos do Compose",
   "FeaturesFaq.serverlessQuestion":
     "Posso rodar o Financy em hospedagem compartilhada ou serverless?",
@@ -422,141 +423,119 @@ export default {
   "FeaturePage.otherFeatures": "Outros recursos",
   "FeaturePage.readMore": "Saiba mais sobre {name}",
   "FeaturePage.all": "Todos os recursos",
-  "FeaturePage.runtimeQuestion": "O Seed roda no Node ou no Bun?",
-  "FeaturePage.runtimeAnswer":
-    "Sim. A API, o worker em segundo plano e o site rodam no Deno, no Node ou no Bun, escolhidos por uma única configuração (APP_RUNTIME). As tarefas do próprio Seed rodam no Deno, que o npm ou o Bun instala para você. Veja a seção de runtimes na página de recursos.",
+  "FeaturePage.demo": "Teste na demo, sem criar conta",
+  "FeaturePageMultiCurrency.name": "Várias moedas",
+  "FeaturePageMultiCurrency.title": "Controle financeiro em várias moedas num total só",
+  "FeaturePageMultiCurrency.description":
+    "Cada conta na própria moeda e todos os totais na moeda principal da família, convertidos pela cotação do dia em que o dinheiro se moveu.",
+  "FeaturePageMultiCurrency.h1": "Veja saldos em várias moedas somados num total só",
+  "FeaturePageMultiCurrency.answer":
+    "Sim. Cada conta mantém a própria moeda, e o Financy soma tudo na moeda principal da família pela cotação de cada dia. Um lançamento pago em outra moeda guarda o próprio valor ao lado do valor convertido.",
+  "FeaturePageMultiCurrency.summary":
+    "Cada conta na própria moeda, cada total na sua moeda principal.",
+  "FeaturePageMultiCurrency.how1":
+    "Sua família escolhe uma moeda principal. Todo dia, o Financy busca as cotações do Banco Central Europeu. Quando você adiciona um lançamento numa moeda diferente da moeda da conta, o Financy converte pela cotação da data do próprio lançamento e guarda os dois valores. Se você mesmo digitar os dois valores, a sua cotação é mantida no lugar.",
+  "FeaturePageMultiCurrency.how2":
+    "A visão geral mostra suas receitas, seus gastos e o total da família na moeda principal. Quando uma moeda não tem cotação, o total a deixa de fora e avisa, em vez de contá-la como zero.",
+  "FeaturePageMultiCurrency.historyQuestion": "Uma cotação nova muda meus lançamentos antigos?",
+  "FeaturePageMultiCurrency.historyAnswer":
+    "Não. Um lançamento em outra moeda guarda o valor convertido uma única vez, pela cotação da própria data. Uma cotação que chega depois nunca o reescreve.",
+  "FeaturePageMultiCurrency.mainCurrencyQuestion":
+    "Dá para mudar a moeda principal da família depois?",
+  "FeaturePageMultiCurrency.mainCurrencyAnswer":
+    "Sim. Um administrador ou o dono da família pode mudá-la a qualquer momento. Nenhum valor muda: cada um continua na própria moeda, e só os totais são convertidos de novo.",
+  "FeaturePageMultiCurrency.ownRateQuestion":
+    "Posso informar a cotação que meu banco cobrou de verdade?",
+  "FeaturePageMultiCurrency.ownRateAnswer":
+    "Sim. Digite os dois valores, o que você pagou e o que saiu da sua conta, e o Financy mantém a sua cotação em vez da cotação do dia.",
+  "FeaturePageMultiCurrency.everyCurrencyQuestion":
+    "O Financy tem cotação diária para todas as moedas?",
+  "FeaturePageMultiCurrency.everyCurrencyAnswer":
+    "Não. As cotações diárias gratuitas do Banco Central Europeu cobrem cerca de 30 moedas. Outras, como o dong vietnamita, precisam de uma fonte de cotações paga que o dono do servidor ativa; sem ela, os totais deixam esses valores de fora e avisam.",
+  "FeaturePageHouseholds.name": "Famílias",
+  "FeaturePageHouseholds.title": "Orçamento para casais, cada um com seu login",
+  "FeaturePageHouseholds.description":
+    "Convide seu parceiro, sua parceira ou parentes para a mesma família. Cada um entra com seu login e função, e todos veem as mesmas contas e orçamentos.",
+  "FeaturePageHouseholds.h1": "Controle financeiro do casal, cada um com seu próprio login",
+  "FeaturePageHouseholds.answer":
+    "Sim. Uma família são as pessoas que dividem o dinheiro. Convide seu parceiro, sua parceira ou parentes, e cada pessoa entra com o próprio login e uma função, de leitor a dono, enquanto todos veem as mesmas contas, lançamentos e orçamentos.",
+  "FeaturePageHouseholds.summary": "Uma família, cada pessoa com o próprio login e função.",
+  "FeaturePageHouseholds.how1":
+    "Quem cria a família é o dono dela. O dono ou um administrador convida as pessoas com um link e escolhe a função de cada uma. Um leitor só vê. Um editor também adiciona e muda contas, lançamentos e orçamentos. Um administrador também gerencia os membros, e o dono pode transferir a família para outra pessoa.",
+  "FeaturePageHouseholds.how2":
+    "No app, a família se chama grupo. Um mesmo login pode fazer parte de várias famílias, como uma compartilhada e uma só sua, e você alterna entre elas. O registro de atividade mostra quem mudou o quê.",
+  "FeaturePageHouseholds.privateQuestion": "Posso esconder algumas contas do meu parceiro?",
+  "FeaturePageHouseholds.privateAnswer":
+    "Não. Todos numa família veem todas as contas e lançamentos dela. O dinheiro que você quer manter só para você fica numa família só sua, para a qual o mesmo login pode alternar.",
+  "FeaturePageHouseholds.viewerQuestion": "Alguém pode ver nosso orçamento sem poder mudar nada?",
+  "FeaturePageHouseholds.viewerAnswer":
+    "Sim. Dê a essa pessoa a função de leitor. Um leitor vê as contas, os lançamentos e os orçamentos, e o servidor recusa qualquer mudança que ele tente fazer.",
+  "FeaturePageHouseholds.handOverQuestion": "Posso transferir a família para meu parceiro?",
+  "FeaturePageHouseholds.handOverAnswer":
+    "Sim. O dono pode tornar outro membro o dono. Todos os registros continuam onde estão.",
+  "FeaturePageHouseholds.restoreQuestion": "Dá para recuperar uma família excluída?",
+  "FeaturePageHouseholds.restoreAnswer":
+    "Sim. Só o dono pode excluir uma família, e ele pode restaurá-la em até 30 dias.",
+  "FeaturePageLiveSync.name": "Sincronização ao vivo",
+  "FeaturePageLiveSync.title": "Orçamento sincronizado ao vivo nos dispositivos",
+  "FeaturePageLiveSync.description":
+    "Quando seu parceiro adiciona um lançamento, você vê na hora no celular. O Financy também abre sem internet e envia suas mudanças quando a conexão volta.",
+  "FeaturePageLiveSync.h1": "As mudanças aparecem no celular do seu parceiro sem recarregar",
+  "FeaturePageLiveSync.answer":
+    "Sim. Quando alguém da família adiciona ou muda alguma coisa, todos os outros veem na hora, em todos os dispositivos abertos. Um celular que estava offline ou em repouso se atualiza assim que volta a se conectar.",
+  "FeaturePageLiveSync.summary":
+    "As mudanças aparecem na hora em todos os dispositivos, mesmo depois de um tempo offline.",
+  "FeaturePageLiveSync.how1":
+    "Cada cópia aberta do Financy mantém uma conexão com o servidor. Quando alguém salva uma mudança, o servidor a envia na hora para todos da família. Um dispositivo que perdeu mudanças enquanto estava fora pede por elas quando volta.",
+  "FeaturePageLiveSync.how2":
+    "Instale o Financy pelo navegador no celular ou no computador, e ele abre sem internet, mostrando o que viu por último. Os lançamentos e as transferências que você adiciona, muda ou exclui offline esperam no dispositivo e são enviados quando você se reconecta.",
+  "FeaturePageLiveSync.offlineEntriesQuestion": "Posso adicionar um lançamento sem internet?",
+  "FeaturePageLiveSync.offlineEntriesAnswer":
+    "Sim. Os lançamentos e as transferências que você adiciona, muda ou exclui offline ficam guardados no seu dispositivo e são enviados ao servidor quando a conexão volta.",
+  "FeaturePageLiveSync.offlineSetupQuestion": "Posso mudar contas ou orçamentos offline?",
+  "FeaturePageLiveSync.offlineSetupAnswer":
+    "Não. Contas, categorias e orçamentos aparecem offline como estavam da última vez, mas para mudá-los é preciso conexão.",
+  "FeaturePageLiveSync.overwriteQuestion":
+    "Uma mudança feita offline pode sobrescrever a do meu parceiro?",
+  "FeaturePageLiveSync.overwriteAnswer":
+    "Não. Se o mesmo lançamento mudou no servidor nesse meio-tempo, o servidor recusa a sua mudança, e o seu dispositivo a guarda para você resolver. Nada é sobrescrito sozinho.",
+  "FeaturePageLiveSync.storesQuestion": "O Financy está na App Store ou no Google Play?",
+  "FeaturePageLiveSync.storesAnswer":
+    "Ainda não. Hoje você instala o Financy pelo navegador no celular ou no computador, e ele abre sem internet.",
+  "FeaturePageSelfHosting.name": "Hospedagem própria",
+  "FeaturePageSelfHosting.title": "App de orçamento no seu próprio servidor",
+  "FeaturePageSelfHosting.description":
+    "Rode o Financy para sua família num servidor alugado ou seu, com Docker Compose. Seus registros ficam no seu servidor, e você paga só pelo servidor.",
+  "FeaturePageSelfHosting.h1": "Rode um app de controle financeiro no seu próprio servidor",
+  "FeaturePageSelfHosting.answer":
+    "Sim. O Financy roda com Docker Compose num servidor Ubuntu alugado ou seu. Sob a licença AGPL‑3.0, você paga só pelo servidor, e os registros da sua família ficam nele.",
+  "FeaturePageSelfHosting.summary": "Os registros da sua família no seu próprio servidor.",
+  "FeaturePageSelfHosting.how1":
+    "Você precisa de um servidor, um domínio e uma conta de e-mail para enviar os códigos a quem cria conta. Do seu computador, um único comando copia o Financy para o servidor, faz o build lá e o inicia. O certificado HTTPS é emitido e renovado sozinho.",
+  "FeaturePageSelfHosting.how2":
+    "Deixe a cobrança desligada, e todas as famílias no seu servidor recebem todos os recursos, sem limites. Ative o backup diário criptografado, e o guia de atualização leva você a cada nova versão.",
+  "FeaturePageSelfHosting.sameFeaturesQuestion":
+    "Falta algum recurso no Financy hospedado no seu próprio servidor?",
+  "FeaturePageSelfHosting.sameFeaturesAnswer":
+    "Não. É o mesmo código. Com a cobrança desligada, todas as famílias no seu servidor recebem todos os recursos, sem limite de membros.",
+  "FeaturePageSelfHosting.mailQuestion":
+    "Preciso de uma conta de e-mail para hospedar o Financy por conta própria?",
+  "FeaturePageSelfHosting.mailAnswer":
+    "Sim. O Financy envia um código por e-mail a todos que criam conta, então o servidor precisa de uma conta SMTP de um provedor de e-mail. Sem ela, ninguém consegue criar conta.",
+  "FeaturePageSelfHosting.moveQuestion":
+    "Posso levar minha família do financy.dev para meu próprio servidor?",
+  "FeaturePageSelfHosting.moveAnswer":
+    "Sim. O dono da família a exporta para um arquivo, e você importa esse arquivo no seu servidor como uma nova família.",
+  "FeaturePageSelfHosting.backupQuestion": "O Financy faz backup do meu servidor?",
+  "FeaturePageSelfHosting.backupAnswer":
+    "Sim. Ative o backup diário, e a cada 24 horas ele salva os registros e arquivos da sua família, criptografados, num armazenamento fora do servidor. O guia de backup também mostra como testar uma restauração.",
+  "FeaturePageSelfHosting.installerQuestion": "Tem instalador de um clique?",
+  "FeaturePageSelfHosting.installerAnswer":
+    "Ainda não. Você configura o Financy a partir do seu computador com Deno, rsync e git, e um único comando faz o deploy. O guia de hospedagem própria mostra cada passo.",
   "FeaturePageMissing.title": "Esta página de recurso não está aqui",
   "FeaturePageMissing.description":
     "Talvez tenha mudado de lugar. Todos os recursos estão na página de recursos.",
   "FeaturePageMissing.action": "Ver todos os recursos",
-  "FeaturePageSignIn.name": "Login",
-  "FeaturePageSignIn.title": "Login para seu SaaS sem serviço de autenticação",
-  "FeaturePageSignIn.description":
-    "Chaves de acesso, códigos por e-mail, Google, GitHub e 2FA, verificados pela sua API, sem serviço de autenticação nem taxa por usuário. Grátis, MIT.",
-  "FeaturePageSignIn.h1":
-    "Chaves de acesso (passkeys) e login para seu SaaS, sem serviço de autenticação",
-  "FeaturePageSignIn.answer":
-    "O Seed faz o login com chaves de acesso, códigos de login por e-mail, Google e GitHub, verificados pela própria API no seu servidor, sem serviço de autenticação de terceiros. Senhas, chaves de acesso e códigos de login funcionam assim que você faz o deploy, sem taxa por usuário; Google e GitHub precisam, cada um, de duas chaves no arquivo de ambiente.",
-  "FeaturePageSignIn.summary":
-    "Chaves de acesso, códigos de login por e-mail, Google, GitHub e 2FA, sem serviço de autenticação.",
-  "FeaturePageSignIn.how1":
-    "A API verifica cada login por conta própria e responde com um cookie de sessão assinado. Uma chave de acesso usa o WebAuthn do próprio navegador: o servidor guarda só a chave pública, e cada desafio de login vale uma vez. Um código de login por e-mail serve para entrar ou criar a conta, vale uma vez, por 10 minutos, só no navegador que o pediu, e é guardado só como hash.",
-  "FeaturePageSignIn.how2":
-    "Um app autenticador ativa a verificação em duas etapas. O perfil lista todas as formas de entrar e todos os dispositivos conectados, e mudar uma forma de entrar exige confirmação e envia um e-mail. Quem chega também pode começar numa conta de visitante e adicionar uma forma de entrar depois.",
-  "FeaturePageSignIn.authServiceQuestion": "Preciso de um serviço de autenticação?",
-  "FeaturePageSignIn.authServiceAnswer":
-    "Não. A própria API do Seed verifica senhas, chaves de acesso, códigos de login e as respostas do Google e do GitHub, no seu servidor, então nada é cobrado por usuário.",
-  "FeaturePageSignIn.passkeysQuestion": "O Seed tem suporte a chaves de acesso (passkeys)?",
-  "FeaturePageSignIn.passkeysAnswer":
-    "Sim. As pessoas adicionam uma chave de acesso no perfil e entram com ela; o servidor guarda só a chave pública, e cada desafio de login vale uma vez.",
-  "FeaturePageSignIn.twoFactorQuestion": "O Seed tem autenticação de dois fatores (2FA)?",
-  "FeaturePageSignIn.twoFactorAnswer":
-    "Sim. Um app autenticador pede um código de uso único no login, também depois de entrar com Google ou GitHub.",
-  "FeaturePageSignIn.providersOffQuestion": "Posso deixar de fora o login com Google ou GitHub?",
-  "FeaturePageSignIn.providersOffAnswer":
-    "Sim. Cada um fica desligado até que as duas variáveis dele estejam definidas no arquivo de ambiente; então, sem elas, ele fica desligado.",
-  "FeaturePageGroups.name": "Grupos e funções",
-  "FeaturePageGroups.title": "Grupos e funções para seu SaaS, sem montar do zero",
-  "FeaturePageGroups.description":
-    "Grupos com funções de leitor a dono, convites, transferência de dono e registro de atividades, com uma verificação de isolamento para tudo. Grátis, MIT.",
-  "FeaturePageGroups.h1": "Grupos e funções para seu SaaS, sem implementar multi-tenancy",
-  "FeaturePageGroups.answer":
-    "O Seed dá a cada conta de usuário um grupo pessoal no cadastro, e as pessoas criam grupos compartilhados, convidam outras e dão funções de leitor a dono. O grupo é a única fronteira de isolamento, então um recurso que você adiciona passa pela mesma verificação assim que copia o agregado de notas.",
-  "FeaturePageGroups.summary":
-    "Grupos com funções de leitor a dono, convites e registro de atividades.",
-  "FeaturePageGroups.how1":
-    "Cada linha de dados compartilhados pertence a um grupo, e a API verifica a função da pessoa nesse grupo antes de ler ou gravar. Um leitor lê, um editor também altera os dados do grupo, e um administrador e o dono também gerenciam membros e leem o registro de atividades.",
-  "FeaturePageGroups.how2":
-    "O dono passa a posse adiante num passo só, e um grupo excluído pode ser restaurado em até 30 dias. Só uma conta de usuário com o endereço de e-mail confirmado pode convidar.",
-  "FeaturePageGroups.personalGroupQuestion": "Toda conta de usuário ganha um grupo?",
-  "FeaturePageGroups.personalGroupAnswer":
-    "Sim. Cada conta de usuário ganha um grupo pessoal no cadastro; um grupo pessoal e um compartilhado passam pela mesma verificação.",
-  "FeaturePageGroups.viewerQuestion": "Um leitor pode alterar os dados de um grupo?",
-  "FeaturePageGroups.viewerAnswer":
-    "Não. Um leitor lê os dados do grupo; um editor, um administrador ou o dono podem alterá-los.",
-  "FeaturePageGroups.restoreQuestion": "Dá para recuperar um grupo excluído?",
-  "FeaturePageGroups.restoreAnswer":
-    "Sim. O dono pode restaurá-lo em até 30 dias; depois disso, o processo em segundo plano o remove de vez.",
-  "FeaturePageGroups.secondModelQuestion":
-    "Preciso de um segundo sistema de permissões para meus próprios recursos?",
-  "FeaturePageGroups.secondModelAnswer":
-    "Não. Um novo agregado copia o agregado de notas e a verificação de grupo dele, então há um só modelo de permissões para manter.",
-  "FeaturePageRealtime.name": "Sincronização em tempo real",
-  "FeaturePageRealtime.title": "Sincronização em tempo real para seu SaaS, sem serviço pago",
-  "FeaturePageRealtime.description":
-    "Uma alteração salva numa aba aparece em todas as outras abas abertas do grupo em até um segundo, por um WebSocket da sua própria API. Grátis, MIT.",
-  "FeaturePageRealtime.h1":
-    "Atualizações em tempo real para seu SaaS, sem um serviço de tempo real de terceiros",
-  "FeaturePageRealtime.answer":
-    "O Seed envia cada alteração salva para todas as abas abertas do grupo por um WebSocket da própria API, então uma nota salva numa janela aparece nas outras em até um segundo, sem recarregar. Roda no seu servidor, sem serviço de tempo real para pagar; um recurso que você adiciona ganha isso ao copiar o exemplo de notas.",
-  "FeaturePageRealtime.summary":
-    "Uma alteração salva numa aba aparece em todas as outras abas abertas, sem recarregar.",
-  "FeaturePageRealtime.how1":
-    "Cada gravação é confirmada com o próximo número de sequência do grupo, e a API a envia para o socket aberto de cada membro. Uma aba só aplica uma alteração quando o número dela vem logo depois do último que a aba tem; se faltar algum, ela pede ao servidor tudo o que veio depois do seu cursor, então uma mensagem perdida custa uma requisição a mais e nunca uma lista errada.",
-  "FeaturePageRealtime.how2":
-    "Um notebook que sai da suspensão reconecta e busca o que perdeu. Com o socket desligado, o app lê e grava por HTTP e verifica se há alterações a cada 30 segundos.",
-  "FeaturePageRealtime.realtimeQuestion": "O Seed atualiza em tempo real?",
-  "FeaturePageRealtime.realtimeAnswer":
-    "Sim. Uma alteração salva aparece em todas as abas abertas do grupo em até um segundo, sem recarregar.",
-  "FeaturePageRealtime.realtimeServiceQuestion":
-    "Preciso do Pusher, do Ably ou de outro serviço de tempo real?",
-  "FeaturePageRealtime.realtimeServiceAnswer":
-    "Não. O WebSocket é servido pela própria API do Seed, no seu servidor.",
-  "FeaturePageRealtime.realtimeSleepQuestion":
-    "Uma aba se atualiza depois que o notebook sai da suspensão?",
-  "FeaturePageRealtime.realtimeSleepAnswer":
-    "Sim. Ela reconecta e busca todas as alterações depois da última que tinha.",
-  "FeaturePageRealtime.realtimeOffQuestion": "Posso desligar o tempo real?",
-  "FeaturePageRealtime.realtimeOffAnswer":
-    "Sim. Defina SPA_REALTIME=false: o app passa a verificar se há alterações a cada 30 segundos e funciona igual.",
-  "FeaturePageOffline.name": "App offline",
-  "FeaturePageOffline.title": "App offline para seu SaaS, sem criar a sincronização",
-  "FeaturePageOffline.description":
-    "Um app instalável que abre sem internet, guarda todas as listas no dispositivo e enfileira edições até a conexão voltar. Grátis, MIT.",
-  "FeaturePageOffline.h1":
-    "Um app offline-first para seu SaaS, sem construir um motor de sincronização",
-  "FeaturePageOffline.answer":
-    "O app do Seed se instala como um app nativo, abre sem internet, mostra todas as listas que viu por último e deixa as pessoas criar, editar e excluir notas e etiquetas offline. Seu próprio recurso escolhe um de três níveis, só online, legível offline ou editável offline, e segue a receita escrita para ele.",
-  "FeaturePageOffline.summary":
-    "Um app instalável que abre sem internet e sincroniza quando ela volta.",
-  "FeaturePageOffline.how1":
-    "O dispositivo guarda uma cópia de cada lista no IndexedDB, e as gravações esperam numa fila com chaves de idempotência, então uma alteração enviada duas vezes é aplicada uma vez só. Uma alteração que o servidor não pode aceitar aparece como conflito, com “Manter a minha versão” ou “Usar a do servidor”; nada é sobrescrito sozinho.",
-  "FeaturePageOffline.how2":
-    "Um service worker guarda a página, os scripts e os estilos do app, então ele abre sem internet. Login, itens excluídos e a configuração da verificação em duas etapas precisam de internet.",
-  "FeaturePageOffline.offlineQuestion": "O Seed funciona offline?",
-  "FeaturePageOffline.offlineAnswer":
-    "Sim. O app abre sem internet e mostra todas as listas que viu por último.",
-  "FeaturePageOffline.offlineEditsQuestion": "Dá para editar offline?",
-  "FeaturePageOffline.offlineEditsAnswer":
-    "Sim. Notas e etiquetas funcionam offline; outras alterações precisam de internet, e a tela avisa.",
-  "FeaturePageOffline.conflictQuestion": "O Seed percebe quando duas pessoas alteram a mesma nota?",
-  "FeaturePageOffline.conflictAnswer":
-    "Sim. A alteração que chega depois aparece como conflito, e quem a fez escolhe “Manter a minha versão” ou “Usar a do servidor”.",
-  "FeaturePageOffline.removeOfflineQuestion": "Posso remover o suporte offline?",
-  "FeaturePageOffline.removeOfflineAnswer":
-    "Sim. Desligue com uma única configuração, ou exclua uma pasta e siga a checklist escrita; um teste falha quando um passo é esquecido.",
-  "FeaturePageDeploy.name": "Deploy",
-  "FeaturePageDeploy.title": "Deploy do seu SaaS sem a conta de uma plataforma de nuvem",
-  "FeaturePageDeploy.description":
-    "Docker Compose num servidor Linux alugado: Traefik, Postgres, Valkey, arquivos no S3, monitoramento e backups, com deploy em um comando. Grátis, MIT.",
-  "FeaturePageDeploy.h1":
-    "Hospede seu SaaS num único servidor, sem a conta de uma plataforma de nuvem",
-  "FeaturePageDeploy.answer":
-    "O Seed roda num servidor Linux que você aluga, com Docker Compose tanto em desenvolvimento quanto em produção, e um comando faz o deploy. Você prepara o servidor uma vez seguindo os passos escritos, e depois cada deploy é só esse comando.",
-  "FeaturePageDeploy.summary": "Um servidor Linux, Docker Compose e um comando para o deploy.",
-  "FeaturePageDeploy.how1":
-    "O deploy copia o projeto para o servidor por SSH e o inicia com o Compose; a cada deploy, um serviço de execução única aplica as migrações do banco de dados. O Traefik fica na frente e pede ao Let's Encrypt o certificado de cada host.",
-  "FeaturePageDeploy.how2":
-    "Postgres, Valkey, um armazenamento de arquivos S3, métricas, logs e painéis com alertas rodam ao lado dos apps, e vários produtos podem dividir um servidor atrás do mesmo proxy.",
-  "FeaturePageDeploy.kubernetesQuestion": "Preciso de Kubernetes?",
-  "FeaturePageDeploy.kubernetesAnswer":
-    "Não. O Docker Compose num único servidor roda o produto inteiro, em desenvolvimento e em produção.",
-  "FeaturePageDeploy.severalQuestion": "Vários produtos podem dividir um servidor?",
-  "FeaturePageDeploy.severalAnswer":
-    "Sim. Eles dividem um proxy, e cada um mantém o próprio diretório, banco de dados e dados; só divida um servidor entre produtos em que você confia por igual.",
-  "FeaturePageDeploy.backupQuestion": "Tem backup?",
-  "FeaturePageDeploy.backupAnswer":
-    "Sim. Um backup diário criptografado do banco de dados com restic, opcional, com instruções escritas de restauração.",
   "ErrorPage.status": "Ver o que funciona hoje",
   "HomeHero.notify": "Me avise",
   "HomeHero.selfHost": "Hospede o Financy você mesmo",
@@ -673,6 +652,20 @@ export default {
   "FeatureRecurring.fact3":
     "Criar um lançamento recorrente exige o plano Household; vê-los, nunca; o servidor confere",
   "FeatureRecurring.code": "Ler o código dos lançamentos recorrentes",
+  "FeatureMultiCurrency.nav": "Moedas",
+  "FeatureMultiCurrency.title": "Muitas moedas, um total só",
+  "FeatureMultiCurrency.lead":
+    "Escolha a moeda principal da família, e cada total é convertido para ela pela cotação do dia em que o dinheiro se moveu. Um lançamento em outra moeda guarda o próprio valor ao lado do valor convertido.",
+  "FeatureMultiCurrency.fact1":
+    "Cotações de referência diárias do Banco Central Europeu, via Frankfurter, sem precisar de chave",
+  "FeatureMultiCurrency.fact2":
+    "Um valor convertido é gravado uma vez, pela cotação da própria data, e nunca é reescrito",
+  "FeatureMultiCurrency.fact3":
+    "Uma moeda sem cotação fica fora do total e é nomeada, nunca contada como 0",
+  "FeatureMultiCurrency.notYetBudgets":
+    "Valores de orçamento convertidos de outra moeda ainda não dizem “cerca de” nem a data da cotação",
+  "FeatureMultiCurrency.notYetOffline": "Ver as cotações sem internet",
+  "FeatureMultiCurrency.code": "Ler o domínio de dinheiro",
   "FeatureTransactions.nav": "Lançamentos",
   "FeatureTransactions.title": "Cada despesa e receita, na moeda em que você pagou",
   "FeatureTransactions.lead":
