@@ -2149,9 +2149,9 @@ export default {
     "other": "Et {count} autres comptes",
   },
   "TelegramBot.moreCurrencies": {
-    "one": "{count} de plus",
-    "many": "{count} de plus",
-    "other": "{count} de plus",
+    "one": "{count} autre",
+    "many": "{count} autres",
+    "other": "{count} autres",
   },
   "UndoToast.title": "Note supprimée",
   "UndoToast.deleted": "« {title} » a été supprimée.",

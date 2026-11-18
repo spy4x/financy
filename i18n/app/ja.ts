@@ -1848,10 +1848,10 @@ export default {
   "TelegramBot.figure": "{label}：{value}",
   "TelegramBot.noTotal": "合計はまだ出せません。どの口座も換算できませんでした。",
   "TelegramBot.moreAccounts": {
-    "other": "ほか{count}件の口座",
+    "other": "ほかに口座が{count}件あります。",
   },
   "TelegramBot.moreCurrencies": {
-    "other": "ほか{count}件",
+    "other": "ほか{count}通貨",
   },
   "UndoToast.title": "メモを削除しました",
   "UndoToast.deleted": "「{title}」を削除しました。",

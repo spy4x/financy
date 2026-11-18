@@ -2241,7 +2241,7 @@ export default {
   "TelegramBot.entryStale":
     "انتهت هذه المعاملة أو انتهت صلاحيتها. أرسل /expense أو /income لبدء معاملة جديدة.",
   "TelegramBot.figure": "{label}: {value}",
-  "TelegramBot.noTotal": "لا يوجد إجمالي بعد: تعذّر تحويل أي من هذه الحسابات.",
+  "TelegramBot.noTotal": "لا يوجد إجمالي بعد: تعذّر تحويل أرصدة هذه الحسابات إلى العملة الرئيسية.",
   "TelegramBot.moreAccounts": {
     "zero": "ولا حسابات أخرى",
     "one": "وحساب آخر",
@@ -2251,9 +2251,9 @@ export default {
     "other": "و{count} حساب آخر",
   },
   "TelegramBot.moreCurrencies": {
-    "zero": "ولا عملات أخرى",
+    "zero": "لا عملات أخرى",
     "one": "عملة أخرى",
-    "two": "عملتان أخريان",
+    "two": "عملتين أخريين",
     "few": "{count} عملات أخرى",
     "many": "{count} عملة أخرى",
     "other": "{count} عملة أخرى",

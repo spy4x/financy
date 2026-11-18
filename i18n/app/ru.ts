@@ -2168,7 +2168,7 @@ export default {
   "TelegramBot.entryStale":
     "Эта операция уже завершена или устарела. Отправьте /expense или /income, чтобы начать новую.",
   "TelegramBot.figure": "{label}: {value}",
-  "TelegramBot.noTotal": "Итога пока нет: ни один из этих счетов не удалось пересчитать.",
+  "TelegramBot.noTotal": "Итога пока нет: ни один счёт не удалось пересчитать в основную валюту.",
   "TelegramBot.moreAccounts": {
     "one": "И ещё {count} счёт",
     "few": "И ещё {count} счёта",

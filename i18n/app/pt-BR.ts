@@ -2071,7 +2071,8 @@ export default {
   "TelegramBot.entryStale":
     "Este lançamento já terminou ou expirou. Envie /expense ou /income para começar outro.",
   "TelegramBot.figure": "{label}: {value}",
-  "TelegramBot.noTotal": "Ainda não há total: não foi possível converter nenhuma destas contas.",
+  "TelegramBot.noTotal":
+    "Ainda não dá para calcular o total: não consegui converter nenhuma destas contas.",
   "TelegramBot.moreAccounts": {
     "one": "E mais {count} conta",
     "many": "E mais {count} contas",

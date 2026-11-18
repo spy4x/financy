@@ -2022,14 +2022,14 @@ export default {
   "TelegramBot.entryStale":
     "Diese Buchung ist schon abgeschlossen oder abgelaufen. Schick /expense oder /income, um eine neue zu beginnen.",
   "TelegramBot.figure": "{label}: {value}",
-  "TelegramBot.noTotal": "Noch keine Summe: Keines dieser Konten ließ sich umrechnen.",
+  "TelegramBot.noTotal": "Eine Summe gibt es noch nicht: Keines dieser Konten ließ sich umrechnen.",
   "TelegramBot.moreAccounts": {
     "one": "Und {count} weiteres Konto",
     "other": "Und {count} weitere Konten",
   },
   "TelegramBot.moreCurrencies": {
-    "one": "{count} weitere",
-    "other": "{count} weitere",
+    "one": "noch {count} Währung",
+    "other": "noch {count} Währungen",
   },
   "UndoToast.title": "Notiz gelöscht",
   "UndoToast.deleted": "„{title}“ wurde gelöscht.",
