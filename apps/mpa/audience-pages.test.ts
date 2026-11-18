@@ -11,6 +11,7 @@ import { handler as sitemap } from "./routes/sitemap.xml.ts"
 import { AUDIENCE_PAGES as KEYED, audiencePageIn, ECB_CURRENCIES } from "./audience-data.ts"
 import { FEATURE_PAGES } from "./features-data.tsx"
 import { SITE_PAGES } from "./pages.ts"
+import { SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import { pageMiddleware } from "./middleware.ts"
 import type { State } from "./utils.ts"
 import { siteEnglishText } from "@ui/site-text.ts"
@@ -63,10 +64,14 @@ describe("the audience pages", () => {
     expect(PAGES.map(({ slug }) => slug)).toEqual(SLUGS)
   })
 
-  it("keeps every title and description short enough for a search result", () => {
-    for (const page of PAGES) {
-      expect(`${page.title} · Financy`.length, page.slug).toBeLessThanOrEqual(60)
-      expect(page.description.length, page.slug).toBeLessThan(155)
+  it("keeps every title and description short enough for a search result, in every language", () => {
+    for (const language of SITE_LANGUAGES) {
+      for (const keys of KEYED) {
+        const page = audiencePageIn(siteTranslator(language), keys)
+        const name = `${language} ${page.slug}`
+        expect(`${page.title} · Financy`.length, name).toBeLessThanOrEqual(60)
+        expect(page.description.length, name).toBeLessThan(155)
+      }
     }
   })
 

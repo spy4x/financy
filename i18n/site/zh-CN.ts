@@ -655,4 +655,149 @@ export default {
   "FeatureTransactions.fact3": "支出分类中的收入就是退款",
   "FeatureTransactions.fact4": "删除的交易可在 30 天内恢复",
   "FeatureTransactions.code": "阅读交易代码",
+  "AudiencePage.demo": "试用演示版",
+  "AudiencePage.demoNote": "使用示例数据，无需账号。",
+  "AudiencePage.limits": "Financy 不能做什么",
+  "AudiencePage.also": "也适合",
+  "AudiencePage.listTitle": "看看 Financy 怎样适合你的情况",
+  "AudienceExpats.name": "海外人士",
+  "AudienceExpats.title": "海外生活记账：收入和支出不同币种",
+  "AudienceExpats.description":
+    "收入是一种货币，支出是另一种？Financy 让每个账户保留自己的币种，并按你的主货币显示一个总额。",
+  "AudienceExpats.h1": "海外生活记账：收入和支出不同币种，总额一眼看清",
+  "AudienceExpats.answer":
+    "你用一种货币赚钱，用另一种货币花钱，所以单看哪个余额都不知道自己的财务状况。Financy 让每个账户保留自己的币种，并按家庭的主货币加总。",
+  "AudienceExpats.how1":
+    "钱放在哪里，就为哪里添加一个账户，比如一个欧元工资账户和一个泰铢本地账户。每个账户保留自己的币种，合计按家庭的主货币显示。",
+  "AudienceExpats.how2":
+    "用其他货币付款时，这笔交易会保留两个金额。两个金额都由你自己填写，Financy 就会保留银行实际收取的汇率。之后的汇率绝不会改写它，跨币种转账也会记录转出和转入两边。",
+  "AudienceExpats.how3":
+    "换算后的合计使用公开发布的每日汇率，所以可能与银行实际收取的金额略有出入。",
+  "AudienceExpats.blockTitle": "哪些货币可以自动换算",
+  "AudienceExpats.blockBody": "欧洲央行的每日汇率覆盖这些货币：{codes}。",
+  "AudienceExpats.limit1": "连接你的银行：交易需要你自己添加。",
+  "AudienceExpats.limit2": "导入银行对账单（目前还不支持）。",
+  "AudienceExpats.limit3": "提供财务或税务建议。",
+  "AudienceExpats.q1": "可以记录银行实际收取的汇率吗？",
+  "AudienceExpats.a1": "可以。在其他货币的交易上填写两个金额，Financy 就会保留银行实际收取的汇率。",
+  "AudienceExpats.q2": "新汇率会改变我以前的交易吗？",
+  "AudienceExpats.a2": "不会。其他货币的交易会保留两个金额，之后的汇率绝不会改写它。",
+  "AudienceExpats.q3": "Financy 能换算所有货币吗？",
+  "AudienceExpats.a3": "不能。欧洲央行的每日汇率覆盖约 30 种货币。",
+  "AudienceExpats.q4": "可以把银行对账单导入 Financy 吗？",
+  "AudienceExpats.a4": "还不能。目前交易需要你自己添加，固定的收支可以用定期交易来记录。",
+  "AudienceExpats.alt": "Financy 的账户页面：示例账户各用自己的币种，上方显示一个总额。",
+  "AudienceExpats.caption": "示例数据。每个账户保留自己的币种。",
+  "AudienceCouples.name": "情侣和夫妻",
+  "AudienceCouples.title": "情侣记账：共同和各自的钱分开管",
+  "AudienceCouples.description":
+    "有些钱一起花，有些钱分开管？两人共用一个 Financy 家庭，再为自己的钱单独建一个家庭，一个账号就能切换。",
+  "AudienceCouples.h1": "情侣记账：共同的钱和各自的钱，在一个应用里分开管",
+  "AudienceCouples.answer":
+    "你和伴侣有些钱共用，有些钱分开。在 Financy 里，这就是两个家庭：家庭里的每个人都能看到它的所有账户和交易，所以分开的钱要放进第二个家庭，你的伴侣不是这个家庭的成员。用一个账号就能在两个家庭之间切换。",
+  "AudienceCouples.how1":
+    "为共用的钱创建一个家庭，通过链接邀请伴侣并设为管理员，这样你们都能管理它。你们看到的是相同的账户和预算，任何改动都会实时显示在每台打开的设备上。",
+  "AudienceCouples.how2":
+    "为每个共用的分类设定每月限额，并为固定开销添加定期交易。应用里把家庭称作“群组”。",
+  "AudienceCouples.blockTitle": "我们的、我的和你的",
+  "AudienceCouples.oursTerm": "我们的",
+  "AudienceCouples.oursDetail": "你们两人都加入的家庭。",
+  "AudienceCouples.mineTerm": "我的",
+  "AudienceCouples.mineDetail": "只属于你自己的家庭。",
+  "AudienceCouples.yoursTerm": "你的",
+  "AudienceCouples.yoursDetail": "只属于伴侣自己的家庭。",
+  "AudienceCouples.blockNote":
+    "在 Financy 云端，每个家庭都有自己的套餐，每月 {monthly} 或每年 {yearly}。云端注册尚未开放。自托管免费。",
+  "AudienceCouples.limit1": "在共用的家庭里隐藏某个账户。",
+  "AudienceCouples.limit2": "分摊账单或计算谁欠谁。",
+  "AudienceCouples.limit3": "连接你的银行：交易需要你自己添加。",
+  "AudienceCouples.q1": "在共用的家庭里，可以对伴侣隐藏某个账户吗？",
+  "AudienceCouples.a1":
+    "不可以。家庭里的每个人都能看到它的所有账户和交易。分开的钱请放在第二个家庭里，用同一个账号切换过去。",
+  "AudienceCouples.q2": "第二个家庭能让这笔钱对伴侣保密吗？",
+  "AudienceCouples.a2":
+    "不能。它只是把这笔钱和共用的家庭分开，但任何不能让伴侣发现的内容，放在这里都不安全。只要能打开你已登录的设备，任何人都可以切换过去。",
+  "AudienceCouples.q3": "在 Financy 云端，第二个家庭要额外付费吗？",
+  "AudienceCouples.a3":
+    "要。每个家庭都有自己的套餐，每月 {monthly} 或每年 {yearly}。邀请伴侣加入家庭不额外收费。",
+  "AudienceCouples.q4": "Financy 能帮我们分摊账单吗？",
+  "AudienceCouples.a4":
+    "不能。Financy 没有分摊账单的功能。它只是让家庭里的每个人看到相同的账户和交易。",
+  "AudienceCouples.alt": "Financy 的概览页面：一个共用家庭当月的收入、支出和结余。",
+  "AudienceCouples.caption": "示例数据。你们两人看到的是同一个月。",
+  "AudienceFamilies.name": "家庭",
+  "AudienceFamilies.title": "家庭多币种记账软件，可自托管",
+  "AudienceFamilies.description":
+    "想把家庭账本放在自己掌控的服务器上？Financy 通过 Docker Compose 运行，采用 AGPL‑3.0 许可，功能齐全，成员人数不限。",
+  "AudienceFamilies.h1": "全家共用的多币种记账软件，可自托管在你自己的服务器上",
+  "AudienceFamilies.answer":
+    "你的家人想共用一本账，并放在你们自己掌控的服务器上。Financy 通过 Docker Compose 运行，功能齐全，成员人数不限，每个人都用自己的账号和角色登录。",
+  "AudienceFamilies.how1":
+    "由一个人用 Docker Compose 在你们自己的服务器上运行 Financy，并负责备份。其他人只需登录。",
+  "AudienceFamilies.how2":
+    "按分类设定每月限额，把分类归到上级分类下，并为固定账单添加定期交易。Financy 可以从浏览器安装，离线也能打开，离线时添加的交易会在恢复联网后发送。应用里把家庭称作“群组”。",
+  "AudienceFamilies.blockTitle": "谁能做什么",
+  "AudienceFamilies.editorTerm": "编辑者",
+  "AudienceFamilies.editorDetail": "添加和修改账户、交易和预算。",
+  "AudienceFamilies.adminTerm": "管理员",
+  "AudienceFamilies.adminDetail": "还能管理成员。",
+  "AudienceFamilies.ownerTerm": "所有者",
+  "AudienceFamilies.ownerDetail": "还能转让家庭。",
+  "AudienceFamilies.limit1": "提供儿童账号或零花钱功能。",
+  "AudienceFamilies.limit2": "对其他成员隐藏账户。",
+  "AudienceFamilies.limit3": "连接你的银行：交易需要你自己添加。",
+  "AudienceFamilies.q1": "自托管的 Financy 少了什么功能吗？",
+  "AudienceFamilies.a1": "没有。代码完全相同，功能齐全，成员人数不限。",
+  "AudienceFamilies.q2": "孩子可以有自己的账号或零花钱吗？",
+  "AudienceFamilies.a2":
+    "不可以。Financy 没有儿童账号或零花钱功能。加入的人都是普通成员，即使是查看者角色，也能看到家庭里的每个账户和每笔交易，请想清楚再决定。",
+  "AudienceFamilies.q3": "一个家庭可以超过六个人吗？",
+  "AudienceFamilies.a3":
+    "可以，但要在你自己的服务器上，那里的 Financy 没有成员人数限制。Financy 云端每个家庭最多 6 名成员。",
+  "AudienceFamilies.q4": "可以把家庭从 Financy 云端迁移到自己的服务器吗？",
+  "AudienceFamilies.a4":
+    "可以。家庭的所有者把它导出为文件，你再在自己的服务器上把这个文件导入为一个新家庭。",
+  "AudienceFamilies.alt": "Financy 的成员页面：示例中的成年人各有自己的角色。",
+  "AudienceFamilies.caption": "示例数据。每个人都有自己的账号和角色。",
+  "AudienceSmallBusiness.name": "小微企业",
+  "AudienceSmallBusiness.title": "自由职业者和小微企业的多币种支出记录",
+  "AudienceSmallBusiness.description":
+    "记录多种货币的共同支出。Financy 不是会计软件：没有复式账簿、发票或税务报表。",
+  "AudienceSmallBusiness.h1": "自由职业者和小微企业的多币种支出记录",
+  "AudienceSmallBusiness.answer":
+    "你是自由职业者或经营小微企业，支出涉及多种货币。Financy 把这些支出集中在一处，并给出一个总额。",
+  "AudienceSmallBusiness.notAccounting":
+    "Financy 不是会计软件：没有复式账簿、发票或税务报表。这些工作请继续使用你的会计所用的工具。",
+  "AudienceSmallBusiness.how1":
+    "和你一起工作的人共用一个群组。通过链接邀请他们，并为每人分配角色。",
+  "AudienceSmallBusiness.how2":
+    "每个账户保留自己的币种，合计按群组的主货币显示。用其他货币付款时会保留两个金额；两个金额都填写，就能保留银行实际收取的汇率。",
+  "AudienceSmallBusiness.how3":
+    "为每个支出分类设定每月限额，并为固定开销添加定期交易。群组的所有者随时可以把它导出为文件。",
+  "AudienceSmallBusiness.blockTitle": "Financy 适合做什么",
+  "AudienceSmallBusiness.useTitle": "用 Financy 管理",
+  "AudienceSmallBusiness.use1": "跨币种的共同支出",
+  "AudienceSmallBusiness.use2": "按分类设定的每月限额",
+  "AudienceSmallBusiness.keepTitle": "继续用会计的工具处理",
+  "AudienceSmallBusiness.keep1": "账簿",
+  "AudienceSmallBusiness.keep2": "发票",
+  "AudienceSmallBusiness.keep3": "税务报表",
+  "AudienceSmallBusiness.limit1": "建立复式账簿。",
+  "AudienceSmallBusiness.limit2": "发送发票。",
+  "AudienceSmallBusiness.limit3": "编制税务报表。",
+  "AudienceSmallBusiness.limit4": "连接你的银行：交易需要你自己添加。",
+  "AudienceSmallBusiness.q1": "Financy 能取代我的会计软件吗？",
+  "AudienceSmallBusiness.a1":
+    "不能。Financy 不是会计软件：没有复式账簿、发票或税务报表。这些工作请继续使用你的会计所用的工具。",
+  "AudienceSmallBusiness.q2": "同事可以只查看我们的支出而不能修改吗？",
+  "AudienceSmallBusiness.a2": "可以。给他们分配查看者角色，这个角色只能查看。",
+  "AudienceSmallBusiness.q3": "可以把公司的钱和个人的钱分开吗？",
+  "AudienceSmallBusiness.a3":
+    "可以。把它们分别放在各自的群组里，用一个账号就能切换。群组里的每个人都能看到它的所有账户和交易。",
+  "AudienceSmallBusiness.q4": "Financy 能连接我们的银行吗？",
+  "AudienceSmallBusiness.a4":
+    "不能。Financy 没有银行同步功能，所以交易需要你自己添加。固定的收支可以用定期交易来记录。",
+  "AudienceSmallBusiness.alt":
+    "Financy 的交易页面：示例支出中有一笔用其他货币支付，同时显示两个金额。",
+  "AudienceSmallBusiness.caption": "示例数据。用其他货币支付的交易会保留两个金额。",
 } satisfies Catalog

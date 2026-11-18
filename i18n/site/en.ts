@@ -842,7 +842,7 @@ export default {
   "AudienceSmallBusiness.how2":
     "Each account keeps its own currency, and totals show in the group's main currency. A payment in another currency keeps both amounts, and typing both keeps the rate the bank really charged.",
   "AudienceSmallBusiness.how3":
-    "Set a monthly limit for each spending category and add repeating entries for regular costs. You can export the group to a file at any time.",
+    "Set a monthly limit for each spending category and add repeating entries for regular costs. The group's owner can export it to a file at any time.",
   "AudienceSmallBusiness.blockTitle": "Where Financy fits",
   "AudienceSmallBusiness.useTitle": "Use Financy for",
   "AudienceSmallBusiness.use1": "Shared spending across currencies",
