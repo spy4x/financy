@@ -595,7 +595,7 @@ export default {
     "أرسل ‎/expense أو ‎/income فيسألك البوت عن المبلغ. تغيّر الأزرار الحساب أو الفئة، ويسجّل زر «حفظ» المعاملة. أما ‎/balance و‎/month فيعرضان أرقامك دون تغيير أي شيء.",
   "FeaturePageTelegramBot.selfHostQuestion": "هل يعمل البوت على خادم أستضيفه بنفسي؟",
   "FeaturePageTelegramBot.selfHostAnswer":
-    "نعم. أنشئ بوتًا عبر BotFather في Telegram، وضع رمزه المميز واسم المستخدم الخاص به وسرّ webhook في إعدادات خادمك. وإلى أن تضيف الرمز يبقى البوت معطّلًا، ويعمل باقي Financy دونه.",
+    "نعم. أنشئ بوتًا عبر BotFather في Telegram، وضع رمزه المميز واسم المستخدم الخاص به وسرّ webhook في إعدادات خادمك. وإلى أن تضيف الرمز المميز يبقى البوت معطّلًا، ويعمل باقي Financy دونه.",
   "FeaturePageTelegramBot.groupQuestion": "هل يمكنني استخدام البوت في محادثة جماعية؟",
   "FeaturePageTelegramBot.groupAnswer":
     "لا. لا تعمل الأوامر ‎/expense و‎/income و‎/balance و‎/month إلا في محادثة خاصة، لأن الرد في مجموعة سيكشف أرقام أسرتك لكل من فيها.",
