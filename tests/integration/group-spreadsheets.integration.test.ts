@@ -872,9 +872,10 @@ Deno.test(`the transactions spreadsheet names who added an entry only while they
     await sql`DELETE FROM group_members WHERE group_id = ${h.groupId} AND user_id = ${removed}`
     const closed = await member(sql, h, `Alan`, `Turing`)
     await sql`UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ${closed}`
+    const elsewhere = await member(sql, await household(sql, `Neighbours`), `Eve`, `Stranger`)
     const account = await h.account(`Main`, `EUR`)
     const category = await h.category(`Food`)
-    const creators = [named, unnamed, removed, closed, null]
+    const creators = [named, unnamed, removed, closed, elsewhere, null]
     for (const [index, createdBy] of creators.entries()) {
       await storedEntry(sql, h, {
         accountId: account,
@@ -890,6 +891,7 @@ Deno.test(`the transactions spreadsheet names who added an entry only while they
     expect(transactions.slice(1).map((row) => row[15])).toEqual([
       `Ada Lovelace`,
       `Unnamed member`,
+      `Former member`,
       `Former member`,
       `Former member`,
       `Former member`,
@@ -928,7 +930,7 @@ Deno.test(`the transactions spreadsheet words an income and its headings in the 
     const { transactions, transfers } = await sheets(sql, h, `ru`)
     expect(transactions[0].slice(0, 3)).toEqual([`Дата`, `Тип`, `Счёт`])
     expect(transactions[0][8]).toBe(`Сумма в основной валюте`)
-    expect(transfers[0][7]).toBe(`Расчётный курс (зачислено за 1 отправленную единицу)`)
+    expect(transfers[0][7]).toBe(`Расчётный курс (зачислено за 1 единицу валюты отправления)`)
     expect([transactions[1][1], transactions[1][6]]).toEqual([`Доход`, `2500.00`])
   })
 })
