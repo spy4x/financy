@@ -253,7 +253,7 @@ export default {
   "FeatureTelegramBot.fact1": "上一笔支出能确定分类时，/expense 12.50 会立即保存",
   "FeatureTelegramBot.fact2": "/balance 和 /month 不会改动任何内容，查看者也能使用",
   "FeatureTelegramBot.fact3":
-    "/expense、/income、/balance 和 /month 只能在私聊中使用，在群聊中机器人会提示你改用私聊",
+    "/expense、 /income、 /balance 和 /month 只能在私聊中使用，在群聊中机器人会提示你改用私聊",
   "FeatureTelegramBot.fact4": "关联码只能使用一次，10 分钟内有效",
   "FeatureTelegramBot.notYetTransfer": "通过机器人记录转账",
   "FeatureTelegramBot.notYetVoice": "把语音消息和小票照片变成交易",
@@ -559,7 +559,7 @@ export default {
     "可以。用 Telegram 的 BotFather 创建一个机器人，把它的令牌、用户名和 Webhook 密钥填入服务器的设置。设置令牌之前，机器人保持关闭，Financy 的其他功能照常可用。",
   "FeaturePageTelegramBot.groupQuestion": "能在群聊里使用机器人吗？",
   "FeaturePageTelegramBot.groupAnswer":
-    "不能。/expense、/income、/balance 和 /month 只能在私聊中使用，因为在群聊里回复会让所有群成员看到你家庭的财务数字。",
+    "不能。/expense、 /income、 /balance 和 /month 只能在私聊中使用，因为在群聊里回复会让所有群成员看到你家庭的财务数字。",
   "FeaturePageTelegramBot.transferQuestion": "能通过机器人记录转账吗？",
   "FeaturePageTelegramBot.transferAnswer":
     "还不能。机器人可以添加支出和收入。账户之间的转账请在 Financy 应用中记录。",

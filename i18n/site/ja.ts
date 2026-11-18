@@ -278,7 +278,7 @@ export default {
     "/expense 1200 と送ると、直前の支出からカテゴリがわかる場合はすぐに保存します",
   "FeatureTelegramBot.fact2": "/balance と /month は何も変更しないので、閲覧者も使えます",
   "FeatureTelegramBot.fact3":
-    "/expense、/income、/balance、/month を使えるのは個別チャットだけで、グループではボットが個別チャットへ案内します",
+    "/expense、 /income、 /balance、 /month を使えるのは個別チャットだけで、グループではボットが個別チャットへ案内します",
   "FeatureTelegramBot.fact4": "連携には、10分間有効なワンタイムコードを使います",
   "FeatureTelegramBot.notYetTransfer": "ボットからの振替の記録",
   "FeatureTelegramBot.notYetVoice": "音声メッセージやレシートの写真からの記録",
@@ -603,7 +603,7 @@ export default {
     "はい。Telegram の BotFather でボットを作成し、そのトークン、ユーザー名、Webhook シークレットをサーバーの設定に追加します。トークンを設定するまでボットはオフのままで、Financy のほかの機能はボットなしで動きます。",
   "FeaturePageTelegramBot.groupQuestion": "グループチャットでボットを使えますか？",
   "FeaturePageTelegramBot.groupAnswer":
-    "いいえ。/expense、/income、/balance、/month を使えるのは個別チャットだけです。グループで返信すると、世帯の数字が全員に見えてしまうためです。",
+    "いいえ。/expense、 /income、 /balance、 /month を使えるのは個別チャットだけです。グループで返信すると、世帯の数字が全員に見えてしまうためです。",
   "FeaturePageTelegramBot.transferQuestion": "ボットから振替を記録できますか？",
   "FeaturePageTelegramBot.transferAnswer":
     "まだです。ボットで追加できるのは支出と収入です。口座の間の振替は Financy のアプリで記録してください。",
