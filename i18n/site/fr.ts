@@ -283,6 +283,22 @@ export default {
   "FeatureLiveSync.notYetRates": "Des taux de change consultables hors ligne",
   "FeatureLiveSync.notYetStores": "Des apps sur Google Play et l’App Store",
   "FeatureLiveSync.code": "Lire la conception du temps réel",
+  "FeatureTelegramBot.nav": "Bot Telegram",
+  "FeatureTelegramBot.title": "Ajoutez une dépense depuis une conversation Telegram",
+  "FeatureTelegramBot.lead":
+    "Associez votre compte Telegram une seule fois, puis envoyez /expense ou /income pour ajouter une opération, ou /balance et /month pour consulter vos chiffres. Le bot agit en votre nom, avec votre rôle dans le foyer.",
+  "FeatureTelegramBot.fact1":
+    "/expense 12,50 enregistre la dépense aussitôt si la précédente fournit la catégorie",
+  "FeatureTelegramBot.fact2":
+    "/balance et /month ne modifient rien, et un lecteur peut aussi les utiliser",
+  "FeatureTelegramBot.fact3":
+    "Les commandes ne fonctionnent qu’en conversation privée. Dans un groupe, le bot vous invite à lui écrire en privé",
+  "FeatureTelegramBot.fact4": "L’association passe par un code à usage unique valable 10 minutes",
+  "FeatureTelegramBot.notYetTransfer": "Enregistrer un virement depuis le bot",
+  "FeatureTelegramBot.notYetVoice":
+    "Des notes vocales et des photos de tickets transformées en opérations",
+  "FeatureTelegramBot.notYetSentences": "Écrire une phrase entière au lieu d’une commande",
+  "FeatureTelegramBot.code": "Lire le code source du bot",
   "FeatureDeploy.nav": "Auto-hébergement",
   "FeatureDeploy.title": "Tourne sur votre propre serveur",
   "FeatureDeploy.lead":
@@ -544,6 +560,97 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "Existe-t-il un installateur en un clic ?",
   "FeaturePageSelfHosting.installerAnswer":
     "Pas encore. Vous installez Financy depuis votre ordinateur avec Deno, rsync et git, et une seule commande le déploie. Le guide d’auto-hébergement détaille chaque étape.",
+  "FeaturePageTransfers.name": "Virements",
+  "FeaturePageTransfers.title": "Virements entre comptes en devises différentes",
+  "FeaturePageTransfers.description":
+    "Enregistrez l’argent déplacé entre vos propres comptes dans deux devises. Financy garde le montant envoyé et le montant reçu.",
+  "FeaturePageTransfers.h1":
+    "Puis-je enregistrer un virement entre des comptes en devises différentes ?",
+  "FeaturePageTransfers.answer":
+    "Oui. Ajoutez un virement, choisissez les deux comptes et saisissez le montant envoyé. Indiquez aussi le montant reçu, ou laissez le champ vide : Financy convertit alors au taux de la date du virement. Les deux montants sont gardés, chacun dans la devise de son compte.",
+  "FeaturePageTransfers.summary":
+    "Enregistrez l’argent déplacé entre vos comptes, avec les deux montants conservés.",
+  "FeaturePageTransfers.how1":
+    "Choisissez le compte de départ et le compte d’arrivée, puis saisissez le montant envoyé. Entre deux devises, un second champ demande le montant reçu. Saisissez-le pour garder le taux appliqué par votre banque, ou laissez-le vide pour convertir au taux de la date du virement. Si Financy n’a pas de taux pour cette date, il vous demande de saisir le montant.",
+  "FeaturePageTransfers.how2":
+    "Le solde de chaque compte évolue de son propre montant. Un virement n’a pas de catégorie : vos revenus, vos dépenses et vos budgets ne bougent donc pas.",
+  "FeaturePageTransfers.spendingQuestion":
+    "Un virement compte-t-il comme une dépense ou un revenu ?",
+  "FeaturePageTransfers.spendingAnswer":
+    "Non. Un virement n’a pas de catégorie et n’entre dans aucun chiffre de revenus ou de dépenses, budgets compris. Seuls les soldes des deux comptes changent.",
+  "FeaturePageTransfers.ownAmountQuestion": "Puis-je saisir le montant réellement reçu ?",
+  "FeaturePageTransfers.ownAmountAnswer":
+    "Oui. Saisissez ce que le compte d’arrivée a reçu : Financy enregistre ce montant tel quel, sans le convertir. Le taux appliqué par votre banque est ainsi conservé.",
+  "FeaturePageTransfers.feeQuestion": "Puis-je enregistrer des frais bancaires sur un virement ?",
+  "FeaturePageTransfers.feeAnswer":
+    "Non. Un virement n’a pas de champ pour les frais, seulement le montant envoyé et le montant reçu. Ajoutez les frais facturés par votre banque à part, comme une dépense.",
+  "FeaturePageTransfers.repeatQuestion": "Un virement peut-il se répéter chaque mois ?",
+  "FeaturePageTransfers.repeatAnswer":
+    "Pas encore. Une opération récurrente ne peut être qu’une dépense ou un revenu : pour l’instant, vous ajoutez donc chaque virement vous-même.",
+  "FeaturePageTransfers.statementQuestion":
+    "Financy peut-il repérer les virements dans mon relevé bancaire ?",
+  "FeaturePageTransfers.statementAnswer":
+    "Pas encore. L’app n’a aucun écran pour importer un relevé bancaire, et ne peut donc pas vous proposer de virements à partir d’un relevé.",
+  "FeaturePageBudgets.name": "Budgets",
+  "FeaturePageBudgets.title": "Fixer un plafond de budget mensuel par catégorie",
+  "FeaturePageBudgets.description":
+    "Fixez un plafond de dépenses mensuel par catégorie et suivez-le en direct avec votre foyer. Il continue jusqu’à ce que vous le changiez.",
+  "FeaturePageBudgets.h1": "Puis-je fixer un plafond mensuel par catégorie ?",
+  "FeaturePageBudgets.answer":
+    "Oui. Fixez un plafond mensuel sur n’importe quelle catégorie de dépenses : Financy montre ce qui a été dépensé par rapport à ce plafond, en direct pour tout le foyer. Le plafond continue les mois suivants jusqu’à ce que vous le changiez.",
+  "FeaturePageBudgets.summary": "Un plafond mensuel par catégorie, en direct pour tout le foyer.",
+  "FeaturePageBudgets.how1":
+    "Ouvrez Budgets, choisissez une catégorie de dépenses et saisissez son plafond. Il s’applique à partir de ce mois-là, et les mois précédents gardent leurs plafonds. La dépense du mois, ce sont ses dépenses moins les remboursements.",
+  "FeaturePageBudgets.how2":
+    "La barre vous alerte dès 80 % du plafond et montre de combien vous l’avez dépassé. Le plafond d’une sous‑catégorie ne peut pas dépasser ce qu’il reste du plafond de sa catégorie parente.",
+  "FeaturePageBudgets.rollOverQuestion":
+    "L’argent non dépensé est-il reporté sur le mois suivant ?",
+  "FeaturePageBudgets.rollOverAnswer":
+    "Non. Chaque mois est comparé à son propre plafond : l’argent que vous n’avez pas dépensé ne s’ajoute pas au mois suivant.",
+  "FeaturePageBudgets.currenciesQuestion":
+    "Les dépenses dans une autre devise comptent-elles dans le plafond ?",
+  "FeaturePageBudgets.currenciesAnswer":
+    "Oui. Financy les convertit dans la devise du plafond. Une devise qui n’a pas encore de taux de change est nommée à l’écran, au lieu d’être écartée en silence.",
+  "FeaturePageBudgets.warningQuestion": "Financy me prévient-il quand je dépasse un plafond ?",
+  "FeaturePageBudgets.warningAnswer":
+    "Non. Financy n’envoie aucun message au sujet des budgets. L’écran Budgets montre de combien une catégorie a dépassé son plafond.",
+  "FeaturePageBudgets.envelopesQuestion":
+    "Puis-je gérer mon budget avec la méthode des enveloppes ?",
+  "FeaturePageBudgets.envelopesAnswer":
+    "Pas encore. Aujourd’hui, chaque catégorie a un plafond mensuel. Les écrans pour répartir l’argent dans des enveloppes et le déplacer de l’une à l’autre n’existent pas encore.",
+  "FeaturePageBudgets.planQuestion": "Les budgets nécessitent-ils un forfait payant ?",
+  "FeaturePageBudgets.planAnswer":
+    "Oui. Sur le cloud Financy, fixer un plafond demande le forfait Household ; consulter les budgets et retirer un plafond, jamais. Sur votre propre serveur, avec la facturation désactivée, chaque foyer peut fixer des plafonds.",
+  "FeaturePageTelegramBot.name": "Bot Telegram",
+  "FeaturePageTelegramBot.title": "Notez vos dépenses, voyez vos soldes sur Telegram",
+  "FeaturePageTelegramBot.description":
+    "Ajoutez une dépense ou un revenu dans une conversation Telegram privée, et consultez vos soldes et l’argent du mois. Tout arrive dans votre foyer.",
+  "FeaturePageTelegramBot.h1": "Puis-je ajouter une dépense depuis Telegram ?",
+  "FeaturePageTelegramBot.answer":
+    "Oui. Associez votre compte Telegram depuis votre profil Financy, puis envoyez /expense dans une conversation privée. Le bot demande le montant, affiche le compte et la catégorie, et enregistre l’opération quand vous appuyez sur « Enregistrer ».",
+  "FeaturePageTelegramBot.summary":
+    "Ajoutez des opérations et consultez vos soldes depuis une conversation privée.",
+  "FeaturePageTelegramBot.how1":
+    "Sur votre profil Financy, appuyez sur « Associer Telegram » et ouvrez la conversation. Le code fonctionne une seule fois, pendant 10 minutes, et le bot vous indique le compte utilisateur concerné avant que vous appuyiez sur « Associer ».",
+  "FeaturePageTelegramBot.how2":
+    "Envoyez /expense ou /income, et le bot demande le montant. Des boutons changent le compte ou la catégorie, et « Enregistrer » ajoute l’opération. /balance et /month affichent vos chiffres sans rien modifier.",
+  "FeaturePageTelegramBot.selfHostQuestion":
+    "Le bot fonctionne-t-il sur un serveur que j’héberge moi-même ?",
+  "FeaturePageTelegramBot.selfHostAnswer":
+    "Oui. Créez un bot avec BotFather, l’outil de Telegram, et ajoutez son jeton aux paramètres de votre serveur. Tant qu’aucun jeton n’est défini, le bot reste désactivé et le reste de Financy fonctionne sans lui.",
+  "FeaturePageTelegramBot.groupQuestion": "Puis-je utiliser le bot dans un groupe Telegram ?",
+  "FeaturePageTelegramBot.groupAnswer":
+    "Non. Les commandes ne fonctionnent qu’en conversation privée, car une réponse montrerait les chiffres de votre foyer à tout le groupe.",
+  "FeaturePageTelegramBot.transferQuestion": "Puis-je enregistrer un virement depuis le bot ?",
+  "FeaturePageTelegramBot.transferAnswer":
+    "Pas encore. Le bot ajoute des dépenses et des revenus. Pour enregistrer un virement entre comptes, passez par l’app Financy.",
+  "FeaturePageTelegramBot.voiceQuestion":
+    "Puis-je envoyer une note vocale ou la photo d’un ticket de caisse ?",
+  "FeaturePageTelegramBot.voiceAnswer":
+    "Pas encore. Le bot lit les montants saisis et les appuis sur ses boutons : une note vocale ou une photo n’ajoute donc rien.",
+  "FeaturePageTelegramBot.costQuestion": "Le bot est-il facturé en supplément ?",
+  "FeaturePageTelegramBot.costAnswer":
+    "Non. Le bot n’est pas une option payante. Une opération ajoutée depuis la conversation compte comme une opération ajoutée dans l’app : si le forfait d’un foyer n’a plus de place pour d’autres opérations, elle est refusée aux deux endroits.",
   "FeaturePageMissing.title": "Cette page de fonctionnalité est introuvable",
   "FeaturePageMissing.description":
     "Elle a peut-être changé d’adresse. Toutes les fonctionnalités sont sur la page des fonctionnalités.",
@@ -715,6 +822,7 @@ export default {
     "La dépense, ce sont les dépenses moins les remboursements ; une devise sans taux de change est nommée, pas écartée en silence",
   "FeatureBudgets.fact3":
     "Fixer un plafond demande le forfait Household ; lire les budgets et retirer un plafond, jamais, et le serveur le vérifie",
+  "FeatureBudgets.notYetEnvelopes": "Des écrans pour gérer son budget par enveloppes",
   "FeatureBudgets.code": "Lire le code source des budgets",
   "HomeStatus.recurring": "Des opérations récurrentes pour le loyer, le salaire et les abonnements",
   "FeatureRecurring.nav": "Opérations récurrentes",
@@ -752,6 +860,21 @@ export default {
   "FeatureTransactions.fact3": "Un revenu dans une catégorie de dépenses est un remboursement",
   "FeatureTransactions.fact4": "Une opération supprimée peut être restaurée pendant 30 jours",
   "FeatureTransactions.code": "Lire le code source des opérations",
+  "FeatureTransfers.nav": "Virements",
+  "FeatureTransfers.title": "L’argent déplacé entre vos propres comptes",
+  "FeatureTransfers.lead":
+    "Enregistrez l’argent qui passe d’un compte à un autre, dans une seule devise ou entre deux. Chaque compte garde son propre montant : le taux réellement appliqué par votre banque reste ainsi enregistré.",
+  "FeatureTransfers.fact1":
+    "Entre deux devises, un montant reçu laissé vide est converti au taux de la date du virement",
+  "FeatureTransfers.fact2":
+    "Un virement n’a pas de catégorie et n’entre dans aucun chiffre de revenus ou de dépenses",
+  "FeatureTransfers.fact3":
+    "Un virement ajouté hors ligne attend sur votre appareil et part au retour de la connexion",
+  "FeatureTransfers.fact4": "Un virement supprimé peut être restauré pendant 30 jours",
+  "FeatureTransfers.notYetStatement":
+    "Des virements proposés à partir d’un relevé bancaire importé",
+  "FeatureTransfers.notYetRepeating": "Des virements récurrents",
+  "FeatureTransfers.code": "Lire le code source des virements",
   "AudiencePage.demo": "Essayer la démo",
   "AudiencePage.demoNote": "Données d’exemple, aucun compte utilisateur requis.",
   "AudiencePage.limits": "Ce que Financy ne fait pas",

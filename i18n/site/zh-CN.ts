@@ -246,6 +246,18 @@ export default {
   "FeatureLiveSync.notYetRates": "离线查看汇率",
   "FeatureLiveSync.notYetStores": "Google Play 和 App Store 中的应用",
   "FeatureLiveSync.code": "阅读实时同步设计",
+  "FeatureTelegramBot.nav": "Telegram 机器人",
+  "FeatureTelegramBot.title": "在 Telegram 聊天里记一笔支出",
+  "FeatureTelegramBot.lead":
+    "只需关联一次 Telegram 账号，之后发送 /expense 或 /income 就能记一笔，发送 /balance 或 /month 就能查看你的收支数字。机器人以你的身份操作，权限与你在家庭中的角色相同。",
+  "FeatureTelegramBot.fact1": "上一笔支出能确定分类时，/expense 12.50 会立即保存",
+  "FeatureTelegramBot.fact2": "/balance 和 /month 不会改动任何内容，查看者也能使用",
+  "FeatureTelegramBot.fact3": "命令只能在私聊中使用，在群聊中机器人会提示你改用私聊",
+  "FeatureTelegramBot.fact4": "关联码只能使用一次，10 分钟内有效",
+  "FeatureTelegramBot.notYetTransfer": "通过机器人记录转账",
+  "FeatureTelegramBot.notYetVoice": "把语音消息和小票照片变成交易",
+  "FeatureTelegramBot.notYetSentences": "直接输入一整句话，不用命令",
+  "FeatureTelegramBot.code": "阅读机器人代码",
   "FeatureDeploy.nav": "自托管",
   "FeatureDeploy.title": "运行在你自己的服务器上",
   "FeatureDeploy.lead":
@@ -476,6 +488,86 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "有一键安装程序吗？",
   "FeaturePageSelfHosting.installerAnswer":
     "还没有。你需要在自己的电脑上用 Deno、rsync 和 git 设置 Financy，然后用一条命令完成部署。自托管指南会带你走完每一步。",
+  "FeaturePageTransfers.name": "转账",
+  "FeaturePageTransfers.title": "跨币种转账记账：转出和到账金额都保留",
+  "FeaturePageTransfers.description":
+    "记录在你自己的账户之间跨币种转移的资金。Financy 会同时保存转出金额和到账金额。",
+  "FeaturePageTransfers.h1": "不同币种的账户之间转账，能记录吗？",
+  "FeaturePageTransfers.answer":
+    "可以。添加一笔转账，选择两个账户，填写转出金额。到账金额可以自己填，也可以留空，由 Financy 按转账当天的汇率换算。两个金额都会保存，并各自使用所在账户的币种。",
+  "FeaturePageTransfers.summary": "记录账户之间的资金转移，两边的金额都保留。",
+  "FeaturePageTransfers.how1":
+    "选择转出账户和转入账户，然后填写转出金额。两个账户币种不同时，还会多出一栏到账金额。填写它就能保留银行实际收取的汇率，留空则按转账当天的汇率换算。如果 Financy 没有当天的汇率，会请你自己填写金额。",
+  "FeaturePageTransfers.how2":
+    "每个账户的余额按各自的金额变动。转账没有分类，所以你的收入、支出和预算都不受影响。",
+  "FeaturePageTransfers.spendingQuestion": "转账会算作支出或收入吗？",
+  "FeaturePageTransfers.spendingAnswer":
+    "不会。转账没有分类，不计入任何收入或支出数字，预算也一样。变动的只有两个账户的余额。",
+  "FeaturePageTransfers.ownAmountQuestion": "能填写实际到账的金额吗？",
+  "FeaturePageTransfers.ownAmountAnswer":
+    "可以。填写转入账户实际收到的金额，Financy 会原样保存，不再换算。银行实际收取的汇率也就留下了记录。",
+  "FeaturePageTransfers.feeQuestion": "转账时能记录银行手续费吗？",
+  "FeaturePageTransfers.feeAnswer":
+    "不能。转账只有转出金额和到账金额，没有手续费这一栏。银行收取的手续费，请另记一笔支出。",
+  "FeaturePageTransfers.repeatQuestion": "转账能每月自动重复吗？",
+  "FeaturePageTransfers.repeatAnswer":
+    "还不能。定期规则只能生成支出或收入，所以目前每笔转账都需要你自己添加。",
+  "FeaturePageTransfers.statementQuestion": "Financy 能从银行对账单里找出转账吗？",
+  "FeaturePageTransfers.statementAnswer":
+    "还不能。应用还没有导入银行对账单的页面，所以无法根据对账单建议转账。",
+  "FeaturePageBudgets.name": "预算",
+  "FeaturePageBudgets.title": "为每个分类设置每月预算限额",
+  "FeaturePageBudgets.description":
+    "为每个支出分类设置每月限额，和家人一起实时查看花了多少。限额会一直延续，直到你修改它。",
+  "FeaturePageBudgets.h1": "能为每个分类设置每月限额吗？",
+  "FeaturePageBudgets.answer":
+    "可以。为任意支出分类设置每月限额，Financy 会显示已经花了多少，家里每个人都能实时看到。限额会延续到之后的月份，直到你修改它。",
+  "FeaturePageBudgets.summary": "每个分类一个每月限额，全家实时可见。",
+  "FeaturePageBudgets.how1":
+    "打开“预算”，选择一个支出分类并填写限额。限额从当月起生效，之前的月份保留当时的限额。支出是当月的花费减去退款。",
+  "FeaturePageBudgets.how2":
+    "花费达到限额的 80% 时，进度条就会提醒你，超支后还会显示超出多少。子分类的限额不能超过父分类限额中尚未分配的部分。",
+  "FeaturePageBudgets.rollOverQuestion": "没花完的预算会结转到下个月吗？",
+  "FeaturePageBudgets.rollOverAnswer": "不会。每个月都按当月的限额计算，没花完的钱不会加到下个月。",
+  "FeaturePageBudgets.currenciesQuestion": "用其他货币付的支出也计入限额吗？",
+  "FeaturePageBudgets.currenciesAnswer":
+    "是的。Financy 会把它们换算成限额的币种。还没有汇率的币种会在页面上列出，而不是悄悄丢掉。",
+  "FeaturePageBudgets.warningQuestion": "超出限额时，Financy 会发消息提醒我吗？",
+  "FeaturePageBudgets.warningAnswer":
+    "不会。Financy 不会发送任何有关预算的消息。你可以在“预算”页面看到某个分类超出限额多少。",
+  "FeaturePageBudgets.envelopesQuestion": "能用信封预算法吗？",
+  "FeaturePageBudgets.envelopesAnswer":
+    "还不能。目前每个分类有一个每月限额，把钱放进信封、在信封之间调配的页面还没有做好。",
+  "FeaturePageBudgets.planQuestion": "预算功能需要付费套餐吗？",
+  "FeaturePageBudgets.planAnswer":
+    "需要。在 Financy 云端，设置限额需要 Household 套餐，查看预算和移除限额则从不需要。在你自己的服务器上，不开启计费时，每个家庭都能设置限额。",
+  "FeaturePageTelegramBot.name": "Telegram 机器人",
+  "FeaturePageTelegramBot.title": "在 Telegram 里记账、查余额",
+  "FeaturePageTelegramBot.description":
+    "在 Telegram 私聊中添加支出或收入，查询余额和本月收支。每一笔都会直接记入你的家庭。",
+  "FeaturePageTelegramBot.h1": "能在 Telegram 里记一笔支出吗？",
+  "FeaturePageTelegramBot.answer":
+    "可以。在 Financy 的个人资料中关联 Telegram 账号，然后在私聊中发送 /expense。机器人会询问金额，并显示账户和分类，你点击“保存”后这笔交易就记好了。",
+  "FeaturePageTelegramBot.summary": "在私聊中记账、查看余额。",
+  "FeaturePageTelegramBot.how1":
+    "在 Financy 的个人资料中点击“关联 Telegram”，然后打开聊天。关联码 10 分钟内有效，只能使用一次；在你点击“关联”之前，机器人会告诉你它属于哪个账号。",
+  "FeaturePageTelegramBot.how2":
+    "发送 /expense 或 /income，机器人会询问金额。用按钮可以更换账户或分类，点击“保存”就记好了。/balance 和 /month 只读取你的数字，不会改动任何内容。",
+  "FeaturePageTelegramBot.selfHostQuestion": "在自己托管的服务器上也能用机器人吗？",
+  "FeaturePageTelegramBot.selfHostAnswer":
+    "可以。用 Telegram 的 BotFather 创建一个机器人，把它的令牌填入服务器的设置。设置令牌之前，机器人保持关闭，Financy 的其他功能照常可用。",
+  "FeaturePageTelegramBot.groupQuestion": "能在群聊里使用机器人吗？",
+  "FeaturePageTelegramBot.groupAnswer":
+    "不能。命令只能在私聊中使用，因为在群聊里回复会让所有群成员看到你家庭的财务数字。",
+  "FeaturePageTelegramBot.transferQuestion": "能通过机器人记录转账吗？",
+  "FeaturePageTelegramBot.transferAnswer":
+    "还不能。机器人可以添加支出和收入。账户之间的转账请在 Financy 应用中记录。",
+  "FeaturePageTelegramBot.voiceQuestion": "能发语音消息或小票照片吗？",
+  "FeaturePageTelegramBot.voiceAnswer":
+    "还不能。机器人只读取输入的金额和按钮操作，发送语音消息或照片不会添加任何内容。",
+  "FeaturePageTelegramBot.costQuestion": "机器人要额外收费吗？",
+  "FeaturePageTelegramBot.costAnswer":
+    "不用。机器人不是付费附加功能。在聊天中添加的交易和在应用中添加的计数方式相同，所以家庭的套餐没有空间添加更多交易时，两边都无法再添加。",
   "FeaturePageMissing.title": "这个功能页面不存在",
   "FeaturePageMissing.description": "这个页面可能已经搬家了。所有功能都在功能页上。",
   "FeaturePageMissing.action": "查看所有功能",
@@ -626,6 +718,7 @@ export default {
   "FeatureBudgets.fact1": "没有自己限额的父分类显示其子分类限额之和",
   "FeatureBudgets.fact2": "支出是花费减去退款；还没有汇率的币种会被列出，而不是悄悄丢掉",
   "FeatureBudgets.fact3": "设置限额需要 Household 套餐；查看预算和移除限额从不需要，由服务器检查",
+  "FeatureBudgets.notYetEnvelopes": "用信封做预算的页面",
   "FeatureBudgets.code": "阅读预算代码",
   "HomeStatus.recurring": "房租、工资和订阅的定期交易",
   "FeatureRecurring.nav": "定期交易",
@@ -655,6 +748,17 @@ export default {
   "FeatureTransactions.fact3": "支出分类中的收入就是退款",
   "FeatureTransactions.fact4": "删除的交易可在 30 天内恢复",
   "FeatureTransactions.code": "阅读交易代码",
+  "FeatureTransfers.nav": "转账",
+  "FeatureTransfers.title": "在你自己的账户之间转移资金",
+  "FeatureTransfers.lead":
+    "记录资金从一个账户转到另一个账户，可以是同一币种，也可以跨两种币种。每个账户保留自己的金额，银行实际收取的汇率也就留下了记录。",
+  "FeatureTransfers.fact1": "跨币种转账时，到账金额留空会按转账当天的汇率换算",
+  "FeatureTransfers.fact2": "转账没有分类，不计入任何收入或支出数字",
+  "FeatureTransfers.fact3": "离线添加的转账会先保存在设备上，恢复联网后再发送",
+  "FeatureTransfers.fact4": "删除的转账可在 30 天内恢复",
+  "FeatureTransfers.notYetStatement": "根据导入的银行对账单建议转账",
+  "FeatureTransfers.notYetRepeating": "按计划自动重复的转账",
+  "FeatureTransfers.code": "阅读转账代码",
   "AudiencePage.demo": "试用演示版",
   "AudiencePage.demoNote": "使用示例数据，无需账号。",
   "AudiencePage.limits": "Financy 不能做什么",

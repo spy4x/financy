@@ -283,9 +283,10 @@ export default {
   "FeatureTelegramBot.lead":
     "Link your Telegram account once, then send /expense or /income to add an entry, or /balance and /month to read your figures. The bot acts as you, with your role in the household.",
   "FeatureTelegramBot.fact1":
-    "/expense 12.50 saves at once when your last expense gives the account and the category",
+    "/expense 12.50 saves at once when your last expense gives the category",
   "FeatureTelegramBot.fact2": "/balance and /month change nothing, and a viewer can use them too",
-  "FeatureTelegramBot.fact3": "Commands answer only in a private chat, never in a group",
+  "FeatureTelegramBot.fact3":
+    "Commands work only in a private chat; in a group the bot asks you to message it privately",
   "FeatureTelegramBot.fact4": "Linking takes a one-time code that lasts 10 minutes",
   "FeatureTelegramBot.notYetTransfer": "Recording a transfer from the bot",
   "FeatureTelegramBot.notYetVoice": "Voice notes and receipt photos that become entries",
@@ -549,7 +550,8 @@ export default {
   "FeaturePageTransfers.h1": "Can I record a transfer between accounts in different currencies?",
   "FeaturePageTransfers.answer":
     "Yes. Add a transfer, choose the two accounts and type the amount sent. Type what arrived too, or leave it empty and Financy converts at the rate of the transfer's date. Both amounts are kept, each in its account's currency.",
-  "FeaturePageTransfers.summary": "Move money between your accounts, with both amounts kept.",
+  "FeaturePageTransfers.summary":
+    "Record money moved between your accounts, with both amounts kept.",
   "FeaturePageTransfers.how1":
     "Choose the account the money left and the account it reached, then type the amount sent. Between two currencies, a second field asks what arrived. Type it to keep the rate your bank charged, or leave it empty to convert at the rate of the transfer's date. When Financy has no rate for that date, it asks you to type the amount.",
   "FeaturePageTransfers.how2":
@@ -565,7 +567,7 @@ export default {
     "No. A transfer has no field for a fee, only the amount sent and the amount received. Add a fee your bank charged separately as an expense of its own.",
   "FeaturePageTransfers.repeatQuestion": "Can a transfer repeat every month?",
   "FeaturePageTransfers.repeatAnswer":
-    "No. A repeating rule makes an expense or an income, so you add each transfer yourself.",
+    "Not yet. A repeating rule makes an expense or an income, so for now you add each transfer yourself.",
   "FeaturePageTransfers.statementQuestion": "Can Financy find transfers in my bank statement?",
   "FeaturePageTransfers.statementAnswer":
     "Not yet. The app has no screen for importing a bank statement, so it cannot propose transfers from one.",
@@ -580,7 +582,7 @@ export default {
   "FeaturePageBudgets.how1":
     "Open Budgets, choose an expense category and type its limit. The limit applies from that month on, and earlier months keep the limits they had. Spending is the month's expenses less refunds.",
   "FeaturePageBudgets.how2":
-    "The bar warns you from 80% of the limit and shows how far over you went. A subcategory's limit cannot go past what its parent's own limit leaves.",
+    "The bar warns you from 80% of the limit and shows how far over you went. A subcategory's limit cannot be more than what is left of its parent's limit.",
   "FeaturePageBudgets.rollOverQuestion": "Does unspent money roll over to the next month?",
   "FeaturePageBudgets.rollOverAnswer":
     "No. Each month is measured against its own limit, so money you did not spend is not added to the next month.",
@@ -613,7 +615,7 @@ export default {
     "Yes. Create a bot with Telegram's BotFather and put its token in your server's settings. Until a token is set, the bot stays off and the rest of Financy works without it.",
   "FeaturePageTelegramBot.groupQuestion": "Can I use the bot in a group chat?",
   "FeaturePageTelegramBot.groupAnswer":
-    "No. Commands answer only in a private chat, because a reply would show your household's figures to everyone in the group.",
+    "No. Commands work only in a private chat, because a reply would show your household's figures to everyone in the group.",
   "FeaturePageTelegramBot.transferQuestion": "Can I record a transfer from the bot?",
   "FeaturePageTelegramBot.transferAnswer":
     "Not yet. The bot adds expenses and income. Record a transfer between accounts in the Financy app.",
