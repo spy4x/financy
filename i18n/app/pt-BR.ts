@@ -2070,6 +2070,18 @@ export default {
   "TelegramBot.planFull": "O plano desta família não tem espaço para mais lançamentos.",
   "TelegramBot.entryStale":
     "Este lançamento já terminou ou expirou. Envie /expense ou /income para começar outro.",
+  "TelegramBot.figure": "{label}: {value}",
+  "TelegramBot.noTotal": "Ainda não há total: não foi possível converter nenhuma destas contas.",
+  "TelegramBot.moreAccounts": {
+    "one": "E mais {count} conta",
+    "many": "E mais {count} contas",
+    "other": "E mais {count} contas",
+  },
+  "TelegramBot.moreCurrencies": {
+    "one": "mais {count}",
+    "many": "mais {count}",
+    "other": "mais {count}",
+  },
   "UndoToast.title": "Nota excluída",
   "UndoToast.deleted": "“{title}” foi excluída.",
   "UndoToast.deletedUntitled": "A nota foi excluída.",

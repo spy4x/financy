@@ -2123,6 +2123,16 @@ export default {
   "TelegramBot.planFull": "This household's plan has no room for more transactions.",
   "TelegramBot.entryStale":
     "This transaction is already finished or has expired. Send /expense or /income to start a new one.",
+  "TelegramBot.figure": "{label}: {value}",
+  "TelegramBot.noTotal": "There's no total yet: none of these accounts could be converted.",
+  "TelegramBot.moreAccounts": {
+    "one": "And {count} more account",
+    "other": "And {count} more accounts",
+  },
+  "TelegramBot.moreCurrencies": {
+    "one": "{count} more",
+    "other": "{count} more",
+  },
   "UndoToast.title": "Note deleted",
   "UndoToast.deleted": '"{title}" was deleted.',
   "UndoToast.deletedUntitled": "The note was deleted.",
