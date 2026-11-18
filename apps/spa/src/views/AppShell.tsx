@@ -6,6 +6,7 @@ import { useFormat } from "@spy4x/preact-ui/format"
 import { todayInTz } from "@spy4x/time/tz"
 import { canMutateNotes, canViewActivity, groupTimeZone } from "@domain/groups"
 import { UserMFAStatus } from "@domain/identity"
+import { ImportStatus } from "@domain/imports"
 import {
   NOTE_PATHS,
   profilePath,
@@ -26,6 +27,7 @@ import { NewNoteDialog } from "@ui/new-note-dialog.tsx"
 import { emailStore } from "../state/email.ts"
 import { signOut } from "../state/auth.ts"
 import { groupsStore } from "../state/groups.ts"
+import { importsStore } from "../state/imports.ts"
 import { notesStore } from "../state/notes.ts"
 import { notificationsStore } from "../state/notifications.ts"
 import { createNoteSearch } from "../state/search.ts"
@@ -42,6 +44,7 @@ import { type ActionPages, pageCommands, runActionCommand, spaShortcutRows } fro
 import { spaRoutePaths } from "./spa-paths.ts"
 import { runChoice } from "./palette-choice.ts"
 import { hasFinePointer, singleKeys, useShortcuts } from "@platform/shortcuts.ts"
+import { paletteRecent } from "@platform/palette-recent.ts"
 import type { SessionUser } from "../state/session.ts"
 import {
   callQuery,
@@ -266,6 +269,12 @@ export function AppShell(
   const { parser } = useRouter()
   const notes = notesOn()
   const routed = spaRoutePaths(notes).some((path) => matchRoute(parser, path, location)[0])
+  // An import's "Check the rows" is a data table, so its page takes the wide column
+  // (docs/design/ui-layout.md, rule 6). The store holds the open import, its check and its review.
+  const review = location !== `/imports/new` &&
+    matchRoute(parser, `/imports/:importId`, location)[0] &&
+    importsStore.current.value?.status === ImportStatus.READY &&
+    importsStore.check.value?.reviews != null
   const t = useAppText()
   // The palette's registry reads it for sizes in a detail; the shortcuts dialog lists its commands.
   const { locale } = useFormat()
@@ -293,7 +302,7 @@ export function AppShell(
     openNewTransaction: current && canMutateNotes(current.role) ? newTransaction : null,
     activityGroupId,
     overviewPage: overviewPageActions.value,
-    benchmarkPage: benchmarkPageActions.value,
+    benchmarkPage: benchmarkPageActions.value !== null,
     notes,
   })
   useShortcuts(rows, singleKeys.on.value)
@@ -384,6 +393,7 @@ export function AppShell(
     notes,
     records,
     files: filesOn(),
+    recent: paletteRecent,
   }
   return (
     <AppFrame
@@ -431,6 +441,7 @@ export function AppShell(
       currentPath={routed
         ? location.startsWith(`/transfers/`) ? TRANSACTION_PATHS.list : location
         : undefined}
+      wide={review}
       navigate={navigate}
       onSignOut={onSignOut}
       language={languageChoice()}

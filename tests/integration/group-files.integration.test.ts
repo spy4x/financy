@@ -820,7 +820,15 @@ Deno.test("the owner's spreadsheets hold the live notes under headings in the as
   await withSchema(async (sql) => {
     const source = await seed(sql)
     const files = await spreadsheetsAs(sql, source.groupId, source.owner, "ru")
-    expect(Object.keys(files).sort()).toEqual(["README.txt", "notes.csv"])
+    expect(Object.keys(files).sort()).toEqual([
+      "README.txt",
+      "accounts.csv",
+      "budgets.csv",
+      "categories.csv",
+      "notes.csv",
+      "transactions.csv",
+      "transfers.csv",
+    ])
     expect(files["README.txt"]).toContain("\n- tags\n")
     expect(files["notes.csv"].startsWith("\uFEFF")).toBe(true)
     const parsed = parseCsv(files["notes.csv"])
@@ -1692,7 +1700,14 @@ Deno.test("with the notes off, a group's export file and spreadsheets hold no no
     const pieces: BlobPart[] = []
     for await (const piece of sheets.chunks) pieces.push(piece as BlobPart)
     const zip = unzipSync(new Uint8Array(await new Blob(pieces).arrayBuffer()))
-    expect(Object.keys(zip)).toEqual(["README.txt"])
+    expect(Object.keys(zip).sort()).toEqual([
+      "README.txt",
+      "accounts.csv",
+      "budgets.csv",
+      "categories.csv",
+      "transactions.csv",
+      "transfers.csv",
+    ])
   })
 })
 

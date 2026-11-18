@@ -2,7 +2,13 @@ import { expect } from "@std/expect"
 import { describe, it } from "@std/testing/bdd"
 import { CommandBus, QueryBus } from "@spy4x/platform/cqrs"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
-import { type Account, AccountGetQuery, AccountKind, AccountListQuery } from "@domain/accounts"
+import {
+  type Account,
+  AccountGetQuery,
+  AccountKind,
+  AccountListQuery,
+  AccountWidgetQuery,
+} from "@domain/accounts"
 import { FREE_PLAN_ID } from "@domain/billing"
 import {
   type Category,
@@ -12,6 +18,7 @@ import {
 } from "@domain/categories"
 import {
   GroupError,
+  GroupGetQuery,
   GroupListQuery,
   GroupRole,
   GroupSelectCommand,
@@ -24,6 +31,7 @@ import {
   TransactionKind,
   TransactionLatestQuery,
 } from "@domain/transactions"
+import { translatorFor } from "@server/telegram/words.ts"
 import { TEST_FREE_PLAN, TEST_PLANS, testUsage } from "../../../libs/domain/billing/test-plans.ts"
 import { MemoryAccountRepository } from "../_testing/memory-accounts.ts"
 import { MemoryCategoryRepository } from "../_testing/memory-categories.ts"
@@ -240,6 +248,23 @@ function entryBot(options: Options = {}) {
   queryBus.register(CategoryListQuery, createCategoryListHandler({ categories, groups }))
   queryBus.register(CategoryGetQuery, createCategoryGetHandler({ categories, groups }))
   queryBus.register(TransactionLatestQuery, createTransactionLatestHandler(dependencies))
+  // Only what `/balance` needs to answer in the middle of a talk; its figures are in reads.test.ts.
+  queryBus.register(AccountWidgetQuery, () =>
+    Promise.resolve({
+      accounts: [],
+      total: {
+        amount: 0,
+        currency: `USD`,
+        rateDate: null,
+        coinPriceDate: null,
+        leftOut: [],
+        tooLarge: false,
+      },
+    }))
+  queryBus.register(GroupGetQuery, ({ data }) =>
+    Promise.resolve({
+      group: { id: data.groupId, name: `Home`, timeZone: `UTC` },
+    }) as never)
   queryBus.register(
     GroupSelectedQuery,
     ({ data }) => Promise.resolve(selectionOf(data.actor.userId)),
@@ -359,6 +384,27 @@ async function typedExpense(bot: EntryBot, accountId: string, typed: string) {
 }
 
 describe(`/expense and /income in the Telegram bot`, () => {
+  describe(`a read command in the middle of a talk`, () => {
+    it(`answers /balance without reading it as the amount, and the talk goes on with its draft`, async () => {
+      const bot = entryBot()
+      await bot.earlier(OWNER, bot.f.cash.id, bot.f.groceries.id)
+      const before = new Set(bot.entries().map((entry) => entry.id))
+      await bot.send(`/expense`)
+      const draft = [...bot.store.values.entries()]
+
+      await bot.send(`/balance`)
+
+      expect(bot.shown().at(-1)).toBe(translatorFor(`en`).t(`TelegramBot.noAccount`))
+      expect([...bot.store.values.entries()]).toEqual(draft)
+
+      await bot.send(`12.50`)
+      await bot.press(bot.data(EN.save))
+
+      const saved = bot.entries().filter((entry) => !before.has(entry.id))
+      expect(saved.map((entry) => entry.amount)).toEqual([-1250])
+    })
+  })
+
   describe(`amounts by the account currency's decimals (R1, R2)`, () => {
     it(`stores 500 for "500" typed into a JPY account`, async () => {
       const bot = entryBot()
