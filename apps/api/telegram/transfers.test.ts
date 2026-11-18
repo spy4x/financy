@@ -816,6 +816,19 @@ describe(`/transfer in the Telegram bot`, () => {
     })
   })
 
+  describe(`the day's rate`, () => {
+    it(`stops waiting for a typed amount once the rate is pressed`, async () => {
+      const bot = transferBot({ rate: `150` })
+      await atRateSummary(bot)
+      const before = bot.shown().length
+
+      await bot.send(`1500`)
+
+      expect(bot.shown().length).toBe(before)
+      expect(bot.draft()).toMatchObject({ step: `summary`, useRate: true, receivedAmount: null })
+    })
+  })
+
   describe(`refusals`, () => {
     it(`refuses a viewer at Save and writes nothing`, async () => {
       const bot = transferBot()
