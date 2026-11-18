@@ -180,7 +180,7 @@ export const AUDIENCE_PAGES: readonly AudiencePage[] = [
     ],
     shot: {
       name: `for-couples`,
-      height: 1040,
+      height: 904,
       alt: `AudienceCouples.alt`,
       caption: `AudienceCouples.caption`,
     },
@@ -218,7 +218,7 @@ export const AUDIENCE_PAGES: readonly AudiencePage[] = [
     ],
     shot: {
       name: `for-families`,
-      height: 1040,
+      height: 880,
       alt: `AudienceFamilies.alt`,
       caption: `AudienceFamilies.caption`,
     },
@@ -279,7 +279,7 @@ export const AUDIENCE_PAGES: readonly AudiencePage[] = [
     ],
     shot: {
       name: `for-small-business`,
-      height: 1040,
+      height: 1096,
       alt: `AudienceSmallBusiness.alt`,
       caption: `AudienceSmallBusiness.caption`,
     },
