@@ -5,17 +5,20 @@ import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { AccountGetQuery, AccountKind, AccountListQuery } from "@domain/accounts"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import { CategoryGetQuery, CategoryListQuery } from "@domain/categories"
-import { GroupListQuery, GroupSelectedQuery } from "@domain/groups"
+import { GroupGetQuery, GroupListQuery, GroupSelectedQuery } from "@domain/groups"
 import { DEFAULT_PREFERENCES, UserMFAStatus } from "@domain/identity"
+import { defaultHouseholdSettings } from "@domain/money"
 import {
   TransactionCreateCommand,
   TransactionKind,
   TransactionLatestQuery,
+  TransactionLedgerQuery,
 } from "@domain/transactions"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import { PostgresCategoryRepository } from "@server/categories/postgres-category-repository.ts"
 import { PostgresGroupRepository } from "@server/groups/postgres-group-repository.ts"
 import { PostgresTransactionRepository } from "@server/transactions/postgres-transaction-repository.ts"
+import { PostgresTransferRepository } from "@server/transfers/postgres-transfer-repository.ts"
 import { createSessionGate } from "../../apps/api/cqrs/session-gate.ts"
 import { createEntitlementGate } from "../../apps/api/cqrs/entitlement-gate.ts"
 import { ENTITLEMENT_NEEDS } from "../../apps/api/cqrs/entitlement-needs.ts"
@@ -32,6 +35,7 @@ import {
 import {
   createTransactionCreateHandler,
   createTransactionLatestHandler,
+  createTransactionLedgerHandler,
 } from "../../apps/api/features/transactions/handlers.ts"
 import { createSeedBot, type TelegramLinkService } from "../../apps/api/telegram/bot.ts"
 import { createTelegramProduct } from "../../apps/api/telegram/commands.ts"
@@ -45,8 +49,9 @@ import { team, withSchema } from "./group-team.ts"
 /**
  * `/expense` over the real Postgres repositories: the bot's entry leaves the same
  * `transaction.created` outbox row as the app's, which is what reaches the other members' screens
- * and pushes, and the latest-entry read the bot's defaults come from. The bot's branches are in
- * `apps/api/telegram/entries.test.ts`. Needs `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME`
+ * and pushes, and the latest-entry read the bot's defaults come from. `/month` stays the same when
+ * money moves between accounts. The bot's branches are in `apps/api/telegram/entries.test.ts` and
+ * `apps/api/telegram/reads.test.ts`. Needs `DB_HOST`, `DB_USER`, `DB_PASS` and `DB_NAME`
  * (recipe in docs/handoff.md); it fails when they are missing rather than skipping.
  */
 
@@ -201,5 +206,100 @@ Deno.test("Telegram entries against Postgres", async (t) => {
         expect(rows[1].row).toMatch(/^transaction\.created /)
       },
     )
+
+    await t.step("the bot's /month does not move when money is transferred", async () => {
+      const savings = (await accounts.create({
+        groupId: members.groupId,
+        id: uuidV7(),
+        name: "Savings",
+        kind: AccountKind.BANK,
+        currency: "USD",
+        startingBalance: 0,
+        allowance: null,
+      }, members.owner)).account
+      const now = () => new Date("2026-11-20T12:00:00.000Z")
+      const queryBus = new QueryBus()
+      queryBus.use(createSessionGate([]))
+      queryBus.register(
+        TransactionLedgerQuery,
+        createTransactionLedgerHandler({
+          transactions,
+          groups,
+          now,
+          settings: {
+            get: (groupId) =>
+              Promise.resolve({ ...defaultHouseholdSettings(groupId), baseCurrency: "USD" }),
+          },
+        }),
+      )
+      queryBus.register(CategoryListQuery, createCategoryListHandler({ categories, groups }))
+      queryBus.register(
+        GroupSelectedQuery,
+        () => Promise.resolve({ groupId: members.groupId, version: 1 }),
+      )
+      queryBus.register(
+        GroupGetQuery,
+        ({ data }) =>
+          Promise.resolve({
+            group: { id: data.groupId, name: "Home", timeZone: "UTC" },
+          }) as never,
+      )
+      queryBus.register(
+        PreferencesGetQuery,
+        () => Promise.resolve({ version: 1, value: DEFAULT_PREFERENCES }) as never,
+      )
+      const telegram = fakeTelegram()
+      const values = new Map<string, string>()
+      const bot = createSeedBot({
+        client: telegram.client,
+        username: "financy_bot",
+        store: {
+          get: (key) => Promise.resolve(values.get(key) ?? null),
+          set: (key, value) => (values.set(key, value), Promise.resolve()),
+          del: (key) => (values.delete(key), Promise.resolve()),
+        },
+        webAppUrl: "https://app.example.com",
+        links: {
+          account: () =>
+            Promise.resolve({
+              userId: members.editor,
+              firstName: "",
+              mfa: UserMFAStatus.NOT_CONFIGURED,
+            }),
+          prepare: () => Promise.resolve(null),
+          spend: () => Promise.resolve(),
+          link: () => Promise.resolve("stale"),
+          unlink: () => Promise.resolve(false),
+        },
+        product: createTelegramProduct({
+          queryBus,
+          commandBus: new CommandBus(),
+          store: { get: () => Promise.resolve(null), set: async () => {}, del: async () => {} },
+          now,
+        }),
+      })
+      const month = async () => {
+        await bot.handleUpdate(textUpdate("/month", { from: TELEGRAM_USER_ID }))
+        return telegram.sent().at(-1) as string
+      }
+      const before = await month()
+
+      await new PostgresTransferRepository(sql).create(
+        {
+          groupId: members.groupId,
+          id: uuidV7(),
+          fromAccountId: account.id,
+          toAccountId: savings.id,
+          sentAmount: 7_700,
+          memo: "",
+          date: "2026-11-06",
+          allowance: null,
+        } as Parameters<PostgresTransferRepository["create"]>[0],
+        members.owner,
+      )
+
+      expect(before).toContain("Spending:")
+      expect(await month()).toBe(before)
+    })
   })
 })
