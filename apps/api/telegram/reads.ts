@@ -13,7 +13,9 @@ import type { QueryBus } from "@spy4x/platform/cqrs"
 import type { TelegramContext } from "@spy4x/integrations/telegram"
 import { negotiateLanguage } from "@spy4x/platform/universal/i18n"
 import { formatMoney } from "@spy4x/platform/universal/money-core"
-import { endOfMonth, parseIsoDate, startOfMonth } from "@spy4x/time/date"
+import { endOfMonth, startOfMonth } from "@spy4x/time/date"
+import { createFormatters } from "@spy4x/time/format"
+import { periodLabel, periodOf, PeriodUnit } from "@spy4x/time/period"
 import { isoDateInTz } from "@spy4x/time/tz"
 import {
   ACCOUNT_KINDS,
@@ -57,19 +59,17 @@ const MORE_LINE_ROOM = 120
 /** The formatters of one reply: its language, and the person's region format for figures. */
 function wordsFor(language: Language, locale: string) {
   const t = translatorFor(language)
-  const dates = new Intl.DateTimeFormat(locale, { dateStyle: `medium`, timeZone: `UTC` })
-  const months = new Intl.DateTimeFormat(locale, {
-    month: `long`,
-    year: `numeric`,
-    timeZone: `UTC`,
+  // `device` keeps the server's own locale and zone out of the reply.
+  const format = createFormatters({ locale, timeZone: `UTC` }, {
+    device: { locale, timeZone: `UTC` },
   })
   const list = new Intl.ListFormat(language, { type: `conjunction` })
   return {
     t,
     money: (amount: number, currency: string) =>
       isolate(formatMoney(amount, currency, locale, { decimals: amountDecimals(currency) })),
-    date: (iso: string) => isolate(dates.format(parseIsoDate(iso))),
-    month: (iso: string) => isolate(months.format(parseIsoDate(iso))),
+    date: (iso: string) => isolate(format.date(iso)),
+    month: (iso: string) => isolate(periodLabel(periodOf(PeriodUnit.Month, iso), locale)),
     figure: (label: string, value: string) => t.t(`TelegramBot.figure`, { label, value }),
     /** Names the first {@link LEFT_OUT_NAMED} codes and counts the rest. */
     currencies: (codes: readonly string[]) => {
