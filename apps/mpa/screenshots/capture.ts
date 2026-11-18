@@ -617,8 +617,8 @@ const SCREENS: Screen[] = [
     name: "for-expats",
     forms: ["mobile"],
     household: true,
-    // From the title to the end of the accounts card.
-    clip: { x: 0, y: 0, width: 390, height: 520 },
+    // From the title to the end of the savings card: all four accounts the total adds up.
+    clip: { x: 0, y: 0, width: 390, height: 634 },
     async open(page) {
       await gotoApp(page, "/accounts", page.locator("[data-e2e=accounts-total-amount]"))
     },
@@ -627,8 +627,8 @@ const SCREENS: Screen[] = [
     name: "for-couples",
     forms: ["mobile"],
     household: true,
-    // From the title to the end of the first row of cards.
-    clip: { x: 0, y: 0, width: 390, height: 452 },
+    // From the title to the end of the spending card, below net and income.
+    clip: { x: 0, y: 0, width: 390, height: 634 },
     async open(page, seeded) {
       await gotoApp(
         page,

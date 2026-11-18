@@ -145,7 +145,7 @@ export const AUDIENCE_PAGES: readonly AudiencePage[] = [
     ],
     shot: {
       name: `for-expats`,
-      height: 1040,
+      height: 1268,
       alt: `AudienceExpats.alt`,
       caption: `AudienceExpats.caption`,
     },
@@ -180,7 +180,7 @@ export const AUDIENCE_PAGES: readonly AudiencePage[] = [
     ],
     shot: {
       name: `for-couples`,
-      height: 904,
+      height: 1268,
       alt: `AudienceCouples.alt`,
       caption: `AudienceCouples.caption`,
     },
