@@ -2367,6 +2367,7 @@ export default {
   "BudgetSpreadsheet.limit": "上限",
   "BudgetSpreadsheet.currency": "上限の通貨",
   "BudgetSpreadsheet.spent": "使った額",
+  "BudgetSpreadsheet.leftOut": "含まれていない通貨（為替レートなし）",
   "GroupSpreadsheets.yes": "はい",
   "GroupSpreadsheets.no": "いいえ",
   "NoteSpreadsheet.id": "ID",

@@ -2742,6 +2742,7 @@ export default {
   "BudgetSpreadsheet.limit": "Plafond",
   "BudgetSpreadsheet.currency": "Devise du plafond",
   "BudgetSpreadsheet.spent": "Dépensé",
+  "BudgetSpreadsheet.leftOut": "Devises non comptées (pas de taux de change)",
   "GroupSpreadsheets.yes": "Oui",
   "GroupSpreadsheets.no": "Non",
   "NoteSpreadsheet.id": "ID",

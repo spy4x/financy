@@ -2178,6 +2178,7 @@ export default {
   "BudgetSpreadsheet.limit": "限额",
   "BudgetSpreadsheet.currency": "限额币种",
   "BudgetSpreadsheet.spent": "已支出",
+  "BudgetSpreadsheet.leftOut": "未计入的币种（无汇率）",
   "GroupSpreadsheets.yes": "是",
   "GroupSpreadsheets.no": "否",
   "NoteSpreadsheet.id": "ID",

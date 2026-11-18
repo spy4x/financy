@@ -46,6 +46,7 @@ export interface BudgetSpreadsheetRow {
   limit: CsvDecimal | string
   currency: string
   spent: CsvDecimal | string
+  leftOut: string
 }
 
 /**
@@ -54,6 +55,10 @@ export interface BudgetSpreadsheetRow {
  * {@link BUDGET_SPREADSHEET_MONTHS_MAX} months. Each month is fed to `budgetMonth` as the Budgets
  * screen feeds it, so a row shows the bar's limit and its spending in the limit's currency: a
  * parent whose limit comes from its subcategories has a row, and an archived category has none.
+ * `leftOut` names, comma-separated, each currency left out for lack of an exchange rate, as the
+ * screen's warning does: it covers the whole month's ledger and, for a parent, its subcategories'
+ * limits. `spent` stays filled, because one such entry would otherwise blank every row of that
+ * month.
  * The ledger is read once per currency for the whole run.
  */
 export async function* budgetSpreadsheetPages(
@@ -125,6 +130,7 @@ export async function* budgetSpreadsheetPages(
         limit: amountCell(row.limit.amount, row.limit.currency),
         currency: row.limit.currency,
         spent: amountCell(row.spending, row.limit.currency),
+        leftOut: row.leftOut.join(`, `),
       }]
     })
   }
@@ -202,6 +208,7 @@ export const budgetPortable = portable<BudgetExportEntry, BudgetSpreadsheetRow>(
       { key: `limit`, header: `BudgetSpreadsheet.limit` },
       { key: `currency`, header: `BudgetSpreadsheet.currency` },
       { key: `spent`, header: `BudgetSpreadsheet.spent` },
+      { key: `leftOut`, header: `BudgetSpreadsheet.leftOut` },
     ],
     read: (sql, groupId) => budgetSpreadsheetPages(sql, groupId, new Date()),
   },

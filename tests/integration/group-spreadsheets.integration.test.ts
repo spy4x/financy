@@ -7,7 +7,7 @@ import { BudgetMonthQuery } from "@domain/budgets"
 import { type CategoryIcon, CategoryKind } from "@domain/categories"
 import { GroupRole } from "@domain/groups"
 import { UserMFAStatus } from "@domain/identity"
-import { amountDecimals } from "@domain/money"
+import { amountDecimals, ECB_BASE, RATE_SOURCES } from "@domain/money"
 import { TransactionKind } from "@domain/transactions"
 import { PostgresAccountRepository } from "@server/accounts/postgres-account-repository.ts"
 import {
@@ -114,6 +114,14 @@ async function household(sql: postgres.Sql, name = `Family`) {
   }
 }
 
+/** How many of `quote` one euro buys, from before the months these tests read. */
+async function euroRate(sql: postgres.Sql, quote: string, rate: string) {
+  await sql`
+    INSERT INTO exchange_rates (id, base, quote, rate, rate_date, source)
+    VALUES (${uuidV7()}, ${ECB_BASE}, ${quote}, ${rate}, '2026-01-01', ${RATE_SOURCES.ecb})
+  `
+}
+
 /** The household's ZIP as the owner downloads it: each spreadsheet's rows, by file name. */
 async function sheets(sql: postgres.Sql, h: Household, language = `en`) {
   const porter = new PostgresGroupPorter(sql, PORTABLE_AGGREGATES)
@@ -149,6 +157,7 @@ async function budgetRows(sql: postgres.Sql, groupId: string, now = NOW) {
         csvField(row.limit),
         row.currency,
         csvField(row.spent),
+        row.leftOut,
       ])
     }
   }
@@ -223,7 +232,14 @@ Deno.test(`the spreadsheets of a household are in the ZIP under headings in its 
       `В архиве`,
     ])
     expect(categories[0]).toEqual([`Название`, `Тип`, `Родительская категория`, `В архиве`])
-    expect(budgets[0]).toEqual([`Месяц`, `Категория`, `Лимит`, `Валюта лимита`, `Потрачено`])
+    expect(budgets[0]).toEqual([
+      `Месяц`,
+      `Категория`,
+      `Лимит`,
+      `Валюта лимита`,
+      `Потрачено`,
+      `Не учтённые валюты (нет курса)`,
+    ])
   })
 })
 
@@ -330,19 +346,20 @@ Deno.test(`the budgets spreadsheet has a row per category for each month a limit
   await withSchema(async (sql) => {
     const h = await budgetedHousehold(sql)
     expect(await budgetRows(sql, h.groupId)).toEqual([
-      [`2026-01`, `Food`, `500.00`, `USD`, `12.50`],
-      [`2026-01`, `Transport`, `7000`, `JPY`, `0`],
-      [`2026-02`, `Food`, `500.00`, `USD`, `0.00`],
+      // No rates exist here, so each row names the month's entries in other currencies.
+      [`2026-01`, `Food`, `500.00`, `USD`, `12.50`, ``],
+      [`2026-01`, `Transport`, `7000`, `JPY`, `0`, `USD`],
+      [`2026-02`, `Food`, `500.00`, `USD`, `0.00`, `BHD, JPY`],
       // Named with its parent; its limit is removed from March on.
-      [`2026-02`, `Food / Groceries`, `1.500`, `BHD`, `0.750`],
-      [`2026-02`, `Transport`, `7000`, `JPY`, `3000`],
-      [`2026-03`, `Food`, `500.00`, `USD`, `-2.00`],
-      [`2026-03`, `Transport`, `7000`, `JPY`, `0`],
+      [`2026-02`, `Food / Groceries`, `1.500`, `BHD`, `0.750`, `JPY`],
+      [`2026-02`, `Transport`, `7000`, `JPY`, `3000`, `BHD`],
+      [`2026-03`, `Food`, `500.00`, `USD`, `-2.00`, ``],
+      [`2026-03`, `Transport`, `7000`, `JPY`, `0`, `USD`],
     ])
   })
 })
 
-Deno.test(`the budgets spreadsheet shows each month's limit and spending as the Budgets screen does`, async () => {
+Deno.test(`the budgets spreadsheet shows each month's limit, spending and left-out currencies as the Budgets screen does`, async () => {
   await withSchema(async (sql) => {
     const h = await budgetedHousehold(sql)
     const decimal = (amount: number | null, currency: string) =>
@@ -357,12 +374,12 @@ Deno.test(`the budgets spreadsheet shows each month's limit and spending as the 
           decimal(row.limit.amount, row.limit.currency),
           row.limit.currency,
           decimal(row.spending, row.limit.currency),
+          row.leftOut.join(`, `),
         ])
       }
     }
     const rows = await budgetRows(sql, h.groupId)
-    expect(rows.map(([month, _name, limit, currency, spent]) => [month, limit, currency, spent]))
-      .toEqual(screen)
+    expect(rows.map(([month, _name, ...figures]) => [month, ...figures])).toEqual(screen)
   })
 })
 
@@ -375,9 +392,41 @@ Deno.test(`the budgets spreadsheet gives a parent a row when its limit comes fro
     await h.limit(rent, `2026-03`, 30000, `USD`)
     await h.entry(main, rent, -1000, `USD`, `2026-03-02`)
     expect(await budgetRows(sql, h.groupId)).toEqual([
-      [`2026-03`, `Home`, `300.00`, `USD`, `10.00`],
-      [`2026-03`, `Home / Rent`, `300.00`, `USD`, `10.00`],
+      [`2026-03`, `Home`, `300.00`, `USD`, `10.00`, ``],
+      [`2026-03`, `Home / Rent`, `300.00`, `USD`, `10.00`, ``],
     ])
+  })
+})
+
+Deno.test(`the budgets spreadsheet converts a parent's limit from subcategories in mixed currencies to the base currency`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await euroRate(sql, `USD`, `1.10`)
+    const home = await h.category(`Home`)
+    const rent = await h.category(`Rent`, home)
+    const power = await h.category(`Power`, home)
+    await h.limit(rent, `2026-03`, 100000, `EUR`)
+    await h.limit(power, `2026-03`, 110000, `USD`)
+    expect((await budgetRows(sql, h.groupId))[0]).toEqual(
+      [`2026-03`, `Home`, `2000.00`, `EUR`, `0.00`, ``],
+    )
+  })
+})
+
+Deno.test(`the budgets spreadsheet names a subcategory's limit currency with no rate on its parent's row`, async () => {
+  await withSchema(async (sql) => {
+    const h = await household(sql)
+    await euroRate(sql, `USD`, `1.10`)
+    const home = await h.category(`Home`)
+    const rent = await h.category(`Rent`, home)
+    const power = await h.category(`Power`, home)
+    const water = await h.category(`Water`, home)
+    await h.limit(rent, `2026-03`, 100000, `EUR`)
+    await h.limit(power, `2026-03`, 110000, `USD`)
+    await h.limit(water, `2026-03`, 90000000, `VND`)
+    expect((await budgetRows(sql, h.groupId))[0]).toEqual(
+      [`2026-03`, `Home`, `2000.00`, `EUR`, `0.00`, `VND`],
+    )
   })
 })
 
@@ -392,20 +441,26 @@ Deno.test(`the budgets spreadsheet has no row for an archived category, past mon
       { groupId: h.groupId, id: old, archived: true, expectedVersion: 1, allowance: null },
       h.owner,
     )
-    expect(await budgetRows(sql, h.groupId)).toEqual([[`2026-03`, `Food`, `500.00`, `USD`, `0.00`]])
+    expect(await budgetRows(sql, h.groupId)).toEqual([
+      [`2026-03`, `Food`, `500.00`, `USD`, `0.00`, ``],
+    ])
   })
 })
 
-Deno.test(`the budgets spreadsheet leaves spending in a currency with no rate out of spent`, async () => {
+Deno.test(`the budgets spreadsheet leaves spending in a currency with no rate out of spent and names that currency`, async () => {
   await withSchema(async (sql) => {
     const h = await household(sql)
     const usd = await h.account(`Main`, `USD`)
     const eur = await h.account(`Euro`, `EUR`)
+    const vnd = await h.account(`Dong`, `VND`)
     const food = await h.category(`Food`)
     await h.limit(food, `2026-03`, 50000, `USD`)
     await h.entry(usd, food, -500, `USD`, `2026-03-02`)
-    await h.entry(eur, food, -900, `EUR`, `2026-03-03`)
-    expect(await budgetRows(sql, h.groupId)).toEqual([[`2026-03`, `Food`, `500.00`, `USD`, `5.00`]])
+    await h.entry(vnd, food, -2500000, `VND`, `2026-03-03`)
+    await h.entry(eur, food, -900, `EUR`, `2026-03-04`)
+    expect(await budgetRows(sql, h.groupId)).toEqual([
+      [`2026-03`, `Food`, `500.00`, `USD`, `5.00`, `EUR, VND`],
+    ])
   })
 })
 

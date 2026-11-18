@@ -51,9 +51,11 @@ aggregate, also in UTF-8 with a byte order mark, its headings in the person's la
   accounts screen shows;
 - `categories.csv`: each category, a subcategory naming its parent;
 - `budgets.csv`: a row per category for each month a limit applies, with the limit and that month's
-  spending as the Budgets screen shows them, in the limit's currency. It runs from the earliest
-  limit through the household's current month, at most the last 240 months. Envelope figures are
-  not in it.
+  spending as the Budgets screen shows them, in the limit's currency. A last column names the
+  currencies left out of the row's figures for lack of an exchange rate. A parent whose limit comes
+  from its subcategories has a row too, so adding up the limit column counts those subcategories
+  twice. It runs from the earliest limit through the household's current month, at most the last
+  240 months. Envelope figures are not in it.
 
 Every amount is an exact decimal in its currency's own decimals. A balance too large for a safe
 integer is left empty rather than rounded.

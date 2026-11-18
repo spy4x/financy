@@ -2873,6 +2873,7 @@ export default {
   "BudgetSpreadsheet.limit": "الحد",
   "BudgetSpreadsheet.currency": "عملة الحد",
   "BudgetSpreadsheet.spent": "المُنفَق",
+  "BudgetSpreadsheet.leftOut": "العملات غير المشمولة (لا يوجد سعر صرف)",
   "GroupSpreadsheets.yes": "نعم",
   "GroupSpreadsheets.no": "لا",
   "NoteSpreadsheet.id": "المعرّف",

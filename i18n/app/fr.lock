@@ -341,6 +341,7 @@ BudgetRemove.message	19b41c87608d1a0a
 BudgetRemove.title	5a3c68775c14150d
 BudgetSpreadsheet.category	292c06f0045a45d0
 BudgetSpreadsheet.currency	1797e779ef7e9107
+BudgetSpreadsheet.leftOut	4d73464bb5d63546
 BudgetSpreadsheet.limit	674b0ed54bf76673
 BudgetSpreadsheet.month	310ca503ef36f177
 BudgetSpreadsheet.spent	679652fd13c58c93

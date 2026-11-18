@@ -2763,6 +2763,7 @@ export default {
   "BudgetSpreadsheet.limit": "Лимит",
   "BudgetSpreadsheet.currency": "Валюта лимита",
   "BudgetSpreadsheet.spent": "Потрачено",
+  "BudgetSpreadsheet.leftOut": "Не учтённые валюты (нет курса)",
   "GroupSpreadsheets.yes": "Да",
   "GroupSpreadsheets.no": "Нет",
   "NoteSpreadsheet.id": "ID",
