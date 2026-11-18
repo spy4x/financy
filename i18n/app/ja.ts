@@ -1870,6 +1870,26 @@ export default {
   "TelegramBot.planFull": "この世帯のプランには、これ以上取引を追加する余裕がありません。",
   "TelegramBot.entryStale":
     "この取引はすでに終了したか期限切れです。/expense か /income を送って新しく始めてください。",
+  "TelegramBot.transferNeedsTwo":
+    "振替には開いている口座が2つ必要です。先にアプリで口座を追加してください。",
+  "TelegramBot.transferPickFrom": "どの口座から振り替えますか？",
+  "TelegramBot.transferPickTo": "どの口座へ振り替えますか？",
+  "TelegramBot.transferAskSent": "{account}からいくら送りますか？（{currency}）",
+  "TelegramBot.transferAskReceived": "{account}でいくら受け取りますか？（{currency}）",
+  "TelegramBot.transferUseRate": "その日の為替レートを使う",
+  "TelegramBot.transferSummary": "今日の振替：{from}から{sent}、{to}へ{received}。",
+  "TelegramBot.transferSummaryRate":
+    "今日の振替：{from}から{to}へ{sent}。その日の為替レートで換算します。",
+  "TelegramBot.transferSaved":
+    "保存しました。{from}から{sent}を送り、{to}で{received}を受け取りました。",
+  "TelegramBot.transferConverted": "その日の為替レートで換算しました。",
+  "TelegramBot.transferNoRate": "この振替に使える為替レートがありません。",
+  "TelegramBot.transferViewer":
+    "この世帯は閲覧のみのため、口座間でお金を移すことはできません。オーナーに編集者にしてもらってください。",
+  "TelegramBot.transferUnavailable":
+    "その口座はこの振替には使えません。/transfer を送ってやり直してください。",
+  "TelegramBot.transferStale":
+    "この振替はすでに終了したか期限切れです。/transfer を送って新しく始めてください。",
   "TelegramBot.figure": "{label}：{value}",
   "TelegramBot.noTotal": "合計はまだ出せません。どの口座も換算できませんでした。",
   "TelegramBot.moreAccounts": {

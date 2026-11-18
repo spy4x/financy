@@ -2280,6 +2280,22 @@ export default {
   "TelegramBot.planFull": "لا تتسع خطة هذه الأسرة لمزيد من المعاملات.",
   "TelegramBot.entryStale":
     "انتهت هذه المعاملة أو انتهت صلاحيتها. أرسل /expense أو /income لبدء معاملة جديدة.",
+  "TelegramBot.transferNeedsTwo": "التحويل يحتاج إلى حسابين مفتوحين. أضف حسابًا آخر في التطبيق أولًا.",
+  "TelegramBot.transferPickFrom": "من أي حساب تريد تحويل المال؟",
+  "TelegramBot.transferPickTo": "إلى أي حساب تريد تحويله؟",
+  "TelegramBot.transferAskSent": "كم المبلغ الذي يُخصم من {account}؟ بعملة {currency}.",
+  "TelegramBot.transferAskReceived": "كم المبلغ الذي يصل إلى {account}؟ بعملة {currency}.",
+  "TelegramBot.transferUseRate": "استخدام سعر صرف اليوم",
+  "TelegramBot.transferSummary": "تحويل اليوم: يُخصم {sent} من {from} ويصل {received} إلى {to}.",
+  "TelegramBot.transferSummaryRate": "تحويل اليوم: {sent} من {from} إلى {to}، يُحسب بسعر صرف اليوم.",
+  "TelegramBot.transferSaved": "تم الحفظ: خُصم {sent} من {from} ووصل {received} إلى {to}.",
+  "TelegramBot.transferConverted": "حُسب المبلغ بسعر صرف اليوم.",
+  "TelegramBot.transferNoRate": "لا يتوفر سعر صرف صالح لهذا التحويل.",
+  "TelegramBot.transferViewer":
+    "يمكنك عرض هذه الأسرة فقط، لذا لا يمكنك تحويل المال بين حساباتها. اطلب من مالكها أن يجعلك محررًا.",
+  "TelegramBot.transferUnavailable":
+    "لا يمكن استخدام هذا الحساب في هذا التحويل. أرسل /transfer للبدء من جديد.",
+  "TelegramBot.transferStale": "انتهى هذا التحويل أو انتهت صلاحيته. أرسل /transfer لبدء تحويل جديد.",
   "TelegramBot.figure": "{label}: {value}",
   "TelegramBot.noTotal": "لا يوجد إجمالي بعد: تعذّر تحويل أرصدة هذه الحسابات إلى العملة الرئيسية.",
   "TelegramBot.moreAccounts": {

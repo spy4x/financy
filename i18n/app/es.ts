@@ -2116,6 +2116,27 @@ export default {
   "TelegramBot.planFull": "El plan de este hogar no tiene sitio para más movimientos.",
   "TelegramBot.entryStale":
     "Este movimiento ya terminó o caducó. Envía /expense o /income para empezar otro.",
+  "TelegramBot.transferNeedsTwo":
+    "Una transferencia necesita dos cuentas abiertas. Añade otra cuenta primero en la app.",
+  "TelegramBot.transferPickFrom": "¿De qué cuenta sale el dinero?",
+  "TelegramBot.transferPickTo": "¿A qué cuenta va el dinero?",
+  "TelegramBot.transferAskSent": "¿Cuánto sale de {account}? En {currency}.",
+  "TelegramBot.transferAskReceived": "¿Cuánto llega a {account}? En {currency}.",
+  "TelegramBot.transferUseRate": "Usar tipo de cambio del día",
+  "TelegramBot.transferSummary": "Transferencia de hoy: {sent} de {from}, {received} a {to}.",
+  "TelegramBot.transferSummaryRate":
+    "Transferencia de hoy: {sent} de {from} a {to}, al tipo de cambio del día.",
+  "TelegramBot.transferSaved":
+    "Guardado: {sent} enviados desde {from} y {received} recibidos en {to}.",
+  "TelegramBot.transferConverted": "Convertido al tipo de cambio del día.",
+  "TelegramBot.transferNoRate":
+    "No hay ningún tipo de cambio que se pueda usar para esta transferencia.",
+  "TelegramBot.transferViewer":
+    "Solo puedes ver este hogar, así que no puedes mover dinero entre sus cuentas. Pide a su propietario que te haga editor.",
+  "TelegramBot.transferUnavailable":
+    "Esa cuenta no se puede usar para esta transferencia. Envía /transfer para empezar de nuevo.",
+  "TelegramBot.transferStale":
+    "Esta transferencia ya terminó o caducó. Envía /transfer para empezar otra.",
   "TelegramBot.figure": "{label}: {value}",
   "TelegramBot.noTotal": "Todavía no hay total: no se pudo convertir ninguna de estas cuentas.",
   "TelegramBot.moreAccounts": {
