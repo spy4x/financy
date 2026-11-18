@@ -614,6 +614,7 @@ function footerGroups(
       title: t.t(`SiteFooter.product`),
       links: [
         { label: t.t(`SiteNav.features`), href: href(`/features`) },
+        { label: t.t(`SiteFooter.alternatives`), href: href(`/alternatives`) },
         ...(blog ? [{ label: t.t(`SiteNav.blog`), href: href(BLOG_PATH) }] : []),
       ],
     },

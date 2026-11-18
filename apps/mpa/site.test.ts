@@ -7,6 +7,8 @@ import AppWrapper from "./routes/_app.tsx"
 import Layout from "./routes/_layout.tsx"
 import Features from "./routes/[[lang]]/features.tsx"
 import { handler as featurePage } from "./routes/[[lang]]/features/[slug].tsx"
+import { handler as alternativesHub } from "./routes/[[lang]]/alternatives/index.tsx"
+import { handler as alternativePage } from "./routes/[[lang]]/alternatives/[slug].tsx"
 import Home, { HOME_HEAD, STATUS_UPDATED } from "./routes/index.tsx"
 import Pricing, { PRICING_UPDATED } from "./routes/[[lang]]/pricing.tsx"
 import Privacy, { PRIVACY_HEAD } from "./routes/[[lang]]/privacy.tsx"
@@ -29,6 +31,7 @@ import { SiteLanguage } from "./use-site.tsx"
 import { SITE_PAGES, type SitePage } from "./pages.ts"
 import { DOC_SLUGS } from "./docs-site.ts"
 import { FEATURE_PAGES } from "./features-data.tsx"
+import { ALTERNATIVES, ALTERNATIVES_UPDATED } from "./alternatives-data.ts"
 import { localePath, pathLanguage, SITE_LANGUAGES, siteTranslator } from "./languages.ts"
 import type { MpaConfig } from "./config.ts"
 import type { State } from "./utils.ts"
@@ -70,6 +73,8 @@ function siteWith(newsletter: () => boolean, siteConfig: MpaConfig = config) {
     .route("/", { component: view(Home) })
     .route("{/:lang}?/features", { component: view(Features) })
     .get("{/:lang}?/features/:slug", featurePage.GET!)
+    .get("{/:lang}?/alternatives", alternativesHub.GET!)
+    .get("{/:lang}?/alternatives/:slug", alternativePage.GET!)
     .route("/pricing", { component: view(Pricing) })
     .route("/privacy", { component: view(Privacy) })
     .route("{/:lang}?/docs/api", { component: view(ApiDocs), handler: apiDocs })
@@ -949,6 +954,10 @@ describe("the public website", () => {
         ...FEATURE_PAGES.flatMap(({ slug }) =>
           SITE_LANGUAGES.map((language) => localePath(language, `/features/${slug}`))
         ),
+        ...SITE_LANGUAGES.map((language) => localePath(language, `/alternatives`)),
+        ...ALTERNATIVES.flatMap(({ slug }) =>
+          SITE_LANGUAGES.map((language) => localePath(language, `/alternatives/${slug}`))
+        ),
         "/docs/api",
         "/docs",
         ...DOC_SLUGS.map((slug) => `/docs/${slug}`),
@@ -988,6 +997,13 @@ describe("the public website", () => {
       "/features": "2026-11-18T00:00:00.000Z",
       ...Object.fromEntries(
         FEATURE_PAGES.map(({ slug, updated }) => [`/features/${slug}`, `${updated}T00:00:00.000Z`]),
+      ),
+      "/alternatives": `${ALTERNATIVES_UPDATED}T00:00:00.000Z`,
+      ...Object.fromEntries(
+        ALTERNATIVES.map(({ slug, checked }) => [
+          `/alternatives/${slug}`,
+          `${checked}T00:00:00.000Z`,
+        ]),
       ),
       "/docs/api": "2026-10-23T00:00:00.000Z",
       // With no history to read, as under `deno test`, the guides and the changelog carry the day
