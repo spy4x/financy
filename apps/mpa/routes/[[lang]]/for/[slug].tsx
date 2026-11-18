@@ -116,7 +116,7 @@ function Block({ block }: { block: AudienceBlock }): JSX.Element {
         {block.columns.map((column) => (
           <div key={column.title} class="flex min-w-0 flex-col gap-2">
             <h3 class="font-semibold text-balance">{column.title}</h3>
-            <ul class="list-disc space-y-1 ps-5">
+            <ul class="list-disc space-y-1 ps-4">
               {column.items.map((item) => <li key={item}>{item}</li>)}
             </ul>
           </div>
@@ -212,7 +212,7 @@ function AudienceBody({ page, demo }: { page: AudiencePage; demo: string }): JSX
             <Block block={page.block} />
           </Section>
           <Section id="limits" label={t.t(`AudiencePage.limits`)}>
-            <ul class="list-disc space-y-1 ps-5" data-e2e="audience-limits">
+            <ul class="list-disc space-y-1 ps-4" data-e2e="audience-limits">
               {page.limits.map((limit) => <li key={limit}>{limit}</li>)}
             </ul>
           </Section>
