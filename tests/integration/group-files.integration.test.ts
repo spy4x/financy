@@ -826,6 +826,8 @@ Deno.test("the owner's spreadsheets hold the live notes under headings in the as
       "budgets.csv",
       "categories.csv",
       "notes.csv",
+      "transactions.csv",
+      "transfers.csv",
     ])
     expect(files["README.txt"]).toContain("\n- tags\n")
     expect(files["notes.csv"].startsWith("\uFEFF")).toBe(true)
@@ -1703,6 +1705,8 @@ Deno.test("with the notes off, a group's export file and spreadsheets hold no no
       "accounts.csv",
       "budgets.csv",
       "categories.csv",
+      "transactions.csv",
+      "transfers.csv",
     ])
   })
 })

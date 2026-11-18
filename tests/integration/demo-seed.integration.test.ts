@@ -531,7 +531,7 @@ Deno.test("the demo seed fills the database with the fake data", async () => {
   })
 })
 
-Deno.test("the demo household's spreadsheets hold its accounts, categories and budgets", async () => {
+Deno.test("the demo household's spreadsheets hold its accounts, categories, budgets, entries and transfers", async () => {
   await withSchema(async (sql) => {
     await seedDemo(new AppDbBase({ sql }), sql, OPTIONS)
     const [{ groupId, userId }] = await sql<{ groupId: string; userId: number }[]>`
@@ -565,6 +565,12 @@ Deno.test("the demo household's spreadsheets hold its accounts, categories and b
     const [budgetHeadings, ...budgets] = rowsOf("budgets.csv")
     expect(budgetHeadings[3]).toBe("Währung des Limits")
     expect(budgets.length).toBeGreaterThan(0)
+    const [entryHeadings, ...entries] = rowsOf("transactions.csv")
+    expect(entryHeadings[8]).toBe("Betrag in Hauptwährung")
+    expect(entries.length).toBeGreaterThan(0)
+    const [transferHeadings, ...transfers] = rowsOf("transfers.csv")
+    expect(transferHeadings[2]).toBe("Gesendeter Betrag")
+    expect(transfers.length).toBeGreaterThan(0)
   })
 })
 
