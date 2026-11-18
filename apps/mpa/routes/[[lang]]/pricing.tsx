@@ -14,7 +14,7 @@ import { FaqList } from "@spy4x/preact-ui/faq-list"
 import { PageHero } from "@spy4x/preact-ui/page-hero"
 import { formatMoney } from "@spy4x/platform/universal/money"
 import { faqPageJsonLd } from "@spy4x/platform/universal/seo"
-import type { Translator } from "@spy4x/platform/universal/i18n"
+import { textDirection, type Translator } from "@spy4x/platform/universal/i18n"
 import { siteEnglishText } from "@ui/site-text.ts"
 import { CONTACT_EMAIL } from "../../brand.ts"
 import { Band } from "../../components/band.tsx"
@@ -52,7 +52,13 @@ export function planPrice(amount: number, currency: string, language: string): s
 
 /** The numbers the page's words name, all from the Household plan, written for `language`. */
 export function householdValues(language: string) {
-  const money = (amount: number) => planPrice(amount, HOUSEHOLD.currency, language)
+  // Right-to-left text would move the `$` of `4 US$` to the wrong side of `US`: U+2066 and U+2069
+  // keep the price left to right inside the sentence.
+  const isolated = textDirection(language) === `rtl`
+  const money = (amount: number) => {
+    const price = planPrice(amount, HOUSEHOLD.currency, language)
+    return isolated ? `\u2066${price}\u2069` : price
+  }
   return {
     monthly: money(HOUSEHOLD.amount),
     yearly: money(HOUSEHOLD.yearlyAmount!),

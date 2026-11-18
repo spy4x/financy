@@ -6,7 +6,7 @@ import AppWrapper from "./routes/_app.tsx"
 import Layout from "./routes/_layout.tsx"
 import { handler as audience } from "./routes/[[lang]]/for/[slug].tsx"
 import { handler as feature } from "./routes/[[lang]]/features/[slug].tsx"
-import { planPrice } from "./routes/[[lang]]/pricing.tsx"
+import { householdValues, planPrice } from "./routes/[[lang]]/pricing.tsx"
 import { handler as sitemap } from "./routes/sitemap.xml.ts"
 import { AUDIENCE_PAGES as KEYED, audiencePageIn, ECB_CURRENCIES } from "./audience-data.ts"
 import { FEATURE_PAGES } from "./features-data.tsx"
@@ -186,6 +186,23 @@ describe("the audience pages", () => {
     } finally {
       plan.amount = amount
       plan.yearlyAmount = yearlyAmount
+    }
+  })
+
+  it("isolates the price in Arabic, so the currency sign stays beside its number", async () => {
+    const plan = PLANS.find(({ yearlyAmount }) => yearlyAmount)!
+    const { html: arabic } = await get(`/ar/for/couples`)
+    expect(arabic).toContain(`\u2066${planPrice(plan.amount, `USD`, `ar`)}\u2069`)
+    const { html: english } = await get(`/for/couples`)
+    expect(english).not.toContain(`\u2066`)
+  })
+
+  it("leaves the prices of every left-to-right language exactly as formatted", () => {
+    const plan = PLANS.find(({ yearlyAmount }) => yearlyAmount)!
+    for (const language of SITE_LANGUAGES.filter((language) => language !== `ar`)) {
+      const { monthly, yearly } = householdValues(language)
+      expect(monthly, language).toBe(planPrice(plan.amount, `USD`, language))
+      expect(yearly, language).toBe(planPrice(plan.yearlyAmount!, `USD`, language))
     }
   })
 
