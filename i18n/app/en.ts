@@ -2151,6 +2151,25 @@ export default {
   "TelegramBot.planFull": "This household's plan has no room for more transactions.",
   "TelegramBot.entryStale":
     "This transaction is already finished or has expired. Send /expense or /income to start a new one.",
+  "TelegramBot.transferNeedsTwo":
+    "A transfer needs two open accounts. Add another account in the app first.",
+  "TelegramBot.transferPickFrom": "Move money from which account?",
+  "TelegramBot.transferPickTo": "Move it to which account?",
+  "TelegramBot.transferAskSent": "How much leaves {account}? In {currency}.",
+  "TelegramBot.transferAskReceived": "How much reaches {account}? In {currency}.",
+  "TelegramBot.transferUseRate": "Use the day's rate",
+  "TelegramBot.transferSummary": "Transfer today: {sent} from {from}, {received} to {to}.",
+  "TelegramBot.transferSummaryRate":
+    "Transfer today: {sent} from {from} to {to}, converted at the day's rate.",
+  "TelegramBot.transferSaved": "Saved: {sent} left {from} and {received} reached {to}.",
+  "TelegramBot.transferConverted": "Converted at the day's rate.",
+  "TelegramBot.transferNoRate": "There is no usable rate for this transfer.",
+  "TelegramBot.transferViewer":
+    "You can only view this household, so you can't move money between its accounts. Ask its owner to make you an editor.",
+  "TelegramBot.transferUnavailable":
+    "That account can't be used for this transfer. Send /transfer to start over.",
+  "TelegramBot.transferStale":
+    "This transfer is already finished or has expired. Send /transfer to start a new one.",
   "TelegramBot.figure": "{label}: {value}",
   "TelegramBot.noTotal": "There's no total yet: none of these accounts could be converted.",
   "TelegramBot.moreAccounts": {
