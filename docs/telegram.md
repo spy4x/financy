@@ -138,7 +138,8 @@ open accounts gets one line that says so.
 4. It shows both accounts and amounts with Save and Cancel. With the day's rate, the summary says
    so and states no received figure, because the server works it out.
 5. Save stores the transfer, dated today in the household's time zone. The message loses its
-   buttons and says what was really stored.
+   buttons and says what was really stored. For the next 15 minutes, any button of that talk
+   leaves this confirmation on the message it was pressed on and writes nothing.
 
 When there is no usable rate at Save, or the conversion rounds to zero, the talk stays open and
 the bot asks for the received amount by hand.

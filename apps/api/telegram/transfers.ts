@@ -5,9 +5,10 @@
  * The talk's state is one draft per person in Valkey, under the same key as an entry's, so a person
  * has one talk at a time. Its id is the new transfer's id and idempotency key, so a second Save
  * stores nothing twice. Every button names the draft by the last 8 characters of that id and is
- * valid at one step only. Every id a button carries is read again through the query bus as the
- * person, and the write goes through the command bus with the person's `actor`: the buses decide
- * who may move money, the bot adds no role check.
+ * valid at one step only. After Save the draft stays for a while as a finished one, so a later
+ * press of the talk's buttons leaves the confirmation in the chat. Every id a button carries is
+ * read again through the query bus as the person, and the write goes through the command bus with
+ * the person's `actor`: the buses decide who may move money, the bot adds no role check.
  *
  * @module
  */
@@ -68,6 +69,19 @@ const draftSchema = type({
 })
 type Draft = typeof draftSchema.infer
 type Step = Draft[`step`]
+
+/** The longest text Telegram shows in one message. */
+const CONFIRMATION_MAX = 4096
+
+/** A saved talk: the confirmation its buttons leave on the message until the draft expires. */
+const finishedSchema = type({
+  talk: `'transfer'`,
+  id: UUID_PATTERN,
+  step: `'finished'`,
+  confirmation: `0 < string <= ${CONFIRMATION_MAX}`,
+})
+type Finished = typeof finishedSchema.infer
+const storedSchema = draftSchema.or(finishedSchema)
 
 /** How many of the household, from, to and sent fields each step has filled, in that order. */
 const FILLED: Record<Step, number> = {
@@ -138,7 +152,10 @@ const textOf = (ctx: TelegramContext) =>
 export function createTransferCommands(
   { queryBus, commandBus, store }: EntryDeps,
 ): TelegramProduct {
-  async function load(ctx: TelegramContext, account: TelegramAccount): Promise<Draft | null> {
+  async function load(
+    ctx: TelegramContext,
+    account: TelegramAccount,
+  ): Promise<Draft | Finished | null> {
     const raw = await store.get(talkKey(ctx, account))
     if (raw === null) return null
     let parsed: unknown
@@ -147,11 +164,12 @@ export function createTransferCommands(
     } catch {
       return null
     }
-    const draft = draftSchema(parsed)
-    return draft instanceof type.errors || !coherent(draft) ? null : draft
+    const found = storedSchema(parsed)
+    if (found instanceof type.errors) return null
+    return found.step === `finished` || coherent(found) ? found : null
   }
 
-  const keep = (ctx: TelegramContext, account: TelegramAccount, draft: Draft) =>
+  const keep = (ctx: TelegramContext, account: TelegramAccount, draft: Draft | Finished) =>
     store.set(talkKey(ctx, account), JSON.stringify(draft), ENTRY_DRAFT_SECONDS)
 
   const drop = (ctx: TelegramContext, account: TelegramAccount) => store.del(talkKey(ctx, account))
@@ -360,7 +378,8 @@ export function createTransferCommands(
 
   /**
    * Stores the transfer: no date, so the server takes today in the household's zone, and the
-   * draft's id, so a second Save of the same talk answers with the transfer the first one stored.
+   * draft's id, so two presses that both read the draft before either finished store one transfer.
+   * The finished draft kept here answers every later press, which never reaches the command bus.
    */
   async function save(ctx: TelegramContext, account: TelegramAccount, draft: Draft) {
     const words = textOf(ctx)
@@ -407,14 +426,15 @@ export function createTransferCommands(
       )
       stored = found.transfer
     }
-    await drop(ctx, account)
     const text = words.stored({
       sent: money(draft, stored.sentAmount, from.currency),
       from: isolate(from.name),
       received: money(draft, stored.receivedAmount, to.currency),
       to: isolate(to.name),
     })
-    await editPressed(ctx, stored.converted ? `${text}\n${words.converted}` : text)
+    const confirmation = stored.converted ? `${text}\n${words.converted}` : text
+    await keep(ctx, account, { talk: `transfer`, id: draft.id, step: `finished`, confirmation })
+    await editPressed(ctx, confirmation)
   }
 
   /** A press of any transfer button. */
@@ -422,7 +442,11 @@ export function createTransferCommands(
     told(async () => {
       const words = textOf(ctx)
       const match = BUTTON.exec(ctx.args)
-      const draft = await load(ctx, account)
+      const found = await load(ctx, account)
+      if (found?.step === `finished` && found.id.slice(-8) === match?.[2]) {
+        return await editPressed(ctx, found.confirmation)
+      }
+      const draft = found?.step === `finished` ? null : found
       const action = match?.[1] as Action | undefined
       const id = match?.[3]
       if (

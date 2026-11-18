@@ -58,8 +58,14 @@ import {
 } from "../features/transfers/handlers.ts"
 import { createSeedBot, type TelegramLinkService } from "./bot.ts"
 import { createTelegramProduct } from "./commands.ts"
-import { ENTRY_CALLBACK, entryText, PICK_MAX, refusalOf } from "./entries.ts"
-import { callbackUpdate, fakeTelegram, TELEGRAM_USER_ID, textUpdate } from "./fake-telegram.ts"
+import { ENTRY_CALLBACK, ENTRY_DRAFT_SECONDS, entryText, PICK_MAX, refusalOf } from "./entries.ts"
+import {
+  callbackUpdate,
+  fakeTelegram,
+  type FakeTelegramAnswer,
+  TELEGRAM_USER_ID,
+  textUpdate,
+} from "./fake-telegram.ts"
 import { TRANSFER_CALLBACK, transferText } from "./transfers.ts"
 
 /**
@@ -122,11 +128,30 @@ function fixtures() {
 /** A string store with the get, set and delete Valkey gives the bot. */
 function memoryStore() {
   const values = new Map<string, string>()
+  const lifetimes = new Map<string, number | undefined>()
   return {
     values,
+    lifetimes,
     get: (key: string) => Promise.resolve(values.get(key) ?? null),
-    set: (key: string, value: string) => (values.set(key, value), Promise.resolve()),
+    set: (key: string, value: string, seconds?: number) => (
+      values.set(key, value), lifetimes.set(key, seconds), Promise.resolve()
+    ),
     del: (key: string) => (values.delete(key), Promise.resolve()),
+  }
+}
+
+/** Answers as Telegram does when an edit would leave a message exactly as it is. */
+function refusingUnchangedEdits(): FakeTelegramAnswer {
+  let last: unknown
+  return ({ method, params }) => {
+    const unchanged = method === `editMessageText` && params.text === last
+    if (method === `editMessageText`) last = params.text
+    return unchanged
+      ? {
+        status: 400,
+        body: { ok: false, error_code: 400, description: `Bad Request: message is not modified` },
+      }
+      : { status: 200, body: { ok: true, result: true } }
   }
 }
 
@@ -147,6 +172,8 @@ interface Options {
   idempotent?: boolean
   /** More open USD accounts in the home household. */
   extraAccounts?: number
+  /** How Telegram answers the bot's calls; every call succeeds when left out. */
+  answer?: FakeTelegramAnswer
 }
 
 /** The bot over the buses, two linked people and a fake Telegram. */
@@ -338,7 +365,7 @@ function transferBot(options: Options = {}) {
     link: () => Promise.resolve(`stale`),
     unlink: () => Promise.resolve(false),
   }
-  const telegram = fakeTelegram()
+  const telegram = fakeTelegram(options.answer)
   const store = memoryStore()
   const bot = createSeedBot({
     client: telegram.client,
@@ -423,6 +450,20 @@ async function atRateSummary(bot: TransferBot) {
   await bot.send(`10.00`)
   await bot.press(bot.data(EN.useRate))
 }
+
+/** A Cash to Savings talk up to its summary, with 12.50 sent. */
+async function atSummary(bot: TransferBot) {
+  await picked(bot, bot.f.cash, bot.f.savings)
+  await bot.send(`12.50`)
+}
+
+/** What the bot says once the talk of {@link atSummary} is saved. */
+const SAVED = EN.stored({
+  sent: iso(`$12.50`),
+  from: iso(`Cash`),
+  received: iso(`$12.50`),
+  to: iso(`Savings`),
+})
 
 describe(`/transfer in the Telegram bot`, () => {
   describe(`the command`, () => {
@@ -549,7 +590,7 @@ describe(`/transfer in the Telegram bot`, () => {
           to: iso(`Savings`),
         }),
       )
-      expect(bot.draft()).toBeNull()
+      expect(bot.draft().step).toBe(`finished`)
     })
 
     it(`dispatches the draft's id as the id and the idempotency key, with no date and no memo`, async () => {
@@ -1079,24 +1120,139 @@ describe(`/transfer in the Telegram bot`, () => {
   })
 
   describe(`a second Save`, () => {
-    it(`stores one transfer and reports the first one's amounts on a retry`, async () => {
+    it(`stores one transfer and keeps the first one's amounts when the rate changes before a second Save`, async () => {
       const bot = transferBot({ rate: `150` })
       await atRateSummary(bot)
       const save = bot.data(EN.save)
-      const draft = bot.store.values.get(bot.draftKey)!
       await bot.press(save)
       const reported = bot.shown().at(-1)
 
       bot.day.rate = `200`
-      bot.store.values.set(bot.draftKey, draft)
       await bot.press(save)
 
+      expect(bot.commands).toHaveLength(1)
       expect(bot.stored()).toHaveLength(1)
       expect(bot.transfers.writes).toBe(1)
       expect(bot.stored()[0].receivedAmount).toBe(1500)
       expect(bot.shown().at(-1)).toBe(reported)
     })
 
+    it(`leaves the Saved text on the message when the same Save is pressed twice`, async () => {
+      const bot = transferBot({ answer: refusingUnchangedEdits() })
+      await atSummary(bot)
+      const save = bot.data(EN.save)
+      await bot.press(save)
+
+      await bot.press(save)
+
+      const last = bot.calls.filter((call) => call.method === `editMessageText`).at(-1)!
+      expect(last.params.text).toBe(SAVED)
+      expect(last.params.reply_markup).toBeUndefined()
+      expect(bot.stored()).toHaveLength(1)
+      expect(bot.transfers.writes).toBe(1)
+    })
+
+    it(`leaves the Saved text and writes nothing when Cancel is pressed after Save`, async () => {
+      const bot = transferBot()
+      await atSummary(bot)
+      const cancel = bot.data(EN.cancel)
+      await bot.press(bot.data(EN.save))
+      const finished = bot.draft()
+
+      await bot.press(cancel)
+
+      const last = bot.calls.filter((call) => call.method === `editMessageText`).at(-1)!
+      expect(last.params.text).toBe(SAVED)
+      expect(last.params.reply_markup).toBeUndefined()
+      expect(bot.shown()).not.toContain(EN.cancelled)
+      expect(bot.commands).toHaveLength(1)
+      expect(bot.transfers.writes).toBe(1)
+      expect(bot.draft()).toEqual(finished)
+    })
+
+    it(`leaves the Saved text when a button of an earlier step is pressed after Save`, async () => {
+      const bot = transferBot()
+      await bot.send(`/transfer`)
+      const from = bot.data(label(bot.f.cash))
+      await bot.press(from)
+      await bot.press(bot.data(label(bot.f.savings)))
+      await bot.send(`12.50`)
+      await bot.press(bot.data(EN.save))
+
+      await bot.press(from)
+
+      expect(bot.shown().at(-1)).toBe(SAVED)
+      expect(bot.draft().step).toBe(`finished`)
+    })
+
+    it(`does not read a message typed after Save as an amount`, async () => {
+      const bot = transferBot()
+      await atSummary(bot)
+      await bot.press(bot.data(EN.save))
+      const before = bot.shown().length
+      const finished = bot.draft()
+
+      await bot.send(`99.00`)
+
+      expect(bot.shown()).toHaveLength(before)
+      expect(bot.commands).toHaveLength(1)
+      expect(bot.draft()).toEqual(finished)
+    })
+
+    it(`keeps the finished talk for as long as a draft waits`, async () => {
+      const bot = transferBot()
+      await atSummary(bot)
+
+      await bot.press(bot.data(EN.save))
+
+      expect(bot.store.lifetimes.get(bot.draftKey)).toBe(ENTRY_DRAFT_SECONDS)
+    })
+
+    for (const command of [`/transfer`, `/expense 12.50`]) {
+      it(`makes the saved talk's buttons stale when ${command} starts after Save`, async () => {
+        const bot = transferBot()
+        await atSummary(bot)
+        const save = bot.data(EN.save)
+        await bot.press(save)
+
+        await bot.send(command)
+        const draft = bot.draft()
+        await bot.press(save)
+
+        expect(bot.shown().at(-1)).toBe(EN.stale)
+        expect(bot.draft()).toEqual(draft)
+        expect(bot.stored()).toHaveLength(1)
+      })
+    }
+
+    it(`answers a button of an older talk as stale after a newer talk is saved`, async () => {
+      const bot = transferBot()
+      await bot.send(`/transfer`)
+      const older = bot.data(EN.cancel)
+      await atSummary(bot)
+      await bot.press(bot.data(EN.save))
+      const finished = bot.draft()
+
+      await bot.press(older)
+
+      expect(bot.shown().at(-1)).toBe(EN.stale)
+      expect(bot.draft()).toEqual(finished)
+    })
+
+    it(`answers a finished talk whose confirmation is longer than a message as stale`, async () => {
+      const bot = transferBot()
+      await atSummary(bot)
+      const save = bot.data(EN.save)
+      await bot.press(save)
+      bot.patchDraft({ confirmation: `x`.repeat(4097) })
+
+      await bot.press(save)
+
+      expect(bot.shown().at(-1)).toBe(EN.stale)
+      expect(bot.stored()).toHaveLength(1)
+    })
+
+    // Two presses that both read the summary's draft before either of them finished.
     it(`replays the first result through the idempotency middleware`, async () => {
       const bot = transferBot({ rate: `150`, idempotent: true })
       await atRateSummary(bot)
@@ -1132,15 +1288,16 @@ describe(`/transfer in the Telegram bot`, () => {
           to: iso(`Savings`),
         }),
       )
-      expect(bot.draft()).toBeNull()
+      expect(bot.draft().step).toBe(`finished`)
     })
 
-    it(`answers a Save pressed after the talk ended as stale and stores nothing more`, async () => {
+    it(`answers a Save pressed after the finished talk expired as stale and stores nothing more`, async () => {
       const bot = transferBot()
       await picked(bot, bot.f.cash, bot.f.savings)
       await bot.send(`12.50`)
       const save = bot.data(EN.save)
       await bot.press(save)
+      bot.store.values.delete(bot.draftKey)
 
       await bot.press(save)
 
@@ -1377,6 +1534,34 @@ describe(`/transfer in the Telegram bot`, () => {
 
       expect(bot.shown().at(-1)).toBe(entryText(`en`).stale)
       expect([...bot.transactions.transactions.values()]).toEqual([])
+    })
+
+    it(`reads a finished transfer under an entry button's tag as no draft`, async () => {
+      const bot = transferBot()
+      await bot.send(`/expense 12.50`)
+      const entrySave = bot.data(EN.save)
+      const { id } = bot.draft()
+      await atSummary(bot)
+      await bot.press(bot.data(EN.save))
+      bot.patchDraft({ id })
+
+      await bot.press(entrySave)
+
+      expect(bot.shown().at(-1)).toBe(entryText(`en`).stale)
+      expect([...bot.transactions.transactions.values()]).toEqual([])
+    })
+
+    it(`reads an entry's draft marked finished under a transfer button's tag as no draft`, async () => {
+      const bot = transferBot()
+      await bot.send(`/transfer`)
+      const cancel = bot.data(EN.cancel)
+      const { id } = bot.draft()
+      await bot.send(`/expense 12.50`)
+      bot.patchDraft({ id, step: `finished`, confirmation: `Not a transfer` })
+
+      await bot.press(cancel)
+
+      expect(bot.shown().at(-1)).toBe(EN.stale)
     })
 
     it(`reads a stored draft marked for another talk as no draft`, async () => {
