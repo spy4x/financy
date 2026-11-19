@@ -530,7 +530,7 @@ export default {
     "Financy と他の家計簿アプリを並べて比較します。どの比較も、相手のツールのほうが合う場合を先に書き、出典と日付つきの事実だけを載せています。",
   "Alternatives.h1": "Financy と、よく知られたツールの比較",
   "Alternatives.lead":
-    "どのページも、相手のツールのほうが合う場合をまず書き、そのツールについての事実はすべて公式ドキュメントにリンクしています。",
+    "どのページも、相手のツールのほうが合う場合をまず書き、そのツールについての事実はすべて、そのツール自身のページにリンクしています。",
   "Alternative.checked": "<time>{date}</time> に確認",
   "Alternative.glance": "ひと目で比較",
   "Alternative.caption": "Financy と {name} の比較",
@@ -540,6 +540,96 @@ export default {
   "Alternative.demo": "デモを試す",
   "Alternative.selfHost": "セルフホストのガイドを読む",
   "Alternative.all": "すべての比較",
+  "AlternativeYnab.title": "複数通貨対応の YNAB 代替アプリ",
+  "AlternativeYnab.description":
+    "YNAB は 1 つの予算計画につき通貨が 1 つです。Financy なら、世帯で使うすべての通貨の合計を、自分で運用するサーバーで確認できます。",
+  "AlternativeYnab.h1": "複数通貨に対応した YNAB 代替アプリ",
+  "AlternativeYnab.answer":
+    "1 つの通貨で予算を立てていて、お使いの銀行が直接取り込みに対応しているなら、YNAB のままがおすすめです。世帯のお金が複数の通貨にまたがっていて、合計を 1 つにまとめて見たいなら、Financy を選んでください。",
+  "AlternativeYnab.rowCurrencies": "1 つの予算で複数の通貨を管理",
+  "AlternativeYnab.rowCurrenciesNote": "YNAB：1 つの予算計画につき通貨は 1 つです。",
+  "AlternativeYnab.rowTotal": "1 つのメイン通貨に換算した合計",
+  "AlternativeYnab.rowTotalNote": "YNAB は通貨ごとに別々の予算を作ることをすすめています。",
+  "AlternativeYnab.rowSharing": "パスワードを共有せずに、世帯でお金の情報を共有",
+  "AlternativeYnab.rowBankImport": "銀行から取引を直接取り込む",
+  "AlternativeYnab.rowBankImportNote":
+    "YNAB：米国、カナダ、英国、EU の一部の銀行に対応しています。",
+  "AlternativeYnab.rowPrice": "年間 $50 未満で使える",
+  "AlternativeYnab.rowPriceNote":
+    "Financy：セルフホストなら無料です。クラウド版は年 $40 の予定で、まだ公開していません。YNAB：年 $109（該当する場合は別途税金がかかります）。",
+  "AlternativeYnab.sourceFaq": "YNAB の料金に関する FAQ",
+  "AlternativeYnab.sourceCurrencies": "YNAB ヘルプ：複数の通貨",
+  "AlternativeYnab.sourceTogether": "YNAB Together",
+  "AlternativeYnab.sourcePricing": "YNAB の料金",
+  "AlternativeYnab.method":
+    "YNAB についての事実は、すべて YNAB 自身のウェブサイトから取り、各行にリンクしています。Financy の行には、今日アプリで動くものだけを載せています。各行は 3 か月ごとに確認し直し、日付はそのときだけ変えます。古くなった情報を見つけたら、<mail>{email}</mail> までお知らせください。",
+  "AlternativeYnab.fit":
+    "Financy には銀行との自動同期も袋分け予算の機能もなく、銀行の明細の取り込みにもまだ対応していません。",
+  "AlternativeYnab.better":
+    "1 つの通貨で予算を立てるなら、<ynab>YNAB</ynab> のままがおすすめです。自分でホストできる無料の袋分け予算アプリなら、<actual>Actual Budget</actual> を検討してください。Financy に近い形のオープンソースアプリなら、いちばん近いのは <sure>Sure</sure> です。こちらも AGPL-3.0 で、Docker でセルフホストします。",
+  "AlternativeYnab.moving":
+    "Financy はまだ YNAB からエクスポートしたデータをアプリで取り込めないため、現時点では履歴を移せません。履歴が大切な場合は、当面 YNAB を使い続けてください。",
+  "AlternativeYnab.currenciesQuestion": "YNAB は複数通貨に対応していますか？",
+  "AlternativeYnab.currenciesAnswer":
+    "1 つの予算計画の中では対応していません。YNAB の料金ページには、1 つの支出計画で複数の通貨を一緒に使うことはできないと書かれており、ヘルプでは通貨ごとに別々の予算を作ることをすすめています。Financy なら、口座ごとにそれぞれの通貨で管理し、合計を 1 つにまとめて表示します。",
+  "AlternativeYnab.householdQuestion": "YNAB Together のように、Financy を世帯で共有できますか？",
+  "AlternativeYnab.householdAnswer":
+    "はい。Financy では、世帯の全員が自分のログインとロールで入り、同じ口座を見られます。YNAB Together も、パスワードを共有せずに使えます。",
+  "AlternativeYnab.dataQuestion": "YNAB のデータを Financy に移せますか？",
+  "AlternativeYnab.dataAnswer":
+    "まだできません。現時点では、YNAB からエクスポートしたデータを Financy のアプリに取り込むことはできません。",
+  "AlternativeYnab.costQuestion": "それぞれの料金は？",
+  "AlternativeYnab.costAnswer":
+    "YNAB は年 $109 で、該当する場合は別途税金がかかります。Financy は AGPL-3.0 のもと、セルフホストなら無料です。クラウド版は 1 世帯あたり年 $40 の予定で、まだ公開していません。",
+  "AlternativeActual.title": "複数通貨対応の Actual Budget 代替アプリ",
+  "AlternativeActual.description":
+    "Actual Budget はまだ複数通貨に対応していません。Financy なら、世帯で使うすべての通貨の合計を、自分で運用するサーバーで確認できます。",
+  "AlternativeActual.h1": "複数通貨に対応した Actual Budget 代替アプリ",
+  "AlternativeActual.answer":
+    "袋分け予算や銀行との自動同期、サーバーなしで動くアプリを求めているなら、Actual Budget のままがおすすめです。世帯のお金が複数の通貨にまたがっていて、合計を 1 つにまとめて見たいなら、Financy を選んでください。",
+  "AlternativeActual.rowCurrencies": "複数の通貨の口座",
+  "AlternativeActual.rowCurrenciesNote":
+    "Actual Budget：実験的なオプションとして追加するドラフトのプルリクエストがあります。",
+  "AlternativeActual.rowTotal": "1 つのメイン通貨に換算した合計",
+  "AlternativeActual.rowTotalNote": "Actual Budget：ルールテンプレートを使った実験的な回避策です。",
+  "AlternativeActual.rowLogins": "一人ひとりが自分のログインで入れる",
+  "AlternativeActual.rowLoginsNote": "Actual Budget：OpenID プロバイダーが必要です。",
+  "AlternativeActual.rowEnvelopes": "袋分け（封筒式）の予算管理",
+  "AlternativeActual.rowBankSync": "銀行との自動同期",
+  "AlternativeActual.rowBankSyncNote": "Actual Budget：地域によって異なるプロバイダーを使います。",
+  "AlternativeActual.rowImport": "銀行の明細ファイルの取り込み",
+  "AlternativeActual.rowImportNote": "Financy：アプリにはまだありません。",
+  "AlternativeActual.rowNoServer": "サーバーなしで使える",
+  "AlternativeActual.rowOpenSource": "無料のオープンソース",
+  "AlternativeActual.rowOpenSourceNote": "Financy：AGPL-3.0。Actual Budget：MIT。",
+  "AlternativeActual.sourceCurrencies": "Actual Budget ドキュメント：複数の通貨",
+  "AlternativeActual.sourceMultiUser": "Actual Budget ドキュメント：マルチユーザー",
+  "AlternativeActual.sourceSite": "Actual Budget のウェブサイト",
+  "AlternativeActual.sourceBankSync": "Actual Budget ドキュメント：銀行との同期",
+  "AlternativeActual.sourceImporting": "Actual Budget ドキュメント：データの取り込み",
+  "AlternativeActual.sourceInstall": "Actual Budget ドキュメント：インストール",
+  "AlternativeActual.sourceReadme": "Actual Budget の README",
+  "AlternativeActual.method":
+    "Actual Budget についての事実は、すべて Actual Budget 自身のウェブサイト、ドキュメント、リポジトリから取り、各行にリンクしています。Financy の行には、今日アプリで動くものだけを載せています。各行は 3 か月ごとに確認し直し、日付はそのときだけ変えます。古くなった情報を見つけたら、<mail>{email}</mail> までお知らせください。",
+  "AlternativeActual.fit":
+    "Financy には袋分け予算の機能も銀行との自動同期もなく、銀行の明細の取り込みにもまだ対応しておらず、動かすにはサーバーが必要です。",
+  "AlternativeActual.better":
+    "1 つの通貨で袋分け予算を使うなら、<actual>Actual Budget</actual> のままがおすすめです。Financy に近い形のオープンソースアプリなら、いちばん近いのは <sure>Sure</sure> です。こちらも AGPL-3.0 で、Docker でセルフホストします。",
+  "AlternativeActual.moving":
+    "Financy はまだ Actual Budget からエクスポートしたデータをアプリで取り込めないため、現時点では履歴を移せません。履歴が大切な場合は、当面 Actual Budget を使い続けてください。",
+  "AlternativeActual.currenciesQuestion": "Actual Budget は複数通貨に対応していますか？",
+  "AlternativeActual.currenciesAnswer":
+    "まだ対応していません。Actual Budget のドキュメントには、複数通貨には対応していないと書かれており、ルールテンプレートを使った実験的な回避策が紹介されています。通貨を実験的なオプションとして追加するドラフトのプルリクエストもあります。Financy なら、口座ごとにそれぞれの通貨で管理し、合計を 1 つにまとめて表示します。",
+  "AlternativeActual.envelopesQuestion":
+    "Financy は Actual Budget のような袋分け予算のアプリですか？",
+  "AlternativeActual.envelopesAnswer":
+    "いいえ。Financy のアプリには、今のところ袋分け予算の機能はありません。袋分け予算を使いたいなら、Actual Budget のままがおすすめです。",
+  "AlternativeActual.dataQuestion": "Actual Budget のデータを Financy に移せますか？",
+  "AlternativeActual.dataAnswer":
+    "まだできません。現時点では、Actual Budget からエクスポートしたデータを Financy のアプリに取り込むことはできません。",
+  "AlternativeActual.costQuestion": "それぞれの料金は？",
+  "AlternativeActual.costAnswer":
+    "どちらもセルフホストなら無料です。Actual Budget は MIT ライセンス、Financy は AGPL-3.0 です。Financy のクラウド版は 1 世帯あたり年 $40 の予定で、まだ公開していません。",
   "AlternativeFirefly.title": "夫婦で使える Firefly III 代替アプリ",
   "AlternativeFirefly.description":
     "Firefly III は帳簿 1 つにつきログインが 1 つです。Financy なら家計簿を共有し、夫婦それぞれが自分のログインで、複数の通貨を扱えます。",

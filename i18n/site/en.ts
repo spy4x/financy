@@ -552,7 +552,7 @@ export default {
   "Alternative.all": "All comparisons",
   "AlternativeYnab.title": "YNAB alternative for multiple currencies",
   "AlternativeYnab.description":
-    "YNAB keeps one currency per plan. Financy totals every currency your household uses, on your own server or in its cloud.",
+    "YNAB keeps one currency per plan. Financy totals every currency your household uses, on a server you run yourself.",
   "AlternativeYnab.h1": "A YNAB alternative for multiple currencies",
   "AlternativeYnab.answer":
     "Stay on YNAB if you budget in one currency and your bank works with its direct import. Choose Financy if your household's money sits in several currencies and you want one total.",

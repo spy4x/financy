@@ -523,7 +523,7 @@ export default {
     "مقارنات بين Financy وتطبيقات أخرى لإدارة المال. تذكر كل مقارنة أولًا متى تكون الأداة الأخرى الخيار الأفضل، بحقائق موثّقة ومؤرّخة.",
   "Alternatives.h1": "مقارنة Financy بالأدوات التي تعرفها",
   "Alternatives.lead":
-    "تذكر كل صفحة أولًا متى تناسبك الأداة الأخرى أكثر، وتربط كل معلومة عنها بوثائقها الرسمية.",
+    "تذكر كل صفحة أولًا متى تناسبك الأداة الأخرى أكثر، وتربط كل معلومة عنها بصفحات تلك الأداة نفسها.",
   "Alternative.checked": "تم التحقق في <time>{date}</time>",
   "Alternative.glance": "نظرة سريعة",
   "Alternative.caption": "Financy مقابل {name}",
@@ -533,6 +533,95 @@ export default {
   "Alternative.demo": "جرّب النسخة التجريبية",
   "Alternative.selfHost": "اقرأ دليل الاستضافة الذاتية",
   "Alternative.all": "كل المقارنات",
+  "AlternativeYnab.title": "بديل YNAB يدعم عدة عملات",
+  "AlternativeYnab.description":
+    "يعتمد YNAB عملة واحدة لكل خطة ميزانية. أما Financy فيجمع كل العملات التي تستخدمها أسرتك في مجموع واحد، على خادم تديره بنفسك.",
+  "AlternativeYnab.h1": "بديل YNAB يدعم عدة عملات",
+  "AlternativeYnab.answer":
+    "ابقَ على YNAB إن كنت تضع ميزانيتك بعملة واحدة وكان بنكك مدعومًا في ميزة الاستيراد المباشر. واختر Financy إن كانت أموال أسرتك موزعة على عدة عملات وأردت مجموعًا واحدًا.",
+  "AlternativeYnab.rowCurrencies": "عدة عملات في ميزانية واحدة",
+  "AlternativeYnab.rowCurrenciesNote": "YNAB: عملة واحدة لكل خطة ميزانية.",
+  "AlternativeYnab.rowTotal": "مجموع محوَّل إلى عملة رئيسية واحدة",
+  "AlternativeYnab.rowTotalNote": "يوصي YNAB بميزانية منفصلة لكل عملة.",
+  "AlternativeYnab.rowSharing": "مشاركة أموالك مع أسرتك دون مشاركة كلمة المرور",
+  "AlternativeYnab.rowBankImport": "استيراد المعاملات مباشرة من بنكك",
+  "AlternativeYnab.rowBankImportNote":
+    "YNAB: بنوك مختارة في الولايات المتحدة وكندا والمملكة المتحدة والاتحاد الأوروبي.",
+  "AlternativeYnab.rowPrice": "التكلفة أقل من ⁦$50⁩ سنويًا",
+  "AlternativeYnab.rowPriceNote":
+    "Financy: مجاني للاستضافة الذاتية، وستكلّف السحابة ⁦$40⁩ سنويًا ولم تُفتح بعد. YNAB: ⁦$109⁩ سنويًا، إضافةً إلى الضريبة حيثما انطبقت.",
+  "AlternativeYnab.sourceFaq": "الأسئلة الشائعة عن أسعار YNAB",
+  "AlternativeYnab.sourceCurrencies": "مساعدة YNAB: العملات المتعددة",
+  "AlternativeYnab.sourceTogether": "YNAB Together",
+  "AlternativeYnab.sourcePricing": "أسعار YNAB",
+  "AlternativeYnab.method":
+    "كل معلومة عن YNAB مأخوذة من موقعه الرسمي، ومربوطة في صفها. ولا تذكر صفوف Financy إلا ما يعمل في التطبيق اليوم. نعيد التحقق من كل صف كل ثلاثة أشهر، ولا نغيّر التاريخ إلا حينها. هل لاحظت معلومة قديمة؟ راسلنا على <mail>{email}</mail>.",
+  "AlternativeYnab.fit":
+    "لا يوفّر Financy مزامنة تلقائية مع البنك ولا ميزانية بالمظاريف، ولا يمكنه بعد استيراد كشوف الحساب البنكية.",
+  "AlternativeYnab.better":
+    "إن كنت تضع ميزانيتك بعملة واحدة، فابقَ على <ynab>YNAB</ynab>. وإن أردت ميزانية مظاريف مجانية تستضيفها بنفسك، فاطّلع على <actual>Actual Budget</actual>. وإن أردت تطبيقًا مفتوح المصدر يشبه Financy في شكله، فأقرب خيار هو <sure>Sure</sure>: بترخيص AGPL-3.0 أيضًا، ويُستضاف ذاتيًا عبر Docker.",
+  "AlternativeYnab.moving":
+    "لا يستطيع Financy بعد استيراد ملف مُصدَّر من YNAB، لذا لا يمكنك اليوم نقل سجلك المالي إلى التطبيق. إذا كان هذا السجل مهمًا لك، فابقَ على YNAB في الوقت الحالي.",
+  "AlternativeYnab.currenciesQuestion": "هل يدعم YNAB عدة عملات؟",
+  "AlternativeYnab.currenciesAnswer":
+    "ليس في خطة ميزانية واحدة. تقول صفحة أسعار YNAB إنه لا يمكنك استخدام عدة عملات معًا في خطة إنفاق واحدة، ويوصي مركز مساعدته بميزانية منفصلة لكل عملة. أما Financy فيحتفظ بكل حساب بعملته ويعرض مجموعًا واحدًا.",
+  "AlternativeYnab.householdQuestion": "هل يمكن لأسرتي مشاركة Financy كما في YNAB Together؟",
+  "AlternativeYnab.householdAnswer":
+    "نعم. يسجّل كل فرد في أسرة Financy الدخول بحساب المستخدم الخاص به ودوره، ويرى الجميع الحسابات نفسها. كذلك لا يتطلب YNAB Together مشاركة كلمة مرور.",
+  "AlternativeYnab.dataQuestion": "هل يمكنني نقل بياناتي من YNAB إلى Financy؟",
+  "AlternativeYnab.dataAnswer":
+    "ليس بعد. لا يستطيع Financy اليوم استيراد ملف مُصدَّر من YNAB داخل التطبيق.",
+  "AlternativeYnab.costQuestion": "كم تكلفة كلٍّ منهما؟",
+  "AlternativeYnab.costAnswer":
+    "تبلغ تكلفة YNAB ⁦$109⁩ سنويًا، إضافةً إلى الضريبة حيثما انطبقت. أما Financy فمجاني للاستضافة الذاتية بترخيص AGPL-3.0. وستبلغ تكلفة سحابته ⁦$40⁩ سنويًا لكل أسرة، ولم تُفتح بعد.",
+  "AlternativeActual.title": "بديل Actual Budget يدعم عدة عملات",
+  "AlternativeActual.description":
+    "لا يدعم Actual Budget العملات المتعددة بعد. أما Financy فيجمع كل العملات التي تستخدمها أسرتك في مجموع واحد، على خادم تديره بنفسك.",
+  "AlternativeActual.h1": "بديل Actual Budget يدعم عدة عملات",
+  "AlternativeActual.answer":
+    "ابقَ على Actual Budget إن أردت الميزانية بالمظاريف أو المزامنة مع البنك أو تطبيقًا يعمل بلا خادم. واختر Financy إن كانت أموال أسرتك موزعة على عدة عملات وأردت مجموعًا واحدًا.",
+  "AlternativeActual.rowCurrencies": "حسابات بعدة عملات",
+  "AlternativeActual.rowCurrenciesNote":
+    "Actual Budget: مسودة طلب سحب (pull request) تضيف هذه الميزة خيارًا تجريبيًا.",
+  "AlternativeActual.rowTotal": "مجموع محوَّل إلى عملة رئيسية واحدة",
+  "AlternativeActual.rowTotalNote": "Actual Budget: حل بديل تجريبي باستخدام قوالب القواعد.",
+  "AlternativeActual.rowLogins": "يسجّل كل شخص الدخول بحساب المستخدم الخاص به",
+  "AlternativeActual.rowLoginsNote": "Actual Budget: يتطلب مزوّد OpenID.",
+  "AlternativeActual.rowEnvelopes": "الميزانية بالمظاريف",
+  "AlternativeActual.rowBankSync": "مزامنة تلقائية مع البنك",
+  "AlternativeActual.rowBankSyncNote": "Actual Budget: عبر مزوّدين يختلفون حسب المنطقة.",
+  "AlternativeActual.rowImport": "استيراد ملفات كشوف الحساب البنكية",
+  "AlternativeActual.rowImportNote": "Financy: غير متاح في التطبيق بعد.",
+  "AlternativeActual.rowNoServer": "يعمل بلا خادم",
+  "AlternativeActual.rowOpenSource": "مجاني ومفتوح المصدر",
+  "AlternativeActual.rowOpenSourceNote": "Financy بترخيص AGPL-3.0، وActual Budget بترخيص MIT.",
+  "AlternativeActual.sourceCurrencies": "وثائق Actual Budget: العملات المتعددة",
+  "AlternativeActual.sourceMultiUser": "وثائق Actual Budget: تعدد المستخدمين",
+  "AlternativeActual.sourceSite": "موقع Actual Budget",
+  "AlternativeActual.sourceBankSync": "وثائق Actual Budget: المزامنة مع البنك",
+  "AlternativeActual.sourceImporting": "وثائق Actual Budget: الاستيراد",
+  "AlternativeActual.sourceInstall": "وثائق Actual Budget: التثبيت",
+  "AlternativeActual.sourceReadme": "ملف README لـ Actual Budget",
+  "AlternativeActual.method":
+    "كل معلومة عن Actual Budget مأخوذة من موقعه الرسمي أو وثائقه أو مستودعه، ومربوطة في صفها. ولا تذكر صفوف Financy إلا ما يعمل في التطبيق اليوم. نعيد التحقق من كل صف كل ثلاثة أشهر، ولا نغيّر التاريخ إلا حينها. هل لاحظت معلومة قديمة؟ راسلنا على <mail>{email}</mail>.",
+  "AlternativeActual.fit":
+    "لا يوفّر Financy ميزانية بالمظاريف ولا مزامنة تلقائية مع البنك، ولا يمكنه بعد استيراد كشوف الحساب البنكية، ويحتاج إلى خادم.",
+  "AlternativeActual.better":
+    "إن أردت ميزانية بالمظاريف بعملة واحدة، فابقَ على <actual>Actual Budget</actual>. وإن أردت تطبيقًا مفتوح المصدر يشبه Financy في شكله، فأقرب خيار هو <sure>Sure</sure>: بترخيص AGPL-3.0 أيضًا، ويُستضاف ذاتيًا عبر Docker.",
+  "AlternativeActual.moving":
+    "لا يستطيع Financy بعد استيراد ملف مُصدَّر من Actual Budget، لذا لا يمكنك اليوم نقل سجلك المالي إلى التطبيق. إذا كان هذا السجل مهمًا لك، فابقَ على Actual Budget في الوقت الحالي.",
+  "AlternativeActual.currenciesQuestion": "هل يدعم Actual Budget عدة عملات؟",
+  "AlternativeActual.currenciesAnswer":
+    "ليس بعد. تذكر وثائق Actual Budget أنه لا يدعم العملات المتعددة، وتصف حلًا بديلًا تجريبيًا باستخدام قوالب القواعد. وتضيف مسودة طلب سحب (pull request) العملات خيارًا تجريبيًا. أما Financy فيحتفظ بكل حساب بعملته ويعرض مجموعًا واحدًا.",
+  "AlternativeActual.envelopesQuestion": "هل يعتمد Financy الميزانية بالمظاريف مثل Actual Budget؟",
+  "AlternativeActual.envelopesAnswer":
+    "لا. لا يوفّر تطبيق Financy الميزانية بالمظاريف اليوم. إن كنت تريد المظاريف، فابقَ على Actual Budget.",
+  "AlternativeActual.dataQuestion": "هل يمكنني نقل بياناتي من Actual Budget إلى Financy؟",
+  "AlternativeActual.dataAnswer":
+    "ليس بعد. لا يستطيع Financy اليوم استيراد ملف مُصدَّر من Actual Budget داخل التطبيق.",
+  "AlternativeActual.costQuestion": "كم تكلفة كلٍّ منهما؟",
+  "AlternativeActual.costAnswer":
+    "كلاهما مجاني للاستضافة الذاتية. يصدر Actual Budget بترخيص MIT، وFinancy بترخيص AGPL-3.0. وستبلغ تكلفة سحابة Financy ⁦$40⁩ سنويًا لكل أسرة، ولم تُفتح بعد.",
   "AlternativeFirefly.title": "بديل Firefly III للأزواج",
   "AlternativeFirefly.description":
     "يمنح Firefly III كل إدارة مالية تسجيل دخول واحدًا. أما Financy فيتيح للشريكين ميزانية مشتركة، لكلٍّ منهما تسجيل دخوله، وبأي مزيج من العملات.",
