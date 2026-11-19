@@ -254,11 +254,20 @@ export default {
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Deine Daten gehen mit dir",
   "FeatureExport.lead":
-    "Wer Inhaber ist, kann einen Haushalt jederzeit in eine offene JSON-Datei exportieren und später als neuen Haushalt importieren. Ein Import überschreibt nie das Original.",
+    "Wer Inhaber ist, kann einen Haushalt jederzeit in eine offene JSON-Datei exportieren und später als neuen Haushalt importieren. Ein Import überschreibt nie das Original. Außerdem lässt er sich als Tabellen herunterladen: eine ZIP-Datei mit CSV-Dateien für Tabellen-Apps oder die Buchhaltung, mit Spaltenüberschriften in der eigenen Sprache.",
   "FeatureExport.fact1":
     "Die ganze Datei wird geprüft, bevor etwas gespeichert wird, und dann in einem Schritt importiert",
   "FeatureExport.fact2":
     "Jeder Datensatz bekommt eine neue ID, daher kollidiert ein Import nie mit vorhandenen Daten",
+  "FeatureExport.fileAccounts":
+    "accounts.csv: Name, Art, Währung, Anfangsbestand, Kontostand heute, Archiviert",
+  "FeatureExport.fileCategories": "categories.csv: Name, Art, Oberkategorie, Archiviert",
+  "FeatureExport.fileBudgets":
+    "budgets.csv: Monat, Kategorie, Limit, Währung des Limits, Ausgegeben, Nicht berücksichtigte Währungen (kein Wechselkurs)",
+  "FeatureExport.fileTransactions":
+    "transactions.csv: Datum, Art, Konto, Kategorie, Oberkategorie, Vermerk, Betrag, Währung, Betrag in Hauptwährung, Hauptwährung, Wechselkurs (1 Einheit der Kontowährung in Hauptwährung), Kursdatum, Kursquelle, Betrag in Kontowährung, Kontowährung, Hinzugefügt von",
+  "FeatureExport.fileTransfers":
+    "transfers.csv: Datum, Von Konto, Gesendeter Betrag, Währung des gesendeten Betrags, Auf Konto, Erhaltener Betrag, Währung des erhaltenen Betrags, Effektiver Kurs (erhalten für 1 gesendete Einheit), Vermerk",
   "FeatureExport.code": "Code des Exports lesen",
   "FeatureLanguages.nav": "Sprachen",
   "FeatureLanguages.title": "In neun Sprachen",

@@ -203,7 +203,8 @@ export default {
   "GroupEditor.export": "Export as JSON",
   "GroupEditor.exportHint": "The only file you can import back",
   "GroupEditor.exportSpreadsheets": "Export as spreadsheets",
-  "GroupEditor.exportSpreadsheetsHint": "A ZIP for a spreadsheet app or an accountant",
+  "GroupEditor.exportSpreadsheetsHint":
+    "Transactions, transfers, accounts, categories and budgets, one CSV each",
   "GroupEditor.exporting": "Preparing…",
   "GroupEditor.offline": "You're offline",
   "GroupEditor.moveAll": "Move all data…",

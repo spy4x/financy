@@ -223,9 +223,17 @@ export default {
   "FeatureExport.nav": "导出",
   "FeatureExport.title": "你的数据，随你带走",
   "FeatureExport.lead":
-    "所有者可以随时把家庭导出为开放的 JSON 文件，之后再作为新家庭导入。导入从不覆盖原有家庭。",
+    "所有者可以随时把家庭导出为开放的 JSON 文件，之后再作为新家庭导入。导入从不覆盖原有家庭。也可以下载为电子表格：一个包含 CSV 文件的 ZIP 压缩包，适合表格软件或会计使用，表头使用界面语言。",
   "FeatureExport.fact1": "写入任何内容之前先检查整个文件，然后一步导入",
   "FeatureExport.fact2": "每条记录都会获得新的 id，因此导入不会与现有数据冲突",
+  "FeatureExport.fileAccounts": "accounts.csv：名称、类型、币种、初始余额、今日余额、已归档",
+  "FeatureExport.fileCategories": "categories.csv：名称、类型、上级分类、已归档",
+  "FeatureExport.fileBudgets":
+    "budgets.csv：月份、分类、限额、限额币种、已支出、未计入的币种（无汇率）",
+  "FeatureExport.fileTransactions":
+    "transactions.csv：日期、类型、账户、分类、上级分类、备注、金额、币种、主货币金额、主货币、汇率（1 单位账户币种折合主货币）、汇率日期、汇率来源、账户币种金额、账户币种、添加人",
+  "FeatureExport.fileTransfers":
+    "transfers.csv：日期、转出账户、转出金额、转出币种、转入账户、到账金额、到账币种、隐含汇率（每 1 单位转出币种的到账金额）、备注",
   "FeatureExport.code": "阅读导出代码",
   "FeatureLanguages.nav": "多语言",
   "FeatureLanguages.title": "支持九种语言",

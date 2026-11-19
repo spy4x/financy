@@ -325,7 +325,12 @@ FeatureDeploy.title	bc8830379dcc02e4
 FeatureExport.code	af6b3bd89e7e65e5
 FeatureExport.fact1	2bc07b51a371a18b
 FeatureExport.fact2	e10126b582d96b9e
-FeatureExport.lead	dddf958463fbce8f
+FeatureExport.fileAccounts	c2f3cd756f594edf
+FeatureExport.fileBudgets	0b0bd5da91e17f51
+FeatureExport.fileCategories	0ecb5501e09aef1e
+FeatureExport.fileTransactions	cdf81eeb7c3679f6
+FeatureExport.fileTransfers	44d727740b01f12b
+FeatureExport.lead	c6fa39200154c346
 FeatureExport.nav	3664895579f0a7e6
 FeatureExport.title	2803704286b5afc2
 FeatureLanguages.code	cf2efaf06efc7511

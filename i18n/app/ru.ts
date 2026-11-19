@@ -214,7 +214,8 @@ export default {
   "GroupEditor.export": "Экспортировать в JSON",
   "GroupEditor.exportHint": "Только этот файл можно импортировать",
   "GroupEditor.exportSpreadsheets": "Экспортировать в таблицы",
-  "GroupEditor.exportSpreadsheetsHint": "ZIP для табличного редактора или бухгалтера",
+  "GroupEditor.exportSpreadsheetsHint":
+    "Операции, переводы, счета, категории и бюджеты, каждый раздел в своём CSV",
   "GroupEditor.exporting": "Готовим файл…",
   "GroupEditor.offline": "Нет сети",
   "GroupEditor.moveAll": "Перенести все данные…",

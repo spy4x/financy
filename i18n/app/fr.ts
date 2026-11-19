@@ -218,7 +218,8 @@ export default {
   "GroupEditor.export": "Exporter en JSON",
   "GroupEditor.exportHint": "Le seul fichier réimportable",
   "GroupEditor.exportSpreadsheets": "Exporter en feuilles de calcul",
-  "GroupEditor.exportSpreadsheetsHint": "Un ZIP pour un tableur ou un comptable",
+  "GroupEditor.exportSpreadsheetsHint":
+    "Opérations, virements, comptes, catégories et budgets, un CSV chacun",
   "GroupEditor.exporting": "Préparation…",
   "GroupEditor.offline": "Vous êtes hors ligne",
   "GroupEditor.moveAll": "Déplacer toutes les données…",

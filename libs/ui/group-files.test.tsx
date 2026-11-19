@@ -415,7 +415,7 @@ describe("group file menu items", () => {
     expect(disabled(sheets)).toBe(false)
     expect(find(json).textContent).toBe("Export as JSONThe only file you can import back")
     expect(find(sheets).textContent).toBe(
-      "Export as spreadsheetsA ZIP for a spreadsheet app or an accountant",
+      "Export as spreadsheetsTransactions, transfers, accounts, categories and budgets, one CSV each",
     )
     expect(has("[data-e2e=group-export-why]")).toBe(false)
     expect(has("[data-e2e=group-export-spreadsheets-why]")).toBe(false)

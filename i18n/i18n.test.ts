@@ -8,6 +8,11 @@ import { expect } from "@std/expect"
 import { walk } from "@std/fs/walk"
 import { checkCatalogs, findUnusedKeys } from "@spy4x/platform/universal/i18n"
 import { LANGUAGES } from "@domain/identity"
+import { accountPortable } from "@server/accounts/account-portable.ts"
+import { budgetPortable } from "@server/budgets/budget-portable.ts"
+import { categoryPortable } from "@server/categories/category-portable.ts"
+import { transactionPortable } from "@server/transactions/transaction-portable.ts"
+import { transferPortable } from "@server/transfers/transfer-portable.ts"
 import { importCatalog, NAMESPACES, readCatalogs } from "./stamp.ts"
 
 const root = new URL(`../`, import.meta.url)
@@ -79,6 +84,36 @@ Deno.test(`i18n fr: every space before : ; ! ? is a non-breaking one`, async () 
     }
   }
   expect(breaking).toEqual([])
+})
+
+// The website's Export section names each spreadsheet of a household's ZIP with the headings that
+// file carries, so the page and the file say the same in every language.
+Deno.test(`i18n site: each Export fact names its CSV file and that file's headings, in order, in every language`, async () => {
+  const app = await readCatalogs(new URL(`app/`, import.meta.url))
+  const site = await readCatalogs(new URL(`site/`, import.meta.url))
+  const facts = [
+    [`FeatureExport.fileAccounts`, accountPortable],
+    [`FeatureExport.fileCategories`, categoryPortable],
+    [`FeatureExport.fileBudgets`, budgetPortable],
+    [`FeatureExport.fileTransactions`, transactionPortable],
+    [`FeatureExport.fileTransfers`, transferPortable],
+  ] as const
+  const wrong: string[] = []
+  for (const language of LANGUAGES) {
+    const appCatalog = language === `en` ? app.source : app.languages[language]
+    const siteCatalog = language === `en` ? site.source : site.languages[language]
+    if (!appCatalog || !siteCatalog) throw new Error(`No app or site catalog for ${language}.`)
+    for (const [key, aggregate] of facts) {
+      if (!aggregate.csv) throw new Error(`${aggregate.kind} has no spreadsheet.`)
+      const headings = aggregate.csv.columns.map(({ header }) => appCatalog[header])
+      const [file, columns = ``] = String(siteCatalog[key]).split(/ : |[:：] ?/, 2)
+      const listed = columns.split(/, |، |、/)
+      if (file !== `${aggregate.kind}.csv` || listed.join(`|`) !== headings.join(`|`)) {
+        wrong.push(`${language}: ${key}`)
+      }
+    }
+  }
+  expect(wrong).toEqual([])
 })
 
 Deno.test(`i18n: every English key is named somewhere in the code`, async () => {

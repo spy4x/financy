@@ -181,7 +181,7 @@ export default {
   "GroupEditor.export": "JSONでエクスポート",
   "GroupEditor.exportHint": "再インポートできるのはこれだけです",
   "GroupEditor.exportSpreadsheets": "表計算ファイルでエクスポート",
-  "GroupEditor.exportSpreadsheetsHint": "表計算アプリや会計士向けのZIP",
+  "GroupEditor.exportSpreadsheetsHint": "取引・振替・口座・カテゴリ・予算をそれぞれCSVで",
   "GroupEditor.exporting": "準備しています…",
   "GroupEditor.offline": "オフラインです",
   "GroupEditor.moveAll": "すべてのデータを移動…",

@@ -204,7 +204,8 @@ export default {
   "GroupEditor.export": "Exportar como JSON",
   "GroupEditor.exportHint": "El único que puedes volver a importar",
   "GroupEditor.exportSpreadsheets": "Exportar como hojas de cálculo",
-  "GroupEditor.exportSpreadsheetsHint": "Un ZIP para hojas de cálculo o contabilidad",
+  "GroupEditor.exportSpreadsheetsHint":
+    "Movimientos, transferencias, cuentas, categorías y presupuestos, un CSV para cada uno",
   "GroupEditor.exporting": "Preparando…",
   "GroupEditor.offline": "Estás sin conexión",
   "GroupEditor.moveAll": "Mover todos los datos…",

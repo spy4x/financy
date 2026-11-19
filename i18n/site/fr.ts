@@ -255,11 +255,20 @@ export default {
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Vos données partent avec vous",
   "FeatureExport.lead":
-    "Le propriétaire peut à tout moment exporter un foyer dans un fichier JSON ouvert, puis l’importer plus tard comme nouveau foyer. L’import n’écrase jamais l’original.",
+    "Le propriétaire peut à tout moment exporter un foyer dans un fichier JSON ouvert, puis l’importer plus tard comme nouveau foyer. L’import n’écrase jamais l’original. Il peut aussi le télécharger en feuilles de calcul : un ZIP de fichiers CSV pour un tableur ou un comptable, avec les en-têtes dans sa langue.",
   "FeatureExport.fact1":
     "Tout le fichier est vérifié avant la moindre écriture, puis importé en une seule étape",
   "FeatureExport.fact2":
     "Chaque enregistrement reçoit un nouvel id, donc un import n’entre jamais en conflit avec l’existant",
+  "FeatureExport.fileAccounts":
+    "accounts.csv : Nom, Type, Devise, Solde initial, Solde du jour, Archivé",
+  "FeatureExport.fileCategories": "categories.csv : Nom, Type, Catégorie parente, Archivée",
+  "FeatureExport.fileBudgets":
+    "budgets.csv : Mois, Catégorie, Plafond, Devise du plafond, Dépensé, Devises non comptées (pas de taux de change)",
+  "FeatureExport.fileTransactions":
+    "transactions.csv : Date, Type, Compte, Catégorie, Catégorie parente, Libellé, Montant, Devise, Montant en devise principale, Devise principale, Taux de change (1 unité de la devise du compte en devise principale), Date du taux, Source du taux, Montant en devise du compte, Devise du compte, Ajouté par",
+  "FeatureExport.fileTransfers":
+    "transfers.csv : Date, Compte de départ, Montant envoyé, Devise envoyée, Compte d’arrivée, Montant reçu, Devise reçue, Taux implicite (reçu pour 1 unité envoyée), Libellé",
   "FeatureExport.code": "Lire le code de l’export",
   "FeatureLanguages.nav": "Langues",
   "FeatureLanguages.title": "En neuf langues",
