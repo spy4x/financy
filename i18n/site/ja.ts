@@ -270,6 +270,20 @@ export default {
   "FeatureLiveSync.notYetRates": "ネットワークなしで見られる為替レート",
   "FeatureLiveSync.notYetStores": "Google Play と App Store のアプリ",
   "FeatureLiveSync.code": "リアルタイム同期の設計を読む",
+  "FeatureTelegramBot.nav": "Telegram ボット",
+  "FeatureTelegramBot.title": "Telegram のチャットから支出を追加",
+  "FeatureTelegramBot.lead":
+    "Telegram アカウントを一度連携すれば、/expense や /income を送って記録を追加でき、/balance や /month で数字を確認できます。ボットは本人として動き、世帯でのロールもそのまま適用されます。",
+  "FeatureTelegramBot.fact1":
+    "/expense 1200 と送ると、直前の支出からカテゴリがわかる場合はすぐに保存します",
+  "FeatureTelegramBot.fact2": "/balance と /month は何も変更しないので、閲覧者も使えます",
+  "FeatureTelegramBot.fact3":
+    "/expense、 /income、 /balance、 /month を使えるのは個別チャットだけで、グループではボットが個別チャットへ案内します",
+  "FeatureTelegramBot.fact4": "連携には、10分間有効なワンタイムコードを使います",
+  "FeatureTelegramBot.notYetTransfer": "ボットからの振替の記録",
+  "FeatureTelegramBot.notYetVoice": "音声メッセージやレシートの写真からの記録",
+  "FeatureTelegramBot.notYetSentences": "コマンドの代わりに文章で入力すること",
+  "FeatureTelegramBot.code": "ボットのコードを読む",
   "FeatureDeploy.nav": "セルフホスト",
   "FeatureDeploy.title": "あなたのサーバーで動く",
   "FeatureDeploy.lead":
@@ -518,6 +532,87 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "ワンクリックでインストールできますか？",
   "FeaturePageSelfHosting.installerAnswer":
     "まだです。Deno、rsync、git を使って自分のパソコンから Financy をセットアップし、コマンドひとつでデプロイします。セルフホストガイドで、すべての手順を説明しています。",
+  "FeaturePageTransfers.name": "振替",
+  "FeaturePageTransfers.title": "通貨の違う口座間の振替を記録できる家計簿",
+  "FeaturePageTransfers.description":
+    "通貨の違う自分の口座の間で動かしたお金を記録できます。Financy は送金額と受取額の両方を残します。",
+  "FeaturePageTransfers.h1": "通貨の違う口座の間の振替を記録できますか？",
+  "FeaturePageTransfers.answer":
+    "はい。振替を追加して2つの口座を選び、送金額を入力します。受取額も入力するか、空欄のままにすれば Financy が振替の日付の為替レートで換算します。どちらの金額も、それぞれの口座の通貨で保存されます。",
+  "FeaturePageTransfers.summary": "口座間の資金移動を記録し、両方の金額を残せます。",
+  "FeaturePageTransfers.how1":
+    "お金を出した口座と受け取った口座を選び、送金額を入力します。通貨が違う場合は、受取額を入れる欄がもうひとつ表示されます。入力すれば銀行で適用されたレートがそのまま残り、空欄のままなら振替の日付のレートで換算します。その日付のレートが Financy にないときは、受取額を入力するよう案内します。",
+  "FeaturePageTransfers.how2":
+    "各口座の残高は、それぞれの金額の分だけ動きます。振替にはカテゴリがないため、収入、支出、予算は変わりません。",
+  "FeaturePageTransfers.spendingQuestion": "振替は支出や収入として数えられますか？",
+  "FeaturePageTransfers.spendingAnswer":
+    "いいえ。振替にはカテゴリがなく、予算を含め、収入や支出の数字には一切入りません。変わるのは2つの口座の残高だけです。",
+  "FeaturePageTransfers.ownAmountQuestion": "実際に受け取った金額を入力できますか？",
+  "FeaturePageTransfers.ownAmountAnswer":
+    "はい。受け取った口座に入った金額を入力すると、Financy は換算せず、入力したとおりに保存します。銀行で適用されたレートも記録に残ります。",
+  "FeaturePageTransfers.feeQuestion": "振替に銀行の手数料を記録できますか？",
+  "FeaturePageTransfers.feeAnswer":
+    "いいえ。振替にあるのは送金額と受取額だけで、手数料の欄はありません。銀行に支払った手数料は、別の支出として追加してください。",
+  "FeaturePageTransfers.repeatQuestion": "振替を毎月自動で繰り返せますか？",
+  "FeaturePageTransfers.repeatAnswer":
+    "まだです。定期取引で作られるのは支出か収入だけなので、今は振替をその都度追加してください。",
+  "FeaturePageTransfers.statementQuestion": "Financy は銀行明細から振替を見つけられますか？",
+  "FeaturePageTransfers.statementAnswer":
+    "まだです。銀行明細を取り込む画面がないため、明細から振替を提案することはできません。",
+  "FeaturePageBudgets.name": "予算",
+  "FeaturePageBudgets.title": "カテゴリごとに月の予算上限を設定できる家計簿",
+  "FeaturePageBudgets.description":
+    "支出カテゴリごとに月の上限を設定し、世帯の全員でリアルタイムに確認できます。上限は変更するまで翌月以降も続きます。",
+  "FeaturePageBudgets.h1": "カテゴリごとに月の予算の上限を設定できますか？",
+  "FeaturePageBudgets.answer":
+    "はい。どの支出カテゴリにも月の上限を設定でき、Financy が上限に対して使った額を世帯の全員にリアルタイムで表示します。上限は、変更するまで翌月以降も引き継がれます。",
+  "FeaturePageBudgets.summary": "カテゴリごとの月の上限を、世帯の全員でリアルタイムに。",
+  "FeaturePageBudgets.how1":
+    "「予算」を開き、支出カテゴリを選んで上限を入力します。上限はその月から適用され、それより前の月の上限はそのまま残ります。使った額は、その月の支出から返金を差し引いた金額です。",
+  "FeaturePageBudgets.how2":
+    "上限の80%に達するとバーが警告し、超えた場合はいくら超過したかを表示します。サブカテゴリの上限は、親カテゴリの上限の残りを超えて設定できません。",
+  "FeaturePageBudgets.rollOverQuestion": "使わなかった予算は翌月に繰り越されますか？",
+  "FeaturePageBudgets.rollOverAnswer":
+    "いいえ。毎月それぞれの上限で計算するので、使わなかった分が翌月に加算されることはありません。",
+  "FeaturePageBudgets.currenciesQuestion": "別の通貨の支出も上限に含まれますか？",
+  "FeaturePageBudgets.currenciesAnswer":
+    "はい。Financy が上限の通貨に換算します。まだ為替レートがない通貨は、黙って除外せず、画面に通貨名を表示します。",
+  "FeaturePageBudgets.warningQuestion": "上限を超えたら Financy から通知が届きますか？",
+  "FeaturePageBudgets.warningAnswer":
+    "いいえ。Financy は予算についての通知を送りません。カテゴリが上限をどれだけ超えたかは、「予算」画面に表示されます。",
+  "FeaturePageBudgets.envelopesQuestion": "袋分け（封筒式）で予算を管理できますか？",
+  "FeaturePageBudgets.envelopesAnswer":
+    "まだです。今はカテゴリごとに月の上限を設定できます。お金を袋に振り分けたり、袋の間で移したりする画面はまだありません。",
+  "FeaturePageBudgets.planQuestion": "予算機能には有料プランが必要ですか？",
+  "FeaturePageBudgets.planAnswer":
+    "はい。Financy のクラウド版では、上限の設定に Household プランが必要です。予算の閲覧と上限の削除には必要ありません。課金をオフにした自分のサーバーなら、すべての世帯が上限を設定できます。",
+  "FeaturePageTelegramBot.name": "Telegram ボット",
+  "FeaturePageTelegramBot.title": "Telegram から支出を追加、残高も確認できる家計簿",
+  "FeaturePageTelegramBot.description":
+    "Telegram の個別チャットから支出や収入を追加し、残高や今月の収支を確認できます。記録はそのまま世帯に反映されます。",
+  "FeaturePageTelegramBot.h1": "Telegram から支出を追加できますか？",
+  "FeaturePageTelegramBot.answer":
+    "はい。Financy のプロフィールで Telegram アカウントを連携し、個別チャットで /expense を送ります。ボットが金額を尋ねて口座とカテゴリを表示し、「保存」を押すと記録します。",
+  "FeaturePageTelegramBot.summary": "個別チャットで記録を追加し、残高を確認できます。",
+  "FeaturePageTelegramBot.how1":
+    "Financy のプロフィールで「Telegramと連携」を押し、チャットを開きます。コードは10分間、1回だけ有効です。「連携する」を押す前に、ボットが連携先のアカウントを表示します。",
+  "FeaturePageTelegramBot.how2":
+    "/expense か /income を送ると、ボットが金額を尋ねます。ボタンで口座やカテゴリを変更でき、「保存」で記録します。/balance と /month は数字を表示するだけで、何も変更しません。",
+  "FeaturePageTelegramBot.selfHostQuestion": "セルフホストしたサーバーでもボットを使えますか？",
+  "FeaturePageTelegramBot.selfHostAnswer":
+    "はい。Telegram の BotFather でボットを作成し、そのトークン、ユーザー名、Webhook シークレットをサーバーの設定に追加します。トークンを設定するまでボットはオフのままで、Financy のほかの機能はボットなしで動きます。",
+  "FeaturePageTelegramBot.groupQuestion": "グループチャットでボットを使えますか？",
+  "FeaturePageTelegramBot.groupAnswer":
+    "いいえ。/expense、 /income、 /balance、 /month を使えるのは個別チャットだけです。グループで返信すると、世帯の数字が全員に見えてしまうためです。",
+  "FeaturePageTelegramBot.transferQuestion": "ボットから振替を記録できますか？",
+  "FeaturePageTelegramBot.transferAnswer":
+    "まだです。ボットで追加できるのは支出と収入です。口座の間の振替は Financy のアプリで記録してください。",
+  "FeaturePageTelegramBot.voiceQuestion": "音声メッセージやレシートの写真を送って記録できますか？",
+  "FeaturePageTelegramBot.voiceAnswer":
+    "まだです。ボットが読み取るのは入力した金額とボタン操作だけなので、音声メッセージや写真を送っても記録は追加されません。",
+  "FeaturePageTelegramBot.costQuestion": "ボットの利用に追加料金はかかりますか？",
+  "FeaturePageTelegramBot.costAnswer":
+    "いいえ。ボットは有料のアドオンではありません。チャットからの記録はアプリからの記録と同じように数えられるため、プランの取引数に空きがない世帯は、どちらからも追加できません。",
   "FeaturePageMissing.title": "この機能ページは見つかりません",
   "FeaturePageMissing.description":
     "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",
@@ -681,6 +776,7 @@ export default {
     "支出は出費から払い戻しを引いた額です。まだ為替レートのない通貨は黙って除かず、名前を表示します",
   "FeatureBudgets.fact3":
     "上限の設定には Household プランが必要です。予算の閲覧と上限の削除には不要で、サーバーが確認します",
+  "FeatureBudgets.notYetEnvelopes": "袋分け（封筒式）で予算を管理する画面",
   "FeatureBudgets.code": "予算のコードを読む",
   "HomeStatus.recurring": "家賃・給料・サブスクの定期取引",
   "FeatureRecurring.nav": "定期取引",
@@ -715,6 +811,19 @@ export default {
   "FeatureTransactions.fact3": "支出カテゴリに入れた収入は返金になります",
   "FeatureTransactions.fact4": "削除した取引は 30 日間は元に戻せます",
   "FeatureTransactions.code": "取引のコードを読む",
+  "FeatureTransfers.nav": "振替",
+  "FeatureTransfers.title": "自分の口座の間でお金を移す",
+  "FeatureTransfers.lead":
+    "ある口座から別の口座へのお金の移動を、同じ通貨でも2つの通貨の間でも記録できます。口座ごとにそれぞれの金額が残るので、銀行で実際に適用されたレートも記録に残ります。",
+  "FeatureTransfers.fact1":
+    "2つの通貨の間で受取額を空欄にすると、振替の日付の為替レートで換算します",
+  "FeatureTransfers.fact2": "振替にはカテゴリがなく、収入にも支出にも数えません",
+  "FeatureTransfers.fact3":
+    "オフラインで追加した振替はデバイスで待機し、オンラインに戻ると送信されます",
+  "FeatureTransfers.fact4": "削除した振替は 30 日間は元に戻せます",
+  "FeatureTransfers.notYetStatement": "取り込んだ銀行明細からの振替の提案",
+  "FeatureTransfers.notYetRepeating": "スケジュールどおりに繰り返す振替",
+  "FeatureTransfers.code": "振替のコードを読む",
   "AudiencePage.demo": "デモを試す",
   "AudiencePage.demoNote": "サンプルデータで動き、アカウント登録は不要です。",
   "AudiencePage.limits": "Financy にできないこと",

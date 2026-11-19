@@ -39,9 +39,10 @@ export interface Tier extends Omit<FeatureTierProps, "children"> {
 }
 
 /**
- * What works in Financy today, one tier, each claim checked against the code on 2026-11-16, and
- * the currencies, households, live sync and self-hosting sections on 2026-11-18; the "where in
- * the code" link of each section points at it.
+ * What works in Financy today, one tier, each claim checked against the code on 2026-11-16, the
+ * currencies, households, live sync and self-hosting sections on 2026-11-18, and the transfers,
+ * budgets and Telegram bot sections on 2026-11-19; the "where in the code" link of each section
+ * points at it.
  */
 export function tiers({ t, language }: Site): readonly Tier[] {
   return [
@@ -96,6 +97,23 @@ export function tiers({ t, language }: Site): readonly Tier[] {
           },
         },
         {
+          id: `transfers`,
+          nav: t.t(`FeatureTransfers.nav`),
+          title: t.t(`FeatureTransfers.title`),
+          lead: t.t(`FeatureTransfers.lead`),
+          facts: [
+            t.t(`FeatureTransfers.fact1`),
+            t.t(`FeatureTransfers.fact2`),
+            t.t(`FeatureTransfers.fact3`),
+            t.t(`FeatureTransfers.fact4`),
+          ],
+          notYet: [
+            { label: t.t(`FeatureTransfers.notYetStatement`), issue: issue(300) },
+            { label: t.t(`FeatureTransfers.notYetRepeating`) },
+          ],
+          code: { label: t.t(`FeatureTransfers.code`), href: source(`libs/domain/transfers/`) },
+        },
+        {
           id: `budgets`,
           nav: t.t(`FeatureBudgets.nav`),
           title: t.t(`FeatureBudgets.title`),
@@ -104,6 +122,10 @@ export function tiers({ t, language }: Site): readonly Tier[] {
             t.t(`FeatureBudgets.fact1`),
             t.t(`FeatureBudgets.fact2`),
             t.t(`FeatureBudgets.fact3`),
+          ],
+          notYet: [
+            { label: t.t(`FeatureBudgets.notYetEnvelopes`), issue: issue(208) },
+            { label: t.t(`FeatureMultiCurrency.notYetBudgets`), issue: issue(317) },
           ],
           code: { label: t.t(`FeatureBudgets.code`), href: source(`libs/domain/budgets/`) },
         },
@@ -185,6 +207,24 @@ export function tiers({ t, language }: Site): readonly Tier[] {
             label: t.t(`FeatureLiveSync.code`),
             href: source(`docs/decisions/002-realtime-transport-and-sync.md`),
           },
+        },
+        {
+          id: `telegram-bot`,
+          nav: t.t(`FeatureTelegramBot.nav`),
+          title: t.t(`FeatureTelegramBot.title`),
+          lead: t.t(`FeatureTelegramBot.lead`),
+          facts: [
+            t.t(`FeatureTelegramBot.fact1`),
+            t.t(`FeatureTelegramBot.fact2`),
+            t.t(`FeatureTelegramBot.fact3`),
+            t.t(`FeatureTelegramBot.fact4`),
+          ],
+          notYet: [
+            { label: t.t(`FeatureTelegramBot.notYetTransfer`), issue: issue(347) },
+            { label: t.t(`FeatureTelegramBot.notYetVoice`), issue: issue(295) },
+            { label: t.t(`FeatureTelegramBot.notYetSentences`) },
+          ],
+          code: { label: t.t(`FeatureTelegramBot.code`), href: source(`apps/api/telegram/`) },
         },
         {
           id: `export`,
@@ -280,8 +320,9 @@ export interface FeaturePage {
 
 /**
  * The feature pages, in the order "Other features" lists them, with their words as catalog keys.
- * Every claim was checked against the code and docs on `main` on 2026-11-18; the pull request
- * that added them lists each claim with the file behind it.
+ * Every claim was checked against the code and docs on `main` on 2026-11-18, and those of the
+ * transfers, budgets and Telegram bot pages on 2026-11-19; the pull request that added each page
+ * lists its claims with the file behind them.
  */
 export const FEATURE_PAGES: readonly FeaturePage[] = [
   {
@@ -424,6 +465,120 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
       },
     ],
     updated: `2026-11-18`,
+  },
+  {
+    slug: `transfers`,
+    name: `FeaturePageTransfers.name`,
+    title: `FeaturePageTransfers.title`,
+    description: `FeaturePageTransfers.description`,
+    h1: `FeaturePageTransfers.h1`,
+    answer: `FeaturePageTransfers.answer`,
+    summary: `FeaturePageTransfers.summary`,
+    how: [`FeaturePageTransfers.how1`, `FeaturePageTransfers.how2`],
+    questions: [
+      {
+        id: `faq-spending`,
+        question: `FeaturePageTransfers.spendingQuestion`,
+        answer: `FeaturePageTransfers.spendingAnswer`,
+      },
+      {
+        id: `faq-own-amount`,
+        question: `FeaturePageTransfers.ownAmountQuestion`,
+        answer: `FeaturePageTransfers.ownAmountAnswer`,
+      },
+      {
+        id: `faq-fee`,
+        question: `FeaturePageTransfers.feeQuestion`,
+        answer: `FeaturePageTransfers.feeAnswer`,
+      },
+      {
+        id: `faq-repeat`,
+        question: `FeaturePageTransfers.repeatQuestion`,
+        answer: `FeaturePageTransfers.repeatAnswer`,
+      },
+      {
+        id: `faq-statement`,
+        question: `FeaturePageTransfers.statementQuestion`,
+        answer: `FeaturePageTransfers.statementAnswer`,
+      },
+    ],
+    updated: `2026-11-19`,
+  },
+  {
+    slug: `budgets`,
+    name: `FeaturePageBudgets.name`,
+    title: `FeaturePageBudgets.title`,
+    description: `FeaturePageBudgets.description`,
+    h1: `FeaturePageBudgets.h1`,
+    answer: `FeaturePageBudgets.answer`,
+    summary: `FeaturePageBudgets.summary`,
+    how: [`FeaturePageBudgets.how1`, `FeaturePageBudgets.how2`],
+    questions: [
+      {
+        id: `faq-roll-over`,
+        question: `FeaturePageBudgets.rollOverQuestion`,
+        answer: `FeaturePageBudgets.rollOverAnswer`,
+      },
+      {
+        id: `faq-currencies`,
+        question: `FeaturePageBudgets.currenciesQuestion`,
+        answer: `FeaturePageBudgets.currenciesAnswer`,
+      },
+      {
+        id: `faq-warning`,
+        question: `FeaturePageBudgets.warningQuestion`,
+        answer: `FeaturePageBudgets.warningAnswer`,
+      },
+      {
+        id: `faq-envelopes`,
+        question: `FeaturePageBudgets.envelopesQuestion`,
+        answer: `FeaturePageBudgets.envelopesAnswer`,
+      },
+      {
+        id: `faq-plan`,
+        question: `FeaturePageBudgets.planQuestion`,
+        answer: `FeaturePageBudgets.planAnswer`,
+      },
+    ],
+    updated: `2026-11-19`,
+  },
+  {
+    slug: `telegram-bot`,
+    name: `FeaturePageTelegramBot.name`,
+    title: `FeaturePageTelegramBot.title`,
+    description: `FeaturePageTelegramBot.description`,
+    h1: `FeaturePageTelegramBot.h1`,
+    answer: `FeaturePageTelegramBot.answer`,
+    summary: `FeaturePageTelegramBot.summary`,
+    how: [`FeaturePageTelegramBot.how1`, `FeaturePageTelegramBot.how2`],
+    questions: [
+      {
+        id: `faq-self-host`,
+        question: `FeaturePageTelegramBot.selfHostQuestion`,
+        answer: `FeaturePageTelegramBot.selfHostAnswer`,
+      },
+      {
+        id: `faq-group-chat`,
+        question: `FeaturePageTelegramBot.groupQuestion`,
+        answer: `FeaturePageTelegramBot.groupAnswer`,
+      },
+      {
+        id: `faq-transfer`,
+        question: `FeaturePageTelegramBot.transferQuestion`,
+        answer: `FeaturePageTelegramBot.transferAnswer`,
+      },
+      {
+        id: `faq-voice`,
+        question: `FeaturePageTelegramBot.voiceQuestion`,
+        answer: `FeaturePageTelegramBot.voiceAnswer`,
+      },
+      {
+        id: `faq-cost`,
+        question: `FeaturePageTelegramBot.costQuestion`,
+        answer: `FeaturePageTelegramBot.costAnswer`,
+      },
+    ],
+    updated: `2026-11-19`,
   },
 ]
 

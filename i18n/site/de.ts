@@ -281,6 +281,20 @@ export default {
   "FeatureLiveSync.notYetRates": "Wechselkurse, die du ohne Netz lesen kannst",
   "FeatureLiveSync.notYetStores": "Apps bei Google Play und im App Store",
   "FeatureLiveSync.code": "Echtzeit-Konzept lesen",
+  "FeatureTelegramBot.nav": "Telegram-Bot",
+  "FeatureTelegramBot.title": "Ausgaben direkt im Telegram-Chat eintragen",
+  "FeatureTelegramBot.lead":
+    "Verknüpfe dein Telegram-Konto einmal, dann trägst du mit /expense oder /income Buchungen ein und rufst mit /balance und /month deine Zahlen ab. Der Bot handelt in deinem Namen, mit deiner Rolle im Haushalt.",
+  "FeatureTelegramBot.fact1":
+    "/expense 12,50 speichert sofort, wenn deine letzte Ausgabe die Kategorie vorgibt",
+  "FeatureTelegramBot.fact2": "/balance und /month ändern nichts und stehen auch Betrachtern offen",
+  "FeatureTelegramBot.fact3":
+    "/expense, /income, /balance und /month funktionieren nur im privaten Chat; in einer Gruppe bittet dich der Bot, ihm privat zu schreiben",
+  "FeatureTelegramBot.fact4": "Zum Verknüpfen dient ein Einmalcode, der 10 Minuten gilt",
+  "FeatureTelegramBot.notYetTransfer": "Umbuchungen über den Bot eintragen",
+  "FeatureTelegramBot.notYetVoice": "Sprachnachrichten und Belegfotos, aus denen Buchungen werden",
+  "FeatureTelegramBot.notYetSentences": "Ganze Sätze statt eines Befehls eintippen",
+  "FeatureTelegramBot.code": "Code des Bots lesen",
   "FeatureDeploy.nav": "Selbst hosten",
   "FeatureDeploy.title": "Läuft auf deinem eigenen Server",
   "FeatureDeploy.lead":
@@ -530,6 +544,95 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "Gibt es einen Ein-Klick-Installer?",
   "FeaturePageSelfHosting.installerAnswer":
     "Noch nicht. Du richtest Financy von deinem eigenen Computer aus mit Deno, rsync und git ein, und ein Befehl stellt es bereit. Die Anleitung zum Selbsthosten führt dich durch jeden Schritt.",
+  "FeaturePageTransfers.name": "Umbuchungen",
+  "FeaturePageTransfers.title": "Umbuchungen zwischen Konten in zwei Währungen",
+  "FeaturePageTransfers.description":
+    "Halte Umbuchungen zwischen deinen Konten in zwei Währungen fest. Financy speichert den gesendeten und den erhaltenen Betrag.",
+  "FeaturePageTransfers.h1":
+    "Kann ich Umbuchungen zwischen Konten in verschiedenen Währungen eintragen?",
+  "FeaturePageTransfers.answer":
+    "Ja. Lege eine Umbuchung an, wähle die beiden Konten und gib den gesendeten Betrag ein. Trag auch ein, was angekommen ist, oder lass das Feld leer, dann rechnet Financy zum Kurs vom Datum der Umbuchung um. Beide Beträge bleiben erhalten, jeder in der Währung seines Kontos.",
+  "FeaturePageTransfers.summary":
+    "Halte Umbuchungen zwischen deinen Konten fest, beide Beträge bleiben erhalten.",
+  "FeaturePageTransfers.how1":
+    "Wähle das Konto, von dem das Geld abging, und das Konto, auf dem es ankam, und gib dann den gesendeten Betrag ein. Bei zwei Währungen fragt ein zweites Feld, was angekommen ist. Trag es ein, um den Kurs festzuhalten, den deine Bank berechnet hat, oder lass es leer, um zum Kurs vom Datum der Umbuchung umzurechnen. Hat Financy für dieses Datum keinen Kurs, bittet es dich, den Betrag einzugeben.",
+  "FeaturePageTransfers.how2":
+    "Der Kontostand jedes Kontos ändert sich um seinen eigenen Betrag. Eine Umbuchung hat keine Kategorie, deine Einnahmen, Ausgaben und Budgets bleiben also unverändert.",
+  "FeaturePageTransfers.spendingQuestion": "Zählt eine Umbuchung als Ausgabe oder Einnahme?",
+  "FeaturePageTransfers.spendingAnswer":
+    "Nein. Eine Umbuchung hat keine Kategorie und fließt in keine Summe der Einnahmen oder Ausgaben ein, auch nicht in Budgets. Nur die Kontostände der beiden Konten ändern sich.",
+  "FeaturePageTransfers.ownAmountQuestion":
+    "Kann ich den Betrag eintragen, der wirklich angekommen ist?",
+  "FeaturePageTransfers.ownAmountAnswer":
+    "Ja. Gib ein, was das Zielkonto erhalten hat, und Financy speichert genau diesen Betrag, statt umzurechnen. So bleibt der Kurs festgehalten, den deine Bank berechnet hat.",
+  "FeaturePageTransfers.feeQuestion": "Kann ich bei einer Umbuchung eine Bankgebühr eintragen?",
+  "FeaturePageTransfers.feeAnswer":
+    "Nein. Eine Umbuchung hat kein Feld für Gebühren, nur den gesendeten und den erhaltenen Betrag. Trag eine Gebühr deiner Bank separat als eigene Ausgabe ein.",
+  "FeaturePageTransfers.repeatQuestion": "Kann sich eine Umbuchung jeden Monat wiederholen?",
+  "FeaturePageTransfers.repeatAnswer":
+    "Noch nicht. Wiederkehrende Buchungen erzeugen nur Ausgaben oder Einnahmen, jede Umbuchung trägst du also vorerst selbst ein.",
+  "FeaturePageTransfers.statementQuestion":
+    "Kann Financy Umbuchungen in meinem Kontoauszug erkennen?",
+  "FeaturePageTransfers.statementAnswer":
+    "Noch nicht. Die App hat keine Ansicht zum Importieren von Kontoauszügen, daher kann sie daraus auch keine Umbuchungen vorschlagen.",
+  "FeaturePageBudgets.name": "Budgets",
+  "FeaturePageBudgets.title": "Monatsbudget für jede Kategorie festlegen",
+  "FeaturePageBudgets.description":
+    "Lege für jede Ausgabenkategorie ein Monatslimit fest und behalte es live mit deinem Haushalt im Blick. Das Limit gilt weiter, bis du es änderst.",
+  "FeaturePageBudgets.h1": "Kann ich pro Kategorie ein monatliches Limit festlegen?",
+  "FeaturePageBudgets.answer":
+    "Ja. Lege für jede Ausgabenkategorie ein Monatslimit fest, und Financy zeigt allen im Haushalt live, wie viel davon schon ausgegeben ist. Das Limit gilt in den folgenden Monaten weiter, bis du es änderst.",
+  "FeaturePageBudgets.summary": "Ein Monatslimit pro Kategorie, live für den ganzen Haushalt.",
+  "FeaturePageBudgets.how1":
+    "Öffne Budgets, wähle eine Ausgabenkategorie und gib ihr Limit ein. Das Limit gilt ab diesem Monat, frühere Monate behalten ihre bisherigen Limits. Als Ausgaben zählen die Ausgaben des Monats abzüglich Erstattungen.",
+  "FeaturePageBudgets.how2":
+    "Ab 80 % des Limits warnt dich der Balken, und er zeigt, wie weit du darüber liegst. Das Limit einer Unterkategorie darf nicht höher sein als das, was vom Limit der Oberkategorie noch übrig ist.",
+  "FeaturePageBudgets.rollOverQuestion":
+    "Wird nicht ausgegebenes Geld in den nächsten Monat übernommen?",
+  "FeaturePageBudgets.rollOverAnswer":
+    "Nein. Jeder Monat wird an seinem eigenen Limit gemessen, nicht ausgegebenes Geld kommt also nicht zum nächsten Monat hinzu.",
+  "FeaturePageBudgets.currenciesQuestion": "Zählen Ausgaben in einer anderen Währung zum Limit?",
+  "FeaturePageBudgets.currenciesAnswer":
+    "Ja. Financy rechnet sie in die Währung des Limits um. Eine Währung, für die es noch keinen Wechselkurs gibt, wird in der Ansicht genannt, nicht still weggelassen.",
+  "FeaturePageBudgets.warningQuestion":
+    "Benachrichtigt mich Financy, wenn ich ein Limit überschreite?",
+  "FeaturePageBudgets.warningAnswer":
+    "Nein. Financy verschickt zu Budgets keine Benachrichtigungen. In der Ansicht Budgets siehst du, wie weit eine Kategorie über dem Limit liegt.",
+  "FeaturePageBudgets.envelopesQuestion": "Kann ich mit der Umschlagmethode budgetieren?",
+  "FeaturePageBudgets.envelopesAnswer":
+    "Noch nicht. Heute hat jede Kategorie ein Monatslimit. Die Ansichten, mit denen du Geld in Umschläge legst und zwischen ihnen verschiebst, gibt es noch nicht.",
+  "FeaturePageBudgets.planQuestion": "Brauche ich für Budgets einen kostenpflichtigen Tarif?",
+  "FeaturePageBudgets.planAnswer":
+    "Ja. In der Cloud von Financy brauchst du zum Setzen eines Limits den Tarif Household, Budgets ansehen und Limits entfernen kannst du immer. Auf deinem eigenen Server mit ausgeschalteter Abrechnung kann jeder Haushalt Limits setzen.",
+  "FeaturePageTelegramBot.name": "Telegram-Bot",
+  "FeaturePageTelegramBot.title": "Telegram-Bot für Ausgaben und Kontostände",
+  "FeaturePageTelegramBot.description":
+    "Trag Ausgaben und Einnahmen im privaten Telegram-Chat ein und frag Kontostände und Monatszahlen ab. Alles landet direkt in deinem Haushalt.",
+  "FeaturePageTelegramBot.h1": "Kann ich Ausgaben per Telegram eintragen?",
+  "FeaturePageTelegramBot.answer":
+    "Ja. Verknüpfe dein Telegram-Konto in deinem Financy-Profil und sende dann /expense im privaten Chat. Der Bot fragt nach dem Betrag, zeigt Konto und Kategorie und speichert die Buchung, sobald du auf „Speichern“ tippst.",
+  "FeaturePageTelegramBot.summary":
+    "Buchungen eintragen und Kontostände abrufen, direkt im privaten Chat.",
+  "FeaturePageTelegramBot.how1":
+    "Tippe in deinem Financy-Profil auf „Telegram verknüpfen“ und öffne den Chat. Der Code gilt 10 Minuten und funktioniert einmal, und der Bot nennt das Benutzerkonto, zu dem der Code gehört, bevor du auf „Verknüpfen“ tippst.",
+  "FeaturePageTelegramBot.how2":
+    "Sende /expense oder /income, und der Bot fragt nach dem Betrag. Über Buttons änderst du Konto oder Kategorie, und „Speichern“ legt die Buchung an. /balance und /month zeigen deine Zahlen und ändern nichts.",
+  "FeaturePageTelegramBot.selfHostQuestion": "Funktioniert der Bot auch auf meinem eigenen Server?",
+  "FeaturePageTelegramBot.selfHostAnswer":
+    "Ja. Erstelle mit dem BotFather von Telegram einen Bot und trag sein Token, seinen Benutzernamen und ein Webhook-Secret in die Einstellungen deines Servers ein. Solange kein Token gesetzt ist, bleibt der Bot aus, und der Rest von Financy läuft ohne ihn.",
+  "FeaturePageTelegramBot.groupQuestion": "Kann ich den Bot in einem Gruppenchat nutzen?",
+  "FeaturePageTelegramBot.groupAnswer":
+    "Nein. /expense, /income, /balance und /month funktionieren nur im privaten Chat, denn sonst sähen alle in der Gruppe die Zahlen deines Haushalts.",
+  "FeaturePageTelegramBot.transferQuestion": "Kann ich mit dem Bot eine Umbuchung eintragen?",
+  "FeaturePageTelegramBot.transferAnswer":
+    "Noch nicht. Der Bot trägt Ausgaben und Einnahmen ein. Umbuchungen zwischen Konten erfasst du in der Financy-App.",
+  "FeaturePageTelegramBot.voiceQuestion":
+    "Kann ich eine Sprachnachricht oder ein Belegfoto schicken?",
+  "FeaturePageTelegramBot.voiceAnswer":
+    "Noch nicht. Der Bot versteht getippte Beträge und Klicks auf Buttons, eine Sprachnachricht oder ein Foto trägt also nichts ein.",
+  "FeaturePageTelegramBot.costQuestion": "Kostet der Bot extra?",
+  "FeaturePageTelegramBot.costAnswer":
+    "Nein. Der Bot ist keine kostenpflichtige Zusatzfunktion. Eine Buchung aus dem Chat zählt wie eine aus der App: Hat der Tarif eines Haushalts keinen Platz für weitere Buchungen, geht es an beiden Stellen nicht.",
   "FeaturePageMissing.title": "Diese Funktionsseite gibt es hier nicht",
   "FeaturePageMissing.description":
     "Vielleicht ist sie umgezogen. Alle Funktionen findest du auf der Funktionsseite.",
@@ -701,6 +804,7 @@ export default {
     "Ausgaben sind Ausgaben minus Erstattungen; eine Währung ohne Wechselkurs wird genannt, nicht still weggelassen",
   "FeatureBudgets.fact3":
     "Ein Limit setzen braucht den Tarif Household; Budgets lesen und ein Limit entfernen nie, geprüft auf dem Server",
+  "FeatureBudgets.notYetEnvelopes": "Ansichten fürs Budgetieren mit Umschlägen",
   "FeatureBudgets.code": "Code der Budgets lesen",
   "HomeStatus.recurring": "Wiederkehrende Buchungen für Miete, Gehalt und Abos",
   "FeatureRecurring.nav": "Wiederkehrende Buchungen",
@@ -738,6 +842,20 @@ export default {
   "FeatureTransactions.fact3": "Eine Einnahme in einer Ausgabenkategorie ist eine Erstattung",
   "FeatureTransactions.fact4": "Eine gelöschte Buchung lässt sich 30 Tage lang wiederherstellen",
   "FeatureTransactions.code": "Code der Buchungen lesen",
+  "FeatureTransfers.nav": "Umbuchungen",
+  "FeatureTransfers.title": "Geld zwischen deinen eigenen Konten verschieben",
+  "FeatureTransfers.lead":
+    "Halte fest, wenn Geld von einem Konto auf ein anderes geht, in einer Währung oder über zwei hinweg. Jedes Konto behält seinen eigenen Betrag, so bleibt der Kurs festgehalten, den deine Bank wirklich berechnet hat.",
+  "FeatureTransfers.fact1":
+    "Bleibt bei zwei Währungen der erhaltene Betrag leer, gilt der Kurs vom Datum der Umbuchung",
+  "FeatureTransfers.fact2":
+    "Eine Umbuchung hat keine Kategorie und zählt weder als Einnahme noch als Ausgabe",
+  "FeatureTransfers.fact3":
+    "Eine offline eingetragene Umbuchung wartet auf deinem Gerät und wird gesendet, sobald du wieder online bist",
+  "FeatureTransfers.fact4": "Eine gelöschte Umbuchung lässt sich 30 Tage lang wiederherstellen",
+  "FeatureTransfers.notYetStatement": "Umbuchungsvorschläge aus einem importierten Kontoauszug",
+  "FeatureTransfers.notYetRepeating": "Umbuchungen, die sich nach Zeitplan wiederholen",
+  "FeatureTransfers.code": "Code der Umbuchungen lesen",
   "AudiencePage.demo": "Demo ausprobieren",
   "AudiencePage.demoNote": "Beispieldaten, kein Benutzerkonto nötig.",
   "AudiencePage.limits": "Was Financy nicht kann",

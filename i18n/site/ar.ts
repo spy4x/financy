@@ -266,6 +266,20 @@ export default {
   "FeatureLiveSync.notYetRates": "أسعار صرف يمكنك قراءتها دون اتصال",
   "FeatureLiveSync.notYetStores": "تطبيقات في Google Play وApp Store",
   "FeatureLiveSync.code": "اقرأ تصميم المزامنة الفورية",
+  "FeatureTelegramBot.nav": "بوت Telegram",
+  "FeatureTelegramBot.title": "أضف مصروفًا من محادثة على Telegram",
+  "FeatureTelegramBot.lead":
+    "اربط حساب Telegram الخاص بك مرة واحدة، ثم أرسل ‎/expense أو ‎/income لإضافة معاملة، أو ‎/balance أو ‎/month للاطلاع على أرقامك. يتصرّف البوت باسمك، وبدورك نفسه في الأسرة.",
+  "FeatureTelegramBot.fact1":
+    "يحفظ الأمر ‎/expense 12.50 المصروف فورًا إن كان آخر مصروف لك يحدّد الفئة",
+  "FeatureTelegramBot.fact2": "لا يغيّر الأمران ‎/balance و‎/month شيئًا، ويستطيع القارئ استخدامهما أيضًا",
+  "FeatureTelegramBot.fact3":
+    "تعمل الأوامر ‎/expense و‎/income و‎/balance و‎/month في المحادثة الخاصة فقط، وفي المجموعات يطلب منك البوت مراسلته في محادثة خاصة",
+  "FeatureTelegramBot.fact4": "يتطلب الربط رمزًا لمرة واحدة صالحًا لمدة 10 دقائق",
+  "FeatureTelegramBot.notYetTransfer": "تسجيل تحويل من البوت",
+  "FeatureTelegramBot.notYetVoice": "رسائل صوتية وصور إيصالات تتحوّل إلى معاملات",
+  "FeatureTelegramBot.notYetSentences": "كتابة جملة كاملة بدلًا من أمر",
+  "FeatureTelegramBot.code": "اقرأ شيفرة البوت",
   "FeatureDeploy.nav": "الاستضافة الذاتية",
   "FeatureDeploy.title": "يعمل على خادمك الخاص",
   "FeatureDeploy.lead":
@@ -512,6 +526,88 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "هل يوجد مثبّت بنقرة واحدة؟",
   "FeaturePageSelfHosting.installerAnswer":
     "ليس بعد. تُعِدّ Financy من حاسوبك باستخدام Deno وrsync وgit، وأمر واحد ينشره. ويرشدك دليل الاستضافة الذاتية خطوة بخطوة.",
+  "FeaturePageTransfers.name": "التحويلات",
+  "FeaturePageTransfers.title": "سجّل التحويلات بين حساباتك بعملتين مختلفتين",
+  "FeaturePageTransfers.description":
+    "سجّل المال الذي تنقله بين حساباتك بعملتين مختلفتين. يحتفظ Financy بالمبلغ المرسل والمبلغ المستلم معًا.",
+  "FeaturePageTransfers.h1": "هل يمكنني تسجيل تحويل بين حسابين بعملتين مختلفتين؟",
+  "FeaturePageTransfers.answer":
+    "نعم. أضف تحويلًا، واختر الحسابين، واكتب المبلغ المرسل. اكتب أيضًا ما وصل فعلًا، أو اترك الحقل فارغًا ليحسبه Financy بسعر صرف تاريخ التحويل. ويُحفظ المبلغان معًا، كلٌّ بعملة حسابه.",
+  "FeaturePageTransfers.summary": "سجّل المال المنقول بين حساباتك، مع حفظ المبلغين معًا.",
+  "FeaturePageTransfers.how1":
+    "اختر الحساب الذي خرج منه المال والحساب الذي وصل إليه، ثم اكتب المبلغ المرسل. وبين عملتين، يظهر حقل ثانٍ يسألك عمّا وصل. اكتبه لتحتفظ بالسعر الذي احتسبه مصرفك، أو اتركه فارغًا ليُحسب بسعر صرف تاريخ التحويل. وإن لم يتوفر لدى Financy سعر لذلك التاريخ، يطلب منك كتابة المبلغ.",
+  "FeaturePageTransfers.how2":
+    "يتغيّر رصيد كل حساب بالمبلغ الخاص به. وليس للتحويل فئة، فيبقى دخلك وإنفاقك وميزانياتك كما هي.",
+  "FeaturePageTransfers.spendingQuestion": "هل يُحتسب التحويل إنفاقًا أو دخلًا؟",
+  "FeaturePageTransfers.spendingAnswer":
+    "لا. ليس للتحويل فئة، ولا يدخل في أي رقم للدخل أو الإنفاق، بما في ذلك الميزانيات. ولا يتغيّر سوى رصيدي الحسابين.",
+  "FeaturePageTransfers.ownAmountQuestion": "هل يمكنني إدخال المبلغ الذي وصل فعلًا؟",
+  "FeaturePageTransfers.ownAmountAnswer":
+    "نعم. اكتب ما استلمه الحساب المستقبِل، فيحفظ Financy المبلغ كما كتبته بدلًا من حسابه بسعر الصرف. ويبقى السعر الذي احتسبه مصرفك محفوظًا في سجلاتك.",
+  "FeaturePageTransfers.feeQuestion": "هل يمكنني تسجيل رسوم مصرفية على التحويل؟",
+  "FeaturePageTransfers.feeAnswer":
+    "لا. ليس في التحويل حقل للرسوم، بل المبلغ المرسل والمبلغ المستلم فقط. أضف الرسوم التي احتسبها مصرفك كمصروف مستقل.",
+  "FeaturePageTransfers.repeatQuestion": "هل يمكن أن يتكرر التحويل كل شهر؟",
+  "FeaturePageTransfers.repeatAnswer":
+    "ليس بعد. القاعدة المتكررة تُنشئ مصروفًا أو دخلًا فقط، لذا تضيف كل تحويل بنفسك حاليًا.",
+  "FeaturePageTransfers.statementQuestion":
+    "هل يستطيع Financy العثور على التحويلات في كشف حسابي البنكي؟",
+  "FeaturePageTransfers.statementAnswer":
+    "ليس بعد. لا توجد في التطبيق شاشة لاستيراد كشف الحساب البنكي، لذا لا يستطيع Financy اقتراح تحويلات منه.",
+  "FeaturePageBudgets.name": "الميزانيات",
+  "FeaturePageBudgets.title": "حدّد ميزانية شهرية لكل فئة",
+  "FeaturePageBudgets.description":
+    "ضع حدًا شهريًا للإنفاق على كل فئة مصروفات وتابعه مباشرةً مع أسرتك. ويستمر الحد حتى تغيّره.",
+  "FeaturePageBudgets.h1": "هل يمكنني تحديد حد شهري لكل فئة؟",
+  "FeaturePageBudgets.answer":
+    "نعم. ضع حدًا شهريًا لأي فئة مصروفات، فيعرض Financy ما أُنفق منه، مباشرةً لكل من في الأسرة. ويستمر الحد في الأشهر التالية حتى تغيّره.",
+  "FeaturePageBudgets.summary": "حد شهري لكل فئة، مباشرةً لكل أفراد الأسرة.",
+  "FeaturePageBudgets.how1":
+    "افتح «الميزانيات»، واختر فئة مصروفات، واكتب حدّها. يسري الحد من ذلك الشهر فصاعدًا، وتحتفظ الأشهر السابقة بحدودها. والإنفاق هو مصروفات الشهر ناقص المبالغ المستردة.",
+  "FeaturePageBudgets.how2":
+    "ينبّهك الشريط بدءًا من 80% من الحد، ويعرض مقدار تجاوزك له. ولا يمكن أن يتجاوز حد الفئة الفرعية ما يتبقّى من حد فئتها الرئيسية.",
+  "FeaturePageBudgets.rollOverQuestion": "هل ينتقل المال غير المنفق إلى الشهر التالي؟",
+  "FeaturePageBudgets.rollOverAnswer":
+    "لا. يُقاس كل شهر بحده الخاص، فالمال الذي لم تنفقه لا يُضاف إلى الشهر التالي.",
+  "FeaturePageBudgets.currenciesQuestion": "هل تُحتسب المصروفات بعملة أخرى ضمن الحد؟",
+  "FeaturePageBudgets.currenciesAnswer":
+    "نعم. يحوّلها Financy إلى عملة الحد. والعملة التي لا سعر صرف لها بعد تظهر باسمها على الشاشة ولا تُسقط بصمت.",
+  "FeaturePageBudgets.warningQuestion": "هل يرسل لي Financy رسالة حين أتجاوز الحد؟",
+  "FeaturePageBudgets.warningAnswer":
+    "لا. لا يرسل Financy أي رسالة عن الميزانية. وتعرض شاشة «الميزانيات» مقدار تجاوز كل فئة لحدها.",
+  "FeaturePageBudgets.envelopesQuestion": "هل يمكنني إدارة ميزانيتي بنظام المظاريف؟",
+  "FeaturePageBudgets.envelopesAnswer":
+    "ليس بعد. لكل فئة اليوم حد شهري. أما شاشات وضع المال في المظاريف ونقله بينها فلم تُبنَ بعد.",
+  "FeaturePageBudgets.planQuestion": "هل تحتاج الميزانيات إلى خطة مدفوعة؟",
+  "FeaturePageBudgets.planAnswer":
+    "نعم. على سحابة Financy، يتطلب تعيين حد خطة Household، أما قراءة الميزانيات وإزالة حد فلا تتطلبانها أبدًا. وعلى خادمك الخاص مع ترك الفوترة معطّلة، تستطيع كل أسرة تعيين الحدود.",
+  "FeaturePageTelegramBot.name": "بوت Telegram",
+  "FeaturePageTelegramBot.title": "أضف مصروفاتك وتابع أرصدتك من Telegram",
+  "FeaturePageTelegramBot.description":
+    "أضف مصروفًا أو دخلًا من محادثة خاصة على Telegram، واطلب أرصدتك وأرقام هذا الشهر. وتُسجَّل المعاملات في بيانات أسرتك مباشرةً.",
+  "FeaturePageTelegramBot.h1": "هل يمكنني إضافة مصروف من Telegram؟",
+  "FeaturePageTelegramBot.answer":
+    "نعم. اربط حساب Telegram من ملفك الشخصي في Financy، ثم أرسل ‎/expense في محادثة خاصة. يسألك البوت عن المبلغ، ويعرض الحساب والفئة، ويحفظ المعاملة حين تضغط «حفظ».",
+  "FeaturePageTelegramBot.summary": "أضف معاملاتك واطّلع على أرصدتك من محادثة خاصة.",
+  "FeaturePageTelegramBot.how1":
+    "في ملفك الشخصي في Financy، اضغط «ربط Telegram» وافتح المحادثة. يعمل الرمز مرة واحدة لمدة 10 دقائق، ويذكر البوت حساب المستخدم الذي يخصّه الرمز قبل أن تضغط «ربط».",
+  "FeaturePageTelegramBot.how2":
+    "أرسل ‎/expense أو ‎/income فيسألك البوت عن المبلغ. تغيّر الأزرار الحساب أو الفئة، ويسجّل زر «حفظ» المعاملة. أما ‎/balance و‎/month فيعرضان أرقامك دون تغيير أي شيء.",
+  "FeaturePageTelegramBot.selfHostQuestion": "هل يعمل البوت على خادم أستضيفه بنفسي؟",
+  "FeaturePageTelegramBot.selfHostAnswer":
+    "نعم. أنشئ بوتًا عبر BotFather في Telegram، وضع رمزه المميز واسم المستخدم الخاص به وسرّ webhook في إعدادات خادمك. وإلى أن تضيف الرمز المميز يبقى البوت معطّلًا، ويعمل باقي Financy دونه.",
+  "FeaturePageTelegramBot.groupQuestion": "هل يمكنني استخدام البوت في محادثة جماعية؟",
+  "FeaturePageTelegramBot.groupAnswer":
+    "لا. لا تعمل الأوامر ‎/expense و‎/income و‎/balance و‎/month إلا في محادثة خاصة، لأن الرد في مجموعة سيكشف أرقام أسرتك لكل من فيها.",
+  "FeaturePageTelegramBot.transferQuestion": "هل يمكنني تسجيل تحويل من البوت؟",
+  "FeaturePageTelegramBot.transferAnswer":
+    "ليس بعد. يضيف البوت المصروفات والدخل فقط. سجّل التحويل بين الحسابات في تطبيق Financy.",
+  "FeaturePageTelegramBot.voiceQuestion": "هل يمكنني إرسال رسالة صوتية أو صورة إيصال؟",
+  "FeaturePageTelegramBot.voiceAnswer":
+    "ليس بعد. يقرأ البوت المبالغ المكتوبة وضغطات الأزرار، فلا تضيف الرسالة الصوتية أو الصورة شيئًا.",
+  "FeaturePageTelegramBot.costQuestion": "هل يكلّف البوت مالًا إضافيًا؟",
+  "FeaturePageTelegramBot.costAnswer":
+    "لا. البوت ليس إضافة مدفوعة. والمعاملة من المحادثة تُحتسب كأنها من التطبيق، فالأسرة التي لم تعد خطتها تتسع لمزيد من المعاملات لا تستطيع الإضافة من أيٍّ منهما.",
   "FeaturePageMissing.title": "صفحة هذه الميزة غير موجودة",
   "FeaturePageMissing.description": "ربما انتقلت. كل الميزات موجودة في صفحة الميزات.",
   "FeaturePageMissing.action": "عرض كل الميزات",
@@ -673,6 +769,7 @@ export default {
     "الإنفاق هو المصروفات ناقص المبالغ المستردة؛ والعملة التي لا سعر صرف لها بعد تُذكر باسمها ولا تُسقط بصمت",
   "FeatureBudgets.fact3":
     "تعيين حد يتطلب خطة Household؛ أما قراءة الميزانيات وإزالة حد فلا تتطلبانها أبدًا، ويتحقق الخادم من ذلك",
+  "FeatureBudgets.notYetEnvelopes": "شاشات لإدارة الميزانية بنظام المظاريف",
   "FeatureBudgets.code": "اقرأ شيفرة الميزانيات",
   "HomeStatus.recurring": "معاملات متكررة للإيجار والراتب والاشتراكات",
   "FeatureRecurring.nav": "المعاملات المتكررة",
@@ -709,6 +806,17 @@ export default {
   "FeatureTransactions.fact3": "الدخل في فئة مصروفات هو استرداد",
   "FeatureTransactions.fact4": "يمكن استعادة المعاملة المحذوفة خلال 30 يومًا",
   "FeatureTransactions.code": "اقرأ شيفرة المعاملات",
+  "FeatureTransfers.nav": "التحويلات",
+  "FeatureTransfers.title": "أموال تنتقل بين حساباتك أنت",
+  "FeatureTransfers.lead":
+    "سجّل المال المنتقل من حساب إلى آخر، بعملة واحدة أو بين عملتين. يحتفظ كل حساب بمبلغه الخاص، فيبقى السعر الذي احتسبه مصرفك فعلًا محفوظًا في سجلاتك.",
+  "FeatureTransfers.fact1": "بين عملتين، يُحسب المبلغ المستلم المتروك فارغًا بسعر صرف تاريخ التحويل",
+  "FeatureTransfers.fact2": "ليس للتحويل فئة، ولا يدخل في أي رقم للدخل أو الإنفاق",
+  "FeatureTransfers.fact3": "التحويل المضاف دون اتصال ينتظر على جهازك ويُرسل حين يعود الاتصال",
+  "FeatureTransfers.fact4": "يمكن استعادة التحويل المحذوف خلال 30 يومًا",
+  "FeatureTransfers.notYetStatement": "اقتراح التحويلات من كشف حساب بنكي مستورد",
+  "FeatureTransfers.notYetRepeating": "تحويلات تتكرر وفق جدول زمني",
+  "FeatureTransfers.code": "اقرأ شيفرة التحويلات",
   "AudiencePage.demo": "جرّب العرض التجريبي",
   "AudiencePage.demoNote": "بيانات تجريبية، ولا حاجة إلى حساب مستخدم.",
   "AudiencePage.limits": "ما لا يفعله Financy",

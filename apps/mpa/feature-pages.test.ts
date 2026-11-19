@@ -210,6 +210,21 @@ describe("the feature pages", () => {
     for (const href of others) expect(href).toMatch(/^\/fr\/features\//)
   })
 
+  it("offers the next three pages under Other features, wrapping round so no page is left out", async () => {
+    for (const [index, page] of FEATURE_PAGES.entries()) {
+      const { html } = await get(`/features/${page.slug}`)
+      const band =
+        html.match(/id="other-features-title"[\s\S]*?data-e2e="feature-page-all"/)?.[0] ??
+          ``
+      const offered = [...band.matchAll(/<a [^>]*href="\/features\/([^"#]+)"/g)]
+        .map((match) => match[1])
+
+      expect([...new Set(offered)], page.slug).toEqual(
+        [1, 2, 3].map((step) => FEATURE_PAGES[(index + step) % FEATURE_PAGES.length].slug),
+      )
+    }
+  })
+
   it("answers an unknown feature with a 404 that leads to every feature", async () => {
     const { status, html } = await get(`/features/not-a-feature`)
 
