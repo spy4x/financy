@@ -160,7 +160,7 @@ export default {
   "GroupEditor.export": "导出为 JSON",
   "GroupEditor.exportHint": "只有这种文件可以重新导入",
   "GroupEditor.exportSpreadsheets": "导出为电子表格",
-  "GroupEditor.exportSpreadsheetsHint": "ZIP 压缩包，适合表格软件或会计使用",
+  "GroupEditor.exportSpreadsheetsHint": "交易、转账、账户、分类和预算，各一个 CSV 文件",
   "GroupEditor.exporting": "正在准备…",
   "GroupEditor.offline": "你已离线",
   "GroupEditor.moveAll": "移动全部数据…",

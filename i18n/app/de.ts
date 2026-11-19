@@ -206,7 +206,8 @@ export default {
   "GroupEditor.export": "Als JSON exportieren",
   "GroupEditor.exportHint": "Nur diese Datei kannst du wieder importieren",
   "GroupEditor.exportSpreadsheets": "Als Tabellen exportieren",
-  "GroupEditor.exportSpreadsheetsHint": "ZIP-Datei für Tabellen-Apps oder die Buchhaltung",
+  "GroupEditor.exportSpreadsheetsHint":
+    "Buchungen, Umbuchungen, Konten, Kategorien und Budgets, je eine CSV-Datei",
   "GroupEditor.exporting": "Wird vorbereitet …",
   "GroupEditor.offline": "Du bist offline",
   "GroupEditor.moveAll": "Alle Daten verschieben …",

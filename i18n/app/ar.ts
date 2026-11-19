@@ -220,7 +220,8 @@ export default {
   "GroupEditor.export": "تصدير بصيغة JSON",
   "GroupEditor.exportHint": "الملف الوحيد الذي يمكنك إعادة استيراده",
   "GroupEditor.exportSpreadsheets": "تصدير إلى جداول بيانات",
-  "GroupEditor.exportSpreadsheetsHint": "ملف ZIP لتطبيق جداول بيانات أو لمحاسبك",
+  "GroupEditor.exportSpreadsheetsHint":
+    "المعاملات والتحويلات والحسابات والفئات والميزانيات، كلٌّ في ملف CSV",
   "GroupEditor.exporting": "جارٍ التجهيز…",
   "GroupEditor.offline": "أنت دون اتصال",
   "GroupEditor.moveAll": "نقل كل البيانات…",
