@@ -307,7 +307,7 @@ export default {
   "FeatureSection.forDevelopers": "للمطورين",
   "FeatureVisuals.deployCaption": "مختصر: حُذفت مخرجات rsync وCompose بين الخطوات.",
   "FeatureVisuals.services": "الخدمات على الخادم",
-  "Loops.realtimeName": "المزامنة المباشرة",
+  "Loops.realtimeName": "المزامنة الفورية",
   "Loops.realtimeTitle":
     "مصروف بمبلغ €64.50 يُضاف في النافذة اليسرى فيرفع ميزانية Travel في النافذة اليمنى من €171.80 إلى €236.30، دون إعادة تحميل.",
   "Loops.realtimeCaption":

@@ -330,17 +330,17 @@ export default {
   "FeatureVisuals.services": "Services sur le serveur",
   "Loops.realtimeName": "Synchronisation en direct",
   "Loops.realtimeTitle":
-    "Une dépense de €64.50 ajoutée dans la fenêtre de gauche fait passer le budget Travel de la fenêtre de droite de €171.80 à €236.30, sans rechargement.",
+    "Une dépense de €64.50 ajoutée dans la fenêtre de gauche fait passer le budget Travel, dans la fenêtre de droite, de €171.80 à €236.30, sans rechargement.",
   "Loops.realtimeCaption":
     "Deux personnes, un même foyer. Une dépense ajoutée sur un écran met à jour le budget sur l’autre.",
   "Loops.offlineName": "Saisie hors ligne",
   "Loops.offlineTitle":
-    "Sans connexion, une dépense de 240 bahts est ajoutée et attend dans la liste. Une fois en ligne, elle est envoyée et convertie en euros.",
+    "Sans connexion, une dépense de 240 bahts est ajoutée et attend dans la liste. Une fois la connexion revenue, elle est envoyée et convertie en euros.",
   "Loops.offlineCaption":
     "Ajoutez des opérations sans connexion. Elles attendent sur cet appareil et partent dès que vous êtes reconnecté.",
   "Loops.shortcutsName": "Raccourcis clavier",
   "Loops.shortcutsTitle":
-    "T puis Entrée ajoutent une opération. Ctrl+K retrouve ensuite un paiement d’hôtel à partir d’un mot mal orthographié, d’un mot en cyrillique et d’un mot tapé avec la mauvaise disposition de clavier, et Entrée l’ouvre.",
+    "T puis Enter ajoutent une opération. Ctrl+K retrouve ensuite un paiement d’hôtel à partir d’un mot mal orthographié, d’un mot en cyrillique et d’un mot tapé avec la mauvaise disposition de clavier, et Enter l’ouvre.",
   "Loops.shortcutsCaption":
     "Appuyez sur T pour ajouter une opération et sur Ctrl+K (⌘K sur Mac) pour en retrouver une. La recherche pardonne les fautes de frappe, le cyrillique et la mauvaise disposition de clavier.",
   "Outbox.change": "La modification",

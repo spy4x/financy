@@ -330,12 +330,12 @@ export default {
   "Loops.offlineTitle":
     "Sem conexão, uma despesa de 240 baht é adicionada e fica aguardando na lista. De volta online, ela é enviada e convertida para euros.",
   "Loops.offlineCaption":
-    "Adicione transações sem conexão. Elas aguardam neste aparelho e são enviadas quando você se reconecta.",
+    "Adicione lançamentos sem conexão. Eles aguardam neste dispositivo e são enviados quando você se reconecta.",
   "Loops.shortcutsName": "Atalhos de teclado",
   "Loops.shortcutsTitle":
-    "T e Enter adicionam uma transação. Depois, Ctrl+K encontra um pagamento de hotel a partir de uma palavra com erro de digitação, uma em cirílico e uma digitada no layout de teclado errado, e Enter o abre.",
+    "T e Enter adicionam um lançamento. Depois, Ctrl+K encontra um pagamento de hotel a partir de uma palavra com erro de digitação, outra em cirílico e outra digitada no layout de teclado errado, e Enter o abre.",
   "Loops.shortcutsCaption":
-    "Pressione T para adicionar uma transação e Ctrl+K (⌘K no Mac) para encontrar uma. A busca perdoa erros de digitação, cirílico e o layout de teclado errado.",
+    "Pressione T para adicionar um lançamento e Ctrl+K (⌘K no Mac) para encontrar um. A busca perdoa erros de digitação, cirílico e o layout de teclado errado.",
   "Outbox.change": "A alteração",
   "Outbox.changeNote": "uma nota, um membro",
   "Outbox.event": "Seu evento",

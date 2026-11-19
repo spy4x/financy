@@ -336,7 +336,7 @@ export default {
     "Añade movimientos sin conexión. Esperan en este dispositivo y se envían cuando vuelves a conectarte.",
   "Loops.shortcutsName": "Atajos de teclado",
   "Loops.shortcutsTitle":
-    "T y Enter añaden un movimiento. Después, Ctrl+K encuentra un pago de hotel con una palabra mal escrita, una en cirílico y una escrita con la distribución de teclado equivocada, y Enter lo abre.",
+    "T y Enter añaden un movimiento. Después, Ctrl+K encuentra un pago de hotel con una palabra mal escrita, otra en cirílico y otra escrita con la distribución de teclado equivocada, y Enter lo abre.",
   "Loops.shortcutsCaption":
     "Pulsa T para añadir un movimiento y Ctrl+K (⌘K en un Mac) para encontrar uno. La búsqueda perdona erratas, el cirílico y la distribución de teclado equivocada.",
   "Outbox.change": "El cambio",

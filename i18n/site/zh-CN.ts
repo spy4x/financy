@@ -289,11 +289,11 @@ export default {
   "Loops.realtimeCaption": "两个人，同一个家庭。在一个屏幕上添加的支出，会更新另一个屏幕上的预算。",
   "Loops.offlineName": "离线记账",
   "Loops.offlineTitle":
-    "没有网络时添加一笔 240 泰铢的支出，它会在列表中等待。恢复联网后，它会被发送并换算成欧元。",
+    "没有网络时添加一笔 240 泰铢的支出，它会在列表中等待。恢复联网后，它会发送出去并换算成欧元。",
   "Loops.offlineCaption": "没有网络也能添加交易。它们会在这台设备上等待，重新联网后再发送。",
   "Loops.shortcutsName": "键盘快捷键",
   "Loops.shortcutsTitle":
-    "按 T 再按 Enter 即可添加一笔交易。随后 Ctrl+K 能通过一个拼错的词、一个西里尔字母的词和一个用错键盘布局输入的词找到一笔酒店付款，按 Enter 即可打开。",
+    "按 T 再按 Enter 即可添加一笔交易。随后按 Ctrl+K，无论输入拼错的词、西里尔字母的词，还是用错键盘布局打出的词，都能找到同一笔酒店付款，再按 Enter 打开。",
   "Loops.shortcutsCaption":
     "按 T 添加交易，按 Ctrl+K（Mac 上为 ⌘K）查找交易。搜索能容忍拼写错误、西里尔字母和用错的键盘布局。",
   "Outbox.change": "更改",

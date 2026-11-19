@@ -311,7 +311,7 @@ export default {
   "FeatureVisuals.deployCaption":
     "一部省略：各ステップの間のrsyncとComposeの出力は割愛しています。",
   "FeatureVisuals.services": "サーバー上のサービス",
-  "Loops.realtimeName": "ライブ同期",
+  "Loops.realtimeName": "リアルタイム同期",
   "Loops.realtimeTitle":
     "左のウィンドウで €64.50 の支出を追加すると、右のウィンドウの Travel の予算が再読み込みなしで €171.80 から €236.30 に増えます。",
   "Loops.realtimeCaption":

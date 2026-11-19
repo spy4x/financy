@@ -324,19 +324,19 @@ export default {
   "FeatureVisuals.services": "Dienste auf dem Server",
   "Loops.realtimeName": "Live-Sync",
   "Loops.realtimeTitle":
-    "Eine Ausgabe von €64.50, im linken Fenster erfasst, hebt das Travel-Budget im rechten Fenster von €171.80 auf €236.30, ohne Neuladen.",
+    "Im linken Fenster wird eine Ausgabe von €64.50 erfasst, und im rechten Fenster steigt das Travel-Budget ohne Neuladen von €171.80 auf €236.30.",
   "Loops.realtimeCaption":
-    "Zwei Personen, ein Haushalt. Eine Ausgabe, auf einem Bildschirm erfasst, aktualisiert das Budget auf dem anderen.",
+    "Zwei Personen, ein Haushalt. Eine Ausgabe auf dem einen Bildschirm, und schon ist das Budget auf dem anderen aktuell.",
   "Loops.offlineName": "Offline erfassen",
   "Loops.offlineTitle":
-    "Ohne Verbindung wird eine Ausgabe von 240 Baht erfasst und wartet in der Liste. Wieder online, wird sie gesendet und in Euro umgerechnet.",
+    "Ohne Verbindung wird eine Ausgabe von 240 Baht erfasst und wartet in der Liste. Sobald das Gerät wieder online ist, wird sie gesendet und in Euro umgerechnet.",
   "Loops.offlineCaption":
     "Erfasse Buchungen ohne Verbindung. Sie warten auf diesem Gerät und werden gesendet, sobald du wieder verbunden bist.",
   "Loops.shortcutsName": "Tastenkürzel",
   "Loops.shortcutsTitle":
-    "T und Enter fügen eine Buchung hinzu. Danach findet Strg+K eine Hotelzahlung über ein falsch geschriebenes Wort, ein kyrillisches Wort und ein Wort im falschen Tastaturlayout, und Enter öffnet sie.",
+    "T und Enter fügen eine Buchung hinzu. Danach findet Ctrl+K eine Hotelzahlung über ein falsch geschriebenes Wort, ein kyrillisches Wort und ein Wort im falschen Tastaturlayout, und Enter öffnet sie.",
   "Loops.shortcutsCaption":
-    "Drück T, um eine Buchung hinzuzufügen, und Strg+K (⌘K auf dem Mac), um eine zu finden. Die Suche verzeiht Tippfehler, Kyrillisch und das falsche Tastaturlayout.",
+    "Drück T, um eine Buchung hinzuzufügen, und Ctrl+K (⌘K auf dem Mac), um eine zu finden. Die Suche verzeiht Tippfehler, Kyrillisch und das falsche Tastaturlayout.",
   "Outbox.change": "Die Änderung",
   "Outbox.changeNote": "eine Notiz, ein Mitglied",
   "Outbox.event": "Ihr Event",
