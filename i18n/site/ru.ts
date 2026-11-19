@@ -632,7 +632,7 @@ export default {
     "Сравнения Financy с другими приложениями для учёта денег. В каждом сказано, когда лучше выбрать другое, а у фактов есть источник и дата.",
   "Alternatives.h1": "Financy в сравнении с привычными инструментами",
   "Alternatives.lead":
-    "Каждая страница сначала говорит, когда вам больше подойдёт другой инструмент, и каждый факт о нём ведёт на его собственную документацию.",
+    "На каждой странице мы сначала говорим, когда вам лучше подойдёт другой инструмент, а каждый факт о нём подтверждаем ссылкой на его собственные страницы.",
   "Alternative.checked": "Проверено <time>{date}</time>",
   "Alternative.glance": "Коротко о главном",
   "Alternative.caption": "Financy и {name}: сравнение",
@@ -642,6 +642,98 @@ export default {
   "Alternative.demo": "Открыть демо",
   "Alternative.selfHost": "Руководство по установке на свой сервер",
   "Alternative.all": "Все сравнения",
+  "AlternativeYnab.title": "Аналог YNAB: учёт в нескольких валютах",
+  "AlternativeYnab.description":
+    "В YNAB одна валюта на бюджетный план. В Financy счета могут быть в любой валюте, а в итог входят валюты, для которых есть курс.",
+  "AlternativeYnab.h1": "Аналог YNAB для учёта в нескольких валютах",
+  "AlternativeYnab.answer":
+    "Оставайтесь на YNAB, если ведёте бюджет в одной валюте, а прямой импорт работает с вашим банком. Выбирайте Financy, если деньги вашей семьи лежат в нескольких валютах и вам нужен один общий итог.",
+  "AlternativeYnab.rowCurrencies": "Несколько валют в одном бюджете",
+  "AlternativeYnab.rowCurrenciesNote": "YNAB: одна валюта на бюджетный план.",
+  "AlternativeYnab.rowTotal": "Итог, пересчитанный в одну основную валюту",
+  "AlternativeYnab.rowTotalNote": "YNAB рекомендует отдельный бюджет для каждой валюты.",
+  "AlternativeYnab.rowSharing": "Совместный учёт денег с семьёй без общего пароля",
+  "AlternativeYnab.rowBankImport": "Импорт операций напрямую из банка",
+  "AlternativeYnab.rowBankImportNote": "YNAB: некоторые банки США, Канады, Великобритании и ЕС.",
+  "AlternativeYnab.rowPrice": "Стоит меньше $50 в год",
+  "AlternativeYnab.rowPriceNote":
+    "Financy: бесплатно на своём сервере; облако будет стоить $40 в год и пока не открыто. YNAB: $109 в год, плюс налог там, где он применяется.",
+  "AlternativeYnab.sourceFaq": "FAQ YNAB о ценах",
+  "AlternativeYnab.sourceCurrencies": "Справка YNAB: несколько валют",
+  "AlternativeYnab.sourceTogether": "YNAB Together",
+  "AlternativeYnab.sourcePricing": "Цены YNAB",
+  "AlternativeYnab.method":
+    "Каждый факт о YNAB взят с его собственного сайта, ссылка — в строке таблицы. В строках Financy только то, что работает в приложении уже сегодня. Мы перепроверяем каждую строку раз в три месяца и только тогда меняем дату. Заметили устаревшее? Напишите на <mail>{email}</mail>.",
+  "AlternativeYnab.fit":
+    "В Financy нет автоматической синхронизации с банком и бюджета по методу конвертов, и пока нет экрана для импорта банковских выписок.",
+  "AlternativeYnab.better":
+    "Если ведёте бюджет в одной валюте, оставайтесь на <ynab>YNAB</ynab>. Нужен бесплатный бюджет по методу конвертов на своём сервере — посмотрите <actual>Actual Budget</actual>. Ближе всего к Financy по устройству среди открытых приложений — <sure>Sure</sure>: тоже AGPL-3.0, и ставится на свой сервер через Docker.",
+  "AlternativeYnab.moving":
+    "В приложении Financy пока нет экрана для импорта выгрузки из YNAB, поэтому перенести историю через приложение сегодня нельзя. Если история для вас важна, пока оставайтесь на YNAB.",
+  "AlternativeYnab.currenciesQuestion": "Поддерживает ли YNAB несколько валют?",
+  "AlternativeYnab.currenciesAnswer":
+    "В одном бюджетном плане — нет. На странице цен YNAB сказано, что несколько валют нельзя использовать вместе в одном плане расходов, а в справке советуют вести отдельный бюджет для каждой валюты. Financy ведёт каждый счёт в его валюте и показывает один общий итог по валютам, для которых есть курс, а валюты без курса называет.",
+  "AlternativeYnab.householdQuestion":
+    "Можно ли пользоваться Financy всей семьёй, как YNAB Together?",
+  "AlternativeYnab.householdAnswer":
+    "Да. В Financy каждый член семьи входит под своим логином и со своей ролью и видит те же счета. В YNAB Together общий пароль тоже не нужен.",
+  "AlternativeYnab.dataQuestion": "Можно ли перенести данные из YNAB в Financy?",
+  "AlternativeYnab.dataAnswer":
+    "Через приложение пока нет. Сейчас в приложении Financy нет экрана для импорта выгрузки из YNAB.",
+  "AlternativeYnab.costQuestion": "Сколько они стоят?",
+  "AlternativeYnab.costAnswer":
+    "YNAB стоит $109 в год, плюс налог там, где он применяется. Financy бесплатен на своём сервере под AGPL-3.0. Его облако будет стоить $40 в год за семью и пока не открыто.",
+  "AlternativeActual.title": "Аналог Actual Budget: учёт в нескольких валютах",
+  "AlternativeActual.description":
+    "Actual Budget пока не поддерживает несколько валют. В Financy счета могут быть в любой валюте, а в итог входят валюты, для которых есть курс.",
+  "AlternativeActual.h1": "Аналог Actual Budget для учёта в нескольких валютах",
+  "AlternativeActual.answer":
+    "Оставайтесь на Actual Budget, если вам нужен бюджет по методу конвертов, синхронизация с банком или приложение, которое работает без сервера. Выбирайте Financy, если деньги вашей семьи лежат в нескольких валютах и вам нужен один общий итог.",
+  "AlternativeActual.rowCurrencies": "Счета в разных валютах",
+  "AlternativeActual.rowCurrenciesNote":
+    "Actual Budget: в документации сказано, что над поддержкой валют работают.",
+  "AlternativeActual.rowTotal": "Итог, пересчитанный в одну основную валюту",
+  "AlternativeActual.rowTotalNote":
+    "Actual Budget: экспериментальный обходной путь через шаблоны правил.",
+  "AlternativeActual.rowLogins": "Каждый входит под своим логином",
+  "AlternativeActual.rowLoginsNote": "Actual Budget: нужен провайдер OpenID.",
+  "AlternativeActual.rowEnvelopes": "Бюджет по методу конвертов",
+  "AlternativeActual.rowBankSync": "Автоматическая синхронизация с банком",
+  "AlternativeActual.rowBankSyncNote":
+    "Actual Budget: через провайдеров, набор которых зависит от региона.",
+  "AlternativeActual.rowImport": "Импорт файлов банковских выписок",
+  "AlternativeActual.rowImportNote": "Financy: в приложении пока нет.",
+  "AlternativeActual.rowNoServer": "Работает без сервера",
+  "AlternativeActual.rowOpenSource": "Бесплатно и с открытым кодом",
+  "AlternativeActual.rowOpenSourceNote": "Financy: AGPL-3.0. Actual Budget: MIT.",
+  "AlternativeActual.sourceCurrencies": "Документация Actual: несколько валют",
+  "AlternativeActual.sourceMultiUser": "Документация Actual: пользователи",
+  "AlternativeActual.sourceSite": "Сайт Actual Budget",
+  "AlternativeActual.sourceBankSync": "Документация Actual: синхронизация с банком",
+  "AlternativeActual.sourceImporting": "Документация Actual: импорт",
+  "AlternativeActual.sourceInstall": "Документация Actual: установка",
+  "AlternativeActual.sourceReadme": "README Actual Budget",
+  "AlternativeActual.method":
+    "Каждый факт об Actual Budget взят с его собственного сайта, из его документации или репозитория, ссылка — в строке таблицы. В строках Financy только то, что работает в приложении уже сегодня. Мы перепроверяем каждую строку раз в три месяца и только тогда меняем дату. Заметили устаревшее? Напишите на <mail>{email}</mail>.",
+  "AlternativeActual.fit":
+    "В Financy нет бюджета по методу конвертов и автоматической синхронизации с банком, пока нет экрана для импорта банковских выписок, а для работы нужен сервер.",
+  "AlternativeActual.better":
+    "Для бюджета по методу конвертов в одной валюте оставайтесь на <actual>Actual Budget</actual>. Ближе всего к Financy по устройству среди открытых приложений — <sure>Sure</sure>: тоже AGPL-3.0, и ставится на свой сервер через Docker.",
+  "AlternativeActual.moving":
+    "В приложении Financy пока нет экрана для импорта выгрузки из Actual Budget, поэтому перенести историю через приложение сегодня нельзя. Если история для вас важна, пока оставайтесь на Actual Budget.",
+  "AlternativeActual.currenciesQuestion": "Поддерживает ли Actual Budget несколько валют?",
+  "AlternativeActual.currenciesAnswer":
+    "Пока нет. В его документации сказано, что несколько валют не поддерживаются и что над этим работают, а ещё описан экспериментальный обходной путь через шаблоны правил. Financy ведёт каждый счёт в его валюте и показывает один общий итог по валютам, для которых есть курс, а валюты без курса называет.",
+  "AlternativeActual.envelopesQuestion":
+    "Financy — это бюджет по методу конвертов, как Actual Budget?",
+  "AlternativeActual.envelopesAnswer":
+    "Нет. Сейчас в приложении Financy нет бюджета по методу конвертов. Если нужны конверты, оставайтесь на Actual Budget.",
+  "AlternativeActual.dataQuestion": "Можно ли перенести данные из Actual Budget в Financy?",
+  "AlternativeActual.dataAnswer":
+    "Через приложение пока нет. Сейчас в приложении Financy нет экрана для импорта выгрузки из Actual Budget.",
+  "AlternativeActual.costQuestion": "Сколько они стоят?",
+  "AlternativeActual.costAnswer":
+    "Оба бесплатны на своём сервере. Actual Budget распространяется под лицензией MIT, а Financy — под AGPL-3.0. Облако Financy будет стоить $40 в год за семью и пока не открыто.",
   "AlternativeFirefly.title": "Аналог Firefly III для семейного бюджета",
   "AlternativeFirefly.description":
     "В Firefly III на один учёт — один логин. В Financy пара ведёт общий семейный бюджет: у каждого свой логин, валюты любые.",

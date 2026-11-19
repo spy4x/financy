@@ -79,12 +79,188 @@ const FIREFLY = {
   readme: `https://github.com/firefly-iii/firefly-iii`,
 } as const
 
+/** YNAB's own website, the pages each row and answer was read on. */
+const YNAB = {
+  site: `https://www.ynab.com/`,
+  pricing: `https://www.ynab.com/pricing`,
+  currencies: `https://support.ynab.com/en_us/using-multiple-currencies-in-ynab-a-guide-SyBF6PHno`,
+  together: `https://www.ynab.com/features/subscription-sharing`,
+} as const
+
+/** Actual Budget's own website, documentation and repository, each row's and answer's source. */
+const ACTUAL = {
+  site: `https://actualbudget.org/`,
+  currencies: `https://actualbudget.org/docs/budgeting/multi-currency/`,
+  multiUser: `https://actualbudget.org/docs/config/multi-user/`,
+  bankSync: `https://actualbudget.org/docs/advanced/bank-sync/`,
+  importing: `https://actualbudget.org/docs/transactions/importing/`,
+  install: `https://actualbudget.org/docs/install/`,
+  readme: `https://github.com/actualbudget/actual`,
+} as const
+
+/** Sure's repository: the open-source tracker closest to Financy, named on every comparison. */
+const SURE = `https://github.com/we-promise/sure`
+
 /**
- * The comparisons, in the order the hub lists them. Each Firefly III fact was read in Firefly
- * III's docs and README on 2026-11-18 (financy#107 has each quote); each Financy row in the app
- * that day.
+ * The comparisons, in the order the hub lists them: the largest search first. Each YNAB and Actual
+ * Budget fact was read on that tool's own pages on 2026-11-19 (financy#381 has each quote), each
+ * Firefly III fact in Firefly III's docs and README on 2026-11-18 (financy#107 has each quote),
+ * and each Financy row in the app on the day its page was checked.
  */
 export const ALTERNATIVES: readonly Alternative[] = [
+  {
+    slug: `ynab-multiple-currencies`,
+    competitor: `YNAB`,
+    title: `AlternativeYnab.title`,
+    description: `AlternativeYnab.description`,
+    h1: `AlternativeYnab.h1`,
+    answer: `AlternativeYnab.answer`,
+    rows: [
+      {
+        capability: `AlternativeYnab.rowCurrencies`,
+        values: [`yes`, `no`],
+        note: `AlternativeYnab.rowCurrenciesNote`,
+        source: { label: `AlternativeYnab.sourceFaq`, href: YNAB.pricing },
+      },
+      {
+        capability: `AlternativeYnab.rowTotal`,
+        values: [`yes`, `no`],
+        note: `AlternativeYnab.rowTotalNote`,
+        source: { label: `AlternativeYnab.sourceCurrencies`, href: YNAB.currencies },
+      },
+      {
+        capability: `AlternativeYnab.rowSharing`,
+        values: [`yes`, `yes`],
+        source: { label: `AlternativeYnab.sourceTogether`, href: YNAB.together },
+      },
+      {
+        capability: `AlternativeYnab.rowBankImport`,
+        values: [`no`, `partial`],
+        note: `AlternativeYnab.rowBankImportNote`,
+        source: { label: `AlternativeYnab.sourceFaq`, href: YNAB.pricing },
+      },
+      {
+        capability: `AlternativeYnab.rowPrice`,
+        values: [`yes`, `no`],
+        note: `AlternativeYnab.rowPriceNote`,
+        source: { label: `AlternativeYnab.sourcePricing`, href: YNAB.pricing },
+      },
+    ],
+    method: `AlternativeYnab.method`,
+    fit: `AlternativeYnab.fit`,
+    better: `AlternativeYnab.better`,
+    betterLinks: { ynab: YNAB.site, actual: ACTUAL.site, sure: SURE },
+    moving: `AlternativeYnab.moving`,
+    questions: [
+      {
+        id: `faq-multiple-currencies`,
+        question: `AlternativeYnab.currenciesQuestion`,
+        answer: `AlternativeYnab.currenciesAnswer`,
+      },
+      {
+        id: `faq-household`,
+        question: `AlternativeYnab.householdQuestion`,
+        answer: `AlternativeYnab.householdAnswer`,
+      },
+      {
+        id: `faq-bring-data`,
+        question: `AlternativeYnab.dataQuestion`,
+        answer: `AlternativeYnab.dataAnswer`,
+      },
+      {
+        id: `faq-cost`,
+        question: `AlternativeYnab.costQuestion`,
+        answer: `AlternativeYnab.costAnswer`,
+      },
+    ],
+    features: [`multi-currency`, `live-sync`],
+    checked: `2026-11-19`,
+  },
+  {
+    slug: `actual-budget`,
+    competitor: `Actual Budget`,
+    title: `AlternativeActual.title`,
+    description: `AlternativeActual.description`,
+    h1: `AlternativeActual.h1`,
+    answer: `AlternativeActual.answer`,
+    rows: [
+      {
+        capability: `AlternativeActual.rowCurrencies`,
+        values: [`yes`, `no`],
+        note: `AlternativeActual.rowCurrenciesNote`,
+        source: { label: `AlternativeActual.sourceCurrencies`, href: ACTUAL.currencies },
+      },
+      {
+        capability: `AlternativeActual.rowTotal`,
+        values: [`yes`, `partial`],
+        note: `AlternativeActual.rowTotalNote`,
+        source: { label: `AlternativeActual.sourceCurrencies`, href: ACTUAL.currencies },
+      },
+      {
+        capability: `AlternativeActual.rowLogins`,
+        values: [`yes`, `partial`],
+        note: `AlternativeActual.rowLoginsNote`,
+        source: { label: `AlternativeActual.sourceMultiUser`, href: ACTUAL.multiUser },
+      },
+      {
+        capability: `AlternativeActual.rowEnvelopes`,
+        values: [`no`, `yes`],
+        source: { label: `AlternativeActual.sourceSite`, href: ACTUAL.site },
+      },
+      {
+        capability: `AlternativeActual.rowBankSync`,
+        values: [`no`, `yes`],
+        note: `AlternativeActual.rowBankSyncNote`,
+        source: { label: `AlternativeActual.sourceBankSync`, href: ACTUAL.bankSync },
+      },
+      {
+        capability: `AlternativeActual.rowImport`,
+        values: [`no`, `yes`],
+        note: `AlternativeActual.rowImportNote`,
+        source: { label: `AlternativeActual.sourceImporting`, href: ACTUAL.importing },
+      },
+      {
+        capability: `AlternativeActual.rowNoServer`,
+        values: [`no`, `yes`],
+        source: { label: `AlternativeActual.sourceInstall`, href: ACTUAL.install },
+      },
+      {
+        capability: `AlternativeActual.rowOpenSource`,
+        values: [`yes`, `yes`],
+        note: `AlternativeActual.rowOpenSourceNote`,
+        source: { label: `AlternativeActual.sourceReadme`, href: ACTUAL.readme },
+      },
+    ],
+    method: `AlternativeActual.method`,
+    fit: `AlternativeActual.fit`,
+    better: `AlternativeActual.better`,
+    betterLinks: { actual: ACTUAL.site, sure: SURE },
+    moving: `AlternativeActual.moving`,
+    questions: [
+      {
+        id: `faq-multiple-currencies`,
+        question: `AlternativeActual.currenciesQuestion`,
+        answer: `AlternativeActual.currenciesAnswer`,
+      },
+      {
+        id: `faq-envelopes`,
+        question: `AlternativeActual.envelopesQuestion`,
+        answer: `AlternativeActual.envelopesAnswer`,
+      },
+      {
+        id: `faq-bring-data`,
+        question: `AlternativeActual.dataQuestion`,
+        answer: `AlternativeActual.dataAnswer`,
+      },
+      {
+        id: `faq-cost`,
+        question: `AlternativeActual.costQuestion`,
+        answer: `AlternativeActual.costAnswer`,
+      },
+    ],
+    features: [`self-hosting`, `multi-currency`],
+    checked: `2026-11-19`,
+  },
   {
     slug: `firefly-iii`,
     competitor: `Firefly III`,
@@ -141,7 +317,7 @@ export const ALTERNATIVES: readonly Alternative[] = [
       gnucash: `https://www.gnucash.org/`,
       beancount: `https://beancount.github.io/`,
       hledger: `https://hledger.org/`,
-      sure: `https://github.com/we-promise/sure`,
+      sure: SURE,
     },
     moving: `AlternativeFirefly.moving`,
     questions: [

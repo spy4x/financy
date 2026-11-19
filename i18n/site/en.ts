@@ -636,7 +636,7 @@ export default {
     "Side-by-side comparisons of Financy with other money trackers. Each names when the other tool is the better pick, with sourced, dated facts.",
   "Alternatives.h1": "Financy compared with the tools you know",
   "Alternatives.lead":
-    "Each page says first when the other tool suits you better, and links every fact about it to that tool's own documentation.",
+    "Each page says first when the other tool suits you better, and links every fact about it to that tool's own pages.",
   "Alternative.checked": "Checked on <time>{date}</time>",
   "Alternative.glance": "At a glance",
   "Alternative.caption": "Financy and {name}, side by side",
@@ -646,6 +646,95 @@ export default {
   "Alternative.demo": "Try the demo",
   "Alternative.selfHost": "Read the self-hosting guide",
   "Alternative.all": "All comparisons",
+  "AlternativeYnab.title": "YNAB alternative for multiple currencies",
+  "AlternativeYnab.description":
+    "YNAB keeps one currency per plan. Financy keeps accounts in any currency and totals those with an exchange rate.",
+  "AlternativeYnab.h1": "A YNAB alternative for multiple currencies",
+  "AlternativeYnab.answer":
+    "Stay on YNAB if you budget in one currency and your bank works with its direct import. Choose Financy if your household's money sits in several currencies and you want one total.",
+  "AlternativeYnab.rowCurrencies": "Several currencies in one budget",
+  "AlternativeYnab.rowCurrenciesNote": "YNAB: one currency per plan.",
+  "AlternativeYnab.rowTotal": "A total converted to one main currency",
+  "AlternativeYnab.rowTotalNote": "YNAB recommends a separate budget for each currency.",
+  "AlternativeYnab.rowSharing": "Share your money with your household without sharing a password",
+  "AlternativeYnab.rowBankImport": "Import transactions directly from your bank",
+  "AlternativeYnab.rowBankImportNote": "YNAB: select US, Canadian, UK and EU banks.",
+  "AlternativeYnab.rowPrice": "Costs under $50 a year",
+  "AlternativeYnab.rowPriceNote":
+    "Financy: free to self-host; the cloud will be $40 a year and is not open yet. YNAB: $109 a year, plus tax where applicable.",
+  "AlternativeYnab.sourceFaq": "YNAB pricing FAQ",
+  "AlternativeYnab.sourceCurrencies": "YNAB help: multiple currencies",
+  "AlternativeYnab.sourceTogether": "YNAB Together",
+  "AlternativeYnab.sourcePricing": "YNAB pricing",
+  "AlternativeYnab.method":
+    "Every YNAB fact comes from YNAB's own website, linked in its row. Financy's rows list only what works in the app today. We re-check every row every three months and change the date only then. Spotted something out of date? Write to <mail>{email}</mail>.",
+  "AlternativeYnab.fit":
+    "Financy has no automatic bank sync, no envelope budgeting and no screen for importing bank statements yet.",
+  "AlternativeYnab.better":
+    "If you budget in one currency, stay on <ynab>YNAB</ynab>. For a free envelope budget you can host yourself, look at <actual>Actual Budget</actual>. If you want an open-source tracker shaped like Financy, <sure>Sure</sure> is the closest: also AGPL-3.0, and self-hosted with Docker.",
+  "AlternativeYnab.moving":
+    "Financy's app has no screen for importing a YNAB export yet, so you cannot bring your history over from the app today. If your history matters to you, stay on YNAB for now.",
+  "AlternativeYnab.currenciesQuestion": "Does YNAB support multiple currencies?",
+  "AlternativeYnab.currenciesAnswer":
+    "Not in one plan. YNAB's pricing page says you can't use multiple currencies together in a single spending plan, and its help recommends a separate budget for each currency. Financy keeps every account in its own currency and shows one total, naming any currency it has no exchange rate for.",
+  "AlternativeYnab.householdQuestion": "Can my household share Financy like YNAB Together?",
+  "AlternativeYnab.householdAnswer":
+    "Yes. Everyone in a Financy household signs in with their own login and role, and sees the same accounts. YNAB Together also needs no shared password.",
+  "AlternativeYnab.dataQuestion": "Can I bring my YNAB data to Financy?",
+  "AlternativeYnab.dataAnswer":
+    "Not from the app yet. Financy's app has no screen for importing a YNAB export today.",
+  "AlternativeYnab.costQuestion": "What does each cost?",
+  "AlternativeYnab.costAnswer":
+    "YNAB costs $109 a year, plus tax where applicable. Financy is free to self-host under AGPL-3.0. Its cloud will cost $40 a year per household and is not open yet.",
+  "AlternativeActual.title": "Actual Budget alternative for multiple currencies",
+  "AlternativeActual.description":
+    "Actual Budget does not support multiple currencies yet. Financy keeps accounts in any currency and totals those with an exchange rate.",
+  "AlternativeActual.h1": "An Actual Budget alternative for multiple currencies",
+  "AlternativeActual.answer":
+    "Stay on Actual Budget if you want envelope budgeting, bank sync or an app that runs without a server. Choose Financy if your household's money sits in several currencies and you want one total.",
+  "AlternativeActual.rowCurrencies": "Accounts in several currencies",
+  "AlternativeActual.rowCurrenciesNote":
+    "Actual Budget: its documentation says people are working on currency support.",
+  "AlternativeActual.rowTotal": "A total converted to one main currency",
+  "AlternativeActual.rowTotalNote":
+    "Actual Budget: an experimental workaround with rule templates.",
+  "AlternativeActual.rowLogins": "Each person signs in with their own login",
+  "AlternativeActual.rowLoginsNote": "Actual Budget: needs an OpenID provider.",
+  "AlternativeActual.rowEnvelopes": "Envelope budgeting",
+  "AlternativeActual.rowBankSync": "Automatic bank sync",
+  "AlternativeActual.rowBankSyncNote": "Actual Budget: through providers that differ by region.",
+  "AlternativeActual.rowImport": "Import bank statement files",
+  "AlternativeActual.rowImportNote": "Financy: not in the app yet.",
+  "AlternativeActual.rowNoServer": "Works without a server",
+  "AlternativeActual.rowOpenSource": "Free and open source",
+  "AlternativeActual.rowOpenSourceNote": "Financy: AGPL-3.0. Actual Budget: MIT.",
+  "AlternativeActual.sourceCurrencies": "Actual docs: multiple currencies",
+  "AlternativeActual.sourceMultiUser": "Actual docs: multi-user",
+  "AlternativeActual.sourceSite": "Actual Budget website",
+  "AlternativeActual.sourceBankSync": "Actual docs: bank sync",
+  "AlternativeActual.sourceImporting": "Actual docs: importing",
+  "AlternativeActual.sourceInstall": "Actual docs: installing",
+  "AlternativeActual.sourceReadme": "Actual Budget README",
+  "AlternativeActual.method":
+    "Every Actual Budget fact comes from Actual Budget's own website, documentation or repository, linked in its row. Financy's rows list only what works in the app today. We re-check every row every three months and change the date only then. Spotted something out of date? Write to <mail>{email}</mail>.",
+  "AlternativeActual.fit":
+    "Financy has no envelope budgeting, no automatic bank sync and no screen for importing bank statements yet, and it needs a server.",
+  "AlternativeActual.better":
+    "For an envelope budget in one currency, stay on <actual>Actual Budget</actual>. If you want an open-source tracker shaped like Financy, <sure>Sure</sure> is the closest: also AGPL-3.0, and self-hosted with Docker.",
+  "AlternativeActual.moving":
+    "Financy's app has no screen for importing an Actual Budget export yet, so you cannot bring your history over from the app today. If your history matters to you, stay on Actual Budget for now.",
+  "AlternativeActual.currenciesQuestion": "Does Actual Budget support multiple currencies?",
+  "AlternativeActual.currenciesAnswer":
+    "Not yet. Its documentation says it does not support multi-currency, that people are working on it, and describes an experimental workaround with rule templates. Financy keeps every account in its own currency and shows one total, naming any currency it has no exchange rate for.",
+  "AlternativeActual.envelopesQuestion": "Is Financy an envelope budget like Actual Budget?",
+  "AlternativeActual.envelopesAnswer":
+    "No. Financy's app has no envelope budgeting today. For envelopes, stay on Actual Budget.",
+  "AlternativeActual.dataQuestion": "Can I bring my Actual Budget data to Financy?",
+  "AlternativeActual.dataAnswer":
+    "Not from the app yet. Financy's app has no screen for importing an Actual Budget export today.",
+  "AlternativeActual.costQuestion": "What does each cost?",
+  "AlternativeActual.costAnswer":
+    "Both are free to self-host. Actual Budget is MIT-licensed and Financy is AGPL-3.0. Financy's cloud will cost $40 a year per household and is not open yet.",
   "AlternativeFirefly.title": "Firefly III alternative for couples",
   "AlternativeFirefly.description":
     "Firefly III gives each administration one login. Financy lets partners share one household, each with a login, in any mix of currencies.",
