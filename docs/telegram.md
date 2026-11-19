@@ -88,7 +88,8 @@ like every job.
 
 A product edits one file, `apps/api/telegram/commands.ts`. Each command has a name, the description
 the command menu shows, and a handler that gets the linked person. Financy's commands are
-`/expense` and `/income` (`apps/api/telegram/entries.ts`, below) and `/balance` and `/month`
+`/expense` and `/income` (`apps/api/telegram/entries.ts`, below), `/transfer`
+(`apps/api/telegram/transfers.ts`, below) and `/balance` and `/month`
 (`apps/api/telegram/reads.ts`, below); one of them looks like this:
 
 ```ts
@@ -123,6 +124,34 @@ The buses refuse a viewer, a removed member, another household's account or cate
 plan, and the bot says why in one line. A talk lives 15 minutes; a button of an older or finished
 talk says so and changes nothing. The entry's id is made when the talk starts, so a double tap on
 Save saves once.
+
+## Move money between accounts
+
+`/transfer` moves money between two open accounts of the selected household. A person who never
+chose a household and is in several picks one first, by button. A household with fewer than two
+open accounts gets one line that says so.
+
+1. The bot lists the open accounts: first the one the money leaves, then the one it reaches.
+2. It asks how much left, in the from account's currency, read as `/expense` reads an amount.
+3. When the two currencies differ, it asks how much arrived, in the to account's currency, with a
+   "Use the day's rate" button. In one currency this step is skipped.
+4. It shows both accounts and amounts with Save and Cancel. With the day's rate, the summary says
+   so and states no received figure, because the server works it out.
+5. Save stores the transfer, dated today in the household's time zone. The message loses its
+   buttons and says what was really stored. For the next 15 minutes, any button of that talk
+   leaves this confirmation on the message it was pressed on and writes nothing.
+
+When there is no usable rate at Save, or the conversion rounds to zero, the talk stays open and
+the bot asks for the received amount by hand.
+
+A person has one talk at a time: `/transfer`, `/expense` and `/income` replace each other, and a
+button of the replaced talk says so and changes nothing. Each button works only at its own step.
+`/balance` and `/month` answer in the middle of a talk and leave it alone.
+
+The bot adds no role check. The buses refuse a viewer at Save, a removed member, another household's
+account and a full plan, and the bot says why in one line. It also reads every account a button
+names again, and refuses an archived one, which the buses would accept. The transfer's id is made
+when the talk starts, so a double tap on Save stores one transfer.
 
 ## Read balances and the month
 

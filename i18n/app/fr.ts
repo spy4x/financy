@@ -2177,6 +2177,27 @@ export default {
   "TelegramBot.planFull": "Le forfait de ce foyer n'a plus de place pour d'autres opérations.",
   "TelegramBot.entryStale":
     "Cette opération est déjà terminée ou a expiré. Envoyez /expense ou /income pour en commencer une nouvelle.",
+  "TelegramBot.transferNeedsTwo":
+    "Un virement nécessite deux comptes ouverts. Ajoutez d’abord un autre compte dans l’app.",
+  "TelegramBot.transferPickFrom": "De quel compte part l’argent ?",
+  "TelegramBot.transferPickTo": "Vers quel compte va l’argent ?",
+  "TelegramBot.transferAskSent": "Combien envoyez-vous depuis {account} ? En {currency}.",
+  "TelegramBot.transferAskReceived": "Combien recevez-vous sur {account} ? En {currency}.",
+  "TelegramBot.transferUseRate": "Utiliser le taux du jour",
+  "TelegramBot.transferSummary":
+    "Virement aujourd’hui : {sent} depuis {from}, {received} sur {to}.",
+  "TelegramBot.transferSummaryRate":
+    "Virement aujourd’hui : {sent} depuis {from} vers {to}, converti au taux du jour.",
+  "TelegramBot.transferSaved":
+    "Enregistré : envoi de {sent} depuis {from}, réception de {received} sur {to}.",
+  "TelegramBot.transferConverted": "Converti au taux du jour.",
+  "TelegramBot.transferNoRate": "Aucun taux n’est utilisable pour ce virement.",
+  "TelegramBot.transferViewer":
+    "Vous pouvez seulement consulter ce foyer, vous ne pouvez donc pas déplacer d’argent entre ses comptes. Demandez à son propriétaire de vous nommer éditeur.",
+  "TelegramBot.transferUnavailable":
+    "Ce compte ne peut pas être utilisé pour ce virement. Envoyez /transfer pour recommencer.",
+  "TelegramBot.transferStale":
+    "Ce virement est déjà terminé ou a expiré. Envoyez /transfer pour en commencer un nouveau.",
   "TelegramBot.figure": "{label} : {value}",
   "TelegramBot.noTotal": "Pas encore de total : aucun de ces comptes n’a pu être converti.",
   "TelegramBot.moreAccounts": {

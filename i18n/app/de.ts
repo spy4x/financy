@@ -2054,6 +2054,26 @@ export default {
   "TelegramBot.planFull": "Der Tarif dieses Haushalts hat keinen Platz für weitere Buchungen.",
   "TelegramBot.entryStale":
     "Diese Buchung ist schon abgeschlossen oder abgelaufen. Schick /expense oder /income, um eine neue zu beginnen.",
+  "TelegramBot.transferNeedsTwo":
+    "Für eine Umbuchung brauchst du zwei offene Konten. Leg zuerst in der App ein weiteres Konto an.",
+  "TelegramBot.transferPickFrom": "Von welchem Konto möchtest du Geld umbuchen?",
+  "TelegramBot.transferPickTo": "Auf welches Konto soll es gehen?",
+  "TelegramBot.transferAskSent": "Wie viel geht von {account} ab? In {currency}.",
+  "TelegramBot.transferAskReceived": "Wie viel kommt bei {account} an? In {currency}.",
+  "TelegramBot.transferUseRate": "Tageskurs verwenden",
+  "TelegramBot.transferSummary": "Umbuchung heute: {sent} von {from}, {received} auf {to}.",
+  "TelegramBot.transferSummaryRate":
+    "Umbuchung heute: {sent} von {from} auf {to}, umgerechnet zum Tageskurs.",
+  "TelegramBot.transferSaved":
+    "Gespeichert: {sent} von {from} abgebucht, {received} auf {to} gutgeschrieben.",
+  "TelegramBot.transferConverted": "Zum Tageskurs umgerechnet.",
+  "TelegramBot.transferNoRate": "Für diese Umbuchung gibt es keinen passenden Wechselkurs.",
+  "TelegramBot.transferViewer":
+    "Du kannst diesen Haushalt nur ansehen, darum kannst du kein Geld zwischen seinen Konten umbuchen. Bitte den Inhaber, dich zum Bearbeiter zu machen.",
+  "TelegramBot.transferUnavailable":
+    "Dieses Konto lässt sich für diese Umbuchung nicht verwenden. Schick /transfer, um neu zu beginnen.",
+  "TelegramBot.transferStale":
+    "Diese Umbuchung ist schon abgeschlossen oder abgelaufen. Schick /transfer, um eine neue zu beginnen.",
   "TelegramBot.figure": "{label}: {value}",
   "TelegramBot.noTotal": "Eine Summe gibt es noch nicht: Keines dieser Konten ließ sich umrechnen.",
   "TelegramBot.moreAccounts": {

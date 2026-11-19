@@ -2106,6 +2106,25 @@ export default {
   "TelegramBot.planFull": "O plano desta família não tem espaço para mais lançamentos.",
   "TelegramBot.entryStale":
     "Este lançamento já terminou ou expirou. Envie /expense ou /income para começar outro.",
+  "TelegramBot.transferNeedsTwo":
+    "Uma transferência precisa de duas contas abertas. Adicione outra conta no app primeiro.",
+  "TelegramBot.transferPickFrom": "De qual conta sai o dinheiro?",
+  "TelegramBot.transferPickTo": "Para qual conta vai o dinheiro?",
+  "TelegramBot.transferAskSent": "Quanto sai de {account}? Em {currency}.",
+  "TelegramBot.transferAskReceived": "Quanto chega em {account}? Em {currency}.",
+  "TelegramBot.transferUseRate": "Usar a cotação do dia",
+  "TelegramBot.transferSummary": "Transferência hoje: {sent} de {from}, {received} para {to}.",
+  "TelegramBot.transferSummaryRate":
+    "Transferência hoje: {sent} de {from} para {to}, convertido pela cotação do dia.",
+  "TelegramBot.transferSaved": "Salvo: saíram {sent} de {from} e chegaram {received} em {to}.",
+  "TelegramBot.transferConverted": "Convertido pela cotação do dia.",
+  "TelegramBot.transferNoRate": "Não há cotação válida para esta transferência.",
+  "TelegramBot.transferViewer":
+    "Você só pode ver esta família, então não pode mover dinheiro entre as contas dela. Peça ao dono para tornar você editor.",
+  "TelegramBot.transferUnavailable":
+    "Essa conta não pode ser usada nesta transferência. Envie /transfer para começar de novo.",
+  "TelegramBot.transferStale":
+    "Esta transferência já terminou ou expirou. Envie /transfer para começar outra.",
   "TelegramBot.figure": "{label}: {value}",
   "TelegramBot.noTotal":
     "Ainda não dá para calcular o total: não consegui converter nenhuma destas contas.",

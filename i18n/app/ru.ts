@@ -2206,6 +2206,27 @@ export default {
   "TelegramBot.planFull": "В тарифе этой семьи нет места для новых операций.",
   "TelegramBot.entryStale":
     "Эта операция уже завершена или устарела. Отправьте /expense или /income, чтобы начать новую.",
+  "TelegramBot.transferNeedsTwo":
+    "Для перевода нужны два открытых счёта. Сначала добавьте ещё один счёт в приложении.",
+  "TelegramBot.transferPickFrom": "С какого счёта перевести деньги?",
+  "TelegramBot.transferPickTo": "На какой счёт перевести?",
+  "TelegramBot.transferAskSent": "Сколько списать со счёта {account}? В {currency}.",
+  "TelegramBot.transferAskReceived": "Сколько зачислить на счёт {account}? В {currency}.",
+  "TelegramBot.transferUseRate": "Пересчитать по курсу дня",
+  "TelegramBot.transferSummary":
+    "Перевод сегодня: {sent} со счёта {from}, {received} на счёт {to}.",
+  "TelegramBot.transferSummaryRate":
+    "Перевод сегодня: {sent} со счёта {from} на счёт {to}, с пересчётом по курсу дня.",
+  "TelegramBot.transferSaved":
+    "Сохранено: {sent} списано со счёта {from}, {received} зачислено на счёт {to}.",
+  "TelegramBot.transferConverted": "Пересчитано по курсу дня.",
+  "TelegramBot.transferNoRate": "Для этого перевода нет подходящего курса.",
+  "TelegramBot.transferViewer":
+    "Вы можете только просматривать эту семью, поэтому не можете переводить деньги между её счетами. Попросите владельца сделать вас редактором.",
+  "TelegramBot.transferUnavailable":
+    "Для этого перевода такой счёт не подойдёт. Отправьте /transfer, чтобы начать заново.",
+  "TelegramBot.transferStale":
+    "Этот перевод уже завершён или устарел. Отправьте /transfer, чтобы начать новый.",
   "TelegramBot.figure": "{label}: {value}",
   "TelegramBot.noTotal": "Итога пока нет: ни один счёт не удалось пересчитать в основную валюту.",
   "TelegramBot.moreAccounts": {
