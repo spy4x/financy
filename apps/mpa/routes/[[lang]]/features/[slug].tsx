@@ -16,6 +16,7 @@ import { ALTERNATIVES } from "../../../alternatives-data.ts"
 import { Band } from "../../../components/band.tsx"
 import { HEADING, LINK, Section } from "../../../components/page-section.tsx"
 import { FactList, NotYetList } from "../../../components/features-section.tsx"
+import { ShotFigure } from "../../../components/shot.tsx"
 import {
   type Feature,
   FEATURE_PAGES,
@@ -196,6 +197,7 @@ function FeaturePageBody({ page, demo }: { page: FeaturePage; demo: string }): J
               }, { name: comparison.competitor })}
             </p>
           )}
+          <ShotFigure shot={page.shot} />
         </header>
         <div class="mt-8 xl:col-start-3 xl:row-span-2 xl:row-start-1 xl:mt-0">
           <OnThisPage

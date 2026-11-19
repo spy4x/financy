@@ -9,6 +9,7 @@
  * @module
  */
 import type { FeatureSectionProps, FeatureTierProps } from "./components/features-section.tsx"
+import type { PhoneShot } from "./components/shot.tsx"
 import { DeployVisual } from "./components/features-visuals.tsx"
 import type { Translator } from "@spy4x/platform/universal/i18n"
 import type { Language } from "@domain/identity"
@@ -314,6 +315,8 @@ export interface FeaturePage {
   code?: string
   /** 3 to 5 questions people type. Empty, the section is not drawn. */
   questions: readonly FeatureQuestion[]
+  /** The real screen the page describes; its `alt` and `caption` are catalog keys too. */
+  shot: PhoneShot
   /** The day this page's words last changed: its "Last updated" line and the sitemap's `lastmod`. */
   updated: string
 }
@@ -357,6 +360,12 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
         answer: `FeaturePageMultiCurrency.everyCurrencyAnswer`,
       },
     ],
+    shot: {
+      name: `for-expats`,
+      height: 1268,
+      alt: `FeaturePageMultiCurrency.alt`,
+      caption: `FeaturePageMultiCurrency.caption`,
+    },
     updated: `2026-11-18`,
   },
   {
@@ -391,6 +400,12 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
         answer: `FeaturePageHouseholds.restoreAnswer`,
       },
     ],
+    shot: {
+      name: `for-families`,
+      height: 880,
+      alt: `FeaturePageHouseholds.alt`,
+      caption: `FeaturePageHouseholds.caption`,
+    },
     updated: `2026-11-18`,
   },
   {
@@ -424,6 +439,12 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
         answer: `FeaturePageLiveSync.storesAnswer`,
       },
     ],
+    shot: {
+      name: `feature-live-sync`,
+      height: 1096,
+      alt: `FeaturePageLiveSync.alt`,
+      caption: `FeaturePageLiveSync.caption`,
+    },
     updated: `2026-11-18`,
   },
   {
@@ -464,6 +485,12 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
         answer: `FeaturePageSelfHosting.installerAnswer`,
       },
     ],
+    shot: {
+      name: `feature-self-hosting`,
+      height: 1408,
+      alt: `FeaturePageSelfHosting.alt`,
+      caption: `FeaturePageSelfHosting.caption`,
+    },
     updated: `2026-11-18`,
   },
   {
@@ -502,6 +529,12 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
         answer: `FeaturePageTransfers.statementAnswer`,
       },
     ],
+    shot: {
+      name: `feature-transfers`,
+      height: 1504,
+      alt: `FeaturePageTransfers.alt`,
+      caption: `FeaturePageTransfers.caption`,
+    },
     updated: `2026-11-19`,
   },
   {
@@ -540,6 +573,12 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
         answer: `FeaturePageBudgets.planAnswer`,
       },
     ],
+    shot: {
+      name: `feature-budgets`,
+      height: 880,
+      alt: `FeaturePageBudgets.alt`,
+      caption: `FeaturePageBudgets.caption`,
+    },
     updated: `2026-11-19`,
   },
   {
@@ -578,6 +617,12 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
         answer: `FeaturePageTelegramBot.costAnswer`,
       },
     ],
+    shot: {
+      name: `feature-telegram-bot`,
+      height: 806,
+      alt: `FeaturePageTelegramBot.alt`,
+      caption: `FeaturePageTelegramBot.caption`,
+    },
     updated: `2026-11-19`,
   },
 ]
@@ -598,6 +643,7 @@ export function featurePageIn(t: Translator<string>, page: FeaturePage): Feature
       question: t.t(question),
       answer: t.t(answer),
     })),
+    shot: { ...page.shot, alt: t.t(page.shot.alt), caption: t.t(page.shot.caption) },
   }
 }
 

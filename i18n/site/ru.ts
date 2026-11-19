@@ -458,6 +458,10 @@ export default {
     "Есть ли в Financy ежедневный курс для любой валюты?",
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "Нет. Бесплатные ежедневные курсы Европейского центрального банка охватывают около 30 валют. Для остальных, например вьетнамского донга, нужен платный источник курсов, который включает владелец сервера. Без него итоги не учитывают такие суммы и прямо об этом говорят.",
+  "FeaturePageMultiCurrency.alt":
+    "Экран счетов Financy с общим итогом в евро над четырьмя счетами из демо-данных: Bangkok account THB 104,750.00, London account £1,840.00, Salary account €5,965.80 и Dollar savings US$12,500.00.",
+  "FeaturePageMultiCurrency.caption":
+    "Демо-данные. У каждого счёта своя валюта, а итог показан в евро.",
   "FeaturePageHouseholds.name": "Семейный бюджет",
   "FeaturePageHouseholds.title": "Общий бюджет для пары, у каждого свой логин",
   "FeaturePageHouseholds.description":
@@ -483,6 +487,9 @@ export default {
   "FeaturePageHouseholds.restoreQuestion": "Можно ли вернуть удалённую семью?",
   "FeaturePageHouseholds.restoreAnswer":
     "Да. Удалить семью может только владелец, и он же может восстановить её в течение 30 дней.",
+  "FeaturePageHouseholds.alt":
+    "Экран участников Financy с четырьмя взрослыми из демо-данных: Ada Lovelace — владелец, Grace Hopper — администратор, Margaret Hamilton — редактор, Linus Torvalds — читатель.",
+  "FeaturePageHouseholds.caption": "Демо-данные. У каждого свой логин и роль.",
   "FeaturePageLiveSync.name": "Синхронизация",
   "FeaturePageLiveSync.title": "Синхронизация бюджета на всех устройствах сразу",
   "FeaturePageLiveSync.description":
@@ -509,6 +516,10 @@ export default {
   "FeaturePageLiveSync.storesQuestion": "Есть ли Financy в App Store или Google Play?",
   "FeaturePageLiveSync.storesAnswer":
     "Пока нет. Сейчас Financy устанавливается из браузера на телефон или компьютер и открывается без сети.",
+  "FeaturePageLiveSync.alt":
+    "Экран операций Financy: вверху списка операция Grace Hopper на €18.40 с пометкой Farmers market.",
+  "FeaturePageLiveSync.caption":
+    "Демо-данные. Операция Grace появилась на открытом экране без перезагрузки.",
   "FeaturePageSelfHosting.name": "Свой сервер",
   "FeaturePageSelfHosting.title": "Приложение для учёта бюджета на своём сервере",
   "FeaturePageSelfHosting.description":
@@ -537,6 +548,10 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "Есть ли установщик в один клик?",
   "FeaturePageSelfHosting.installerAnswer":
     "Пока нет. Financy настраивается с вашего компьютера с помощью Deno, rsync и git, а разворачивается одной командой. Руководство по установке на свой сервер проведёт через каждый шаг.",
+  "FeaturePageSelfHosting.alt":
+    "Страница «Система» в панели администратора Financy: всё работает, база данных и кеш отмечены как OK.",
+  "FeaturePageSelfHosting.caption":
+    "Демо-сервер. Панель администратора показывает состояние вашего сервера.",
   "FeaturePageTransfers.name": "Переводы",
   "FeaturePageTransfers.title": "Переводы между счетами в разных валютах",
   "FeaturePageTransfers.description":
@@ -565,6 +580,10 @@ export default {
   "FeaturePageTransfers.statementQuestion": "Может ли Financy найти переводы в банковской выписке?",
   "FeaturePageTransfers.statementAnswer":
     "Пока нет. В приложении нет экрана для импорта банковской выписки, поэтому предложить переводы из неё Financy не может.",
+  "FeaturePageTransfers.alt":
+    "Экран перевода Financy: 500.00 EUR отправлено со счёта Salary account, 18250.00 THB получено на счёт Bangkok account по вашему курсу 1 EUR = 36.5 THB.",
+  "FeaturePageTransfers.caption":
+    "Демо-данные. Перевод хранит обе суммы, каждую в валюте своего счёта.",
   "FeaturePageBudgets.name": "Бюджеты",
   "FeaturePageBudgets.title": "Месячный бюджет с лимитом на каждую категорию",
   "FeaturePageBudgets.description":
@@ -593,6 +612,9 @@ export default {
   "FeaturePageBudgets.planQuestion": "Нужен ли для бюджетов платный тариф?",
   "FeaturePageBudgets.planAnswer":
     "Да. В облаке Financy, чтобы задать лимит, нужен тариф Household, а смотреть бюджеты и убирать лимиты можно на любом тарифе. На своём сервере с выключенной оплатой лимиты может задавать каждая семья.",
+  "FeaturePageBudgets.alt":
+    "Экран бюджетов Financy за этот месяц: Groceries — €286.40 из €250.00, лимит превышен на €36.40; Rent — €1,100.00 из €1,200.00, лимит почти исчерпан, осталось €100.00; Travel — в пределах лимита €400.00.",
+  "FeaturePageBudgets.caption": "Демо-данные. Полоса предупреждает, начиная с 80% лимита.",
   "FeaturePageTelegramBot.name": "Telegram-бот",
   "FeaturePageTelegramBot.title": "Учёт расходов и проверка баланса в Telegram",
   "FeaturePageTelegramBot.description":
@@ -620,6 +642,10 @@ export default {
   "FeaturePageTelegramBot.costQuestion": "Нужно ли доплачивать за бота?",
   "FeaturePageTelegramBot.costAnswer":
     "Нет. Бот — не платное дополнение. Операция из чата считается так же, как из приложения, поэтому если в тарифе семьи закончилось место для новых операций, добавить её не получится ни там, ни там.",
+  "FeaturePageTelegramBot.alt":
+    "Окно «Привязать Telegram» в Financy: кнопка «Открыть Telegram», одноразовое сообщение для привязки, которое можно скопировать, и подсказка, что код работает один раз в течение 10 минут.",
+  "FeaturePageTelegramBot.caption":
+    "Демо-экран. Привяжите Telegram здесь один раз, а потом добавляйте операции прямо в чате.",
   "FeaturePageMissing.title": "Такой страницы о возможности нет",
   "FeaturePageMissing.description":
     "Возможно, её перенесли. Все возможности — на странице возможностей.",

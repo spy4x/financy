@@ -415,6 +415,9 @@ export default {
   "FeaturePageMultiCurrency.everyCurrencyQuestion": "Financy 每种货币都有每日汇率吗？",
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "不是。欧洲央行免费提供的每日汇率覆盖约 30 种货币。其他货币，比如越南盾，需要服务器所有者开启付费汇率源；没有的话，合计会排除这些金额并加以说明。",
+  "FeaturePageMultiCurrency.alt":
+    "Financy 的账户页面，以欧元显示的总额下方是四个示例账户：Bangkok account THB 104,750.00、London account £1,840.00、Salary account €5,965.80 和 Dollar savings US$12,500.00。",
+  "FeaturePageMultiCurrency.caption": "示例数据。每个账户保留自己的币种，总额以欧元显示。",
   "FeaturePageHouseholds.name": "家庭",
   "FeaturePageHouseholds.title": "情侣共享预算：一起记账，每人独立账号",
   "FeaturePageHouseholds.description":
@@ -438,6 +441,9 @@ export default {
     "可以。所有者可以把另一位成员设为所有者。所有记录都保持原样。",
   "FeaturePageHouseholds.restoreQuestion": "删除的家庭还能恢复吗？",
   "FeaturePageHouseholds.restoreAnswer": "可以。只有所有者能删除家庭，并且可以在 30 天内恢复。",
+  "FeaturePageHouseholds.alt":
+    "Financy 的成员页面，有四位示例成年人：Ada Lovelace 是所有者，Grace Hopper 是管理员，Margaret Hamilton 是编辑者，Linus Torvalds 是查看者。",
+  "FeaturePageHouseholds.caption": "示例数据。每个人都有自己的账号和角色。",
   "FeaturePageLiveSync.name": "实时同步",
   "FeaturePageLiveSync.title": "预算在每台设备上实时同步",
   "FeaturePageLiveSync.description":
@@ -462,6 +468,9 @@ export default {
   "FeaturePageLiveSync.storesQuestion": "App Store 或 Google Play 上有 Financy 吗？",
   "FeaturePageLiveSync.storesAnswer":
     "还没有。目前你可以在手机或电脑上通过浏览器安装 Financy，没有网络也能打开。",
+  "FeaturePageLiveSync.alt":
+    "Financy 的交易页面，列表最上方是 Grace Hopper 的一笔 €18.40 交易，备注为 Farmers market。",
+  "FeaturePageLiveSync.caption": "示例数据。Grace 添加的交易无需刷新就出现在这个打开的页面上。",
   "FeaturePageSelfHosting.name": "自托管",
   "FeaturePageSelfHosting.title": "在自己的服务器上部署记账应用",
   "FeaturePageSelfHosting.description":
@@ -489,6 +498,9 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "有一键安装程序吗？",
   "FeaturePageSelfHosting.installerAnswer":
     "还没有。你需要在自己的电脑上用 Deno、rsync 和 git 设置 Financy，然后用一条命令完成部署。自托管指南会带你走完每一步。",
+  "FeaturePageSelfHosting.alt":
+    "Financy 管理后台的系统页面，显示一切运行正常，数据库和缓存都标记为 OK。",
+  "FeaturePageSelfHosting.caption": "示例服务器。管理后台会显示你所运行服务器的健康状况。",
   "FeaturePageTransfers.name": "转账",
   "FeaturePageTransfers.title": "跨币种转账记账：转出和到账金额都保留",
   "FeaturePageTransfers.description":
@@ -516,6 +528,9 @@ export default {
   "FeaturePageTransfers.statementQuestion": "Financy 能从银行对账单里找出转账吗？",
   "FeaturePageTransfers.statementAnswer":
     "还不能。应用还没有导入银行对账单的页面，所以无法根据对账单建议转账。",
+  "FeaturePageTransfers.alt":
+    "Financy 的转账页面：从 Salary account 转出 500.00 EUR，Bangkok account 收到 18250.00 THB，使用你自己的汇率 1 EUR = 36.5 THB。",
+  "FeaturePageTransfers.caption": "示例数据。转账会保留两笔金额，各用对应账户的币种。",
   "FeaturePageBudgets.name": "预算",
   "FeaturePageBudgets.title": "为每个分类设置每月预算限额",
   "FeaturePageBudgets.description":
@@ -542,6 +557,9 @@ export default {
   "FeaturePageBudgets.planQuestion": "预算功能需要付费套餐吗？",
   "FeaturePageBudgets.planAnswer":
     "需要。在 Financy 云端，设置限额需要 Household 套餐，查看预算和移除限额则从不需要。在你自己的服务器上，不开启计费时，每个家庭都能设置限额。",
+  "FeaturePageBudgets.alt":
+    "Financy 本月的预算页面：Groceries 已用 €286.40，限额 €250.00，超出 €36.40；Rent 已用 €1,100.00，限额 €1,200.00，接近限额，还剩 €100.00；Travel 未超过 €400.00 的限额。",
+  "FeaturePageBudgets.caption": "示例数据。用到限额的 80% 时，进度条就会提醒你。",
   "FeaturePageTelegramBot.name": "Telegram 机器人",
   "FeaturePageTelegramBot.title": "在 Telegram 里记账、查余额",
   "FeaturePageTelegramBot.description":
@@ -569,6 +587,9 @@ export default {
   "FeaturePageTelegramBot.costQuestion": "机器人要额外收费吗？",
   "FeaturePageTelegramBot.costAnswer":
     "不用。机器人不是付费附加功能。在聊天中添加的交易和在应用中添加的计数方式相同，所以家庭的套餐没有空间添加更多交易时，两边都无法再添加。",
+  "FeaturePageTelegramBot.alt":
+    "Financy 的“关联 Telegram”对话框，包含“打开 Telegram”按钮、一条可复制的一次性关联消息，以及验证码只能使用一次、10 分钟内有效的提示。",
+  "FeaturePageTelegramBot.caption": "示例页面。在这里关联一次，之后就能在 Telegram 聊天中记账。",
   "FeaturePageMissing.title": "这个功能页面不存在",
   "FeaturePageMissing.description": "这个页面可能已经搬家了。所有功能都在功能页上。",
   "FeaturePageMissing.action": "查看所有功能",

@@ -1,4 +1,5 @@
 import type { JSX } from "preact"
+import { WindowFrame } from "@spy4x/preact-ui/window-frame"
 
 /** Whether a screenshot was taken on the desktop viewport (1280×800) or the phone one (390×844). */
 export type ShotKind = "desktop" | "mobile"
@@ -76,5 +77,41 @@ export function Shot(
           : { loading: "lazy" as const, decoding: "async" as const })}
       />
     </picture>
+  )
+}
+
+/** A page's one phone-sized screenshot, cropped by `screenshots/capture.ts`. */
+export interface PhoneShot {
+  /** The screenshot's name in `static/shots/`. */
+  name: string
+  /** The height at the 780 px file: twice the crop's height in `screenshots/capture.ts`. */
+  height: number
+  /** What the screen shows, for a reader who cannot see it. */
+  alt: string
+  caption: string
+}
+
+/**
+ * A phone-sized screenshot in the house frame with its caption under it, at most 390 px wide and
+ * centred. Loaded at once, because on a phone it can be the largest element of the first screen.
+ */
+export function ShotFigure({ shot }: { shot: PhoneShot }): JSX.Element {
+  return (
+    <WindowFrame
+      variant="plain"
+      caption={shot.caption}
+      class="mx-auto mt-4 w-full max-w-[390px]"
+    >
+      <div dir="ltr">
+        <Shot
+          name={shot.name}
+          kind="mobile"
+          height={shot.height}
+          alt={shot.alt}
+          sizes="(min-width: 430px) 390px, calc(100vw - 2rem)"
+          priority
+        />
+      </div>
+    </WindowFrame>
   )
 }

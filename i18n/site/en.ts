@@ -467,6 +467,10 @@ export default {
     "Does Financy have a daily rate for every currency?",
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "No. The European Central Bank's free daily rates cover about 30 currencies. Others, such as the Vietnamese dong, need a paid rate source that the server's owner turns on; without one, totals leave those amounts out and say so.",
+  "FeaturePageMultiCurrency.alt":
+    "Financy's accounts screen with one total in euros above four sample accounts: Bangkok account THB 104,750.00, London account £1,840.00, Salary account €5,965.80 and Dollar savings US$12,500.00.",
+  "FeaturePageMultiCurrency.caption":
+    "Sample data. Each account keeps its own currency, and the total is in euros.",
   "FeaturePageHouseholds.name": "Households",
   "FeaturePageHouseholds.title": "A shared budget for couples, each with a login",
   "FeaturePageHouseholds.description":
@@ -491,6 +495,9 @@ export default {
   "FeaturePageHouseholds.restoreQuestion": "Can we get a deleted household back?",
   "FeaturePageHouseholds.restoreAnswer":
     "Yes. Only the owner can delete a household, and the owner can restore it within 30 days.",
+  "FeaturePageHouseholds.alt":
+    "Financy's members screen with four sample adults: Ada Lovelace is the owner, Grace Hopper an admin, Margaret Hamilton an editor and Linus Torvalds a viewer.",
+  "FeaturePageHouseholds.caption": "Sample data. Each person has their own login and role.",
   "FeaturePageLiveSync.name": "Live sync",
   "FeaturePageLiveSync.title": "Live sync of your budget on every device",
   "FeaturePageLiveSync.description":
@@ -515,6 +522,10 @@ export default {
   "FeaturePageLiveSync.storesQuestion": "Is Financy in the App Store or Google Play?",
   "FeaturePageLiveSync.storesAnswer":
     "Not yet. Today you install Financy from your browser on a phone or computer, and it opens with no network.",
+  "FeaturePageLiveSync.alt":
+    "Financy's transactions screen with Grace Hopper's €18.40 Farmers market entry at the top of the list.",
+  "FeaturePageLiveSync.caption":
+    "Sample data. Grace's entry reached this open screen without a reload.",
   "FeaturePageSelfHosting.name": "Self-hosting",
   "FeaturePageSelfHosting.title": "Run a budget app on your own server",
   "FeaturePageSelfHosting.description":
@@ -543,6 +554,10 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "Is there a one-click installer?",
   "FeaturePageSelfHosting.installerAnswer":
     "Not yet. You set Financy up from your own computer with Deno, rsync and git, and one command deploys it. The self-hosting guide walks through every step.",
+  "FeaturePageSelfHosting.alt":
+    "Financy's System page in the admin panel, saying everything is working, with the database and the cache each marked OK.",
+  "FeaturePageSelfHosting.caption":
+    "Sample server. The admin panel shows the health of the server you run.",
   "FeaturePageTransfers.name": "Transfers",
   "FeaturePageTransfers.title": "Record transfers between currencies",
   "FeaturePageTransfers.description":
@@ -571,6 +586,10 @@ export default {
   "FeaturePageTransfers.statementQuestion": "Can Financy find transfers in my bank statement?",
   "FeaturePageTransfers.statementAnswer":
     "Not yet. The app has no screen for importing a bank statement, so it cannot propose transfers from one.",
+  "FeaturePageTransfers.alt":
+    "Financy's transfer screen: 500.00 EUR sent from Salary account and 18250.00 THB received in Bangkok account, at your own rate of 1 EUR = 36.5 THB.",
+  "FeaturePageTransfers.caption":
+    "Sample data. A transfer keeps both amounts, each in its account's currency.",
   "FeaturePageBudgets.name": "Budgets",
   "FeaturePageBudgets.title": "Set a monthly budget limit for each category",
   "FeaturePageBudgets.description":
@@ -598,6 +617,9 @@ export default {
   "FeaturePageBudgets.planQuestion": "Do budgets need a paid plan?",
   "FeaturePageBudgets.planAnswer":
     "Yes. On Financy's cloud, setting a limit needs the Household plan, while reading budgets and removing a limit never do. On your own server with billing left off, every household can set limits.",
+  "FeaturePageBudgets.alt":
+    "Financy's budgets screen for this month: Groceries €286.40 of €250.00, €36.40 over the limit; Rent €1,100.00 of €1,200.00, close to the limit with €100.00 left; Travel under its €400.00 limit.",
+  "FeaturePageBudgets.caption": "Sample data. The bar warns you from 80% of the limit.",
   "FeaturePageTelegramBot.name": "Telegram bot",
   "FeaturePageTelegramBot.title": "Add expenses and check balances from Telegram",
   "FeaturePageTelegramBot.description":
@@ -625,6 +647,10 @@ export default {
   "FeaturePageTelegramBot.costQuestion": "Does the bot cost extra?",
   "FeaturePageTelegramBot.costAnswer":
     "No. The bot is not a paid add-on. An entry from the chat counts like one from the app, so a household whose plan has no room for more transactions cannot add one in either place.",
+  "FeaturePageTelegramBot.alt":
+    "Financy's Link Telegram dialog, with an Open Telegram button, a one-time link message to copy and a note that the code works once, for 10 minutes.",
+  "FeaturePageTelegramBot.caption":
+    "Sample screen. Link once here, then add entries in the Telegram chat.",
   "FeaturePageMissing.title": "This feature page isn't here",
   "FeaturePageMissing.description": "It may have moved. Every feature is on the features page.",
   "FeaturePageMissing.action": "See all features",

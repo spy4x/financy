@@ -53,6 +53,14 @@ async function get(path: string) {
   }
 }
 
+/** The width and height of a lossy WebP, the only kind `screenshots/capture.ts` writes. */
+function webpSize(file: Uint8Array): { width: number; height: number } {
+  const chunk = new TextDecoder().decode(file.subarray(12, 16))
+  if (chunk !== `VP8 `) throw new Error(`expected a lossy WebP, found the chunk "${chunk}"`)
+  const view = new DataView(file.buffer, file.byteOffset, file.byteLength)
+  return { width: view.getUint16(26, true) & 0x3fff, height: view.getUint16(28, true) & 0x3fff }
+}
+
 function jsonLdGraph(html: string): Record<string, unknown>[] {
   return [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
     .flatMap((match) => JSON.parse(match[1])["@graph"])
@@ -70,6 +78,38 @@ function onThisPage(html: string): string[] {
 }
 
 describe("the feature pages", () => {
+  it("every page has its screenshot's four files, at the height the page declares", async () => {
+    for (const { slug, shot } of KEYED_PAGES) {
+      for (const theme of [`light`, `dark`]) {
+        for (const width of [780, 390]) {
+          const url = new URL(`static/shots/${shot.name}-${theme}-${width}.webp`, import.meta.url)
+          const size = webpSize(await Deno.readFile(url))
+          expect({ slug, ...size }).toEqual({
+            slug,
+            width,
+            height: Math.round(shot.height * width / 780),
+          })
+        }
+      }
+    }
+  })
+
+  it("every page draws its screenshot with words in the page's language", async () => {
+    for (const language of SITE_LANGUAGES) {
+      const prefix = language === `en` ? `` : `/${language}`
+      const t = siteTranslator(language)
+      for (const page of KEYED_PAGES) {
+        const { html } = await get(`${prefix}/features/${page.slug}`)
+        const article = html.slice(html.indexOf(`<article`))
+        const header = article.slice(0, article.indexOf(`</header>`))
+        expect(header).toContain(`src="/shots/${page.shot.name}-light-780.webp`)
+        expect(header).toContain(`width="780" height="${page.shot.height}"`)
+        expect(header).toContain(`alt="${t.t(page.shot.alt).replaceAll(`"`, `&quot;`)}"`)
+        expect(header).toContain(t.t(page.shot.caption))
+      }
+    }
+  })
+
   it("draws each feature page in its fixed order, with On this page listing exactly those sections", async () => {
     for (const page of FEATURE_PAGES) {
       const { status, html } = await get(`/features/${page.slug}`)

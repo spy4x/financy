@@ -8,6 +8,7 @@
  */
 import type { Language } from "@domain/identity"
 import type { Translator } from "@spy4x/platform/universal/i18n"
+import type { PhoneShot } from "./components/shot.tsx"
 import type { FeatureQuestion } from "./features-data.tsx"
 import { DEFAULT_LANGUAGE, localePath } from "./languages.ts"
 import { householdValues } from "./routes/[[lang]]/pricing.tsx"
@@ -74,16 +75,6 @@ export type AudienceBlock =
     | { kind: `columns`; columns: readonly AudienceColumn[] }
   )
 
-/** The page's one screenshot, a phone-sized crop in `static/shots/`. */
-export interface AudienceShot {
-  /** The screenshot's name in `static/shots/`. */
-  name: string
-  /** The height at the 780 px file: twice the crop's height in `screenshots/capture.ts`. */
-  height: number
-  alt: string
-  caption: string
-}
-
 /**
  * One audience page. In {@link AUDIENCE_PAGES} every text field is a key of the `site` catalog;
  * {@link audiencePageIn} turns them into the words of one language.
@@ -107,7 +98,8 @@ export interface AudiencePage {
   /** "What Financy does not do": limits of the product, not planned work. */
   limits: readonly string[]
   questions: readonly FeatureQuestion[]
-  shot: AudienceShot
+  /** The page's one screenshot. */
+  shot: PhoneShot
   /** The two feature pages the page closes with, by slug. */
   features: readonly [string, string]
   /** The day this page's words last changed: its "Last updated" line and the sitemap's `lastmod`. */
