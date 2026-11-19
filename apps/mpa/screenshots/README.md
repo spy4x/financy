@@ -53,7 +53,7 @@ Every screen is delivered at 780 and 390 px wide.
 | `feature-self-hosting` | `/features/self-hosting`                  | System, in the admin panel | 1408          |
 | `feature-transfers`    | `/features/transfers`                     | Transfer editor            | 1504          |
 | `feature-budgets`      | `/features/budgets`                       | Budgets                    | 880           |
-| `feature-telegram-bot` | `/features/telegram-bot`                  | Link Telegram dialog       | 806           |
+| `feature-telegram-bot` | `/features/telegram-bot`                  | Link Telegram dialog       | 802           |
 
 A crop's height is written twice: as its `clip` in `capture.ts`, and at twice the size in
 `audience-data.ts` or `features-data.tsx`. Change both together; `feature-pages.test.ts` fails when

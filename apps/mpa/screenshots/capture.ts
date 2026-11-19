@@ -441,8 +441,8 @@ async function scrollToTop(target: Locator): Promise<void> {
   })
 }
 
-/** Waits until the page is still, then writes the master PNG of `clip`. */
-async function snap(page: Page, name: string, clip: Clip): Promise<void> {
+/** Waits until the page is still, then writes the master PNG of the screen's crop. */
+async function snap(page: Page, name: string, screen: Screen): Promise<void> {
   await page.addStyleTag({ content: STEADY_CSS })
   await page.waitForLoadState("networkidle")
   await page.evaluate(() => document.fonts.ready)
@@ -452,6 +452,9 @@ async function snap(page: Page, name: string, clip: Clip): Promise<void> {
   const viewport = page.viewportSize()!
   await page.mouse.move(viewport.width - 2, viewport.height / 2)
   await page.waitForTimeout(300)
+  // Measured here, because a dialog stands still only once its animation is off.
+  const clip = typeof screen.clip === `function` ? await screen.clip(page) : screen.clip
+  await expectInsideClip(screen.last(page), clip)
   await page.screenshot({
     path: `${MASTERS}/${name}.png`,
     animations: "disabled",
@@ -471,8 +474,11 @@ interface Clip {
 /** A screen of the sample household: opened in each theme, waited for, checked and arranged. */
 interface Screen {
   name: string
-  /** The part of the viewport the picture keeps. Its height is also in the website's data. */
-  clip: Clip
+  /**
+   * The part of the viewport the picture keeps, or how to measure it on the open screen. Its height
+   * is also in the website's data.
+   */
+  clip: Clip | ((page: Page) => Promise<Clip>)
   open(page: Page, seeded: Seeded): Promise<void>
   /** Throws when the screen does not show what the website's alt text says it shows. */
   check(page: Page): Promise<void>
@@ -686,8 +692,8 @@ const SCREENS: Screen[] = [
   },
   {
     name: "feature-telegram-bot",
-    // The dialog alone.
-    clip: { x: 0, y: 221, width: 390, height: 403 },
+    // The dialog alone: the page behind it never shows along an edge.
+    clip: (page) => dialogBox(page.locator(`[data-e2e=telegram-code-dialog]`)),
     async open(page, seeded) {
       // The development stack has no bot: these are the two answers a running one gives.
       await page.route(`**/api/telegram`, (route) =>
@@ -727,6 +733,19 @@ async function attempt(name: string, shoot: () => Promise<void>): Promise<void> 
   }
 }
 
+/**
+ * The box a centred dialog fills. A dialog of an odd height centres on half a pixel, where a crop
+ * would either cut its border or keep a line of the page behind it, so it moves up to a whole one.
+ */
+async function dialogBox(dialog: Locator): Promise<Clip> {
+  await dialog.evaluate((element: HTMLElement) => {
+    element.style.marginTop = `${Math.floor(element.getBoundingClientRect().top)}px`
+  })
+  const box = await dialog.boundingBox()
+  if (!box) throw new Error(`the dialog to crop to is not on the screen`)
+  return box
+}
+
 /** Throws when `last` ends below the picture's crop, so a taller screen cannot lose its end. */
 async function expectInsideClip(last: Locator, clip: Clip): Promise<void> {
   const box = await last.boundingBox()
@@ -755,8 +774,7 @@ async function captureScreens(browser: Browser, contexts: BrowserContext[], seed
             throw new Error(`the stack has no rate for EUR, USD, GBP or THB`)
           }
           await screen.check(page)
-          await expectInsideClip(screen.last(page), screen.clip)
-          await snap(page, name, screen.clip)
+          await snap(page, name, screen)
         } finally {
           await screen.after?.(seeded)
           await page.context().close()

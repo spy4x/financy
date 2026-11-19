@@ -619,7 +619,7 @@ export const FEATURE_PAGES: readonly FeaturePage[] = [
     ],
     shot: {
       name: `feature-telegram-bot`,
-      height: 806,
+      height: 802,
       alt: `FeaturePageTelegramBot.alt`,
       caption: `FeaturePageTelegramBot.caption`,
     },
