@@ -91,7 +91,7 @@ describe(`runChoice`, () => {
         },
         save: (_response, filename) => Promise.resolve(void saved.push(filename)),
       })
-      if (status === `busy`) store.exporting.value = HOME
+      if (status === `busy`) store.exporting.value = { groupId: HOME, format: `json` }
       return { store, requests, saved }
     }
 

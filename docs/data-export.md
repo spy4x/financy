@@ -43,9 +43,10 @@ The ZIP has three kinds of file:
 - one CSV per section, in UTF-8 with a byte order mark, so spreadsheets read accents;
 - `README.txt`, which explains the files.
 
-A group's owner downloads the group's own spreadsheets apart from this, from the group: one CSV per
-aggregate, also in UTF-8 with a byte order mark, its headings in the person's language
-([Make it exportable](aggregate-lifecycle.md#make-it-exportable)). Financy adds five:
+A group's owner downloads the group's own spreadsheets apart from this, from the group's "More
+actions" menu: one CSV per aggregate, also in UTF-8 with a byte order mark, its headings in the
+person's language ([Make it exportable](aggregate-lifecycle.md#make-it-exportable)). Financy adds
+five:
 
 - `accounts.csv`: each live account with its starting balance and its balance today, the one the
   accounts screen shows;

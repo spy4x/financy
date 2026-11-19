@@ -1,5 +1,7 @@
 import type { ReadonlySignal } from "@preact/signals"
 import type { ThemePreference } from "@domain/identity"
+import type { GroupExportFormat } from "@domain/groups"
+import type { GroupExportJob } from "../state/group-files.ts"
 import { GROUP_PATHS, NOTE_PATHS, TAG_PATHS, TRANSACTION_PATHS } from "@ui/progressive.tsx"
 import type { SearchChoice } from "@ui/search-palette.tsx"
 
@@ -34,11 +36,11 @@ export interface ChoicePorts {
   /** The account menu's sign-out, which asks about unsent changes first. */
   signOut: () => void
   install: () => void
-  /** The group export store, whose `download` the group menu's "Export group…" calls too. */
+  /** The group export store, whose `download` the group menu's "Export as JSON" calls too. */
   groupExport: {
-    download: (groupId: string) => Promise<boolean>
-    /** The group whose last export failed, or `null`. */
-    failed: ReadonlySignal<string | null>
+    download: (groupId: string, format: GroupExportFormat, language: string) => Promise<boolean>
+    /** The group and format of the last export, when it failed; otherwise `null`. */
+    failed: ReadonlySignal<GroupExportJob | null>
   }
   /** Says an export failed: the group page that shows why may not be open. */
   exportFailed: () => void
@@ -67,8 +69,9 @@ export async function runChoice(choice: SearchChoice, ports: ChoicePorts): Promi
       return ports.install()
     case "export-group": {
       // A download refused because another one runs is no failure: the store keeps no failure then.
-      const saved = await ports.groupExport.download(choice.groupId)
-      if (!saved && ports.groupExport.failed.value === choice.groupId) ports.exportFailed()
+      // The JSON file has no headings, so it needs no language.
+      const saved = await ports.groupExport.download(choice.groupId, `json`, ``)
+      if (!saved && ports.groupExport.failed.value?.groupId === choice.groupId) ports.exportFailed()
       return
     }
     case "note":
