@@ -1,4 +1,3 @@
-// Seed's own site: see docs/start-a-product.md
 import type { JSX } from "preact"
 import { WindowFrame } from "@spy4x/preact-ui/window-frame"
 import { LoopClip } from "../islands/videos.tsx"
@@ -25,7 +24,7 @@ const LOOP_KEYS: Record<LoopName, { name: string; title: string; caption: string
 }
 
 /**
- * A feature loop in a plain frame, with its caption under it: the dark clip in both page themes.
+ * A feature loop in a plain frame, with its caption under it: the light clip in both page themes.
  * `data-no-zoom` keeps its poster out of the screenshot lightbox (`islands/shot-lightbox.tsx`).
  */
 export function FeatureLoop(
@@ -43,7 +42,7 @@ export function FeatureLoop(
       <WindowFrame variant="plain" caption={caption ? t.t(keys.caption) : undefined}>
         <LoopClip
           poster={{
-            src: `/video/${loop}-loop-dark-${LOOP_SIZE.width}.webp`,
+            src: `/video/${loop}-loop-light-${LOOP_SIZE.width}.webp`,
             srcset: loopPosterSrcset(loop),
             sizes,
             width: LOOP_SIZE.width,

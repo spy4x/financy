@@ -155,7 +155,7 @@ provider with the product's translator.
 | ------------------------ | ----------------------------------------- | -------------------------------------------- |
 | Website screenshots      | `static/shots/`                           | `screenshots/capture.ts`                     |
 | The admin video          | `media/video/admin-panel.*`, `static/video/admin-panel-*` | `deno task video:admin`      |
-| The three feature loops  | `media/video/*-loop-*`, `static/video/*-loop-*` | `deno task loops` in `apps/mpa` (`screenshots/loops.ts`) |
+| The three feature loops  | `media/video/*-loop-light.*`, `static/video/*-loop-light-*` | `deno task loops` in `apps/mpa` (`screenshots/loops.ts`) |
 | README pictures          | `docs/screenshots/`                       | `docs/screenshots/record.ts`                 |
 
 `deno task video:admin`, run from the repository's root, records the video with
@@ -163,9 +163,10 @@ provider with the product's translator.
 the transcript into `admin-video.ts` (this one under `apps/mpa/`), which the website reads for the
 line under the player and the structured data.
 
-The feature loops show Seed's own app. `loops.ts` names them and `components/feature-loop.tsx`
-draws them on the website: replace both with the product's own clips, or delete them with the
-`loops` task and their uses. The GitHub social preview says `seedsaas.com` too; replace it.
+The feature loops show Financy's own app: a shared household's live budget, an expense added
+offline, and the keyboard shortcuts with search. `screenshots/loops.ts` records them, `loops.ts`
+names them and `components/feature-loop.tsx` draws them on the website. The GitHub social preview
+says `seedsaas.com`; replace it.
 
 ## The product's name, icon and colour in the apps
 
