@@ -326,21 +326,21 @@ export default {
   "FeatureVisuals.deployCaption":
     "Shortened: the rsync and Compose output between the steps is left out.",
   "FeatureVisuals.services": "Services on the server",
-  "Loops.realtimeName": "Realtime sync",
+  "Loops.realtimeName": "Live sync",
   "Loops.realtimeTitle":
-    "A note saved in the left window appears in the right window within a second, with no reload.",
+    "An expense of €64.50 added in the left window moves the Travel budget in the right window from €171.80 to €236.30, with no reload.",
   "Loops.realtimeCaption":
-    "Two windows, one account. Save in one, and the other updates by itself.",
-  "Loops.offlineName": "Offline editing",
+    "Two people, one household. An expense added on one screen updates the budget on the other.",
+  "Loops.offlineName": "Offline entries",
   "Loops.offlineTitle":
-    "The app goes offline, a note is edited, and on reconnect the conflict chooser asks which version to keep.",
+    "With no connection, a 240 baht expense is added and waits on the list. Back online, it is sent and converted to euros.",
   "Loops.offlineCaption":
-    "Offline edits wait in an outbox. If someone changed the same note, you choose which version to keep.",
+    "Add transactions with no connection. They wait on this device and are sent when you reconnect.",
   "Loops.shortcutsName": "Keyboard shortcuts",
   "Loops.shortcutsTitle":
-    "Ctrl+K opens the command palette. A misspelled, a Cyrillic and a wrong-layout search each find the same action, which then runs.",
+    "T and Enter add a transaction. Ctrl+K then finds a hotel payment from a misspelled word, a Cyrillic word and a wrong-layout word, and Enter opens it.",
   "Loops.shortcutsCaption":
-    "Press Ctrl+K (⌘K on a Mac). Search forgives typos, Cyrillic and the wrong keyboard layout.",
+    "Press T to add a transaction and Ctrl+K (⌘K on a Mac) to find one. Search forgives typos, Cyrillic and the wrong keyboard layout.",
   "Outbox.change": "The change",
   "Outbox.changeNote": "a note, a member",
   "Outbox.event": "Its event",

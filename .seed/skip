@@ -14,8 +14,6 @@ apps/mpa/components/compare-alternatives.tsx
 apps/mpa/components/cta-band.tsx
 apps/mpa/components/founders-handoff.tsx
 apps/mpa/hire.ts
-apps/mpa/media/video/admin-panel.mp4
-apps/mpa/media/video/admin-panel.webm
 apps/mpa/routes/[[lang]]/admin.tsx
 apps/mpa/routes/[[lang]]/compare.tsx
 apps/mpa/routes/features/admin.ts
@@ -23,8 +21,6 @@ apps/mpa/routes/mvp.ts
 apps/mpa/routes/video-sitemap.xml.ts
 apps/mpa/static/og
 apps/mpa/static/shots
-apps/mpa/static/video/admin-panel-poster-1280.webp
-apps/mpa/static/video/admin-panel-poster-1920.webp
 e2e/mpa/admin.mpa.ts
 e2e/mpa/compare.mpa.ts
 e2e/mpa/mvp.mpa.ts
@@ -49,7 +45,7 @@ e2e/mpa/launch-checklist.mpa.ts
 libs/server/db/migrations/2026_12_16_0005_import_options_review_choices.sql
 apps/mpa/docs-list.ts
 .woodpecker/demo-deploy.yml
-apps/mpa/media/video/speed-loop-*
-apps/mpa/static/video/speed-loop-*
 apps/mpa/screenshots/speed-usual-app.html
 libs/server/db/migrations/2026_12_16_0006_import_keep.sql
+apps/mpa/media/video/
+apps/mpa/static/video/

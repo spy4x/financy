@@ -90,7 +90,7 @@ for (const path of [`/compare`, `/admin`, `/mvp`, `/features/admin`, `/de/compar
 test(`the video route answers a byte range of every loop and of the demo video`, async ({ request }) => {
   const files = [
     ...[`realtime`, `offline`, `shortcuts`].flatMap((loop) =>
-      [`webm`, `mp4`].map((ext) => `${loop}-loop-dark.${ext}`)
+      [`webm`, `mp4`].map((ext) => `${loop}-loop-light.${ext}`)
     ),
     `demo.webm`,
     `demo.mp4`,
