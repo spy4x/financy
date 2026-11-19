@@ -64,17 +64,22 @@ is measured from the dialog, so only its height in `features-data.tsx` is writte
 
 `loops.ts` (`deno task loops`, or `deno task loops offline` for one) records the three silent
 loops the feature pages and the home page play: realtime sync, offline editing and the keyboard
-shortcuts, once, in the dark theme, which the site shows in both of its themes. It needs the same
+shortcuts, once, in the light theme, which the site shows in both of its themes. It needs the same
 running stack, plus `ffmpeg` built with `libsvtav1` and `libx264`, and `cwebp`.
 
-- It signs up the same four people as `capture.ts`, seeds its own notes and tags, and deletes the
-  people again at the end.
+- It signs up the same four people as `capture.ts`, seeds the same household with its accounts,
+  categories and budgets, and fetches the exchange rates as the admin (`rates.fetch`).
+- Live sync: Margaret adds a €64.50 Travel expense on the left and Ada's Travel budget grows on
+  the right. Offline entries: Ada adds a 240 baht expense with no connection, and the cut skips the
+  wait until it is sent and converted. Keyboard shortcuts: `T` adds an expense, then `Ctrl+K` finds
+  "Hotel in Bangkok" from `htoel`, `отель` and `рщеуд`.
+- Each take deletes the transactions it added, and the people are deleted again at the end.
 - Each clip plays in the real SPA at 720×450 CSS px (realtime: two windows of 360 px side by side)
   at device scale 2, with a drawn pointer moved at a person's pace and key caps for shortcuts.
 - Chromium's screencast is played back at 15 frames a second. The clip ends with a half-second
   fade into its own first frame, so it loops without a jump.
-- It writes `media/video/<name>-loop-dark.webm` (AV1) and `.mp4` (H.264), each under 600 KB, and
-  the first frame as `static/video/<name>-loop-dark-<720|1440>.webp`, the poster.
+- It writes `media/video/<name>-loop-light.webm` (AV1) and `.mp4` (H.264), each under 600 KB, and
+  the first frame as `static/video/<name>-loop-light-<720|1440>.webp`, the poster.
 
 ## Size budgets
 

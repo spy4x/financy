@@ -17,12 +17,12 @@ The admin panel video on the website's `/admin` page is a third piece, made by
 `apps/mpa/media/video/` and `apps/mpa/static/video/`. Re-record it in the same PR when the change
 altered a screen the video shows significantly; its header names the shots.
 
-The website's three feature loops (realtime sync, offline editing, keyboard shortcuts) are a
-fourth, made by `apps/mpa/screenshots/loops.ts` (`deno task loops` in `apps/mpa`) and committed
-under `apps/mpa/media/video/` and `apps/mpa/static/video/`. They are recorded once, in the dark
-theme, and the site shows that one copy in both of its themes. Re-record them in the same PR when
-the change altered the notes list, the note editor, the conflict chooser, the search palette or the
-shell significantly.
+The website's three feature loops (live sync, offline entries, keyboard shortcuts) are a fourth,
+made by `apps/mpa/screenshots/loops.ts` (`deno task loops` in `apps/mpa`) and committed under
+`apps/mpa/media/video/` and `apps/mpa/static/video/` as `<name>-loop-light.*`. They are recorded
+once, in the light theme, and the site shows that one copy in both of its themes. Re-record them in
+the same PR when the change altered the transactions list, the transaction editor, the budgets
+screen, the search palette or the shell significantly.
 
 `AGENTS.seed.md`, "Product screenshots", says when to run this. This skill says how.
 
@@ -42,7 +42,8 @@ listed in `apps/mpa/screenshots/README.md`, "What it does"; the README's are nam
    Keep `ENV=dev`, which the README pictures need. When another project already holds port 5432,
    set `DB_HOST_PORT` in that `.env` to a free one, keeping its
    `127.0.0.1:<port>` form so Postgres stays off the network (`127.0.0.1:55432`).
-4. Add `admin` to `COMPOSE_PROFILES` in `infra/envs/.env`, then from the worktree root run
+4. Add `admin` to `COMPOSE_PROFILES` in `infra/envs/.env` and set `FILES=false` there (without
+   it the API stays unhealthy and Traefik answers 404), then from the worktree root run
    `deno task proxy:start` and `deno task dev`. Both start detached Docker containers. When
    `deno task dev` hangs on its `docker compose --dry-run` check (#200), run what it would run:
 
@@ -113,7 +114,7 @@ its timezone) and with one transcript line per shot of the new cut, then the e2e
    of key moments (`ffmpeg -i admin-panel.mp4 -vf fps=2 still-%03d.png` in your scratch folder),
    look at each, and check that the transcript matches what the video shows.
 3. For the loops, extract a contact sheet of each clip
-   (`ffmpeg -i realtime-loop-dark.webm -vf "fps=2,scale=720:-1,tile=3x4" -frames:v 1 sheet.png`
+   (`ffmpeg -i realtime-loop-light.webm -vf "fps=2,scale=720:-1,tile=3x4" -frames:v 1 sheet.png`
    in your scratch folder) and check that the pointer moves to each target and the story reads
    from start to end.
 4. Check the budgets the website's README names: 70 KB for each file, under 2.5 MB for the folder

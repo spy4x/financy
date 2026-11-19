@@ -321,21 +321,21 @@ export default {
   "FeatureVisuals.deployCaption":
     "Resumido: a saída do rsync e do Compose entre os passos foi omitida.",
   "FeatureVisuals.services": "Serviços no servidor",
-  "Loops.realtimeName": "Sincronização em tempo real",
+  "Loops.realtimeName": "Sincronização ao vivo",
   "Loops.realtimeTitle":
-    "Uma nota salva na janela da esquerda aparece na da direita em menos de um segundo, sem recarregar.",
+    "Uma despesa de €64.50 adicionada na janela da esquerda faz o orçamento de Travel na janela da direita passar de €171.80 para €236.30, sem recarregar.",
   "Loops.realtimeCaption":
-    "Duas janelas, a mesma conta de usuário. Salve em uma, e a outra se atualiza sozinha.",
-  "Loops.offlineName": "Edição offline",
+    "Duas pessoas, uma casa. Uma despesa adicionada em uma tela atualiza o orçamento na outra.",
+  "Loops.offlineName": "Lançamentos offline",
   "Loops.offlineTitle":
-    "O app fica offline, uma nota é editada e, ao reconectar, o seletor de conflitos pergunta qual versão manter.",
+    "Sem conexão, uma despesa de 240 baht é adicionada e fica aguardando na lista. De volta online, ela é enviada e convertida para euros.",
   "Loops.offlineCaption":
-    "As edições offline esperam numa caixa de saída. Se alguém mudou a mesma nota, você escolhe qual versão manter.",
+    "Adicione lançamentos sem conexão. Eles aguardam neste dispositivo e são enviados quando você se reconecta.",
   "Loops.shortcutsName": "Atalhos de teclado",
   "Loops.shortcutsTitle":
-    "Ctrl+K abre a paleta de comandos. Uma busca com erro de digitação, uma em cirílico e uma no layout de teclado errado encontram a mesma ação, que então é executada.",
+    "T e Enter adicionam um lançamento. Depois, Ctrl+K encontra um pagamento de hotel a partir de uma palavra com erro de digitação, outra em cirílico e outra digitada no layout de teclado errado, e Enter o abre.",
   "Loops.shortcutsCaption":
-    "Pressione Ctrl+K (⌘K no Mac). A busca perdoa erros de digitação, cirílico e o layout de teclado errado.",
+    "Pressione T para adicionar um lançamento e Ctrl+K (⌘K no Mac) para encontrar um. A busca perdoa erros de digitação, cirílico e o layout de teclado errado.",
   "Outbox.change": "A alteração",
   "Outbox.changeNote": "uma nota, um membro",
   "Outbox.event": "Seu evento",
