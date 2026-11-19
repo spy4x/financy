@@ -4,10 +4,11 @@
  * editing and the keyboard shortcuts, in the dark theme only, the one most of the site's developer
  * readers use; a dark clip sits fine on a light page (`loops.ts` beside the routes names them).
  *
- * `deno task loops` in `apps/mpa`; README.md beside this file says what it needs. It seeds the same
- * four people and notes as `capture.ts`, plays each loop at 720×450 CSS px and device scale 2 with
- * a drawn pointer moved at a person's pace, and records Chromium's screencast. Each clip ends with a
- * fade into its own first frame, so it loops without a jump. It writes an AV1 WebM and an H.264 MP4
+ * `deno task loops` in `apps/mpa`; README.md beside this file says what it needs. It signs up the
+ * same four people as `capture.ts` and seeds its own notes and tags, plays each loop at 720×450 CSS
+ * px and device scale 2 with a drawn pointer moved at a person's pace, and records Chromium's
+ * screencast. Each clip ends with a fade into its own first frame, so it loops without a jump. It
+ * writes an AV1 WebM and an H.264 MP4
  * of every clip into `media/video/` and the first frame, at 720 and 1440 px, as the WebP poster
  * into `static/video/`. The four accounts are deleted again whether or not the run succeeded.
  */
