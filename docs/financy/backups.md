@@ -42,7 +42,9 @@ Your env file is not saved: keep your own copy, as [Self-host Financy](self-host
 
 On the server, in Financy's folder:
 
-1. List the backups. The container makes the first one when it starts, right after the deploy:
+1. List the backups. The container makes the first one when it starts, right after the deploy. It
+   holds the database and the web push keys; the file store joins from the first run after the
+   store has made its first hourly copy:
 
    ```sh
    deno task compose run --rm backup restic snapshots
@@ -64,8 +66,14 @@ Restore the newest backup into a spare database once, so you know it can be read
 your household's live records. Follow [Rehearse a restore](../restore.md#rehearse-a-restore), with
 `<db>` the `DB_NAME` of your env file.
 
+Right after an upgrade, back up first with `deno task compose run --rm backup once`. The deploy
+does not restart the backup, so the newest backup can be older than the upgrade's migrations, and
+its tables then do not match the live list.
+
 When you need a real restore, on the same server or a new one, follow
-[Restore from a backup](../restore.md).
+[Restore from a backup](../restore.md). In its first step, stop `pgbouncer` too: while it runs, it
+holds the database open, and the rename in the second step fails with "being accessed by other
+users".
 
 ## Next
 

@@ -43,6 +43,9 @@ your computer, in the repository you deployed from, unless it says the server.
    curl -sS -w '\n%{http_code}\n' https://money.example.com/api/health
    ```
 
+   For up to a minute after the deploy it can answer `404 page not found`, until the new API passes
+   its health check; try again.
+
 Use your own release tags in place of `v0.1.0` and `v0.2.0`.
 
 ## What the deploy does to your data
@@ -58,8 +61,10 @@ names each one.
 
 Going back to the old release does not undo a migration. When the new release fails after its
 migrations ran, restore the backup from step 2 as [Restore from a backup](../restore.md#restore)
-says, then deploy the old tag. [Deploy an update](../deploy-updates.md) has the details of every
-deploy and of rolling back.
+says, then deploy the old tag. In the restore's first step, stop `pgbouncer` too: while it runs,
+it holds the database open, and the rename in the second step fails with "being accessed by other
+users". [Deploy an update](../deploy-updates.md) has the details of every deploy and of rolling
+back.
 
 ## Next
 
