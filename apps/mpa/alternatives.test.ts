@@ -116,6 +116,7 @@ describe("the comparison pages", () => {
   it("quotes the cloud's yearly price from the plan catalog", () => {
     const plan = findPlan(PRO_PLAN_ID)!
     const price = planPrice(plan.yearlyAmount!, plan.currency, `en`)
+    const wholePrice = new RegExp(`${price.replace(`$`, `\\$`)}(?![.,]?\\d)`)
 
     for (
       const key of [
@@ -126,7 +127,7 @@ describe("the comparison pages", () => {
     ) {
       expect(english.t(key), key).toContain(`${price} a year`)
       for (const language of SITE_LANGUAGES) {
-        expect(siteTranslator(language).t(key), `${language} ${key}`).toContain(price)
+        expect(siteTranslator(language).t(key), `${language} ${key}`).toMatch(wholePrice)
       }
     }
   })
