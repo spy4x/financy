@@ -251,11 +251,20 @@ export default {
   "FeatureExport.nav": "Export",
   "FeatureExport.title": "Your data leaves with you",
   "FeatureExport.lead":
-    "The owner can export a household to an open JSON file at any time, and import it later as a new household. Importing never overwrites the original.",
+    "The owner can export a household to an open JSON file at any time, and import it later as a new household. Importing never overwrites the original. They can also download it as spreadsheets: a ZIP of CSV files for a spreadsheet app or an accountant, with the headings in their language.",
   "FeatureExport.fact1":
     "The whole file is checked before anything is written, then imported in one step",
   "FeatureExport.fact2":
     "Every record gets a new id, so an import never collides with what is there",
+  "FeatureExport.fileAccounts":
+    "accounts.csv: Name, Type, Currency, Starting balance, Balance today, Archived",
+  "FeatureExport.fileCategories": "categories.csv: Name, Kind, Parent category, Archived",
+  "FeatureExport.fileBudgets":
+    "budgets.csv: Month, Category, Limit, Limit currency, Spent, Currencies left out (no exchange rate)",
+  "FeatureExport.fileTransactions":
+    "transactions.csv: Date, Type, Account, Category, Parent category, Memo, Amount, Currency, Amount in main currency, Main currency, Exchange rate (1 unit of account currency in main currency), Rate date, Rate source, Amount in account, Account currency, Added by",
+  "FeatureExport.fileTransfers":
+    "transfers.csv: Date, From account, Amount sent, Currency sent, To account, Amount received, Currency received, Implied rate (received for 1 unit sent), Memo",
   "FeatureExport.code": "Read the export code",
   "FeatureLanguages.nav": "Languages",
   "FeatureLanguages.title": "In nine languages",

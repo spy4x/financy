@@ -232,7 +232,15 @@ export function tiers({ t, language }: Site): readonly Tier[] {
           nav: t.t(`FeatureExport.nav`),
           title: t.t(`FeatureExport.title`),
           lead: t.t(`FeatureExport.lead`),
-          facts: [t.t(`FeatureExport.fact1`), t.t(`FeatureExport.fact2`)],
+          facts: [
+            t.t(`FeatureExport.fact1`),
+            t.t(`FeatureExport.fact2`),
+            t.t(`FeatureExport.fileAccounts`),
+            t.t(`FeatureExport.fileCategories`),
+            t.t(`FeatureExport.fileBudgets`),
+            t.t(`FeatureExport.fileTransactions`),
+            t.t(`FeatureExport.fileTransfers`),
+          ],
           code: {
             label: t.t(`FeatureExport.code`),
             href: source(`libs/server/groups/portable.ts`),

@@ -245,10 +245,19 @@ export default {
   "FeatureExport.nav": "書き出し",
   "FeatureExport.title": "データは自分のもの",
   "FeatureExport.lead":
-    "オーナーはいつでも世帯をオープンな JSON ファイルに書き出し、あとで新しい世帯として取り込めます。取り込みで元の世帯が上書きされることはありません。",
+    "オーナーはいつでも世帯をオープンな JSON ファイルに書き出し、あとで新しい世帯として取り込めます。取り込みで元の世帯が上書きされることはありません。表計算ファイルとしてダウンロードすることもできます。表計算アプリや会計士向けに CSV ファイルをまとめた ZIP で、見出しは利用中の言語になります。",
   "FeatureExport.fact1": "何かを書き込む前にファイル全体を確認し、1ステップで取り込みます",
   "FeatureExport.fact2":
     "各レコードに新しい id が付くので、取り込みが既存のデータとぶつかることはありません",
+  "FeatureExport.fileAccounts":
+    "accounts.csv：名前、種類、通貨、開始残高、今日の残高、アーカイブ済み",
+  "FeatureExport.fileCategories": "categories.csv：名前、種類、親カテゴリ、アーカイブ済み",
+  "FeatureExport.fileBudgets":
+    "budgets.csv：月、カテゴリ、上限、上限の通貨、使った額、含まれていない通貨（為替レートなし）",
+  "FeatureExport.fileTransactions":
+    "transactions.csv：日付、種類、口座、カテゴリ、親カテゴリ、摘要、金額、通貨、メイン通貨換算額、メイン通貨、為替レート（口座通貨1単位あたりのメイン通貨額）、レート基準日、レートの出典、口座の入出金額、口座通貨、登録者",
+  "FeatureExport.fileTransfers":
+    "transfers.csv：日付、振替元の口座、送金額、送金通貨、振替先の口座、受取額、受取通貨、実質レート（送金通貨1単位あたりの受取額）、摘要",
   "FeatureExport.code": "エクスポートのコードを読む",
   "FeatureLanguages.nav": "言語",
   "FeatureLanguages.title": "9言語に対応",

@@ -252,11 +252,20 @@ export default {
   "FeatureExport.nav": "Exportación",
   "FeatureExport.title": "Tus datos se van contigo",
   "FeatureExport.lead":
-    "El propietario puede exportar un hogar a un archivo JSON abierto en cualquier momento e importarlo después como un hogar nuevo. Importar nunca sobrescribe el original.",
+    "El propietario puede exportar un hogar a un archivo JSON abierto en cualquier momento e importarlo después como un hogar nuevo. Importar nunca sobrescribe el original. También puede descargarlo como hojas de cálculo: un ZIP de archivos CSV para una app de hojas de cálculo o para contabilidad, con los encabezados en su idioma.",
   "FeatureExport.fact1":
     "Se comprueba todo el archivo antes de escribir nada, y luego se importa en un solo paso",
   "FeatureExport.fact2":
     "Cada registro recibe un id nuevo, así que una importación nunca choca con lo que ya hay",
+  "FeatureExport.fileAccounts":
+    "accounts.csv: Nombre, Tipo, Moneda, Saldo inicial, Saldo de hoy, Archivada",
+  "FeatureExport.fileCategories": "categories.csv: Nombre, Tipo, Categoría principal, Archivada",
+  "FeatureExport.fileBudgets":
+    "budgets.csv: Mes, Categoría, Límite, Moneda del límite, Gastado, Monedas no incluidas (sin tipo de cambio)",
+  "FeatureExport.fileTransactions":
+    "transactions.csv: Fecha, Tipo, Cuenta, Categoría, Categoría principal, Concepto, Importe, Moneda, Importe en moneda principal, Moneda principal, Tipo de cambio (1 unidad de la moneda de la cuenta en moneda principal), Fecha del tipo de cambio, Fuente del tipo de cambio, Importe en la cuenta, Moneda de la cuenta, Añadido por",
+  "FeatureExport.fileTransfers":
+    "transfers.csv: Fecha, Cuenta de origen, Importe enviado, Moneda enviada, Cuenta de destino, Importe recibido, Moneda recibida, Tipo de cambio implícito (recibido por cada unidad enviada), Concepto",
   "FeatureExport.code": "Ver el código de exportación",
   "FeatureLanguages.nav": "Idiomas",
   "FeatureLanguages.title": "En nueve idiomas",

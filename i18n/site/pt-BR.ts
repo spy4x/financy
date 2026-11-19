@@ -252,11 +252,20 @@ export default {
   "FeatureExport.nav": "Exportação",
   "FeatureExport.title": "Seus dados vão com você",
   "FeatureExport.lead":
-    "O dono pode exportar uma família para um arquivo JSON aberto a qualquer hora, e importá-lo depois como uma nova família. A importação nunca sobrescreve o original.",
+    "O dono pode exportar uma família para um arquivo JSON aberto a qualquer hora, e importá-lo depois como uma nova família. A importação nunca sobrescreve o original. Também pode baixá-la como planilhas: um ZIP de arquivos CSV para um app de planilhas ou para o contador, com os cabeçalhos no seu idioma.",
   "FeatureExport.fact1":
     "O arquivo inteiro é verificado antes de qualquer gravação, e depois importado num único passo",
   "FeatureExport.fact2":
     "Cada registro recebe um id novo, então uma importação nunca colide com o que já existe",
+  "FeatureExport.fileAccounts":
+    "accounts.csv: Nome, Tipo, Moeda, Saldo inicial, Saldo de hoje, Arquivada",
+  "FeatureExport.fileCategories": "categories.csv: Nome, Tipo, Categoria principal, Arquivada",
+  "FeatureExport.fileBudgets":
+    "budgets.csv: Mês, Categoria, Limite, Moeda do limite, Gasto, Moedas deixadas de fora (sem cotação)",
+  "FeatureExport.fileTransactions":
+    "transactions.csv: Data, Tipo, Conta, Categoria, Categoria principal, Descrição, Valor, Moeda, Valor na moeda principal, Moeda principal, Cotação (1 unidade da moeda da conta na moeda principal), Data da cotação, Fonte da cotação, Valor na moeda da conta, Moeda da conta, Adicionado por",
+  "FeatureExport.fileTransfers":
+    "transfers.csv: Data, Conta de origem, Valor enviado, Moeda enviada, Conta de destino, Valor recebido, Moeda recebida, Cotação implícita (valor recebido por 1 unidade enviada), Descrição",
   "FeatureExport.code": "Ler o código de exportação",
   "FeatureLanguages.nav": "Idiomas",
   "FeatureLanguages.title": "Em nove idiomas",
