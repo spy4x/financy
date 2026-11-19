@@ -125,6 +125,9 @@ describe("the comparison pages", () => {
       ]
     ) {
       expect(english.t(key), key).toContain(`${price} a year`)
+      for (const language of SITE_LANGUAGES) {
+        expect(siteTranslator(language).t(key), `${language} ${key}`).toContain(price)
+      }
     }
   })
 

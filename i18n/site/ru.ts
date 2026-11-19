@@ -707,7 +707,7 @@ export default {
   "AlternativeActual.rowOpenSource": "Бесплатно и с открытым кодом",
   "AlternativeActual.rowOpenSourceNote": "Financy: AGPL-3.0. Actual Budget: MIT.",
   "AlternativeActual.sourceCurrencies": "Документация Actual: несколько валют",
-  "AlternativeActual.sourceMultiUser": "Документация Actual: многопользовательский режим",
+  "AlternativeActual.sourceMultiUser": "Документация Actual: пользователи",
   "AlternativeActual.sourceSite": "Сайт Actual Budget",
   "AlternativeActual.sourceBankSync": "Документация Actual: синхронизация с банком",
   "AlternativeActual.sourceImporting": "Документация Actual: импорт",

@@ -9,6 +9,8 @@
         "http://127.0.0.1:48411/features/transfers",
         "http://127.0.0.1:48411/for/expats",
         "http://127.0.0.1:48411/alternatives",
+        "http://127.0.0.1:48411/alternatives/ynab-multiple-currencies",
+        "http://127.0.0.1:48411/alternatives/actual-budget",
         "http://127.0.0.1:48411/alternatives/firefly-iii",
         "http://127.0.0.1:48411/pricing",
         "http://127.0.0.1:48411/privacy",
