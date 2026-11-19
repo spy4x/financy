@@ -79,6 +79,8 @@ const OG_CARDS: OgCard[] = [
     title: "A finance tracker for every currency you use.",
     sub: "Financy · free to self-host · AGPL-3.0 · being rebuilt",
     shot: "shots/for-expats-dark-780.webp",
+    // Starts at the total and ends after the London account, so no row's words are cut.
+    top: 170,
   },
   {
     file: "features",
@@ -86,6 +88,8 @@ const OG_CARDS: OgCard[] = [
     title: "What Financy does today, and what it does not yet.",
     sub: "Households · live updates · offline · nine languages",
     shot: "shots/feature-budgets-dark-780.webp",
+    // Starts at the month and ends after the last budget, so no row is cut.
+    top: 184,
   },
   {
     file: "pricing",
@@ -623,7 +627,7 @@ const SCREENS: Screen[] = [
     name: "feature-self-hosting",
     admin: true,
     // From the title to the end of the cache card.
-    clip: { x: 0, y: 0, width: 390, height: 712 },
+    clip: { x: 0, y: 0, width: 390, height: 704 },
     async open(page) {
       await gotoApp(page, "/system", page.locator("[data-e2e=admin-system-cache]"))
     },
