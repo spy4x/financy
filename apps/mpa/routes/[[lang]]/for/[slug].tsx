@@ -19,7 +19,7 @@ import {
 } from "../../../audience-data.ts"
 import { Band } from "../../../components/band.tsx"
 import { LINK, Section } from "../../../components/page-section.tsx"
-import { Shot } from "../../../components/shot.tsx"
+import { ShotFigure } from "../../../components/shot.tsx"
 import { featurePage, featurePageIn, featurePath } from "../../../features-data.tsx"
 import { localePath, siteTranslator } from "../../../languages.ts"
 import {
@@ -180,24 +180,7 @@ function AudienceBody({ page, demo }: { page: AudiencePage; demo: string }): JSX
               time: (text) => <time datetime={page.updated}>{text}</time>,
             }, { date: format.date(page.updated) })}
           </p>
-          <figure class="mt-4 flex flex-col gap-3">
-            <div
-              dir="ltr"
-              class="mx-auto w-full max-w-[390px] overflow-hidden rounded-xl border border-subtle"
-            >
-              <Shot
-                name={page.shot.name}
-                kind="mobile"
-                height={page.shot.height}
-                alt={page.shot.alt}
-                sizes="(min-width: 430px) 390px, calc(100vw - 2rem)"
-                priority
-              />
-            </div>
-            <figcaption class="text-center text-sm text-muted text-pretty">
-              {page.shot.caption}
-            </figcaption>
-          </figure>
+          <ShotFigure shot={page.shot} />
         </header>
         <div class="mt-8 xl:col-start-3 xl:row-span-2 xl:row-start-1 xl:mt-0">
           <OnThisPage

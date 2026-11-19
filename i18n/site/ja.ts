@@ -452,6 +452,10 @@ export default {
     "Financy はすべての通貨の為替レートを毎日取得できますか？",
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "いいえ。欧州中央銀行の無料の日次レートが対応するのは約30通貨です。ベトナムドンなどほかの通貨には、サーバーの運営者が有効にする有料のレート提供元が必要です。それがない場合、その金額は合計から外し、そのことを表示します。",
+  "FeaturePageMultiCurrency.alt":
+    "Financy の口座画面。ユーロの合計の下に、サンプルの口座が4つ並んでいます。Bangkok account THB 104,750.00、London account £1,840.00、Salary account €5,965.80、Dollar savings US$12,500.00。",
+  "FeaturePageMultiCurrency.caption":
+    "サンプルデータです。口座はそれぞれの通貨のままで、合計はユーロで表示します。",
   "FeaturePageHouseholds.name": "世帯",
   "FeaturePageHouseholds.title": "夫婦で共有できる家計簿、それぞれ自分のアカウントで",
   "FeaturePageHouseholds.description":
@@ -476,6 +480,10 @@ export default {
   "FeaturePageHouseholds.restoreQuestion": "削除した世帯は元に戻せますか？",
   "FeaturePageHouseholds.restoreAnswer":
     "はい。世帯を削除できるのはオーナーだけで、オーナーは30日以内なら復元できます。",
+  "FeaturePageHouseholds.alt":
+    "Financy のメンバー画面。サンプルの大人が4人並び、Ada Lovelace はオーナー、Grace Hopper は管理者、Margaret Hamilton は編集者、Linus Torvalds は閲覧者です。",
+  "FeaturePageHouseholds.caption":
+    "サンプルデータです。一人ひとりに自分のログインとロールがあります。",
   "FeaturePageLiveSync.name": "リアルタイム同期",
   "FeaturePageLiveSync.title": "家計簿をすべてのデバイスでリアルタイム同期",
   "FeaturePageLiveSync.description":
@@ -503,6 +511,10 @@ export default {
   "FeaturePageLiveSync.storesQuestion": "Financy は App Store や Google Play にありますか？",
   "FeaturePageLiveSync.storesAnswer":
     "まだです。今はブラウザから Financy をスマホやパソコンにインストールでき、ネットワークがなくても開けます。",
+  "FeaturePageLiveSync.alt":
+    "Financy の取引画面。リストの一番上に、Grace Hopper が追加した €18.40 の取引「Farmers market」があります。",
+  "FeaturePageLiveSync.caption":
+    "サンプルデータです。Grace の取引は、開いたままのこの画面に再読み込みなしで届きました。",
   "FeaturePageSelfHosting.name": "セルフホスト",
   "FeaturePageSelfHosting.title": "家計簿アプリを自分のサーバーでセルフホスト",
   "FeaturePageSelfHosting.description":
@@ -532,6 +544,10 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "ワンクリックでインストールできますか？",
   "FeaturePageSelfHosting.installerAnswer":
     "まだです。Deno、rsync、git を使って自分のパソコンから Financy をセットアップし、コマンドひとつでデプロイします。セルフホストガイドで、すべての手順を説明しています。",
+  "FeaturePageSelfHosting.alt":
+    "Financy の管理パネルのシステムページ。すべて正常に動作していると表示され、データベースとキャッシュにそれぞれ OK の印が付いています。",
+  "FeaturePageSelfHosting.caption":
+    "サンプルのサーバーです。管理パネルで、運用中のサーバーの状態を確認できます。",
   "FeaturePageTransfers.name": "振替",
   "FeaturePageTransfers.title": "通貨の違う口座間の振替を記録できる家計簿",
   "FeaturePageTransfers.description":
@@ -559,6 +575,10 @@ export default {
   "FeaturePageTransfers.statementQuestion": "Financy は銀行明細から振替を見つけられますか？",
   "FeaturePageTransfers.statementAnswer":
     "まだです。銀行明細を取り込む画面がないため、明細から振替を提案することはできません。",
+  "FeaturePageTransfers.alt":
+    "Financy の振替画面。Salary account から 500.00 EUR を送り、Bangkok account で 18250.00 THB を受け取っています。レートは自分で決めた 1 EUR = 36.5 THB です。",
+  "FeaturePageTransfers.caption":
+    "サンプルデータです。振替では両方の金額を、それぞれの口座の通貨で記録します。",
   "FeaturePageBudgets.name": "予算",
   "FeaturePageBudgets.title": "カテゴリごとに月の予算上限を設定できる家計簿",
   "FeaturePageBudgets.description":
@@ -586,6 +606,9 @@ export default {
   "FeaturePageBudgets.planQuestion": "予算機能には有料プランが必要ですか？",
   "FeaturePageBudgets.planAnswer":
     "はい。Financy のクラウド版では、上限の設定に Household プランが必要です。予算の閲覧と上限の削除には必要ありません。課金をオフにした自分のサーバーなら、すべての世帯が上限を設定できます。",
+  "FeaturePageBudgets.alt":
+    "Financy の今月の予算画面。Groceries は €250.00 のうち €286.40 で €36.40 超過、Rent は €1,200.00 のうち €1,100.00 で上限間近、残り €100.00、Travel は上限 €400.00 の範囲内です。",
+  "FeaturePageBudgets.caption": "サンプルデータです。上限の80%に達すると、バーでお知らせします。",
   "FeaturePageTelegramBot.name": "Telegram ボット",
   "FeaturePageTelegramBot.title": "Telegram から支出を追加、残高も確認できる家計簿",
   "FeaturePageTelegramBot.description":
@@ -613,6 +636,10 @@ export default {
   "FeaturePageTelegramBot.costQuestion": "ボットの利用に追加料金はかかりますか？",
   "FeaturePageTelegramBot.costAnswer":
     "いいえ。ボットは有料のアドオンではありません。チャットからの記録はアプリからの記録と同じように数えられるため、プランの取引数に空きがない世帯は、どちらからも追加できません。",
+  "FeaturePageTelegramBot.alt":
+    "Financy の「Telegramと連携」ダイアログ。「Telegramを開く」ボタン、コピーできる1回限りの連携メッセージ、コードは10分間、1回だけ使えるという案内があります。",
+  "FeaturePageTelegramBot.caption":
+    "サンプル画面です。ここで一度連携すれば、あとは Telegram のチャットから記録できます。",
   "FeaturePageMissing.title": "この機能ページは見つかりません",
   "FeaturePageMissing.description":
     "ページが移動した可能性があります。すべての機能は機能ページにまとめています。",

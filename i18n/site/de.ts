@@ -465,6 +465,10 @@ export default {
   "FeaturePageMultiCurrency.everyCurrencyQuestion": "Hat Financy für jede Währung einen Tageskurs?",
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "Nein. Die kostenlosen Tageskurse der Europäischen Zentralbank decken etwa 30 Währungen ab. Andere, etwa der vietnamesische Dong, brauchen eine kostenpflichtige Kursquelle, die der Betreiber des Servers einschaltet; ohne sie lassen Summen diese Beträge weg und sagen das.",
+  "FeaturePageMultiCurrency.alt":
+    "Die Kontenansicht von Financy mit einer Gesamtsumme in Euro über vier Beispielkonten: Bangkok account THB 104,750.00, London account £1,840.00, Salary account €5,965.80 und Dollar savings US$12,500.00.",
+  "FeaturePageMultiCurrency.caption":
+    "Beispieldaten. Jedes Konto behält seine eigene Währung, die Gesamtsumme steht in Euro.",
   "FeaturePageHouseholds.name": "Haushalte",
   "FeaturePageHouseholds.title": "Gemeinsames Budget für Paare, jeder mit Login",
   "FeaturePageHouseholds.description":
@@ -489,6 +493,10 @@ export default {
   "FeaturePageHouseholds.restoreQuestion": "Können wir einen gelöschten Haushalt zurückholen?",
   "FeaturePageHouseholds.restoreAnswer":
     "Ja. Nur der Inhaber kann einen Haushalt löschen, und nur er kann ihn innerhalb von 30 Tagen wiederherstellen.",
+  "FeaturePageHouseholds.alt":
+    "Die Mitgliederansicht von Financy mit vier erwachsenen Beispielpersonen: Ada Lovelace ist Inhaberin, Grace Hopper Admin, Margaret Hamilton Bearbeiterin und Linus Torvalds Betrachter.",
+  "FeaturePageHouseholds.caption":
+    "Beispieldaten. Jede Person hat ihr eigenes Login und ihre eigene Rolle.",
   "FeaturePageLiveSync.name": "Live-Sync",
   "FeaturePageLiveSync.title": "Budget live auf allen Geräten synchronisieren",
   "FeaturePageLiveSync.description":
@@ -515,6 +523,10 @@ export default {
   "FeaturePageLiveSync.storesQuestion": "Gibt es Financy im App Store oder bei Google Play?",
   "FeaturePageLiveSync.storesAnswer":
     "Noch nicht. Heute installierst du Financy aus dem Browser auf Handy oder Computer, und es startet auch ohne Netz.",
+  "FeaturePageLiveSync.alt":
+    "Die Buchungsansicht von Financy mit Grace Hoppers Buchung Farmers market über €18.40 ganz oben in der Liste.",
+  "FeaturePageLiveSync.caption":
+    "Beispieldaten. Graces Buchung erschien ohne Neuladen in dieser geöffneten Ansicht.",
   "FeaturePageSelfHosting.name": "Selbst hosten",
   "FeaturePageSelfHosting.title": "Haushaltsbuch-App auf dem eigenen Server hosten",
   "FeaturePageSelfHosting.description":
@@ -544,6 +556,10 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "Gibt es einen Ein-Klick-Installer?",
   "FeaturePageSelfHosting.installerAnswer":
     "Noch nicht. Du richtest Financy von deinem eigenen Computer aus mit Deno, rsync und git ein, und ein Befehl stellt es bereit. Die Anleitung zum Selbsthosten führt dich durch jeden Schritt.",
+  "FeaturePageSelfHosting.alt":
+    "Die Seite „System“ im Admin-Bereich von Financy: Alles läuft, Datenbank und Cache sind jeweils mit OK markiert.",
+  "FeaturePageSelfHosting.caption":
+    "Beispielserver. Der Admin-Bereich zeigt dir den Zustand des Servers, den du betreibst.",
   "FeaturePageTransfers.name": "Umbuchungen",
   "FeaturePageTransfers.title": "Umbuchungen zwischen Konten in zwei Währungen",
   "FeaturePageTransfers.description":
@@ -575,6 +591,10 @@ export default {
     "Kann Financy Umbuchungen in meinem Kontoauszug erkennen?",
   "FeaturePageTransfers.statementAnswer":
     "Noch nicht. Die App hat keine Ansicht zum Importieren von Kontoauszügen, daher kann sie daraus auch keine Umbuchungen vorschlagen.",
+  "FeaturePageTransfers.alt":
+    "Die Umbuchungsansicht von Financy: 500.00 EUR von Salary account gesendet und 18250.00 THB auf Bangkok account erhalten, zu deinem eigenen Kurs von 1 EUR = 36.5 THB.",
+  "FeaturePageTransfers.caption":
+    "Beispieldaten. Eine Umbuchung behält beide Beträge, jeden in der Währung seines Kontos.",
   "FeaturePageBudgets.name": "Budgets",
   "FeaturePageBudgets.title": "Monatsbudget für jede Kategorie festlegen",
   "FeaturePageBudgets.description":
@@ -604,6 +624,9 @@ export default {
   "FeaturePageBudgets.planQuestion": "Brauche ich für Budgets einen kostenpflichtigen Tarif?",
   "FeaturePageBudgets.planAnswer":
     "Ja. In der Cloud von Financy brauchst du zum Setzen eines Limits den Tarif Household, Budgets ansehen und Limits entfernen kannst du immer. Auf deinem eigenen Server mit ausgeschalteter Abrechnung kann jeder Haushalt Limits setzen.",
+  "FeaturePageBudgets.alt":
+    "Die Budgetansicht von Financy für diesen Monat: Groceries €286.40 von €250.00, €36.40 über dem Limit; Rent €1,100.00 von €1,200.00, nah am Limit mit €100.00 übrig; Travel unter seinem Limit von €400.00.",
+  "FeaturePageBudgets.caption": "Beispieldaten. Der Balken warnt dich ab 80 % des Limits.",
   "FeaturePageTelegramBot.name": "Telegram-Bot",
   "FeaturePageTelegramBot.title": "Telegram-Bot für Ausgaben und Kontostände",
   "FeaturePageTelegramBot.description":
@@ -633,6 +656,10 @@ export default {
   "FeaturePageTelegramBot.costQuestion": "Kostet der Bot extra?",
   "FeaturePageTelegramBot.costAnswer":
     "Nein. Der Bot ist keine kostenpflichtige Zusatzfunktion. Eine Buchung aus dem Chat zählt wie eine aus der App: Hat der Tarif eines Haushalts keinen Platz für weitere Buchungen, geht es an beiden Stellen nicht.",
+  "FeaturePageTelegramBot.alt":
+    "Der Dialog „Telegram verknüpfen“ in Financy mit der Schaltfläche „Telegram öffnen“, einer einmaligen Nachricht zum Kopieren und dem Hinweis, dass der Code einmal und 10 Minuten lang gilt.",
+  "FeaturePageTelegramBot.caption":
+    "Beispielansicht. Verknüpfe Telegram hier einmal und trage Buchungen danach direkt im Chat ein.",
   "FeaturePageMissing.title": "Diese Funktionsseite gibt es hier nicht",
   "FeaturePageMissing.description":
     "Vielleicht ist sie umgezogen. Alle Funktionen findest du auf der Funktionsseite.",

@@ -472,6 +472,10 @@ export default {
     "¿Tiene Financy un tipo de cambio diario para todas las monedas?",
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "No. Los tipos de cambio diarios y gratuitos del Banco Central Europeo cubren unas 30 monedas. Otras, como el dong vietnamita, necesitan una fuente de pago que active el propietario del servidor; sin ella, los totales dejan fuera esos importes y lo indican.",
+  "FeaturePageMultiCurrency.alt":
+    "Pantalla de cuentas de Financy con un total en euros sobre cuatro cuentas de ejemplo: Bangkok account THB 104,750.00, London account £1,840.00, Salary account €5,965.80 y Dollar savings US$12,500.00.",
+  "FeaturePageMultiCurrency.caption":
+    "Datos de ejemplo. Cada cuenta conserva su propia moneda y el total aparece en euros.",
   "FeaturePageHouseholds.name": "Hogares",
   "FeaturePageHouseholds.title": "Presupuesto en pareja, cada uno con su acceso",
   "FeaturePageHouseholds.description":
@@ -498,6 +502,10 @@ export default {
   "FeaturePageHouseholds.restoreQuestion": "¿Podemos recuperar un hogar eliminado?",
   "FeaturePageHouseholds.restoreAnswer":
     "Sí. Solo el propietario puede eliminar un hogar, y puede restaurarlo durante 30 días.",
+  "FeaturePageHouseholds.alt":
+    "Pantalla de miembros de Financy con cuatro personas adultas de ejemplo: Ada Lovelace es propietaria, Grace Hopper administradora, Margaret Hamilton editora y Linus Torvalds lector.",
+  "FeaturePageHouseholds.caption":
+    "Datos de ejemplo. Cada persona tiene su propia cuenta de usuario y su rol.",
   "FeaturePageLiveSync.name": "Sincronización en vivo",
   "FeaturePageLiveSync.title": "Tu presupuesto en vivo en cada dispositivo",
   "FeaturePageLiveSync.description":
@@ -524,6 +532,10 @@ export default {
   "FeaturePageLiveSync.storesQuestion": "¿Está Financy en la App Store o en Google Play?",
   "FeaturePageLiveSync.storesAnswer":
     "Todavía no. Por ahora instalas Financy desde el navegador en un móvil o un ordenador, y se abre sin conexión.",
+  "FeaturePageLiveSync.alt":
+    "Pantalla de movimientos de Financy con el movimiento Farmers market de €18.40 de Grace Hopper al principio de la lista.",
+  "FeaturePageLiveSync.caption":
+    "Datos de ejemplo. El movimiento de Grace llegó a esta pantalla abierta sin recargarla.",
   "FeaturePageSelfHosting.name": "Alojamiento propio",
   "FeaturePageSelfHosting.title": "Una app de presupuesto en tu propio servidor",
   "FeaturePageSelfHosting.description":
@@ -553,6 +565,10 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "¿Hay un instalador de un clic?",
   "FeaturePageSelfHosting.installerAnswer":
     "Todavía no. Preparas Financy desde tu ordenador con Deno, rsync y git, y un solo comando lo despliega. La guía de alojamiento propio explica cada paso.",
+  "FeaturePageSelfHosting.alt":
+    "Página Sistema del panel de administración de Financy: indica que todo funciona, con la base de datos y la caché marcadas como OK.",
+  "FeaturePageSelfHosting.caption":
+    "Servidor de ejemplo. El panel de administración muestra el estado del servidor que gestionas.",
   "FeaturePageTransfers.name": "Transferencias",
   "FeaturePageTransfers.title": "Transferencias entre cuentas en distintas monedas",
   "FeaturePageTransfers.description":
@@ -584,6 +600,10 @@ export default {
     "¿Financy puede encontrar transferencias en mi extracto bancario?",
   "FeaturePageTransfers.statementAnswer":
     "Todavía no. La app no tiene una pantalla para importar extractos bancarios, así que no puede proponer transferencias a partir de uno.",
+  "FeaturePageTransfers.alt":
+    "Pantalla de transferencia de Financy: 500.00 EUR enviados desde Salary account y 18250.00 THB recibidos en Bangkok account, a tu propio tipo de cambio de 1 EUR = 36.5 THB.",
+  "FeaturePageTransfers.caption":
+    "Datos de ejemplo. Una transferencia conserva ambos importes, cada uno en la moneda de su cuenta.",
   "FeaturePageBudgets.name": "Presupuestos",
   "FeaturePageBudgets.title": "Un límite de gasto mensual para cada categoría",
   "FeaturePageBudgets.description":
@@ -611,6 +631,9 @@ export default {
   "FeaturePageBudgets.planQuestion": "¿Los presupuestos requieren un plan de pago?",
   "FeaturePageBudgets.planAnswer":
     "Sí. En la nube de Financy, fijar un límite requiere el plan Household; ver los presupuestos y quitar un límite, nunca. En tu propio servidor, con la facturación desactivada, cada hogar puede fijar límites.",
+  "FeaturePageBudgets.alt":
+    "Pantalla de presupuestos de Financy de este mes: Groceries €286.40 de €250.00, €36.40 por encima del límite; Rent €1,100.00 de €1,200.00, cerca del límite con €100.00 disponibles; Travel por debajo de su límite de €400.00.",
+  "FeaturePageBudgets.caption": "Datos de ejemplo. La barra te avisa a partir del 80% del límite.",
   "FeaturePageTelegramBot.name": "Bot de Telegram",
   "FeaturePageTelegramBot.title": "Añade gastos y consulta saldos desde Telegram",
   "FeaturePageTelegramBot.description":
@@ -639,6 +662,10 @@ export default {
   "FeaturePageTelegramBot.costQuestion": "¿El bot tiene un coste adicional?",
   "FeaturePageTelegramBot.costAnswer":
     "No. El bot no es un complemento de pago. Un movimiento desde el chat cuenta igual que uno desde la app, así que un hogar cuyo plan no admite más movimientos no puede añadirlo en ninguno de los dos sitios.",
+  "FeaturePageTelegramBot.alt":
+    "Diálogo Vincular Telegram de Financy, con un botón Abrir Telegram, un mensaje de vinculación de un solo uso para copiar y un aviso de que el código funciona una vez, durante 10 minutos.",
+  "FeaturePageTelegramBot.caption":
+    "Pantalla de ejemplo. Vincula Telegram una vez aquí y añade movimientos desde el chat.",
   "FeaturePageMissing.title": "Esta página de función no existe",
   "FeaturePageMissing.description":
     "Puede que se haya movido. Todas las funciones están en la página de funciones.",

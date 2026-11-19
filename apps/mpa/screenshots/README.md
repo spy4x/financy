@@ -12,8 +12,10 @@ is committed: the website serves the files, nothing builds them at deploy time.
 
 ## Run it
 
-1. Start the development stack: run `deno task proxy:start` and `deno task dev` from the repository
-   root. The script talks to `http://app.localhost`; `SHOTS_APP_URL` changes it.
+1. Start the development stack with the admin panel (`admin` in `COMPOSE_PROFILES`): run
+   `deno task proxy:start` and `deno task dev` from the repository root. The script talks to
+   `http://app.localhost` and `http://admin.localhost`; `SHOTS_APP_URL` and `SHOTS_ADMIN_URL` change
+   them.
 2. Have `cwebp` (libwebp), `magick` (ImageMagick 7) and `tar` on the `PATH`.
 3. From `apps/mpa`: `deno task screenshots`.
    `deno task screenshots --og-only` renders only the social cards, from the shots already there.
@@ -26,36 +28,37 @@ A screen that fails is listed at the end and the run exits 1; the others are sti
 - Signs up Ada Lovelace, Grace Hopper, Linus Torvalds and Margaret Hamilton (all `@example.com`),
   with a password made per run. It deletes the four accounts first and again at the end, even when
   the run fails, through the development route `/api/test/cleanup-user`.
-- Builds the group "Acme Studio" on Pro, five tags and six notes, each note written by its author,
-  the way the e2e tests do. Pro comes from a signed webhook of the development billing provider,
-  so no Stripe account is needed. Every id it makes is a UUID version 7.
-- Gives Ada three notifications from three other groups and two-factor sign-in.
-- Photographs each screen in light and dark with reduced motion, a hidden caret, no transitions,
-  and a clock fixed a few minutes after the data was made, so every time reads "3 minutes ago".
+- Builds the group "Sample household" through the API: four adults, accounts in EUR, USD, GBP and
+  THB, transactions, one transfer and three budgets. Every id it makes is a UUID version 7.
+- Signs Linus in to the admin panel as an operator and runs the `rates.fetch` job, so a fresh stack
+  has the day's rates. A screen that says a rate is missing fails the run.
+- Records a finished backup through the development route `/api/test/record-backup`, so the admin
+  panel's System page can report that everything is working.
+- Answers the app's two Telegram requests in the browser, because a development stack has no bot.
+- Photographs each screen in light and dark on a 390×844 phone at device scale 3, with reduced
+  motion, a hidden caret, no transitions, and a clock fixed a few minutes after the data was made,
+  so every time reads "3 minutes ago".
+- Fails the run when a number the website's words quote is not on the screen, or when a screen's
+  content reaches past its crop.
 
-| Screen               | Form               | Delivered widths          |
-| -------------------- | ------------------ | ------------------------- |
-| `notes`              | desktop and mobile | 1280, 800, 640 / 780, 390 |
-| `profile-security`   | desktop            | 1280, 800, 640            |
-| `group-members`      | desktop            | 1280, 800, 640            |
-| `billing`            | desktop            | 1280, 800, 640            |
-| `billing-plan`       | mobile, plan only  | 780, 390                  |
-| `notifications`      | desktop            | 1280, 800, 640            |
-| `activity`           | desktop            | 1280, 800, 640            |
-| `sign-in`            | mobile             | 780, 390                  |
-| `for-expats`         | mobile, cropped    | 780, 390                  |
-| `for-couples`        | mobile, cropped    | 780, 390                  |
-| `for-families`       | mobile, cropped    | 780, 390                  |
-| `for-small-business` | mobile, cropped    | 780, 390                  |
+Every screen is delivered at 780 and 390 px wide.
 
-Desktop is a 1280×800 viewport at device scale 2, mobile a 390×844 viewport at device scale 3.
-`billing-plan` keeps only the 390×208 part of the phone's billing tab that shows the plan, which is
-all the home page's billing card draws.
+| Screen                 | Page that shows it                        | Screen in the product      | Height at 780 |
+| ---------------------- | ----------------------------------------- | -------------------------- | ------------- |
+| `for-expats`           | `/for/expats`, `/features/multi-currency` | Accounts                   | 1268          |
+| `for-couples`          | `/for/couples`                            | Overview                   | 1268          |
+| `for-families`         | `/for/families`, `/features/households`   | Members                    | 880           |
+| `for-small-business`   | `/for/small-business`                     | Transactions               | 1096          |
+| `feature-live-sync`    | `/features/live-sync`                     | Transactions               | 1096          |
+| `feature-self-hosting` | `/features/self-hosting`                  | System, in the admin panel | 1408          |
+| `feature-transfers`    | `/features/transfers`                     | Transfer editor            | 1504          |
+| `feature-budgets`      | `/features/budgets`                       | Budgets                    | 880           |
+| `feature-telegram-bot` | `/features/telegram-bot`                  | Link Telegram dialog       | 802           |
 
-The `for-*` crops are the audience pages' (`/for/<slug>`). They show the group "Sample household":
-four adults and accounts in EUR, USD, GBP and THB only. The stack needs a daily rate for those
-currencies, which its worker fetches; a screen that says a rate is missing fails the run. The height
-of each crop is also in `audience-data.ts`, at twice the size.
+A crop's height is written twice: as its `clip` in `capture.ts`, and at twice the size in
+`audience-data.ts` or `features-data.tsx`. Change both together; `feature-pages.test.ts` fails when
+a feature page's height differs from its file. The one exception is `feature-telegram-bot`: its crop
+is measured from the dialog, so only its height in `features-data.tsx` is written by hand.
 
 ## Feature loops
 
@@ -64,7 +67,8 @@ loops the feature pages and the home page play: realtime sync, offline editing a
 shortcuts, once, in the dark theme, which the site shows in both of its themes. It needs the same
 running stack, plus `ffmpeg` built with `libsvtav1` and `libx264`, and `cwebp`.
 
-- It seeds the same four people and notes as `capture.ts`, and deletes them again at the end.
+- It signs up the same four people as `capture.ts`, seeds its own notes and tags, and deletes the
+  people again at the end.
 - Each clip plays in the real SPA at 720×450 CSS px (realtime: two windows of 360 px side by side)
   at device scale 2, with a drawn pointer moved at a person's pace and key caps for shortcuts.
 - Chromium's screencast is played back at 15 frames a second. The clip ends with a half-second
@@ -74,8 +78,8 @@ running stack, plus `ffmpeg` built with `libsvtav1` and `libx264`, and `cwebp`.
 
 ## Size budgets
 
-`cwebp` starts at quality 80 and steps down until a file fits: 90 KB for the notes hero at 1280,
-70 KB for every other file. The whole `static/shots` folder stays under 2.5 MB. A social card is a
+`cwebp` starts at quality 80 and steps down until a file fits 70 KB. The whole `static/shots` folder
+stays under 2.5 MB. A social card is a
 full-colour PNG when it fits 150 KB and a 256-colour one when it does not.
 
 ## Fonts

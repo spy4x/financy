@@ -451,6 +451,10 @@ export default {
   "FeaturePageMultiCurrency.everyCurrencyQuestion": "هل لدى Financy سعر صرف يومي لكل عملة؟",
   "FeaturePageMultiCurrency.everyCurrencyAnswer":
     "لا. تغطي الأسعار اليومية المجانية من البنك المركزي الأوروبي نحو 30 عملة. أما غيرها، مثل الدونغ الفيتنامي، فتحتاج إلى مصدر أسعار مدفوع يفعّله مالك الخادم؛ ومن دونه تستبعد المجاميع تلك المبالغ وتذكر ذلك.",
+  "FeaturePageMultiCurrency.alt":
+    "شاشة الحسابات في Financy تعرض إجماليًا واحدًا باليورو فوق أربعة حسابات تجريبية: Bangkok account بمبلغ THB 104,750.00، وLondon account بمبلغ £1,840.00، وSalary account بمبلغ €5,965.80، وDollar savings بمبلغ US$12,500.00.",
+  "FeaturePageMultiCurrency.caption":
+    "بيانات تجريبية. يحتفظ كل حساب بعملته، ويظهر الإجمالي باليورو.",
   "FeaturePageHouseholds.name": "الأُسر",
   "FeaturePageHouseholds.title": "ميزانية مشتركة للزوجين، ولكلٍّ حساب مستخدم خاص",
   "FeaturePageHouseholds.description":
@@ -475,6 +479,9 @@ export default {
   "FeaturePageHouseholds.restoreQuestion": "هل يمكننا استعادة أسرة محذوفة؟",
   "FeaturePageHouseholds.restoreAnswer":
     "نعم. لا يحذف الأسرة إلا مالكها، ويستطيع المالك استعادتها خلال 30 يومًا.",
+  "FeaturePageHouseholds.alt":
+    "شاشة الأعضاء في Financy تعرض أربعة بالغين تجريبيين: Ada Lovelace المالكة، وGrace Hopper مسؤولة، وMargaret Hamilton محررة، وLinus Torvalds قارئ.",
+  "FeaturePageHouseholds.caption": "بيانات تجريبية. لكل شخص حساب مستخدم ودور خاصّان به.",
   "FeaturePageLiveSync.name": "المزامنة الفورية",
   "FeaturePageLiveSync.title": "مزامنة فورية لميزانيتك على كل أجهزتك",
   "FeaturePageLiveSync.description":
@@ -499,6 +506,10 @@ export default {
   "FeaturePageLiveSync.storesQuestion": "هل Financy متوفر في App Store أو Google Play؟",
   "FeaturePageLiveSync.storesAnswer":
     "ليس بعد. اليوم تثبّت Financy من متصفحك على هاتف أو حاسوب، ويفتح دون اتصال.",
+  "FeaturePageLiveSync.alt":
+    "شاشة المعاملات في Financy وفي أعلى القائمة معاملة Farmers market بمبلغ €18.40 التي أضافتها Grace Hopper.",
+  "FeaturePageLiveSync.caption":
+    "بيانات تجريبية. وصلت معاملة Grace إلى هذه الشاشة المفتوحة دون إعادة تحميل.",
   "FeaturePageSelfHosting.name": "الاستضافة الذاتية",
   "FeaturePageSelfHosting.title": "شغّل تطبيق ميزانية على خادمك الخاص",
   "FeaturePageSelfHosting.description":
@@ -526,6 +537,9 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "هل يوجد مثبّت بنقرة واحدة؟",
   "FeaturePageSelfHosting.installerAnswer":
     "ليس بعد. تُعِدّ Financy من حاسوبك باستخدام Deno وrsync وgit، وأمر واحد ينشره. ويرشدك دليل الاستضافة الذاتية خطوة بخطوة.",
+  "FeaturePageSelfHosting.alt":
+    "صفحة النظام في لوحة الإدارة في Financy تُظهر أن كل شيء يعمل، وقد ظهرت علامة OK لكل من قاعدة البيانات وذاكرة التخزين المؤقت.",
+  "FeaturePageSelfHosting.caption": "خادم تجريبي. تعرض لوحة الإدارة حالة الخادم الذي تديره.",
   "FeaturePageTransfers.name": "التحويلات",
   "FeaturePageTransfers.title": "سجّل التحويلات بين حساباتك بعملتين مختلفتين",
   "FeaturePageTransfers.description":
@@ -554,6 +568,9 @@ export default {
     "هل يستطيع Financy العثور على التحويلات في كشف حسابي البنكي؟",
   "FeaturePageTransfers.statementAnswer":
     "ليس بعد. لا توجد في التطبيق شاشة لاستيراد كشف الحساب البنكي، لذا لا يستطيع Financy اقتراح تحويلات منه.",
+  "FeaturePageTransfers.alt":
+    "شاشة التحويل في Financy: إرسال 500.00 EUR من Salary account واستلام 18250.00 THB في Bangkok account، بسعرك الخاص 1 EUR = 36.5 THB.",
+  "FeaturePageTransfers.caption": "بيانات تجريبية. يحتفظ التحويل بالمبلغين، كلٌّ بعملة حسابه.",
   "FeaturePageBudgets.name": "الميزانيات",
   "FeaturePageBudgets.title": "حدّد ميزانية شهرية لكل فئة",
   "FeaturePageBudgets.description":
@@ -581,6 +598,9 @@ export default {
   "FeaturePageBudgets.planQuestion": "هل تحتاج الميزانيات إلى خطة مدفوعة؟",
   "FeaturePageBudgets.planAnswer":
     "نعم. على سحابة Financy، يتطلب تعيين حد خطة Household، أما قراءة الميزانيات وإزالة حد فلا تتطلبانها أبدًا. وعلى خادمك الخاص مع ترك الفوترة معطّلة، تستطيع كل أسرة تعيين الحدود.",
+  "FeaturePageBudgets.alt":
+    "شاشة الميزانيات في Financy لهذا الشهر: Groceries بمبلغ €286.40 من €250.00، متجاوزًا الحد بمقدار €36.40؛ وRent بمبلغ €1,100.00 من €1,200.00، قريبًا من الحد ويتبقى €100.00؛ وTravel ضمن حده البالغ €400.00.",
+  "FeaturePageBudgets.caption": "بيانات تجريبية. ينبّهك الشريط بدءًا من 80% من الحد.",
   "FeaturePageTelegramBot.name": "بوت Telegram",
   "FeaturePageTelegramBot.title": "أضف مصروفاتك وتابع أرصدتك من Telegram",
   "FeaturePageTelegramBot.description":
@@ -608,6 +628,10 @@ export default {
   "FeaturePageTelegramBot.costQuestion": "هل يكلّف البوت مالًا إضافيًا؟",
   "FeaturePageTelegramBot.costAnswer":
     "لا. البوت ليس إضافة مدفوعة. والمعاملة من المحادثة تُحتسب كأنها من التطبيق، فالأسرة التي لم تعد خطتها تتسع لمزيد من المعاملات لا تستطيع الإضافة من أيٍّ منهما.",
+  "FeaturePageTelegramBot.alt":
+    "نافذة ربط Telegram في Financy، وفيها زر فتح Telegram، ورسالة ربط لمرة واحدة يمكنك نسخها، وتنبيه بأن الرمز يعمل مرة واحدة خلال 10 دقائق.",
+  "FeaturePageTelegramBot.caption":
+    "شاشة تجريبية. اربط حسابك هنا مرة واحدة، ثم أضف معاملاتك من محادثة Telegram.",
   "FeaturePageMissing.title": "صفحة هذه الميزة غير موجودة",
   "FeaturePageMissing.description": "ربما انتقلت. كل الميزات موجودة في صفحة الميزات.",
   "FeaturePageMissing.action": "عرض كل الميزات",

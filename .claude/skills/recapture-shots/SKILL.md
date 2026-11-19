@@ -116,8 +116,8 @@ its timezone) and with one transcript line per shot of the new cut, then the e2e
    (`ffmpeg -i realtime-loop-dark.webm -vf "fps=2,scale=720:-1,tile=3x4" -frames:v 1 sheet.png`
    in your scratch folder) and check that the pointer moves to each target and the story reads
    from start to end.
-4. Check the budgets the website's README names: 90 KB for the notes hero at 1280, 70 KB for the
-   rest, under 2.5 MB for the folder (`du -sb apps/mpa/static/shots`).
+4. Check the budgets the website's README names: 70 KB for each file, under 2.5 MB for the folder
+   (`du -sb apps/mpa/static/shots`).
 5. Stop what you started: `deno task compose down` and `deno task proxy:stop`, unless the stack was
    already running before you began. Then run the orphan sweep.
 6. Open a PR with the before and after of the main pictures. A design reviewer checks it, as for
