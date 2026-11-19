@@ -1,21 +1,20 @@
-// Seed's own site: see docs/start-a-product.md
 /**
  * Captures the product screenshots and the Open Graph images of the public website.
  *
  * `deno task screenshots` in `apps/mpa`; README.md beside this file says what it needs. It signs up
- * four people on the local development stack, builds their group, notes, tags, notifications and
- * plan through the API, photographs each screen in light and dark, encodes the pictures as WebP
- * into `static/shots/`, renders `og.html` into `static/og/`, and deletes the four accounts again
- * whether or not the run succeeded.
+ * four people on the local development stack, builds a sample household through the API, photographs
+ * each screen on a phone in light and dark, encodes the pictures as WebP into `static/shots/`,
+ * renders `og.html` into `static/og/`, and deletes the four accounts again whether or not the run
+ * succeeded. A screen whose numbers differ from what the website's words say about it fails the run.
  */
 import { type Browser, type BrowserContext, chromium, type Locator, type Page } from "playwright"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { gotoApp } from "../../../e2e/fixtures/app.ts"
 import { stripeSignature, subscriptionEvent } from "../../../e2e/fixtures/billing.ts"
-import { currentStep, totpCode } from "../../../e2e/fixtures/totp.ts"
 import { signUpWithCode } from "../../../e2e/fixtures/sign-up.ts"
 
 export const APP = Deno.env.get("SHOTS_APP_URL") ?? "http://app.localhost"
+const ADMIN = Deno.env.get("SHOTS_ADMIN_URL") ?? "http://admin.localhost"
 const MPA = new URL("..", import.meta.url).pathname
 export const MASTERS = `${MPA}screenshots/.out/masters`
 export const CACHE = `${MPA}screenshots/.out/cache`
@@ -39,71 +38,25 @@ const GEIST = {
 /** One password for the four people, made per run and never written anywhere. */
 const PASSWORD = `Sd-${crypto.getRandomValues(new Uint32Array(4)).join("")}`
 
-interface Person {
+export interface Person {
   email: string
   firstName: string
   lastName: string
 }
 
-const ADA: Person = { email: "ada@example.com", firstName: "Ada", lastName: "Lovelace" }
-const GRACE: Person = { email: "grace@example.com", firstName: "Grace", lastName: "Hopper" }
-const LINUS: Person = { email: "linus@example.com", firstName: "Linus", lastName: "Torvalds" }
-const MARGARET: Person = {
+export const ADA: Person = { email: "ada@example.com", firstName: "Ada", lastName: "Lovelace" }
+export const GRACE: Person = { email: "grace@example.com", firstName: "Grace", lastName: "Hopper" }
+export const LINUS: Person = {
+  email: "linus@example.com",
+  firstName: "Linus",
+  lastName: "Torvalds",
+}
+export const MARGARET: Person = {
   email: "margaret@example.com",
   firstName: "Margaret",
   lastName: "Hamilton",
 }
 const PEOPLE = [ADA, GRACE, LINUS, MARGARET]
-
-const TAGS = [
-  { name: "Roadmap", color: "#7e22ce" },
-  { name: "Bug", color: "#b91c1c" },
-  { name: "Design", color: "#1d4ed8" },
-  { name: "Research", color: "#15803d" },
-  { name: "Ops", color: "#c2410c" },
-] as const
-type TagName = typeof TAGS[number]["name"]
-
-/** The six notes of "Acme Studio", oldest first, with who writes each. */
-export const NOTES: { title: string; body: string; tags: TagName[]; author: Person }[] = [
-  {
-    title: "Postgres 18 upgrade checklist",
-    body: "Snapshot the volume, run the upgrade task on staging first, then production at 06:00.",
-    tags: ["Ops"],
-    author: GRACE,
-  },
-  {
-    title: "Interview notes: three design agencies",
-    body:
-      "All three bill per member and hate per-member pricing. Two of them work offline on trains.",
-    tags: ["Research"],
-    author: MARGARET,
-  },
-  {
-    title: "Checkout fails for EU VAT numbers",
-    body: "Stripe rejects numbers with spaces. Strip them before we send the tax id.",
-    tags: ["Bug"],
-    author: LINUS,
-  },
-  {
-    title: "New pricing page: copy review",
-    body: "Lead with the price, then what the plan covers. Cut the comparison table to five rows.",
-    tags: ["Design", "Research"],
-    author: GRACE,
-  },
-  {
-    title: "Release notes 2.4",
-    body: "Two-factor sign-in, group activity, and the offline conflict chooser.",
-    tags: ["Roadmap"],
-    author: ADA,
-  },
-  {
-    title: "Q4 roadmap: onboarding and billing",
-    body: "Ship self-serve onboarding by November, then annual plans and invoices in December.",
-    tags: ["Roadmap", "Design"],
-    author: ADA,
-  },
-]
 
 /** The Open Graph card of one website page: its words (marketing brief 4.3) and picture. */
 interface OgCard {
@@ -111,11 +64,11 @@ interface OgCard {
   eyebrow: string
   title: string
   sub: string
-  /** A dark picture under `static/`, such as `shots/notes-dark-1280.webp`, or "" for words only. */
+  /** A dark picture under `static/`, such as `shots/for-expats-dark-780.webp`, or "" for words only. */
   shot: string
   /** How far down the screenshot its frame starts, in the card's pixels. */
   top?: number
-  /** How wide the screenshot is drawn, in the card's pixels: 860 unless set. */
+  /** How wide the screenshot is drawn, in the card's pixels: 520, the frame's width, unless set. */
   width?: number
 }
 
@@ -125,14 +78,14 @@ const OG_CARDS: OgCard[] = [
     eyebrow: "Finance tracker",
     title: "A finance tracker for every currency you use.",
     sub: "Financy · free to self-host · AGPL-3.0 · being rebuilt",
-    shot: "",
+    shot: "shots/for-expats-dark-780.webp",
   },
   {
     file: "features",
     eyebrow: "Features",
     title: "What Financy does today, and what it does not yet.",
     sub: "Households · live updates · offline · nine languages",
-    shot: "",
+    shot: "shots/feature-budgets-dark-780.webp",
   },
   {
     file: "pricing",
@@ -145,16 +98,15 @@ const OG_CARDS: OgCard[] = [
     file: "subscribe",
     eyebrow: "Newsletter",
     title: "What shipped in Financy, briefly.",
-    sub: "A short email when it changes",
+    sub: "A short email when Financy has news",
     shot: "",
   },
 ]
 
 type Theme = "light" | "dark"
-type Form = "desktop" | "mobile"
 
-/** The widths each form is delivered at. */
-const WIDTHS: Record<Form, number[]> = { desktop: [1280, 800, 640], mobile: [780, 390] }
+/** The widths every screenshot is delivered at. */
+const WIDTHS = [780, 390]
 
 /** Hidden caret, no transitions: added by the test browser, never by the site. */
 const STEADY_CSS = `*, *::before, *::after { caret-color: transparent !important;
@@ -163,29 +115,31 @@ const STEADY_CSS = `*, *::before, *::after { caret-color: transparent !important
 type StorageState = Awaited<ReturnType<BrowserContext["storageState"]>>
 
 /** What the screens need from the seeding. */
-export interface Seeded {
-  groupId: string
-  /** The sample household the audience pages (`/for/<slug>`) show. */
+interface Seeded {
   householdId: string
-  noteIds: string[]
+  salaryId: string
+  groceriesId: string
+  transferId: string
   /** The moment every page's clock is fixed at, a few minutes after the data was made. */
   now: Date
-  /** Ada's signed-in session on the app host, with two-factor sign-in on. */
+  /** Ada's signed-in session on the app host. */
   appState: StorageState
-  /** API contexts of Ada and Grace, for writes during a capture. */
-  ada: Page
+  /** Linus's signed-in session on the admin host. */
+  adminState: StorageState
+  /** Grace's API context and id, for the entry that arrives while Ada's page is open. */
   grace: Page
+  graceId: number
 }
 
 const failures: string[] = []
 
 /** Origin headers the API's same-origin guard asks of a write. */
-function sameOrigin(): Record<string, string> {
-  return { origin: APP, "sec-fetch-site": "same-origin" }
+export function sameOrigin(origin = APP): Record<string, string> {
+  return { origin, "sec-fetch-site": "same-origin" }
 }
 
 /** Throws with the response body unless the status is 200 or 201. */
-async function expectOk(
+export async function expectOk(
   what: string,
   response: { status(): number; text(): Promise<string> },
 ): Promise<void> {
@@ -219,7 +173,31 @@ async function signUp(page: Page, person: Person): Promise<number> {
   return id
 }
 
-async function createGroup(page: Page, name: string): Promise<string> {
+/** The four people, signed up, each with a browser context of their own. */
+export interface SignedUp {
+  pages: Map<Person, Page>
+  ids: Map<Person, number>
+}
+
+/** Signs the four people up; Ada uses `ada`, the others a new context added to `contexts`. */
+export async function signUpPeople(
+  browser: Browser,
+  contexts: BrowserContext[],
+  ada: Page,
+): Promise<SignedUp> {
+  const pageFor = async () => {
+    const context = await browser.newContext({ baseURL: APP })
+    contexts.push(context)
+    return await context.newPage()
+  }
+  const [grace, linus, margaret] = await Promise.all([pageFor(), pageFor(), pageFor()])
+  const pages = new Map([[ADA, ada], [GRACE, grace], [LINUS, linus], [MARGARET, margaret]])
+  const ids = new Map<Person, number>()
+  for (const [person, page] of pages) ids.set(person, await signUp(page, person))
+  return { pages, ids }
+}
+
+export async function createGroup(page: Page, name: string): Promise<string> {
   const id = uuidV7()
   const response = await page.request.post(`${APP}/api/groups`, {
     headers: sameOrigin(),
@@ -230,27 +208,18 @@ async function createGroup(page: Page, name: string): Promise<string> {
 }
 
 /** Adds a member through the development route; the product only invites. */
-async function addMember(page: Page, person: Person, groupId: string, role: 1 | 2 | 3) {
+export async function addMember(page: Page, person: Person, groupId: string, role: 1 | 2 | 3) {
   const response = await page.request.post(`${APP}/api/test/add-member`, {
     data: { login: person.email, groupId, role },
   })
   await expectOk(`member ${person.email}`, response)
 }
 
-/** Changes a member's role as the signed-in owner does, so it is audited and notified. */
-async function setRole(page: Page, groupId: string, userId: number, role: 1 | 2 | 3) {
-  const response = await page.request.patch(`${APP}/api/groups/${groupId}/members/${userId}`, {
-    headers: { ...sameOrigin(), "idempotency-key": uuidV7() },
-    data: { role },
-  })
-  await expectOk(`role of ${userId} in ${groupId}`, response)
-}
-
 /**
  * Puts a group on Pro through the development billing provider: the signed webhook Stripe would
  * send after a checkout. Roles other than the default are a Pro feature.
  */
-async function upgradeToPro(page: Page, groupId: string): Promise<void> {
+export async function upgradeToPro(page: Page, groupId: string): Promise<void> {
   const id = uuidV7().replace(/-/g, "")
   const body = subscriptionEvent({
     reference: groupId,
@@ -268,24 +237,42 @@ async function upgradeToPro(page: Page, groupId: string): Promise<void> {
   await expectOk(`Pro for ${groupId}`, webhook)
 }
 
+/** Runs one operation as `userId`, through the route that runs what the socket runs. */
+export async function operation(
+  page: Page,
+  userId: number,
+  name: string,
+  data: unknown,
+): Promise<void> {
+  const response = await page.request.post(`${APP}/api/call/${name}`, {
+    headers: {
+      ...sameOrigin(),
+      "content-type": "application/json",
+      "x-realtime-user": String(userId),
+      "idempotency-key": uuidV7(),
+    },
+    data: JSON.stringify(data),
+  })
+  await expectOk(`${name} ${JSON.stringify(data)}`, response)
+}
+
+/** What {@link seedHousehold} made that a screen opens or writes to. */
+type Household = Pick<Seeded, "householdId" | "salaryId" | "groceriesId" | "transferId">
+
 /**
- * Builds the household the audience pages show: four adults, and accounts in the euro, the dollar,
- * the pound and the baht only, the currencies the free daily rates cover. Two payments in another
- * currency state both amounts, so they keep the rate the bank charged.
+ * Builds the household the website shows: four adults, and accounts in the euro, the dollar, the
+ * pound and the baht only, the currencies the free daily rates cover. Two payments in another
+ * currency state both amounts, so they keep the rate the bank charged. This month's budgets put
+ * Groceries over its limit, Rent close to it and Travel well under it.
  */
-async function seedHousehold(ada: Page, adaId: number): Promise<string> {
+async function seedHousehold(ada: Page, adaId: number, now: Date): Promise<Household> {
   const groupId = await createGroup(ada, "Sample household")
   await upgradeToPro(ada, groupId)
   await addMember(ada, GRACE, groupId, 3)
   await addMember(ada, MARGARET, groupId, 2)
   await addMember(ada, LINUS, groupId, 1)
-  const call = async (operation: string, data: Record<string, unknown>) => {
-    const response = await ada.request.post(`${APP}/api/call/${operation}`, {
-      headers: { ...sameOrigin(), "x-realtime-user": String(adaId), "idempotency-key": uuidV7() },
-      data: { groupId, id: uuidV7(), ...data },
-    })
-    await expectOk(`${operation} ${JSON.stringify(data)}`, response)
-  }
+  const call = (name: string, data: Record<string, unknown>) =>
+    operation(ada, adaId, name, { groupId, ...data })
   const account = async (name: string, kind: number, currency: string, balance: number) => {
     const id = uuidV7()
     await call(`account.create`, { id, name, kind, currency, startingBalance: balance })
@@ -296,18 +283,18 @@ async function seedHousehold(ada: Page, adaId: number): Promise<string> {
     await call(`category.create`, { id, name, kind, icon, color, parentId: null })
     return id
   }
-  const salary = await account("Salary account", 2, "EUR", 420_000)
+  const salaryId = await account("Salary account", 2, "EUR", 420_000)
   await account("Dollar savings", 4, "USD", 1_250_000)
   await account("London account", 2, "GBP", 184_000)
-  await account("Bangkok account", 2, "THB", 8_650_000)
+  const bangkok = await account("Bangkok account", 2, "THB", 8_650_000)
   const income = await category("Salary", 2, "shopping-cart", "#16a34a")
   const home = await category("Rent", 1, "shopping-cart", "#2563eb")
-  const food = await category("Groceries", 1, "shopping-cart", "#d97706")
+  const groceriesId = await category("Groceries", 1, "shopping-cart", "#d97706")
   const travel = await category("Travel", 1, "shopping-cart", "#9333ea")
   const entries = [
     { categoryId: income, kind: 2, amount: 380_000, currency: "EUR", memo: "Monthly salary" },
     { categoryId: home, kind: 1, amount: 110_000, currency: "EUR", memo: "Rent" },
-    { categoryId: food, kind: 1, amount: 28_640, currency: "EUR", memo: "Weekly groceries" },
+    { categoryId: groceriesId, kind: 1, amount: 28_640, currency: "EUR", memo: "Weekly groceries" },
     {
       categoryId: travel,
       kind: 1,
@@ -325,149 +312,115 @@ async function seedHousehold(ada: Page, adaId: number): Promise<string> {
       memo: "Train in London",
     },
   ]
-  for (const entry of entries) await call(`transaction.create`, { accountId: salary, ...entry })
-  return groupId
+  for (const entry of entries) {
+    await call(`transaction.create`, { id: uuidV7(), accountId: salaryId, ...entry })
+  }
+  const transferId = uuidV7()
+  await call(`transfer.create`, {
+    id: transferId,
+    fromAccountId: salaryId,
+    toAccountId: bangkok,
+    sentAmount: 50_000,
+    receivedAmount: 1_825_000,
+    memo: "Money for Bangkok",
+    date: new Date(now.valueOf() - 2 * 24 * 3600_000).toISOString().slice(0, 10),
+  })
+  const month = now.toISOString().slice(0, 7)
+  for (const [categoryId, amount] of [[groceriesId, 25_000], [home, 120_000], [travel, 40_000]]) {
+    await call(`budget.set`, { categoryId, month, amount, expectedVersion: null })
+  }
+  return { householdId: groupId, salaryId, groceriesId, transferId }
+}
+
+/** Signs Linus in to the admin app as an administrator, and returns his page there. */
+async function signInToAdmin(browser: Browser, contexts: BrowserContext[]): Promise<Page> {
+  const context = await browser.newContext({ baseURL: ADMIN })
+  contexts.push(context)
+  const promoted = await context.request.post(`${APP}/api/test/set-role`, {
+    data: { login: LINUS.email, role: 4 },
+  })
+  await expectOk(`administrator role of ${LINUS.email}`, promoted)
+  const page = await context.newPage()
+  await page.goto(`${ADMIN}/sign-in`)
+  await page.locator("[data-e2e=auth-form-login]").fill(LINUS.email)
+  await page.locator("[data-e2e=auth-form-password]").fill(PASSWORD)
+  await page.locator("[data-e2e=auth-form-submit]").click()
+  await page.locator("[data-e2e=admin-dashboard-title]").waitFor()
+  return page
+}
+
+/**
+ * Has the worker fetch today's exchange rates now and waits for it: the job otherwise runs at
+ * 16:00 UTC, and a fresh stack holds no rate to total the accounts with.
+ */
+async function fetchRates(admin: Page): Promise<void> {
+  const url = `${ADMIN}/api/admin/jobs/repeating`
+  const started = await admin.request.post(`${url}/rates.fetch/run-now`, {
+    headers: sameOrigin(ADMIN),
+  })
+  await expectOk(`the exchange rates job`, started)
+  const deadline = Date.now() + 90_000
+  while (Date.now() < deadline) {
+    const response = await admin.request.get(url)
+    await expectOk(`the repeating jobs`, response)
+    const { jobs } = await response.json() as {
+      jobs: { kind: string; lastRunAt: string | null; lastFailed: boolean; running: boolean }[]
+    }
+    const job = jobs.find(({ kind }) => kind === `rates.fetch`)
+    if (job?.lastFailed) throw new Error(`the exchange rates job failed`)
+    if (job?.lastRunAt && !job.running) return
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
+  }
+  throw new Error(`the exchange rates job did not finish in 90 seconds`)
 }
 
 /** Builds everything the screens show. Each person has a browser context of their own. */
-export async function seed(
-  browser: Browser,
-  contexts: BrowserContext[],
-  ada: Page,
-): Promise<Seeded> {
-  const pageFor = async () => {
-    const context = await browser.newContext({ baseURL: APP })
-    contexts.push(context)
-    return await context.newPage()
-  }
-  const [grace, linus, margaret] = await Promise.all([pageFor(), pageFor(), pageFor()])
-  const adaId = await signUp(ada, ADA)
-  await signUp(grace, GRACE)
-  const linusId = await signUp(linus, LINUS)
-  await signUp(margaret, MARGARET)
+async function seed(browser: Browser, contexts: BrowserContext[], ada: Page): Promise<Seeded> {
+  const { pages, ids } = await signUpPeople(browser, contexts, ada)
+  const adaId = ids.get(ADA)!
+  // Ada has used the product for a while: her first-steps card is gone.
+  await operation(ada, adaId, `onboarding.dismiss`, null)
+  const now = new Date(Date.now() + 3 * 60_000)
+  const household = await seedHousehold(ada, adaId, now)
 
-  const groupId = await createGroup(ada, "Acme Studio")
-  await upgradeToPro(ada, groupId)
-  await addMember(ada, GRACE, groupId, 3)
-  await addMember(ada, LINUS, groupId, 1)
-  await addMember(ada, MARGARET, groupId, 2)
-  await setRole(ada, groupId, linusId, 2)
-  const selected = await ada.request.put(`${APP}/api/groups/selected`, {
-    headers: sameOrigin(),
-    data: { groupId },
-  })
-  await expectOk("selected group", selected)
-
-  // Tags have no REST write: the operations route runs what the socket runs.
-  const tagIds = new Map<TagName, string>()
-  for (const tag of TAGS) {
-    const id = uuidV7()
-    const response = await ada.request.post(`${APP}/api/call/tag.create`, {
-      headers: { ...sameOrigin(), "x-realtime-user": String(adaId), "idempotency-key": uuidV7() },
-      data: { groupId, id, name: tag.name, color: tag.color },
-    })
-    await expectOk(`tag ${tag.name}`, response)
-    tagIds.set(tag.name, id)
-  }
-  const pages = new Map([[ADA, ada], [GRACE, grace], [LINUS, linus], [MARGARET, margaret]])
-  const noteIds: string[] = []
-  for (const note of NOTES) {
-    const id = uuidV7()
-    const response = await pages.get(note.author)!.request.post(
-      `${APP}/api/groups/${groupId}/notes`,
-      {
-        headers: { ...sameOrigin(), "idempotency-key": uuidV7() },
-        data: {
-          id,
-          title: note.title,
-          body: note.body,
-          tagIds: note.tags.map((tag) => tagIds.get(tag)!),
-        },
-      },
-    )
-    await expectOk(`note ${note.title}`, response)
-    noteIds.push(id)
-  }
-
-  // Ada's inbox: an invitation, a role change and a group handed over.
-  const apollo = await createGroup(margaret, "Apollo Guidance")
-  await upgradeToPro(margaret, apollo)
-  const invitation = await margaret.request.post(`${APP}/api/groups/${apollo}/invitations`, {
-    headers: sameOrigin(),
-    data: { role: 1, email: ADA.email },
-  })
-  await expectOk("invitation to Ada", invitation)
-  const northwind = await createGroup(grace, "Northwind Labs")
-  await upgradeToPro(grace, northwind)
-  await addMember(grace, ADA, northwind, 1)
-  await setRole(grace, northwind, adaId, 3)
-  const kernel = await createGroup(linus, "Kernel Notes")
-  await addMember(linus, ADA, kernel, 2)
-  const transfer = await linus.request.post(`${APP}/api/groups/${kernel}/transfer`, {
-    headers: sameOrigin(),
-    data: { userId: adaId, name: "Kernel Notes", password: PASSWORD },
-  })
-  await expectOk("transfer to Ada", transfer)
-
-  // An authenticator, so the profile shows two-factor sign-in on.
-  const started = await ada.request.post(`${APP}/api/auth/totp/connect/start`, {
-    headers: sameOrigin(),
-    data: { password: PASSWORD },
-  })
-  await expectOk("authenticator start", started)
-  const { secret } = await started.json() as { secret: string }
-  const finished = await ada.request.post(`${APP}/api/auth/totp/connect/finish`, {
-    headers: sameOrigin(),
-    data: { otp: await totpCode(secret, currentStep()) },
-  })
-  await expectOk("authenticator finish", finished)
-  // Ada has used the product for a while: her first-steps card is gone from the profile.
-  const dismissed = await ada.request.post(`${APP}/api/call/onboarding.dismiss`, {
-    headers: {
-      ...sameOrigin(),
-      "content-type": "application/json",
-      "x-realtime-user": String(adaId),
-      "idempotency-key": uuidV7(),
-    },
-    // The operation takes no payload, and the route reads JSON: `null` is both.
-    data: "null",
-  })
-  await expectOk("first-steps card dismissal", dismissed)
-  const householdId = await seedHousehold(ada, adaId)
+  const admin = await signInToAdmin(browser, contexts)
+  await fetchRates(admin)
+  // The System page reports an error while no backup was ever recorded.
+  const backup = await admin.request.post(`${APP}/api/test/record-backup`)
+  await expectOk(`the recorded backup`, backup)
 
   return {
-    groupId,
-    householdId,
-    noteIds,
-    now: new Date(Date.now() + 3 * 60_000),
+    ...household,
+    now,
     appState: await ada.context().storageState(),
-    ada,
-    grace,
+    adminState: await admin.context().storageState(),
+    grace: pages.get(GRACE)!,
+    graceId: ids.get(GRACE)!,
   }
 }
 
 interface ContextOptions {
   theme: Theme
-  form: Form
-  state?: StorageState
+  state: StorageState
+  baseURL: string
 }
 
+/** Opens a phone-sized page with the clock fixed at the seeded moment. */
 async function openPage(
   browser: Browser,
   contexts: BrowserContext[],
   seeded: Seeded,
   options: ContextOptions,
 ): Promise<Page> {
-  const desktop = options.form === "desktop"
   const context = await browser.newContext({
-    baseURL: APP,
+    baseURL: options.baseURL,
     storageState: options.state,
     colorScheme: options.theme,
     reducedMotion: "reduce",
-    viewport: desktop ? { width: 1280, height: 800 } : { width: 390, height: 844 },
-    deviceScaleFactor: desktop ? 2 : 3,
-    isMobile: !desktop,
-    hasTouch: !desktop,
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
     locale: "en-GB",
     timezoneId: "Europe/London",
   })
@@ -484,8 +437,8 @@ async function scrollToTop(target: Locator): Promise<void> {
   })
 }
 
-/** Waits until the page is still, then writes the master PNG, of `clip` alone when given. */
-async function snap(page: Page, name: string, clip?: Clip): Promise<void> {
+/** Waits until the page is still, then writes the master PNG of `clip`. */
+async function snap(page: Page, name: string, clip: Clip): Promise<void> {
   await page.addStyleTag({ content: STEADY_CSS })
   await page.waitForLoadState("networkidle")
   await page.evaluate(() => document.fonts.ready)
@@ -511,15 +464,20 @@ interface Clip {
   height: number
 }
 
-/** A screen that only reads: opened in each theme and form, waited for, and arranged. */
+/** A screen of the sample household: opened in each theme, waited for, checked and arranged. */
 interface Screen {
   name: string
-  forms: Form[]
+  /** The part of the viewport the picture keeps. Its height is also in the website's data. */
+  clip: Clip
   open(page: Page, seeded: Seeded): Promise<void>
-  /** The part of the viewport the picture keeps; the whole viewport when absent. */
-  clip?: Clip
-  /** Shows the sample household instead of the group "Acme Studio". */
-  household?: boolean
+  /** Throws when the screen does not show what the website's alt text says it shows. */
+  check(page: Page): Promise<void>
+  /** The element that ends the crop: the run fails when it does not fit inside `clip`. */
+  last(page: Page): Locator
+  /** Shows the admin app, signed in as Linus, instead of the app, signed in as Ada. */
+  admin?: boolean
+  /** Undoes what `open` wrote, so the next screen reads the household as it was. */
+  after?(seeded: Seeded): Promise<void>
 }
 
 /** Makes `groupId` the group the app opens with. */
@@ -531,102 +489,54 @@ async function selectGroup(page: Page, groupId: string): Promise<void> {
   await expectOk(`selected group ${groupId}`, selected)
 }
 
-/** The group's Billing tab, scrolled so the tab's title sits at the top. */
-async function openBilling(page: Page, seeded: Seeded): Promise<void> {
-  await gotoApp(
-    page,
-    `/groups/${seeded.groupId}/billing`,
-    page.locator("[data-e2e=billing-plan][data-plan=pro]"),
-  )
-  await scrollToTop(page.locator("[data-e2e=group-section-billing]"))
+/** Throws unless `scope` shows every one of `texts`, with spaces of any width read as spaces. */
+async function expectTexts(scope: Locator, texts: string[]): Promise<void> {
+  const shown = (await scope.innerText()).replace(/[  ]/g, ` `)
+  const missing = texts.filter((text) => !shown.includes(text))
+  if (missing.length) throw new Error(`the screen does not show: ${missing.join(`, `)}`)
 }
+
+/** Throws unless the field inside `scope` holds `value`. */
+async function expectValue(scope: Locator, value: string): Promise<void> {
+  const held = await scope.locator(`input`).first().inputValue()
+  if (held !== value) throw new Error(`a field holds "${held}" instead of "${value}"`)
+}
+
+/** Throws unless the health badge inside `scope` reads OK. */
+async function expectHealthy(scope: Locator): Promise<void> {
+  const health = await scope.locator(`[data-health]`).first().getAttribute(`data-health`)
+  if (health !== `ok`) throw new Error(`the health badge reads "${health}" instead of "ok"`)
+}
+
+/** The memo of the entry Grace adds while the live-sync picture's page is open. */
+const LIVE_MEMO = `Farmers market`
+/** That entry's id while it exists: it is made anew for each theme, and deleted after each. */
+let liveEntryId: string | null = null
 
 const SCREENS: Screen[] = [
   {
-    name: "notes",
-    forms: ["desktop", "mobile"],
-    async open(page) {
-      await gotoApp(page, "/notes", page.locator("[data-e2e=note-item-title]").nth(5))
-    },
-  },
-  {
-    name: "profile-security",
-    forms: ["desktop"],
-    async open(page) {
-      await gotoApp(page, "/profile/security", page.locator("[data-e2e=totp-disable]"))
-    },
-  },
-  {
-    name: "group-members",
-    forms: ["desktop"],
-    async open(page, seeded) {
-      await gotoApp(
-        page,
-        `/groups/${seeded.groupId}/members`,
-        page.locator("[data-e2e=group-member]").nth(3),
-      )
-      // Linus's menu open: the roles an owner hands out, which the billing picture lacks.
-      await page.locator("[data-e2e=group-member-menu]").nth(1).click()
-      await page.getByRole("menuitem", { name: "Make Viewer" }).waitFor()
-      // The menu focuses its first item a frame after it opens, which scrolls the page; the
-      // members go back to the top only after that.
-      await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menuitem")
-      await scrollToTop(page.locator("[data-e2e=group-section-members]"))
-    },
-  },
-  {
-    name: "billing",
-    forms: ["desktop"],
-    open: openBilling,
-  },
-  {
-    // The home page's billing card: the plan alone, on a phone, from the canvas above its
-    // "Billing" title to the canvas below the "Pro plan" card.
-    name: "billing-plan",
-    forms: ["mobile"],
-    open: openBilling,
-    clip: { x: 0, y: 144, width: 390, height: 208 },
-  },
-  {
-    name: "notifications",
-    forms: ["desktop"],
-    async open(page) {
-      await gotoApp(page, "/notifications", page.locator("[data-e2e=notification-text]").nth(2))
-    },
-  },
-  {
-    name: "activity",
-    forms: ["desktop"],
-    async open(page, seeded) {
-      await gotoApp(
-        page,
-        `/groups/${seeded.groupId}/activity`,
-        page.locator("[data-e2e=activity-text]").nth(5),
-      )
-    },
-  },
-  {
-    name: "sign-in",
-    forms: ["mobile"],
-    async open(page) {
-      await gotoApp(page, "/sign-in", page.locator("[data-e2e=auth-form-login]"))
-      await page.locator("[data-e2e=auth-form-login]").fill(ADA.email)
-    },
-  },
-  {
+    // Also the multi-currency feature page's picture.
     name: "for-expats",
-    forms: ["mobile"],
-    household: true,
     // From the title to the end of the savings card: all four accounts the total adds up.
     clip: { x: 0, y: 0, width: 390, height: 634 },
     async open(page) {
       await gotoApp(page, "/accounts", page.locator("[data-e2e=accounts-total-amount]"))
     },
+    check: (page) =>
+      expectTexts(page.locator(`main`), [
+        `Bangkok account`,
+        `THB 104,750.00`,
+        `London account`,
+        `£1,840.00`,
+        `Salary account`,
+        `€5,965.80`,
+        `Dollar savings`,
+        `US$12,500.00`,
+      ]),
+    last: (page) => page.locator(`main`).getByText(`Dollar savings`),
   },
   {
     name: "for-couples",
-    forms: ["mobile"],
-    household: true,
     // From the title to the end of the spending card, below net and income.
     clip: { x: 0, y: 0, width: 390, height: 634 },
     async open(page, seeded) {
@@ -636,11 +546,12 @@ const SCREENS: Screen[] = [
         page.locator(`[data-e2e="overview-widget-money.income"]`),
       )
     },
+    check: (page) => expectTexts(page.locator(`main`), [`Income`, `Spending`]),
+    last: (page) => page.locator(`[data-e2e="overview-widget-money.spending"]`),
   },
   {
+    // Also the households feature page's picture.
     name: "for-families",
-    forms: ["mobile"],
-    household: true,
     // The four members alone: the invitations below them stay out of the picture.
     clip: { x: 0, y: 176, width: 390, height: 440 },
     async open(page, seeded) {
@@ -651,16 +562,153 @@ const SCREENS: Screen[] = [
       )
       await scrollToTop(page.locator("[data-e2e=group-section-members]"))
     },
+    check: (page) =>
+      expectTexts(page.locator(`main`), [
+        `Ada Lovelace`,
+        `Owner`,
+        `Grace Hopper`,
+        `Admin`,
+        `Margaret Hamilton`,
+        `Editor`,
+        `Linus Torvalds`,
+        `Viewer`,
+      ]),
+    last: (page) => page.locator("[data-e2e=group-member]").nth(3),
   },
   {
     name: "for-small-business",
-    forms: ["mobile"],
-    household: true,
     // From the title to the end of the second payment, each with both amounts.
     clip: { x: 0, y: 0, width: 390, height: 548 },
     async open(page) {
       await gotoApp(page, "/transactions", page.getByText("Hotel in Bangkok"))
     },
+    check: (page) => expectTexts(page.locator(`main`), [`Train in London`, `Hotel in Bangkok`]),
+    last: (page) => page.getByText("Hotel in Bangkok"),
+  },
+  {
+    name: "feature-live-sync",
+    // From the title to the end of the second payment, as the small-business picture.
+    clip: { x: 0, y: 0, width: 390, height: 548 },
+    async open(page, seeded) {
+      await gotoApp(page, "/transactions", page.getByText("Hotel in Bangkok"))
+      // Grace writes through the API while Ada's page stays open: nothing reloads it.
+      const id = uuidV7()
+      await operation(seeded.grace, seeded.graceId, `transaction.create`, {
+        groupId: seeded.householdId,
+        id,
+        accountId: seeded.salaryId,
+        categoryId: seeded.groceriesId,
+        kind: 1,
+        amount: 1_840,
+        currency: `EUR`,
+        memo: LIVE_MEMO,
+      })
+      liveEntryId = id
+      await page.getByText(LIVE_MEMO).waitFor()
+    },
+    check: (page) => expectTexts(page.locator(`main`), [LIVE_MEMO, `€18.40`]),
+    last: (page) => page.getByText(LIVE_MEMO),
+    // The budgets picture counts Groceries without this entry.
+    async after(seeded) {
+      if (!liveEntryId) return
+      await operation(seeded.grace, seeded.graceId, `transaction.delete`, {
+        groupId: seeded.householdId,
+        id: liveEntryId,
+        version: 1,
+      })
+      liveEntryId = null
+    },
+  },
+  {
+    name: "feature-self-hosting",
+    admin: true,
+    // From the title to the end of the cache card.
+    clip: { x: 0, y: 0, width: 390, height: 712 },
+    async open(page) {
+      await gotoApp(page, "/system", page.locator("[data-e2e=admin-system-cache]"))
+    },
+    async check(page) {
+      const summary = page.locator(`[data-e2e=admin-system-summary]`)
+      if (await summary.getAttribute(`data-health`) !== `ok`) {
+        throw new Error(`the System page does not say everything is working`)
+      }
+      await expectTexts(summary, [`Everything is working`])
+      await expectHealthy(page.locator(`[data-e2e=admin-system-database]`))
+      await expectHealthy(page.locator(`[data-e2e=admin-system-cache]`))
+    },
+    last: (page) => page.locator(`[data-e2e=admin-system-cache]`),
+  },
+  {
+    name: "feature-transfers",
+    // From the title to the end of the memo.
+    clip: { x: 0, y: 0, width: 390, height: 752 },
+    async open(page, seeded) {
+      await gotoApp(
+        page,
+        `/transfers/${seeded.transferId}`,
+        page.locator(`[data-e2e=transfer-rate]`),
+      )
+    },
+    async check(page) {
+      await expectValue(page.locator(`[data-e2e=transfer-sent-field]`), `500.00`)
+      await expectValue(page.locator(`[data-e2e=transfer-received-field]`), `18250.00`)
+      await expectTexts(page.locator(`[data-e2e=transfer-rate]`), [`1 EUR = 36.5 THB`])
+      await expectTexts(page.locator(`[data-e2e=transfer-from]`), [`Salary account`])
+      await expectTexts(page.locator(`[data-e2e=transfer-to]`), [`Bangkok account`])
+    },
+    last: (page) => page.locator(`[data-e2e=transfer-memo]`),
+  },
+  {
+    name: "feature-budgets",
+    // From the title to the end of the last budget.
+    clip: { x: 0, y: 0, width: 390, height: 440 },
+    async open(page) {
+      await gotoApp(page, "/budgets", page.locator(`[data-e2e=budgets-list]`))
+    },
+    check: (page) =>
+      expectTexts(page.locator(`[data-e2e=budgets-list]`), [
+        `Groceries`,
+        `€286.40`,
+        `€250.00`,
+        `€36.40`,
+        `Rent`,
+        `€1,100.00`,
+        `€1,200.00`,
+        `€100.00`,
+        `Travel`,
+        `€400.00`,
+      ]),
+    last: (page) => page.locator(`[data-e2e=budgets-list] > li`).last(),
+  },
+  {
+    name: "feature-telegram-bot",
+    // The dialog alone.
+    clip: { x: 0, y: 221, width: 390, height: 403 },
+    async open(page, seeded) {
+      // The development stack has no bot: these are the two answers a running one gives.
+      await page.route(`**/api/telegram`, (route) =>
+        route.fulfill({
+          json: { enabled: true, botUsername: `financy_sample_bot`, linkedAt: null },
+        }))
+      await page.route(`**/api/telegram/code`, (route) =>
+        route.fulfill({
+          json: {
+            code: `SAMPLE-CODE`,
+            expiresAt: new Date(seeded.now.valueOf() + 10 * 60_000).toISOString(),
+            url: `https://t.me/financy_sample_bot?start=SAMPLE-CODE`,
+          },
+        }))
+      await gotoApp(page, "/profile/notifications", page.locator(`[data-e2e=telegram-link]`))
+      await page.locator(`[data-e2e=telegram-link]`).click()
+      await page.locator(`[data-e2e=telegram-code]`).waitFor()
+    },
+    check: (page) =>
+      expectTexts(page.locator(`[data-e2e=telegram-code-dialog]`), [
+        `Open Telegram`,
+        `/link SAMPLE-CODE`,
+        `10 minutes`,
+      ]),
+    last: (page) => page.locator(`[data-e2e=telegram-code-dialog]`),
   },
 ]
 
@@ -675,59 +723,43 @@ async function attempt(name: string, shoot: () => Promise<void>): Promise<void> 
   }
 }
 
-async function captureScreens(browser: Browser, contexts: BrowserContext[], seeded: Seeded) {
-  for (const theme of ["light", "dark"] as const) {
-    for (const screen of SCREENS) {
-      for (const form of screen.forms) {
-        const name = `${screen.name}-${theme}-${form}`
-        await attempt(name, async () => {
-          const signedOut = screen.name === "sign-in"
-          const page = await openPage(browser, contexts, seeded, {
-            theme,
-            form,
-            state: signedOut ? undefined : seeded.appState,
-          })
-          try {
-            if (!signedOut) {
-              await selectGroup(page, screen.household ? seeded.householdId : seeded.groupId)
-            }
-            await screen.open(page, seeded)
-            // A public page never shows a total that leaves money out for want of a rate.
-            if (screen.household && await page.getByText(/no exchange rate/i).count()) {
-              throw new Error(`the stack has no rate for EUR, USD, GBP or THB`)
-            }
-            await snap(page, name, screen.clip)
-          } finally {
-            await page.context().close()
-          }
-        })
-      }
-    }
+/** Throws when `last` ends below the picture's crop, so a taller screen cannot lose its end. */
+async function expectInsideClip(last: Locator, clip: Clip): Promise<void> {
+  const box = await last.boundingBox()
+  if (!box) throw new Error(`the end of the crop is not on the screen`)
+  const bottom = Math.ceil(box.y + box.height)
+  if (bottom > clip.y + clip.height) {
+    throw new Error(`the crop ends at ${clip.y + clip.height} px, its content at ${bottom} px`)
   }
 }
 
-interface Note {
-  body: string
-  version: number
-}
-
-/** Saves a note's title through `as`'s API context, at the version the server holds. */
-export async function saveTitle(
-  as: Page,
-  seeded: Seeded,
-  noteId: string,
-  title: string,
-): Promise<void> {
-  const url = `${APP}/api/groups/${seeded.groupId}/notes/${noteId}`
-  const current = await as.request.get(url)
-  await expectOk("note read", current)
-  const read = await current.json() as { note?: Note } & Note
-  const note = read.note ?? read
-  const saved = await as.request.patch(url, {
-    headers: { ...sameOrigin(), "idempotency-key": uuidV7() },
-    data: { title, body: note.body, version: note.version },
-  })
-  await expectOk("note save", saved)
+async function captureScreens(browser: Browser, contexts: BrowserContext[], seeded: Seeded) {
+  for (const theme of ["light", "dark"] as const) {
+    for (const screen of SCREENS) {
+      const name = `${screen.name}-${theme}`
+      await attempt(name, async () => {
+        const page = await openPage(browser, contexts, seeded, {
+          theme,
+          state: screen.admin ? seeded.adminState : seeded.appState,
+          baseURL: screen.admin ? ADMIN : APP,
+        })
+        try {
+          if (!screen.admin) await selectGroup(page, seeded.householdId)
+          await screen.open(page, seeded)
+          // A public page never shows a total that leaves money out for want of a rate.
+          if (await page.getByText(/no exchange rate/i).count()) {
+            throw new Error(`the stack has no rate for EUR, USD, GBP or THB`)
+          }
+          await screen.check(page)
+          await expectInsideClip(screen.last(page), screen.clip)
+          await snap(page, name, screen.clip)
+        } finally {
+          await screen.after?.(seeded)
+          await page.context().close()
+        }
+      })
+    }
+  }
 }
 
 /** Runs a command and throws with its error output when it fails. */
@@ -740,16 +772,16 @@ export async function run(command: string, args: string[]): Promise<void> {
 
 /**
  * Encodes every master into its delivered widths with `cwebp`. Quality starts at 80 and steps down
- * until the file fits its budget: the notes hero 90 KB at 1280, every other file 70 KB.
+ * until the file fits its budget of 70 KB.
  */
 async function encodeShots(): Promise<void> {
+  const budget = 70 * 1024
   for await (const entry of Deno.readDir(MASTERS)) {
-    const match = entry.name.match(/^(.+)-(light|dark)-(desktop|mobile)\.png$/)
+    const match = entry.name.match(/^(.+)-(light|dark)\.png$/)
     if (!match) continue
-    const [, name, theme, form] = match
-    for (const width of WIDTHS[form as Form]) {
+    const [, name, theme] = match
+    for (const width of WIDTHS) {
       const target = `${SHOTS}/${name}-${theme}-${width}.webp`
-      const budget = (name === "notes" && width === 1280 ? 90 : 70) * 1024
       let quality = 80
       for (;;) {
         await run("cwebp", [
@@ -822,7 +854,7 @@ async function renderOgImages(browser: Browser, contexts: BrowserContext[]): Pro
           sub: card.sub,
           shot: card.shot ? `/static/${card.shot}` : "",
           top: String(card.top ?? 0),
-          width: String(card.width ?? 860),
+          width: String(card.width ?? 520),
         })
         await page.goto(`${origin}/screenshots/og.html?${query}`)
         await page.evaluate(() => document.fonts.ready)

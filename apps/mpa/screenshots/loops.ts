@@ -15,8 +15,152 @@ import { type Browser, type BrowserContext, chromium, type Page } from "playwrig
 import { gotoApp } from "../../../e2e/fixtures/app.ts"
 import { clickLike, type Point } from "../../../media/demo/recipe/human-mouse.ts"
 import { concatList, Recorder } from "../../../docs/screenshots/screencast.ts"
-import { APP, cleanupPeople, NOTES, saveTitle, seed, type Seeded } from "./capture.ts"
+import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import {
+  ADA,
+  addMember,
+  APP,
+  cleanupPeople,
+  createGroup,
+  expectOk,
+  GRACE,
+  LINUS,
+  MARGARET,
+  operation,
+  type Person,
+  sameOrigin,
+  signUpPeople,
+  upgradeToPro,
+} from "./capture.ts"
 import { LOOP_NAMES, LOOP_SIZE, type LoopName } from "../loops.ts"
+
+const TAGS = [
+  { name: "Roadmap", color: "#7e22ce" },
+  { name: "Bug", color: "#b91c1c" },
+  { name: "Design", color: "#1d4ed8" },
+  { name: "Research", color: "#15803d" },
+  { name: "Ops", color: "#c2410c" },
+] as const
+type TagName = typeof TAGS[number]["name"]
+
+/** The six notes of "Acme Studio", oldest first, with who writes each. */
+const NOTES: { title: string; body: string; tags: TagName[]; author: Person }[] = [
+  {
+    title: "Postgres 18 upgrade checklist",
+    body: "Snapshot the volume, run the upgrade task on staging first, then production at 06:00.",
+    tags: ["Ops"],
+    author: GRACE,
+  },
+  {
+    title: "Interview notes: three design agencies",
+    body:
+      "All three bill per member and hate per-member pricing. Two of them work offline on trains.",
+    tags: ["Research"],
+    author: MARGARET,
+  },
+  {
+    title: "Checkout fails for EU VAT numbers",
+    body: "Stripe rejects numbers with spaces. Strip them before we send the tax id.",
+    tags: ["Bug"],
+    author: LINUS,
+  },
+  {
+    title: "New pricing page: copy review",
+    body: "Lead with the price, then what the plan covers. Cut the comparison table to five rows.",
+    tags: ["Design", "Research"],
+    author: GRACE,
+  },
+  {
+    title: "Release notes 2.4",
+    body: "Two-factor sign-in, group activity, and the offline conflict chooser.",
+    tags: ["Roadmap"],
+    author: ADA,
+  },
+  {
+    title: "Q4 roadmap: onboarding and billing",
+    body: "Ship self-serve onboarding by November, then annual plans and invoices in December.",
+    tags: ["Roadmap", "Design"],
+    author: ADA,
+  },
+]
+
+type StorageState = Awaited<ReturnType<BrowserContext["storageState"]>>
+
+/** What the loops need from the seeding. */
+interface Seeded {
+  groupId: string
+  noteIds: string[]
+  /** Ada's signed-in session on the app host. */
+  appState: StorageState
+  /** API contexts of Ada and Grace, for writes during a recording. */
+  ada: Page
+  grace: Page
+}
+
+/** Builds the group "Acme Studio" with its tags and notes, each note written by its author. */
+async function seed(browser: Browser, contexts: BrowserContext[], ada: Page): Promise<Seeded> {
+  const { pages, ids } = await signUpPeople(browser, contexts, ada)
+  const adaId = ids.get(ADA)!
+  const groupId = await createGroup(ada, "Acme Studio")
+  await upgradeToPro(ada, groupId)
+  await addMember(ada, GRACE, groupId, 3)
+  await addMember(ada, LINUS, groupId, 2)
+  await addMember(ada, MARGARET, groupId, 2)
+  const selected = await ada.request.put(`${APP}/api/groups/selected`, {
+    headers: sameOrigin(),
+    data: { groupId },
+  })
+  await expectOk("selected group", selected)
+  await operation(ada, adaId, `onboarding.dismiss`, null)
+
+  const tagIds = new Map<TagName, string>()
+  for (const tag of TAGS) {
+    const id = uuidV7()
+    await operation(ada, adaId, `tag.create`, { groupId, id, name: tag.name, color: tag.color })
+    tagIds.set(tag.name, id)
+  }
+  const noteIds: string[] = []
+  for (const note of NOTES) {
+    const id = uuidV7()
+    const response = await pages.get(note.author)!.request.post(
+      `${APP}/api/groups/${groupId}/notes`,
+      {
+        headers: { ...sameOrigin(), "idempotency-key": uuidV7() },
+        data: {
+          id,
+          title: note.title,
+          body: note.body,
+          tagIds: note.tags.map((tag) => tagIds.get(tag)!),
+        },
+      },
+    )
+    await expectOk(`note ${note.title}`, response)
+    noteIds.push(id)
+  }
+  return {
+    groupId,
+    noteIds,
+    appState: await ada.context().storageState(),
+    ada,
+    grace: pages.get(GRACE)!,
+  }
+}
+
+/** Saves a note's title through `as`'s API context, at the version the server holds. */
+async function saveTitle(as: Page, seeded: Seeded, noteId: string, title: string): Promise<void> {
+  const url = `${APP}/api/groups/${seeded.groupId}/notes/${noteId}`
+  const current = await as.request.get(url)
+  await expectOk("note read", current)
+  const read = await current.json() as
+    & { note?: { body: string; version: number } }
+    & { body: string; version: number }
+  const note = read.note ?? read
+  const saved = await as.request.patch(url, {
+    headers: { ...sameOrigin(), "idempotency-key": uuidV7() },
+    data: { title, body: note.body, version: note.version },
+  })
+  await expectOk("note save", saved)
+}
 
 const MPA = new URL("..", import.meta.url).pathname
 const VIDEO_DIR = `${MPA}media/video`
