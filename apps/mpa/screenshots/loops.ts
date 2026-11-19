@@ -14,7 +14,7 @@
  */
 import { type Browser, type BrowserContext, chromium, type Page } from "playwright"
 import { gotoApp } from "../../../e2e/fixtures/app.ts"
-import { clickLike, type Point } from "../../../media/demo/recipe/human-mouse.ts"
+import { clickLike, moveLike, type Point } from "../../../media/demo/recipe/human-mouse.ts"
 import { concatList, Recorder } from "../../../docs/screenshots/screencast.ts"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import {
@@ -175,6 +175,14 @@ async function openWindow(
   )
   await context.addInitScript({ path: POINTER })
   await context.addInitScript({ path: KEYS })
+  // After each route change the app focuses the page's heading for screen readers, and its focus
+  // outline would frame "Transactions" in every list beat: the focus leaves it at once.
+  await context.addInitScript(() => {
+    addEventListener(`focusin`, (event) => {
+      const target = event.target
+      if (target instanceof HTMLElement && /^H[1-6]$/.test(target.tagName)) target.blur()
+    }, true)
+  })
   const page = await context.newPage()
   const dir = `${frames}/${contexts.length}`
   await Deno.mkdir(dir, { recursive: true })
@@ -253,6 +261,12 @@ async function realtime(
   await at(2.6)
   await page.keyboard.press(`Enter`)
   const added = await rowId(page, `€64.50`)
+  // The key cap outlives the form: on the list it would look like a second Enter.
+  await page.evaluate(() => {
+    for (const node of document.querySelectorAll<HTMLElement>(`[data-demo]`)) {
+      if (node.textContent === `Enter`) node.style.opacity = `0`
+    }
+  })
   await travel.filter({ hasText: `€236.30` }).waitFor()
   await at(6.3)
   const take = await finish(windows, frames)
@@ -358,11 +372,10 @@ async function shortcuts(
   frames: string,
 ): Promise<Take> {
   const setup = await addTravel(seeded.ada, seeded, { amount: 2_400, currency: `EUR` })
-  const window = await openWindow(browser, contexts, seeded.ada, LOOP_SIZE.width, frames, {
-    x: 690,
-    y: 185,
-  })
-  const { page } = window
+  // Right of the filters, where nothing is written.
+  const spot = { x: 640, y: 135 }
+  const window = await openWindow(browser, contexts, seeded.ada, LOOP_SIZE.width, frames, spot)
+  const { page, pointer } = window
   await gotoApp(page, `/transactions`, rowOf(page, `€24.00`))
   await online(page)
   const at = await begin([window])
@@ -372,16 +385,25 @@ async function shortcuts(
   await page.keyboard.type(`18.90`, { delay: 110 })
   await page.keyboard.press(`Enter`)
   const added = await rowId(page, `€18.90`)
-  await at(2.4)
+  // "Transaction added" covers the new row's amount and would stay beside the hotel payment, as if
+  // that were the €18.90: the pointer closes it, once it has stopped sliding in.
+  const toast = page.locator(`[data-e2e=toasts] button[aria-label]`).first()
+  await page.locator(`[data-e2e=toasts]`).evaluate((stack) =>
+    Promise.all(stack.getAnimations({ subtree: true }).map((animation) => animation.finished))
+  )
+  await clickLike(page, pointer, toast, { scroll: false })
+  await toast.waitFor({ state: `detached` })
+  await moveLike(page, pointer, spot)
+  await at(3.4)
   await page.keyboard.press(`Control+k`)
   const palette = page.locator(`[data-e2e=search]`)
   await palette.getByRole(`combobox`).waitFor()
   const hotel = palette.getByRole(`option`).filter({ hasText: `Hotel in Bangkok` })
-  await at(2.7)
+  await at(3.7)
   for (const [index, query] of [`htoel`, `отель`, `рщеуд`].entries()) {
     if (index) await page.keyboard.press(`Control+a`)
     await page.keyboard.type(query, { delay: 85 })
-    await at(2.7 + (index + 1) * 0.93)
+    await at(3.7 + (index + 1) * 0.85)
     if (!await hotel.isVisible()) throw new Error(`search for ${query} lost the hotel payment`)
   }
   await page.keyboard.press(`Enter`)
@@ -391,7 +413,7 @@ async function shortcuts(
     (selector) => document.querySelector<HTMLInputElement>(selector)?.value === `1850.00`,
     `[data-e2e=transaction-amount-field] input[type=text]`,
   )
-  await at(7.1)
+  await at(7.6)
   const take = await finish([window], frames)
   await removeEntries(seeded, [setup, added])
   return take
