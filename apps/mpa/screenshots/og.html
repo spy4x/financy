@@ -1,7 +1,8 @@
 <!doctype html>
 <!--
   The Open Graph card of one website page, 1200×630. capture.ts opens it with the words in the
-  query string (eyebrow, title, sub, shot, top, width) and photographs it. Self-contained: its
+  query string (eyebrow, title, sub, shot, top, left, width, and cardWidth and cardHeight for another
+  size, as docs/screenshots/record.ts's social preview) and photographs it. Self-contained: its
   fonts come from the pinned geist package that capture.ts unpacks, and nothing loads from outside.
 -->
 <html lang="en">
@@ -164,6 +165,11 @@
     </footer>
     <script>
     const query = new URLSearchParams(location.search)
+    // Another size, such as GitHub's 1280×640 social preview: the layout keeps its distances.
+    for (const element of [document.documentElement, document.body]) {
+      if (query.get("cardWidth")) element.style.width = `${Number(query.get("cardWidth"))}px`
+      if (query.get("cardHeight")) element.style.height = `${Number(query.get("cardHeight"))}px`
+    }
     document.querySelector(".eyebrow").textContent = query.get("eyebrow") ?? ""
     document.querySelector("h1").textContent = query.get("title") ?? ""
     document.querySelector(".sub").textContent = query.get("sub") ?? ""
@@ -178,6 +184,7 @@
       image.onerror = () => document.body.setAttribute("data-error", shot)
       // How far down the picture the frame starts, in its own pixels.
       image.style.marginTop = `-${Number(query.get("top") ?? 0)}px`
+      image.style.marginLeft = `-${Number(query.get("left") ?? 0)}px`
       image.style.width = `${Number(query.get("width") ?? 860)}px`
       image.src = shot
     } else {

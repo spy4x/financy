@@ -9,8 +9,9 @@ Two sets of pictures show the product, and both are re-captured together:
 
 - The public website (`apps/mpa`): made by `apps/mpa/screenshots/capture.ts`, committed under
   `apps/mpa/static/shots/` and `apps/mpa/static/og/`.
-- The README: the stills, the sign-up GIF and the GitHub social preview, made by
-  `docs/screenshots/record.ts` and committed under `docs/screenshots/`.
+- The README: the stills of Accounts, Transactions, Budgets and Overview, the add-a-transaction
+  GIF and the GitHub social preview, made by `docs/screenshots/record.ts` and committed under
+  `docs/screenshots/`.
 
 The admin panel video on the website's `/admin` page is a third piece, made by
 `docs/screenshots/admin-video.ts` (`deno task video:admin`) and committed under
@@ -70,14 +71,15 @@ three times. The script deletes its four demo accounts at the end, also when it 
 Then, from the worktree root, record the README pictures the same way:
 
 ```bash
-BASE_URL=http://app.localhost systemd-run --user --scope --quiet -p TasksMax=4000 -p MemoryMax=8G timeout 900 deno run -A docs/screenshots/record.ts
+systemd-run --user --scope --quiet -p TasksMax=4000 -p MemoryMax=8G timeout 900 deno run -A docs/screenshots/record.ts
 ```
 
-It signs the demo user `alex.rivera@example.com` up with the code the worker mails, which it
-reads from the API's development route `/api/test/last-mail`; that route exists only with
-`ENV=dev`. It deletes the demo user through `/api/test/cleanup-user` before it starts, so any
-development database works, also one where an earlier run left the user, and again when it ends,
-also when it fails, so the admin panel video never shows the user.
+It builds the website's sample household with `capture.ts`'s helpers, so it signs up the same four
+people: run it after `capture.ts` has finished, never beside it. It deletes the four through the
+development route `/api/test/cleanup-user` (only with `ENV=dev`) before it starts, so any
+development database works, also one where an earlier run left them, and again when it ends, also
+when it fails, so the admin panel video never shows them. A screen that does not show what the
+README says it shows, or a missing exchange rate, fails the run.
 
 When the video needs it too, record it last, on a freshly seeded database, as the header of
 `docs/screenshots/admin-video.ts` says (`ENV=dev deno task db:reset`, then restart the API and the
@@ -105,11 +107,11 @@ its timezone) and with one transcript line per shot of the new cut, then the e2e
 ## 4. Look, then ship
 
 1. Open every changed `.webp`, `og/*.png` and `docs/screenshots/*.png` with the Read tool, and a few
-   frames of the GIF. For the frames, copy `docs/screenshots/sign-up-flow.gif` into your scratch
-   folder, then run there
-   `ffmpeg -i sign-up-flow.gif -vf "select='not(mod(n,20))'" -fps_mode vfr f%02d.png`. Check each
-   against the screen it shows: right data, nothing cut off, both themes, no spinner or toast
-   caught mid-flight.
+   frames of the GIF. For the frames, copy `docs/screenshots/add-transaction-dark-1280.gif` into
+   your scratch folder, then run there
+   `ffmpeg -i add-transaction-dark-1280.gif -vf "select='not(mod(n,12))'" -fps_mode vfr f%02d.png`.
+   Check each against the screen it shows: right data, nothing cut off, both themes, no spinner,
+   toast, focus ring or hover caught mid-flight.
 2. Update the README's alt text so it describes the new pictures. For the video, extract stills
    of key moments (`ffmpeg -i admin-panel.mp4 -vf fps=2 still-%03d.png` in your scratch folder),
    look at each, and check that the transcript matches what the video shows.
@@ -123,6 +125,6 @@ its timezone) and with one transcript line per shot of the new cut, then the e2e
    already running before you began. Then run the orphan sweep.
 6. Open a PR with the before and after of the main pictures. A design reviewer checks it, as for
    any visible change; merge and deploy as `AGENTS.seed.md` says.
-7. `docs/screenshots/social-preview.png` reaches GitHub only when the owner uploads it in the
+7. `docs/screenshots/social-preview-1280.png` reaches GitHub only when the owner uploads it in the
    repository's settings (General, "Social preview"); no agent can. When it changed, the PR body
    and the final report name this under "Needs you".

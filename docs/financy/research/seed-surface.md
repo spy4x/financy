@@ -302,10 +302,11 @@ Order: 1 → (2, 5, 6 in parallel) → 7 → (3, 4, 11 in parallel) → 9 → (8
 
 - **Files.** `apps/mpa/static/shots/`, `static/og/` (drawn by `screenshots/og.html`),
   `static/video/`, `media/video/`, `apps/mpa/admin-video.ts` (length, size, date, transcript),
-  `apps/mpa/screenshots/loops.ts` (task `loops`), `docs/screenshots/*.png` (README pictures),
+  `apps/mpa/screenshots/loops.ts` (task `loops`), `docs/screenshots/*.png`, `*.webp` and `*.gif` (README pictures, by `record.ts`),
   `media/demo/` (the README demo video and its recipe). The GitHub social preview is uploaded by
   hand: `manual`.
-- **Skip list gains** the picture folders Financy owns, so Seed's re-captures never arrive.
+- **Skip list gains** the picture folders Financy owns, and `docs/screenshots/record.ts` with the
+  README's picture files, so Seed's re-captures never arrive.
 - **Done when.** No picture shows Seed, seedsaas.com or notes; `recapture-shots` reruns them.
 - **Needs** every visual package before it.
 

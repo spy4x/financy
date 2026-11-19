@@ -156,7 +156,7 @@ provider with the product's translator.
 | Website screenshots      | `static/shots/`                           | `screenshots/capture.ts`                     |
 | The admin video          | `media/video/admin-panel.*`, `static/video/admin-panel-*` | `deno task video:admin`      |
 | The three feature loops  | `media/video/*-loop-light.*`, `static/video/*-loop-light-*` | `deno task loops` in `apps/mpa` (`screenshots/loops.ts`) |
-| README pictures          | `docs/screenshots/`                       | `docs/screenshots/record.ts`                 |
+| README pictures          | `docs/screenshots/*.png`, `*.webp`, `*.gif` | `docs/screenshots/record.ts`               |
 
 `deno task video:admin`, run from the repository's root, records the video with
 `docs/screenshots/admin-video.ts`. It prints the files' length and sizes: write them, the date and
@@ -165,8 +165,12 @@ line under the player and the structured data.
 
 The feature loops show Financy's own app: a shared household's live budget, an expense added
 offline, and the keyboard shortcuts with search. `screenshots/loops.ts` records them, `loops.ts`
-names them and `components/feature-loop.tsx` draws them on the website. The GitHub social preview
-says `seedsaas.com`; replace it.
+names them and `components/feature-loop.tsx` draws them on the website.
+
+`docs/screenshots/record.ts` photographs the README's stills and GIF on the website's sample
+household, with the helpers of `screenshots/capture.ts`, and draws the GitHub social preview
+(`social-preview-1280.png`) from the website's home card. GitHub has no API for the preview: upload
+it by hand in the repository's settings, "Social preview".
 
 ## The product's name, icon and colour in the apps
 
