@@ -1,398 +1,502 @@
-// Seed's own site: see docs/start-a-product.md
 /**
- * Records the README screenshots, the sign-up GIF and the GitHub social preview image from a
- * running app, with neutral demo data.
+ * Records the README's pictures of Financy from the running app, with the website's "Sample
+ * household": four stills in light and dark, the add-a-transaction GIF and the GitHub social
+ * preview. Other sites reuse the files, so each still ships unframed: rounded corners on a
+ * transparent background, each site adding its own backdrop.
  *
- * Needs the app reachable as one origin (API under /api, SPA everywhere else) on a throw-away
- * database in development mode: the run deletes the demo user through the development route
- * `/api/test/cleanup-user` before it starts and again when it ends, also when it fails, so a later
- * capture of that database (the admin panel video's Users list) never shows it; the GIF signs that
- * user up, reading the mailed code from the development route `/api/test/last-mail`, and the
- * stills sign that user in.
- * `deno task dev` behind `deno task proxy:start` serves it at http://app.localhost. Also needs
- * `ffmpeg` on the PATH for the GIF.
+ * - `<screen>-<theme>-2560.png`, `-1280.webp` and `-2560.webp` for `accounts`, `transactions`,
+ *   `budgets` and `overview`: a 1280×800 window at device scale 2, cropped to the height of what
+ *   the screen shows. A screen that does not show what the README says it shows fails the run.
+ * - `add-transaction-dark-1280.gif`: Transactions at rest, T opens the editor, an amount in baht
+ *   on "Bangkok account" is typed and saved, the new row holds on top, then a fade back to the
+ *   first frame.
+ * - `social-preview-1280.png`: the dark Accounts still in the website's home card
+ *   (`apps/mpa/screenshots/og.html`), at GitHub's 1280×640. Only the owner can upload it: GitHub's
+ *   repository settings, "Social preview".
+ *
+ * It signs up, seeds and deletes the same four people as `apps/mpa/screenshots/capture.ts`, with
+ * that file's helpers, so the two scripts never run at the same time. The four accounts are deleted
+ * through the development route `/api/test/cleanup-user` before the run and after it, also when it
+ * fails. It needs the development stack (`ENV=dev`, `admin` in `COMPOSE_PROFILES`) at
+ * http://app.localhost and http://admin.localhost (`SHOTS_APP_URL` and `SHOTS_ADMIN_URL` name
+ * others), and `ffmpeg`, `cwebp` and `magick` on the PATH. The `recapture-shots` skill runs it:
  *
  * ```sh
- * BASE_URL=http://app.localhost deno run -A docs/screenshots/record.ts
+ * deno run -A docs/screenshots/record.ts
  * ```
  *
  * `CHROME_PATH` points Playwright at a Chromium already on disk instead of its own download.
  */
-import { type Browser, type BrowserContext, chromium, type Page } from "playwright"
-import { clickLike, typeLike } from "./human-mouse.ts"
+import { type Browser, type BrowserContext, chromium, type Locator, type Page } from "playwright"
+import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import { gotoApp } from "../../e2e/fixtures/app.ts"
+import { clickLike, moveLike, type Point } from "../../media/demo/recipe/human-mouse.ts"
+import {
+  APP,
+  CACHE,
+  cardContext,
+  cleanupPeople,
+  encodeWebp,
+  expectRates,
+  expectTexts,
+  OG_CARDS,
+  openPage,
+  operation,
+  run,
+  seed,
+  type Seeded,
+  selectGroup,
+  settle,
+  shootCard,
+} from "../../apps/mpa/screenshots/capture.ts"
 
-const BASE_URL = Deno.env.get("BASE_URL") ?? "http://app.localhost"
 const OUT_DIR = new URL(".", import.meta.url).pathname
+const RECIPE = new URL("../../media/demo/recipe/", import.meta.url).pathname
 const VIEWPORT = { width: 1280, height: 800 }
-/** The sign-in still's viewport: 16:10 like {@link VIEWPORT}, tall enough for the whole page. */
-const SIGN_IN_VIEWPORT = { width: 1440, height: 900 }
 const THEMES = ["light", "dark"] as const
 type Theme = typeof THEMES[number]
+/** Space kept below a still's last element, in CSS pixels. */
+const MARGIN = 24
+/** The budget of each WebP, and of the GIF, in bytes. */
+const BUDGET = { webp: 150 * 1024, gif: 2 * 1024 * 1024 }
+/** The GIF's frames a second, its closing fade into the first frame, and how long that holds. */
+const FPS = 12
+const FADE = 0.5
+const HOLD = 0.2
 
-/** Neutral demo data: no real person, product or price. */
-const DEMO = {
-  email: "alex.rivera@example.com",
-  password: "Demo-passw0rd!",
-  firstName: "Alex",
-  lastName: "Rivera",
+/** Grace's entry, so the transactions list shows a second member. */
+const GRACE_ENTRY = { amount: 28_640, currency: `EUR`, memo: `Weekly groceries` }
+
+/** A screen of the README: where it is, when it has loaded, and what it must show. */
+interface Screen {
+  name: string
+  path(seeded: Seeded): string
+  ready(page: Page): Locator
+  /** Throws when the screen does not show what the README says it shows. */
+  check(page: Page): Promise<void>
+  /** Where the crop ends, in CSS pixels, when not after everything in `main`. */
+  end?(page: Page): Promise<number>
+  /** What `check` names that must also end inside that crop, when `end` cuts the screen short. */
+  inside?(page: Page): Locator[]
 }
 
-/** The frame's backdrop behind each still, per theme. */
-const BACKDROP: Record<Theme, string> = {
-  light: "linear-gradient(135deg, #eef1f5 0%, #d9dee7 100%)",
-  dark: "linear-gradient(135deg, #1b1f27 0%, #0d0f14 100%)",
+/** Throws unless `locator` is on the screen. */
+async function expectVisible(locator: Locator, what: string): Promise<void> {
+  if (!await locator.first().isVisible()) throw new Error(`the screen does not show ${what}`)
 }
 
-function newContext(browser: Browser, theme: Theme, scale: number): Promise<BrowserContext> {
-  return browser.newContext({
-    baseURL: BASE_URL,
-    viewport: VIEWPORT,
-    deviceScaleFactor: scale,
-    colorScheme: theme,
-    locale: "en-US",
-    timezoneId: "Etc/UTC",
+const SCREENS: Screen[] = [
+  {
+    // The README's hero: every currency, one total.
+    name: `accounts`,
+    path: () => `/accounts`,
+    ready: (page) => page.locator(`[data-e2e=accounts-total-amount]`),
+    async check(page) {
+      await expectTexts(page.locator(`main`), [
+        `Bangkok account`,
+        `THB 104,750.00`,
+        `London account`,
+        `£1,840.00`,
+        `Salary account`,
+        `€5,965.80`,
+        `Dollar savings`,
+        `US$12,500.00`,
+      ])
+      await expectVisible(page.locator(`[data-e2e=accounts-total-amount]`), `the total`)
+      await expectVisible(page.locator(`[data-e2e=accounts-total-rates]`), `the rates date`)
+      await expectVisible(page.locator(`[data-e2e=rail-shell-rail]`), `the rail`)
+    },
+  },
+  {
+    name: `transactions`,
+    path: () => `/transactions`,
+    // Grace's name comes with the members, and the transfer with the transfers, after the rows.
+    ready: (page) => page.locator(`[data-e2e=transaction-meta]`, { hasText: `Grace` }),
+    // A baht payment with both amounts, the transfer, and entries by two members.
+    async check(page) {
+      await page.getByText(`Money for Bangkok`).waitFor({ timeout: 15_000 })
+      await expectTexts(page.locator(`main`), [
+        `Hotel in Bangkok`,
+        `THB 1,850.00`,
+        `€49.20`,
+        `Money for Bangkok`,
+        GRACE_ENTRY.memo,
+        `Grace`,
+        `You`,
+      ])
+    },
+    // The list is taller than the window: the crop ends after the last row that fits.
+    end: (page) => lastFitting(page.locator(`main li`)),
+    inside: (page) =>
+      [`Hotel in Bangkok`, `Money for Bangkok`, GRACE_ENTRY.memo].map((text) =>
+        page.locator(`main li`).filter({ hasText: text }).first()
+      ),
+  },
+  {
+    name: `budgets`,
+    path: () => `/budgets`,
+    ready: (page) => page.locator(`[data-e2e=budgets-list]`),
+    check: (page) =>
+      expectTexts(page.locator(`[data-e2e=budgets-list]`), [`Groceries`, `Rent`, `Travel`]),
+  },
+  {
+    name: `overview`,
+    path: (seeded) => `/overview/${seeded.householdId}`,
+    ready: (page) => page.locator(`[data-e2e="overview-widget-money.spending"]`),
+    async check(page) {
+      await expectTexts(page.locator(`main`), [`Net`, `Income`, `Spending`])
+      await expectVisible(page.locator(`[data-e2e=overview-range]`), `the range picker`)
+    },
+    // The three key numbers and the range picker above them; the chart below stays out.
+    end: (page) => bottomOf(page.locator(`[data-e2e="overview-widget-money.spending"]`)),
+  },
+]
+
+/** The bottom of the lowest of `rows` that ends inside the window, margin included. */
+async function lastFitting(rows: Locator): Promise<number> {
+  const limit = VIEWPORT.height - MARGIN
+  const bottoms = await rows.evaluateAll((elements) =>
+    elements.map((element) => element.getBoundingClientRect().bottom)
+  )
+  const fitting = bottoms.filter((bottom) => bottom <= limit)
+  if (!fitting.length) throw new Error(`no row ends inside the window`)
+  return Math.max(...fitting)
+}
+
+/**
+ * Opens a 1280×800 page signed in as Ada in the sample household, with the clock fixed, ready for
+ * a picture: Financy's rail without Seed's example screens, and no focus ring on the heading the
+ * app focuses after each navigation.
+ */
+async function openDesktop(
+  browser: Browser,
+  contexts: BrowserContext[],
+  seeded: Seeded,
+  theme: Theme,
+  device: { deviceScaleFactor: number; recordVideo?: { dir: string; size: typeof VIEWPORT } },
+): Promise<Page> {
+  const page = await openPage(browser, contexts, seeded, {
+    theme,
+    state: seeded.appState,
+    baseURL: APP,
+    device: { viewport: VIEWPORT, isMobile: false, hasTouch: false, ...device },
   })
-}
-
-/** Deletes the demo user, if there is one, through the development route. */
-async function deleteDemoUser(browser: Browser): Promise<void> {
-  const context = await newContext(browser, "light", 1)
-  try {
-    const cleanup = await context.request.post("/api/test/cleanup-user", {
-      data: { login: DEMO.email },
-    })
-    if (!cleanup.ok()) throw new Error(`cleanup-user answered ${cleanup.status()}`)
-  } finally {
-    await context.close()
-  }
+  const context = page.context()
+  // Financy runs without the example (`SPA_NOTES=false`), but the development server answers
+  // with the committed `apps/spa/public/config.json`, which keeps it on.
+  await context.route(
+    `${APP}/config.json*`,
+    (route) => route.fulfill({ json: { env: `dev`, notes: `false` } }),
+  )
+  await context.addInitScript(() => {
+    addEventListener(`focusin`, (event) => {
+      const target = event.target
+      if (target instanceof HTMLElement && /^H[1-6]$/.test(target.tagName)) target.blur()
+    }, true)
+  })
+  await selectGroup(page, seeded.householdId)
+  return page
 }
 
 /**
- * Deletes the demo user a previous run left, and waits for the first load of both signed-out
- * pages, which is slow while the dev server bundles dependencies.
+ * The bottom of `scope`'s lowest visible innermost element, in CSS pixels from the window's top.
+ * Innermost, because a wrapper such as `main` stretches to the window's height.
  */
-async function warmUp(browser: Browser): Promise<void> {
-  await deleteDemoUser(browser)
-  const context = await newContext(browser, "light", 1)
+function bottomOf(scope: Locator): Promise<number> {
+  return scope.evaluate((element) =>
+    Math.max(
+      ...[element, ...element.querySelectorAll(`*`)]
+        .filter((child) => child.childElementCount === 0 && child.checkVisibility())
+        .map((child) => child.getBoundingClientRect().bottom),
+    )
+  )
+}
+
+/**
+ * Photographs `screen` at device scale 2, from the window's top to its content's end. Throws when
+ * the content does not fit the 800 px window, so a taller screen never loses its end.
+ */
+async function capture(
+  browser: Browser,
+  contexts: BrowserContext[],
+  seeded: Seeded,
+  screen: Screen,
+  theme: Theme,
+): Promise<{ png: Uint8Array; height: number }> {
+  const page = await openDesktop(browser, contexts, seeded, theme, { deviceScaleFactor: 2 })
   try {
-    const page = await context.newPage()
-    const pages = [["/sign-in", "Welcome back"], ["/sign-up", "Create your account"]]
-    for (const [path, name] of pages) {
-      await page.goto(path)
-      await page.getByRole("heading", { level: 1, name }).waitFor({ timeout: 120_000 })
+    await gotoApp(page, screen.path(seeded), screen.ready(page))
+    await expectRates(page)
+    await screen.check(page)
+    await settle(page)
+    const end = await (screen.end?.(page) ?? bottomOf(page.locator(`main`)))
+    const height = Math.ceil(end) + MARGIN
+    if (height > VIEWPORT.height) {
+      throw new Error(`${screen.name}: its content ends at ${height} px, below the window`)
     }
+    for (const part of screen.inside?.(page) ?? []) {
+      const box = await part.boundingBox()
+      if (!box || box.y + box.height > end) {
+        throw new Error(`${screen.name}: ${part} ends below the picture's crop`)
+      }
+    }
+    const png = await page.screenshot({
+      clip: { x: 0, y: 0, width: VIEWPORT.width, height },
+      animations: `disabled`,
+      caret: `hide`,
+    })
+    return { png, height }
   } finally {
-    await context.close()
+    await page.context().close()
   }
 }
 
-/** Raw 2x viewport captures of the sign-in and profile pages in one theme. */
-async function captureStills(browser: Browser, theme: Theme): Promise<Record<string, Uint8Array>> {
-  const context = await newContext(browser, theme, 2)
-  try {
-    const page = await context.newPage()
-    // The sign-in page is taller than the 800 px viewport, so it is shot on a larger one of the
-    // same 16:10 shape: the whole card, the guest offer and the sign-up link, with room below.
-    await page.setViewportSize(SIGN_IN_VIEWPORT)
-    await page.goto("/sign-in")
-    await page.getByRole("heading", { level: 1, name: "Welcome back" }).waitFor()
-    await page.getByText("Create an account", { exact: true }).waitFor()
-    await page.waitForTimeout(500)
-    const signIn = await page.screenshot()
-    await page.setViewportSize(VIEWPORT)
-    await page.locator("[data-e2e=auth-form-login]").fill(DEMO.email)
-    await page.locator("[data-e2e=auth-form-password]").fill(DEMO.password)
-    await page.locator("[data-e2e=auth-form-submit]").click()
-    await notesLoaded(page)
-    await page.locator("[data-e2e=account-menu-button]").click()
-    await page.locator("[data-e2e=account-menu-header]").click()
-    await page.locator("[data-e2e=profile-name]", {
-      hasText: `${DEMO.firstName} ${DEMO.lastName}`,
-    }).waitFor()
-    await profileLoaded(page, DEMO.email)
-    await page.waitForTimeout(800)
-    const profile = await page.screenshot()
-    return { "sign-in": signIn, profile }
-  } finally {
-    await context.close()
-  }
-}
-
-function dataUrl(bytes: Uint8Array, type = "image/png"): string {
-  let binary = ""
+function dataUrl(bytes: Uint8Array): string {
+  let binary = ``
   for (const byte of bytes) binary += String.fromCharCode(byte)
-  return `data:${type};base64,${btoa(binary)}`
+  return `data:image/png;base64,${btoa(binary)}`
 }
 
-/** Puts a capture in a rounded window on a neutral backdrop, 16:10 at 2x like the capture. */
-async function frame(browser: Browser, theme: Theme, png: Uint8Array): Promise<Uint8Array> {
-  const context = await newContext(browser, theme, 2)
+/** Rounds a still's corners on a transparent background, at the still's own 2x size. */
+async function rounded(browser: Browser, png: Uint8Array, height: number): Promise<Uint8Array> {
+  const context = await browser.newContext({
+    viewport: { width: VIEWPORT.width, height },
+    deviceScaleFactor: 2,
+  })
   try {
     const page = await context.newPage()
-    await page.setContent(`<!doctype html><html><body style="margin:0;width:1280px;height:800px;
-      display:grid;place-items:center;background:${BACKDROP[theme]}">
-      <img src="${dataUrl(png)}" style="width:1152px;height:720px;border-radius:12px;
-      box-shadow:0 24px 60px rgba(0,0,0,.28),0 0 0 1px rgba(127,127,127,.25)"></body></html>`)
-    await page.locator("img").evaluate((img: HTMLImageElement) => img.decode())
-    return await page.screenshot()
+    await page.setContent(`<!doctype html><body style="margin:0;background:transparent">
+      <img src="${dataUrl(png)}" style="display:block;width:${VIEWPORT.width}px;height:${height}px;
+      border-radius:12px"></body>`)
+    await page.locator(`img`).evaluate((img: HTMLImageElement) => img.decode())
+    return await page.screenshot({ omitBackground: true })
   } finally {
     await context.close()
   }
 }
 
-/** The website's typefaces, which the social preview embeds so it does not depend on the host. */
-const FONTS = new URL("../../apps/mpa/static/fonts/", import.meta.url)
+/** Writes a still's PNG and its two WebPs, and answers the PNG's path. */
+async function writeStill(name: string, png: Uint8Array, dir: string): Promise<string> {
+  const raw = `${dir}/${name}.png`
+  const target = `${OUT_DIR}${name}-2560.png`
+  await Deno.writeFile(raw, png)
+  await run(`magick`, [raw, `-strip`, `-define`, `png:compression-level=9`, target])
+  for (const width of [1280, 2560]) {
+    const webp = `${OUT_DIR}${name}-${width}.webp`
+    if (!await encodeWebp(target, webp, width, BUDGET.webp)) {
+      throw new Error(`${webp} stays above ${BUDGET.webp} bytes at quality 50`)
+    }
+  }
+  return target
+}
 
-/**
- * The 1280x640 image GitHub shows when the repository link is shared. It copies the website's
- * home card (`apps/mpa/screenshots/og.html`, `apps/mpa/static/og/home.png`): the same words,
- * typefaces, colours and sprout lockup, with the dark profile capture in place of the notes one.
- */
-async function socialPreview(browser: Browser, profile: Uint8Array): Promise<Uint8Array> {
-  const sans = dataUrl(await Deno.readFile(new URL("geist-sans.var.woff2", FONTS)), "font/woff2")
-  const mono = dataUrl(await Deno.readFile(new URL("geist-mono.var.woff2", FONTS)), "font/woff2")
-  const context = await browser.newContext({ viewport: { width: 1280, height: 640 } })
+/** The social preview: the website's home card, at GitHub's size, with the dark Accounts still. */
+async function socialPreview(browser: Browser, accounts: string, dir: string): Promise<void> {
+  const home = OG_CARDS.find((card) => card.file === `home`)
+  if (!home) throw new Error(`capture.ts has no home card`)
+  const context = await cardContext(browser, { width: 1280, height: 640 }, {
+    "/static/readme-accounts.png": accounts,
+  })
   try {
-    const page = await context.newPage()
-    await page.setContent(`<!doctype html><html lang="en"><head><style>
-      @font-face { font-family: "Geist"; src: url("${sans}") format("woff2"); font-weight: 100 900 }
-      @font-face {
-        font-family: "Geist Mono"; src: url("${mono}") format("woff2"); font-weight: 100 900
-      }
-      * { box-sizing: border-box; margin: 0 }
-      body {
-        position: relative; width: 1280px; height: 640px; overflow: hidden; background: #0a0a0c;
-        color: #f4f4f6; font-family: "Geist", sans-serif;
-      }
-      .grid {
-        position: absolute; inset: 0; background-size: 48px 48px;
-        background-image: linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px);
-        mask-image: radial-gradient(ellipse at 70% 20%, #000 20%, transparent 80%);
-      }
-      .glow {
-        position: absolute; top: -260px; right: -200px; width: 760px; height: 620px;
-        background: radial-gradient(closest-side, rgba(139,92,246,.42), transparent);
-      }
-      .shot {
-        position: absolute; top: 96px; left: 760px; width: 560px; height: 410px;
-        border-radius: 14px; border: 1px solid rgba(255,255,255,.12); overflow: hidden;
-        box-shadow: 0 30px 80px rgba(0,0,0,.6);
-      }
-      .shot img { display: block; width: 900px; height: auto }
-      .copy { position: absolute; left: 72px; top: 96px; width: 600px }
-      .eyebrow {
-        font-family: "Geist Mono", monospace; font-size: 20px; letter-spacing: .12em;
-        text-transform: uppercase; color: #a78bfa;
-      }
-      h1 { margin-top: 28px; font-size: 60px; line-height: 1.06; font-weight: 650; letter-spacing: -.03em }
-      .sub { margin-top: 28px; font-size: 26px; line-height: 1.35; color: #a1a1aa }
-      footer {
-        position: absolute; left: 72px; right: 72px; bottom: 60px; display: flex;
-        align-items: center; justify-content: space-between;
-      }
-      .brand {
-        display: flex; align-items: center; gap: 14px; font-size: 32px; font-weight: 650;
-        letter-spacing: -.02em;
-      }
-      .domain { font-family: "Geist Mono", monospace; font-size: 22px; color: #a1a1aa }
-      </style></head><body>
-      <div class="grid"></div><div class="glow"></div>
-      <div class="shot"><img src="${dataUrl(profile)}" alt=""></div>
-      <div class="copy">
-        <p class="eyebrow">Open-source SaaS foundation</p>
-        <h1>The groundwork of your SaaS, already built.</h1>
-        <p class="sub">Seed · open source · MIT · one server you rent</p>
-      </div>
-      <footer>
-        <span class="brand"><svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true">
-          <path d="M16 29V15" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round" />
-          <path d="M16 17C16 10 11 6 4 6c0 7 5 11 12 11Z" fill="#4ade80" />
-          <path d="M16 14c0-6 4.5-10 12-10 0 6.5-4.5 10-12 10Z" fill="#a78bfa" />
-        </svg>Seed</span>
-        <span class="domain">seedsaas.com</span>
-      </footer></body></html>`)
-    await page.locator("img").evaluate((img: HTMLImageElement) => img.decode())
-    await page.evaluate(() => document.fonts.ready)
-    return await page.screenshot()
+    const target = `${OUT_DIR}social-preview-1280.png`
+    const card = { ...home, shot: `readme-accounts.png`, top: 0, left: 175, width: 785 }
+    const size = await shootCard(context, card, `${dir}/social-card-master.png`, target)
+    if (size > 1024 * 1024) throw new Error(`${target} is over GitHub's 1 MB`)
   } finally {
     await context.close()
   }
 }
 
-/** The text of the newest mail the dev worker sent to `email`, from the development route. */
-async function lastMailText(page: Page, email: string): Promise<string | null> {
-  const response = await page.request.post("/api/test/last-mail", { data: { email } })
-  return response.ok() ? (await response.json() as { text: string }).text : null
-}
-
-/** Waits for a mail to `email` other than `before` and answers the code in it. */
-async function nextCode(page: Page, email: string, before: string | null): Promise<string> {
-  for (let attempt = 0; attempt < 40; attempt++) {
-    const text = await lastMailText(page, email)
-    if (text && text !== before) return text.split("\n\n")[1].trim()
-    await page.waitForTimeout(500)
-  }
-  throw new Error(`no sign-up code reached ${email} within 20 seconds`)
-}
-
-/** What `recordFlow` hands to `toGif`: the video and the parts of it to leave out. */
+/** What `recordGif` hands to `toGif`, in seconds from the video's start. */
 interface Recording {
   video: string
-  /** Seconds of blank start to trim. */
-  trim: number
-  /** Seconds into the video, from its start, between which the notes page was still loading. */
-  loading: [number, number]
+  /** Where the GIF starts: Transactions at rest. */
+  start: number
+  /** The stretch left out: from saving until the "Transaction added" toast has gone. */
+  cut: [number, number]
+  /** Where the GIF's hold on the new row ends. */
+  end: number
 }
 
 /**
- * Waits until the notes page, where a new account lands, shows what it loads: the group and the
- * first-steps checklist.
+ * Records adding a baht expense the way a person does: T opens the editor, the drawn pointer picks
+ * the account and the category, the amount and a memo are typed, Enter saves.
  */
-async function notesLoaded(page: Page): Promise<void> {
-  await page.waitForURL(`${BASE_URL}/notes`)
-  await page.getByRole("button", { name: /^Group: / }).waitFor()
-  await page.locator("[data-e2e=onboarding]").waitFor()
-}
-
-/** Waits until the profile shows everything it loads: the group and the e-mail. */
-async function profileLoaded(page: Page, email: string): Promise<void> {
-  await page.waitForURL(/\/profile/)
-  await page.getByRole("button", { name: /^Group: / }).waitFor()
-  await page.getByText(email, { exact: true }).filter({ visible: true }).first().waitFor()
-}
-
-/**
- * Records sign-up with an address, a password and the mailed code, the notes page the new account
- * lands on, then naming the profile from the account menu, the way a person does it, with a drawn
- * pointer.
- * The GIF is recorded in the light theme; the stills cover both.
- * Returns the WebM path, how many seconds of blank start to trim, and when the notes page loaded.
- */
-async function recordFlow(browser: Browser, dir: string): Promise<Recording> {
-  const context = await browser.newContext({
-    baseURL: BASE_URL,
-    viewport: VIEWPORT,
-    colorScheme: "light",
-    locale: "en-US",
-    timezoneId: "Etc/UTC",
+async function recordGif(
+  browser: Browser,
+  contexts: BrowserContext[],
+  seeded: Seeded,
+  dir: string,
+): Promise<Recording> {
+  // Right of the list and above the toast, which stops its timer while the pointer is over it.
+  const rest = { x: 1170, y: 400 }
+  const page = await openDesktop(browser, contexts, seeded, `dark`, {
+    deviceScaleFactor: 1,
     recordVideo: { dir, size: VIEWPORT },
   })
-  const pointer = { x: 900, y: 620 }
-  let page: Page | undefined
-  let trim = 0
-  let loading: [number, number] = [0, 0]
+  // The video starts with the page: its clock is near enough to this one.
+  const started = Date.now()
+  const now = () => (Date.now() - started) / 1000
+  const pointer: Point = { ...rest }
+  let recording: Omit<Recording, `video`>
   try {
-    await context.addInitScript(`window.__demoPointerStart = ${JSON.stringify(pointer)}`)
-    await context.addInitScript({ path: new URL("pointer.js", import.meta.url).pathname })
-    // The video starts when the page is made, so the clock does too: the trim then cuts the
-    // whole first load, "Loading…" included.
-    const started = Date.now()
-    page = await context.newPage()
-    await page.goto("/sign-up")
-    await page.getByRole("heading", { level: 1, name: "Create your account" }).waitFor()
-    await page.mouse.move(pointer.x, pointer.y)
-    trim = (Date.now() - started) / 1000
-    await page.waitForTimeout(900)
-
-    const h = VIEWPORT.height
-    await typeLike(page, pointer, page.locator("[data-e2e=auth-form-login]"), DEMO.email, h)
+    const context = page.context()
+    await context.addInitScript(`globalThis.__demoPointerOptions = ${JSON.stringify(rest)}`)
+    await context.addInitScript({ path: `${RECIPE}pointer.js` })
+    await context.addInitScript({ path: `${RECIPE}keys.js` })
+    await gotoApp(page, `/transactions`, page.getByText(`Hotel in Bangkok`))
+    await expectRates(page)
+    await settle(page)
+    await page.mouse.move(rest.x, rest.y)
     await page.waitForTimeout(300)
-    await typeLike(page, pointer, page.locator("[data-e2e=auth-form-password]"), DEMO.password, h)
-    await page.waitForTimeout(500)
-    const before = await lastMailText(page, DEMO.email)
-    await clickLike(page, pointer, page.locator("[data-e2e=auth-form-submit]"), h)
-    const codeInput = page.locator("[data-e2e=mailed-code-step-code]")
-    await codeInput.waitFor()
-    const code = await nextCode(page, DEMO.email, before)
-    await page.waitForTimeout(600)
-    await typeLike(page, pointer, codeInput, code, h)
-    await page.waitForTimeout(400)
-    await clickLike(page, pointer, page.locator("[data-e2e=mailed-code-step-submit]"), h)
-    // From the click until the notes page has loaded, the page shows parts of it (the group chip
-    // as a bare chevron, no checklist yet); the GIF leaves that stretch out.
-    const clicked = (Date.now() - started) / 1000
-    await notesLoaded(page)
-    // A moment for the last paint to reach the video.
-    await page.waitForTimeout(300)
-    loading = [clicked + 0.1, (Date.now() - started) / 1000]
+    const start = now()
     await page.waitForTimeout(1200)
 
-    // The account menu's header opens the profile, where the person names themselves.
-    await clickLike(page, pointer, page.locator("[data-e2e=account-menu-button]"), h)
-    await page.waitForTimeout(500)
-    await clickLike(page, pointer, page.locator("[data-e2e=account-menu-header]"), h)
-    await profileLoaded(page, DEMO.email)
-    const edit = page.locator("[data-e2e=profile-edit]")
-    await page.waitForTimeout(800)
-
-    await clickLike(page, pointer, edit, h)
-    await page.locator("[data-e2e=profile-first-name]").waitFor()
-    await page.waitForTimeout(400)
-    await typeLike(page, pointer, page.locator("[data-e2e=profile-first-name]"), DEMO.firstName, h)
+    await page.keyboard.press(`t`)
+    const amount = page.locator(`[data-e2e=transaction-amount-field] input[type=text]`)
+    await amount.waitFor()
     await page.waitForTimeout(300)
-    await typeLike(page, pointer, page.locator("[data-e2e=profile-last-name]"), DEMO.lastName, h)
+    // A native list draws outside the page, where no recording sees it: the pointer goes to the
+    // field and the choice lands in it.
+    for (const [field, label] of [[`account`, `Bangkok account · THB`], [`category`, `Travel`]]) {
+      const select = page.locator(`select[data-e2e=transaction-${field}]`)
+      const box = await select.boundingBox()
+      if (!box) throw new Error(`the editor has no ${field} field`)
+      await moveLike(page, pointer, { x: box.x + box.width / 2, y: box.y + box.height / 2 })
+      await page.waitForTimeout(150)
+      await select.selectOption({ label })
+      await page.waitForTimeout(300)
+    }
+    // The editor keeps the last entry's currency, so the person picks baht as well.
+    const currency = page.locator(`[data-e2e=transaction-currency-field] input`)
+    await clickLike(page, pointer, currency)
+    await currency.selectText()
+    await page.keyboard.type(`THB`, { delay: 110 })
+    await page.keyboard.press(`Enter`)
+    // The amount is in the account's own currency: no second amount to convert.
+    await page.locator(`[data-e2e=transaction-amount-field]`, { hasText: `THB` }).waitFor({
+      timeout: 10_000,
+    })
+    await page.locator(`[data-e2e=transaction-account-amount-field]`).waitFor({
+      state: `detached`,
+      timeout: 10_000,
+    })
+    await page.waitForTimeout(200)
+    await clickLike(page, pointer, amount)
+    await amount.selectText()
+    await page.keyboard.type(`450`, { delay: 130 })
+    await page.waitForTimeout(250)
+    const memo = page.locator(`input[data-e2e=transaction-memo]`)
+    await clickLike(page, pointer, memo)
+    await page.keyboard.type(`Street food`, { delay: 70 })
+    if (await memo.inputValue() !== `Street food`) throw new Error(`the memo did not take its text`)
     await page.waitForTimeout(400)
-    await clickLike(page, pointer, page.locator("[data-e2e=profile-save]"), h)
-    await page.locator("[data-e2e=profile-saved]").getByText("Profile saved", { exact: true }).waitFor()
+
+    const saved = now()
+    await page.keyboard.press(`Enter`)
+    const row = page.locator(`li[data-e2e^=transaction-]`).first()
+    await row.filter({ hasText: `Street food` }).filter({ hasText: `THB 450.00` }).waitFor()
+    // The pointer leaves the list, where it would light up a row, while the cut hides it.
+    await page.mouse.move(rest.x, rest.y)
+    await page.locator(`[data-e2e=toasts] > *`).first().waitFor({
+      state: `detached`,
+      timeout: 30_000,
+    })
+    const back = now() + 0.2
     await page.waitForTimeout(1800)
+    recording = { start, cut: [saved, back], end: now() }
   } finally {
-    await context.close()
+    await page.context().close()
   }
-  const video = await page?.video()?.path()
-  if (!video) throw new Error("the recording context produced no video")
-  return { video, trim, loading }
+  const video = await page.video()?.path()
+  if (!video) throw new Error(`the recording context produced no video`)
+  return { video, ...recording }
 }
 
 /**
- * Converts the recording to a GIF from `trim` on, without the frames between `loading`'s two
- * moments. The timestamps count from the video's start, which is when the page was created.
+ * Converts the recording to a 12 fps GIF from `start` to `end` without the cut, ending in a fade
+ * into its first frame, so it loops without a jump. Fewer colours are tried until it fits.
  */
-async function toGif({ video, trim, loading: [from, to] }: Recording, out: string): Promise<void> {
-  const filter = `fps=20,select='not(between(t,${from.toFixed(2)},${to.toFixed(2)}))',` +
-    "setpts=N/20/TB,scale=800:-1:flags=lanczos,split[a][b];" +
-    "[a]palettegen=max_colors=256:stats_mode=diff[p];" +
-    "[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle"
-  const { success, stderr } = await new Deno.Command("ffmpeg", {
-    args: [
-      "-y",
-      "-loglevel",
-      "error",
-      "-i",
-      video,
-      "-ss",
-      trim.toFixed(2),
-      "-vf",
-      filter,
-      "-loop",
-      "0",
-      out,
-    ],
-    stdout: "null",
-  }).output()
-  if (!success) throw new Error(`ffmpeg failed: ${new TextDecoder().decode(stderr)}`)
+async function toGif({ video, start, cut: [from, to], end }: Recording, dir: string) {
+  const out = `${OUT_DIR}add-transaction-dark-1280.gif`
+  const first = `${dir}/first.png`
+  const seek = [`-y`, `-loglevel`, `error`, `-ss`, start.toFixed(2), `-i`, video]
+  await run(`ffmpeg`, [...seek, `-frames:v`, `1`, first])
+  const length = end - start - (to - from)
+  for (const colors of [256, 192, 128, 96]) {
+    const graph = [
+      `[0:v]fps=${FPS},select='not(between(t,${(from - start).toFixed(2)},${
+        (to - start).toFixed(2)
+      }))',setpts=N/${FPS}/TB,trim=duration=${length.toFixed(2)},format=rgb24[main]`,
+      `[1:v]fps=${FPS},trim=duration=${FADE + HOLD},setpts=PTS-STARTPTS,format=rgb24[first]`,
+      `[main][first]xfade=transition=fade:duration=${FADE}:offset=${
+        (length - FADE).toFixed(2)
+      },split[a][b]`,
+      `[a]palettegen=max_colors=${colors}:stats_mode=diff[p]`,
+      `[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle`,
+    ].join(`;`)
+    await run(`ffmpeg`, [
+      ...seek,
+      ...[`-loop`, `1`, `-t`, String(FADE + HOLD + 0.5), `-i`, first],
+      ...[`-filter_complex`, graph, `-loop`, `0`, out],
+    ])
+    const { size } = await Deno.stat(out)
+    console.log(`${out}: ${(length + HOLD).toFixed(1)} s, ${colors} colours, ${size} B`)
+    if (size <= BUDGET.gif) return
+  }
+  throw new Error(`${out} stays above ${BUDGET.gif} bytes`)
 }
 
-const browser = await chromium.launch({ executablePath: Deno.env.get("CHROME_PATH") || undefined })
-const videoDir = await Deno.makeTempDir()
-try {
-  await warmUp(browser)
-  await toGif(await recordFlow(browser, videoDir), `${OUT_DIR}sign-up-flow.gif`)
-  let darkProfile: Uint8Array | undefined
-  for (const theme of THEMES) {
-    const stills = await captureStills(browser, theme)
-    for (const [name, png] of Object.entries(stills)) {
-      await Deno.writeFile(`${OUT_DIR}${name}-${theme}.png`, await frame(browser, theme, png))
-    }
-    if (theme === "dark") darkProfile = stills.profile
-  }
-  if (!darkProfile) throw new Error("no dark profile capture")
-  await Deno.writeFile(`${OUT_DIR}social-preview.png`, await socialPreview(browser, darkProfile))
-} finally {
+async function main(): Promise<void> {
+  await Deno.mkdir(CACHE, { recursive: true })
+  const browser = await chromium.launch({
+    executablePath: Deno.env.get(`CHROME_PATH`) || undefined,
+  })
+  const contexts: BrowserContext[] = []
+  const dir = await Deno.makeTempDir({ prefix: `readme-pictures-` })
   try {
-    await deleteDemoUser(browser)
+    const adaContext = await browser.newContext({ baseURL: APP })
+    contexts.push(adaContext)
+    const ada = await adaContext.newPage()
+    await cleanupPeople(ada)
+    try {
+      const seeded = await seed(browser, contexts, ada)
+      // Grace, not Ada, did the weekly shop: the list shows two members with the website's totals
+      // and the same number of rows, all of which a 1280×800 window fits with the transfer.
+      await operation(seeded.grace, seeded.graceId, `transaction.delete`, {
+        groupId: seeded.householdId,
+        id: seeded.entryIds[GRACE_ENTRY.memo],
+        version: 1,
+      })
+      await operation(seeded.grace, seeded.graceId, `transaction.create`, {
+        id: uuidV7(),
+        groupId: seeded.householdId,
+        accountId: seeded.salaryId,
+        categoryId: seeded.groceriesId,
+        kind: 1,
+        ...GRACE_ENTRY,
+      })
+      let accountsDark = ``
+      for (const theme of THEMES) {
+        for (const screen of SCREENS) {
+          const { png, height } = await capture(browser, contexts, seeded, screen, theme)
+          const name = `${screen.name}-${theme}`
+          const path = await writeStill(name, await rounded(browser, png, height), dir)
+          if (name === `accounts-dark`) accountsDark = path
+          console.log(`captured ${name}`)
+        }
+      }
+      await socialPreview(browser, accountsDark, dir)
+      await toGif(await recordGif(browser, contexts, seeded, dir), dir)
+    } finally {
+      await cleanupPeople(ada)
+    }
   } finally {
+    for (const context of contexts) await context.close().catch(() => {})
     await browser.close()
-    await Deno.remove(videoDir, { recursive: true })
+    await Deno.remove(dir, { recursive: true })
   }
+  console.log(`Done: ${OUT_DIR}`)
 }
+
+if (import.meta.main) await main()
