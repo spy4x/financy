@@ -637,7 +637,7 @@ export default {
   "Alternative.all": "すべての比較",
   "AlternativeYnab.title": "複数通貨対応の YNAB 代替アプリ",
   "AlternativeYnab.description":
-    "YNAB は 1 つの予算計画につき通貨が 1 つです。Financy なら、世帯で使うすべての通貨の合計を、自分で運用するサーバーで確認できます。",
+    "YNAB は 1 つの予算計画につき通貨が 1 つです。Financy なら、どの通貨の口座も管理でき、為替レートのある通貨を合計します。",
   "AlternativeYnab.h1": "複数通貨に対応した YNAB 代替アプリ",
   "AlternativeYnab.answer":
     "1 つの通貨で予算を立てていて、お使いの銀行が直接取り込みに対応しているなら、YNAB のままがおすすめです。世帯のお金が複数の通貨にまたがっていて、合計を 1 つにまとめて見たいなら、Financy を選んでください。",
@@ -659,32 +659,32 @@ export default {
   "AlternativeYnab.method":
     "YNAB についての事実は、すべて YNAB 自身のウェブサイトから取り、各行にリンクしています。Financy の行には、今日アプリで動くものだけを載せています。各行は 3 か月ごとに確認し直し、日付はそのときだけ変えます。古くなった情報を見つけたら、<mail>{email}</mail> までお知らせください。",
   "AlternativeYnab.fit":
-    "Financy には銀行との自動同期も袋分け予算の機能もなく、銀行の明細の取り込みにもまだ対応していません。",
+    "Financy にはまだ、銀行との自動同期も袋分け予算の機能も、銀行の明細を取り込む画面もありません。",
   "AlternativeYnab.better":
     "1 つの通貨で予算を立てるなら、<ynab>YNAB</ynab> のままがおすすめです。自分でホストできる無料の袋分け予算アプリなら、<actual>Actual Budget</actual> を検討してください。Financy に近い形のオープンソースアプリなら、いちばん近いのは <sure>Sure</sure> です。こちらも AGPL-3.0 で、Docker でセルフホストします。",
   "AlternativeYnab.moving":
-    "Financy はまだ YNAB からエクスポートしたデータをアプリで取り込めないため、現時点では履歴を移せません。履歴が大切な場合は、当面 YNAB を使い続けてください。",
+    "Financy のアプリには、YNAB からエクスポートしたデータを取り込む画面がまだないため、現時点ではアプリから履歴を移せません。履歴が大切な場合は、当面 YNAB を使い続けてください。",
   "AlternativeYnab.currenciesQuestion": "YNAB は複数通貨に対応していますか？",
   "AlternativeYnab.currenciesAnswer":
-    "1 つの予算計画の中では対応していません。YNAB の料金ページには、1 つの支出計画で複数の通貨を一緒に使うことはできないと書かれており、ヘルプでは通貨ごとに別々の予算を作ることをすすめています。Financy なら、口座ごとにそれぞれの通貨で管理し、合計を 1 つにまとめて表示します。",
+    "1 つの予算計画の中では対応していません。YNAB の料金ページには、1 つの支出計画で複数の通貨を一緒に使うことはできないと書かれており、ヘルプでは通貨ごとに別々の予算を作ることをすすめています。Financy なら、口座ごとにそれぞれの通貨で管理し、為替レートのある通貨を 1 つの合計にまとめて表示します。為替レートのない通貨があれば、その通貨名を表示します。",
   "AlternativeYnab.householdQuestion": "YNAB Together のように、Financy を世帯で共有できますか？",
   "AlternativeYnab.householdAnswer":
     "はい。Financy では、世帯の全員が自分のログインとロールで入り、同じ口座を見られます。YNAB Together も、パスワードを共有せずに使えます。",
   "AlternativeYnab.dataQuestion": "YNAB のデータを Financy に移せますか？",
   "AlternativeYnab.dataAnswer":
-    "まだできません。現時点では、YNAB からエクスポートしたデータを Financy のアプリに取り込むことはできません。",
+    "アプリからはまだ移せません。Financy のアプリには、YNAB からエクスポートしたデータを取り込む画面が今のところありません。",
   "AlternativeYnab.costQuestion": "それぞれの料金は？",
   "AlternativeYnab.costAnswer":
     "YNAB は年 $109 で、該当する場合は別途税金がかかります。Financy は AGPL-3.0 のもと、セルフホストなら無料です。クラウド版は 1 世帯あたり年 $40 の予定で、まだ公開していません。",
   "AlternativeActual.title": "複数通貨対応の Actual Budget 代替アプリ",
   "AlternativeActual.description":
-    "Actual Budget はまだ複数通貨に対応していません。Financy なら、世帯で使うすべての通貨の合計を、自分で運用するサーバーで確認できます。",
+    "Actual Budget はまだ複数通貨に対応していません。Financy なら、どの通貨の口座も管理でき、為替レートのある通貨を合計します。",
   "AlternativeActual.h1": "複数通貨に対応した Actual Budget 代替アプリ",
   "AlternativeActual.answer":
     "袋分け予算や銀行との自動同期、サーバーなしで動くアプリを求めているなら、Actual Budget のままがおすすめです。世帯のお金が複数の通貨にまたがっていて、合計を 1 つにまとめて見たいなら、Financy を選んでください。",
   "AlternativeActual.rowCurrencies": "複数の通貨の口座",
   "AlternativeActual.rowCurrenciesNote":
-    "Actual Budget：実験的なオプションとして追加するドラフトのプルリクエストがあります。",
+    "Actual Budget：ドキュメントには、通貨対応に取り組んでいる人たちがいると書かれています。",
   "AlternativeActual.rowTotal": "1 つのメイン通貨に換算した合計",
   "AlternativeActual.rowTotalNote": "Actual Budget：ルールテンプレートを使った実験的な回避策です。",
   "AlternativeActual.rowLogins": "一人ひとりが自分のログインで入れる",
@@ -707,21 +707,21 @@ export default {
   "AlternativeActual.method":
     "Actual Budget についての事実は、すべて Actual Budget 自身のウェブサイト、ドキュメント、リポジトリから取り、各行にリンクしています。Financy の行には、今日アプリで動くものだけを載せています。各行は 3 か月ごとに確認し直し、日付はそのときだけ変えます。古くなった情報を見つけたら、<mail>{email}</mail> までお知らせください。",
   "AlternativeActual.fit":
-    "Financy には袋分け予算の機能も銀行との自動同期もなく、銀行の明細の取り込みにもまだ対応しておらず、動かすにはサーバーが必要です。",
+    "Financy にはまだ、袋分け予算の機能も銀行との自動同期も、銀行の明細を取り込む画面もありません。また、動かすにはサーバーが必要です。",
   "AlternativeActual.better":
     "1 つの通貨で袋分け予算を使うなら、<actual>Actual Budget</actual> のままがおすすめです。Financy に近い形のオープンソースアプリなら、いちばん近いのは <sure>Sure</sure> です。こちらも AGPL-3.0 で、Docker でセルフホストします。",
   "AlternativeActual.moving":
-    "Financy はまだ Actual Budget からエクスポートしたデータをアプリで取り込めないため、現時点では履歴を移せません。履歴が大切な場合は、当面 Actual Budget を使い続けてください。",
+    "Financy のアプリには、Actual Budget からエクスポートしたデータを取り込む画面がまだないため、現時点ではアプリから履歴を移せません。履歴が大切な場合は、当面 Actual Budget を使い続けてください。",
   "AlternativeActual.currenciesQuestion": "Actual Budget は複数通貨に対応していますか？",
   "AlternativeActual.currenciesAnswer":
-    "まだ対応していません。Actual Budget のドキュメントには、複数通貨には対応していないと書かれており、ルールテンプレートを使った実験的な回避策が紹介されています。通貨を実験的なオプションとして追加するドラフトのプルリクエストもあります。Financy なら、口座ごとにそれぞれの通貨で管理し、合計を 1 つにまとめて表示します。",
+    "まだ対応していません。Actual Budget のドキュメントには、複数通貨には対応していないこと、対応に取り組んでいる人たちがいることが書かれており、ルールテンプレートを使った実験的な回避策も紹介されています。Financy なら、口座ごとにそれぞれの通貨で管理し、為替レートのある通貨を 1 つの合計にまとめて表示します。為替レートのない通貨があれば、その通貨名を表示します。",
   "AlternativeActual.envelopesQuestion":
     "Financy は Actual Budget のような袋分け予算のアプリですか？",
   "AlternativeActual.envelopesAnswer":
     "いいえ。Financy のアプリには、今のところ袋分け予算の機能はありません。袋分け予算を使いたいなら、Actual Budget のままがおすすめです。",
   "AlternativeActual.dataQuestion": "Actual Budget のデータを Financy に移せますか？",
   "AlternativeActual.dataAnswer":
-    "まだできません。現時点では、Actual Budget からエクスポートしたデータを Financy のアプリに取り込むことはできません。",
+    "アプリからはまだ移せません。Financy のアプリには、Actual Budget からエクスポートしたデータを取り込む画面が今のところありません。",
   "AlternativeActual.costQuestion": "それぞれの料金は？",
   "AlternativeActual.costAnswer":
     "どちらもセルフホストなら無料です。Actual Budget は MIT ライセンス、Financy は AGPL-3.0 です。Financy のクラウド版は 1 世帯あたり年 $40 の予定で、まだ公開していません。",

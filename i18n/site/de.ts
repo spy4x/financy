@@ -657,7 +657,7 @@ export default {
   "Alternative.all": "Alle Vergleiche",
   "AlternativeYnab.title": "YNAB-Alternative für mehrere Währungen",
   "AlternativeYnab.description":
-    "Bei YNAB hat jeder Plan genau eine Währung. Financy rechnet alle Währungen deines Haushalts zusammen, auf deinem eigenen Server.",
+    "Bei YNAB hat jeder Plan genau eine Währung. Financy führt Konten in jeder Währung und summiert die, für die es einen Wechselkurs gibt.",
   "AlternativeYnab.h1": "Eine YNAB-Alternative für mehrere Währungen",
   "AlternativeYnab.answer":
     "Bleib bei YNAB, wenn du in einer Währung budgetierst und deine Bank mit dem Direktimport von YNAB funktioniert. Nimm Financy, wenn das Geld deines Haushalts in mehreren Währungen liegt und du eine Gesamtsumme sehen willst.",
@@ -679,33 +679,33 @@ export default {
   "AlternativeYnab.method":
     "Jede Aussage über YNAB stammt von der Website von YNAB und ist in ihrer Zeile verlinkt. Die Zeilen von Financy nennen nur, was heute in der App funktioniert. Wir prüfen jede Zeile alle drei Monate neu und ändern erst dann das Datum. Etwas ist veraltet? Schreib an <mail>{email}</mail>.",
   "AlternativeYnab.fit":
-    "Financy hat keine automatische Synchronisierung mit der Bank, keine Umschlagmethode und kann noch keine Kontoauszüge importieren.",
+    "Financy hat keine automatische Synchronisierung mit der Bank, keine Umschlagmethode und noch keine Ansicht zum Importieren von Kontoauszügen.",
   "AlternativeYnab.better":
     "Wenn du in einer Währung budgetierst, bleib bei <ynab>YNAB</ynab>. Für ein kostenloses Umschlagbudget, das du selbst hosten kannst, sieh dir <actual>Actual Budget</actual> an. Suchst du ein Open-Source-Tool, das wie Financy aufgebaut ist, kommt <sure>Sure</sure> am nächsten: ebenfalls AGPL-3.0 und mit Docker selbst gehostet.",
   "AlternativeYnab.moving":
-    "Financy kann einen Export aus YNAB noch nicht in der App importieren, du kannst deine Historie also heute nicht übernehmen. Wenn dir deine Historie wichtig ist, bleib vorerst bei YNAB.",
+    "Die App von Financy hat noch keine Ansicht zum Importieren eines YNAB-Exports, du kannst deine Historie also heute nicht über die App übernehmen. Wenn dir deine Historie wichtig ist, bleib vorerst bei YNAB.",
   "AlternativeYnab.currenciesQuestion": "Unterstützt YNAB mehrere Währungen?",
   "AlternativeYnab.currenciesAnswer":
-    "Nicht in einem Plan. Laut der Preisseite von YNAB kannst du in einem einzelnen Ausgabenplan nicht mehrere Währungen zusammen nutzen, und die Hilfe von YNAB empfiehlt für jede Währung ein eigenes Budget. Financy führt jedes Konto in seiner eigenen Währung und zeigt eine Gesamtsumme.",
+    "Nicht in einem Plan. Laut der Preisseite von YNAB kannst du in einem einzelnen Ausgabenplan nicht mehrere Währungen zusammen nutzen, und die Hilfe von YNAB empfiehlt für jede Währung ein eigenes Budget. Financy führt jedes Konto in seiner eigenen Währung und zeigt eine Gesamtsumme; jede Währung ohne Wechselkurs wird dabei genannt.",
   "AlternativeYnab.householdQuestion":
     "Kann mein Haushalt Financy gemeinsam nutzen wie YNAB Together?",
   "AlternativeYnab.householdAnswer":
     "Ja. In einem Financy-Haushalt meldet sich jede Person mit eigenem Login und eigener Rolle an und sieht dieselben Konten. Auch YNAB Together kommt ohne gemeinsames Passwort aus.",
   "AlternativeYnab.dataQuestion": "Kann ich meine Daten aus YNAB in Financy übernehmen?",
   "AlternativeYnab.dataAnswer":
-    "Noch nicht. Financy kann einen Export aus YNAB derzeit nicht in der App importieren.",
+    "Über die App noch nicht. Die App von Financy hat derzeit keine Ansicht zum Importieren eines YNAB-Exports.",
   "AlternativeYnab.costQuestion": "Was kosten die beiden?",
   "AlternativeYnab.costAnswer":
     "YNAB kostet $109 im Jahr, zuzüglich Steuern, sofern diese anfallen. Financy kannst du unter AGPL-3.0 kostenlos selbst hosten. Die Cloud von Financy wird $40 im Jahr pro Haushalt kosten und ist noch nicht verfügbar.",
   "AlternativeActual.title": "Actual Budget: Alternative für mehrere Währungen",
   "AlternativeActual.description":
-    "Actual Budget unterstützt mehrere Währungen noch nicht. Financy rechnet alle Währungen deines Haushalts zusammen, auf deinem eigenen Server.",
+    "Actual Budget unterstützt mehrere Währungen noch nicht. Financy führt Konten in jeder Währung und summiert die, für die es einen Wechselkurs gibt.",
   "AlternativeActual.h1": "Eine Alternative zu Actual Budget für mehrere Währungen",
   "AlternativeActual.answer":
     "Bleib bei Actual Budget, wenn du die Umschlagmethode, eine Synchronisierung mit der Bank oder eine App ohne Server willst. Nimm Financy, wenn das Geld deines Haushalts in mehreren Währungen liegt und du eine Gesamtsumme sehen willst.",
   "AlternativeActual.rowCurrencies": "Konten in mehreren Währungen",
   "AlternativeActual.rowCurrenciesNote":
-    "Actual Budget: Ein Draft-Pull-Request fügt das als experimentelle Option hinzu.",
+    "Actual Budget: Laut Dokumentation arbeiten Leute an der Unterstützung für Währungen.",
   "AlternativeActual.rowTotal": "Eine Gesamtsumme, umgerechnet in eine Hauptwährung",
   "AlternativeActual.rowTotalNote":
     "Actual Budget: ein experimenteller Workaround mit Regelvorlagen.",
@@ -730,20 +730,20 @@ export default {
   "AlternativeActual.method":
     "Jede Aussage über Actual Budget stammt von der Website, aus der Dokumentation oder dem Repository von Actual Budget und ist in ihrer Zeile verlinkt. Die Zeilen von Financy nennen nur, was heute in der App funktioniert. Wir prüfen jede Zeile alle drei Monate neu und ändern erst dann das Datum. Etwas ist veraltet? Schreib an <mail>{email}</mail>.",
   "AlternativeActual.fit":
-    "Financy hat keine Umschlagmethode und keine automatische Synchronisierung mit der Bank, kann noch keine Kontoauszüge importieren und braucht einen Server.",
+    "Financy hat keine Umschlagmethode, keine automatische Synchronisierung mit der Bank und noch keine Ansicht zum Importieren von Kontoauszügen, und es braucht einen Server.",
   "AlternativeActual.better":
     "Für ein Umschlagbudget in einer Währung bleib bei <actual>Actual Budget</actual>. Suchst du ein Open-Source-Tool, das wie Financy aufgebaut ist, kommt <sure>Sure</sure> am nächsten: ebenfalls AGPL-3.0 und mit Docker selbst gehostet.",
   "AlternativeActual.moving":
-    "Financy kann einen Export aus Actual Budget noch nicht in der App importieren, du kannst deine Historie also heute nicht übernehmen. Wenn dir deine Historie wichtig ist, bleib vorerst bei Actual Budget.",
+    "Die App von Financy hat noch keine Ansicht zum Importieren eines Exports aus Actual Budget, du kannst deine Historie also heute nicht über die App übernehmen. Wenn dir deine Historie wichtig ist, bleib vorerst bei Actual Budget.",
   "AlternativeActual.currenciesQuestion": "Unterstützt Actual Budget mehrere Währungen?",
   "AlternativeActual.currenciesAnswer":
-    "Noch nicht. Die Dokumentation sagt, dass mehrere Währungen nicht unterstützt werden, und beschreibt einen experimentellen Workaround mit Regelvorlagen. Ein Draft-Pull-Request fügt Währungen als experimentelle Option hinzu. Financy führt jedes Konto in seiner eigenen Währung und zeigt eine Gesamtsumme.",
+    "Noch nicht. Die Dokumentation sagt, dass mehrere Währungen nicht unterstützt werden und Leute daran arbeiten, und beschreibt einen experimentellen Workaround mit Regelvorlagen. Financy führt jedes Konto in seiner eigenen Währung und zeigt eine Gesamtsumme; jede Währung ohne Wechselkurs wird dabei genannt.",
   "AlternativeActual.envelopesQuestion": "Ist Financy ein Umschlagbudget wie Actual Budget?",
   "AlternativeActual.envelopesAnswer":
     "Nein. Die App von Financy hat heute keine Umschlagmethode. Wenn du mit Umschlägen budgetieren willst, bleib bei Actual Budget.",
   "AlternativeActual.dataQuestion": "Kann ich meine Daten aus Actual Budget in Financy übernehmen?",
   "AlternativeActual.dataAnswer":
-    "Noch nicht. Financy kann einen Export aus Actual Budget derzeit nicht in der App importieren.",
+    "Über die App noch nicht. Die App von Financy hat derzeit keine Ansicht zum Importieren eines Exports aus Actual Budget.",
   "AlternativeActual.costQuestion": "Was kosten die beiden?",
   "AlternativeActual.costAnswer":
     "Beide kannst du kostenlos selbst hosten. Actual Budget steht unter der MIT-Lizenz, Financy unter AGPL-3.0. Die Cloud von Financy wird $40 im Jahr pro Haushalt kosten und ist noch nicht verfügbar.",

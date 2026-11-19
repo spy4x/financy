@@ -592,7 +592,7 @@ export default {
   "Alternative.all": "所有对比",
   "AlternativeYnab.title": "YNAB 多币种替代方案",
   "AlternativeYnab.description":
-    "YNAB 每个预算计划只能用一种货币。Financy 把你家用到的所有货币汇总成一个总额，运行在你自己的服务器上。",
+    "YNAB 每个预算计划只能用一种货币。Financy 的账户支持任意币种，有汇率的币种会汇总成一个总额。",
   "AlternativeYnab.h1": "支持多币种的 YNAB 替代方案",
   "AlternativeYnab.answer":
     "如果你只用一种货币做预算，你的银行也支持 YNAB 的直接导入，就继续用 YNAB。如果你家的钱分布在多种货币里，又想看到一个总额，就选 Financy。",
@@ -612,31 +612,31 @@ export default {
   "AlternativeYnab.sourcePricing": "YNAB 价格",
   "AlternativeYnab.method":
     "关于 YNAB 的每条事实都来自 YNAB 自己的网站，并在所在行附上链接。Financy 的各行只列出应用里今天已经可用的功能。我们每三个月重新核实每一行，只在那时更新日期。发现过时的内容？请写信到 <mail>{email}</mail>。",
-  "AlternativeYnab.fit": "Financy 没有自动银行同步，没有信封预算，目前也还不能导入银行对账单。",
+  "AlternativeYnab.fit": "Financy 没有自动银行同步，没有信封预算，也还没有导入银行对账单的界面。",
   "AlternativeYnab.better":
     "如果你只用一种货币做预算，就继续用 <ynab>YNAB</ynab>。如果想要可以自己托管的免费信封预算，可以看看 <actual>Actual Budget</actual>。如果你想要一款形态和 Financy 相近的开源记账应用，最接近的是 <sure>Sure</sure>：同样是 AGPL-3.0，用 Docker 自托管。",
   "AlternativeYnab.moving":
-    "Financy 目前还不能在应用中导入 YNAB 的导出文件，所以现在无法把你的历史记录迁移过来。如果你很看重历史记录，就先继续用 YNAB 吧。",
+    "Financy 应用里还没有导入 YNAB 导出文件的界面，所以现在无法通过应用把你的历史记录迁移过来。如果你很看重历史记录，就先继续用 YNAB 吧。",
   "AlternativeYnab.currenciesQuestion": "YNAB 支持多币种吗？",
   "AlternativeYnab.currenciesAnswer":
-    "同一个预算计划里不支持。YNAB 的价格页面说明，不能在单个支出计划中同时使用多种货币，它的帮助文档也建议每种货币单独建一个预算。Financy 让每个账户保留自己的币种，并显示一个总额。",
+    "同一个预算计划里不支持。YNAB 的价格页面说明，不能在单个支出计划中同时使用多种货币，它的帮助文档也建议每种货币单独建一个预算。Financy 让每个账户保留自己的币种，并显示一个总额，同时注明哪些币种因暂无汇率而未计入。",
   "AlternativeYnab.householdQuestion": "我的家人能像 YNAB Together 那样共享 Financy 吗？",
   "AlternativeYnab.householdAnswer":
     "可以。Financy 家庭里的每个人都用自己的账号和角色登录，看到同样的账户。YNAB Together 同样不需要共用密码。",
   "AlternativeYnab.dataQuestion": "能把 YNAB 的数据搬到 Financy 吗？",
-  "AlternativeYnab.dataAnswer": "暂时不行。目前无法在 Financy 应用中导入 YNAB 的导出文件。",
+  "AlternativeYnab.dataAnswer":
+    "暂时无法通过应用迁移。Financy 应用目前还没有导入 YNAB 导出文件的界面。",
   "AlternativeYnab.costQuestion": "两者各要多少钱？",
   "AlternativeYnab.costAnswer":
     "YNAB 每年 $109，适用税费另计。Financy 基于 AGPL-3.0，可免费自托管。它的云服务将按每个家庭每年 $40 收费，目前尚未开放。",
   "AlternativeActual.title": "Actual Budget 多币种替代方案",
   "AlternativeActual.description":
-    "Actual Budget 暂不支持多币种。Financy 把你家用到的所有货币汇总成一个总额，运行在你自己的服务器上。",
+    "Actual Budget 暂不支持多币种。Financy 的账户支持任意币种，有汇率的币种会汇总成一个总额。",
   "AlternativeActual.h1": "支持多币种的 Actual Budget 替代方案",
   "AlternativeActual.answer":
     "如果你想要信封预算、银行同步，或者一款不需要服务器就能运行的应用，就继续用 Actual Budget。如果你家的钱分布在多种货币里，又想看到一个总额，就选 Financy。",
   "AlternativeActual.rowCurrencies": "多种货币的账户",
-  "AlternativeActual.rowCurrenciesNote":
-    "Actual Budget：一个草稿 Pull Request 将它作为实验性选项加入。",
+  "AlternativeActual.rowCurrenciesNote": "Actual Budget：它的文档说，有人正在开发多币种支持。",
   "AlternativeActual.rowTotal": "换算成一种主货币的总额",
   "AlternativeActual.rowTotalNote": "Actual Budget：借助规则模板的实验性变通方案。",
   "AlternativeActual.rowLogins": "每个人用自己的账号登录",
@@ -659,20 +659,20 @@ export default {
   "AlternativeActual.method":
     "关于 Actual Budget 的每条事实都来自 Actual Budget 自己的网站、文档或代码仓库，并在所在行附上链接。Financy 的各行只列出应用里今天已经可用的功能。我们每三个月重新核实每一行，只在那时更新日期。发现过时的内容？请写信到 <mail>{email}</mail>。",
   "AlternativeActual.fit":
-    "Financy 没有信封预算，也没有自动银行同步，目前还不能导入银行对账单，而且需要服务器才能运行。",
+    "Financy 没有信封预算，也没有自动银行同步，还没有导入银行对账单的界面，而且需要服务器才能运行。",
   "AlternativeActual.better":
     "如果你想用一种货币做信封预算，就继续用 <actual>Actual Budget</actual>。如果你想要一款形态和 Financy 相近的开源记账应用，最接近的是 <sure>Sure</sure>：同样是 AGPL-3.0，用 Docker 自托管。",
   "AlternativeActual.moving":
-    "Financy 目前还不能在应用中导入 Actual Budget 的导出文件，所以现在无法把你的历史记录迁移过来。如果你很看重历史记录，就先继续用 Actual Budget 吧。",
+    "Financy 应用里还没有导入 Actual Budget 导出文件的界面，所以现在无法通过应用把你的历史记录迁移过来。如果你很看重历史记录，就先继续用 Actual Budget 吧。",
   "AlternativeActual.currenciesQuestion": "Actual Budget 支持多币种吗？",
   "AlternativeActual.currenciesAnswer":
-    "暂时不支持。它的文档说明目前不支持多币种，并介绍了一种借助规则模板的实验性变通方案。一个草稿 Pull Request 将货币功能作为实验性选项加入。Financy 让每个账户保留自己的币种，并显示一个总额。",
+    "暂时不支持。它的文档说明目前不支持多币种，有人正在开发这项功能，并介绍了一种借助规则模板的实验性变通方案。Financy 让每个账户保留自己的币种，并显示一个总额，同时注明哪些币种因暂无汇率而未计入。",
   "AlternativeActual.envelopesQuestion": "Financy 和 Actual Budget 一样是信封预算吗？",
   "AlternativeActual.envelopesAnswer":
     "不是。Financy 应用目前没有信封预算。如果需要信封预算，就继续用 Actual Budget。",
   "AlternativeActual.dataQuestion": "能把 Actual Budget 的数据搬到 Financy 吗？",
   "AlternativeActual.dataAnswer":
-    "暂时不行。目前无法在 Financy 应用中导入 Actual Budget 的导出文件。",
+    "暂时无法通过应用迁移。Financy 应用目前还没有导入 Actual Budget 导出文件的界面。",
   "AlternativeActual.costQuestion": "两者各要多少钱？",
   "AlternativeActual.costAnswer":
     "两者都可免费自托管。Actual Budget 采用 MIT 许可证，Financy 采用 AGPL-3.0。Financy 的云服务将按每个家庭每年 $40 收费，目前尚未开放。",

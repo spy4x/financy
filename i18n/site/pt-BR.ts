@@ -654,12 +654,12 @@ export default {
   "Alternative.all": "Todas as comparações",
   "AlternativeYnab.title": "Alternativa ao YNAB com várias moedas",
   "AlternativeYnab.description":
-    "O YNAB aceita uma só moeda por plano. O Financy soma todas as moedas da sua família, em um servidor que você mesmo administra.",
+    "O YNAB aceita uma só moeda por plano de gastos. O Financy mantém contas em qualquer moeda e soma as que têm cotação.",
   "AlternativeYnab.h1": "Uma alternativa ao YNAB para quem usa várias moedas",
   "AlternativeYnab.answer":
     "Fique no YNAB se você faz seu orçamento em uma só moeda e a importação direta funciona com o seu banco. Escolha o Financy se o dinheiro da sua família está em várias moedas e você quer ver um total único.",
   "AlternativeYnab.rowCurrencies": "Várias moedas em um só orçamento",
-  "AlternativeYnab.rowCurrenciesNote": "YNAB: uma moeda por plano.",
+  "AlternativeYnab.rowCurrenciesNote": "YNAB: uma moeda por plano de gastos.",
   "AlternativeYnab.rowTotal": "Um total convertido para uma moeda principal",
   "AlternativeYnab.rowTotalNote": "O YNAB recomenda um orçamento separado para cada moeda.",
   "AlternativeYnab.rowSharing": "Compartilhar as finanças com a família sem dividir uma senha",
@@ -676,33 +676,33 @@ export default {
   "AlternativeYnab.method":
     "Cada fato sobre o YNAB vem do site do próprio YNAB, com link na sua linha. As linhas do Financy listam só o que já funciona no app hoje. Revisamos cada linha a cada três meses e só então mudamos a data. Viu algo desatualizado? Escreva para <mail>{email}</mail>.",
   "AlternativeYnab.fit":
-    "O Financy não tem sincronização automática com o banco nem orçamento por envelopes, e ainda não importa extratos bancários.",
+    "O Financy não tem sincronização automática com o banco nem orçamento por envelopes, e ainda não tem uma tela para importar extratos bancários.",
   "AlternativeYnab.better":
     "Se você faz seu orçamento em uma só moeda, fique no <ynab>YNAB</ynab>. Para um orçamento por envelopes grátis e hospedado por você, veja o <actual>Actual Budget</actual>. Se você quer um app de código aberto no formato do Financy, o mais próximo é o <sure>Sure</sure>: também AGPL-3.0 e hospedado por você com Docker.",
   "AlternativeYnab.moving":
-    "O Financy ainda não importa uma exportação do YNAB no app, então hoje você não consegue trazer seu histórico. Se o seu histórico é importante para você, fique no YNAB por enquanto.",
+    "O app do Financy ainda não tem uma tela para importar uma exportação do YNAB, então hoje você não consegue trazer seu histórico pelo app. Se o seu histórico é importante para você, fique no YNAB por enquanto.",
   "AlternativeYnab.currenciesQuestion": "O YNAB funciona com várias moedas?",
   "AlternativeYnab.currenciesAnswer":
-    "Não em um mesmo plano. A página de preços do YNAB diz que não dá para usar várias moedas juntas em um único plano de gastos, e a ajuda dele recomenda um orçamento separado para cada moeda. O Financy mantém cada conta na própria moeda e mostra um total único.",
+    "Não em um mesmo plano. A página de preços do YNAB diz que não dá para usar várias moedas juntas em um único plano de gastos, e a ajuda dele recomenda um orçamento separado para cada moeda. O Financy mantém cada conta na própria moeda e mostra um total único, informando o nome de qualquer moeda sem cotação.",
   "AlternativeYnab.householdQuestion":
     "Dá para compartilhar o Financy com a família, como no YNAB Together?",
   "AlternativeYnab.householdAnswer":
     "Sim. No Financy, cada pessoa da família entra com o próprio login e a própria função, e todos veem as mesmas contas. O YNAB Together também dispensa compartilhar senha.",
   "AlternativeYnab.dataQuestion": "Posso trazer meus dados do YNAB para o Financy?",
   "AlternativeYnab.dataAnswer":
-    "Ainda não. Hoje o Financy não consegue importar uma exportação do YNAB no app.",
+    "Pelo app, ainda não. Hoje o app do Financy não tem uma tela para importar uma exportação do YNAB.",
   "AlternativeYnab.costQuestion": "Quanto custa cada um?",
   "AlternativeYnab.costAnswer":
     "O YNAB custa $109 por ano, mais impostos, quando aplicável. O Financy é grátis para hospedar você mesmo, sob AGPL-3.0. A nuvem do Financy vai custar $40 por ano por família e ainda não está aberta.",
   "AlternativeActual.title": "Alternativa ao Actual Budget com várias moedas",
   "AlternativeActual.description":
-    "O Actual Budget ainda não tem suporte a várias moedas. O Financy soma todas as moedas da sua família, em um servidor que você mesmo administra.",
+    "O Actual Budget ainda não tem suporte a várias moedas. O Financy mantém contas em qualquer moeda e soma as que têm cotação.",
   "AlternativeActual.h1": "Uma alternativa ao Actual Budget para quem usa várias moedas",
   "AlternativeActual.answer":
     "Fique no Actual Budget se você quer orçamento por envelopes, sincronização com o banco ou um app que funciona sem servidor. Escolha o Financy se o dinheiro da sua família está em várias moedas e você quer ver um total único.",
   "AlternativeActual.rowCurrencies": "Contas em várias moedas",
   "AlternativeActual.rowCurrenciesNote":
-    "Actual Budget: um pull request em rascunho adiciona isso como opção experimental.",
+    "Actual Budget: a documentação diz que há pessoas trabalhando no suporte a moedas.",
   "AlternativeActual.rowTotal": "Um total convertido para uma moeda principal",
   "AlternativeActual.rowTotalNote":
     "Actual Budget: uma solução alternativa experimental com modelos de regras.",
@@ -727,21 +727,21 @@ export default {
   "AlternativeActual.method":
     "Cada fato sobre o Actual Budget vem do site, da documentação ou do repositório do próprio Actual Budget, com link na sua linha. As linhas do Financy listam só o que já funciona no app hoje. Revisamos cada linha a cada três meses e só então mudamos a data. Viu algo desatualizado? Escreva para <mail>{email}</mail>.",
   "AlternativeActual.fit":
-    "O Financy não tem orçamento por envelopes nem sincronização automática com o banco, ainda não importa extratos bancários e precisa de um servidor.",
+    "O Financy não tem orçamento por envelopes nem sincronização automática com o banco, ainda não tem uma tela para importar extratos bancários e precisa de um servidor.",
   "AlternativeActual.better":
     "Para um orçamento por envelopes em uma só moeda, fique no <actual>Actual Budget</actual>. Se você quer um app de código aberto no formato do Financy, o mais próximo é o <sure>Sure</sure>: também AGPL-3.0 e hospedado por você com Docker.",
   "AlternativeActual.moving":
-    "O Financy ainda não importa uma exportação do Actual Budget no app, então hoje você não consegue trazer seu histórico. Se o seu histórico é importante para você, fique no Actual Budget por enquanto.",
+    "O app do Financy ainda não tem uma tela para importar uma exportação do Actual Budget, então hoje você não consegue trazer seu histórico pelo app. Se o seu histórico é importante para você, fique no Actual Budget por enquanto.",
   "AlternativeActual.currenciesQuestion": "O Actual Budget funciona com várias moedas?",
   "AlternativeActual.currenciesAnswer":
-    "Ainda não. A documentação dele diz que não há suporte a várias moedas e descreve uma solução alternativa experimental com modelos de regras. Um pull request em rascunho adiciona moedas como opção experimental. O Financy mantém cada conta na própria moeda e mostra um total único.",
+    "Ainda não. A documentação dele diz que não há suporte a várias moedas, que há pessoas trabalhando nisso, e descreve uma solução alternativa experimental com modelos de regras. O Financy mantém cada conta na própria moeda e mostra um total único, informando o nome de qualquer moeda sem cotação.",
   "AlternativeActual.envelopesQuestion":
     "O Financy é um orçamento por envelopes como o Actual Budget?",
   "AlternativeActual.envelopesAnswer":
     "Não. Hoje o app do Financy não tem orçamento por envelopes. Para usar envelopes, fique no Actual Budget.",
   "AlternativeActual.dataQuestion": "Posso trazer meus dados do Actual Budget para o Financy?",
   "AlternativeActual.dataAnswer":
-    "Ainda não. Hoje o Financy não consegue importar uma exportação do Actual Budget no app.",
+    "Pelo app, ainda não. Hoje o app do Financy não tem uma tela para importar uma exportação do Actual Budget.",
   "AlternativeActual.costQuestion": "Quanto custa cada um?",
   "AlternativeActual.costAnswer":
     "Os dois são grátis para hospedar você mesmo. O Actual Budget tem licença MIT e o Financy é AGPL-3.0. A nuvem do Financy vai custar $40 por ano por família e ainda não está aberta.",
