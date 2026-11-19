@@ -49,3 +49,7 @@ apps/mpa/screenshots/speed-usual-app.html
 libs/server/db/migrations/2026_12_16_0006_import_keep.sql
 apps/mpa/media/video/
 apps/mpa/static/video/
+docs/screenshots/record.ts
+docs/screenshots/*.png
+docs/screenshots/*.webp
+docs/screenshots/*.gif

@@ -7,7 +7,14 @@
  * renders `og.html` into `static/og/`, and deletes the four accounts again whether or not the run
  * succeeded. A screen whose numbers differ from what the website's words say about it fails the run.
  */
-import { type Browser, type BrowserContext, chromium, type Locator, type Page } from "playwright"
+import {
+  type Browser,
+  type BrowserContext,
+  type BrowserContextOptions,
+  chromium,
+  type Locator,
+  type Page,
+} from "playwright"
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { gotoApp } from "../../../e2e/fixtures/app.ts"
 import { stripeSignature, subscriptionEvent } from "../../../e2e/fixtures/billing.ts"
@@ -59,7 +66,7 @@ export const MARGARET: Person = {
 const PEOPLE = [ADA, GRACE, LINUS, MARGARET]
 
 /** The Open Graph card of one website page: its words (marketing brief 4.3) and picture. */
-interface OgCard {
+export interface OgCard {
   file: string
   eyebrow: string
   title: string
@@ -68,11 +75,13 @@ interface OgCard {
   shot: string
   /** How far down the screenshot its frame starts, in the card's pixels. */
   top?: number
+  /** How far right of the screenshot's left edge its frame starts, in the card's pixels. */
+  left?: number
   /** How wide the screenshot is drawn, in the card's pixels: 520, the frame's width, unless set. */
   width?: number
 }
 
-const OG_CARDS: OgCard[] = [
+export const OG_CARDS: OgCard[] = [
   {
     file: "home",
     eyebrow: "Finance tracker",
@@ -119,11 +128,13 @@ const STEADY_CSS = `*, *::before, *::after { caret-color: transparent !important
 type StorageState = Awaited<ReturnType<BrowserContext["storageState"]>>
 
 /** What the screens need from the seeding. */
-interface Seeded {
+export interface Seeded {
   householdId: string
   salaryId: string
   groceriesId: string
   transferId: string
+  /** The id of each payment the household starts with, by its memo. */
+  entryIds: Record<string, string>
   /** The moment every page's clock is fixed at, a few minutes after the data was made. */
   now: Date
   /** Ada's signed-in session on the app host. */
@@ -262,7 +273,7 @@ export async function operation(
 
 /** What {@link seedHousehold} made that a screen opens or writes to. */
 export type Household =
-  & Pick<Seeded, "householdId" | "salaryId" | "groceriesId" | "transferId">
+  & Pick<Seeded, "householdId" | "salaryId" | "groceriesId" | "transferId" | "entryIds">
   & { travelId: string }
 
 /**
@@ -318,8 +329,10 @@ export async function seedHousehold(ada: Page, adaId: number, now: Date): Promis
       memo: "Train in London",
     },
   ]
+  const entryIds: Record<string, string> = {}
   for (const entry of entries) {
-    await call(`transaction.create`, { id: uuidV7(), accountId: salaryId, ...entry })
+    entryIds[entry.memo] = uuidV7()
+    await call(`transaction.create`, { id: entryIds[entry.memo], accountId: salaryId, ...entry })
   }
   const transferId = uuidV7()
   await call(`transfer.create`, {
@@ -335,7 +348,7 @@ export async function seedHousehold(ada: Page, adaId: number, now: Date): Promis
   for (const [categoryId, amount] of [[groceriesId, 25_000], [home, 120_000], [travel, 40_000]]) {
     await call(`budget.set`, { categoryId, month, amount, expectedVersion: null })
   }
-  return { householdId: groupId, salaryId, groceriesId, travelId: travel, transferId }
+  return { householdId: groupId, salaryId, groceriesId, travelId: travel, transferId, entryIds }
 }
 
 /** Signs Linus in to the admin app as an administrator, and returns his page there. */
@@ -381,7 +394,11 @@ export async function fetchRates(admin: Page): Promise<void> {
 }
 
 /** Builds everything the screens show. Each person has a browser context of their own. */
-async function seed(browser: Browser, contexts: BrowserContext[], ada: Page): Promise<Seeded> {
+export async function seed(
+  browser: Browser,
+  contexts: BrowserContext[],
+  ada: Page,
+): Promise<Seeded> {
   const { pages, ids } = await signUpPeople(browser, contexts, ada)
   const adaId = ids.get(ADA)!
   // Ada has used the product for a while: her first-steps card is gone.
@@ -405,17 +422,19 @@ async function seed(browser: Browser, contexts: BrowserContext[], ada: Page): Pr
   }
 }
 
-interface ContextOptions {
+export interface ContextOptions {
   theme: Theme
   state: StorageState
   baseURL: string
+  /** Replaces the phone's settings, such as a desktop viewport or a video recording. */
+  device?: BrowserContextOptions
 }
 
-/** Opens a phone-sized page with the clock fixed at the seeded moment. */
-async function openPage(
+/** Opens a phone-sized page, unless `options.device` says otherwise, with the clock fixed at the seeded moment. */
+export async function openPage(
   browser: Browser,
   contexts: BrowserContext[],
-  seeded: Seeded,
+  seeded: Pick<Seeded, "now">,
   options: ContextOptions,
 ): Promise<Page> {
   const context = await browser.newContext({
@@ -429,6 +448,7 @@ async function openPage(
     hasTouch: true,
     locale: "en-GB",
     timezoneId: "Europe/London",
+    ...options.device,
   })
   contexts.push(context)
   const page = await context.newPage()
@@ -443,8 +463,8 @@ async function scrollToTop(target: Locator): Promise<void> {
   })
 }
 
-/** Waits until the page is still, then writes the master PNG of the screen's crop. */
-async function snap(page: Page, name: string, screen: Screen): Promise<void> {
+/** Waits until the page is still: no animation, caret, focus ring or hover, every font loaded. */
+export async function settle(page: Page): Promise<void> {
   await page.addStyleTag({ content: STEADY_CSS })
   await page.waitForLoadState("networkidle")
   await page.evaluate(() => document.fonts.ready)
@@ -454,6 +474,11 @@ async function snap(page: Page, name: string, screen: Screen): Promise<void> {
   const viewport = page.viewportSize()!
   await page.mouse.move(viewport.width - 2, viewport.height / 2)
   await page.waitForTimeout(300)
+}
+
+/** Waits until the page is still, then writes the master PNG of the screen's crop. */
+async function snap(page: Page, name: string, screen: Screen): Promise<void> {
+  await settle(page)
   // Measured here, because a dialog stands still only once its animation is off.
   const clip = typeof screen.clip === `function` ? await screen.clip(page) : screen.clip
   await expectInsideClip(screen.last(page), clip)
@@ -493,7 +518,7 @@ interface Screen {
 }
 
 /** Makes `groupId` the group the app opens with. */
-async function selectGroup(page: Page, groupId: string): Promise<void> {
+export async function selectGroup(page: Page, groupId: string): Promise<void> {
   const selected = await page.request.put(`${APP}/api/groups/selected`, {
     headers: sameOrigin(),
     data: { groupId },
@@ -502,7 +527,7 @@ async function selectGroup(page: Page, groupId: string): Promise<void> {
 }
 
 /** Throws unless `scope` shows every one of `texts`, with spaces of any width read as spaces. */
-async function expectTexts(scope: Locator, texts: string[]): Promise<void> {
+export async function expectTexts(scope: Locator, texts: string[]): Promise<void> {
   const shown = (await scope.innerText()).replace(/[  ]/g, ` `)
   const missing = texts.filter((text) => !shown.includes(text))
   if (missing.length) throw new Error(`the screen does not show: ${missing.join(`, `)}`)
@@ -758,6 +783,13 @@ async function expectInsideClip(last: Locator, clip: Clip): Promise<void> {
   }
 }
 
+/** Throws when the page says a rate is missing: a public picture never leaves money out of a total. */
+export async function expectRates(page: Page): Promise<void> {
+  if (await page.getByText(/no exchange rate/i).count()) {
+    throw new Error(`the stack has no rate for EUR, USD, GBP or THB`)
+  }
+}
+
 async function captureScreens(browser: Browser, contexts: BrowserContext[], seeded: Seeded) {
   for (const theme of ["light", "dark"] as const) {
     for (const screen of SCREENS) {
@@ -771,10 +803,7 @@ async function captureScreens(browser: Browser, contexts: BrowserContext[], seed
         try {
           if (!screen.admin) await selectGroup(page, seeded.householdId)
           await screen.open(page, seeded)
-          // A public page never shows a total that leaves money out for want of a rate.
-          if (await page.getByText(/no exchange rate/i).count()) {
-            throw new Error(`the stack has no rate for EUR, USD, GBP or THB`)
-          }
+          await expectRates(page)
           await screen.check(page)
           await snap(page, name, screen)
         } finally {
@@ -806,19 +835,30 @@ async function encodeShots(): Promise<void> {
     const [, name, theme] = match
     for (const width of WIDTHS) {
       const target = `${SHOTS}/${name}-${theme}-${width}.webp`
-      let quality = 80
-      for (;;) {
-        await run("cwebp", [
-          ...["-quiet", "-mt", "-m", "6", "-q", String(quality)],
-          ...["-resize", String(width), "0", `${MASTERS}/${entry.name}`, "-o", target],
-        ])
-        if ((await Deno.stat(target)).size <= budget || quality <= 50) break
-        quality -= 5
-      }
-      if ((await Deno.stat(target)).size > budget) {
-        failures.push(`${target} is over its budget at quality ${quality}`)
+      if (!await encodeWebp(`${MASTERS}/${entry.name}`, target, width, budget)) {
+        failures.push(`${target} is over its budget at quality 50`)
       }
     }
+  }
+}
+
+/**
+ * Encodes `source` as a WebP `width` pixels wide with `cwebp`, from quality 80 down in steps of 5
+ * to 50 until it fits `budget` bytes. Answers whether it fits.
+ */
+export async function encodeWebp(
+  source: string,
+  target: string,
+  width: number,
+  budget: number,
+): Promise<boolean> {
+  for (let quality = 80;; quality -= 5) {
+    await run("cwebp", [
+      ...["-quiet", "-mt", "-m", "6", "-q", String(quality)],
+      ...["-resize", String(width), "0", source, "-o", target],
+    ])
+    const fits = (await Deno.stat(target)).size <= budget
+    if (fits || quality <= 50) return fits
   }
 }
 
@@ -846,58 +886,84 @@ export async function geistFonts(): Promise<void> {
   await Deno.remove(archive)
 }
 
+/** The made-up origin `og.html` is served from. */
+const CARD_ORIGIN = "http://og.invalid"
+
 /**
- * Renders `og.html` once per page at 1200×630. The page is served from a made-up origin that maps
- * to this app's files and the cached fonts, so it needs no server and loads nothing from outside.
+ * A context that renders `og.html` at `size`, 1200×630 unless set. The page is served from a
+ * made-up origin that maps to this app's files and the cached fonts, so it needs no server and
+ * loads nothing from outside. `files` adds files from elsewhere on disk, by their path there.
  */
-async function renderOgImages(browser: Browser, contexts: BrowserContext[]): Promise<void> {
+export async function cardContext(
+  browser: Browser,
+  size = { width: 1200, height: 630 },
+  files: Record<string, string> = {},
+): Promise<BrowserContext> {
   await geistFonts()
-  const context = await browser.newContext({
-    viewport: { width: 1200, height: 630 },
-    deviceScaleFactor: 1,
-  })
-  contexts.push(context)
-  const origin = "http://og.invalid"
-  await context.route(`${origin}/**`, async (route) => {
+  const context = await browser.newContext({ viewport: size, deviceScaleFactor: 1 })
+  await context.route(`${CARD_ORIGIN}/**`, async (route) => {
     const path = new URL(route.request().url()).pathname
-    const file = path.startsWith("/fonts/") ? `${CACHE}/${path.slice(7)}` : `${MPA}${path.slice(1)}`
+    const file = files[path] ??
+      (path.startsWith("/fonts/") ? `${CACHE}/${path.slice(7)}` : `${MPA}${path.slice(1)}`)
     try {
       await route.fulfill({ path: file })
     } catch {
       await route.fulfill({ status: 404 })
     }
   })
-  await context.route((url) => !url.href.startsWith(origin), (route) => route.abort())
+  await context.route((url) => !url.href.startsWith(CARD_ORIGIN), (route) => route.abort())
+  return context
+}
+
+/**
+ * Photographs `card` in a {@link cardContext} into `master`, then writes it to `target` as a
+ * compressed PNG. Answers `target`'s size in bytes.
+ */
+export async function shootCard(
+  context: BrowserContext,
+  card: OgCard,
+  master: string,
+  target: string,
+): Promise<number> {
+  const page = await context.newPage()
+  const size = page.viewportSize()!
+  const query = new URLSearchParams({
+    eyebrow: card.eyebrow,
+    title: card.title,
+    sub: card.sub,
+    shot: card.shot ? `/static/${card.shot}` : "",
+    top: String(card.top ?? 0),
+    left: String(card.left ?? 0),
+    width: String(card.width ?? 520),
+    cardWidth: String(size.width),
+    cardHeight: String(size.height),
+  })
+  await page.goto(`${CARD_ORIGIN}/screenshots/og.html?${query}`)
+  await page.evaluate(() => document.fonts.ready)
+  await page.locator("body[data-ready]").waitFor({ state: "attached" })
+  await page.screenshot({ path: master })
+  await page.close()
+  await run("magick", [master, "-strip", "-define", "png:compression-level=9", target])
+  if ((await Deno.stat(target)).size > 150 * 1024) {
+    // A screenshot has too many colours for 150 KB: 256 of them, dithered, fit.
+    await run("magick", [
+      ...[master, "-strip", "-dither", "FloydSteinberg", "-colors", "256"],
+      ...["-define", "png:compression-level=9", `PNG8:${target}`],
+    ])
+  }
+  return (await Deno.stat(target)).size
+}
+
+/** Renders `og.html` once per page at 1200×630. */
+async function renderOgImages(browser: Browser, contexts: BrowserContext[]): Promise<void> {
+  const context = await cardContext(browser)
+  contexts.push(context)
   try {
     for (const card of OG_CARDS) {
       await attempt(`og-${card.file}`, async () => {
-        const page = await context.newPage()
-        const query = new URLSearchParams({
-          eyebrow: card.eyebrow,
-          title: card.title,
-          sub: card.sub,
-          shot: card.shot ? `/static/${card.shot}` : "",
-          top: String(card.top ?? 0),
-          width: String(card.width ?? 520),
-        })
-        await page.goto(`${origin}/screenshots/og.html?${query}`)
-        await page.evaluate(() => document.fonts.ready)
-        await page.locator("body[data-ready]").waitFor({ state: "attached" })
-        const master = `${MASTERS}/og-${card.file}.png`
-        await page.screenshot({ path: master })
-        await page.close()
         const target = `${OG}/${card.file}.png`
-        await run("magick", [master, "-strip", "-define", "png:compression-level=9", target])
-        if ((await Deno.stat(target)).size > 150 * 1024) {
-          // A screenshot has too many colours for 150 KB: 256 of them, dithered, fit.
-          await run("magick", [
-            ...[master, "-strip", "-dither", "FloydSteinberg", "-colors", "256"],
-            ...["-define", "png:compression-level=9", `PNG8:${target}`],
-          ])
-        }
-        if ((await Deno.stat(target)).size > 150 * 1024) {
-          failures.push(`${target} is over 150 KB`)
-        }
+        const size = await shootCard(context, card, `${MASTERS}/og-${card.file}.png`, target)
+        if (size > 150 * 1024) failures.push(`${target} is over 150 KB`)
       })
     }
   } finally {
