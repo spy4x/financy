@@ -79,3 +79,34 @@ Deno.test("the coin price route refuses outside development and stores nothing",
   expect((await post({ coin: `BTC`, price: `60000`, date: `2026-11-15` })).status).toBe(403)
   expect(statements).toEqual([])
 })
+
+/** The development route with a fake client that records the text of each statement. */
+function recordBackupRoute(isDev: boolean) {
+  const statements: string[] = []
+  const sql = (strings: TemplateStringsArray) => {
+    statements.push(strings.join(`?`))
+    return Promise.resolve([])
+  }
+  const route = createDevRoute({
+    isDev,
+    db: {} as DevRouteDeps["db"],
+    sql: sql as unknown as DevRouteDeps["sql"],
+    closeSockets: () => 0,
+    forgetCodeBudget: () => Promise.resolve(),
+    freePlanAllowsNothing: false,
+  })
+  return { statements, post: () => route.request("/record-backup", { method: `POST` }) }
+}
+
+Deno.test("the record backup route records a finished backup in development", async () => {
+  const { statements, post } = recordBackupRoute(true)
+  expect((await post()).status).toBe(200)
+  expect(statements).toHaveLength(1)
+  expect(statements[0]).toContain(`INSERT INTO backup_status`)
+})
+
+Deno.test("the record backup route refuses outside development and records nothing", async () => {
+  const { statements, post } = recordBackupRoute(false)
+  expect((await post()).status).toBe(403)
+  expect(statements).toEqual([])
+})

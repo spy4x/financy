@@ -10,6 +10,7 @@ import { GroupRole } from "@domain/groups"
 import { coinCode } from "@domain/money"
 import { calendarDate } from "@domain/transactions"
 import { recordAccessChange } from "@server/groups/group-change-log.ts"
+import { BACKUP_TARGET_DATABASE } from "@server/jobs/admin-system.ts"
 import { storeCoinPrice } from "@server/money/coin-prices.ts"
 import { type } from "arktype"
 import type { Sql, Transaction } from "@spy4x/server/db"
@@ -88,6 +89,10 @@ export interface DevRouteDeps {
  * `POST /coin-price` with `{ coin, price, date }` stores that euro price as the listed coin's only
  * price, as the daily fetch does with a CoinGecko key, which no development stack has. The e2e
  * specs value a coin account this way.
+ *
+ * `POST /record-backup` records a database backup that finished just now, as the backup service
+ * does after each run, which no development stack has. The website's capture needs it: without a
+ * recorded backup the System page reports an error.
  */
 export function createDevRoute(deps: DevRouteDeps) {
   return new Hono<APIContext>()
@@ -205,6 +210,15 @@ export function createDevRoute(deps: DevRouteDeps) {
       `
       if (!mail) return errorResponse(c, `not_found`, { message: "No mail for this address" })
       return c.json({ subject: mail.subject, text: mail.textBody })
+    })
+    .post("/record-backup", async (c) => {
+      if (!deps.isDev) return errorResponse(c, `forbidden`, { message: "Not allowed" })
+      await deps.sql`
+        INSERT INTO backup_status (target, succeeded_at)
+        VALUES (${BACKUP_TARGET_DATABASE}, NOW())
+        ON CONFLICT (target) DO UPDATE SET succeeded_at = EXCLUDED.succeeded_at
+      `
+      return c.json({ success: true })
     })
     .post("/coin-price", async (c) => {
       if (!deps.isDev) return errorResponse(c, `forbidden`, { message: "Not allowed" })
