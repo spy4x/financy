@@ -147,8 +147,19 @@ const SCREENS: Screen[] = [
       await expectTexts(page.locator(`main`), [`Net`, `Income`, `Spending`])
       await expectVisible(page.locator(`[data-e2e=overview-range]`), `the range picker`)
     },
-    // The three key numbers and the range picker above them; the chart below stays out.
-    end: (page) => bottomOf(page.locator(`[data-e2e="overview-widget-money.spending"]`)),
+    // The three key numbers and the range picker above them. The widgets below are hidden, so the
+    // margin under the cards shows no sliver of the next one.
+    async end(page) {
+      const spending = page.locator(`[data-e2e="overview-widget-money.spending"]`)
+      await spending.evaluate((card) => {
+        const bottom = card.getBoundingClientRect().bottom
+        const widgets = document.querySelectorAll<HTMLElement>(`[data-e2e^=overview-widget-]`)
+        for (const widget of widgets) {
+          if (widget.getBoundingClientRect().top > bottom) widget.style.visibility = `hidden`
+        }
+      })
+      return bottomOf(spending)
+    },
   },
 ]
 
@@ -199,14 +210,25 @@ async function openDesktop(
 }
 
 /**
- * The bottom of `scope`'s lowest visible innermost element, in CSS pixels from the window's top.
- * Innermost, because a wrapper such as `main` stretches to the window's height.
+ * The bottom of `scope`'s lowest visible box, in CSS pixels from the window's top: an innermost
+ * element, or one a person sees the edge of (a border, a background or a shadow), so a card's
+ * padding and border count while a layout wrapper's empty padding does not. A wrapper that
+ * reaches the window's bottom never counts, because one such as `main` stretches to the window's
+ * height; an innermost element always does, so content below the window still fails the crop.
  */
 function bottomOf(scope: Locator): Promise<number> {
   return scope.evaluate((element) =>
     Math.max(
       ...[element, ...element.querySelectorAll(`*`)]
-        .filter((child) => child.childElementCount === 0 && child.checkVisibility())
+        .filter((child) => child.checkVisibility())
+        .filter((child) => {
+          if (child.childElementCount === 0) return true
+          if (child.getBoundingClientRect().bottom >= innerHeight) return false
+          const style = getComputedStyle(child)
+          return parseFloat(style.borderBottomWidth) > 0 ||
+            style.boxShadow !== `none` ||
+            !/^transparent$|[,/]\s*0\)$/.test(style.backgroundColor)
+        })
         .map((child) => child.getBoundingClientRect().bottom),
     )
   )
