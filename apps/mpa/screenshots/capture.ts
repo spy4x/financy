@@ -261,7 +261,9 @@ export async function operation(
 }
 
 /** What {@link seedHousehold} made that a screen opens or writes to. */
-type Household = Pick<Seeded, "householdId" | "salaryId" | "groceriesId" | "transferId">
+export type Household =
+  & Pick<Seeded, "householdId" | "salaryId" | "groceriesId" | "transferId">
+  & { travelId: string }
 
 /**
  * Builds the household the website shows: four adults, and accounts in the euro, the dollar, the
@@ -269,7 +271,7 @@ type Household = Pick<Seeded, "householdId" | "salaryId" | "groceriesId" | "tran
  * currency state both amounts, so they keep the rate the bank charged. This month's budgets put
  * Groceries over its limit, Rent close to it and Travel well under it.
  */
-async function seedHousehold(ada: Page, adaId: number, now: Date): Promise<Household> {
+export async function seedHousehold(ada: Page, adaId: number, now: Date): Promise<Household> {
   const groupId = await createGroup(ada, "Sample household")
   await upgradeToPro(ada, groupId)
   await addMember(ada, GRACE, groupId, 3)
@@ -333,11 +335,11 @@ async function seedHousehold(ada: Page, adaId: number, now: Date): Promise<House
   for (const [categoryId, amount] of [[groceriesId, 25_000], [home, 120_000], [travel, 40_000]]) {
     await call(`budget.set`, { categoryId, month, amount, expectedVersion: null })
   }
-  return { householdId: groupId, salaryId, groceriesId, transferId }
+  return { householdId: groupId, salaryId, groceriesId, travelId: travel, transferId }
 }
 
 /** Signs Linus in to the admin app as an administrator, and returns his page there. */
-async function signInToAdmin(browser: Browser, contexts: BrowserContext[]): Promise<Page> {
+export async function signInToAdmin(browser: Browser, contexts: BrowserContext[]): Promise<Page> {
   const context = await browser.newContext({ baseURL: ADMIN })
   contexts.push(context)
   const promoted = await context.request.post(`${APP}/api/test/set-role`, {
@@ -357,7 +359,7 @@ async function signInToAdmin(browser: Browser, contexts: BrowserContext[]): Prom
  * Has the worker fetch today's exchange rates now and waits for it: the job otherwise runs at
  * 16:00 UTC, and a fresh stack holds no rate to total the accounts with.
  */
-async function fetchRates(admin: Page): Promise<void> {
+export async function fetchRates(admin: Page): Promise<void> {
   const url = `${ADMIN}/api/admin/jobs/repeating`
   const started = await admin.request.post(`${url}/rates.fetch/run-now`, {
     headers: sameOrigin(ADMIN),
