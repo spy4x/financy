@@ -5,8 +5,9 @@
 Run Financy for your household on a server you rent or own, from a fresh server to everyone signed
 in. Self-hosting is free under the AGPL-3.0 licence; you pay only for the server.
 
-How long a fresh install takes is being measured on a new server, and this guide will say once it
-is.
+A fresh install took 15 minutes on a Hetzner cx23 server (2 shared CPUs, 4 GB), from ordering the
+server to a signed-in household. The first deploy, which builds the images on the server, took 3 of
+them.
 
 **You need:**
 
@@ -23,7 +24,13 @@ Seed, the starter Financy is built on, explains every step in more depth in
 
 Follow [Deploy to a server](../deploy.md#the-server), "The server" and "The firewall": a `deploy`
 user with uid 1000, SSH keys only, Docker with Compose, rsync, unzip and Deno, and only ports 22,
-80 and 443 open.
+80 and 443 open. Two things that page does not say:
+
+- Keep the root session open until the firewall is on. The second step of "The server" turns root
+  logins off, the `deploy` user has no `sudo`, and installing Docker and turning on the firewall
+  need root.
+- Install Deno with `curl -fsSL https://deno.land/install.sh | sh -s -- -y`. Without `-y`, an
+  installer that cannot ask leaves Deno off the `PATH`, and `deno task` in step 5 is not found.
 
 ## 2. Point a host name at it
 
@@ -57,27 +64,29 @@ Use the first tag the second command prints in place of `v0.1.0`.
 
 2. Set these values:
 
-   | Variable                | Value                                                   |
-   | ----------------------- | ------------------------------------------------------- |
-   | `ENV`                   | `prod`                                                  |
-   | `PROJECT`               | `financy`                                               |
-   | `DOMAIN`                | `money.example.com`                                     |
-   | `ADMIN_DOMAIN`          | Empty, unless you want the admin panel.                 |
-   | `TRAEFIK_ACME_EMAIL`    | Your address, for certificate notices.                  |
-   | `SSH_TO_SERVER`         | `deploy@192.0.2.10`                                     |
-   | `PATH_ON_SERVER`        | `financy`, a folder in the deploy user's home.          |
-   | `PROXY_HTTPS_HOST_PORT` | `443`                                                   |
-   | `PROXY_HTTP_HOST_PORT`  | `80`                                                    |
-   | `COMPOSE_PROFILES`      | `files`                                                 |
-   | `TIMEZONE`              | Your IANA time zone, such as `Europe/Berlin`.           |
-   | `SMTP_*`                | All five: your mail provider's SMTP account.            |
+   | Variable                | Value                                          |
+   | ----------------------- | ---------------------------------------------- |
+   | `ENV`                   | `prod`                                         |
+   | `PROJECT`               | `financy`                                      |
+   | `DOMAIN`                | `money.example.com`                            |
+   | `ADMIN_DOMAIN`          | Empty, unless you want the admin panel.        |
+   | `TRAEFIK_ACME_EMAIL`    | Your address, for certificate notices.         |
+   | `SSH_TO_SERVER`         | `deploy@192.0.2.10`                            |
+   | `PATH_ON_SERVER`        | `financy`, a folder in the deploy user's home. |
+   | `PROXY_HTTPS_HOST_PORT` | `443`                                          |
+   | `PROXY_HTTP_HOST_PORT`  | `80`                                           |
+   | `COMPOSE_PROFILES`      | `files`                                        |
+   | `TIMEZONE`              | Your IANA time zone, such as `Europe/Berlin`.  |
+   | `SPA_CPU_LIMIT`         | `1`. The example's `4` fails on 2 CPUs.        |
+   | `SMTP_*`                | All five: your mail provider's SMTP account.   |
 
 3. Give every secret a value of its own, as the secrets table in
    [The env file](../deploy.md#the-env-file) says. The deploy refuses a secret left as in the
    example, and names it.
 4. Mail is required: Financy emails a code to everyone who signs up, signs in by emailed code or
    resets a password. Without the five `SMTP_*` values that code never arrives, so nobody can make
-   an account.
+   an account. The mail server must speak TLS: implicit TLS on port 465, or STARTTLS on any other
+   port, with a certificate valid for `SMTP_HOST`.
 5. Keep a copy of `infra/envs/.env.prod` in your password manager. It holds the only copy of the
    secrets and the key of the file store, and no backup saves it.
 
@@ -123,7 +132,8 @@ and what a key adds.
    curl -sS -w '\n%{http_code}\n' https://money.example.com/api/health
    ```
 
-When it does not, [Check it](../deploy.md#check-it) and
+For up to a minute after a deploy it can answer `404 page not found`, until the new API passes its
+health check; try again. When it still does not, [Check it](../deploy.md#check-it) and
 [HTTPS certificates](../certificates.md) say what to look at.
 
 ## 6. Sign up, and bring in your household
@@ -132,10 +142,11 @@ Anyone who reaches `money.example.com` can make an account until you close sign-
 right after the deploy:
 
 1. Open `https://money.example.com`, sign up, and create a group for your household.
-2. In the group, choose **Invite** for each member and send them the invitation link. They open
-   it, sign up and join the group.
-3. Once everyone has an account, close sign-up. Add this line to `infra/envs/.env.prod` and deploy
-   again:
+2. In the group's **Members** tab, choose **Invite** for each member, create the invitation and
+   send them its link. They open it, sign up, enter the code from their mail and accept the
+   invitation.
+3. Once everyone has an account, close sign-up. Set this in `infra/envs/.env.prod`, where the
+   example has an empty `SIGN_UP=`, and deploy again:
 
    ```sh
    SIGN_UP=invite
@@ -149,8 +160,8 @@ People with an account keep signing in as before.
 
 For now, `SIGN_UP=invite` closes sign-up to everyone, an invitation included, because the sign-up
 screens cannot carry one yet ([seed#913](https://github.com/spy4x/seed/issues/913)). To add a
-member later, remove the line, deploy, let them sign up from your invitation, then put it back and
-deploy again.
+member later, empty `SIGN_UP=`, deploy, let them sign up from your invitation, then set it back
+to `invite` and deploy again.
 
 ## 7. Turn on backups
 
