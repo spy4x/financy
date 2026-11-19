@@ -284,17 +284,18 @@ export default {
   "FeatureVisuals.deployCaption": "已精简：省略了各步骤之间 rsync 和 Compose 的输出。",
   "FeatureVisuals.services": "服务器上的服务",
   "Loops.realtimeName": "实时同步",
-  "Loops.realtimeTitle": "在左边窗口保存的笔记，一秒内就出现在右边窗口，无需刷新。",
-  "Loops.realtimeCaption": "两个窗口，同一个账户。在一个窗口保存，另一个会自动更新。",
-  "Loops.offlineName": "离线编辑",
-  "Loops.offlineTitle": "应用断网后编辑一条笔记，重新连接时，冲突选择器会询问保留哪个版本。",
-  "Loops.offlineCaption":
-    "离线编辑会在发件箱里排队。如果有人改了同一条笔记，由你选择保留哪个版本。",
+  "Loops.realtimeTitle":
+    "在左侧窗口添加一笔 €64.50 的支出后，右侧窗口的 Travel 预算无需刷新，就从 €171.80 变为 €236.30。",
+  "Loops.realtimeCaption": "两个人，同一个家庭。在一个屏幕上添加的支出，会更新另一个屏幕上的预算。",
+  "Loops.offlineName": "离线记账",
+  "Loops.offlineTitle":
+    "没有网络时添加一笔 240 泰铢的支出，它会在列表中等待。恢复联网后，它会被发送并换算成欧元。",
+  "Loops.offlineCaption": "没有网络也能添加交易。它们会在这台设备上等待，重新联网后再发送。",
   "Loops.shortcutsName": "键盘快捷键",
   "Loops.shortcutsTitle":
-    "Ctrl+K 打开命令面板。拼错的搜索、西里尔字母的搜索和用错键盘布局的搜索，都能找到同一个操作，然后执行它。",
+    "按 T 再按 Enter 即可添加一笔交易。随后 Ctrl+K 能通过一个拼错的词、一个西里尔字母的词和一个用错键盘布局输入的词找到一笔酒店付款，按 Enter 即可打开。",
   "Loops.shortcutsCaption":
-    "按 Ctrl+K（Mac 上为 ⌘K）。搜索能容忍拼写错误、西里尔字母和用错的键盘布局。",
+    "按 T 添加交易，按 Ctrl+K（Mac 上为 ⌘K）查找交易。搜索能容忍拼写错误、西里尔字母和用错的键盘布局。",
   "Outbox.change": "更改",
   "Outbox.changeNote": "一条笔记、一位成员",
   "Outbox.event": "它的事件",

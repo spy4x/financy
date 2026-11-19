@@ -324,21 +324,21 @@ export default {
   "FeatureVisuals.deployCaption":
     "Resumido: se omite la salida de rsync y Compose entre los pasos.",
   "FeatureVisuals.services": "Servicios en el servidor",
-  "Loops.realtimeName": "Sincronización en tiempo real",
+  "Loops.realtimeName": "Sincronización en vivo",
   "Loops.realtimeTitle":
-    "Una nota guardada en la ventana izquierda aparece en la derecha en menos de un segundo, sin recargar.",
+    "Un gasto de €64.50 añadido en la ventana izquierda sube el presupuesto de Travel en la ventana derecha de €171.80 a €236.30, sin recargar.",
   "Loops.realtimeCaption":
-    "Dos ventanas, una cuenta de usuario. Guarda en una y la otra se actualiza sola.",
-  "Loops.offlineName": "Edición sin conexión",
+    "Dos personas, un hogar. Un gasto añadido en una pantalla actualiza el presupuesto en la otra.",
+  "Loops.offlineName": "Movimientos sin conexión",
   "Loops.offlineTitle":
-    "La app se queda sin conexión, se edita una nota y, al reconectar, el selector de conflictos pregunta qué versión conservar.",
+    "Sin conexión, se añade un gasto de 240 bahts, que espera en la lista. De nuevo en línea, se envía y se convierte a euros.",
   "Loops.offlineCaption":
-    "Los cambios sin conexión esperan en una bandeja de salida. Si alguien cambió la misma nota, eliges qué versión conservar.",
+    "Añade movimientos sin conexión. Esperan en este dispositivo y se envían cuando vuelves a conectarte.",
   "Loops.shortcutsName": "Atajos de teclado",
   "Loops.shortcutsTitle":
-    "Ctrl+K abre la paleta de comandos. Una búsqueda con una errata, otra en cirílico y otra con la distribución de teclado equivocada encuentran la misma acción, que después se ejecuta.",
+    "T y Enter añaden un movimiento. Después, Ctrl+K encuentra un pago de hotel con una palabra mal escrita, una en cirílico y una escrita con la distribución de teclado equivocada, y Enter lo abre.",
   "Loops.shortcutsCaption":
-    "Pulsa Ctrl+K (⌘K en un Mac). La búsqueda perdona erratas, el cirílico y la distribución de teclado equivocada.",
+    "Pulsa T para añadir un movimiento y Ctrl+K (⌘K en un Mac) para encontrar uno. La búsqueda perdona erratas, el cirílico y la distribución de teclado equivocada.",
   "Outbox.change": "El cambio",
   "Outbox.changeNote": "una nota, un miembro",
   "Outbox.event": "Su evento",

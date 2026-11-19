@@ -328,21 +328,21 @@ export default {
   "FeatureVisuals.deployCaption":
     "Version abrégée : la sortie de rsync et de Compose entre les étapes est omise.",
   "FeatureVisuals.services": "Services sur le serveur",
-  "Loops.realtimeName": "Synchronisation en temps réel",
+  "Loops.realtimeName": "Synchronisation en direct",
   "Loops.realtimeTitle":
-    "Une note enregistrée dans la fenêtre de gauche apparaît dans celle de droite en moins d’une seconde, sans rechargement.",
+    "Une dépense de €64.50 ajoutée dans la fenêtre de gauche fait passer le budget Travel de la fenêtre de droite de €171.80 à €236.30, sans rechargement.",
   "Loops.realtimeCaption":
-    "Deux fenêtres, un même compte utilisateur. Enregistrez dans l’une, l’autre se met à jour d’elle-même.",
-  "Loops.offlineName": "Modification hors ligne",
+    "Deux personnes, un même foyer. Une dépense ajoutée sur un écran met à jour le budget sur l’autre.",
+  "Loops.offlineName": "Saisie hors ligne",
   "Loops.offlineTitle":
-    "L’application passe hors ligne, une note est modifiée, et à la reconnexion le choix de conflit demande quelle version garder.",
+    "Sans connexion, une dépense de 240 bahts est ajoutée et attend dans la liste. Une fois en ligne, elle est envoyée et convertie en euros.",
   "Loops.offlineCaption":
-    "Les modifications hors ligne attendent dans une file d’envoi. Si quelqu’un a changé la même note, vous choisissez la version à garder.",
+    "Ajoutez des opérations sans connexion. Elles attendent sur cet appareil et partent dès que vous êtes reconnecté.",
   "Loops.shortcutsName": "Raccourcis clavier",
   "Loops.shortcutsTitle":
-    "Ctrl+K ouvre la palette de commandes. Une recherche avec une faute de frappe, une en cyrillique et une dans la mauvaise disposition de clavier trouvent chacune la même action, qui s’exécute ensuite.",
+    "T puis Entrée ajoutent une opération. Ctrl+K retrouve ensuite un paiement d’hôtel à partir d’un mot mal orthographié, d’un mot en cyrillique et d’un mot tapé avec la mauvaise disposition de clavier, et Entrée l’ouvre.",
   "Loops.shortcutsCaption":
-    "Appuyez sur Ctrl+K (⌘K sur Mac). La recherche pardonne les fautes de frappe, le cyrillique et la mauvaise disposition de clavier.",
+    "Appuyez sur T pour ajouter une opération et sur Ctrl+K (⌘K sur Mac) pour en retrouver une. La recherche pardonne les fautes de frappe, le cyrillique et la mauvaise disposition de clavier.",
   "Outbox.change": "La modification",
   "Outbox.changeNote": "une note, un membre",
   "Outbox.event": "Son événement",

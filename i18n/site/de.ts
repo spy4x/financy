@@ -322,21 +322,21 @@ export default {
   "FeatureVisuals.deployCaption":
     "Gekürzt: Die Ausgaben von rsync und Compose zwischen den Schritten sind weggelassen.",
   "FeatureVisuals.services": "Dienste auf dem Server",
-  "Loops.realtimeName": "Echtzeit-Sync",
+  "Loops.realtimeName": "Live-Sync",
   "Loops.realtimeTitle":
-    "Eine im linken Fenster gespeicherte Notiz erscheint binnen einer Sekunde im rechten Fenster, ohne Neuladen.",
+    "Eine Ausgabe von €64.50, im linken Fenster erfasst, hebt das Travel-Budget im rechten Fenster von €171.80 auf €236.30, ohne Neuladen.",
   "Loops.realtimeCaption":
-    "Zwei Fenster, ein Benutzerkonto. Speichere in einem, und das andere aktualisiert sich von selbst.",
-  "Loops.offlineName": "Offline bearbeiten",
+    "Zwei Personen, ein Haushalt. Eine Ausgabe, auf einem Bildschirm erfasst, aktualisiert das Budget auf dem anderen.",
+  "Loops.offlineName": "Offline erfassen",
   "Loops.offlineTitle":
-    "Die App geht offline, eine Notiz wird bearbeitet, und nach der Wiederverbindung fragt die Konfliktauswahl, welche Version bleibt.",
+    "Ohne Verbindung wird eine Ausgabe von 240 Baht erfasst und wartet in der Liste. Wieder online, wird sie gesendet und in Euro umgerechnet.",
   "Loops.offlineCaption":
-    "Offline-Änderungen warten in einer Outbox. Hat jemand dieselbe Notiz geändert, wählst du, welche Version bleibt.",
+    "Erfasse Buchungen ohne Verbindung. Sie warten auf diesem Gerät und werden gesendet, sobald du wieder verbunden bist.",
   "Loops.shortcutsName": "Tastenkürzel",
   "Loops.shortcutsTitle":
-    "Strg+K öffnet die Befehlspalette. Eine Suche mit Tippfehler, eine auf Kyrillisch und eine im falschen Tastaturlayout finden jeweils dieselbe Aktion, die dann ausgeführt wird.",
+    "T und Enter fügen eine Buchung hinzu. Danach findet Strg+K eine Hotelzahlung über ein falsch geschriebenes Wort, ein kyrillisches Wort und ein Wort im falschen Tastaturlayout, und Enter öffnet sie.",
   "Loops.shortcutsCaption":
-    "Drück Strg+K (⌘K auf dem Mac). Die Suche verzeiht Tippfehler, Kyrillisch und das falsche Tastaturlayout.",
+    "Drück T, um eine Buchung hinzuzufügen, und Strg+K (⌘K auf dem Mac), um eine zu finden. Die Suche verzeiht Tippfehler, Kyrillisch und das falsche Tastaturlayout.",
   "Outbox.change": "Die Änderung",
   "Outbox.changeNote": "eine Notiz, ein Mitglied",
   "Outbox.event": "Ihr Event",
