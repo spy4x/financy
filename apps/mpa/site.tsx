@@ -66,7 +66,7 @@ export const OG_IMAGES: Record<OgImageKey, { headline: string; line: string }> =
   },
   subscribe: {
     headline: `What shipped in Financy, briefly.`,
-    line: `A short email when it changes`,
+    line: `A short email when Financy has news`,
   },
 }
 
