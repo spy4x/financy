@@ -236,5 +236,7 @@ describe("the comparison pages", () => {
       expect(line, feature).toContain(`href="/fr/alternatives/${slug}"`)
       expect(line, feature).toContain(competitor)
     }
+    const { html } = await get(`/features/transfers`)
+    expect(html).not.toContain(`data-e2e="feature-page-comparison"`)
   })
 })
