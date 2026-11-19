@@ -6,6 +6,7 @@ import Layout from "./routes/_layout.tsx"
 import { handler as hub } from "./routes/[[lang]]/alternatives/index.tsx"
 import { handler as comparison } from "./routes/[[lang]]/alternatives/[slug].tsx"
 import { handler as feature } from "./routes/[[lang]]/features/[slug].tsx"
+import { planPrice } from "./routes/[[lang]]/pricing.tsx"
 import { alternativeIn, ALTERNATIVES as KEYED, ALTERNATIVES_UPDATED } from "./alternatives-data.ts"
 import { SITE_PAGES } from "./pages.ts"
 import { SITE_LANGUAGES, siteTranslator } from "./languages.ts"
@@ -13,6 +14,7 @@ import { pageMiddleware } from "./middleware.ts"
 import type { State } from "./utils.ts"
 import { siteEnglishText } from "@ui/site-text.ts"
 import { importKindView } from "@ui/import-kinds.ts"
+import { findPlan, PRO_PLAN_ID } from "@domain/billing"
 
 const english = siteEnglishText()
 /** The comparisons in English. */
@@ -98,7 +100,36 @@ describe("the comparison pages", () => {
     for (const page of KEYED) {
       expect(listed.get(`/alternatives/${page.slug}`), page.slug).toBe(page.checked)
     }
-    expect(ALTERNATIVES_UPDATED).toBe(`2026-11-18`)
+    expect(ALTERNATIVES_UPDATED).toBe(`2026-11-19`)
+    expect(KEYED.map(({ checked }) => checked)).toEqual([`2026-11-19`, `2026-11-19`, `2026-11-18`])
+  })
+
+  it("lists YNAB, then Actual Budget, then Firefly III on the hub", async () => {
+    const { html } = await get(`/alternatives`)
+    const list = html.match(/data-e2e="alternatives-list"[\s\S]*?<\/ul>/)?.[0] ?? ``
+
+    expect([...list.matchAll(/href="\/alternatives\/([^"]+)"/g)].map((match) => match[1])).toEqual(
+      [`ynab-multiple-currencies`, `actual-budget`, `firefly-iii`],
+    )
+  })
+
+  it("quotes the cloud's yearly price from the plan catalog", () => {
+    const plan = findPlan(PRO_PLAN_ID)!
+    const price = planPrice(plan.yearlyAmount!, plan.currency, `en`)
+    const wholePrice = new RegExp(`${price.replace(`$`, `\\$`)}(?![.,]?\\d)`)
+
+    for (
+      const key of [
+        `AlternativeYnab.rowPriceNote`,
+        `AlternativeYnab.costAnswer`,
+        `AlternativeActual.costAnswer`,
+      ]
+    ) {
+      expect(english.t(key), key).toContain(`${price} a year`)
+      for (const language of SITE_LANGUAGES) {
+        expect(siteTranslator(language).t(key), `${language} ${key}`).toMatch(wholePrice)
+      }
+    }
   })
 
   it("answers an unknown comparison, or a property every object has, with the feature pages' 404", async () => {
@@ -184,22 +215,32 @@ describe("the comparison pages", () => {
   })
 
   it("claims statement import for Financy only once the app has a screen for it", () => {
-    const row = KEYED.flatMap((page) => page.rows)
-      .find((row) => row.capability === `AlternativeFirefly.rowImport`)
+    const rows = KEYED.flatMap((page) => page.rows)
     const screen = importKindView(`bank-statement`, true)
-    expect(row?.values[0]).toBe(screen === null ? `no` : `yes`)
+    for (const key of [`AlternativeFirefly.rowImport`, `AlternativeActual.rowImport`]) {
+      const row = rows.find((row) => row.capability === key)
+      expect(row?.values[0], key).toBe(screen === null ? `no` : `yes`)
+    }
   })
 
-  it("links back from each feature page a comparison names, in the page's language", async () => {
-    for (const page of KEYED) {
-      for (const slug of page.features) {
-        const { html } = await get(`/fr/features/${slug}`)
-        const line = html.match(/data-e2e="feature-page-comparison"[\s\S]*?<\/p>/)?.[0] ?? ``
-        expect(line, slug).toContain(`href="/fr/alternatives/${page.slug}"`)
-        expect(line, slug).toContain(page.competitor)
-      }
+  it("links each feature page to the first comparison on the hub that names it, in the page's language", async () => {
+    const expected = {
+      "multi-currency": { slug: `ynab-multiple-currencies`, competitor: `YNAB` },
+      "live-sync": { slug: `ynab-multiple-currencies`, competitor: `YNAB` },
+      "self-hosting": { slug: `actual-budget`, competitor: `Actual Budget` },
+      households: { slug: `firefly-iii`, competitor: `Firefly III` },
     }
-    const { html } = await get(`/features/live-sync`)
+
+    expect(Object.keys(expected).sort()).toEqual(
+      [...new Set(KEYED.flatMap((p) => p.features))].sort(),
+    )
+    for (const [feature, { slug, competitor }] of Object.entries(expected)) {
+      const { html } = await get(`/fr/features/${feature}`)
+      const line = html.match(/data-e2e="feature-page-comparison"[\s\S]*?<\/p>/)?.[0] ?? ``
+      expect(line, feature).toContain(`href="/fr/alternatives/${slug}"`)
+      expect(line, feature).toContain(competitor)
+    }
+    const { html } = await get(`/features/transfers`)
     expect(html).not.toContain(`data-e2e="feature-page-comparison"`)
   })
 })

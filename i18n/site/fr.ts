@@ -663,7 +663,7 @@ export default {
     "Financy comparé à d’autres applis de suivi des dépenses. Chaque page dit quand l’autre outil vous convient mieux, avec des faits sourcés et datés.",
   "Alternatives.h1": "Financy comparé aux outils que vous connaissez",
   "Alternatives.lead":
-    "Chaque page dit d’abord quand l’autre outil vous convient mieux, et relie chaque fait le concernant à sa propre documentation.",
+    "Chaque page dit d’abord quand l’autre outil vous convient mieux, et relie chaque fait le concernant aux pages de cet outil.",
   "Alternative.checked": "Vérifié le <time>{date}</time>",
   "Alternative.glance": "En un coup d’œil",
   "Alternative.caption": "Financy et {name}, côte à côte",
@@ -673,6 +673,99 @@ export default {
   "Alternative.demo": "Essayer la démo",
   "Alternative.selfHost": "Lire le guide d’auto-hébergement",
   "Alternative.all": "Toutes les comparaisons",
+  "AlternativeYnab.title": "Alternative multidevises à YNAB",
+  "AlternativeYnab.description":
+    "YNAB se limite à une seule devise par plan de dépenses. Financy tient vos comptes en toute devise et totalise celles qui ont un taux de change.",
+  "AlternativeYnab.h1": "Une alternative à YNAB pour gérer plusieurs devises",
+  "AlternativeYnab.answer":
+    "Restez sur YNAB si votre budget tient dans une seule devise et si votre banque est compatible avec son import direct. Choisissez Financy si l’argent de votre foyer est réparti entre plusieurs devises et si vous voulez un total unique.",
+  "AlternativeYnab.rowCurrencies": "Plusieurs devises dans un même budget",
+  "AlternativeYnab.rowCurrenciesNote": "YNAB : une seule devise par plan.",
+  "AlternativeYnab.rowTotal": "Un total converti dans une devise principale",
+  "AlternativeYnab.rowTotalNote": "YNAB recommande un budget distinct pour chaque devise.",
+  "AlternativeYnab.rowSharing": "Ouvrir vos finances à votre foyer sans partager de mot de passe",
+  "AlternativeYnab.rowBankImport": "Importer les opérations directement depuis votre banque",
+  "AlternativeYnab.rowBankImportNote":
+    "YNAB : certaines banques des États-Unis, du Canada, du Royaume-Uni et de l’UE.",
+  "AlternativeYnab.rowPrice": "Moins de $50 par an",
+  "AlternativeYnab.rowPriceNote":
+    "Financy : gratuit en auto-hébergement ; le cloud coûtera $40 par an et n’est pas encore ouvert. YNAB : $109 par an, plus taxes le cas échéant.",
+  "AlternativeYnab.sourceFaq": "FAQ des tarifs de YNAB",
+  "AlternativeYnab.sourceCurrencies": "Aide YNAB : plusieurs devises",
+  "AlternativeYnab.sourceTogether": "YNAB Together",
+  "AlternativeYnab.sourcePricing": "Tarifs de YNAB",
+  "AlternativeYnab.method":
+    "Chaque fait sur YNAB provient du site de YNAB, en lien dans sa ligne. Les lignes de Financy ne listent que ce qui fonctionne déjà dans l’appli. Nous revérifions chaque ligne tous les trois mois et ne changeons la date qu’à ce moment-là. Une info dépassée ? Écrivez à <mail>{email}</mail>.",
+  "AlternativeYnab.fit":
+    "Financy n’a ni synchronisation bancaire automatique ni budget par enveloppes, et n’a pas encore d’écran pour importer des relevés bancaires.",
+  "AlternativeYnab.better":
+    "Si votre budget tient dans une seule devise, restez sur <ynab>YNAB</ynab>. Pour un budget par enveloppes gratuit que vous hébergez vous-même, regardez <actual>Actual Budget</actual>. Si vous cherchez une appli open source pensée comme Financy, la plus proche est <sure>Sure</sure> : elle aussi sous AGPL-3.0, et auto-hébergée avec Docker.",
+  "AlternativeYnab.moving":
+    "L’application Financy n’a pas encore d’écran pour importer un export de YNAB : vous ne pouvez donc pas transférer votre historique depuis l’application aujourd’hui. Si votre historique compte pour vous, restez sur YNAB pour le moment.",
+  "AlternativeYnab.currenciesQuestion": "YNAB gère-t-il plusieurs devises ?",
+  "AlternativeYnab.currenciesAnswer":
+    "Pas dans un même plan. La page des tarifs de YNAB indique qu’on ne peut pas utiliser plusieurs devises ensemble dans un seul plan de dépenses, et son aide recommande un budget distinct pour chaque devise. Financy conserve chaque compte dans sa propre devise et affiche un total unique, en nommant toute devise pour laquelle il n’a pas de taux de change.",
+  "AlternativeYnab.householdQuestion":
+    "Mon foyer peut-il partager Financy comme avec YNAB Together ?",
+  "AlternativeYnab.householdAnswer":
+    "Oui. Dans un foyer Financy, chacun se connecte avec son propre identifiant et son rôle, et voit les mêmes comptes. YNAB Together ne demande pas non plus de mot de passe partagé.",
+  "AlternativeYnab.dataQuestion": "Puis-je importer mes données YNAB dans Financy ?",
+  "AlternativeYnab.dataAnswer":
+    "Pas depuis l’application pour le moment. Aujourd’hui, l’application Financy n’a pas d’écran pour importer un export de YNAB.",
+  "AlternativeYnab.costQuestion": "Combien coûte chacun ?",
+  "AlternativeYnab.costAnswer":
+    "YNAB coûte $109 par an, plus taxes le cas échéant. Financy est gratuit en auto-hébergement, sous AGPL-3.0. Son cloud coûtera $40 par an et par foyer, et n’est pas encore ouvert.",
+  "AlternativeActual.title": "Alternative multidevises à Actual Budget",
+  "AlternativeActual.description":
+    "Actual Budget ne gère pas encore plusieurs devises. Financy tient vos comptes en toute devise et totalise celles qui ont un taux de change.",
+  "AlternativeActual.h1": "Une alternative à Actual Budget pour gérer plusieurs devises",
+  "AlternativeActual.answer":
+    "Restez sur Actual Budget si vous voulez un budget par enveloppes, la synchronisation bancaire ou une appli qui fonctionne sans serveur. Choisissez Financy si l’argent de votre foyer est réparti entre plusieurs devises et si vous voulez un total unique.",
+  "AlternativeActual.rowCurrencies": "Des comptes dans plusieurs devises",
+  "AlternativeActual.rowCurrenciesNote":
+    "Actual Budget : sa documentation indique que des personnes travaillent à la prise en charge des devises.",
+  "AlternativeActual.rowTotal": "Un total converti dans une devise principale",
+  "AlternativeActual.rowTotalNote":
+    "Actual Budget : une solution de contournement expérimentale, à base de modèles de règles.",
+  "AlternativeActual.rowLogins": "Chacun se connecte avec son propre identifiant",
+  "AlternativeActual.rowLoginsNote": "Actual Budget : nécessite un fournisseur OpenID.",
+  "AlternativeActual.rowEnvelopes": "Budget par enveloppes",
+  "AlternativeActual.rowBankSync": "Synchronisation bancaire automatique",
+  "AlternativeActual.rowBankSyncNote":
+    "Actual Budget : via des fournisseurs qui varient selon la région.",
+  "AlternativeActual.rowImport": "Importer des relevés bancaires en fichier",
+  "AlternativeActual.rowImportNote": "Financy : pas encore dans l’application.",
+  "AlternativeActual.rowNoServer": "Fonctionne sans serveur",
+  "AlternativeActual.rowOpenSource": "Gratuit et open source",
+  "AlternativeActual.rowOpenSourceNote": "Financy : AGPL-3.0. Actual Budget : MIT.",
+  "AlternativeActual.sourceCurrencies": "Docs Actual : plusieurs devises",
+  "AlternativeActual.sourceMultiUser": "Docs Actual : multi-utilisateur",
+  "AlternativeActual.sourceSite": "Site d’Actual Budget",
+  "AlternativeActual.sourceBankSync": "Docs Actual : synchronisation bancaire",
+  "AlternativeActual.sourceImporting": "Docs Actual : importer des données",
+  "AlternativeActual.sourceInstall": "Docs Actual : installation",
+  "AlternativeActual.sourceReadme": "README d’Actual Budget",
+  "AlternativeActual.method":
+    "Chaque fait sur Actual Budget provient de son site, de sa documentation ou de son dépôt, en lien dans sa ligne. Les lignes de Financy ne listent que ce qui fonctionne déjà dans l’appli. Nous revérifions chaque ligne tous les trois mois et ne changeons la date qu’à ce moment-là. Une info dépassée ? Écrivez à <mail>{email}</mail>.",
+  "AlternativeActual.fit":
+    "Financy n’a ni budget par enveloppes ni synchronisation bancaire automatique, n’a pas encore d’écran pour importer des relevés bancaires et nécessite un serveur.",
+  "AlternativeActual.better":
+    "Pour un budget par enveloppes dans une seule devise, restez sur <actual>Actual Budget</actual>. Si vous cherchez une appli open source pensée comme Financy, la plus proche est <sure>Sure</sure> : elle aussi sous AGPL-3.0, et auto-hébergée avec Docker.",
+  "AlternativeActual.moving":
+    "L’application Financy n’a pas encore d’écran pour importer un export d’Actual Budget : vous ne pouvez donc pas transférer votre historique depuis l’application aujourd’hui. Si votre historique compte pour vous, restez sur Actual Budget pour le moment.",
+  "AlternativeActual.currenciesQuestion": "Actual Budget gère-t-il plusieurs devises ?",
+  "AlternativeActual.currenciesAnswer":
+    "Pas encore. Sa documentation indique qu’il ne prend pas en charge le multidevises, que des personnes y travaillent, et décrit une solution de contournement expérimentale, à base de modèles de règles. Financy conserve chaque compte dans sa propre devise et affiche un total unique, en nommant toute devise pour laquelle il n’a pas de taux de change.",
+  "AlternativeActual.envelopesQuestion":
+    "Financy est-il un budget par enveloppes comme Actual Budget ?",
+  "AlternativeActual.envelopesAnswer":
+    "Non. L’appli Financy ne propose pas de budget par enveloppes aujourd’hui. Pour les enveloppes, restez sur Actual Budget.",
+  "AlternativeActual.dataQuestion": "Puis-je importer mes données Actual Budget dans Financy ?",
+  "AlternativeActual.dataAnswer":
+    "Pas depuis l’application pour le moment. Aujourd’hui, l’application Financy n’a pas d’écran pour importer un export d’Actual Budget.",
+  "AlternativeActual.costQuestion": "Combien coûte chacun ?",
+  "AlternativeActual.costAnswer":
+    "Les deux sont gratuits en auto-hébergement. Actual Budget est sous licence MIT et Financy sous AGPL-3.0. Le cloud de Financy coûtera $40 par an et par foyer, et n’est pas encore ouvert.",
   "AlternativeFirefly.title": "Alternative à Firefly III pour les couples",
   "AlternativeFirefly.description":
     "Firefly III donne un seul identifiant par administration. Avec Financy, un couple partage un foyer, chacun avec son identifiant, en toutes devises.",
