@@ -27,7 +27,7 @@ export function shotSrcset(name: string, theme: "light" | "dark", kind: ShotKind
 }
 
 export interface ShotProps {
-  /** The screenshot's name in `static/shots/`, such as `notes`. */
+  /** The screenshot's name in `static/shots/`, such as `for-expats`. */
   name: string
   kind?: ShotKind
   /** The height at the widest width, for a picture cropped from its kind's viewport. */
