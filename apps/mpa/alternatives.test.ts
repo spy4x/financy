@@ -101,6 +101,7 @@ describe("the comparison pages", () => {
       expect(listed.get(`/alternatives/${page.slug}`), page.slug).toBe(page.checked)
     }
     expect(ALTERNATIVES_UPDATED).toBe(`2026-11-19`)
+    expect(KEYED.map(({ checked }) => checked)).toEqual([`2026-11-19`, `2026-11-19`, `2026-11-18`])
   })
 
   it("lists YNAB, then Actual Budget, then Firefly III on the hub", async () => {
