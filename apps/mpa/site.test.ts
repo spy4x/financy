@@ -1000,7 +1000,7 @@ describe("the public website", () => {
     )
     expect(english).toEqual({
       "/": "2026-11-16T00:00:00.000Z",
-      "/features": "2026-11-18T00:00:00.000Z",
+      "/features": "2026-11-19T00:00:00.000Z",
       ...Object.fromEntries(
         FEATURE_PAGES.map(({ slug, updated }) => [`/features/${slug}`, `${updated}T00:00:00.000Z`]),
       ),

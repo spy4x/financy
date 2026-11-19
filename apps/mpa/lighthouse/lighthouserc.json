@@ -6,6 +6,7 @@
         "http://127.0.0.1:48411/features",
         "http://127.0.0.1:48411/features/multi-currency",
         "http://127.0.0.1:48411/features/households",
+        "http://127.0.0.1:48411/features/transfers",
         "http://127.0.0.1:48411/for/expats",
         "http://127.0.0.1:48411/alternatives",
         "http://127.0.0.1:48411/alternatives/firefly-iii",

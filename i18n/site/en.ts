@@ -278,6 +278,20 @@ export default {
   "FeatureLiveSync.notYetRates": "Exchange rates you can read with no network",
   "FeatureLiveSync.notYetStores": "Apps in Google Play and the App Store",
   "FeatureLiveSync.code": "Read the realtime design",
+  "FeatureTelegramBot.nav": "Telegram bot",
+  "FeatureTelegramBot.title": "Add an expense from a Telegram chat",
+  "FeatureTelegramBot.lead":
+    "Link your Telegram account once, then send /expense or /income to add an entry, or /balance and /month to read your figures. The bot acts as you, with your role in the household.",
+  "FeatureTelegramBot.fact1":
+    "/expense 12.50 saves at once when your last expense gives the category",
+  "FeatureTelegramBot.fact2": "/balance and /month change nothing, and a viewer can use them too",
+  "FeatureTelegramBot.fact3":
+    "/expense, /income, /balance and /month work only in a private chat; in a group the bot asks you to message it privately",
+  "FeatureTelegramBot.fact4": "Linking takes a one-time code that lasts 10 minutes",
+  "FeatureTelegramBot.notYetTransfer": "Recording a transfer from the bot",
+  "FeatureTelegramBot.notYetVoice": "Voice notes and receipt photos that become entries",
+  "FeatureTelegramBot.notYetSentences": "Typing a whole sentence instead of a command",
+  "FeatureTelegramBot.code": "Read the bot's code",
   "FeatureDeploy.nav": "Self-hosting",
   "FeatureDeploy.title": "Runs on your own server",
   "FeatureDeploy.lead":
@@ -529,6 +543,88 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "Is there a one-click installer?",
   "FeaturePageSelfHosting.installerAnswer":
     "Not yet. You set Financy up from your own computer with Deno, rsync and git, and one command deploys it. The self-hosting guide walks through every step.",
+  "FeaturePageTransfers.name": "Transfers",
+  "FeaturePageTransfers.title": "Record transfers between currencies",
+  "FeaturePageTransfers.description":
+    "Record money moved between your own accounts in two currencies. Financy keeps the amount sent and the amount received.",
+  "FeaturePageTransfers.h1": "Can I record a transfer between accounts in different currencies?",
+  "FeaturePageTransfers.answer":
+    "Yes. Add a transfer, choose the two accounts and type the amount sent. Type what arrived too, or leave it empty and Financy converts at the rate of the transfer's date. Both amounts are kept, each in its account's currency.",
+  "FeaturePageTransfers.summary":
+    "Record money moved between your accounts, with both amounts kept.",
+  "FeaturePageTransfers.how1":
+    "Choose the account the money left and the account it reached, then type the amount sent. Between two currencies, a second field asks what arrived. Type it to keep the rate your bank charged, or leave it empty to convert at the rate of the transfer's date. When Financy has no rate for that date, it asks you to type the amount.",
+  "FeaturePageTransfers.how2":
+    "Each account's balance moves by its own amount. A transfer has no category, so your income, spending and budgets stay as they were.",
+  "FeaturePageTransfers.spendingQuestion": "Does a transfer count as spending or income?",
+  "FeaturePageTransfers.spendingAnswer":
+    "No. A transfer has no category and counts in no income or spending figure, budgets included. Only the balances of the two accounts change.",
+  "FeaturePageTransfers.ownAmountQuestion": "Can I enter the amount that actually arrived?",
+  "FeaturePageTransfers.ownAmountAnswer":
+    "Yes. Type what the receiving account got, and Financy stores that amount as you typed it instead of converting. The rate your bank charged stays on record.",
+  "FeaturePageTransfers.feeQuestion": "Can I record a bank fee on a transfer?",
+  "FeaturePageTransfers.feeAnswer":
+    "No. A transfer has no field for a fee, only the amount sent and the amount received. Add a fee your bank charged separately as an expense of its own.",
+  "FeaturePageTransfers.repeatQuestion": "Can a transfer repeat every month?",
+  "FeaturePageTransfers.repeatAnswer":
+    "Not yet. A repeating rule makes an expense or an income, so for now you add each transfer yourself.",
+  "FeaturePageTransfers.statementQuestion": "Can Financy find transfers in my bank statement?",
+  "FeaturePageTransfers.statementAnswer":
+    "Not yet. The app has no screen for importing a bank statement, so it cannot propose transfers from one.",
+  "FeaturePageBudgets.name": "Budgets",
+  "FeaturePageBudgets.title": "Set a monthly budget limit for each category",
+  "FeaturePageBudgets.description":
+    "Set a monthly spending limit on each expense category and follow it live with your household. A limit carries on until you change it.",
+  "FeaturePageBudgets.h1": "Can I set a monthly limit per category?",
+  "FeaturePageBudgets.answer":
+    "Yes. Set a monthly limit on any expense category and Financy shows what was spent against it, live for everyone in the household. The limit carries on into later months until you change it.",
+  "FeaturePageBudgets.summary": "A monthly limit per category, live for the whole household.",
+  "FeaturePageBudgets.how1":
+    "Open Budgets, choose an expense category and type its limit. The limit applies from that month on, and earlier months keep the limits they had. Spending is the month's expenses less refunds.",
+  "FeaturePageBudgets.how2":
+    "The bar warns you from 80% of the limit and shows how far over you went. A subcategory's limit cannot be more than what is left of its parent's limit.",
+  "FeaturePageBudgets.rollOverQuestion": "Does unspent money roll over to the next month?",
+  "FeaturePageBudgets.rollOverAnswer":
+    "No. Each month is measured against its own limit, so money you did not spend is not added to the next month.",
+  "FeaturePageBudgets.currenciesQuestion": "Do expenses in another currency count against a limit?",
+  "FeaturePageBudgets.currenciesAnswer":
+    "Yes. Financy converts them into the limit's currency. A currency with no exchange rate yet is named on the screen instead of being quietly dropped.",
+  "FeaturePageBudgets.warningQuestion": "Will Financy message me when I go over a limit?",
+  "FeaturePageBudgets.warningAnswer":
+    "No. Financy sends no message about a budget. The Budgets screen shows how far over the limit a category went.",
+  "FeaturePageBudgets.envelopesQuestion": "Can I budget with envelopes?",
+  "FeaturePageBudgets.envelopesAnswer":
+    "Not yet. Today each category has a monthly limit. The screens for putting money into envelopes and moving it between them are not built.",
+  "FeaturePageBudgets.planQuestion": "Do budgets need a paid plan?",
+  "FeaturePageBudgets.planAnswer":
+    "Yes. On Financy's cloud, setting a limit needs the Household plan, while reading budgets and removing a limit never do. On your own server with billing left off, every household can set limits.",
+  "FeaturePageTelegramBot.name": "Telegram bot",
+  "FeaturePageTelegramBot.title": "Add expenses and check balances from Telegram",
+  "FeaturePageTelegramBot.description":
+    "Add an expense or income from a private Telegram chat, and ask for your balances and this month's money. Entries go straight into your household.",
+  "FeaturePageTelegramBot.h1": "Can I add an expense from Telegram?",
+  "FeaturePageTelegramBot.answer":
+    "Yes. Link your Telegram account from your Financy profile, then send /expense in a private chat. The bot asks for the amount, shows the account and category, and saves the entry when you press Save.",
+  "FeaturePageTelegramBot.summary": "Add entries and read your balances from a private chat.",
+  "FeaturePageTelegramBot.how1":
+    "On your Financy profile, press Link Telegram and open the chat. The code lasts 10 minutes and works once, and the bot names the account it belongs to before you press Link.",
+  "FeaturePageTelegramBot.how2":
+    "Send /expense or /income and the bot asks for the amount. Buttons change the account or the category, and Save writes the entry. /balance and /month read your figures and change nothing.",
+  "FeaturePageTelegramBot.selfHostQuestion": "Does the bot work on a server I host myself?",
+  "FeaturePageTelegramBot.selfHostAnswer":
+    "Yes. Create a bot with Telegram's BotFather, then put its token, its username and a webhook secret in your server's settings. Until a token is set, the bot stays off and the rest of Financy works without it.",
+  "FeaturePageTelegramBot.groupQuestion": "Can I use the bot in a group chat?",
+  "FeaturePageTelegramBot.groupAnswer":
+    "No. /expense, /income, /balance and /month work only in a private chat, because a reply would show your household's figures to everyone in the group.",
+  "FeaturePageTelegramBot.transferQuestion": "Can I record a transfer from the bot?",
+  "FeaturePageTelegramBot.transferAnswer":
+    "Not yet. The bot adds expenses and income. Record a transfer between accounts in the Financy app.",
+  "FeaturePageTelegramBot.voiceQuestion": "Can I send a voice note or a receipt photo?",
+  "FeaturePageTelegramBot.voiceAnswer":
+    "Not yet. The bot reads typed amounts and button presses, so a voice note or a photo adds nothing.",
+  "FeaturePageTelegramBot.costQuestion": "Does the bot cost extra?",
+  "FeaturePageTelegramBot.costAnswer":
+    "No. The bot is not a paid add-on. An entry from the chat counts like one from the app, so a household whose plan has no room for more transactions cannot add one in either place.",
   "FeaturePageMissing.title": "This feature page isn't here",
   "FeaturePageMissing.description": "It may have moved. Every feature is on the features page.",
   "FeaturePageMissing.action": "See all features",
@@ -769,6 +865,7 @@ export default {
     "Spending is expenses less refunds; a currency with no exchange rate yet is named, not quietly dropped",
   "FeatureBudgets.fact3":
     "Setting a limit needs the Household plan; reading budgets and removing a limit never do, checked on the server",
+  "FeatureBudgets.notYetEnvelopes": "Screens for budgeting with envelopes",
   "FeatureBudgets.code": "Read the budgets domain",
   "HomeStatus.recurring": "Repeating entries for rent, salary and subscriptions",
   "FeatureRecurring.nav": "Repeating entries",
@@ -806,6 +903,19 @@ export default {
   "FeatureTransactions.fact3": "Income in an expense category is a refund",
   "FeatureTransactions.fact4": "A deleted transaction can be restored for 30 days",
   "FeatureTransactions.code": "Read the transactions domain",
+  "FeatureTransfers.nav": "Transfers",
+  "FeatureTransfers.title": "Money moved between your own accounts",
+  "FeatureTransfers.lead":
+    "Record money going from one account to another, in one currency or across two. Each account keeps its own amount, so the rate your bank really charged stays on record.",
+  "FeatureTransfers.fact1":
+    "Across two currencies, an empty received amount converts at the rate of the transfer's date",
+  "FeatureTransfers.fact2": "A transfer has no category and counts in no income or spending figure",
+  "FeatureTransfers.fact3":
+    "A transfer added offline waits on your device and is sent when you are back online",
+  "FeatureTransfers.fact4": "A deleted transfer can be restored for 30 days",
+  "FeatureTransfers.notYetStatement": "Transfers proposed from an imported bank statement",
+  "FeatureTransfers.notYetRepeating": "Transfers that repeat on a schedule",
+  "FeatureTransfers.code": "Read the transfers domain",
   "AudiencePage.demo": "Try the demo",
   "AudiencePage.demoNote": "Sample data, no account needed.",
   "AudiencePage.limits": "What Financy does not do",

@@ -258,10 +258,14 @@ function FeaturePageBody({ page, demo }: { page: FeaturePage; demo: string }): J
   )
 }
 
-/** Three other feature pages as cards, then the way to every feature. */
+/**
+ * The three feature pages after this one as cards, wrapping round at the end so every page is
+ * offered on three others, then the way to every feature.
+ */
 function OtherFeatures({ current }: { current: string }): JSX.Element {
   const { t, language, href } = useSite()
-  const others = FEATURE_PAGES.filter(({ slug }) => slug !== current).slice(0, 3)
+  const at = FEATURE_PAGES.findIndex(({ slug }) => slug === current)
+  const others = [1, 2, 3].map((step) => FEATURE_PAGES[(at + step) % FEATURE_PAGES.length])
     .map((other) => featurePageIn(t, other))
   return (
     <Band id="other-features" labelledBy="other-features-title">

@@ -279,6 +279,23 @@ export default {
   "FeatureLiveSync.notYetRates": "Tipos de cambio que puedas consultar sin conexión",
   "FeatureLiveSync.notYetStores": "Apps en Google Play y en la App Store",
   "FeatureLiveSync.code": "Ver el diseño de la sincronización",
+  "FeatureTelegramBot.nav": "Bot de Telegram",
+  "FeatureTelegramBot.title": "Añade un gasto desde un chat de Telegram",
+  "FeatureTelegramBot.lead":
+    "Vincula tu Telegram una sola vez y envía /expense o /income para añadir un movimiento, o /balance y /month para consultar tus cifras. El bot actúa en tu nombre, con tu rol en el hogar.",
+  "FeatureTelegramBot.fact1":
+    "/expense 12,50 guarda al momento cuando tu último gasto ya indica la categoría",
+  "FeatureTelegramBot.fact2":
+    "/balance y /month no cambian nada, y también puede usarlos un lector",
+  "FeatureTelegramBot.fact3":
+    "/expense, /income, /balance y /month solo funcionan en un chat privado; en un grupo, el bot te pide que le escribas en privado",
+  "FeatureTelegramBot.fact4":
+    "Para vincularlo hace falta un código de un solo uso que dura 10 minutos",
+  "FeatureTelegramBot.notYetTransfer": "Registrar una transferencia desde el bot",
+  "FeatureTelegramBot.notYetVoice":
+    "Notas de voz y fotos de recibos que se convierten en movimientos",
+  "FeatureTelegramBot.notYetSentences": "Escribir una frase entera en lugar de un comando",
+  "FeatureTelegramBot.code": "Ver el código del bot",
   "FeatureDeploy.nav": "Alojamiento propio",
   "FeatureDeploy.title": "Funciona en tu propio servidor",
   "FeatureDeploy.lead":
@@ -536,6 +553,92 @@ export default {
   "FeaturePageSelfHosting.installerQuestion": "¿Hay un instalador de un clic?",
   "FeaturePageSelfHosting.installerAnswer":
     "Todavía no. Preparas Financy desde tu ordenador con Deno, rsync y git, y un solo comando lo despliega. La guía de alojamiento propio explica cada paso.",
+  "FeaturePageTransfers.name": "Transferencias",
+  "FeaturePageTransfers.title": "Transferencias entre cuentas en distintas monedas",
+  "FeaturePageTransfers.description":
+    "Anota el dinero que mueves entre tus cuentas en dos monedas. Financy guarda el importe enviado y el importe recibido.",
+  "FeaturePageTransfers.h1":
+    "¿Puedo registrar una transferencia entre cuentas en distintas monedas?",
+  "FeaturePageTransfers.answer":
+    "Sí. Añade una transferencia, elige las dos cuentas y escribe el importe enviado. Escribe también lo que llegó, o déjalo vacío y Financy lo convierte al tipo de cambio de la fecha de la transferencia. Se guardan los dos importes, cada uno en la moneda de su cuenta.",
+  "FeaturePageTransfers.summary":
+    "Registra el dinero que mueves entre tus cuentas y conserva los dos importes.",
+  "FeaturePageTransfers.how1":
+    "Elige la cuenta de la que salió el dinero y la cuenta a la que llegó, y escribe el importe enviado. Entre dos monedas, un segundo campo pregunta cuánto llegó. Escríbelo para conservar el tipo de cambio que te cobró tu banco, o déjalo vacío para convertirlo al tipo de cambio de la fecha de la transferencia. Si Financy no tiene tipo de cambio para esa fecha, te pide que escribas el importe.",
+  "FeaturePageTransfers.how2":
+    "El saldo de cada cuenta cambia según su propio importe. Una transferencia no tiene categoría, así que tus ingresos, tus gastos y tus presupuestos se quedan como estaban.",
+  "FeaturePageTransfers.spendingQuestion": "¿Una transferencia cuenta como gasto o como ingreso?",
+  "FeaturePageTransfers.spendingAnswer":
+    "No. Una transferencia no tiene categoría y no cuenta en ninguna cifra de ingresos o gastos, tampoco en los presupuestos. Solo cambian los saldos de las dos cuentas.",
+  "FeaturePageTransfers.ownAmountQuestion": "¿Puedo anotar el importe que llegó realmente?",
+  "FeaturePageTransfers.ownAmountAnswer":
+    "Sí. Escribe lo que recibió la cuenta de destino y Financy guarda ese importe tal como lo escribiste, sin convertirlo. El tipo de cambio que te cobró tu banco queda registrado.",
+  "FeaturePageTransfers.feeQuestion":
+    "¿Puedo registrar una comisión bancaria en una transferencia?",
+  "FeaturePageTransfers.feeAnswer":
+    "No. Una transferencia no tiene campo para comisiones, solo el importe enviado y el importe recibido. Añade la comisión que te cobró tu banco como un gasto aparte.",
+  "FeaturePageTransfers.repeatQuestion": "¿Una transferencia puede repetirse cada mes?",
+  "FeaturePageTransfers.repeatAnswer":
+    "Todavía no. Una regla recurrente crea un gasto o un ingreso, así que por ahora cada transferencia la añades tú.",
+  "FeaturePageTransfers.statementQuestion":
+    "¿Financy puede encontrar transferencias en mi extracto bancario?",
+  "FeaturePageTransfers.statementAnswer":
+    "Todavía no. La app no tiene una pantalla para importar extractos bancarios, así que no puede proponer transferencias a partir de uno.",
+  "FeaturePageBudgets.name": "Presupuestos",
+  "FeaturePageBudgets.title": "Un límite de gasto mensual para cada categoría",
+  "FeaturePageBudgets.description":
+    "Fija un límite mensual para cada categoría de gastos y síguelo en vivo con tu hogar. El límite sigue vigente hasta que lo cambies.",
+  "FeaturePageBudgets.h1": "¿Puedo fijar un límite mensual por categoría?",
+  "FeaturePageBudgets.answer":
+    "Sí. Fija un límite mensual en cualquier categoría de gastos y Financy muestra lo gastado frente a ese límite, en vivo para todo el hogar. El límite sigue vigente en los meses siguientes hasta que lo cambies.",
+  "FeaturePageBudgets.summary": "Un límite mensual por categoría, en vivo para todo el hogar.",
+  "FeaturePageBudgets.how1":
+    "Abre Presupuestos, elige una categoría de gastos y escribe su límite. El límite se aplica desde ese mes en adelante, y los meses anteriores conservan los límites que tenían. El gasto son los gastos del mes menos los reembolsos.",
+  "FeaturePageBudgets.how2":
+    "La barra te avisa a partir del 80 % del límite y muestra cuánto te pasaste. El límite de una subcategoría no puede superar lo que queda del límite de su categoría principal.",
+  "FeaturePageBudgets.rollOverQuestion": "¿El dinero que no gasto pasa al mes siguiente?",
+  "FeaturePageBudgets.rollOverAnswer":
+    "No. Cada mes se mide con su propio límite, así que lo que no gastaste no se suma al mes siguiente.",
+  "FeaturePageBudgets.currenciesQuestion": "¿Los gastos en otra moneda cuentan para el límite?",
+  "FeaturePageBudgets.currenciesAnswer":
+    "Sí. Financy los convierte a la moneda del límite. Una moneda que aún no tiene tipo de cambio se nombra en la pantalla, en lugar de descartarse en silencio.",
+  "FeaturePageBudgets.warningQuestion": "¿Financy me envía un mensaje cuando supero un límite?",
+  "FeaturePageBudgets.warningAnswer":
+    "No. Financy no envía ningún mensaje sobre los presupuestos. La pantalla Presupuestos muestra cuánto se pasó del límite cada categoría.",
+  "FeaturePageBudgets.envelopesQuestion": "¿Puedo presupuestar con el método de los sobres?",
+  "FeaturePageBudgets.envelopesAnswer":
+    "Todavía no. Hoy cada categoría tiene un límite mensual. Las pantallas para meter dinero en sobres y moverlo entre ellos aún no existen.",
+  "FeaturePageBudgets.planQuestion": "¿Los presupuestos requieren un plan de pago?",
+  "FeaturePageBudgets.planAnswer":
+    "Sí. En la nube de Financy, fijar un límite requiere el plan Household; ver los presupuestos y quitar un límite, nunca. En tu propio servidor, con la facturación desactivada, cada hogar puede fijar límites.",
+  "FeaturePageTelegramBot.name": "Bot de Telegram",
+  "FeaturePageTelegramBot.title": "Añade gastos y consulta saldos desde Telegram",
+  "FeaturePageTelegramBot.description":
+    "Añade un gasto o un ingreso desde un chat privado de Telegram y consulta tus saldos y el dinero de este mes. Todo va directo a tu hogar.",
+  "FeaturePageTelegramBot.h1": "¿Puedo añadir un gasto desde Telegram?",
+  "FeaturePageTelegramBot.answer":
+    "Sí. Vincula tu Telegram desde tu perfil de Financy y envía /expense en un chat privado. El bot te pide el importe, te muestra la cuenta y la categoría, y guarda el movimiento cuando pulsas «Guardar».",
+  "FeaturePageTelegramBot.summary":
+    "Añade movimientos y consulta tus saldos desde un chat privado.",
+  "FeaturePageTelegramBot.how1":
+    "En tu perfil de Financy, pulsa «Vincular Telegram» y abre el chat. El código sirve una sola vez, durante 10 minutos, y el bot te dice a qué cuenta de usuario pertenece ese código antes de que pulses «Vincular».",
+  "FeaturePageTelegramBot.how2":
+    "Envía /expense o /income y el bot te pide el importe. Con los botones cambias la cuenta o la categoría, y «Guardar» anota el movimiento. /balance y /month consultan tus cifras y no cambian nada.",
+  "FeaturePageTelegramBot.selfHostQuestion": "¿El bot funciona en un servidor propio?",
+  "FeaturePageTelegramBot.selfHostAnswer":
+    "Sí. Crea un bot con BotFather, de Telegram, y pon su token, su nombre de usuario y un secreto de webhook en los ajustes de tu servidor. Mientras no haya un token, el bot sigue apagado y el resto de Financy funciona sin él.",
+  "FeaturePageTelegramBot.groupQuestion": "¿Puedo usar el bot en un chat de grupo?",
+  "FeaturePageTelegramBot.groupAnswer":
+    "No. /expense, /income, /balance y /month solo funcionan en un chat privado, porque una respuesta mostraría las cifras de tu hogar a todo el grupo.",
+  "FeaturePageTelegramBot.transferQuestion": "¿Puedo registrar una transferencia desde el bot?",
+  "FeaturePageTelegramBot.transferAnswer":
+    "Todavía no. El bot añade gastos e ingresos. Las transferencias entre cuentas se registran en la app de Financy.",
+  "FeaturePageTelegramBot.voiceQuestion": "¿Puedo enviar una nota de voz o la foto de un recibo?",
+  "FeaturePageTelegramBot.voiceAnswer":
+    "Todavía no. El bot lee importes escritos y pulsaciones de botones, así que una nota de voz o una foto no añaden nada.",
+  "FeaturePageTelegramBot.costQuestion": "¿El bot tiene un coste adicional?",
+  "FeaturePageTelegramBot.costAnswer":
+    "No. El bot no es un complemento de pago. Un movimiento desde el chat cuenta igual que uno desde la app, así que un hogar cuyo plan no admite más movimientos no puede añadirlo en ninguno de los dos sitios.",
   "FeaturePageMissing.title": "Esta página de función no existe",
   "FeaturePageMissing.description":
     "Puede que se haya movido. Todas las funciones están en la página de funciones.",
@@ -804,6 +907,7 @@ export default {
     "El gasto son los gastos menos los reembolsos; una moneda que aún no tiene tipo de cambio se nombra, no se descarta en silencio",
   "FeatureBudgets.fact3":
     "Fijar un límite requiere el plan Household; ver los presupuestos y quitar un límite, nunca; lo comprueba el servidor",
+  "FeatureBudgets.notYetEnvelopes": "Pantallas para presupuestar con el método de los sobres",
   "FeatureBudgets.code": "Ver el código de los presupuestos",
   "HomeStatus.recurring": "Movimientos recurrentes para el alquiler, el sueldo y las suscripciones",
   "FeatureRecurring.nav": "Movimientos recurrentes",
@@ -841,6 +945,21 @@ export default {
   "FeatureTransactions.fact3": "Un ingreso en una categoría de gastos es un reembolso",
   "FeatureTransactions.fact4": "Un movimiento eliminado se puede restaurar durante 30 días",
   "FeatureTransactions.code": "Ver el código de los movimientos",
+  "FeatureTransfers.nav": "Transferencias",
+  "FeatureTransfers.title": "Dinero que se mueve entre tus propias cuentas",
+  "FeatureTransfers.lead":
+    "Anota el dinero que pasa de una cuenta a otra, en una sola moneda o entre dos. Cada cuenta conserva su propio importe, así que el tipo de cambio que te cobró tu banco queda registrado.",
+  "FeatureTransfers.fact1":
+    "Entre dos monedas, si dejas vacío el importe recibido, se convierte al tipo de cambio de la fecha de la transferencia",
+  "FeatureTransfers.fact2":
+    "Una transferencia no tiene categoría y no cuenta en ninguna cifra de ingresos o gastos",
+  "FeatureTransfers.fact3":
+    "Una transferencia añadida sin conexión espera en tu dispositivo y se envía cuando vuelves a tener conexión",
+  "FeatureTransfers.fact4": "Una transferencia eliminada se puede restaurar durante 30 días",
+  "FeatureTransfers.notYetStatement":
+    "Transferencias propuestas a partir de un extracto bancario importado",
+  "FeatureTransfers.notYetRepeating": "Transferencias que se repiten de forma programada",
+  "FeatureTransfers.code": "Ver el código de las transferencias",
   "AudiencePage.demo": "Probar la demo",
   "AudiencePage.demoNote": "Datos de ejemplo, sin crear una cuenta de usuario.",
   "AudiencePage.limits": "Lo que Financy no hace",
