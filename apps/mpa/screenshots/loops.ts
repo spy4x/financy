@@ -261,18 +261,21 @@ async function realtime(
   await at(2.6)
   await page.keyboard.press(`Enter`)
   const added = await rowId(page, `€64.50`)
-  // The key cap outlives the form: on the list it would look like a second Enter.
-  await page.evaluate(() => {
-    for (const node of document.querySelectorAll<HTMLElement>(`[data-demo]`)) {
-      if (node.textContent === `Enter`) node.style.opacity = `0`
-    }
-  })
+  await hideEnterCap(page)
   await travel.filter({ hasText: `€236.30` }).waitFor()
   await at(6.3)
   const take = await finish(windows, frames)
   await removeEntries(seeded, [setup, added])
   return take
 }
+
+/** The key cap outlives the form: on the list it would look like a second Enter. */
+const hideEnterCap = (page: Page) =>
+  page.evaluate(() => {
+    for (const node of document.querySelectorAll<HTMLElement>(`[data-demo]`)) {
+      if (node.textContent === `Enter`) node.style.opacity = `0`
+    }
+  })
 
 /**
  * Keeps a closed socket closed until the network returns (`testBackoff` in
@@ -316,7 +319,7 @@ async function offline(
   await page.mouse.move(start.x, start.y)
   try {
     const at = await begin([window])
-    await at(1)
+    await at(0.6)
     // A browser keeps an open socket through `setOffline`, so the socket closes first.
     const closed = await seeded.ada.page.request.post(`${APP}/api/test/close-sockets`, {
       data: { login: ADA.email },
@@ -324,15 +327,20 @@ async function offline(
     await expectOk(`closing the sockets`, closed)
     await status.filter({ hasText: `Offline` }).waitFor()
     await page.context().setOffline(true)
-    await at(1.8)
+    // The socket takes a varying time to close: the beats after it count from "Offline".
+    const offlineAt = Date.now()
+    const after = (second: number) =>
+      page.waitForTimeout(Math.max(0, offlineAt + second * 1000 - Date.now()))
+    await after(0.4)
     await clickLike(page, pointer, add, { scroll: false })
     await page.locator(`[data-e2e=transaction-offline]`).waitFor()
-    await at(2.6)
+    await after(1.1)
     await page.keyboard.type(`240`, { delay: 150 })
-    await at(3.3)
+    await after(1.65)
     await page.keyboard.press(`Enter`)
     const row = rowOf(page, `THB 240.00`)
     await row.filter({ hasText: `Converted when back online` }).waitFor()
+    await hideEnterCap(page)
     await page.locator(`[data-e2e=offline-status]`).waitFor()
     // "Transaction added" covers the row's amounts: the pointer closes it.
     const toast = page.locator(`[data-e2e=toasts] button[aria-label]`).first()
@@ -342,12 +350,13 @@ async function offline(
     )
     await clickLike(page, pointer, toast, { scroll: false })
     await toast.waitFor({ state: `detached` })
-    await at(5)
+    // The waiting row, uncovered, stays long enough to read, and the pointer leaves its amounts
+    // for where the clip starts and ends.
+    const uncovered = Date.now()
+    await moveLike(page, pointer, start)
+    await page.waitForTimeout(Math.max(0, uncovered + 1000 - Date.now()))
     // The wait for the reconnect is cut: the clip goes straight to the entry that was sent.
     rec.end()
-    // Off the amounts the clip ends on, where it started.
-    Object.assign(pointer, start)
-    await page.mouse.move(start.x, start.y)
     await page.context().setOffline(false)
     await online(page)
     await page.locator(`[data-e2e=offline-status]`).waitFor({ state: `detached` })
