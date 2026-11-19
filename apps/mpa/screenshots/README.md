@@ -57,7 +57,8 @@ Every screen is delivered at 780 and 390 px wide.
 
 A crop's height is written twice: as its `clip` in `capture.ts`, and at twice the size in
 `audience-data.ts` or `features-data.tsx`. Change both together; `feature-pages.test.ts` fails when
-a feature page's height differs from its file.
+a feature page's height differs from its file. The one exception is `feature-telegram-bot`: its crop
+is measured from the dialog, so only its height in `features-data.tsx` is written by hand.
 
 ## Feature loops
 
