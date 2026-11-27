@@ -53,3 +53,5 @@ docs/screenshots/record.ts
 docs/screenshots/*.png
 docs/screenshots/*.webp
 docs/screenshots/*.gif
+apps/mpa/screenshots/capture.ts
+apps/mpa/screenshots/README.md
