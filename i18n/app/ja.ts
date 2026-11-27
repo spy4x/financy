@@ -2026,6 +2026,7 @@ export default {
   "AuthScreen.waitingDevice": "デバイスの応答を待っています…",
   "AuthScreen.passkey": "パスキーでログイン",
   "AuthScreen.continueWith": "{provider}で続行",
+  "Honeypot.label": "この欄は空欄のままにしてください",
   "ConfirmSignUpScreen.failed": "アカウントを作成できませんでした",
   "ConfirmSignUpScreen.title": "新しいアカウントを作成しますか？",
   "ConfirmSignUpScreen.goneTitle": "確認するものはありません",
