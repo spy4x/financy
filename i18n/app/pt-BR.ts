@@ -2274,6 +2274,7 @@ export default {
   "AuthScreen.waitingDevice": "Esperando seu dispositivo…",
   "AuthScreen.passkey": "Entrar com chave de acesso",
   "AuthScreen.continueWith": "Continuar com {provider}",
+  "Honeypot.label": "Deixe este campo em branco",
   "ConfirmSignUpScreen.failed": "Não foi possível criar sua conta",
   "ConfirmSignUpScreen.title": "Criar uma conta nova?",
   "ConfirmSignUpScreen.goneTitle": "Nada para confirmar",
