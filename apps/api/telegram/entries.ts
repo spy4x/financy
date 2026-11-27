@@ -39,6 +39,7 @@ import {
   TransactionKind,
   TransactionLatestQuery,
 } from "@domain/transactions"
+import { TransferError } from "@domain/transfers"
 import { isolate } from "@server/mail/mail.ts"
 import { translatorFor } from "@server/telegram/words.ts"
 import { PreferencesGetQuery } from "../cqrs/queries.ts"
@@ -175,11 +176,15 @@ function ofKind(kind: TransactionKind, category: CategoryKind): boolean {
   return category === (kind === TransactionKind.INCOME ? CategoryKind.INCOME : CategoryKind.EXPENSE)
 }
 
+/** The lines a refusal can be told in; a transfer words some of them its own way. */
+export type RefusalWords = Pick<EntryText, `planFull` | `viewer` | `notMember` | `unavailable`>
+
 /** The one line that tells the person why the buses refused, or `null` for any other failure. */
-function refusalOf(error: unknown, words: EntryText): string | null {
+export function refusalOf(error: unknown, words: RefusalWords): string | null {
   if (error instanceof PlanError) return words.planFull
   const known = error instanceof TransactionError || error instanceof AccountError ||
-    error instanceof CategoryError || error instanceof GroupError
+    error instanceof CategoryError || error instanceof GroupError ||
+    error instanceof TransferError
   if (!known) return null
   switch (error.code) {
     case `ROLE_INSUFFICIENT`:
@@ -189,6 +194,7 @@ function refusalOf(error: unknown, words: EntryText): string | null {
     case `ACCOUNT_NOT_FOUND`:
     case `CATEGORY_NOT_FOUND`:
     case `CATEGORY_KIND_MISMATCH`:
+    case `TRANSFER_SAME_ACCOUNT`:
       return words.unavailable
     default:
       return null
@@ -196,12 +202,59 @@ function refusalOf(error: unknown, words: EntryText): string | null {
 }
 
 /** Thrown to stop a step after the person was told why; nothing is written. */
-class Refused extends Error {}
+export class Refused extends Error {}
+
+/** Runs one bus call; a refusal is told in one line and stops the step. */
+export async function refusing<T>(
+  ctx: TelegramContext,
+  words: RefusalWords,
+  call: () => Promise<T>,
+): Promise<T> {
+  try {
+    return await call()
+  } catch (error) {
+    const refusal = refusalOf(error, words)
+    if (refusal === null) throw error
+    await ctx.reply(refusal)
+    throw new Refused()
+  }
+}
+
+/** Runs a handler, ending quietly where {@link refusing} already told the person why. */
+export async function told(work: () => Promise<unknown>): Promise<void> {
+  try {
+    await work()
+  } catch (error) {
+    if (!(error instanceof Refused)) throw error
+  }
+}
+
+/** Replaces the pressed message's text and buttons; no buttons leaves it without any. */
+export async function editPressed(
+  ctx: TelegramContext,
+  text: string,
+  rows?: TelegramInlineButton[][],
+): Promise<void> {
+  const message = ctx.update.callback_query?.message
+  if (!message) return
+  await ctx.client.editMessageText({
+    chat_id: message.chat.id,
+    message_id: message.message_id,
+    text,
+    ...(rows ? { reply_markup: { inline_keyboard: rows } } : {}),
+  })
+}
+
+/**
+ * Where a person's one running talk is kept. `/expense`, `/income` and `/transfer` share it, so
+ * starting one makes the buttons of the one before stale.
+ */
+export const talkKey = (ctx: TelegramContext, { userId }: TelegramAccount): string =>
+  `financy:telegram:entry:${ctx.from?.id}:${userId}`
 
 /** `/expense`, `/income`, their buttons and the conversation that reads a typed amount. */
 export function createEntryCommands({ queryBus, commandBus, store }: EntryDeps): TelegramProduct {
-  const keyOf = (ctx: TelegramContext, { userId }: TelegramAccount) =>
-    `financy:telegram:entry:${ctx.from?.id}:${userId}`
+  const keyOf = talkKey
 
   async function load(ctx: TelegramContext, account: TelegramAccount): Promise<Draft | null> {
     const raw = await store.get(keyOf(ctx, account))
@@ -224,26 +277,7 @@ export function createEntryCommands({ queryBus, commandBus, store }: EntryDeps):
     await store.del(keyOf(ctx, account))
   }
 
-  /** Runs one bus call; a refusal is told in one line and stops the step. */
-  async function bus<T>(ctx: TelegramContext, call: () => Promise<T>): Promise<T> {
-    try {
-      return await call()
-    } catch (error) {
-      const refusal = refusalOf(error, textOf(ctx))
-      if (refusal === null) throw error
-      await ctx.reply(refusal)
-      throw new Refused()
-    }
-  }
-
-  /** Runs a handler, ending quietly where {@link bus} already told the person why. */
-  const told = async (work: () => Promise<unknown>) => {
-    try {
-      await work()
-    } catch (error) {
-      if (!(error instanceof Refused)) throw error
-    }
-  }
+  const bus = <T>(ctx: TelegramContext, call: () => Promise<T>) => refusing(ctx, textOf(ctx), call)
 
   const tagOf = (draft: Draft) => draft.id.slice(-8)
   const button = (draft: Draft, text: string, action: Action, id?: string) => ({
@@ -251,17 +285,7 @@ export function createEntryCommands({ queryBus, commandBus, store }: EntryDeps):
     callback_data: `${ENTRY_CALLBACK}:${action}:${tagOf(draft)}${id ? `:${id}` : ``}`,
   })
 
-  /** Replaces the pressed message's text and buttons; no buttons leaves it without any. */
-  async function edit(ctx: TelegramContext, text: string, rows?: TelegramInlineButton[][]) {
-    const message = ctx.update.callback_query?.message
-    if (!message) return
-    await ctx.client.editMessageText({
-      chat_id: message.chat.id,
-      message_id: message.message_id,
-      text,
-      ...(rows ? { reply_markup: { inline_keyboard: rows } } : {}),
-    })
-  }
+  const edit = editPressed
 
   /** The draft's summary line and its buttons. */
   async function summary(ctx: TelegramContext, account: TelegramAccount, draft: Draft) {
