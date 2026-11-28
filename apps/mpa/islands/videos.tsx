@@ -9,7 +9,7 @@ import { LoopVideo, type LoopVideoProps } from "@spy4x/preact-ui/loop-video"
 // so this file imports nothing of the site's own.
 
 /**
- * The README's one-minute demo (`media/demo/`) in the home page's hero: its poster until the
+ * The README's one-minute demo (`media/demo/`), for a page's hero: its poster until the
  * visitor presses it, then the clip with its captions and music. It never starts by itself.
  */
 export function HeroDemo(props: DemoVideoProps): JSX.Element {
