@@ -20,7 +20,7 @@
 **Status: works today, before its launch release.** You can run it on your own server now, or
 try the [live demo](https://demo.financy.dev). Sign-up on financy.dev is by invitation until the
 paid cloud opens. Pre-launch versions can still change how things look and work; the
-[launch milestone](https://github.com/spy4x/financy/milestones) shows what is left.
+[launch milestone](https://github.com/spy4x/financy/milestone/9) shows what is left.
 
 ## What it does
 
@@ -36,7 +36,7 @@ paid cloud opens. Pre-launch versions can still change how things look and work;
   for people who would rather not.
 
 <p align="center">
-  <img src="docs/screenshots/add-transaction-dark-1280.gif" width="640" alt="Adding a transaction in Thai baht from the keyboard: the t shortcut opens the form, and the new transaction appears in the list.">
+  <img src="docs/screenshots/add-transaction-dark-1280.gif" width="640" alt="Adding a transaction in Thai baht: the t shortcut opens the form, the currency switches from pounds to baht, and the new transaction appears at the top of the list.">
 </p>
 
 ## Compared with Actual Budget and Firefly III
@@ -44,8 +44,8 @@ paid cloud opens. Pre-launch versions can still change how things look and work;
 Stay on Actual Budget for envelope budgeting, automatic bank sync or an app that runs without a
 server. Stay on Firefly III for double-entry bookkeeping or if you track money alone. Choose
 Financy when your household's money sits in several currencies and you want one total, with
-each person signing in with their own login. The website compares them in detail: [Actual Budget](https://financy.dev/alternatives/actual-budget),
-[Firefly III](https://financy.dev/alternatives/firefly-iii) and
+each person signing in with their own login. The website compares them in detail:
+[Actual Budget](https://financy.dev/alternatives/actual-budget), [Firefly III](https://financy.dev/alternatives/firefly-iii) and
 [the others](https://financy.dev/alternatives).
 
 ## Quick start
