@@ -1,224 +1,135 @@
 /// <reference lib="deno.ns" />
 /**
- * Records Seed's demo video, "From an empty folder to the app and the admin panel", end to end on
- * this machine, and encodes it into `media/demo/` (see README.md beside this file).
+ * Records Financy's demo video from this checkout's own app, and encodes it into `media/demo/`
+ * (see README.md beside this file).
  *
  * `deno task demo-video` records and encodes. `deno task demo-video --encode` only encodes the last
  * take again (`media/demo/.take/`, gitignored), after a change to `captions.vtt` or the music.
  *
  * What it does:
  *
- * 1. In a terminal (ttyd in a browser page, a staged home): `git clone` of Seed from GitHub,
- *    `deno task init`, `deno task dev`. Long waits play faster, and the caption says so.
- * 2. Off camera, between `init` and `dev`, the env file gets hosts and ports of its own
- *    (`my-product.localhost`, spare ports), so the stack runs beside any other Seed stack here.
- *    After `dev`: the development seed (`deno task db:seed`), and the sign-ins of the Product
- *    team's owner in the app and of the seed's administrator in the admin app (`stage.ts`).
- * 3. In the browser: the team's notes, a new note with a tag, the group's members, the admin
- *    panel's people, one teammate's sessions, groups and activity, and the new note on top.
- * 4. `encode.ts` adds the title and end cards, burns in the captions this run wrote to
+ * 1. Off camera: starts the development stack of this checkout apart from any other one here
+ *    (`stack.ts`), builds the website's sample household with the helpers of
+ *    `apps/mpa/screenshots/capture.ts` (four people, accounts in four currencies, budgets), fetches
+ *    the day's exchange rates, and keeps Ada's and Grace's signed-in sessions. No password is ever
+ *    on screen.
+ * 2. On camera, as Ada, in the light theme: the accounts and their total, a transfer from euros to
+ *    baht converted at the day's rate, a dinner in baht added with the `t` shortcut, Grace's
+ *    groceries arriving live from her own session, the month's budgets and the overview.
+ * 3. `encode.ts` adds the title and end cards, burns in the captions this run wrote to
  *    `captions.vtt`, lays the music under it, and writes the videos and posters.
  *
- * On exit, failed, stopped with Ctrl-C (SIGINT) or SIGTERM, or not, it removes the stack's
- * containers, volumes and images, its temporary folder, and Traefik and the `proxy` network only
- * when this run started them.
+ * On exit, failed, stopped with Ctrl-C (SIGINT) or SIGTERM, or not, it closes the browser and
+ * removes the stack (`stack.ts`, `Stack.stop`).
  */
 import { type Browser, type BrowserContext, chromium, type Locator, type Page } from "playwright"
-import { encodeDemo, CARD_SECONDS } from "./encode.ts"
+import { uuidV7 } from "@spy4x/platform/universal/uuid"
+import { CARD_SECONDS, encodeDemo } from "./encode.ts"
 import { clickLike, moveLike, parkLike, type Point, scrollLike } from "./human-mouse.ts"
+import { HOSTS, run, type Stack, startStack } from "./stack.ts"
 import { type Screen, sleep, Take } from "./take.ts"
-import { openTerminal, type Terminal } from "./terminal.ts"
-import { stage } from "./stage.ts"
 
 const OUT = new URL("../", import.meta.url).pathname.replace(/\/$/, "")
 const TAKE = `${OUT}/.take`
 const RECIPE = new URL("./", import.meta.url).pathname
 
-const PROJECT = "my-product"
-const REPOSITORY = "https://github.com/spy4x/seed.git"
-const HOSTS = { app: `http://${PROJECT}.localhost`, admin: `http://admin.${PROJECT}.localhost` }
-/** The seeded group the video shows, and the title typed in it: made up. */
-const GROUP = "Product team"
-const NEW_NOTE = "Launch checklist for Friday"
-const TAG = "roadmap"
-
 /** Every frame is 2560×1600; the encoder scales it to 1280×800. */
 const FRAME = { width: 2560, height: 1600 }
-/** The pages are drawn at 960×600 CSS pixels, a third larger than 1280×800: readable when small. */
-const PAGE_VIEWPORT = { width: 960, height: 600 }
-/** A wait longer than this plays in about this long. */
-const SQUEEZED_S = 1.6
+/**
+ * The app is drawn at 800×500 CSS pixels, so its text stays readable where a site plays the video
+ * about 528 px wide. The rail still shows at this width.
+ */
+const PAGE_VIEWPORT = { width: 800, height: 500 }
 
-const TITLE = "Seed"
-const CLAIM = "The groundwork of your SaaS, already built"
-const END = "github.com/spy4x/seed"
+const TITLE = "Financy"
+/** The encoder takes one line of at most 64 characters. */
+const CLAIM = "A finance tracker for a person or a family, in any currency"
+const END = "github.com/spy4x/financy"
 
-const pause = (ms: number) => sleep(ms)
+/** What the video types and picks: made up, like the household. */
+const TRANSFER = { from: "Salary account", to: "Bangkok account", sent: "200", memo: "Money for the trip" }
+const DINNER = { account: "Bangkok account", currency: "THB", amount: "1250", category: "Travel", memo: "Dinner at the night market" }
+/** Grace's entry, in cents of euro: €38.20. */
+const GROCERIES = { amount: 3_820, memo: "Bakery and fruit" }
 
-/** Runs a command and returns its standard output; throws with its error output when it fails. */
-async function run(cmd: string[], options: { cwd?: string; env?: Record<string, string> } = {}) {
-  const result = await new Deno.Command(cmd[0], {
-    args: cmd.slice(1),
-    cwd: options.cwd,
-    env: options.env,
-    stdout: "piped",
-    stderr: "piped",
-  }).output()
-  const text = (bytes: Uint8Array) => new TextDecoder().decode(bytes).trim()
-  if (!result.success) throw new Error(`${cmd.join(" ")} failed: ${text(result.stderr).slice(-2000)}`)
-  return text(result.stdout)
+type State = Awaited<ReturnType<BrowserContext["storageState"]>>
+
+/** What the take needs from the seeding. */
+interface Seeded {
+  groupId: string
+  salaryId: string
+  groceriesId: string
+  ada: State
+  /** Grace's API page and id, for the entry that arrives while Ada's page is open. */
+  grace: Page
+  graceId: number
+  operation: (page: Page, userId: number, name: string, data: unknown) => Promise<void>
 }
 
-/** Whether `cmd` succeeds, quietly. */
-async function ok(cmd: string[], cwd?: string): Promise<boolean> {
-  const { success } = await new Deno.Command(cmd[0], {
-    args: cmd.slice(1),
-    cwd,
-    stdout: "null",
-    stderr: "null",
-  }).output()
-  return success
-}
-
-/** A free TCP port on the loopback interface. */
-function freePort(): number {
-  const listener = Deno.listen({ hostname: "127.0.0.1", port: 0 })
-  const { port } = listener.addr as Deno.NetAddr
-  listener.close()
-  return port
-}
-
-/** Sets `key` to `value` in an env file's text, on the last line that sets it. */
-function setEnv(text: string, key: string, value: string): string {
-  const lines = text.split("\n")
-  const at = lines.findLastIndex((line) => line.startsWith(`${key}=`))
-  if (at === -1) throw new Error(`the env file has no ${key}`)
-  lines[at] = `${key}=${value}`
-  return lines.join("\n")
-}
-
-/** An env file's value of `key`, without a trailing comment. */
-function envValue(text: string, key: string): string {
-  const line = text.split("\n").findLast((l) => l.startsWith(`${key}=`))
-  if (line === undefined) throw new Error(`the env file has no ${key}`)
-  return line.slice(key.length + 1).replace(/\s+#.*$/, "").trim()
-}
-
-/** Types a command, runs it, and plays a long wait for it faster. Fails when it fails. */
-async function command(take: Take, term: Terminal, text: string, seconds = 120): Promise<void> {
-  await term.type(text)
-  await pause(400)
-  await term.enter()
-  await take.split()
-  const code = await term.done(seconds)
-  squeeze(await take.split())
-  if (code !== 0) throw new Error(`"${text}" exited with ${code}`)
-}
-
-/** Plays a shot that lasted longer than {@link SQUEEZED_S} in about that long. */
-function squeeze(shot: { start: number; end: number; speed: number }): void {
-  const length = shot.end - shot.start
-  if (length > SQUEEZED_S) shot.speed = length / SQUEEZED_S
-}
-
-/** The terminal part: clone, init, then (after the off-camera env edit) dev. */
-async function terminalPart(take: Take, term: Terminal, screen: Screen, app: string) {
-  await take.begin(screen)
-  await pause(500)
-  await take.caption("Clone Seed into a new folder{fast}")
-  await command(take, term, `git clone ${REPOSITORY} ${PROJECT}`, 600)
-  await pause(250)
-  await command(take, term, `cd ${PROJECT}`)
-  await pause(300)
-
-  await take.caption("One command writes the env file with fresh secrets{fast}")
-  await term.type("deno task init")
-  await pause(400)
-  await term.enter()
-  await take.split()
-  const rows = term.page.locator(".xterm-rows")
-  for (const deadline = Date.now() + 600_000; !(await rows.innerText()).includes("Project name");) {
-    if (Date.now() > deadline) throw new Error("init asked for no project name within 10 min")
-    await sleep(250)
-  }
-  squeeze(await take.split())
-  await pause(800)
-  await term.enter()
-  if (await term.done(60) !== 0) throw new Error("deno task init failed")
-  await take.readPrevious(0.8)
-  take.end()
-
-  // Off camera: hosts and ports of its own, and the admin app instead of the monitoring stack.
-  const envPath = `${app}/infra/envs/.env`
-  let env = await Deno.readTextFile(envPath)
-  for (
-    const [key, value] of [
-      ["DOMAIN", new URL(HOSTS.app).host],
-      ["ADMIN_DOMAIN", new URL(HOSTS.admin).host],
-      ["COMPOSE_PROFILES", "admin"],
-      ["DB_HOST_PORT", `127.0.0.1:${freePort()}`],
-      ["KV_HOST_PORT", `127.0.0.1:${freePort()}`],
-      ["GRAFANA_HOST_PORT", `127.0.0.1:${freePort()}`],
-    ]
-  ) env = setEnv(env, key, value)
-  await Deno.writeTextFile(envPath, env)
-
-  await take.begin(screen)
-  await pause(500)
-  await take.caption("deno task dev builds and starts every service{fast}")
-  await command(take, term, "deno task dev", 1800)
-  await pause(500)
-  await take.caption("Every service is up")
-  await pause(600)
-  await take.readPrevious(0.6)
-  take.end()
-}
-
-/** Waits until `url` answers 200; the proxy routes a host once its dev server is healthy. */
-async function waitFor(url: string, seconds: number): Promise<void> {
-  const deadline = Date.now() + seconds * 1000
-  while (true) {
-    try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(10_000) })
-      await response.body?.cancel()
-      if (response.ok) return
-    } catch { /* not up yet */ }
-    if (Date.now() > deadline) throw new Error(`${url} did not answer within ${seconds} s`)
-    await sleep(2000)
+/**
+ * Builds the website's sample household on the stack with the screenshot script's own helpers,
+ * fetches the day's rates, and opens the household for Ada with her first-steps card put away.
+ */
+async function seed(browser: Browser, contexts: BrowserContext[]): Promise<Seeded> {
+  // capture.ts reads its hosts when it loads.
+  Deno.env.set("SHOTS_APP_URL", HOSTS.app)
+  Deno.env.set("SHOTS_ADMIN_URL", HOSTS.admin)
+  const capture = await import("../../../apps/mpa/screenshots/capture.ts")
+  const context = await browser.newContext({ baseURL: HOSTS.app })
+  contexts.push(context)
+  // A cold dev server compiles a page's modules on its first load, well past capture.ts's 30 s.
+  const warm = await context.newPage()
+  await open(warm, `${HOSTS.admin}/sign-in`, warm.locator("[data-e2e=auth-form-login]"))
+  await open(warm, `${HOSTS.app}/sign-in`, warm.locator("[data-e2e=auth-form-login]"))
+  await warm.close()
+  const ada = await context.newPage()
+  const { pages, ids } = await capture.signUpPeople(browser, contexts, ada)
+  const adaId = ids.get(capture.ADA)!
+  const household = await capture.seedHousehold(ada, adaId, new Date())
+  await capture.fetchRates(await capture.signInToAdmin(browser, contexts))
+  await capture.selectGroup(ada, household.householdId)
+  await capture.operation(ada, adaId, `onboarding.dismiss`, null)
+  return {
+    groupId: household.householdId,
+    salaryId: household.salaryId,
+    groceriesId: household.groceriesId,
+    ada: await context.storageState(),
+    grace: pages.get(capture.GRACE)!,
+    graceId: ids.get(capture.GRACE)!,
+    operation: capture.operation,
   }
 }
 
-/** A recording context: the page size, the dark theme, the drawn pointer and key caps. */
+/** The recording context: the page size, the light theme, the drawn pointer and key caps. */
 async function recordingContext(
   browser: Browser,
-  storageState: Awaited<ReturnType<BrowserContext["storageState"]>>,
+  storageState: State,
   userAgent: string,
   start: Point,
 ): Promise<BrowserContext> {
   const context = await browser.newContext({
     viewport: PAGE_VIEWPORT,
     deviceScaleFactor: FRAME.width / PAGE_VIEWPORT.width,
-    colorScheme: "dark",
+    colorScheme: "light",
     locale: "en-GB",
     timezoneId: "Etc/UTC",
     userAgent,
     storageState,
   })
   // The click mark keeps its 64 px on the finished video at this page scale.
-  await context.addInitScript(
-    `window.__demoPointerOptions = ${JSON.stringify({ ...start, mark: 48 })}`,
-  )
+  const mark = Math.round(64 * PAGE_VIEWPORT.width / 1280)
+  await context.addInitScript(`window.__demoPointerOptions = ${JSON.stringify({ ...start, mark })}`)
   await context.addInitScript({ path: `${RECIPE}pointer.js` })
   await context.addInitScript({ path: `${RECIPE}keys.js` })
   return context
 }
 
-/** Opens `url` and waits for `ready`, loading again when a cold dev server stalls. */
-async function open(page: Page, url: string, ready: string): Promise<void> {
+/** Opens `path` (on the app, or a full URL) and waits for `ready`, loading again when a cold dev server stalls. */
+async function open(page: Page, path: string, ready: Locator): Promise<void> {
   for (let attempt = 1;; attempt++) {
     try {
-      await page.goto(url, { timeout: 120_000 })
-      await page.locator(ready).first().waitFor({ timeout: 120_000 })
+      await page.goto(new URL(path, HOSTS.app).href, { timeout: 120_000 })
+      await ready.first().waitFor({ timeout: 120_000 })
       await page.waitForLoadState("networkidle", { timeout: 30_000 }).catch(() => {})
       return
     } catch (error) {
@@ -238,160 +149,219 @@ async function typeAtPace(take: Take, page: Page, pointer: Point, field: Locator
   await take.within(text.length * KEY_S, () => page.keyboard.type(text, { delay: 55 }))
 }
 
-const NOTE_TITLE = "[data-e2e=note-item-title]"
-const USERS = "[data-e2e=admin-users-list] tbody tr"
+/**
+ * Picks `label` in a native `<select>`: headless Chromium never draws the open list, so the
+ * pointer clicks the field, the option is chosen behind it, and the field shows the choice.
+ */
+async function choose(page: Page, pointer: Point, select: Locator, label: string | RegExp) {
+  await clickLike(page, pointer, select)
+  const options = await select.locator("option").allTextContents()
+  const option = options.find((text) => typeof label === "string" ? text === label : label.test(text))
+  if (!option) throw new Error(`no option ${label} in ${options.join(", ")}`)
+  await select.selectOption({ label: option })
+  await sleep(500)
+}
 
-/** The browser part: the app, the admin panel, then the new note in the app again. */
-async function browserPart(
-  take: Take,
-  browser: Browser,
-  states: Awaited<ReturnType<typeof stage>>,
-  userAgent: string,
-  teammate: string,
-): Promise<void> {
-  const appStart = { x: 620, y: 330 }
-  const app = await (await recordingContext(browser, states.app, userAgent, appStart)).newPage()
-  const admin = await (await recordingContext(browser, states.admin, userAgent, { x: 600, y: 330 }))
-    .newPage()
+/**
+ * Closes the toast a save shows: it stays ten seconds for its Undo, over the balances the next
+ * caption talks about.
+ */
+async function dismissToast(page: Page, pointer: Point) {
+  await clickLike(page, pointer, page.getByRole("button", { name: "Dismiss" }).first(), { scroll: false })
+  await sleep(400)
+}
+
+/** The rail's link to `path`. */
+const rail = (page: Page, path: string) =>
+  page.locator(`a[data-e2e=rail-shell-entry][href="${path}"]`).first()
+
+const TOTAL = "[data-e2e=accounts-total-amount]"
+const accountRow = (page: Page, name: string) =>
+  page.locator(`li[data-e2e^=account-]`).filter({
+    has: page.locator(`[data-e2e=account-name]`, { hasText: name }),
+  }).first()
+const transactionRow = (page: Page, memo: string) =>
+  page.locator(`[data-e2e=transaction-row]`).filter({ hasText: memo }).first()
+
+/** The take, as Ada: one page, one shot, every step in the spec's order. */
+async function takePart(take: Take, browser: Browser, seeded: Seeded, userAgent: string) {
+  const start = { x: 560, y: 300 }
+  const context = await recordingContext(browser, seeded.ada, userAgent, start)
+  const page = await context.newPage()
+  const p = { ...start }
 
   // Off camera: open every screen once, so a cold dev server compiles nothing on camera.
-  await open(app, `${HOSTS.app}/groups`, `a:has-text("${GROUP}")`)
-  await open(app, `${HOSTS.app}/notes`, NOTE_TITLE)
-  await app.locator("[data-e2e=note-new]").click()
-  await app.locator("[data-e2e=note-title]").waitFor({ timeout: 120_000 })
-  await open(admin, `${HOSTS.admin}/users?q=${encodeURIComponent(teammate)}`, USERS)
-  await admin.getByRole("link", { name: teammate }).click()
-  await admin.locator("[data-e2e=admin-user-title]").waitFor({ timeout: 120_000 })
-  await open(admin, `${HOSTS.admin}/users`, USERS)
-  await open(app, `${HOSTS.app}/notes`, NOTE_TITLE)
+  await open(page, "/transactions", page.locator("[data-e2e=transaction-new]"))
+  await open(page, "/transactions/new", page.locator("[data-e2e=transaction-account]"))
+  await open(page, "/transfers/new", page.locator("[data-e2e=transfer-from]"))
+  await open(page, "/budgets", page.locator("[data-e2e=budget-change]"))
+  await open(page, "/overview", page.locator("[data-e2e=budget-widget-link]"))
+  await open(page, "/accounts", page.locator(TOTAL))
+  await page.evaluate(() => document.fonts.ready)
 
-  const appScreen = await take.watch(app, FRAME)
-  const adminScreen = await take.watch(admin, FRAME)
+  const screen: Screen = await take.watch(page, FRAME)
   try {
-    // The poster: the team's notes, without the pointer.
-    await app.evaluate(`__demoPointerVisible(false)`)
-    await app.screenshot({ path: `${TAKE}/poster.png` })
-    await app.evaluate(`__demoPointerVisible(true)`)
-    await app.mouse.move(appStart.x, appStart.y)
-    const pa = { ...appStart }
+    // The poster: the accounts as they open, without the pointer.
+    await page.evaluate(`__demoPointerVisible(false)`)
+    await page.screenshot({ path: `${TAKE}/poster.png` })
+    await page.evaluate(`__demoPointerVisible(true)`)
+    await page.mouse.move(start.x, start.y)
 
-    await take.begin(appScreen)
-    await take.caption("The app, with a team's sample notes and tags")
-    await pause(1200)
-    await take.readPrevious(0.4)
-    await take.caption("Write a note and tag it")
-    await clickLike(app, pa, app.locator("[data-e2e=note-new]"), { scroll: false })
-    await take.within(ANSWER_S, () => app.locator("[data-e2e=note-title]").waitFor())
-    await pause(300)
-    await typeAtPace(take, app, pa, app.locator("[data-e2e=note-title]"), NEW_NOTE)
-    await pause(300)
-    await clickLike(app, pa, app.getByRole("button", { name: TAG, exact: true }))
-    await pause(400)
-    await take.caption("Create it, and the whole team can read it")
-    await clickLike(app, pa, app.getByRole("button", { name: "Create note" }))
-    // The note's page shows "Loading the note…" first, then the note under its title.
-    await take.within(ANSWER_S, () =>
-      app.waitForFunction((title) =>
-        document.querySelector("h1")?.textContent?.trim() === title &&
-        !document.body.innerText.includes("Loading the note"), NEW_NOTE, { timeout: 60_000 }))
-    await parkLike(app, pa)
-    await pause(1500)
+    await take.begin(screen)
+    await take.caption("One household, four currencies, one total in euros")
+    await sleep(1200)
+    await moveLike(page, p, { x: 300, y: 190 })
+    await sleep(600)
+
+    await take.caption("Each account keeps its own currency")
+    const bangkok = accountRow(page, TRANSFER.to)
+    const bangkokBox = (await bangkok.boundingBox())!
+    await moveLike(page, p, { x: 600, y: Math.round(bangkokBox.y + bangkokBox.height / 2) })
+    await sleep(900)
+    await scrollLike(page, 170)
+    await sleep(400)
+    const dollars = (await accountRow(page, "Dollar savings").boundingBox())!
+    await moveLike(page, p, { x: 600, y: Math.round(dollars.y + dollars.height / 2) })
+    await sleep(1000)
     await take.readPrevious(0.3)
 
-    await take.caption("Every group has members, each with a role")
-    await clickLike(app, pa, app.getByRole("link", { name: "Groups" }).first(), { scroll: false })
-    const group = app.getByRole("link", { name: new RegExp(GROUP) })
-    await take.within(ANSWER_S, () => group.waitFor())
-    await pause(400)
-    await clickLike(app, pa, group)
-    await take.within(ANSWER_S, () => app.getByText(/^Members \(\d+\)$/).waitFor())
-    await pause(400)
-    await moveLike(app, pa, { x: 620, y: 360 })
-    const members = await app.getByText(/^Members \(\d+\)$/).boundingBox()
-    if (!members) throw new Error("no Members heading")
-    await scrollLike(app, Math.round(members.y - 90))
-    await pause(900)
-    await take.readPrevious(0.3)
-    take.end()
+    await take.caption("Send €200 from Salary to the Bangkok account")
+    await clickLike(page, p, rail(page, "/transactions"), { scroll: false })
+    await take.within(ANSWER_S, () => page.locator("[data-e2e=transactions-menu]").first().waitFor())
+    await sleep(300)
+    await clickLike(page, p, page.locator("[data-e2e=transactions-menu]"), { scroll: false })
+    await sleep(400)
+    await clickLike(page, p, page.locator("[data-e2e=transfer-new]"), { scroll: false })
+    await take.within(ANSWER_S, () => page.locator("[data-e2e=transfer-from]").first().waitFor())
+    await sleep(400)
+    await choose(page, p, page.locator("[data-e2e=transfer-from]"), new RegExp(`^${TRANSFER.from}`))
+    await choose(page, p, page.locator("[data-e2e=transfer-to]"), new RegExp(`^${TRANSFER.to}`))
+    await typeAtPace(
+      take,
+      page,
+      p,
+      page.locator("[data-e2e=transfer-sent-field] input").first(),
+      TRANSFER.sent,
+    )
+    await sleep(500)
 
-    const pb = { x: 600, y: 330 }
-    await take.begin(adminScreen)
-    await take.caption("The admin panel, on its own host: find a teammate")
-    await pause(300)
-    await typeAtPace(take, admin, pb, admin.locator("[data-e2e=admin-users-search]"), teammate)
-    await pause(400)
-    await take.within(ANSWER_S, async () => {
-      await admin.keyboard.press("Enter")
-      await admin.waitForURL(/\?q=/)
-      await admin.getByRole("link", { name: teammate }).waitFor()
-    })
-    await pause(900)
-    await clickLike(admin, pb, admin.getByRole("link", { name: teammate }))
-    await take.within(ANSWER_S, () => admin.locator("[data-e2e=admin-user-title]").waitFor())
-    await pause(800)
-    await take.readPrevious(0.2)
-    await take.caption("Their sessions, groups and activity, at a glance")
-    for (const tab of [/^Sessions/, /^Groups/, /^Activity/]) {
-      await clickLike(admin, pb, admin.getByRole("tab", { name: tab }), { scroll: false })
-      await pause(600)
+    await take.caption("Leave the baht empty to convert at today's rate")
+    const received = page.locator("[data-e2e=transfer-received-field]")
+    await received.waitFor()
+    const receivedBox = (await received.boundingBox())!
+    if (receivedBox.y + receivedBox.height > PAGE_VIEWPORT.height - 70) {
+      await scrollLike(page, Math.round(receivedBox.y - 120))
     }
-    await parkLike(admin, pb)
-    await pause(300)
+    const hint = (await received.boundingBox())!
+    await moveLike(page, p, { x: Math.round(hint.x + hint.width - 40), y: Math.round(hint.y + 40) })
+    await sleep(1400)
+    await typeAtPace(take, page, p, page.locator("[data-e2e=transfer-memo]"), TRANSFER.memo)
+    await sleep(300)
+    await clickLike(page, p, page.locator("[data-e2e=transfer-save]"))
+    await take.within(ANSWER_S, () => page.locator("[data-e2e=transaction-new]").first().waitFor())
+    await sleep(600)
+    await dismissToast(page, p)
     await take.readPrevious(0.2)
-    take.end()
 
-    // The result: the new note on top of the team's list.
-    await open(app, `${HOSTS.app}/notes`, NOTE_TITLE)
-    const top = (await app.locator(NOTE_TITLE).first().textContent())?.trim()
-    if (top !== NEW_NOTE) throw new Error(`the newest note is "${top}", not the new one`)
-    await take.begin(appScreen)
-    await take.caption("The new note now leads the team's list")
-    await pause(1500)
+    await take.caption("Both balances move, each in its own currency")
+    await clickLike(page, p, rail(page, "/accounts"), { scroll: false })
+    await take.within(ANSWER_S, () => page.locator(TOTAL).first().waitFor())
+    await sleep(500)
+    const salary = (await accountRow(page, TRANSFER.from).boundingBox())!
+    const thb = (await accountRow(page, TRANSFER.to).boundingBox())!
+    await moveLike(page, p, { x: 640, y: Math.round(thb.y + thb.height / 2) })
+    await sleep(900)
+    await moveLike(page, p, { x: 640, y: Math.round(salary.y + salary.height / 2) })
+    await sleep(900)
+    await take.readPrevious(0.2)
+
+    await take.caption("Add a dinner in baht with one key: T")
+    await clickLike(page, p, rail(page, "/transactions"), { scroll: false })
+    await take.within(ANSWER_S, () => page.locator("[data-e2e=transaction-new]").first().waitFor())
+    await parkLike(page, p)
+    await sleep(600)
+    await page.keyboard.press("t")
+    await take.within(ANSWER_S, () => page.locator("[data-e2e=transaction-account]").first().waitFor())
+    await sleep(600)
+    await choose(page, p, page.locator("[data-e2e=transaction-account]"), new RegExp(`^${DINNER.account}`))
+    // The form starts in the last currency used, not the account's: pick the baht by its code.
+    const currency = page.locator("[data-e2e=transaction-currency-field] input").first()
+    await clickLike(page, p, currency)
+    await page.keyboard.press("ControlOrMeta+a")
+    await take.within(3 * KEY_S, () => page.keyboard.type(DINNER.currency, { delay: 55 }))
+    await page.getByRole("option").first().waitFor()
+    await sleep(400)
+    await page.keyboard.press("Enter")
+    await sleep(400)
+    if (!(await currency.inputValue()).includes(DINNER.currency)) {
+      throw new Error(`the currency reads ${await currency.inputValue()}, not ${DINNER.currency}`)
+    }
+    await typeAtPace(
+      take,
+      page,
+      p,
+      page.locator("[data-e2e=transaction-amount-field] input[type=text]"),
+      DINNER.amount,
+    )
+    await choose(page, p, page.locator("[data-e2e=transaction-category]"), DINNER.category)
+    await typeAtPace(take, page, p, page.locator("[data-e2e=transaction-memo]"), DINNER.memo)
+    await sleep(300)
+    await clickLike(page, p, page.locator("[data-e2e=transaction-save]"))
+    await take.within(ANSWER_S, () => transactionRow(page, DINNER.memo).waitFor())
+    await dismissToast(page, p)
+    await parkLike(page, p)
+    await sleep(900)
+    await take.readPrevious(0.2)
+
+    await take.caption("Grace adds groceries on her phone, and it appears live")
+    await sleep(600)
+    // Grace writes from her own session while Ada's page stays open: nothing reloads it.
+    await seeded.operation(seeded.grace, seeded.graceId, `transaction.create`, {
+      groupId: seeded.groupId,
+      id: uuidV7(),
+      accountId: seeded.salaryId,
+      categoryId: seeded.groceriesId,
+      kind: 1,
+      amount: GROCERIES.amount,
+      currency: `EUR`,
+      memo: GROCERIES.memo,
+    })
+    await take.within(1, () => transactionRow(page, GROCERIES.memo).waitFor())
+    await sleep(1800)
+    await take.readPrevious(0.2)
+
+    await take.caption("Budgets this month: Groceries over, Travel well under")
+    await clickLike(page, p, rail(page, "/overview"), { scroll: false })
+    const budgets = page.locator("[data-e2e=budget-widget-link]")
+    await take.within(ANSWER_S, () => budgets.first().waitFor())
+    await sleep(500)
+    await clickLike(page, p, page.locator("[data-e2e=budget-widget-link]"))
+    await take.within(ANSWER_S, () => page.locator("[data-e2e=budget-change]").first().waitFor())
+    await parkLike(page, p)
+    await sleep(1500)
+    await take.readPrevious(0.3)
+
+    await take.caption("Every view totals in the household's currency")
+    await clickLike(page, p, rail(page, "/overview"), { scroll: false })
+    await take.within(ANSWER_S, () => page.locator("[data-e2e=money-widget-link]").first().waitFor())
+    await sleep(800)
+    await take.readPrevious(0.2)
+
+    await take.caption("Free to host yourself, or use the cloud")
+    await parkLike(page, p)
+    await sleep(600)
     await take.readPrevious(0.3)
     take.end()
   } finally {
-    await take.stop([appScreen, adminScreen])
+    await take.stop([screen])
+    await context.close()
   }
-}
-
-/** The Product team's owner, who uses the app, the group's id, and the teammate to look up. */
-async function people(app: string, user: string, database: string) {
-  const sql = (query: string) =>
-    run(["docker", "exec", `${PROJECT}-db`, "psql", "-U", user, "-d", database, "-At", "-c", query], {
-      cwd: app,
-    })
-  const group = await sql(`select id from groups where name = '${GROUP}'`)
-  const owner = await sql(
-    `select k.email from group_members m join auth_keys k on k.user_id = m.user_id
-     join users u on u.id = m.user_id
-     where m.group_id = '${group}' and m.role = 4 and k.method = 'password' and u.mfa = 1`,
-  )
-  const teammate = await sql(
-    `select u.first_name || ' ' || u.last_name from group_members m join users u on u.id = m.user_id
-     where m.group_id = '${group}' and m.role < 4
-     order by (select count(*) from auth_sessions s where s.user_id = u.id) desc, u.id limit 1`,
-  )
-  if (!group || !owner || !teammate) {
-    throw new Error(`the seed has no "${GROUP}" with an owner who signs in with a password`)
-  }
-  return { group, owner, teammate }
 }
 
 /** Records the whole take into {@link TAKE}. */
 async function record(): Promise<void> {
-  const existing = await run(["docker", "ps", "-a", "--format", "{{.Names}}"])
-  if (existing.split("\n").some((name) => name.startsWith(`${PROJECT}-`))) {
-    throw new Error(`containers named ${PROJECT}-* exist; this recording needs that name`)
-  }
-  const traefikBefore = existing.split("\n").includes("traefik")
-  const networkBefore = await ok(["docker", "network", "inspect", "proxy"])
-
   await Deno.remove(TAKE, { recursive: true }).catch(() => {})
   await Deno.mkdir(`${TAKE}/frames`, { recursive: true })
-  const work = await Deno.makeTempDir({ prefix: "seed-demo-" })
-  const projects = `${work}/projects`
-  const app = `${projects}/${PROJECT}`
-  await Deno.mkdir(projects)
   const take = new Take(`${TAKE}/frames`)
   // Playwright's own signal handlers would close the browser and exit before the cleanup below.
   const browser = await chromium.launch({
@@ -399,17 +369,16 @@ async function record(): Promise<void> {
     handleSIGTERM: false,
     handleSIGHUP: false,
   })
-  let term: Terminal | null = null
+  const contexts: BrowserContext[] = []
+  let stack: Stack | null = null
   // Deno skips `finally` when a signal ends the process, so Ctrl-C and SIGTERM run the same
   // cleanup themselves, once, and then exit.
   let released: Promise<void> | null = null
   const release = () =>
     released ??= (async () => {
-      await term?.close().catch(() => {})
+      for (const context of contexts) await context.close().catch(() => {})
       await browser.close().catch(() => {})
-      await cleanup(app, traefikBefore, networkBefore)
-      // The containers write the database files and Vite's caches as their own users.
-      await ok(["sudo", "-n", "find", work, "-delete"])
+      await stack?.stop()
     })()
   const listeners = ([["SIGINT", 130], ["SIGTERM", 143]] as const).map(([signal, code]) => {
     const listener = () => {
@@ -424,39 +393,9 @@ async function record(): Promise<void> {
     const userAgent = (await agent.evaluate(() => navigator.userAgent)).replace("Headless", "")
     await agent.close()
 
-    term = await openTerminal(browser, work, projects)
-    const termScreen = await take.watch(term.page, FRAME)
-    await terminalPart(take, term, termScreen, app)
-    await take.stop([termScreen])
-    await term.close()
-    term = null
-
-    const env = await Deno.readTextFile(`${app}/infra/envs/.env`)
-    await waitFor(`${HOSTS.app}/sign-in`, 900)
-    await waitFor(`${HOSTS.admin}/sign-in`, 900)
-    const dbUser = envValue(env, "DB_USER")
-    await run(["deno", "task", "db:seed"], {
-      cwd: app,
-      env: {
-        ENV: "dev",
-        DB_HOST: "127.0.0.1",
-        DB_PORT: envValue(env, "DB_HOST_PORT").split(":")[1],
-        DB_USER: dbUser,
-        DB_PASS: envValue(env, "DB_PASS"),
-        DB_NAME: envValue(env, "DB_NAME"),
-        AUTH_PEPPER: envValue(env, "AUTH_PEPPER"),
-        SEED_PASSWORD: envValue(env, "SEED_PASSWORD"),
-      },
-    })
-    const { group, owner, teammate } = await people(app, dbUser, envValue(env, "DB_NAME"))
-    const states = await stage(
-      browser,
-      HOSTS,
-      envValue(env, "SEED_PASSWORD"),
-      userAgent,
-      { email: owner, groupId: group },
-    )
-    await browserPart(take, browser, states, userAgent, teammate)
+    stack = await startStack()
+    const seeded = await seed(browser, contexts)
+    await takePart(take, browser, seeded, userAgent)
 
     await writeTake(take)
     await Deno.writeTextFile(`${OUT}/captions.vtt`, take.vtt(CARD_SECONDS.title))
@@ -488,24 +427,6 @@ async function writeTake(take: Take): Promise<void> {
   await Deno.remove(`${TAKE}/frames`, { recursive: true })
 }
 
-/** Removes the stack this run started, its volumes and images, and Traefik if it was ours. */
-async function cleanup(app: string, traefikBefore: boolean, networkBefore: boolean) {
-  const compose = [
-    ..."docker compose -f infra/compose/compose.shared.yml -f infra/compose/compose.dev.yml".split(" "),
-    ...["--env-file", "infra/envs/.env"],
-  ]
-  if (await Deno.stat(`${app}/infra/envs/.env`).catch(() => null)) {
-    await ok([...compose, "down", "-v", "--rmi", "local", "--timeout", "5"], app)
-    if (!traefikBefore) {
-      await ok(["docker", "compose", "-f", "infra/compose/compose.proxy.yml", "--env-file",
-        "infra/envs/.env", "down"], app)
-    }
-  }
-  const images = await run(["docker", "images", "-q", `${PROJECT}/*`]).catch(() => "")
-  for (const image of images.split("\n").filter(Boolean)) await ok(["docker", "rmi", image])
-  if (!networkBefore) await ok(["docker", "network", "rm", "proxy"])
-}
-
 /** Encodes the last take into `media/demo/`. */
 async function encode(): Promise<void> {
   await encodeDemo({
@@ -515,6 +436,8 @@ async function encode(): Promise<void> {
     claim: CLAIM,
     end: END,
     poster: `${TAKE}/poster.png`,
+    // Leaves CPU to the other sessions on a shared machine.
+    threads: 2,
   })
 }
 
