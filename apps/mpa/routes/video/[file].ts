@@ -21,7 +21,7 @@ async function folder(paths: readonly string[], name: string): Promise<URL> {
 const SITE = await folder([`../../media/video/`, `../../../media/video/`], `apps/mpa/media/video/`)
 
 /**
- * `media/demo/` at the repository root: the README's demo video, which the home page plays too.
+ * `media/demo/` at the repository root: the README's demo video.
  * Its one copy stays there (`.dockerignore` lets in only its two files).
  */
 const DEMO = await folder([`../../../../media/demo/`, `../../../../../media/demo/`], `media/demo/`)

@@ -1,34 +1,31 @@
 WEBVTT
 
-00:02.503 --> 00:09.729
-Clone Seed into a new folder, sped up 4×
+00:02.003 --> 00:05.636
+One household, four currencies, one total in euros
 
-00:09.729 --> 00:15.244
-One command writes the env file with fresh secrets
+00:05.636 --> 00:09.231
+Each account keeps its own currency
 
-00:15.244 --> 00:19.410
-deno task dev builds and starts every service, sped up 29×
+00:09.231 --> 00:18.636
+Send €200 from Salary to the Bangkok account
 
-00:19.410 --> 00:22.544
-Every service is up
+00:18.636 --> 00:26.812
+Leave the baht empty to convert at today's rate
 
-00:22.544 --> 00:25.878
-The app, with a team's sample notes and tags
+00:26.812 --> 00:31.195
+Both balances move, each in its own currency
 
-00:25.878 --> 00:32.657
-Write a note and tag it
+00:31.195 --> 00:49.396
+Add a dinner in baht with one key: T
 
-00:32.657 --> 00:37.004
-Create it, and the whole team can read it
+00:49.396 --> 00:53.297
+Grace adds groceries on her phone, and it appears live
 
-00:37.004 --> 00:43.206
-Every group has members, each with a role
+00:53.297 --> 00:58.693
+Budgets this month: Groceries over, Travel well under
 
-00:43.206 --> 00:49.535
-The admin panel, on its own host: find a teammate
+00:58.693 --> 01:01.994
+Every view totals in the household's currency
 
-00:49.535 --> 00:55.471
-Their sessions, groups and activity, at a glance
-
-00:55.471 --> 00:58.290
-The new note now leads the team's list
+01:01.994 --> 01:04.857
+Free to host yourself, or use the cloud
