@@ -93,9 +93,10 @@ export interface Stack {
 
 /**
  * Starts the stack and waits until the app and the admin app answer. On a failed start it removes
- * what it made before it throws.
+ * what it made before it throws. `onStop` gets {@link Stack.stop} before anything starts, so a
+ * signal during the minutes the start takes can remove what it made so far.
  */
-export async function startStack(): Promise<Stack> {
+export async function startStack(onStop?: (stop: () => Promise<void>) => void): Promise<Stack> {
   const names = (await run(["docker", "ps", "-a", "--format", "{{.Names}}"])).split("\n")
   if (names.some((name) => name.startsWith(`${PROJECT}-`))) {
     throw new Error(`containers named ${PROJECT}-* exist; the recording needs that name`)
@@ -137,6 +138,7 @@ export async function startStack(): Promise<Stack> {
       await ok(["sudo", "-n", "find", work, "-delete"])
       await Deno.remove(work, { recursive: true }).catch(() => {})
     })()
+  onStop?.(stop)
 
   try {
     const example = await Deno.readTextFile(`${ROOT}infra/envs/.env.example`)

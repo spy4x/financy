@@ -26,7 +26,7 @@ import { type Browser, type BrowserContext, chromium, type Locator, type Page } 
 import { uuidV7 } from "@spy4x/platform/universal/uuid"
 import { CARD_SECONDS, encodeDemo } from "./encode.ts"
 import { clickLike, moveLike, parkLike, type Point, scrollLike } from "./human-mouse.ts"
-import { HOSTS, run, type Stack, startStack } from "./stack.ts"
+import { HOSTS, run, startStack } from "./stack.ts"
 import { type Screen, sleep, Take } from "./take.ts"
 
 const OUT = new URL("../", import.meta.url).pathname.replace(/\/$/, "")
@@ -370,7 +370,7 @@ async function record(): Promise<void> {
     handleSIGHUP: false,
   })
   const contexts: BrowserContext[] = []
-  let stack: Stack | null = null
+  let stopStack: (() => Promise<void>) | null = null
   // Deno skips `finally` when a signal ends the process, so Ctrl-C and SIGTERM run the same
   // cleanup themselves, once, and then exit.
   let released: Promise<void> | null = null
@@ -378,22 +378,22 @@ async function record(): Promise<void> {
     released ??= (async () => {
       for (const context of contexts) await context.close().catch(() => {})
       await browser.close().catch(() => {})
-      await stack?.stop()
+      await stopStack?.()
     })()
-  const listeners = ([["SIGINT", 130], ["SIGTERM", 143]] as const).map(([signal, code]) => {
-    const listener = () => {
+  // The listeners stay through the encoding, so Ctrl-C ends it too; the cleanup has run by
+  // then, so they only exit.
+  for (const [signal, code] of [["SIGINT", 130], ["SIGTERM", 143]] as const) {
+    Deno.addSignalListener(signal, () => {
       console.error(`${signal}: removing the stack, then exiting`)
       release().finally(() => Deno.exit(code))
-    }
-    Deno.addSignalListener(signal, listener)
-    return [signal, listener] as const
-  })
+    })
+  }
   try {
     const agent = await browser.newPage()
     const userAgent = (await agent.evaluate(() => navigator.userAgent)).replace("Headless", "")
     await agent.close()
 
-    stack = await startStack()
+    await startStack((stop) => stopStack = stop)
     const seeded = await seed(browser, contexts)
     await takePart(take, browser, seeded, userAgent)
 
@@ -402,7 +402,6 @@ async function record(): Promise<void> {
     console.log(`take: ${take.seconds().toFixed(1)} s in ${take.shots.length} shots`)
   } finally {
     await release()
-    for (const [signal, listener] of listeners) Deno.removeSignalListener(signal, listener)
   }
 }
 
